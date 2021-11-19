@@ -2,5 +2,15 @@
   "extends": "react-app",
   "rules": {
     "quotes": ["error", "single"]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.stories.*"
+      ],
+      "rules": {
+        "import/no-anonymous-default-export": "off"
+      }
+    }
+  ]
 }

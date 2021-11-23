@@ -1,15 +1,17 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
+import { shallow } from 'enzyme';
 import App from './App';
 
-test('renders learn react link', () => {
-  const { getByText } = render(
-    <Provider store={store}>
-      <App />
-    </Provider>
-  );
+describe('App', () => {
+  const subject = () => {
+    return shallow(<App />);
+  };
 
-  expect(getByText(/learn/i)).toBeInTheDocument();
+  test('renders learn react link', () => {
+    const wrapper = subject();
+
+    const linkText = wrapper.find('a.App-link.learn').text().trim(); 
+
+    expect(linkText).toStrictEqual('React');
+  });
 });

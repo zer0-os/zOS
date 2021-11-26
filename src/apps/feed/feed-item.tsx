@@ -8,14 +8,15 @@ export interface Model {
   description: string;
 }
 
-export interface Properties {
-  items: Model[];
+export interface Properties extends Model {
 }
 
-export class FeedItem extends React.Component {
+export class FeedItem extends React.Component<Properties> {
   render() {
     return (
       <div className="feed-item">
+        <span className="feed-item__title">{this.props.title}</span>
+        <span className="feed-item__description">{this.props.description}</span>
       </div>
     );
   }

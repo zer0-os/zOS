@@ -1,5 +1,5 @@
 import React from 'react';
-import { Feed } from '../../apps/feed';
+import { FeedContainer } from '../../apps/feed/container';
 
 import './styles.css';
 
@@ -14,7 +14,7 @@ export interface Properties {
 export class AppContainer extends React.Component<Properties> {
   renderSelectedApp() {
     if (this.props.selectedApp === Apps.Feed) {
-      return <Feed />;
+      return <FeedContainer />;
     }
 
     return null;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Feed } from '../../apps/feed';
+import { FeedContainer } from '../../apps/feed/container';
 
 import { AppContainer, Apps, Properties } from '.';
 
@@ -14,15 +14,15 @@ describe('AppContainer', () => {
     return shallow(<AppContainer {...allProps} />);
   };
 
-  test('renders Feed app when Feed app selected', () => {
+  test('renders Feed app container when Feed app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Feed });
 
-    expect(wrapper.find(Feed).exists()).toBe(true); 
+    expect(wrapper.find(FeedContainer).exists()).toBe(true); 
   });
 
-  test('does not render Feed app if no app is selected', () => {
+  test('does not render Feed app container if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
-    expect(wrapper.find(Feed).exists()).toBe(false); 
+    expect(wrapper.find(FeedContainer).exists()).toBe(false); 
   });
 });

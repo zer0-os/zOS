@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
-import { AppContainer } from './core-components/app-container';
+import { AppContainer, Apps } from './core-components/app-container';
 
 import './Main.css';
 
@@ -14,7 +14,7 @@ export class Main extends React.Component {
         <header className="Main-header">
           <img src={logo} className="Main-logo" alt="logo" />
           <Counter />
-          <AppContainer />
+          <AppContainer selectedApp={Apps.Feed} />
         </header>
       </div>
     );

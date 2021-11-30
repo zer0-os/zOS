@@ -1,16 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Main } from './Main';
-import { AppContainer } from './core-components/app-container';
+import { AppContainer, Apps } from './core-components/app-container';
 
 describe('Main', () => {
   const subject = () => {
     return shallow(<Main />);
   };
 
-  test('renders AppContainer', () => {
+  test('defaults selected app to Feed', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(AppContainer).exists()).toBe(true); 
+    expect(wrapper.find(AppContainer).prop('selectedApp')).toBe(Apps.Feed); 
   });
 });

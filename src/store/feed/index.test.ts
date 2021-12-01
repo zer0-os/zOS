@@ -3,7 +3,7 @@ import {
   receive,
   FeedState,
 } from '.';
-import { Model as FeedItem } from '../../../apps/feed/feed-item';
+import { Model as FeedItem } from '../../apps/feed/feed-item';
 
 describe('feed reducer', () => {
   const initialExistingState: FeedState = {

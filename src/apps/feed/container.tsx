@@ -1,10 +1,10 @@
 import React from 'react';
-import { RootState } from '../../app/store';
-import { connectContainer } from '../../app/store/redux-container';
+import { RootState } from '../../store';
+import { connectContainer } from '../../store/redux-container';
 
 import { Feed } from '.';
 import { Model as FeedItem } from './feed-item';
-import { load } from '../../app/store/feed';
+import { load } from '../../store/feed';
 
 export interface Properties {
   items: FeedItem[];

@@ -8,7 +8,7 @@ import {
 //   AppThunk,
 // } from '..';
 // import { fetchCount } from '../counterAPI';
-import { Model as FeedItem } from '../../../apps/feed/feed-item';
+import { Model as FeedItem } from '../../apps/feed/feed-item';
 
 enum AsyncActionStatus {
   Idle = 'idle',

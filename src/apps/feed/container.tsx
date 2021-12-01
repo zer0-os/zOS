@@ -4,9 +4,11 @@ import { connectContainer } from '../../app/store/redux-container';
 
 import { Feed } from '.';
 import { Model as FeedItem } from './feed-item';
+import { load } from '../../app/store/feed';
 
 export interface Properties {
   items: FeedItem[];
+  load: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -17,7 +19,13 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      load,
+    };
+  }
+
+  componentDidMount() {
+    this.props.load();
   }
 
   render() {

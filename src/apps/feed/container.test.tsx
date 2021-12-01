@@ -5,14 +5,23 @@ import { Feed } from '.';
 import {RootState} from '../../app/store';
 
 describe('FeedContainer', () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       items: [],
+      load: () => undefined,
       ...props,
     };
 
     return shallow(<Container {...allProps} />);
   };
+
+  test('it loads feed on mount', () => {
+    const load = jest.fn();
+
+    subject({ load });
+
+    expect(load.mock.calls).toHaveLength(1);
+  });
 
   test('passes items to child', () => {
     const items = [{

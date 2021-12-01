@@ -11,8 +11,8 @@ export interface Properties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    console.log('state: ', state);
     return {
+      items: state.feed.value,
     };
   }
 

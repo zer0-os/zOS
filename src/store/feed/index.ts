@@ -17,7 +17,7 @@ export enum SagaActionTypes {
 
 const load = createAction(SagaActionTypes.Load);
 
-enum AsyncActionStatus {
+export enum AsyncActionStatus {
   Idle = 'idle',
   Loading = 'loading',
   Failed = 'failed',

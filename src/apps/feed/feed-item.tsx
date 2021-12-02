@@ -15,7 +15,7 @@ export class FeedItem extends React.Component<Properties> {
   render() {
     return (
       <div className="feed-item">
-        <span className="feed-item__title">{this.props.title}</span>
+        <h3 className="feed-item__title">{this.props.title}</h3>
         <span className="feed-item__description">{this.props.description}</span>
       </div>
     );

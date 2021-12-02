@@ -8,7 +8,8 @@ import './Main.css';
 export class Main extends React.Component {
   render() {
     return (
-      <div className="Main">
+      <div className='main'>
+        <div className='main__header'>zOS</div>
         <AppContainer selectedApp={Apps.Feed} />
       </div>
     );

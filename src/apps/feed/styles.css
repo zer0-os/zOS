@@ -1,2 +1,24 @@
 .feed {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feed__items {
+  max-width: 600px;
+  padding: 0 20px;
+}
+
+.feed-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-item__title {
+  font-size: 24px;
+}
+
+.feed-item__description {
+  font-size: 16px;
 }

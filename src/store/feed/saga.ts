@@ -1,24 +1,14 @@
-import { takeLatest, put } from 'redux-saga/effects';
+import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
 
+import { client } from '../../lib/web3/zns/client';
+import { service as providerService } from '../../lib/web3/provider-service';
+
 export function* load() {
-  const items = [{
-    id: 'the-first-id',
-    title: 'The First Item',
-    description: 'This is the description of the first item.',
-  }, {
-    id: 'the-second-id',
-    title: 'The Second Item',
-    description: 'This is the description of the Second item.',
-  }, {
-    id: 'the-third-id',
-    title: 'The Third Item',
-    description: 'This is the description of the Third item.',
-  }, {
-    id: 'the-fourth-id',
-    title: 'The Fourth Item',
-    description: 'This is the description of the Fourth item.',
-  }];
+  const currentProvider = yield call([providerService, providerService.get]);
+  const znsClient = yield call(client.get, currentProvider);
+
+  const items = yield call(znsClient.getFeed);
 
   yield put(receive(items));
 }

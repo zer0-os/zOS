@@ -9,6 +9,7 @@ export enum Connectors {
 }
 
 export interface Properties {
+  providerService: { register: (provider: any) => void },
   web3: any;
 }
 
@@ -25,6 +26,14 @@ export class Container extends React.Component<Properties> {
 
   componentDidMount() {
     this.props.web3.setConnector(Connectors.Infura);
+  }
+
+  componentDidUpdate({ web3: { active: previouslyActive } }) {
+    const { web3 } = this.props;
+
+    if (!previouslyActive && web3.active) {
+      this.props.providerService.register(web3.library);
+    }
   }
 
   get isActive() {

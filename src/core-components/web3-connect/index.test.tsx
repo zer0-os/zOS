@@ -4,14 +4,16 @@ import { Container, Properties, Connectors } from '.';
 
 
 const getWeb3 = (web3 = {}) => ({
-  setConnector: () => undefined,
+  activate: (connector: any) => undefined,
   active: false,
+  library: null,
   ...(web3 || {}),
 });
 
 describe('Web3Connect', () => {
   const subject = (props: Partial<Properties> = {}, child = <div />) => {
     const allProps: Properties = {
+      connectors: { get: async () => undefined },
       ...props,
       web3: getWeb3(props.web3),
       providerService: {
@@ -23,12 +25,18 @@ describe('Web3Connect', () => {
     return shallow(<Container {...allProps}>{child}</ Container>);
   };
 
-  test('it sets infura connector on mount', () => {
-    const setConnector = jest.fn();
+  test('it activates infura connector on mount', () => {
+    const activate = jest.fn();
+    const connector = { what: 'connector' };
 
-    subject({ web3: { setConnector } });
+    subject({
+      connectors: {
+        get: jest.fn((c: Connectors) => c === Connectors.Infura ? connector : null),
+      },
+      web3: { activate } as any,
+    });
 
-    expect(setConnector).toHaveBeenCalledWith(Connectors.Infura);
+    expect(activate).toHaveBeenCalledWith(connector);
   });
 
   test('it registers provider when active is true', () => {
@@ -37,7 +45,7 @@ describe('Web3Connect', () => {
 
     const component = subject({
         providerService: { register },
-        web3: { active: false },
+        web3: { active: false } as any,
       },
       <div className='the-cat-parade' />,
     );
@@ -48,13 +56,13 @@ describe('Web3Connect', () => {
   });
 
   test('it renders children when active is true', () => {
-    const component = subject({ web3: { active: true } }, <div className='the-cat-parade' />);
+    const component = subject({ web3: { active: true } as any }, <div className='the-cat-parade' />);
 
     expect(component.hasClass('the-cat-parade')).toBe(true);
   });
 
   test('it does not render children when active is false', () => {
-    const component = subject({ web3: { active: false } }, <div className='the-cat-parade' />);
+    const component = subject({ web3: { active: false } as any }, <div className='the-cat-parade' />);
 
     expect(component.isEmptyRender()).toBe(true);
   });

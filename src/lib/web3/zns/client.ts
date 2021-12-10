@@ -5,23 +5,17 @@ export class ZnsClient {
   constructor(private provider: any) { }
 
   async getFeed() {
-    return [{
-      id: 'the-first-id',
-      title: 'The First ZNS Feed Item',
-      description: 'This is the description of the first item.',
-    }, {
-      id: 'the-second-id',
-      title: 'The Second ZNS Feed Item',
-      description: 'This is the description of the Second item.',
-    }, {
-      id: 'the-third-id',
-      title: 'The Third ZNS Feed Item',
-      description: 'This is the description of the Third item.',
-    }, {
-      id: 'the-fourth-id',
-      title: 'The Fourth ZNS Feed Item',
-      description: 'This is the description of the Fourth item.',
-    }];
+    const domains = await this.provider.getAllDomains();
+
+    return domains.map(this.mapDomainToFeedItem);
+  }
+
+  private mapDomainToFeedItem({ id, name }) {
+    return {
+      id,
+      title: name,
+      description: name,
+    };
   }
 }
 

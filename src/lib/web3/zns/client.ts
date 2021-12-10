@@ -4,7 +4,7 @@ import { getForProvider } from './config';
 export class ZnsClient {
   constructor(private provider: any) { }
 
-  getFeed() {
+  async getFeed() {
     return [{
       id: 'the-first-id',
       title: 'The First ZNS Feed Item',
@@ -26,9 +26,9 @@ export class ZnsClient {
 }
 
 export const client = {
-  get(web3Provider: any) {
-    const znsProvider = createInstance(getForProvider(web3Provider));
+  async get(web3Provider: any) {
+    const config = await getForProvider(web3Provider);
 
-    return new ZnsClient(znsProvider);
+    return new ZnsClient(createInstance(config));
   },
 };

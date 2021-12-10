@@ -13,7 +13,7 @@ describe('feed saga', () => {
 
     await expectSaga(load)
       .provide([
-        [matchers.call.fn(client.get), { getFeed: () => [] }],
+        [matchers.call.fn(client.get), { getFeed: async () => [] }],
         [matchers.call.fn(providerService.get), currentProvider],
       ])
       .call(client.get, currentProvider)
@@ -40,7 +40,7 @@ describe('feed saga', () => {
     }];
 
     const znsClient = {
-      getFeed: () => items,
+      getFeed: async () => items,
     };
 
     await expectSaga(load)

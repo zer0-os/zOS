@@ -8,7 +8,7 @@ export function* load() {
   const currentProvider = yield call([providerService, providerService.get]);
   const znsClient = yield call(client.get, currentProvider);
 
-  const items = yield call(znsClient.getFeed);
+  const items = yield call([znsClient, znsClient.getFeed]);
 
   yield put(receive(items));
 }

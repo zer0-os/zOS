@@ -1,3 +1,8 @@
+export enum ConnectionStatus {
+  Disconnected = 'disconnected',
+  Connected = 'connected',
+}
+
 export enum Chains {
   MainNet = 1,
   Morden = 2,

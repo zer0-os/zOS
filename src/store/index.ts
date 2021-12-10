@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import { rootSaga } from './saga';
 
 import { reducer as feed } from './feed';
+import { reducer as web3 } from './web3';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -14,6 +15,7 @@ const sagaMiddleware = createSagaMiddleware({
 export const store = configureStore({
   reducer: {
     feed,
+    web3,
   },
   middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),
 });

@@ -1,11 +1,16 @@
 import { createInstance } from '@zero-tech/zns-sdk';
 import { getForProvider } from './config';
+import { config as appConfig } from '../../../config';
+
+interface ZnsClientConfig {
+  rootDomainId: string;
+}
 
 export class ZnsClient {
-  constructor(private provider: any) { }
+  constructor(private provider: any, private config: ZnsClientConfig = appConfig) { }
 
-  async getFeed() {
-    const domains = await this.provider.getAllDomains();
+  async getFeed(id = this.config.rootDomainId) {
+    const domains = await this.provider.getSubdomainsById(id);
 
     return domains.map(this.mapDomainToFeedItem);
   }

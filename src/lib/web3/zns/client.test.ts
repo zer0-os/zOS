@@ -1,23 +1,43 @@
 import { ZnsClient } from './client';
 
 describe('ZnsClient', () => {
-  const subject = (overrides = {}) => {
+  const subject = (overrides = {}, config = { rootDomainId: '' }) => {
     const provider = {
-      getAllDomains: () => [],
+      getSubdomainsById: () => [],
       ...overrides,
     };
 
-    return new ZnsClient(provider);
+    return new ZnsClient(provider, config);
   }
 
+  it('calls getSubdomainsById for id', async () => {
+    const id = '0x01';
+    const getSubdomainsById = jest.fn(_ => []);
+    const client = subject({ getSubdomainsById });
+
+    await client.getFeed(id);
+
+    expect(getSubdomainsById).toBeCalledWith(id)
+  });
+
+  it('calls getSubdomainsById for root id if no id provided', async () => {
+    const rootDomainId = '0x03';
+    const getSubdomainsById = jest.fn(_ => []);
+    const client = subject({ getSubdomainsById }, { rootDomainId });
+
+    await client.getFeed();
+
+    expect(getSubdomainsById).toBeCalledWith(rootDomainId)
+  });
+
   it('returns domains as feed items', async () => {
-    const getAllDomains = async () => [
+    const getSubdomainsById = async () => [
       { id: 'first-id', name: 'the.first.domain.name' },
       { id: 'second-id', name: 'the.second.domain.name' },
       { id: 'third-id', name: 'the.third.domain.name' },
     ];
 
-    const client = subject({ getAllDomains });
+    const client = subject({ getSubdomainsById });
 
     const feedItems = [{
       id: 'first-id',

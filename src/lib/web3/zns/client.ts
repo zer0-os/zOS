@@ -1,3 +1,4 @@
+import { utils } from 'ethers';
 import { createInstance } from '@zero-tech/zns-sdk';
 import { getForProvider } from './config';
 import { config as appConfig } from '../../../config';
@@ -13,6 +14,25 @@ export class ZnsClient {
     const domains = await this.provider.getSubdomainsById(id);
 
     return domains.map(this.mapDomainToFeedItem);
+  }
+
+  resolveIdFromName(domainName: string) {
+    const rootId = this.config.rootDomainId;
+
+    if (!domainName) return rootId;
+
+    return domainName
+      .split('.')
+      .reduce((prev, curr) => this.hashPair(prev, utils.id(curr)), rootId);
+  }
+
+  private hashPair(first: string, second: string) {
+    return utils.keccak256(
+      utils.defaultAbiCoder.encode(
+        ['bytes32', 'bytes32'],
+        [utils.arrayify(first), utils.arrayify(second)],
+      ),
+    );
   }
 
   private mapDomainToFeedItem({ id, name }) {

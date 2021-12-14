@@ -25,7 +25,19 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    this.props.load(this.props.route);
+    // at this point the assumption is that we're never navigating to the
+    // "root", so we only for routes that are a non-empty string.
+    if (this.props.route) {
+      this.props.load(this.props.route);
+    }
+  }
+
+  componentDidUpdate(prevProps: Properties) {
+    const { route } = this.props;
+
+    if (route && ( route !== prevProps.route)) {
+      this.props.load(route);
+    }
   }
 
   render() {

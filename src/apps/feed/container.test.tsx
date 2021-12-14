@@ -24,6 +24,24 @@ describe('FeedContainer', () => {
     expect(load).toHaveBeenCalledWith('pickles');
   });
 
+  test('it does not load empty feed on mount', () => {
+    const load = jest.fn();
+
+    subject({ load, route: '' });
+
+    expect(load).toHaveBeenCalledTimes(0);
+  });
+
+  test('it loads feed when route updates', () => {
+    const load = jest.fn();
+
+    const container = subject({ load, route: '' });
+
+    container.setProps({ route: 'bob' });
+
+    expect(load).toHaveBeenCalledWith('bob');
+  });
+
   test('passes items to child', () => {
     const items = [{
       id: 'the-first-id',

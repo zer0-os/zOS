@@ -7,25 +7,25 @@ import { Model as FeedItem } from './feed-item';
 import { load } from '../../store/feed';
 
 export interface Properties {
+  route: string;
   items: FeedItem[];
-  load: () => void;
+  load: (route: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     return {
       items: state.feed.value,
+      route: state.zns.value.route,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {
-      load,
-    };
+    return { load };
   }
 
   componentDidMount() {
-    this.props.load();
+    this.props.load(this.props.route);
   }
 
   render() {

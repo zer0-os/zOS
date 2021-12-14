@@ -7,6 +7,7 @@ import { RootState } from '../../store';
 describe('FeedContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
+      route: '',
       items: [],
       load: () => undefined,
       ...props,
@@ -15,12 +16,12 @@ describe('FeedContainer', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  test('it loads feed on mount', () => {
+  test('it loads feed for route on mount', () => {
     const load = jest.fn();
 
-    subject({ load });
+    subject({ load, route: 'pickles' });
 
-    expect(load.mock.calls).toHaveLength(1);
+    expect(load).toHaveBeenCalledWith('pickles');
   });
 
   test('passes items to child', () => {
@@ -40,7 +41,18 @@ describe('FeedContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: RootState) => Container.mapState(state);
+    const subject = (state: RootState) => Container.mapState({
+      feed: { value: [], ...(state.feed || {}) },
+      zns: { value: { route: '' }, ...(state.zns || {}) },
+    } as any);
+
+    test('route', () => {
+      const route = 'deep.fried.zucchini';
+
+      const state = subject({ zns: { value: { route } } } as RootState);
+
+      expect(state).toMatchObject({ route });
+    });
 
     test('items', () => {
       const items = [{
@@ -55,7 +67,7 @@ describe('FeedContainer', () => {
 
       const state = subject({ feed: { value: items } } as RootState);
 
-      expect(state).toEqual({ items });
+      expect(state).toMatchObject({ items });
     });
   });
 });

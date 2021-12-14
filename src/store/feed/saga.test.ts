@@ -8,15 +8,37 @@ import { load } from './saga';
 import { AsyncActionStatus, reducer } from '.';
 
 describe('feed saga', () => {
+  const getZnsClient = (overrides = {}) => {
+    return {
+      getFeed: async () => [],
+      resolveIdFromName: () => '',
+      ...overrides,
+    };
+  };
+
   it('should pass current provider to zns client', async () => {
     const currentProvider = { networkId: 7 };
 
-    await expectSaga(load)
+    await expectSaga(load, { payload: '' })
       .provide([
-        [matchers.call.fn(client.get), { getFeed: async () => [] }],
+        [matchers.call.fn(client.get), getZnsClient()],
         [matchers.call.fn(providerService.get), currentProvider],
       ])
       .call(client.get, currentProvider)
+      .run();
+  });
+
+  it('should get feed for provided payload', async () => {
+    const znsClient = getZnsClient();
+
+    await expectSaga(load, { payload: 'theroute' })
+      .provide([
+        [matchers.call.fn(providerService.get), {}],
+        [matchers.call.fn(client.get), znsClient],
+        [matchers.call([znsClient, znsClient.resolveIdFromName], 'theroute'), 'the-id'],
+        [matchers.call.fn(znsClient.getFeed), []],
+      ])
+      .call([znsClient, znsClient.getFeed], 'the-id')
       .run();
   });
 
@@ -39,11 +61,11 @@ describe('feed saga', () => {
       description: 'This is the description of the Fourth item.',
     }];
 
-    const znsClient = {
+    const znsClient = getZnsClient({
       getFeed: async () => items,
-    };
+    });
 
-    await expectSaga(load)
+    await expectSaga(load, { payload: '' })
       .withReducer(reducer)
       .provide([
         [matchers.call.fn(client.get), znsClient],

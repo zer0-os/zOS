@@ -1,18 +1,23 @@
 import { ZnsClient } from './client';
 
 describe('ZnsClient', () => {
-  const subject = (overrides = {}, config = {}) => {
+  const subject = (providerOverrides = {}, metadataServiceOverrides = {}, config = {}) => {
     const allConfig = {
       rootDomainId: '0x0000000000000000000000000000000000000000000000000000000000000000',
       ...config,
     };
 
-    const provider = {
-      getSubdomainsById: () => [],
-      ...overrides,
+    const metadataService = {
+      load: () => ({} as any),
+      ...metadataServiceOverrides,
     };
 
-    return new ZnsClient(provider, allConfig);
+    const provider = {
+      getSubdomainsById: () => [],
+      ...providerOverrides,
+    };
+
+    return new ZnsClient(provider, metadataService, allConfig);
   }
 
   it('resolves id for single root domain', () => {
@@ -24,19 +29,19 @@ describe('ZnsClient', () => {
   });
 
   it('resolves root domain id if no id for empty string', () => {
-    const client = subject({}, { rootDomainId: '0xb0b' });
+    const client = subject({}, {}, { rootDomainId: '0xb0b' });
 
     expect(client.resolveIdFromName('')).toStrictEqual('0xb0b');
   });
 
   it('resolves root domain id if no id for null', () => {
-    const client = subject({}, { rootDomainId: '0xb0b' });
+    const client = subject({}, {}, { rootDomainId: '0xb0b' });
 
     expect(client.resolveIdFromName(null)).toStrictEqual('0xb0b');
   });
 
   it('resolves root domain id if no id for undefined', () => {
-    const client = subject({}, { rootDomainId: '0xb0b' });
+    const client = subject({}, {}, { rootDomainId: '0xb0b' });
 
     expect(client.resolveIdFromName(undefined)).toStrictEqual('0xb0b');
   });
@@ -59,10 +64,110 @@ describe('ZnsClient', () => {
     expect(getSubdomainsById).toBeCalledWith(id)
   });
 
+  it('loads metadata for domain', async () => {
+    const getSubdomainsById = async () => [
+      { id: 'first-id', name: 'the.first.domain.name', metadataUri: 'http://example.com/what' },
+    ];
+
+    const loadMetadata = jest.fn();
+
+    const client = subject({ getSubdomainsById }, { load: loadMetadata });
+
+    await client.getFeed('the-id');
+
+    expect(loadMetadata).toBeCalledWith('http://example.com/what');
+  });
+
+  it('merges metadata with domains', async () => {
+    const getSubdomainsById = async () => [
+      { id: 'first-id', name: 'the.first.domain.name', metadataUri: 'http://example.com/what-one' },
+      { id: 'second-id', name: 'the.second.domain.name', metadataUri: 'http://example.com/what-two' },
+    ];
+
+    const loadMetadata = jest.fn((url) => {
+      if (url === 'http://example.com/what-one') {
+        return {
+          title: 'first-title',
+          description: 'first-description',
+        };
+      }
+
+      return {
+        title: 'second-title',
+        description: 'second-description',
+      };
+    });
+
+    const client = subject({ getSubdomainsById }, { load: loadMetadata });
+
+    const items = await client.getFeed('the-id');
+
+    expect(items).toMatchObject([
+      { id: 'first-id', title: 'first-title', description: 'first-description' },
+      { id: 'second-id', title: 'second-title', description: 'second-description' },
+    ]);
+  });
+
+  it('defaults title and description if metadata is null', async () => {
+    const getSubdomainsById = async () => [
+      { id: 'first-id', name: 'the.first.domain.name', metadataUri: 'http://example.com/what-one' },
+      { id: 'second-id', name: 'the.second.domain.name', metadataUri: 'http://example.com/what-two' },
+    ];
+
+    const loadMetadata = jest.fn((url) => {
+      if (url === 'http://example.com/what-one') {
+        return {
+          title: 'first-title',
+          description: 'first-description',
+        };
+      }
+
+      return null;
+    });
+
+    const client = subject({ getSubdomainsById }, { load: loadMetadata });
+
+    const items = await client.getFeed('the-id');
+
+    expect(items).toMatchObject([
+      { id: 'first-id', title: 'first-title', description: 'first-description' },
+      { id: 'second-id', title: 'the.second.domain.name', description: 'the.second.domain.name' },
+    ]);
+  });
+
+  it('defaults description to title if when null', async () => {
+    const getSubdomainsById = async () => [
+      { id: 'first-id', name: 'the.first.domain.name', metadataUri: 'http://example.com/what-one' },
+      { id: 'second-id', name: 'the.second.domain.name', metadataUri: 'http://example.com/what-two' },
+    ];
+
+    const loadMetadata = jest.fn((url) => {
+      if (url === 'http://example.com/what-one') {
+        return {
+          title: 'first-title',
+          description: 'first-description',
+        };
+      }
+
+      return {
+        title: 'second-title',
+      };
+    });
+
+    const client = subject({ getSubdomainsById }, { load: loadMetadata });
+
+    const items = await client.getFeed('the-id');
+
+    expect(items).toMatchObject([
+      { id: 'first-id', title: 'first-title', description: 'first-description' },
+      { id: 'second-id', title: 'second-title', description: 'second-title' },
+    ]);
+  });
+
   it('calls getSubdomainsById for root id if no id provided', async () => {
     const rootDomainId = '0x03';
     const getSubdomainsById = jest.fn(_ => []);
-    const client = subject({ getSubdomainsById }, { rootDomainId });
+    const client = subject({ getSubdomainsById }, {}, { rootDomainId });
 
     await client.getFeed();
 
@@ -80,18 +185,15 @@ describe('ZnsClient', () => {
 
     const feedItems = [{
       id: 'first-id',
-      title: 'the.first.domain.name',
-      description: 'the.first.domain.name',
+      znsRoute: 'the.first.domain.name',
     }, {
       id: 'second-id',
-      title: 'the.second.domain.name',
-      description: 'the.second.domain.name',
+      znsRoute: 'the.second.domain.name',
     }, {
       id: 'third-id',
-      title: 'the.third.domain.name',
-      description: 'the.third.domain.name',
+      znsRoute: 'the.third.domain.name',
     }];
 
-    expect(await client.getFeed()).toStrictEqual(feedItems);
+    expect(await client.getFeed()).toMatchObject(feedItems);
   });
 });

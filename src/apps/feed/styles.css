@@ -13,6 +13,14 @@
 .feed-item {
   display: flex;
   flex-direction: column;
+  padding: 15px 0 25px 0;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  border: 1px solid #cccccc;
+}
+
+.feed-item__text-content {
+  padding: 5px 20px;
 }
 
 .feed-item__title {

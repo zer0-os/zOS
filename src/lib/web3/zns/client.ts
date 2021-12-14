@@ -47,13 +47,14 @@ export class ZnsClient {
 
   private mapDomainToFeedItem(domain) {
     const { id, name, metadata } = domain;
-    const { title, description } = (metadata || { title: name });
+    const { title, description, image } = (metadata || { title: name });
 
     return {
       id,
       title,
       description: description || title,
       znsRoute: name,
+      imageUrl: image || null,
     };
   }
 }

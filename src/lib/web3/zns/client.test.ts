@@ -89,12 +89,14 @@ describe('ZnsClient', () => {
         return {
           title: 'first-title',
           description: 'first-description',
+          image: 'http://example.com/first-image.jpg',
         };
       }
 
       return {
         title: 'second-title',
         description: 'second-description',
+        image: 'http://example.com/second-image.jpg',
       };
     });
 
@@ -103,8 +105,18 @@ describe('ZnsClient', () => {
     const items = await client.getFeed('the-id');
 
     expect(items).toMatchObject([
-      { id: 'first-id', title: 'first-title', description: 'first-description' },
-      { id: 'second-id', title: 'second-title', description: 'second-description' },
+      {
+        id: 'first-id',
+        title: 'first-title',
+        description: 'first-description',
+        imageUrl: 'http://example.com/first-image.jpg',
+      },
+      {
+        id: 'second-id',
+        title: 'second-title',
+        description: 'second-description',
+        imageUrl: 'http://example.com/second-image.jpg',
+      },
     ]);
   });
 
@@ -162,6 +174,33 @@ describe('ZnsClient', () => {
       { id: 'first-id', title: 'first-title', description: 'first-description' },
       { id: 'second-id', title: 'second-title', description: 'second-title' },
     ]);
+  });
+
+  it('defaults imageUrl to null', async () => {
+    const getSubdomainsById = async () => [
+      { id: 'first-id', name: 'the.first.domain.name', metadataUri: 'http://example.com/what-one' },
+      { id: 'second-id', name: 'the.second.domain.name', metadataUri: 'http://example.com/what-two' },
+    ];
+
+    const loadMetadata = jest.fn((url) => {
+      if (url === 'http://example.com/what-one') {
+        return {
+          title: 'first-title',
+          description: 'first-description',
+        };
+      }
+
+      return {
+        title: 'second-title',
+        description: 'second-description',
+      };
+    });
+
+    const client = subject({ getSubdomainsById }, { load: loadMetadata });
+
+    const [item] = await client.getFeed('the-id');
+
+    expect(item.imageUrl).toBeNull();
   });
 
   it('calls getSubdomainsById for root id if no id provided', async () => {

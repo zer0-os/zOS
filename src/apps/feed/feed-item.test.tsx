@@ -9,11 +9,28 @@ describe('FeedItem', () => {
       id: '',
       title: '',
       description: '',
+      imageUrl: '',
       ...props,
     };
 
     return shallow(<FeedItem {...allProps} />);
   };
+
+  test('renders image', () => {
+    const wrapper = subject({
+      imageUrl: 'http://example.com/theimage.jpg',
+    });
+
+    expect(wrapper.find('.feed-item__image').prop('src')).toStrictEqual('http://example.com/theimage.jpg');
+  });
+
+  it('does not render image if not provided', () => {
+    const wrapper = subject({
+      imageUrl: null,
+    });
+
+    expect(wrapper.find('.feed-item__image').exists()).toBe(false);
+  });
 
   test('renders title', () => {
     const title = 'The First Item';

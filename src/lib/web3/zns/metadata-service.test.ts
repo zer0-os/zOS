@@ -110,6 +110,36 @@ describe('MetadataService', () => {
     expect(image).toBeNull();
   });
 
+  it('image_full becomes image if image is empty string', async () => {
+    const body = {
+      title: 'the-title',
+      description: 'what',
+      image: '',
+      image_full: 'http://example.com/my-face.jpg',
+    };
+
+    const service = subject({ get: async () => ({ body }) });
+
+    const { image } = await service.load('http://example.com/what');
+
+    expect(image).toBe('http://example.com/my-face.jpg');
+  });
+
+  it('image_full does not replace image', async () => {
+    const body = {
+      title: 'the-title',
+      description: 'what',
+      image: 'http://example.com/my-face.jpg',
+      image_full: 'http://example.com/my-full-face.jpg',
+    };
+
+    const service = subject({ get: async () => ({ body }) });
+
+    const { image } = await service.load('http://example.com/what');
+
+    expect(image).toBe('http://example.com/my-face.jpg');
+  });
+
   it('metadata is null when body is not defined', async () => {
     const service = subject({ get: async () => ({}) });
 

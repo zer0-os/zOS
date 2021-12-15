@@ -53,7 +53,15 @@ export class MetadataService {
     return {
       title: domain.title || domain.name || null,
       description: domain.description || null,
-      image: domain.image ? this.normalizeUrl(domain.image) : null,
+      image: this.normalizeImage(domain),
     }
+  }
+
+  private normalizeImage({ image, image_full }) {
+    const url = image || image_full;
+
+    if (!url) return null;
+
+    return this.normalizeUrl(url);
   }
 }

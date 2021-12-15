@@ -15,7 +15,7 @@ ReactDOM.render(
     <Provider store={store}>
       <BrowserRouter>
         <Web3ReactContextProvider>
-          <Route path='/'>
+          <Route path='/' exact>
             <Redirect to={`/${config.defaultZnsRoute}`} />
           </Route>
           <Route path='/:znsRoute' component={ZnsRouteConnect} />

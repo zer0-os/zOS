@@ -1,13 +1,18 @@
 import { MetadataService } from './metadata-service';
 
 describe('MetadataService', () => {
-  const subject = (clientOverrides = {}) => {
+  const subject = (clientOverrides = {}, configOverrides = {}) => {
     const httpClient = {
       get: () => ({ body: null }),
       ...clientOverrides,
     };
 
-    return new MetadataService(httpClient);
+    const config = {
+      ipfsBaseUrl: '',
+      ...configOverrides,
+    };
+
+    return new MetadataService(httpClient, config as any);
   }
 
   it('gets url', async () => {
@@ -18,6 +23,26 @@ describe('MetadataService', () => {
     await service.load('http://example.com/what');
 
     expect(get).toBeCalledWith('http://example.com/what');
+  });
+
+  it('normalizes ipfs url', async () => {
+    const get = jest.fn(() => ({ body: null }));
+
+    const service = subject({ get }, { ipfsBaseUrl: 'http://example.com/ipfs' });
+
+    await service.load('ipfs://thehash');
+
+    expect(get).toBeCalledWith('http://example.com/ipfs/thehash');
+  });
+
+  it('normalizes ipfs url if config has trailing slash', async () => {
+    const get = jest.fn(() => ({ body: null }));
+
+    const service = subject({ get }, { ipfsBaseUrl: 'http://example.com/ipfs/' });
+
+    await service.load('ipfs://thehash');
+
+    expect(get).toBeCalledWith('http://example.com/ipfs/thehash');
   });
 
   it('returns metadata from endpoint', async () => {
@@ -103,5 +128,31 @@ describe('MetadataService', () => {
     const metadata = await service.load('http://example.com/what');
 
     expect(metadata).toBeNull();
+  });
+
+  it('normalizes ipfs url for image', async () => {
+    const body = {
+      title: 'the-title',
+      image: 'ipfs://thehash',
+    };
+
+    const service = subject({ get: async () => ({ body }) }, { ipfsBaseUrl: 'http://example.com/ipfs' });
+
+    const { image } = await service.load('http://example.com/what');
+
+    expect(image).toBe('http://example.com/ipfs/thehash');
+  });
+
+  it('normalizes ipfs url for image when config has trailing slash', async () => {
+    const body = {
+      title: 'the-title',
+      image: 'ipfs://thehash',
+    };
+
+    const service = subject({ get: async () => ({ body }) }, { ipfsBaseUrl: 'http://example.com/ipfs/' });
+
+    const { image } = await service.load('http://example.com/what');
+
+    expect(image).toBe('http://example.com/ipfs/thehash');
   });
 });

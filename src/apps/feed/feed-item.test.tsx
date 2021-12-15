@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Link } from 'react-router-dom';
 
 import { FeedItem, Properties } from './feed-item';
 
@@ -10,6 +11,7 @@ describe('FeedItem', () => {
       title: '',
       description: '',
       imageUrl: '',
+      znsRoute: '',
       ...props,
     };
 
@@ -22,6 +24,15 @@ describe('FeedItem', () => {
     });
 
     expect(wrapper.find('.feed-item__image').prop('src')).toStrictEqual('http://example.com/theimage.jpg');
+  });
+
+  it('adds title as alt text to image', () => {
+    const wrapper = subject({
+      title: 'what',
+      imageUrl: 'http://example.com/theimage.jpg',
+    });
+
+    expect(wrapper.find('.feed-item__image').prop('alt')).toStrictEqual('what');
   });
 
   it('does not render image if not provided', () => {
@@ -54,5 +65,16 @@ describe('FeedItem', () => {
     });
 
     expect(wrapper.find('.feed-item__description').text().trim()).toStrictEqual(description);
+  });
+
+  test('renders title as link to route', () => {
+    const wrapper = subject({
+      id: 'the-first-id',
+      znsRoute: 'the.route.yo',
+    });
+
+    const link = wrapper.find('.feed-item__title').closest(Link);
+
+    expect(link.prop('to')).toStrictEqual('the.route.yo');
   });
 });

@@ -1,6 +1,7 @@
 import {
   reducer,
   receive,
+  setRoute,
   ZnsState,
 } from '.';
 
@@ -19,5 +20,11 @@ describe('zns reducer', () => {
     const actual = reducer(initialExistingState, receive({ route: 'cheeseburgers' }));
 
     expect(actual.value).toMatchObject({ route: 'cheeseburgers' });
+  });
+
+  it('should replace existing route', () => {
+    const actual = reducer(initialExistingState, setRoute('tacos.fish'));
+
+    expect(actual.value).toMatchObject({ route: 'tacos.fish' });
   });
 });

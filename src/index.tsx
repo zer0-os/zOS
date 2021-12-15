@@ -1,21 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { Main } from './Main';
+import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
-import { Web3Connect } from './core-components/web3-connect';
+import { BrowserRouter, Route } from 'react-router-dom';
+
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Web3ReactContextProvider>
-        <Web3Connect>
-          <Main />
-        </Web3Connect>
-      </Web3ReactContextProvider>
+      <BrowserRouter>
+        <Web3ReactContextProvider>
+          <Route path='/:znsRoute' component={ZnsRouteConnect} />
+        </Web3ReactContextProvider>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -21,11 +21,14 @@ const slice = createSlice({
   name: 'zns',
   initialState,
   reducers: {
+    setRoute: (state, action: PayloadAction<string>) => {
+      state.value = { route: action.payload };
+    },
     receive: (state, action: PayloadAction<ZnsDomainDescriptor>) => {
       state.value = action.payload;
     },
   },
 });
 
-export const { receive } = slice.actions;
+export const { receive, setRoute } = slice.actions;
 export const { reducer } =  slice;

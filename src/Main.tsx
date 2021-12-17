@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AppContainer, Apps } from './core-components/app-container';
 
 import './Main.css';
@@ -9,7 +10,9 @@ export class Main extends React.Component {
   render() {
     return (
       <div className='main'>
-        <div className='main__header'>zOS</div>
+        <Link to='/'>
+          <div className='main__header'>zOS</div>
+        </Link>
         <AppContainer selectedApp={Apps.Feed} />
       </div>
     );

@@ -4,6 +4,7 @@ import './index.css';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
+import { Provider as EscapeManagerProvider } from 'lib/escape-manager';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 
@@ -13,14 +14,16 @@ import {config} from './config';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <Web3ReactContextProvider>
-          <Route path='/' exact>
-            <Redirect to={`/${config.defaultZnsRoute}`} />
-          </Route>
-          <Route path='/:znsRoute' component={ZnsRouteConnect} />
-        </Web3ReactContextProvider>
-      </BrowserRouter>
+      <EscapeManagerProvider>
+        <BrowserRouter>
+          <Web3ReactContextProvider>
+            <Route path='/' exact>
+              <Redirect to={`/${config.defaultZnsRoute}`} />
+            </Route>
+            <Route path='/:znsRoute' component={ZnsRouteConnect} />
+          </Web3ReactContextProvider>
+        </BrowserRouter>
+      </EscapeManagerProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -35,4 +35,13 @@ describe('WalletManager', () => {
 
     expect(wrapper.find(WalletSelectModal).exists()).toBe(true);
   });
+
+  it('closes wallet select modal onClose', () => {
+    const wrapper = subject();
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    wrapper.find(WalletSelectModal).simulate('close');
+
+    expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
+  });
 });

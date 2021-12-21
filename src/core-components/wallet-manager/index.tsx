@@ -30,13 +30,14 @@ export class Container extends React.Component<Properties, State> {
     return this.state.showModal;
   }
 
-  handleClick = () => this.setState({ showModal: true });
+  openModal = () => this.setState({ showModal: true });
+  closeModal = () => this.setState({ showModal: false });
 
   render() {
     return (
       <div className="wallet-manager">
-        <Button className='wallet-manager__connect-button' onClick={this.handleClick} />
-        {this.showModal && <WalletSelectModal />}
+        <Button className='wallet-manager__connect-button' onClick={this.openModal} />
+        {this.showModal && <WalletSelectModal onClose={this.closeModal} />}
       </div>
     );
   }

@@ -49,4 +49,14 @@ describe('Button', () => {
 
     expect(child.exists()).toBe(true);
   });
+
+  it('propagates onClick', () => {
+    const onClick = jest.fn();
+
+    const wrapper = subject({ onClick });
+
+    wrapper.simulate('click');
+
+    expect(onClick).toHaveBeenCalled();
+  });
 });

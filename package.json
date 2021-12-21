@@ -13,6 +13,7 @@
     "@web3-react/network-connector": "^6.1.9",
     "@zero-tech/zauction-sdk": "0.0.30",
     "@zero-tech/zns-sdk": "0.0.33",
+    "classnames": "^2.3.1",
     "ethers": "^5.5.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

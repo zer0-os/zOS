@@ -18,6 +18,22 @@ describe('Button', () => {
     expect(wrapper.hasClass('taco-launcher')).toBe(true);
   });
 
+  it('renders label text', () => {
+    const wrapper = subject({ label: 'click me' });
+
+    const label = wrapper.find('.button__label');
+
+    expect(label.text().trim()).toBe('click me');
+  });
+
+  it('does not render children if label provided', () => {
+    const wrapper = subject({ label: 'click me' }, <div className='cats' />);
+
+    const child = wrapper.find('.button__label .cats');
+
+    expect(child.exists()).toBe(false);
+  });
+
   it('renders child text', () => {
     const wrapper = subject({}, 'Click me for a surprise!');
 

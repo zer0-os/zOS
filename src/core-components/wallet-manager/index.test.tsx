@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
+import { Connectors } from '../../lib/web3';
 import { Container } from '.';
 
 describe('WalletManager', () => {
@@ -43,5 +44,16 @@ describe('WalletManager', () => {
     wrapper.find(WalletSelectModal).simulate('close');
 
     expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
+  });
+
+  it('calls update connector when wallet selected', () => {
+    const updateConnector = jest.fn();
+
+    const wrapper = subject({ updateConnector });
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+
+    expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
   });
 });

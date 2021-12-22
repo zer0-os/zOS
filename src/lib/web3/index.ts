@@ -6,7 +6,10 @@ export enum ConnectionStatus {
 export enum Connectors {
   Infura = 'infura',
   Metamask = 'metamask',
-  Walletconnect = 'walletconnect',
+  WalletConnect = 'wallet-connect',
+  Coinbase = 'coinbase',
+  Fortmatic = 'fortmatic',
+  Portis = 'portis',
 }
 
 export enum Chains {

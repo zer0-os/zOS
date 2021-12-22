@@ -11,7 +11,7 @@ export interface Properties {
 }
 
 export class Dialog extends React.Component<Properties> {
-  contextType = EscapeManagerContext;
+  static contextType = EscapeManagerContext;
 
   componentDidMount() {
     // See note in test file. This is conditional due to

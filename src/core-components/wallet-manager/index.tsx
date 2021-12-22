@@ -36,7 +36,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className="wallet-manager">
-        <Button className='wallet-manager__connect-button' onClick={this.openModal} />
+        <Button className='wallet-manager__connect-button' label='Connect Wallet' onClick={this.openModal} />
         {this.showModal && <WalletSelectModal onClose={this.closeModal} />}
       </div>
     );

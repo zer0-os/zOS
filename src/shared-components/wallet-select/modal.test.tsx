@@ -36,4 +36,12 @@ describe('WalletSelect/Modal', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('passes onSelect to child', () => {
+    const onSelect = () => undefined;
+
+    const wrapper = subject({ onSelect });
+
+    expect(wrapper.find(WalletSelect).prop('onSelect')).toStrictEqual(onSelect);
+  });
 });

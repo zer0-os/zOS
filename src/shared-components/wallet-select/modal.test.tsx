@@ -1,6 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
+import { Dialog } from '../dialog';
+
 import { WalletSelect } from '.';
 import { WalletSelectModal } from './modal';
 
@@ -23,5 +25,15 @@ describe('WalletSelect/Modal', () => {
     const wrapper = subject();
 
     expect(wrapper.find(WalletSelect).exists()).toBe(true);
+  });
+
+  it('propagates onClose from Dialog', () => {
+    const onClose = jest.fn();
+
+    const wrapper = subject({ onClose });
+
+    wrapper.find(Dialog).simulate('close');
+
+    expect(onClose).toHaveBeenCalled();
   });
 });

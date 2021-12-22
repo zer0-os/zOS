@@ -2,15 +2,14 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 
-import { Connectors } from '../../lib/web3';
-
 import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
 
 import './styles.css';
+import {WalletType} from '../../shared-components/wallet-select/wallets';
 
 export interface Properties {
-  updateConnector: (connector: Connectors) => void;
+  updateConnector: (connector: WalletType) => void;
 }
 
 export interface State {
@@ -36,7 +35,7 @@ export class Container extends React.Component<Properties, State> {
   openModal = () => this.setState({ showModal: true });
   closeModal = () => this.setState({ showModal: false });
 
-  handleWalletSelected = (connector: Connectors) => {
+  handleWalletSelected = (connector: WalletType) => {
     this.props.updateConnector(connector);
   }
 

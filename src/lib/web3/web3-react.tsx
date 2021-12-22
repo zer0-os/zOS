@@ -14,7 +14,7 @@ import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core';
 import { NetworkConnector } from '@web3-react/network-connector';
 import { providers } from 'ethers';
 
-import { Connectors } from '../../core-components/web3-connect';
+import { Connectors } from '../../lib/web3';
 import { Chains } from '.';
 import {config} from '../../config';
 

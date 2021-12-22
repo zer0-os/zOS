@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Container, Properties, Connectors } from '.';
+import { Container, Properties } from '.';
 
-import { ConnectionStatus } from '../../lib/web3';
+import { ConnectionStatus, Connectors } from '../../lib/web3';
 import {RootState} from '../../store';
 
 const getWeb3 = (web3 = {}) => ({

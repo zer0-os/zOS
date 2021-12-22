@@ -3,6 +3,12 @@ export enum ConnectionStatus {
   Connected = 'connected',
 }
 
+export enum Connectors {
+  Infura = 'infura',
+  Metamask = 'metamask',
+  Walletconnect = 'walletconnect',
+}
+
 export enum Chains {
   MainNet = 1,
   Morden = 2,

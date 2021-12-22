@@ -5,12 +5,8 @@ import { providers } from 'ethers';
 
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
-import { ConnectionStatus } from '../../lib/web3';
+import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { setConnectionStatus } from '../../store/web3';
-
-export enum Connectors {
-  Infura = 'infura',
-}
 
 export interface Properties {
   connectionStatus: ConnectionStatus,

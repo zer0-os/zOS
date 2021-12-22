@@ -4,7 +4,7 @@ import './index.css';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
-import { Provider as EscapeManagerProvider } from 'lib/escape-manager';
+import { Provider as EscapeManagerProvider } from './lib/escape-manager';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 

@@ -16,7 +16,7 @@ export class WalletSelectModal extends React.Component<Properties> {
   render() {
     return (
       <Dialog className={classNames('wallet-select-modal', this.props.className)} onClose={this.handleClose}>
-        <WalletSelect {...this.props} />
+        <WalletSelect onSelect={this.props.onSelect} />
       </Dialog>
     );
   }

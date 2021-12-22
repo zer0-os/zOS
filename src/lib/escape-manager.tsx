@@ -8,19 +8,27 @@ export class EscapeManager {
     this.closableStack = [];
   }
 
-  start() {
-    document.addEventListener('keydown', this.handleKeydown);
-  }
-
   register(onEscape: () => void) {
+    if (this.closableStack.length === 0) {
+      this.addListener();
+    }
+
     this.closableStack.push(onEscape);
   }
 
   unregister() {
     this.closableStack.pop();
+
+    if (this.closableStack.length === 0) {
+      this.removeListener();
+    }
   }
 
-  destroy() {
+  private addListener() {
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+
+  private removeListener() {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 

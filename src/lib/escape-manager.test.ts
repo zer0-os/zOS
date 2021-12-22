@@ -3,13 +3,7 @@ import document from 'global/document';
 import { EscapeManager } from './escape-manager';
 
 describe('escape-manager', () => {
-  const subject = () => {
-    const escapeManager = new EscapeManager();
-
-    escapeManager.start();
-
-    return escapeManager;
-  }
+  const subject = () => new EscapeManager();
 
   const createEvent = (props: any = {}) => {
     const event = document.createEvent();

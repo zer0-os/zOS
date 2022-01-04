@@ -4,9 +4,10 @@ import { connectContainer } from '../../store/redux-container';
 
 import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
+import { updateConnector } from '../../store/web3';
+import { WalletType } from '../../shared-components/wallet-select/wallets';
 
 import './styles.css';
-import {WalletType} from '../../shared-components/wallet-select/wallets';
 
 export interface Properties {
   updateConnector: (connector: WalletType) => void;
@@ -23,7 +24,9 @@ export class Container extends React.Component<Properties, State> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      updateConnector: (connector: WalletType) => updateConnector,
+    };
   }
 
   state = { showModal: false };

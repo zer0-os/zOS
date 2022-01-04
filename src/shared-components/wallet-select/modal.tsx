@@ -4,10 +4,12 @@ import classNames from 'classnames';
 import './styles.css';
 import { Dialog } from '../dialog';
 import { WalletSelect, Properties as WalletSelectProperties } from '.';
+import { WalletType } from './wallets';
 
 export interface Properties extends WalletSelectProperties {
   className?: string;
   onClose?: () => void;
+  onSelect?: (connector: WalletType) => void;
 }
 
 export class WalletSelectModal extends React.Component<Properties> {

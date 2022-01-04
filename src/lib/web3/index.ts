@@ -1,9 +1,11 @@
 export enum ConnectionStatus {
   Disconnected = 'disconnected',
+  Connecting = 'connecting',
   Connected = 'connected',
 }
 
 export enum Connectors {
+  None = 'none',
   Infura = 'infura',
   Metamask = 'metamask',
   WalletConnect = 'wallet-connect',

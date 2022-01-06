@@ -12,6 +12,7 @@ import React from 'react';
 
 import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core';
 import { NetworkConnector } from '@web3-react/network-connector';
+import { InjectedConnector } from '@web3-react/injected-connector';
 import { providers } from 'ethers';
 
 import { Connectors } from '../../lib/web3';
@@ -37,7 +38,11 @@ export class ConnectorProvider extends React.Component {
 }
 
 export function inject<T>(ChildComponent: any) {
-  const getConnector = (_connectorType: Connectors) => {
+  const getConnector = (connectorType: Connectors) => {
+    if (connectorType === Connectors.Metamask) {
+      return new InjectedConnector({ supportedChainIds: [Chains.Kovan] });
+    }
+
     return new NetworkConnector({ urls: { [Chains.Kovan]: config.INFURA_URL } });
   }
 

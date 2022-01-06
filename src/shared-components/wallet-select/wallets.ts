@@ -17,7 +17,7 @@ export const wallets: { [walletType: string]: Wallet } = {
     name: 'Metamask',
   },
 	[WalletType.WalletConnect]: {
-		type: WalletType.Metamask,
+		type: WalletType.WalletConnect,
 		name: 'Wallet Connect',
 	},
 	[WalletType.Coinbase]: {

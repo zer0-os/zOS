@@ -25,7 +25,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      updateConnector: (connector: WalletType) => updateConnector,
+      updateConnector,
     };
   }
 

@@ -5,6 +5,7 @@ import { Dialog } from '../dialog';
 
 import { WalletSelect } from '.';
 import { WalletSelectModal } from './modal';
+import {WalletType} from './wallets';
 
 describe('WalletSelect/Modal', () => {
   const subject = (props: any = {}) => {
@@ -36,6 +37,14 @@ describe('WalletSelect/Modal', () => {
     wrapper.find(Dialog).simulate('close');
 
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('passes wallets to child', () => {
+    const wallets = [ WalletType.Portis ];
+
+    const wrapper = subject({ wallets });
+
+    expect(wrapper.find(WalletSelect).prop('wallets')).toStrictEqual(wallets);
   });
 
   it('passes onSelect to child', () => {

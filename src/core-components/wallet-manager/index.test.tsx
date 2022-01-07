@@ -6,6 +6,7 @@ import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
+import { WalletType } from '../../shared-components/wallet-select/wallets';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
@@ -37,6 +38,14 @@ describe('WalletManager', () => {
     wrapper.find('.wallet-manager__connect-button').simulate('click');
 
     expect(wrapper.find(WalletSelectModal).exists()).toBe(true);
+  });
+
+  it('limits wallet select modal to Metamask', () => {
+    const wrapper = subject();
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+
+    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([ WalletType.Metamask ]);
   });
 
   it('passes isConnecting of true when connection status is Connecting', () => {

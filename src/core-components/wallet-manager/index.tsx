@@ -6,7 +6,7 @@ import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
 import { updateConnector } from '../../store/web3';
 import { WalletType } from '../../shared-components/wallet-select/wallets';
-import  {ConnectionStatus } from '../../lib/web3';
+import  { ConnectionStatus } from '../../lib/web3';
 
 import './styles.css';
 
@@ -54,6 +54,10 @@ export class Container extends React.Component<Properties, State> {
     return this.state.walletSelected || ( this.props.connectionStatus === ConnectionStatus.Connecting );
   }
 
+  get availableWallets() {
+    return [ WalletType.Metamask ];
+  }
+
   openModal = () => this.setState({ showModal: true });
   closeModal = () => this.setState({ showModal: false });
 
@@ -68,6 +72,7 @@ export class Container extends React.Component<Properties, State> {
         <Button className='wallet-manager__connect-button' label='Connect Wallet' onClick={this.openModal} />
         {this.showModal && (
           <WalletSelectModal
+            wallets={this.availableWallets}
             isConnecting={this.isConnecting}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}

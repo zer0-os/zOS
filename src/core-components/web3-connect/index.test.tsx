@@ -174,6 +174,35 @@ describe('Web3Connect', () => {
     expect(component.isEmptyRender()).toBe(true);
   });
 
+  it('does not render children when connectionStatus is Connecting', () => {
+    const component = subject({ connectionStatus: ConnectionStatus.Connecting }, <div className='the-cat-parade' />);
+
+    expect(component.isEmptyRender()).toBe(true);
+  });
+
+  it('does render children when connectionStatus is Connecting and has been connected', () => {
+    const component = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      web3: getWeb3({
+        active: false,
+      }),
+    }, <div className='the-cat-parade' />);
+
+    // initial connection is made
+    component.setProps({
+      connectionStatus: ConnectionStatus.Connecting,
+      // shouldn't strictly be needed since rendering should be based on
+      // connection status not web3 library, but keeping it in sync for clarity.
+      web3: getWeb3({ active: true }),
+    });
+    component.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    // new connection initiated
+    component.setProps({ connectionStatus: ConnectionStatus.Connecting });
+
+    expect(component.hasClass('the-cat-parade')).toBe(true);
+  });
+
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
     const getState = (state: any = {}) => ({

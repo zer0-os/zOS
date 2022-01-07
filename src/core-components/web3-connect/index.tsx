@@ -23,7 +23,11 @@ export interface Properties {
   },
 }
 
-export class Container extends React.Component<Properties> {
+interface State {
+  hasConnected: boolean;
+}
+
+export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const { web3: { status, value: { connector } } } = state;
 
@@ -39,6 +43,8 @@ export class Container extends React.Component<Properties> {
       updateConnector,
     };
   }
+
+  state = { hasConnected: false };
 
   componentDidMount() {
     this.setReadOnlyConnector();
@@ -64,25 +70,35 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { web3: { active: previouslyActive, library: previousLibrary } } = prevProps;
+    const {
+      connectionStatus: previousConnectionStatus,
+      web3: {
+        active: previouslyActive,
+        library: previousLibrary,
+      },
+    } = prevProps;
     const { web3, connectionStatus } = this.props;
 
     if (this.props.currentConnector !== prevProps.currentConnector) {
       this.activateCurrentConnector();
     }
 
-    if (web3.active && (!previouslyActive || ( web3.library !== previousLibrary ))) {
+    if (web3.active && ( !previouslyActive || ( web3.library !== previousLibrary ))) {
       this.props.providerService.register(web3.library);
       this.props.setConnectionStatus(ConnectionStatus.Connected);
     }
+
+    if (previousConnectionStatus !== ConnectionStatus.Connected && connectionStatus === ConnectionStatus.Connected) {
+      this.setState({ hasConnected: true });
+    }
   }
 
-  get isConnected() {
-    return this.props.connectionStatus === ConnectionStatus.Connected;
+  get shouldRender() {
+    return ( this.props.connectionStatus === ConnectionStatus.Connected ) || this.state.hasConnected;
   }
 
   render() {
-    if (!this.isConnected) return null;
+    if (!this.shouldRender) return null;
 
     return this.props.children;
   }

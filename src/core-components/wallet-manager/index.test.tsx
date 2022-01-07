@@ -27,6 +27,19 @@ describe('WalletManager', () => {
     expect(button.hasClass('wallet-manager__connect-button')).toBe(true);
   });
 
+  // this will be currentWallet dependent in the future, but at the moment we only support
+  // metamask
+  it('does not render connect button if Metamask is connected', () => {
+    const wrapper = subject();
+
+    wrapper.setProps({
+      connectionStatus: ConnectionStatus.Connected,
+      currentConnector: Connectors.Metamask,
+    });
+
+    expect(wrapper.find(Button).exists()).toBe(false);
+  });
+
   it('renders wallet address when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
@@ -83,6 +96,25 @@ describe('WalletManager', () => {
     expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
   });
 
+  it('passes isConnecting of false when wallet selected and status becomes connected', () => {
+    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected });
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
+
+    // assert pre-condition
+    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    // re-open modal, as it will be closed at this point
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+
+    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
+  });
+
   it('closes wallet select modal onClose', () => {
     const wrapper = subject();
 
@@ -128,6 +160,7 @@ describe('WalletManager', () => {
       ...(web3 || {}),
       value: {
         address: '0x0',
+        connector: Connectors.None,
         ...(web3.value || {}),
       },
     });
@@ -144,6 +177,14 @@ describe('WalletManager', () => {
       const state = subject(getState({ web3: getWeb3({ value: { address } }) }));
 
       expect(state.currentAddress).toEqual(address);
+    });
+
+    test('currentConnector', () => {
+      const currentConnector = Connectors.Fortmatic;
+
+      const state = subject(getState({ web3: getWeb3({ value: { connector: currentConnector } }) }));
+
+      expect(state.currentConnector).toEqual(Connectors.Fortmatic);
     });
   });
 });

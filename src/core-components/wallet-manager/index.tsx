@@ -6,13 +6,14 @@ import { Button } from '../../shared-components/button';
 import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
 import { updateConnector } from '../../store/web3';
 import { WalletType } from '../../shared-components/wallet-select/wallets';
-import  { ConnectionStatus } from '../../lib/web3';
+import  { ConnectionStatus, Connectors } from '../../lib/web3';
+import { EthAddress } from '../../shared-components/eth-address';
 
 import './styles.css';
-import {EthAddress} from '../../shared-components/eth-address';
 
 export interface Properties {
   currentAddress: string;
+  currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
   updateConnector: (connector: WalletType) => void;
 }
@@ -27,6 +28,7 @@ export class Container extends React.Component<Properties, State> {
     const { web3: { status, value } } = state;
 
     return {
+      currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
     };
@@ -46,7 +48,15 @@ export class Container extends React.Component<Properties, State> {
       ( prevProps.connectionStatus !== ConnectionStatus.Connected )
     ) {
       this.closeModal();
+      this.setState({ walletSelected: false });
     }
+  }
+
+  get showButton() {
+    return !(
+      ( this.props.connectionStatus === ConnectionStatus.Connected ) &&
+      ( this.props.currentConnector === Connectors.Metamask )
+    );
   }
 
   get showModal() {
@@ -73,7 +83,13 @@ export class Container extends React.Component<Properties, State> {
     return (
       <div className="wallet-manager">
         {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
-        <Button className='wallet-manager__connect-button' label='Connect Wallet' onClick={this.openModal} />
+        {this.showButton && (
+          <Button
+            className='wallet-manager__connect-button'
+            label='Connect Wallet'
+            onClick={this.openModal}
+          />
+        )}
         {this.showModal && (
           <WalletSelectModal
             wallets={this.availableWallets}

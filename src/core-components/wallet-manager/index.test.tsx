@@ -110,19 +110,18 @@ describe('WalletManager', () => {
     const subject = (state: RootState) => Container.mapState(state);
     const getState = (state: any = {}) => ({
       ...state,
-      web3: {
-        address: '0x0',
-        status: ConnectionStatus.Connecting,
+      web3: getWeb3({
         ...(state.web3 || {}),
-      },
+      }),
     } as RootState);
 
-    const getWeb3 = (web3 = {}) => ({
-      activate: (connector: any) => undefined,
-      active: false,
-      library: null,
-      connector: null,
+    const getWeb3 = (web3: any = {}) => ({
+      status: ConnectionStatus.Disconnected,
       ...(web3 || {}),
+      value: {
+        address: '0x0',
+        ...(web3.value || {}),
+      },
     });
 
     test('status', () => {
@@ -134,7 +133,7 @@ describe('WalletManager', () => {
     test('currentAddress', () => {
       const address = '0x0000000000000000000000000000000000000002';
 
-      const state = subject(getState({ web3: getWeb3({ address }) }));
+      const state = subject(getState({ web3: getWeb3({ value: { address } }) }));
 
       expect(state.currentAddress).toEqual(address);
     });

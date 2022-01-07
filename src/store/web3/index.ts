@@ -17,13 +17,14 @@ const updateConnector = createAction(SagaActionTypes.UpdateConnector);
 export interface Web3State {
   status: ConnectionStatus;
   value: {
+    address: string,
     connector: Connectors,
   },
 }
 
 const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
-  value: { connector: Connectors.None },
+  value: { address: '', connector: Connectors.None },
 };
 
 const slice = createSlice({
@@ -36,9 +37,12 @@ const slice = createSlice({
     setConnector: (state, action: PayloadAction<Connectors>) => {
       state.value.connector = action.payload;
     },
+    setAddress: (state, action: PayloadAction<string>) => {
+      state.value.address = action.payload;
+    },
   },
 });
 
-export const { setConnectionStatus, setConnector } = slice.actions;
+export const { setConnectionStatus, setConnector, setAddress } = slice.actions;
 export const { reducer } =  slice;
 export { updateConnector };

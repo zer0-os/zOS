@@ -2,6 +2,7 @@ import {
   reducer,
   setConnectionStatus,
   setConnector,
+  setAddress,
   Web3State,
 } from '.';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
@@ -9,13 +10,13 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 describe('web3 reducer', () => {
   const initialExistingState: Web3State = {
     status: ConnectionStatus.Disconnected,
-    value: { connector: Connectors.None },
+    value: { address: '', connector: Connectors.None },
   };
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       status: ConnectionStatus.Disconnected,
-      value: { connector: Connectors.None },
+      value: { address: '', connector: Connectors.None },
     });
   });
 
@@ -29,5 +30,11 @@ describe('web3 reducer', () => {
     const actual = reducer(initialExistingState, setConnector(Connectors.Portis));
 
     expect(actual.value.connector).toEqual(Connectors.Portis);
+  });
+
+  it('should replace existing state with new address', () => {
+    const actual = reducer(initialExistingState, setAddress('0x0000000000000000000000000000000000000007'));
+
+    expect(actual.value.address).toEqual('0x0000000000000000000000000000000000000007');
   });
 });

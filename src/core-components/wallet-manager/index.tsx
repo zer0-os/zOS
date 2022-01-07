@@ -24,10 +24,10 @@ export interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { web3: { address, status } } = state;
+    const { web3: { status, value } } = state;
 
     return {
-      currentAddress: address,
+      currentAddress: value.address,
       connectionStatus: status,
     };
   }

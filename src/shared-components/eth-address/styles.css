@@ -1,7 +1,3 @@
-.button {
+.eth-address {
   display: inline-block;
-  border: 1px solid #CCCCCC;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
 }

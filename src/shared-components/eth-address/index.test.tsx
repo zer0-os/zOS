@@ -26,4 +26,12 @@ describe('EthAddress', () => {
 
     expect(wrapper.find('.eth-address__address').text().trim()).toBe('0x0D1C...7FBA');
   });
+
+  it('it adds full address as title', () => {
+    const address = '0x0D1C97113D70E4D04345D55807CB19C648E17FBA';
+
+    const wrapper = subject({ address });
+
+    expect(wrapper.find('.eth-address__address').prop('title')).toBe(address);
+  });
 });

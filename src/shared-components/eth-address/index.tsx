@@ -15,7 +15,7 @@ export class EthAddress extends React.Component<Properties> {
 
     return (
       <div className={classNames('eth-address', this.props.className)}>
-        <span className='eth-address__address'>
+        <span title={address} className='eth-address__address'>
           <span>{address.slice(0, 6)}</span>
           <span>...</span>
           <span className='eth-address__address-last-four'>{address.slice(-4)}</span>

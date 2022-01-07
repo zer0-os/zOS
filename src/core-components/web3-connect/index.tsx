@@ -19,6 +19,7 @@ export interface Properties {
     activate: (connector: any) => void,
     active: boolean,
     library: providers.Web3Provider,
+    connector: any,
   },
 }
 
@@ -48,9 +49,18 @@ export class Container extends React.Component<Properties> {
   }
 
   async activateCurrentConnector() {
-    const connector = this.props.connectors.get(this.props.currentConnector);
+    const { web3, connectors, currentConnector } = this.props;
 
-    this.props.web3.activate(connector);
+    if (web3.connector) {
+      // it is unclear whether this needs to happen before
+      // or after the new connector is activated. this is simplest,
+      // but if the gap between connector availabiliity causes issues
+      // we can just save the old connector here and deactivate once
+      // the new one is connected.
+      web3.connector.deactivate();
+    }
+
+    web3.activate(connectors.get(currentConnector));
   }
 
   componentDidUpdate(prevProps: Properties) {

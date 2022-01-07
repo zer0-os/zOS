@@ -9,6 +9,7 @@ const getWeb3 = (web3 = {}) => ({
   activate: (connector: any) => undefined,
   active: false,
   library: null,
+  connector: null,
   ...(web3 || {}),
 });
 
@@ -54,6 +55,21 @@ describe('Web3Connect', () => {
     web3Connect.setProps({ currentConnector: Connectors.Portis });
 
     expect(activate).toHaveBeenCalledWith(connector);
+  });
+
+  it('deactivates old connector when connector changes', () => {
+    const deactivate = jest.fn();
+    const connector = { what: 'connector' };
+
+    const web3Connect = subject({
+      connectors: { get: () => connector },
+      web3: { activate: () => undefined, connector: { deactivate } } as any,
+      currentConnector: Connectors.Infura,
+    });
+
+    web3Connect.setProps({ currentConnector: Connectors.Portis });
+
+    expect(deactivate).toHaveBeenCalledOnce();
   });
 
   it('registers provider once when active is true', () => {

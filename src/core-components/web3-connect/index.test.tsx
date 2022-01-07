@@ -7,6 +7,7 @@ import { RootState } from '../../store';
 
 const getWeb3 = (web3 = {}) => ({
   activate: (connector: any) => undefined,
+  account: '',
   active: false,
   library: null,
   connector: null,
@@ -20,6 +21,7 @@ describe('Web3Connect', () => {
       currentConnector: Connectors.None,
       connectionStatus: ConnectionStatus.Disconnected,
       setConnectionStatus: () => undefined,
+      setAddress: () => undefined,
       updateConnector: () => undefined,
       ...props,
       web3: getWeb3(props.web3),
@@ -160,6 +162,38 @@ describe('Web3Connect', () => {
     component.setProps({ web3: getWeb3({ library, active: true }) });
 
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Connected);
+  });
+
+  it('does not set address if address is empty string', () => {
+    const setAddress = jest.fn();
+    const address = '';
+
+    const component = subject({
+        setAddress,
+        web3: { active: false } as any,
+      },
+      <div className='the-cat-parade' />,
+    );
+
+    component.setProps({ web3: getWeb3({ account: address, active: true }) });
+
+    expect(setAddress).toHaveBeenCalledTimes(0);
+  });
+
+  it('sets address when active is true', () => {
+    const setAddress = jest.fn();
+    const address = '0x0000000000000000000000000000000000000009';
+
+    const component = subject({
+        setAddress,
+        web3: { active: false } as any,
+      },
+      <div className='the-cat-parade' />,
+    );
+
+    component.setProps({ web3: getWeb3({ account: address, active: true }) });
+
+    expect(setAddress).toHaveBeenCalledWith(address);
   });
 
   it('renders children when connectionStatus is Connected', () => {

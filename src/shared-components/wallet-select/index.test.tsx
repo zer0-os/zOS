@@ -19,6 +19,18 @@ describe('WalletSelect', () => {
     expect(wrapper.hasClass('taco-launcher')).toBe(true);
   });
 
+  it('does not render wallets when connecting', () => {
+    const wrapper = subject({ isConnecting: true, wallets: [ WalletType.Metamask ] });
+
+    expect(wrapper.find('.wallet-select__wallet').exists()).toBe(false);
+  });
+
+  it('does renders connecting indicator when connecting', () => {
+    const wrapper = subject({ isConnecting: true, wallets: [ WalletType.Metamask ] });
+
+    expect(wrapper.find('.wallet-select__connecting-indicator').exists()).toBe(true);
+  });
+
   it('renders a single wallet', () => {
     const wrapper = subject({ wallets: [ WalletType.Metamask ] });
 

@@ -9,6 +9,7 @@ import { WalletSelectModal } from './modal';
 describe('WalletSelect/Modal', () => {
   const subject = (props: any = {}) => {
     const allProps = {
+      isConnecting: false,
       ...props,
     };
 
@@ -43,5 +44,11 @@ describe('WalletSelect/Modal', () => {
     const wrapper = subject({ onSelect });
 
     expect(wrapper.find(WalletSelect).prop('onSelect')).toStrictEqual(onSelect);
+  });
+
+  it('passes isConnecting to child', () => {
+    const wrapper = subject({ isConnecting: true });
+
+    expect(wrapper.find(WalletSelect).prop('isConnecting')).toBe(true);
   });
 });

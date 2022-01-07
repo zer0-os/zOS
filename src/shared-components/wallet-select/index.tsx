@@ -6,6 +6,7 @@ import { wallets, WalletType } from './wallets';
 import './styles.css';
 
 export interface Properties {
+  isConnecting: boolean;
   className?: string;
   wallets?: WalletType[];
 
@@ -27,6 +28,18 @@ export class WalletSelect extends React.Component<Properties> {
 		return this.props.wallets || Object.values(WalletType);
 	}
 
+  renderContent() {
+    if (this.props.isConnecting) {
+      return (
+        <div className='wallet-select__connecting-indicator'>
+          Connecting...
+        </div>
+      );
+    }
+
+    return this.renderWallets();
+  }
+
   renderWallets() {
     return this.wallets.map(walletType => {
       const { type, name } = wallets[walletType];
@@ -42,7 +55,7 @@ export class WalletSelect extends React.Component<Properties> {
   render() {
     return (
       <div className={classNames('wallet-select', this.props.className)}>
-        {this.renderWallets()}
+        {this.renderContent()}
       </div>
     );
   }

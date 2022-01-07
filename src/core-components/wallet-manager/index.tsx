@@ -72,7 +72,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className="wallet-manager">
-        <EthAddress address={this.props.currentAddress} />
+        {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
         <Button className='wallet-manager__connect-button' label='Connect Wallet' onClick={this.openModal} />
         {this.showModal && (
           <WalletSelectModal

@@ -35,6 +35,14 @@ describe('WalletManager', () => {
     expect(wrapper.find(EthAddress).prop('address')).toBe(currentAddress);
   });
 
+  it('does not render wallet address when not set', () => {
+    const currentAddress = '';
+
+    const wrapper = subject({ currentAddress });
+
+    expect(wrapper.find(EthAddress).exists()).toBe(false);
+  });
+
   it('does not render wallet select modal', () => {
     const wrapper = subject();
 

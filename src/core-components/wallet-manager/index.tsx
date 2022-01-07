@@ -9,8 +9,10 @@ import { WalletType } from '../../shared-components/wallet-select/wallets';
 import  { ConnectionStatus } from '../../lib/web3';
 
 import './styles.css';
+import {EthAddress} from '../../shared-components/eth-address';
 
 export interface Properties {
+  currentAddress: string;
   connectionStatus: ConnectionStatus;
   updateConnector: (connector: WalletType) => void;
 }
@@ -22,9 +24,10 @@ export interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { web3: { status } } = state;
+    const { web3: { address, status } } = state;
 
     return {
+      currentAddress: address,
       connectionStatus: status,
     };
   }
@@ -69,6 +72,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className="wallet-manager">
+        <EthAddress address={this.props.currentAddress} />
         <Button className='wallet-manager__connect-button' label='Connect Wallet' onClick={this.openModal} />
         {this.showModal && (
           <WalletSelectModal

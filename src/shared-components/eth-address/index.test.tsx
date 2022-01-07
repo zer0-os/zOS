@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { EthAddress } from '.';
 
 describe('EthAddress', () => {
-  const subject = (props: any = {}, child: any = <div />) => {
+  const subject = (props: any = {}) => {
     const allProps = {
       address: '',
       ...props,

@@ -7,6 +7,7 @@ import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 import { WalletType } from '../../shared-components/wallet-select/wallets';
+import { EthAddress } from '../../shared-components/eth-address';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
@@ -24,6 +25,14 @@ describe('WalletManager', () => {
     const button = wrapper.find(Button);
 
     expect(button.hasClass('wallet-manager__connect-button')).toBe(true);
+  });
+
+  it('renders wallet address when set', () => {
+    const currentAddress = '0x0000000000000000000000000000000000000001';
+
+    const wrapper = subject({ currentAddress });
+
+    expect(wrapper.find(EthAddress).prop('address')).toBe(currentAddress);
   });
 
   it('does not render wallet select modal', () => {
@@ -102,15 +111,32 @@ describe('WalletManager', () => {
     const getState = (state: any = {}) => ({
       ...state,
       web3: {
+        address: '0x0',
         status: ConnectionStatus.Connecting,
         ...(state.web3 || {}),
       },
     } as RootState);
 
+    const getWeb3 = (web3 = {}) => ({
+      activate: (connector: any) => undefined,
+      active: false,
+      library: null,
+      connector: null,
+      ...(web3 || {}),
+    });
+
     test('status', () => {
-      const state = subject(getState({ web3: { status: ConnectionStatus.Connected } }));
+      const state = subject(getState({ web3: getWeb3({ status: ConnectionStatus.Connected }) }));
 
       expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
+    });
+
+    test('currentAddress', () => {
+      const address = '0x0000000000000000000000000000000000000002';
+
+      const state = subject(getState({ web3: getWeb3({ address }) }));
+
+      expect(state.currentAddress).toEqual(address);
     });
   });
 });

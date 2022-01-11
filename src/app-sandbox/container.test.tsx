@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
 import { RootState } from './store';
-import {AppSandbox} from '.';
+import { AppSandbox, Apps } from '.';
 
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -13,6 +13,12 @@ describe('AppSandboxContainer', () => {
 
     return shallow(<Container {...allProps} />);
   };
+
+  it('defaults selected app to feed', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(Apps.Feed);
+  });
 
   it('passes route to sandbox', () => {
     const wrapper = subject({ route: 'tacos.street.pollo' });

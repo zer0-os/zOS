@@ -1,7 +1,7 @@
 import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from '../store/redux-container';
-import {AppSandbox} from '.';
+import { AppSandbox, Apps } from '.';
 
 export interface Properties {
   route: string;
@@ -20,7 +20,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <AppSandbox znsRoute={this.props.route} />
+      <AppSandbox selectedApp={Apps.Feed} znsRoute={this.props.route} />
     );
   }
 }

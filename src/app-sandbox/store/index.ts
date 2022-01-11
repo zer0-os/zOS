@@ -9,4 +9,5 @@ export const store = configureStore({
   middleware: (defaults) => defaults({ thunk: false }),
 });
 
+export const { dispatch } = store;
 export type RootState = ReturnType<typeof store.getState>;

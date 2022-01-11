@@ -13,3 +13,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#app-sandbox {
+  position: fixed;
+  top: 200px;
+  left: 10px;
+}

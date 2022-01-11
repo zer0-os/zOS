@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
 import { Feed } from '.';
-import { RootState } from '../../store';
+import { RootState } from '../../app-sandbox/store';
 
 describe('FeedContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { RootState } from '../../store';
+import { RootState } from '../../app-sandbox/store';
 import { connectContainer } from '../../store/redux-container';
 
 import { Feed } from '.';
 import { Model as FeedItem } from './feed-item';
-import { load } from '../../store/feed';
+import { load } from './store';
 
 export interface Properties {
   route: string;

@@ -5,7 +5,7 @@ import { client } from '../../lib/web3/zns/client';
 import { service as providerService } from '../../lib/web3/provider-service';
 
 import { load } from './saga';
-import { AsyncActionStatus, reducer } from '.';
+import { AsyncActionStatus, reducer } from './store';
 
 describe('feed saga', () => {
   const getZnsClient = (overrides = {}) => {

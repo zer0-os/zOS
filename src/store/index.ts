@@ -3,7 +3,6 @@ import createSagaMiddleware from 'redux-saga';
 
 import { rootSaga } from './saga';
 
-import { reducer as feed } from './feed';
 import { reducer as web3 } from './web3';
 import { reducer as zns } from './zns';
 
@@ -15,7 +14,6 @@ const sagaMiddleware = createSagaMiddleware({
 
 export const store = configureStore({
   reducer: {
-    feed,
     web3,
     zns,
   },

@@ -1,5 +1,5 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
-import { SagaActionTypes, receive } from '.';
+import { SagaActionTypes, receive } from './store';
 
 import { client } from '../../lib/web3/zns/client';
 import { service as providerService } from '../../lib/web3/provider-service';

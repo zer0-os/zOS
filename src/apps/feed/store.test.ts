@@ -2,7 +2,7 @@ import {
   reducer,
   receive,
   FeedState,
-} from '.';
+} from './store';
 import { Model as FeedItem } from '../../apps/feed/feed-item';
 
 describe('feed reducer', () => {

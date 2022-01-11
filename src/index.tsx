@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
+import { store as appSandboxStore } from './app-sandbox/store';
 import { Provider } from 'react-redux';
 import { Provider as EscapeManagerProvider } from './lib/escape-manager';
 import * as serviceWorker from './serviceWorker';
@@ -10,7 +11,7 @@ import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
 
-import { AppSandbox } from './app-sandbox';
+import { AppSandboxContainer } from './app-sandbox/container';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -30,8 +31,11 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-ReactDOM.render(
-  <AppSandbox />,
+ReactDOM.render((
+    <Provider store={appSandboxStore}>
+      <AppSandboxContainer />
+    </Provider>
+  ),
   document.getElementById('app-sandbox')
 );
 

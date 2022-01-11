@@ -2,11 +2,15 @@ import React from 'react';
 
 import './styles.css';
 
-export class AppSandbox extends React.Component {
+export interface Properties {
+  znsRoute: string;
+}
+
+export class AppSandbox extends React.Component<Properties> {
   render() {
     return (
       <div className="app-sandbox">
-        Hello from the sandbox
+        {this.props.znsRoute}
       </div>
     );
   }

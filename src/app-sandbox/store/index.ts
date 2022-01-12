@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import { rootSaga } from './saga';
 
 import { reducer as zns } from './zns';
+import { reducer as web3 } from './web3';
 import { reducer as feed } from '../../apps/feed/store';
 
 const sagaMiddleware = createSagaMiddleware({
@@ -15,6 +16,7 @@ const sagaMiddleware = createSagaMiddleware({
 export const store = configureStore({
   reducer: {
     zns,
+    web3,
     feed,
   },
   middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),

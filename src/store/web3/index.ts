@@ -7,12 +7,15 @@ import {
   ConnectionStatus,
   Connectors,
 } from '../../lib/web3';
+import { WalletType } from '../../shared-components/wallet-select/wallets';
 
 export enum SagaActionTypes {
   UpdateConnector = 'web3/saga/updateConnector',
+  SetConnectionStatus = 'web3/saga/setConnectionStatus',
 }
 
-const updateConnector = createAction(SagaActionTypes.UpdateConnector);
+const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);
+const setConnectionStatus = createAction<ConnectionStatus>(SagaActionTypes.SetConnectionStatus);
 
 export interface Web3State {
   status: ConnectionStatus;
@@ -31,7 +34,7 @@ const slice = createSlice({
   name: 'web3',
   initialState,
   reducers: {
-    setConnectionStatus: (state, action: PayloadAction<ConnectionStatus>) => {
+    receiveConnectionStatus: (state, action: PayloadAction<ConnectionStatus>) => {
       state.status = action.payload;
     },
     setConnector: (state, action: PayloadAction<Connectors>) => {
@@ -43,6 +46,6 @@ const slice = createSlice({
   },
 });
 
-export const { setConnectionStatus, setConnector, setAddress } = slice.actions;
+export const { setConnector, setAddress, receiveConnectionStatus } = slice.actions;
 export const { reducer } =  slice;
-export { updateConnector };
+export { updateConnector, setConnectionStatus };

@@ -1,6 +1,6 @@
 import {
   reducer,
-  setConnectionStatus,
+  receiveConnectionStatus,
   setConnector,
   setAddress,
   Web3State,
@@ -21,7 +21,7 @@ describe('web3 reducer', () => {
   });
 
   it('should replace existing state with new status', () => {
-    const actual = reducer(initialExistingState, setConnectionStatus(ConnectionStatus.Connected));
+    const actual = reducer(initialExistingState, receiveConnectionStatus(ConnectionStatus.Connected));
 
     expect(actual.status).toEqual(ConnectionStatus.Connected);
   });

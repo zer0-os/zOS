@@ -15,12 +15,4 @@ describe('Main', () => {
 
     expect(wrapper.find(WalletManager).exists()).toBe(true);
   });
-
-  it('links to root', () => {
-    const wrapper = subject();
-
-    const link = wrapper.find('.main__header').closest(Link);
-
-    expect(link.prop('to')).toBe('/'); 
-  });
 });

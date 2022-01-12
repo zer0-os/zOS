@@ -11,10 +11,12 @@ export class Main extends React.Component {
   render() {
     return (
       <div className='main'>
-        <Link to={`/${config.defaultZnsRoute}`}>
-          <div className='main__header'>zOS</div>
-        </Link>
-        <WalletManager />
+        <div className='main__header'>
+          <Link className='main__title' to={`/${config.defaultZnsRoute}`}>
+            <span>zOS</span>
+          </Link>
+          <WalletManager />
+        </div>
       </div>
     );
   }

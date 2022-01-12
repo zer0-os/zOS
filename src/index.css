@@ -14,8 +14,19 @@ code {
     monospace;
 }
 
+#root {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
 #app-sandbox {
   position: fixed;
-  top: 200px;
-  left: 10px;
+  width: 70vw;
+  top: 0;
+  bottom: 0;
+  right: 15vw;
+  left: 15vw;
 }

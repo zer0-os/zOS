@@ -9,6 +9,10 @@ export interface Properties {
   connectionStatus: ConnectionStatus;
 }
 
+export interface State {
+  hasConnected: boolean;
+}
+
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     return {
@@ -21,12 +25,26 @@ export class Container extends React.Component<Properties> {
     return { };
   }
 
-  get isConnected() {
-    return this.props.connectionStatus === ConnectionStatus.Connected;
+  state = { hasConnected: false };
+
+  componentDidMount() {
+    if (this.props.connectionStatus === ConnectionStatus.Connected) {
+      this.setState({ hasConnected: true });
+    }
+  }
+
+  componentDidUpdate(prevProps: Properties) {
+    if (prevProps.connectionStatus !== ConnectionStatus.Connected && this.props.connectionStatus === ConnectionStatus.Connected) {
+      this.setState({ hasConnected: true });
+    }
+  }
+
+  get shouldRender() {
+    return this.state.hasConnected;
   }
 
   render() {
-    if (!this.isConnected) return null;
+    if (!this.shouldRender) return null;
 
     return (
       <AppSandbox selectedApp={Apps.Feed} znsRoute={this.props.route} />

@@ -22,6 +22,20 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).exists()).toBe(false);
   });
 
+  it('renders child when connecting and has been connected', () => {
+    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
+
+    // verify initial conditions
+    expect(wrapper.find(AppSandbox).exists()).toBe(false);
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
+
+    expect(wrapper.find(AppSandbox).exists()).toBe(true);
+  });
+
   it('defaults selected app to feed', () => {
     const wrapper = subject();
 

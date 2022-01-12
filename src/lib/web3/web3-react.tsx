@@ -17,7 +17,7 @@ import { providers } from 'ethers';
 
 import { Connectors } from '../../lib/web3';
 import { Chains } from '.';
-import {config} from '../../config';
+import { config } from '../../config';
 
 export class ContextProvider extends React.Component {
   getLibrary = (provider) => new providers.Web3Provider(provider);

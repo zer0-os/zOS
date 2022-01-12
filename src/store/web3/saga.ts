@@ -1,5 +1,5 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
-import { SagaActionTypes, receiveConnectionStatus, setConnector, setConnectionStatus as setConnectionStatusSaga } from '.';
+import { SagaActionTypes, receiveConnectionStatus, setConnector } from '.';
 import { dispatch } from '../../app-sandbox/store';
 import { setConnectionStatus as appSandboxSetConnectionStatus } from '../../app-sandbox/store/web3';
 

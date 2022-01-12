@@ -7,24 +7,27 @@ import { store as appSandboxStore } from './app-sandbox/store';
 import { Provider } from 'react-redux';
 import { Provider as EscapeManagerProvider } from './lib/escape-manager';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter, Redirect, Route } from 'react-router-dom';
+import { Router, Redirect, Route } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
 
 import { AppSandboxContainer } from './app-sandbox/container';
 
+const history = createBrowserHistory();
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <EscapeManagerProvider>
-        <BrowserRouter>
+        <Router history={history}>
           <Web3ReactContextProvider>
             <Route path='/' exact>
               <Redirect to={`/${config.defaultZnsRoute}`} />
             </Route>
             <Route path='/:znsRoute' component={ZnsRouteConnect} />
           </Web3ReactContextProvider>
-        </BrowserRouter>
+        </Router>
       </EscapeManagerProvider>
     </Provider>
   </React.StrictMode>,
@@ -33,7 +36,9 @@ ReactDOM.render(
 
 ReactDOM.render((
     <Provider store={appSandboxStore}>
-      <AppSandboxContainer />
+      <Router history={history}>
+        <AppSandboxContainer />
+      </Router>
     </Provider>
   ),
   document.getElementById('app-sandbox')

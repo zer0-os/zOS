@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FeedContainer } from '../apps/feed/container';
+import { App as FeedApp } from '@zer0-os/zos-feed';
 
 import './styles.css';
 
@@ -16,7 +16,7 @@ export interface Properties {
 export class AppSandbox extends React.Component<Properties> {
   renderSelectedApp() {
     if (this.props.selectedApp === Apps.Feed) {
-      return <FeedContainer />;
+      return <FeedApp />;
     }
 
     return null;

@@ -26,4 +26,18 @@ describe('AppSandbox', () => {
 
     expect(wrapper.find(App).exists()).toBe(false); 
   });
+
+  it('passes route to feed app', () => {
+    const wrapper = subject({ selectedApp: Apps.Feed, znsRoute: 'food.tacos' });
+
+    expect(wrapper.find(App).prop('route')).toStrictEqual('food.tacos');
+  });
+
+  it('passes provider to feed app', () => {
+    const web3Provider = { chain: '7' };
+
+    const wrapper = subject({ selectedApp: Apps.Feed, web3Provider });
+
+    expect(wrapper.find(App).prop('provider')).toStrictEqual(web3Provider);
+  });
 });

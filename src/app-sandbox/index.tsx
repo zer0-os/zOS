@@ -9,6 +9,7 @@ export enum Apps {
 }
 
 export interface Properties {
+  web3Provider: any;
   znsRoute: string;
   selectedApp: Apps;
 }
@@ -16,7 +17,7 @@ export interface Properties {
 export class AppSandbox extends React.Component<Properties> {
   renderSelectedApp() {
     if (this.props.selectedApp === Apps.Feed) {
-      return <FeedApp />;
+      return <FeedApp route={this.props.znsRoute} provider={this.props.web3Provider} />;
     }
 
     return null;

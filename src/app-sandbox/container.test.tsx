@@ -3,13 +3,15 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
 import { RootState } from './store';
 import { AppSandbox, Apps } from '.';
-import {ConnectionStatus} from '../lib/web3';
+import { ConnectionStatus } from '../lib/web3';
+import { ProviderService } from '../lib/web3/provider-service';
 
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       route: '',
       connectionStatus: ConnectionStatus.Connected,
+      providerService: { get: () => null } as ProviderService,
       ...props,
     };
 
@@ -46,6 +48,40 @@ describe('AppSandboxContainer', () => {
     const wrapper = subject({ route: 'tacos.street.pollo' });
 
     expect(wrapper.find(AppSandbox).prop('znsRoute')).toBe('tacos.street.pollo');
+  });
+
+  it('passes provider to sandbox', () => {
+    const provider = { hey: 'what' };
+    
+    const wrapper = subject({
+      route: 'tacos.street.pollo',
+      providerService: { get: () => provider } as ProviderService,
+    });
+
+    expect(wrapper.find(AppSandbox).prop('web3Provider')).toStrictEqual(provider);
+  });
+
+  it('updates provider when connection status changes', () => {
+    const oldProvider = { hey: 'what old provider' };
+    const wrapper = subject({
+      route: 'tacos.street.pollo',
+      providerService: { get: () => oldProvider } as ProviderService,
+      connectionStatus: ConnectionStatus.Connected,
+    });
+
+    const newProvider = { hey: 'what new provider' };
+
+    wrapper.setProps({
+      providerService: { get: () => newProvider } as ProviderService,
+      connectionStatus: ConnectionStatus.Connecting,
+    });
+
+    // check precondition
+    expect(wrapper.find(AppSandbox).prop('web3Provider')).toStrictEqual(oldProvider);
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    expect(wrapper.find(AppSandbox).prop('web3Provider')).toStrictEqual(newProvider);
   });
 
   describe('mapState', () => {

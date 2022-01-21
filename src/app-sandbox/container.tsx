@@ -3,17 +3,21 @@ import { RootState } from './store';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox, Apps } from '.';
 import { ConnectionStatus } from '../lib/web3';
+import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
 
 export interface Properties {
   route: string;
   connectionStatus: ConnectionStatus;
+
+  providerService: ProviderService;
 }
 
-export interface State {
+interface State {
   hasConnected: boolean;
+  web3Provider: any;
 }
 
-export class Container extends React.Component<Properties> {
+export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     return {
       route: state.zns.value.route,
@@ -25,17 +29,23 @@ export class Container extends React.Component<Properties> {
     return { };
   }
 
-  state = { hasConnected: false };
+  state = { hasConnected: false, web3Provider: null };
 
   componentDidMount() {
     if (this.props.connectionStatus === ConnectionStatus.Connected) {
-      this.setState({ hasConnected: true });
+      this.setState({
+        hasConnected: true,
+        web3Provider: this.props.providerService.get(),
+      });
     }
   }
 
   componentDidUpdate(prevProps: Properties) {
     if (prevProps.connectionStatus !== ConnectionStatus.Connected && this.props.connectionStatus === ConnectionStatus.Connected) {
-      this.setState({ hasConnected: true });
+      this.setState({
+        hasConnected: true,
+        web3Provider: this.props.providerService.get(),
+      });
     }
   }
 
@@ -43,13 +53,21 @@ export class Container extends React.Component<Properties> {
     return this.state.hasConnected;
   }
 
+  get web3Provider() {
+    return this.state.web3Provider;
+  }
+
   render() {
     if (!this.shouldRender) return null;
 
     return (
-      <AppSandbox selectedApp={Apps.Feed} znsRoute={this.props.route} />
+      <AppSandbox
+        selectedApp={Apps.Feed}
+        znsRoute={this.props.route}
+        web3Provider={this.web3Provider}
+      />
     );
   }
 }
 
-export const AppSandboxContainer = connectContainer<{}>(Container);
+export const AppSandboxContainer = injectProviderService(connectContainer<{}>(Container));

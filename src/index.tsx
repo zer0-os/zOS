@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
-import { store as appSandboxStore } from './app-sandbox/store';
 import { Provider } from 'react-redux';
 import { Provider as EscapeManagerProvider } from './lib/escape-manager';
 import * as serviceWorker from './serviceWorker';
@@ -36,7 +35,7 @@ ReactDOM.render(
 
 ReactDOM.render((
     <Router history={history}>
-      <AppSandboxContainer store={appSandboxStore} />
+      <AppSandboxContainer store={store} />
     </Router>
   ),
   document.getElementById('app-sandbox')

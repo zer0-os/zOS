@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect, ConnectedComponent } from 'react-redux';
 import { RootState } from '.';
-import { RootState as AppSandboxRootState } from '../app-sandbox/store';
 
 // XXX
 // interface IContainerComponent<TPublicProps, TContainerProps> {
 interface IContainerComponent<TPublicProps, TContainerProps> {
   new (props: TContainerProps): React.Component<TContainerProps>;
-  mapState(state: RootState | AppSandboxRootState, props?: TPublicProps): Partial<TContainerProps>;
+  mapState(state: RootState, props?: TPublicProps): Partial<TContainerProps>;
   mapActions(props?: TPublicProps): Partial<TContainerProps>;
 }
 
@@ -20,7 +19,7 @@ interface IDispatchActions {
 // XXX
 // export function connectContainer<TPublicProps, TContainerProps>(containerComponent: IContainerComponent<TPublicProps, TContainerProps>): IConnectorComponent<TPublicProps> {
 export function connectContainer<TPublicProps>(containerComponent: IContainerComponent<TPublicProps, any>): ConnectedComponent<any, TPublicProps> {
-  function mapStateToProps(state: RootState | AppSandboxRootState, props: TPublicProps) {
+  function mapStateToProps(state: RootState, props: TPublicProps) {
     return containerComponent.mapState(state, props);
   }
 

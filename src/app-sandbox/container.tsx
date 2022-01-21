@@ -1,5 +1,5 @@
 import React from 'react';
-import { RootState } from './store';
+import { RootState } from '../store';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox, Apps } from '.';
 import { ConnectionStatus } from '../lib/web3';

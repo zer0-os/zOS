@@ -70,4 +70,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const AppSandboxContainer = injectProviderService(connectContainer<{}>(Container));
+export const AppSandboxContainer = injectProviderService<any>(connectContainer<{}>(Container));

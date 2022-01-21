@@ -35,11 +35,9 @@ ReactDOM.render(
 );
 
 ReactDOM.render((
-    <Provider store={appSandboxStore}>
-      <Router history={history}>
-        <AppSandboxContainer />
-      </Router>
-    </Provider>
+    <Router history={history}>
+      <AppSandboxContainer store={appSandboxStore} />
+    </Router>
   ),
   document.getElementById('app-sandbox')
 );

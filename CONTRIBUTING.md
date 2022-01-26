@@ -9,3 +9,4 @@ Other Considerations:
 * Our team is small. Please ensure any code submitted in a PR is 'production ready'.
 * If you're unsure what that means, consider reaching out to the core team, or submitting an 'in progress' PR to get feedback as early as possible.
 * Try to keep changes small and focused.
+* Review the [zOS style guide](URL ./STYLE_GUIDE.md) if this is your first time contributing to see any guidance or decisions that have been made to help ensure consistency across the project.

@@ -1,4 +1,4 @@
-TOTO:: Outstanding Topics:
+TODO:: Outstanding Topics:
 - shared vs. core components
 - Style management (BEM/CSS modules/etc.)
 - Storybook
@@ -10,7 +10,7 @@ This is a collection of choices/preferences/decisions around how to build within
 The responsibility of components is to display data and accept user input. Business logic including data manipulation does not belong at the component level.
 
 ### Function vs. Class Components
-Function and class components both have their place. Function components can be used for simple components that don't require a lot of logic around how the data is displayed. For anything that requires a bit more complexity, a class is generally going to be mmore appropriate.
+Function and class components both have their place. Function components can be used for simple components that don't require a lot of logic around how the data is displayed. For anything that requires a bit more complexity, a class is generally going to be more appropriate.
 
 #### Function Components
 The general wisdom around functions in software development also applies to function components. They should be very short, accept minimal input props, and return clear and consistent markup. If you can't figure out what a function component requires, renders, and is doing at a glance, then it is too long.
@@ -44,6 +44,7 @@ Because they are the "latest thing", which always ends up generating a lot of re
   - In response to the previous points, the obvious response to many of them is to try and test *everything* at as high a level as possible. This is unfortunately not practical in a real application. While high level "as a user would interact with it" tests are an important part of the testing pyramid, they are at the top of the pyramid for a reason. They are slow, they are brittle, and they are too far removed from the actual implementation.
     - A failing UI test is an important signal, and an important last line of defence, but it is not a practical way of diagnosing *what* has gone wrong. Conversely, there is simply no way to be thorough enough with user level tests to give you full confidence in all aspects of the underlying code.
     - User level tests are slooooow. Even fast ones are slow. Rapid feedback loops are an important part of building software, and there's just no way to integrate user-level tests with an efficient development workflow.
+    - User level tests don't actually address all of the previous points, and in fact, exacerbate some of them. Such as the overhead required to deal with deeply nested external dependencies. Handling them at a single level of abstraction is hard enough, but if they are deeply nested, they become so far removed from the current working context that any effort to discover and maintain them requires way more overhead than is practical.
 2. Hooks require function components.
   - Any functionality tied up in hooks needs to be fully restructured if the component is rewritten using a class. This alone makes it a poor choice for code reuse, since as soon as you convert to a class, you need to rewrite the the functionality from scratch.
   - Because of the previous point, using hooks increases the friction in using all of the tools available, and puts a heavy emphasis on exclusively using function components. While in principle this could be a reasonable tradeoff if the benefits were large enough, in practice the discipline required to structure a complex application using only function components is much greater than if you are able to also use class components. Additionally, the benefits of using hooks in practice are only apparent if you are *already* exclusively using function components. The result of this is that while they are a reasonable tool to use in moderation, or if you already have the discipline required to exlusively use function componets, they are not in and of themselves a reasonable replacement for using class components where appropriate.

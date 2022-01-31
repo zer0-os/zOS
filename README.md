@@ -1,5 +1,5 @@
 # zOS
-### Flexible application platform for interacting with the Zer0 ecosystem
+#### Flexible application platform for interacting with the Zer0 ecosystem
 
 ## Ways to Participate
 ### Create an app

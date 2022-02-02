@@ -2,7 +2,7 @@ import React from 'react';
 
 import { App as FeedApp } from '@zer0-os/zos-feed';
 
-import './styles.css';
+import './styles.scss';
 
 export enum Apps {
   Feed = 'feed',

@@ -9,7 +9,7 @@ import { WalletType } from '../../shared-components/wallet-select/wallets';
 import  { ConnectionStatus, Connectors } from '../../lib/web3';
 import { EthAddress } from '../../shared-components/eth-address';
 
-import './styles.css';
+import './styles.scss';
 
 export interface Properties {
   currentAddress: string;

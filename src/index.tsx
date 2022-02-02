@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
@@ -12,6 +11,8 @@ import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-rea
 import { config } from './config';
 
 import { AppSandboxContainer } from './app-sandbox/container';
+
+import './index.scss';
 
 const history = createBrowserHistory();
 

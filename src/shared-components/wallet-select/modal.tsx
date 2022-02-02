@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import './styles.css';
 import { Dialog } from '../dialog';
 import { WalletSelect, Properties as WalletSelectProperties } from '.';
 import { WalletType } from './wallets';

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { WalletManager } from './core-components/wallet-manager';
 import { config } from './config';
 
-import './Main.css';
+import './main.scss';
 
 // Renamed from App to Main to reduce confusion around
 // apps & app due to the intent of this project.

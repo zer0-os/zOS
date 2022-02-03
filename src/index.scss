@@ -1,17 +1,30 @@
 @use 'modules/font' as fonts;
+@use 'modules/animation' as animation;
+@use 'shared-components/theme-engine/theme' as theme;
 
 @import-normalize;
 
 body {
   margin: 0;
   font-family: fonts.$font-family, 'Helvetica Neue Ultra Light', Helvetica, Arial, 'Lucida Grande', 'sans-serif';
+  color: theme.$font-color-primary;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  transition: color animation.$animation-duration-double ease-out;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+A {
+  text-decoration: none;
+}
+
+A, BUTTON {
+  color: inherit;
 }
 
 #root {

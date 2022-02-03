@@ -1,7 +1,9 @@
 @use 'shared-components/theme-engine/theme' as theme;
+@use 'modules/animation' as animation;
 
 .main {
   background: theme.$platform-background;
+  transition: background animation.$animation-duration-double ease-out;
 
   position: fixed;
   top: 0;

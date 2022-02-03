@@ -1,0 +1,80 @@
+{
+  "light": {
+    "platformBackground": "radial-gradient(#FFFFFF, #BDBDBD)",
+
+    "backgroundColorPrimary": "#F5F5F5",
+    "backgroundColorPrimaryHover": "#F0F0F0",
+    "backgroundColorPrimarySelected": "#DBDBDB",
+    "backgroundColorPrimaryTransparent": "rgba(245, 245, 245, 0.9)",
+
+    "backgroundColorSecondary": "#CCCCCC",
+    "backgroundColorSecondaryHover": "#E6E6E6",
+    "backgroundColorSecondaryTransparent": "rgba(211, 211, 211, 0.9)",
+
+    "backgroundColorTertiary": "#FFFFFF",
+    "backgroundColorTertiaryHover": "#F5F5F5",
+    "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
+
+    "fontColorPrimary": "#000000",
+    "fontColorPrimaryHover": "#121212",
+    "fontColorSecondary": "#4A4A4A",
+    "fontColorSecondaryHover": "#121212",
+    "fontColorTertiary": "#FFFFFF",
+    "fontColorTertiaryHover": "#F5F5F5",
+
+    "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
+    "inputBackgroundSecondaryColor": "rgba(255, 255, 255, 0)",
+    "inputBorderColor": "#FFFFFF",
+    "inputArrowColor": "#121212",
+
+    "buttonDropShadowPrimaryColor": "rgba(176,176,176,0.37)",
+    "buttonDropShadowSecondaryColor": "rgba(247,247,247,0.25)",
+
+    "scrollGradientColor": "rgba(255, 255, 255, 1)",
+    "scrollColor": "#F0F0F0",
+    "scrollThumbColor": "#353535",
+
+    "dialogBorderColor": "#FFFFFF",
+    "dialogBackgroundColor": "#CCCCCC",
+    "underlayBackgroundColor": "rgba(245, 245, 245, 0.95)"
+  },
+  "dark": {
+    "platformBackground": "radial-gradient(#3A3B3D, #2B2B2B)",
+
+    "backgroundColorPrimary": "#18181C",
+    "backgroundColorPrimaryHover": "#2E2E2E",
+    "backgroundColorPrimarySelected": "#000000",
+    "backgroundColorPrimaryTransparent": "rgba(24, 24, 28, 0.9)",
+
+    "backgroundColorSecondary": "rgba(33, 33, 33, 1)",
+    "backgroundColorSecondaryHover": "#1A1919",
+    "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
+
+    "backgroundColorTertiary": "#000000",
+    "backgroundColorTertiaryHover": "#121212",
+    "backgroundColorTertiaryTransparent": "rgba(0, 0, 0, 0.95)",
+
+    "fontColorPrimary": "#FFFFFF",
+    "fontColorPrimaryHover": "#F5F5F5",
+    "fontColorSecondary": "#737373",
+    "fontColorSecondaryHover": "#363636",
+    "fontColorTertiary": "#212121",
+    "fontColorTertiaryHover": "#000000",
+
+    "inputBackgroundPrimaryColor": "rgba(66, 68, 70, 1)",
+    "inputBackgroundSecondaryColor": "rgba(66, 68, 70, 0)",
+    "inputBorderColor": "#3C3C3C",
+    "inputArrowColor": "#3C3C3C",
+
+    "buttonDropShadowPrimaryColor": "rgba(64,64,64,0.37)",
+    "buttonDropShadowSecondaryColor": "rgba(0,0,0,0.65)",
+
+    "scrollGradientColor": "rgba(0, 0, 0, 1)",
+    "scrollColor": "#353535",
+    "scrollThumbColor": "#7E7E7E",
+
+    "dialogBorderColor": "rgb(60, 60, 60)",
+    "dialogBackgroundColor": "#CCCCCC",
+    "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)"
+  }
+}

@@ -4,6 +4,7 @@ import { WalletManager } from './core-components/wallet-manager';
 import { config } from './config';
 
 import './main.scss';
+import { ThemeEngine, ViewModes } from './shared-components/theme-engine';
 
 // Renamed from App to Main to reduce confusion around
 // apps & app due to the intent of this project.
@@ -17,6 +18,7 @@ export class Main extends React.Component {
           </Link>
           <WalletManager />
         </div>
+        <ThemeEngine viewMode={ViewModes.Dark} />
       </div>
     );
   }

@@ -3,7 +3,8 @@ import { shallow } from 'enzyme';
 
 import { Main } from './Main';
 import { WalletManager } from './core-components/wallet-manager';
-import { ThemeEngine, ViewModes } from './shared-components/theme-engine';
+import { ThemeEngine } from './core-components/theme-engine';
+import { ViewModeToggle } from './core-components/view-mode-toggle';
 
 describe('Main', () => {
   const subject = () => {
@@ -16,9 +17,15 @@ describe('Main', () => {
     expect(wrapper.find(WalletManager).exists()).toBe(true);
   });
 
-  it('defaults to dark mode', () => {
+  it('renders view mode toggle', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(ThemeEngine).prop('viewMode')).toBe(ViewModes.Dark);
+    expect(wrapper.find(ViewModeToggle).exists()).toBe(true);
+  });
+
+  it('renders theme engine', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(ThemeEngine).exists()).toBe(true);
   });
 });

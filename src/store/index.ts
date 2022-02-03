@@ -5,6 +5,7 @@ import { rootSaga } from './saga';
 
 import { reducer as web3 } from './web3';
 import { reducer as zns } from './zns';
+import { reducer as theme } from './theme';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -16,6 +17,7 @@ export const store = configureStore({
   reducer: {
     web3,
     zns,
+    theme,
   },
   middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),
 });

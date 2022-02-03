@@ -1,0 +1,34 @@
+$platform-background: var(--platform-background, radial-gradient(#3A3B3D, #2B2B2B));
+
+$background-color-primary: var(--background-color-primary, #18181C);
+$background-color-primary-hover: var(--background-color-primary-hover, #2E2E2E);
+$background-color-primary-selected: var(--background-color-primary-selected, #000000);
+$background-color-primary-transparent: var(--background-color-primary-transparent, rgba(24, 24, 28, 0.9));
+
+$background-color-secondary: var(--background-color-secondary, #212121);
+$background-color-secondary-transparent: var(--background-color-secondary-transparent, rgba(33, 33, 33, 0.9));
+$background-color-secondary-hover: var(--background-color-secondary-hover, #1A1919);
+
+$background-color-tertiary: var(--background-color-tertiary, #000000);
+$background-color-tertiary-transparent: var(--background-color-tertiary-transparent, rgba(0, 0, 0, 0.95));
+$background-color-tertiary-hover: var(--background-color-tertiary-hover, #121212);
+
+$font-color-primary: var(--font-color-primary);
+$font-color-primary-hover: var(--font-color-primary-hover);
+$font-color-secondary: var(--font-color-secondary);
+$font-color-secondary-hover: var(--font-color-secondary-hover);
+$font-color-tertiary: var(--font-color-tertiary);
+$font-color-tertiary-hover: var(--font-color-tertiary-hover);
+
+$input-background-primary-color: var(--input-background-primary-color, rgba(66, 68, 70, 1));
+$input-background-secondary-color: var(--input-background-secondary-color, rgba(66, 68, 70, 0));
+$input-border-color: var(--input-border-color, #3C3C3C);
+$input-arrow-color: var(--input-arrow-color, #3C3C3C);
+
+$button-drop-shadow-primary-color: var(--button-drop-shadow-primary-color, rgba(64,64,64,0.37));
+$button-drop-shadow-secondary-color: var(--button-drop-shadow-secondary-color, rgba(0,0,0,0.65));
+
+$dialog-border-color: var(--dialog-border-color, rgb(60,60,60));
+$dialog-background-color: var(--dialog-background-color, #000000);
+
+$underlay-background: var(--underlay-background, rgba(0,0,0,0.95));

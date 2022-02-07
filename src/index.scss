@@ -1,6 +1,6 @@
 @use 'modules/font' as fonts;
 @use 'modules/animation' as animation;
-@use 'shared-components/theme-engine/theme' as theme;
+@use '../node_modules/@zer0-os/zos-theme-engine/dist/theme' as theme;
 
 @import-normalize;
 

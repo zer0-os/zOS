@@ -3,7 +3,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 
-import { ViewModes } from '../../shared-components/theme-engine';
+import { ViewModes } from '@zer0-os/zos-theme-engine';
 
 export interface ThemeState {
   value: { viewMode: ViewModes };

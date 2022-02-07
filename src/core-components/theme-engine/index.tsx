@@ -2,7 +2,7 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 
-import { ThemeEngine as ThemeEngineComponent, ViewModes } from '../../shared-components/theme-engine';
+import { ThemeEngine as ThemeEngineComponent, ViewModes } from '@zer0-os/zos-theme-engine';
 
 export interface Properties {
   viewMode: ViewModes;

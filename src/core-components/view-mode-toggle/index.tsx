@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 import { setViewMode } from '../../store/theme';
 import { connectContainer } from '../../store/redux-container';
 
-import { ViewModes } from '../../shared-components/theme-engine';
+import { ViewModes } from '@zer0-os/zos-theme-engine';
 
 import DarkModeToggle from 'react-dark-mode-toggle';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { ThemeEngine, ViewModes } from '../../shared-components/theme-engine';
+import { ThemeEngine, ViewModes } from '@zer0-os/zos-theme-engine';
 import { Container } from '.';
 
 describe('ThemeEngine', () => {

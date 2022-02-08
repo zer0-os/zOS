@@ -4,7 +4,7 @@ import {
   ThemeState,
 } from '.';
 
-import { ViewModes } from '../../shared-components/theme-engine';
+import { ViewModes } from '@zer0-os/zos-theme-engine';
 
 describe('theme reducer', () => {
   const initialExistingState: ThemeState = {

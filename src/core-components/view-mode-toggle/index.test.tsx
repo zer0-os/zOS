@@ -4,7 +4,7 @@ import { RootState } from '../../store';
 
 import DarkModeToggle from 'react-dark-mode-toggle';
 import { Container } from '.';
-import { ViewModes } from '../../shared-components/theme-engine';
+import { ViewModes } from '@zer0-os/zos-theme-engine';
 
 describe('ViewModeToggle', () => {
   const subject = (props: any = {}) => {

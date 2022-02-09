@@ -2,12 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { Button } from '../../shared-components/button';
-import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
+import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
-import { WalletType } from '../../shared-components/wallet-select/wallets';
-import { EthAddress } from '../../shared-components/eth-address';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {

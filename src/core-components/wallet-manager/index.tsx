@@ -2,12 +2,9 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 
-import { Button } from '../../shared-components/button';
-import { WalletSelectModal } from '../../shared-components/wallet-select/modal';
+import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { updateConnector } from '../../store/web3';
-import { WalletType } from '../../shared-components/wallet-select/wallets';
 import  { ConnectionStatus, Connectors } from '../../lib/web3';
-import { EthAddress } from '../../shared-components/eth-address';
 
 import './styles.scss';
 

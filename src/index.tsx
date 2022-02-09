@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
-import { Provider as EscapeManagerProvider } from './lib/escape-manager';
+import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';

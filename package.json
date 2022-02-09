@@ -36,9 +36,7 @@
     "lint": "eslint src",
     "build": "react-scripts build",
     "test": "react-scripts test --env=node",
-    "eject": "react-scripts eject",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
@@ -53,12 +51,6 @@
     ]
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.4.9",
-    "@storybook/addon-essentials": "^6.4.9",
-    "@storybook/addon-links": "^6.4.9",
-    "@storybook/node-logger": "^6.4.9",
-    "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.4.9",
     "@types/enzyme": "^3.10.10",
     "@types/react-portal": "^4.0.4",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",

@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Link } from 'react-router-dom';
 
 import { AddressBar } from '.';
 
@@ -31,6 +32,15 @@ describe('AddressBar', () => {
     const segments = wrapper.find('.address-bar__route-segment').map(segment => segment.text().trim());
 
     expect(segments).toStrictEqual(['food', 'street', 'tacos']);
+  });
+
+  it.only('renders Link to route at segment', () => {
+    const wrapper = subject({ route: 'food.street.tacos' });
+    
+    const segments = wrapper.find(Link);
+
+    expect(segments.at(0).prop('to')).toStrictEqual('food');
+    expect(segments.at(1).prop('to')).toStrictEqual('food.street');
   });
 
   it('renders route seperators', () => {

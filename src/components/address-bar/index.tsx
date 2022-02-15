@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import './styles.scss';
 
@@ -14,16 +15,23 @@ export class AddressBar extends React.Component<Properties> {
   }
 
   renderSegments() {
-    return this.routeSegments.reduce((elements, segment, index) => {
+    const { elements } = this.routeSegments.reduce(({ elements, route }, segment, index) => {
       if (elements.length) {
         elements.push(<span key={index} className='address-bar__route-seperator'>.</span>);
       }
 
-      return [
-        ...elements,
-        <span key={segment} className='address-bar__route-segment'>{segment}</span>
-      ];
-    }, []);
+      route = route ? `${route}.${segment}` : segment;
+
+      return {
+        elements: [
+          ...elements,
+          <Link key={segment} className='address-bar__route-segment' to={route}>{segment}</Link>
+        ],
+        route,
+      };
+    }, { elements: [], route: '' });
+
+    return elements;
   }
 
   renderRoute() {

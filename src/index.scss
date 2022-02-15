@@ -33,6 +33,18 @@ A, BUTTON {
   bottom: 0;
   right: 0;
   left: 0;
+
+  background: theme.$platform-background;
+  transition: background animation.$animation-duration-double ease-out;
+}
+
+#platform {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
 }
 
 #app-sandbox {
@@ -42,4 +54,5 @@ A, BUTTON {
   bottom: 0;
   right: 15vw;
   left: 15vw;
+  z-index: 0;
 }

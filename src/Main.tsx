@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { WalletManager } from './core-components/wallet-manager';
+import { WalletManager } from './components/wallet-manager';
 import { config } from './config';
-import { ViewModeToggle } from './core-components/view-mode-toggle';
-import { ThemeEngine } from './core-components/theme-engine';
+import { ViewModeToggle } from './components/view-mode-toggle';
+import { ThemeEngine } from './components/theme-engine';
+import { AddressBarContainer } from './components/address-bar/container';
 
 import './main.scss';
 
@@ -17,6 +18,7 @@ export class Main extends React.Component {
           <Link className='main__title' to={`/${config.defaultZnsRoute}`}>
             <span>zOS</span>
           </Link>
+          <AddressBarContainer className='main__address-bar' />
           <ViewModeToggle />
           <WalletManager />
         </div>

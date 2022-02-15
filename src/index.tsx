@@ -32,7 +32,7 @@ ReactDOM.render(
       </EscapeManagerProvider>
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('platform')
 );
 
 ReactDOM.render((

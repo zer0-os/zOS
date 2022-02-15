@@ -34,7 +34,7 @@ describe('AddressBar', () => {
     expect(segments).toStrictEqual(['food', 'street', 'tacos']);
   });
 
-  it.only('renders Link to route at segment', () => {
+  it('renders Link to route at segment', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
     
     const segments = wrapper.find(Link);

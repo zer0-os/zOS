@@ -8,18 +8,18 @@ import { ViewModes } from '@zer0-os/zos-theme-engine';
 
 describe('theme reducer', () => {
   const initialExistingState: ThemeState = {
-    value: { viewMode: ViewModes.Dark },
+    value: { viewMode: ViewModes.Light },
   };
 
-  it('should default to light mode', () => {
+  it('should default to dark mode', () => {
     const { viewMode } = reducer(undefined, { type: 'unknown' }).value;
 
-    expect(viewMode).toBe(ViewModes.Light);
+    expect(viewMode).toBe(ViewModes.Dark);
   });
 
   it('should replace existing state', () => {
-    const actual = reducer(initialExistingState, setViewMode(ViewModes.Light));
+    const actual = reducer(initialExistingState, setViewMode(ViewModes.Dark));
 
-    expect(actual.value).toMatchObject({ viewMode: ViewModes.Light });
+    expect(actual.value).toMatchObject({ viewMode: ViewModes.Dark });
   });
 });

@@ -10,7 +10,7 @@ export interface ThemeState {
 }
 
 const initialState: ThemeState = {
-  value: { viewMode: ViewModes.Light },
+  value: { viewMode: ViewModes.Dark },
 };
 
 const slice = createSlice({

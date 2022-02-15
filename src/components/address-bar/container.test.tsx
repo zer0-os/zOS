@@ -21,6 +21,12 @@ describe('AddressBarContainer', () => {
     expect(wrapper.find(AddressBar).prop('route')).toBe('the.cats.pajamas');
   });
 
+  it('passes className to address bar', () => {
+    const wrapper = subject({ className: 'the-class' });
+
+    expect(wrapper.find(AddressBar).prop('className')).toBe('the-class');
+  });
+
   describe('mapState', () => {
     const subject = (state: Partial<RootState>) => Container.mapState({
       ...state,

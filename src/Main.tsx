@@ -18,7 +18,7 @@ export class Main extends React.Component {
           <Link className='main__title' to={`/${config.defaultZnsRoute}`}>
             <span>zOS</span>
           </Link>
-          <AddressBarContainer />
+          <AddressBarContainer className='main__address-bar' />
           <ViewModeToggle />
           <WalletManager />
         </div>

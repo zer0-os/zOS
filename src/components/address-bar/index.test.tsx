@@ -13,6 +13,12 @@ describe('AddressBar', () => {
     return shallow(<AddressBar {...allProps} />);
   };
 
+  it('adds class', () => {
+    const wrapper = subject({ className: 'the-class' });
+    
+    expect(wrapper.find('.address-bar').hasClass('the-class')).toBe(true);
+  });
+
   it('renders protocol', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
     

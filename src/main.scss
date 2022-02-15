@@ -20,10 +20,17 @@
   width: 100%;
   height: 50px;
   padding-top: 10px;
+
+  display: flex;
+  align-items: center;
 }
 
 .main__title {
   display: inline-block;
   font-size: 40px;
-  padding: 10px 0 20px 10px;
+  padding-left: 10px;
+}
+
+.main__address-bar {
+  margin-left: 100px;
 }

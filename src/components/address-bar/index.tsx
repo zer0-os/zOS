@@ -1,8 +1,10 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import './styles.scss';
 
 export interface Properties {
+  className?: string;
   route: string;
 }
 
@@ -34,7 +36,7 @@ export class AddressBar extends React.Component<Properties> {
 
   render() {
     return (
-      <div className='address-bar'>
+      <div className={classNames('address-bar', this.props.className)}>
         <span className='address-bar__protocol'>0://</span>
         {this.renderRoute()}
       </div>

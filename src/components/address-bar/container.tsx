@@ -4,7 +4,11 @@ import { connectContainer } from '../../store/redux-container';
 
 import { AddressBar } from '.';
 
-export interface Properties {
+interface PublicProperties {
+  className?: string;
+}
+
+export interface Properties extends PublicProperties {
   route: string;
 }
 
@@ -20,8 +24,8 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return <AddressBar route={this.props.route} />;
+    return <AddressBar className={this.props.className} route={this.props.route} />;
   }
 }
 
-export const AddressBarContainer = connectContainer<{}>(Container);
+export const AddressBarContainer = connectContainer<PublicProperties>(Container);

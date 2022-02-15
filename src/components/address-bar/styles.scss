@@ -1,2 +1,22 @@
+@use '../../../node_modules/@zer0-os/zos-theme-engine/dist/theme' as theme;
+
 .address-bar {
+  padding: 10px;
+  min-width: 600px;
+
+  border: 1px solid theme.$primary-border-color;
+  border-radius: 24px;
+
+  &__protocol,
+  &__route {
+    color: theme.$font-color-tertiary;
+  }
+
+  &__route-segment:last-child {
+    color: theme.$font-color-primary;
+    text-shadow:
+      0px 0px 6px theme.$drop-shadow-secondary-color,
+      0px 0px 12px theme.$drop-shadow-primary-color,
+      0px 0px 24px theme.$drop-shadow-primary-color;
+  }
 }

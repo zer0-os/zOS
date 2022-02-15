@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Main } from './Main';
-import { WalletManager } from './core-components/wallet-manager';
-import { ThemeEngine } from './core-components/theme-engine';
-import { ViewModeToggle } from './core-components/view-mode-toggle';
+import { WalletManager } from './components/wallet-manager';
+import { ThemeEngine } from './components/theme-engine';
+import { ViewModeToggle } from './components/view-mode-toggle';
 
 describe('Main', () => {
   const subject = () => {

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { WalletManager } from './core-components/wallet-manager';
+import { WalletManager } from './components/wallet-manager';
 import { config } from './config';
-import { ViewModeToggle } from './core-components/view-mode-toggle';
-import { ThemeEngine } from './core-components/theme-engine';
+import { ViewModeToggle } from './components/view-mode-toggle';
+import { ThemeEngine } from './components/theme-engine';
 
 import './main.scss';
 

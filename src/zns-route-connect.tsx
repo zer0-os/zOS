@@ -3,7 +3,7 @@ import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
 
 import { setRoute } from './store/zns';
-import { Web3Connect } from './core-components/web3-connect';
+import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 
 export interface Properties {

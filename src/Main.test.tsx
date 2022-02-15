@@ -5,6 +5,7 @@ import { Main } from './Main';
 import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
 import { ViewModeToggle } from './components/view-mode-toggle';
+import { AddressBarContainer } from './components/address-bar/container';
 
 describe('Main', () => {
   const subject = () => {
@@ -27,5 +28,11 @@ describe('Main', () => {
     const wrapper = subject();
 
     expect(wrapper.find(ThemeEngine).exists()).toBe(true);
+  });
+
+  it('renders address bar container', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(AddressBarContainer).exists()).toBe(true);
   });
 });

@@ -4,6 +4,7 @@ import { WalletManager } from './components/wallet-manager';
 import { config } from './config';
 import { ViewModeToggle } from './components/view-mode-toggle';
 import { ThemeEngine } from './components/theme-engine';
+import { AddressBarContainer } from './components/address-bar/container';
 
 import './main.scss';
 
@@ -17,6 +18,7 @@ export class Main extends React.Component {
           <Link className='main__title' to={`/${config.defaultZnsRoute}`}>
             <span>zOS</span>
           </Link>
+          <AddressBarContainer />
           <ViewModeToggle />
           <WalletManager />
         </div>

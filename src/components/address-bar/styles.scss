@@ -7,16 +7,50 @@
   border-radius: 24px;
   padding: 3px;
 
+  display: flex;
+  align-items: center;
+
   &__inner {
     border: 1px solid theme.$primary-border-color;
     border-radius: 24px;
 
     padding: 10px;
+
+    flex: 1 1 auto;
   }
   
   &__protocol,
   &__route {
     color: theme.$font-color-tertiary;
+  }
+
+  &__navigation {
+    padding: 0 5px;
+  }
+
+  &__navigation-button {
+    color: theme.$accent-color-mid;
+    background-color: theme.$accent-color-mid;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+
+    &-icon {
+      width: 6px;
+      height: 10px;
+    }
+
+    path {
+      fill: theme.$accent-color-mid;
+    }
+
+    padding: 10px 5px;
+
+    &.is-actionable path {
+      color: theme.$accent-color;
+    }
   }
 
   &__route-segment:last-child {

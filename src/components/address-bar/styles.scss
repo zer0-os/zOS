@@ -1,12 +1,19 @@
 @use '../../../node_modules/@zer0-os/zos-theme-engine/dist/theme' as theme;
 
 .address-bar {
-  padding: 10px;
   min-width: 600px;
 
-  border: 1px solid theme.$primary-border-color;
+  border: 1px solid theme.$secondary-border-color;
   border-radius: 24px;
+  padding: 3px;
 
+  &__inner {
+    border: 1px solid theme.$primary-border-color;
+    border-radius: 24px;
+
+    padding: 10px;
+  }
+  
   &__protocol,
   &__route {
     color: theme.$font-color-tertiary;

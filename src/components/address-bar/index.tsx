@@ -7,6 +7,12 @@ import './styles.scss';
 export interface Properties {
   className?: string;
   route: string;
+
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+
+  onBack?: () => void;
+  onForward?: () => void;
 }
 
 export class AddressBar extends React.Component<Properties> {
@@ -43,8 +49,18 @@ export class AddressBar extends React.Component<Properties> {
   }
 
   render() {
+    const backButtonClass = classNames('address-bar__navigation-button', {
+      'is-actionable': this.props.canGoBack,
+    });
+
+    const forwardButtonClass = classNames('address-bar__navigation-button', {
+      'is-actionable': this.props.canGoForward,
+    });
+
     return (
       <div className={classNames('address-bar', this.props.className)}>
+        <button className={backButtonClass} onClick={this.props.onBack}>&#60;</button>
+        <button className={forwardButtonClass} onClick={this.props.onForward}>&#62;</button>
         <div className='address-bar__inner'>
           <span className='address-bar__protocol'>0://</span>
           {this.renderRoute()}

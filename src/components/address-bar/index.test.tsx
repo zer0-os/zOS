@@ -48,4 +48,36 @@ describe('AddressBar', () => {
     
     expect(wrapper.find('.address-bar__route-seperator')).toHaveLength(2);
   });
+
+  it('adds class when canGoBack is true', () => {
+    const wrapper = subject({ canGoBack: true });
+
+    expect(wrapper.find('.address-bar__navigation-button').at(0).hasClass('is-actionable')).toBe(true);
+  });
+
+  it('adds class when canGoForward is true', () => {
+    const wrapper = subject({ canGoForward: true });
+
+    expect(wrapper.find('.address-bar__navigation-button').at(1).hasClass('is-actionable')).toBe(true);
+  });
+
+  it('fires onBack when back button is clicked', () => {
+    const onBack = jest.fn();
+
+    const wrapper = subject({ onBack });
+
+    wrapper.find('.address-bar__navigation-button').at(0).simulate('click');
+
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('fires onForward when forward button is clicked', () => {
+    const onForward = jest.fn();
+
+    const wrapper = subject({ onForward });
+
+    wrapper.find('.address-bar__navigation-button').at(1).simulate('click');
+
+    expect(onForward).toHaveBeenCalledOnce();
+  });
 });

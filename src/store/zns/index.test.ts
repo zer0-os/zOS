@@ -1,13 +1,15 @@
 import {
   reducer,
   receive,
-  setRoute,
   ZnsState,
 } from '.';
 
 describe('zns reducer', () => {
   const initialExistingState: ZnsState = {
-    value: { route: 'tacos' },
+    value: {
+      route: 'tacos',
+      deepestVisitedRoute: 'tacos.soft.cheesy',
+    },
   };
 
   it('should have a default route that is a string', () => {
@@ -16,15 +18,21 @@ describe('zns reducer', () => {
     expect(typeof route).toBe('string');
   });
 
-  it('should replace existing state', () => {
-    const actual = reducer(initialExistingState, receive({ route: 'cheeseburgers' }));
+  it('should have a default deepestVisitedRoute that is a string', () => {
+    const { deepestVisitedRoute } = reducer(undefined, { type: 'unknown' }).value;
 
-    expect(actual.value).toMatchObject({ route: 'cheeseburgers' });
+    expect(typeof deepestVisitedRoute).toBe('string');
   });
 
-  it('should replace existing route', () => {
-    const actual = reducer(initialExistingState, setRoute('tacos.fish'));
+  it('should replace existing state', () => {
+    const actual = reducer(initialExistingState, receive({
+      route: 'cheeseburgers',
+      deepestVisitedRoute: 'cheeseburgers.with.pickles',
+    }));
 
-    expect(actual.value).toMatchObject({ route: 'tacos.fish' });
+    expect(actual.value).toMatchObject({
+      route: 'cheeseburgers',
+      deepestVisitedRoute: 'cheeseburgers.with.pickles',
+    });
   });
 });

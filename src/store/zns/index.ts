@@ -1,12 +1,20 @@
 import {
   createSlice,
+  createAction,
   PayloadAction,
 } from '@reduxjs/toolkit';
 
 import { config } from '../../config';
 
+export enum SagaActionTypes {
+  UpdateRoute = 'zns/saga/updateRoute',
+}
+
+const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
+
 interface ZnsDomainDescriptor {
   route: string,
+  deepestVisitedRoute: string,
 }
 
 export interface ZnsState {
@@ -14,21 +22,22 @@ export interface ZnsState {
 }
 
 const initialState: ZnsState = {
-  value: { route: config.defaultZnsRoute },
+  value: {
+    route: config.defaultZnsRoute,
+    deepestVisitedRoute: config.defaultZnsRoute,
+  },
 };
 
 const slice = createSlice({
   name: 'zns',
   initialState,
   reducers: {
-    setRoute: (state, action: PayloadAction<string>) => {
-      state.value = { route: action.payload };
-    },
     receive: (state, action: PayloadAction<ZnsDomainDescriptor>) => {
       state.value = action.payload;
     },
   },
 });
 
-export const { receive, setRoute } = slice.actions;
+export const { receive } = slice.actions;
 export const { reducer } =  slice;
+export { setRoute };

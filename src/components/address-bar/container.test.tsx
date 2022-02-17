@@ -10,6 +10,7 @@ describe('AddressBarContainer', () => {
     const allProps = {
       route: '',
       deepestVisitedRoute: '',
+      history: { push: () => undefined },
       ...props,
     };
 
@@ -56,6 +57,62 @@ describe('AddressBarContainer', () => {
     const wrapper = subject({ route: 'cats.alley' });
 
     expect(wrapper.find(AddressBar).prop('canGoBack')).toBe(true);
+  });
+
+  it('navigates to next deepest route when onForward is called', () => {
+    const push = jest.fn();
+
+    const wrapper = subject({
+      route: 'food',
+      deepestVisitedRoute: 'food.tacos.bean.pinto',
+      history: { push },
+    });
+
+    wrapper.find(AddressBar).simulate('forward');
+
+    expect(push).toHaveBeenCalledWith('/food.tacos');
+  });
+
+  it('does not navigate when forward is called if already at deepest route', () => {
+    const push = jest.fn();
+
+    const wrapper = subject({
+      route: 'food.tacos.bean.pinto',
+      deepestVisitedRoute: 'food.tacos.bean.pinto',
+      history: { push },
+    });
+
+    wrapper.find(AddressBar).simulate('forward');
+
+    expect(push).toHaveBeenCalledTimes(0);
+  });
+
+  it('navigates to previous route when onBack is called', () => {
+    const push = jest.fn();
+
+    const wrapper = subject({
+      route: 'food.tacos.bean',
+      deepestVisitedRoute: 'food.tacos.bean.pinto',
+      history: { push },
+    });
+
+    wrapper.find(AddressBar).simulate('back');
+
+    expect(push).toHaveBeenCalledWith('/food.tacos');
+  });
+
+  it('does not navigate when onBack is called if already at root route', () => {
+    const push = jest.fn();
+
+    const wrapper = subject({
+      route: 'food',
+      deepestVisitedRoute: 'food.tacos.bean.pinto',
+      history: { push },
+    });
+
+    wrapper.find(AddressBar).simulate('back');
+
+    expect(push).toHaveBeenCalledTimes(0);
   });
 
   describe('mapState', () => {

@@ -34,7 +34,6 @@
 
     background: none;
     border: none;
-    cursor: pointer;
     display: inline-block;
 
     &-icon {
@@ -48,8 +47,12 @@
 
     padding: 10px 5px;
 
-    &.is-actionable path {
-      fill: theme.$accent-color;
+    &.is-actionable {
+      cursor: pointer;
+
+      path {
+        fill: theme.$accent-color;
+      }
     }
   }
 

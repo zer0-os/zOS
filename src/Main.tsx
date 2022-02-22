@@ -13,7 +13,7 @@ import './main.scss';
 export class Main extends React.Component {
   render() {
     return (
-      <div className='flex flex-row items-center h-[64px] px-[3.5rem] space-x-1'>
+      <div className='flex flex-row items-center h-[64px] px-[3.5rem] space-x-1 main__header'>
         <div className='justify-center basis-[20px]'>{/* World image */}
           <Link to={`/${config.defaultZnsRoute}`}>
             <span className='text-3xl'>zOS</span>

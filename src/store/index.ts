@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
+import { combineReducers } from 'redux';
 
 import { rootSaga } from './saga';
 
@@ -13,12 +14,14 @@ const sagaMiddleware = createSagaMiddleware({
   },
 });
 
+export const rootReducer = combineReducers({
+  web3,
+  zns,
+  theme,
+});
+
 export const store = configureStore({
-  reducer: {
-    web3,
-    zns,
-    theme,
-  },
+  reducer: rootReducer,
   middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './zns-route-connect';
 import { Main } from './Main';
-import { Web3Connect } from './core-components/web3-connect';
+import { Web3Connect } from './components/web3-connect';
 
 describe('ZnsRouteConnect', () => {
   const subject = (props: Partial<Properties> = {}) => {

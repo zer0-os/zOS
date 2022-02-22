@@ -1,10 +1,12 @@
 import { all, call, spawn } from 'redux-saga/effects';
 
 import { saga as web3 } from './web3/saga';
+import { saga as zns } from './zns/saga';
 
 export function* rootSaga() {
   const allSagas = [
     web3,
+    zns,
   ];
 
   yield all(Object.keys(allSagas).map(sagaName => {

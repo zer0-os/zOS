@@ -15,8 +15,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 A {
@@ -25,21 +24,4 @@ A {
 
 A, BUTTON {
   color: inherit;
-}
-
-#root {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-}
-
-#app-sandbox {
-  position: fixed;
-  width: 70vw;
-  top: 0;
-  bottom: 0;
-  right: 15vw;
-  left: 15vw;
 }

@@ -25,7 +25,7 @@ export class AppSandbox extends React.Component<Properties> {
 
   render() {
     return (
-      <div className="app-sandbox">
+      <div className='application-content'>
         {this.renderSelectedApp()}
       </div>
     );

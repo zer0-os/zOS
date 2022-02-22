@@ -13,7 +13,7 @@ import { config } from './config';
 import { AppSandboxContainer } from './app-sandbox/container';
 
 import './index.scss';
-import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
+// import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 
 const history = createBrowserHistory();
 
@@ -36,9 +36,18 @@ ReactDOM.render(
 );
 
 ReactDOM.render((
+  <div className='flex flex-row'>
     <Router history={history}>
-      <AppSandboxContainer store={store} />
+      <div className='basis-[3.5rem]'>{/* World navigation */}</div>
+      <div className='grow flex flex-row justify-center'>
+        <div className='basis-[12.5rem]'>{/* Application navigation */}</div>
+        <div className='basis-[46rem]'>{/* Application content */}
+          <AppSandboxContainer store={store} />
+        </div>
+      </div>
+      <div className='basis-[16rem]'>{/* Sidekick */}</div>
     </Router>
+  </div>
   ),
   document.getElementById('app-sandbox')
 );

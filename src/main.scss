@@ -1,29 +1,9 @@
 @use '../node_modules/@zer0-os/zos-theme-engine/dist/theme' as theme;
 @use 'modules/animation' as animation;
 
-.main {
+@import './scss/tailwind.scss';
+
+body {
   background: theme.$platform-background;
   transition: background animation.$animation-duration-double ease-out;
-
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-}
-
-.main__header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  height: 50px;
-  padding-top: 10px;
-}
-
-.main__title {
-  display: inline-block;
-  font-size: 40px;
-  padding: 10px 0 20px 10px;
 }

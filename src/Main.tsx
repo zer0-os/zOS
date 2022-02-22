@@ -12,11 +12,15 @@ import './main.scss';
 export class Main extends React.Component {
   render() {
     return (
-      <div className='main'>
-        <div className='main__header'>
-          <Link className='main__title' to={`/${config.defaultZnsRoute}`}>
-            <span>zOS</span>
+      <div className='flex flex-row items-center h-[64px] space-x-1'>
+        <div className='justify-center basis-[20px]'>{/* World image */}
+          <Link to={`/${config.defaultZnsRoute}`}>
+            <span className='text-3xl'>zOS</span>
           </Link>
+        </div>
+        <div className='grow'>{/* Search */}
+        </div>
+        <div className='flex justify-end basis-[207px]'>{/* Wallet, User Menu */}
           <ViewModeToggle />
           <WalletManager />
         </div>

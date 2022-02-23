@@ -2,7 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { App } from '@zer0-os/zos-feed';
-import { AppSandbox, Apps } from '.';
+import { AppSandbox } from '.';
+import { Apps } from '../lib/apps';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {

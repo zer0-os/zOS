@@ -1,12 +1,9 @@
 import React from 'react';
 
+import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 
 import './styles.scss';
-
-export enum Apps {
-  Feed = 'feed',
-}
 
 export interface Properties {
   web3Provider: any;

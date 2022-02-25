@@ -12,6 +12,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   transition: color animation.$animation-duration-double ease-out;
+
+  --box-radius: 16px;
+  --animation-time-medium: 0.3s;
 }
 
 code {
@@ -56,4 +59,34 @@ A, BUTTON {
   right: 15vw;
   left: 15vw;
   z-index: 0;
+}
+
+.border-primary {
+  border: 1px solid var(--dialog-border-color);
+  border-collapse: separate;
+  box-shadow: 0 0 16px 0 var(--dialog-drop-shadow-color);
+}
+
+hr.glow {
+  position: relative;
+  height: 1px;
+  border: none;
+  background-color: #6e10bb;
+}
+
+hr.glow:after {
+  right: 0;
+}
+
+hr.glow:after, hr.glow:before {
+  content: ' ';
+  position: absolute;
+  top: 0;
+  height: 1px;
+  width: 8px;
+  background-color: #e0baff;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--glow-text-color);
 }

@@ -72,7 +72,7 @@ describe('WalletManager', () => {
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
 
-    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([ WalletType.Metamask ]);
+    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([ WalletType.Metamask, WalletType.WalletConnect, WalletType.Coinbase, WalletType.Fortmatic, WalletType.Portis ]);
   });
 
   it('passes isConnecting of true when connection status is Connecting', () => {

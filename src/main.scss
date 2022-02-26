@@ -8,7 +8,7 @@ body {
   transition: background animation.$animation-duration-double ease-out;
 }
 
-.main__header {
-  background: rgba(177, 78, 255, 0.03);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+.main {
+  background: var(--background-color-secondary);
+  box-shadow: 0px 4px 8px var(--actionable-active-background);
 }

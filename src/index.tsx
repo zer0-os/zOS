@@ -38,14 +38,14 @@ ReactDOM.render(
 ReactDOM.render((
   <div className='flex flex-row'>
     <Router history={history}>
-      <div className='basis-[3.5rem]'>{/* World navigation */}</div>
+      <div className='basis-world-navigation'>{/* World navigation */}</div>
       <div className='grow flex flex-row justify-center'>
-        <div className='basis-[12.5rem]'>{/* Application navigation */}</div>
-        <div className='basis-[46rem]'>{/* Application content */}
+        <div className='basis-application-navigation'>{/* Application navigation */}</div>
+        <div className='basis-application-content'>{/* Application content */}
           <AppSandboxContainer store={store} />
         </div>
       </div>
-      <div className='basis-[16rem]'>{/* Sidekick */}</div>
+      <div className='basis-sidekick'>{/* Sidekick */}</div>
     </Router>
   </div>
   ),

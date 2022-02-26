@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --world-navigation-width: 3.5rem;
+  --world-image-width: 20px;
+  --user-utilities-width: 207px;
+
+  --application-navigation-width: 12.5rem;
+  --application-content-width: 46rem;
+  --sidekick-width: 16rem;
+}
+
+@layer components {
+  .basis-world-navigation {
+    flex-basis: var(--world-navigation-width);
+  }
+
+  .basis-world-image {
+    flex-basis: var(--world-image-width);
+  }
+
+  .basis-user-utilities {
+    flex-basis: var(--user-utilities-width);
+  }
+
+  .basis-application-navigation {
+    flex-basis: var(--application-navigation-width);
+  }
+
+  .basis-application-content {
+    flex-basis: var(--application-content-width);
+  }
+
+  .basis-sidekick {
+    flex-basis: var(--sidekick-width);
+  }
+}

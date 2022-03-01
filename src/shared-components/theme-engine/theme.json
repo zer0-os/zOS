@@ -2,7 +2,7 @@
   "light": {
     "platformBackground": "radial-gradient(#FFFFFF, #BDBDBD)",
 
-    "backgroundColorPrimary": "#F5F5F5",
+    "backgroundColorPrimary": "#120D16",
     "backgroundColorPrimaryHover": "#F0F0F0",
     "backgroundColorPrimarySelected": "#DBDBDB",
     "backgroundColorPrimaryTransparent": "rgba(245, 245, 245, 0.9)",
@@ -15,6 +15,9 @@
     "backgroundColorTertiaryHover": "#F5F5F5",
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
+    "primaryBorderColor": "#FFFFFF",
+    "secondaryBorderColor": "#21152D",
+
     "fontColorPrimary": "#000000",
     "fontColorPrimaryHover": "#121212",
     "fontColorSecondary": "#4A4A4A",
@@ -22,13 +25,20 @@
     "fontColorTertiary": "#FFFFFF",
     "fontColorTertiaryHover": "#F5F5F5",
 
+    "accentColor": "#B14EFF",
+    "accentColorMid": "#6A3991",
+
+    "actionableInactiveColor": "#737373",
+    "actionableActiveColor": "rgb(18, 18, 18, 0.75)",
+    "actionableHoverBackground": "rgba(0, 0, 0, 0.05)",
+    "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
+
     "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
     "inputBackgroundSecondaryColor": "rgba(255, 255, 255, 0)",
-    "inputBorderColor": "#FFFFFF",
     "inputArrowColor": "#121212",
 
-    "buttonDropShadowPrimaryColor": "rgba(176,176,176,0.37)",
-    "buttonDropShadowSecondaryColor": "rgba(247,247,247,0.25)",
+    "dropShadowPrimaryColor": "rgba(177, 78, 255, 0.6)",
+    "dropShadowSecondaryColor": "rgba(177, 78, 255, 0.25)",
 
     "scrollGradientColor": "rgba(255, 255, 255, 1)",
     "scrollColor": "#F0F0F0",
@@ -36,12 +46,16 @@
 
     "dialogBorderColor": "#FFFFFF",
     "dialogBackgroundColor": "#CCCCCC",
-    "underlayBackgroundColor": "rgba(245, 245, 245, 0.95)"
+    "dialogDropShadowColor": "#CCCCCC",
+
+    "underlayBackgroundColor": "rgba(245, 245, 245, 0.95)",
+
+    "glowTextColor": "#F0F0F0"
   },
   "dark": {
-    "platformBackground": "radial-gradient(#3A3B3D, #2B2B2B)",
+    "platformBackground": "#0A0A0A",
 
-    "backgroundColorPrimary": "#18181C",
+    "backgroundColorPrimary": "#120D16",
     "backgroundColorPrimaryHover": "#2E2E2E",
     "backgroundColorPrimarySelected": "#000000",
     "backgroundColorPrimaryTransparent": "rgba(24, 24, 28, 0.9)",
@@ -54,27 +68,41 @@
     "backgroundColorTertiaryHover": "#121212",
     "backgroundColorTertiaryTransparent": "rgba(0, 0, 0, 0.95)",
 
+    "primaryBorderColor": "#472E5B",
+    "secondaryBorderColor": "#21152D",
+
     "fontColorPrimary": "#FFFFFF",
     "fontColorPrimaryHover": "#F5F5F5",
-    "fontColorSecondary": "#737373",
+    "fontColorSecondary": "#707070",
     "fontColorSecondaryHover": "#363636",
-    "fontColorTertiary": "#212121",
+    "fontColorTertiary": "#959595",
     "fontColorTertiaryHover": "#000000",
+
+    "accentColor": "#52cbff",
+    "accentColorMid": "rgba(0,209,255,0.1)",
+
+    "actionableInactiveColor": "#737373",
+    "actionableActiveColor": "#FFFFFF",
+    "actionableHoverBackground": "rgba(255, 255, 255, 0.1)",
+    "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
 
     "inputBackgroundPrimaryColor": "rgba(66, 68, 70, 1)",
     "inputBackgroundSecondaryColor": "rgba(66, 68, 70, 0)",
-    "inputBorderColor": "#3C3C3C",
     "inputArrowColor": "#3C3C3C",
 
-    "buttonDropShadowPrimaryColor": "rgba(64,64,64,0.37)",
-    "buttonDropShadowSecondaryColor": "rgba(0,0,0,0.65)",
+    "dropShadowPrimaryColor": "rgba(177, 78, 255, 0.6)",
+    "dropShadowSecondaryColor": "rgba(0, 0, 0, .5)",
 
     "scrollGradientColor": "rgba(0, 0, 0, 1)",
     "scrollColor": "#353535",
     "scrollThumbColor": "#7E7E7E",
 
-    "dialogBorderColor": "rgb(60, 60, 60)",
-    "dialogBackgroundColor": "#CCCCCC",
-    "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)"
+    "dialogBorderColor": "rgba(175,76,255,.403921568627451)",
+    "dialogBackgroundColor": "#10052e",
+    "dialogDropShadowColor": "rgb(196 29 255 / 20%)",
+
+    "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)",
+
+    "glowTextColor": "hsla(0,0%,100%,0.7)"
   }
 }

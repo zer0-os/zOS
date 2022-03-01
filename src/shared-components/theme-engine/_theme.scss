@@ -13,6 +13,9 @@ $background-color-tertiary: var(--background-color-tertiary, #000000);
 $background-color-tertiary-transparent: var(--background-color-tertiary-transparent, rgba(0, 0, 0, 0.95));
 $background-color-tertiary-hover: var(--background-color-tertiary-hover, #121212);
 
+$primary-border-color: var(--primary-border-color, #3C3C3C);
+$secondary-border-color: var(--secondary-border-color, #3C3C3C);
+
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);
 $font-color-secondary: var(--font-color-secondary);
@@ -20,15 +23,25 @@ $font-color-secondary-hover: var(--font-color-secondary-hover);
 $font-color-tertiary: var(--font-color-tertiary);
 $font-color-tertiary-hover: var(--font-color-tertiary-hover);
 
+$accent-color: var(--accent-color, #52cbff);
+$accent-color-mid: var(--accent-color-mid, rgba(0,209,255,0.1));
+
+$actionable-inactive-color: var(--actionable-inactive-color, #737373);
+$actionable-active-color: var(--actionable-active-color, #FFFFFF);
+$actionable-hover-background: var(--actionable-hover-background, rgba(255, 255, 255, 0.1));
+$actionable-active-background: var(--actionable-active-background, rgba(0, 0, 0, 0.25));
+
 $input-background-primary-color: var(--input-background-primary-color, rgba(66, 68, 70, 1));
 $input-background-secondary-color: var(--input-background-secondary-color, rgba(66, 68, 70, 0));
-$input-border-color: var(--input-border-color, #3C3C3C);
 $input-arrow-color: var(--input-arrow-color, #3C3C3C);
 
-$button-drop-shadow-primary-color: var(--button-drop-shadow-primary-color, rgba(64,64,64,0.37));
-$button-drop-shadow-secondary-color: var(--button-drop-shadow-secondary-color, rgba(0,0,0,0.65));
+$drop-shadow-primary-color: var(--drop-shadow-primary-color, rgba(64,64,64,0.37));
+$drop-shadow-secondary-color: var(--drop-shadow-secondary-color, rgba(0, 0, 0, .5));
 
-$dialog-border-color: var(--dialog-border-color, rgb(60,60,60));
-$dialog-background-color: var(--dialog-background-color, #000000);
+$dialog-border-color: var(--dialog-border-color, rgba(175,76,255,.403921568627451));
+$dialog-drop-shadow-color: var(--dialog-drop-shadow-color, rgb(196 29 255 / 20%));
+$dialog-background-color: var(--dialog-background-color, #10052e);
 
 $underlay-background: var(--underlay-background, rgba(0,0,0,0.95));
+
+$glow-text-color: var(--glow-text-color, hsla(0,0%,100%,0.7))

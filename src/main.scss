@@ -1,3 +1,6 @@
+@use 'shared-components/theme-engine/theme' as theme;
+@use 'modules/animation' as animation;
+
 .main {
   position: fixed;
   top: 0;

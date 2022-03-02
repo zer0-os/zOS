@@ -1,0 +1,48 @@
+$platform-background: var(--platform-background, radial-gradient(#3A3B3D, #2B2B2B));
+
+$background-color-primary: var(--background-color-primary, #18181C);
+$background-color-primary-hover: var(--background-color-primary-hover, #2E2E2E);
+$background-color-primary-selected: var(--background-color-primary-selected, #000000);
+$background-color-primary-transparent: var(--background-color-primary-transparent, rgba(24, 24, 28, 0.9));
+
+$background-color-secondary: var(--background-color-secondary, #212121);
+$background-color-secondary-transparent: var(--background-color-secondary-transparent, rgba(33, 33, 33, 0.9));
+$background-color-secondary-hover: var(--background-color-secondary-hover, #1A1919);
+
+$background-color-tertiary: var(--background-color-tertiary, #000000);
+$background-color-tertiary-transparent: var(--background-color-tertiary-transparent, rgba(0, 0, 0, 0.95));
+$background-color-tertiary-hover: var(--background-color-tertiary-hover, #121212);
+
+$primary-border-color: var(--primary-border-color, #3C3C3C);
+$secondary-border-color: var(--secondary-border-color, #3C3C3C);
+
+$font-color-primary: var(--font-color-primary);
+$font-color-primary-hover: var(--font-color-primary-hover);
+$font-color-secondary: var(--font-color-secondary);
+$font-color-secondary-hover: var(--font-color-secondary-hover);
+$font-color-tertiary: var(--font-color-tertiary);
+$font-color-tertiary-hover: var(--font-color-tertiary-hover);
+
+$accent-color: var(--accent-color, #52cbff);
+$accent-color-mid: var(--accent-color-mid, rgba(0,209,255,0.1));
+
+$actionable-inactive-color: var(--actionable-inactive-color, #737373);
+$actionable-active-color: var(--actionable-active-color, #FFFFFF);
+$actionable-hover-background: var(--actionable-hover-background, rgba(255, 255, 255, 0.1));
+$actionable-active-background: var(--actionable-active-background, rgba(0, 0, 0, 0.25));
+
+$input-background-primary-color: var(--input-background-primary-color, rgba(66, 68, 70, 1));
+$input-background-secondary-color: var(--input-background-secondary-color, rgba(66, 68, 70, 0));
+$input-arrow-color: var(--input-arrow-color, #3C3C3C);
+
+$drop-shadow-primary-color: var(--drop-shadow-primary-color, rgba(64,64,64,0.37));
+$drop-shadow-secondary-color: var(--drop-shadow-secondary-color, rgba(0, 0, 0, .5));
+
+$dialog-border-color: var(--dialog-border-color, rgba(175,76,255,.403921568627451));
+$dialog-drop-shadow-color: var(--dialog-drop-shadow-color, rgb(196 29 255 / 20%));
+$dialog-background-color: var(--dialog-background-color, #10052e);
+
+$underlay-background: var(--underlay-background, rgba(0,0,0,0.95));
+
+$glow-text-color: var(--glow-text-color, hsla(0,0%,100%,0.7));
+$glow-background-color: var(--glow-background-color, #6e10bb);

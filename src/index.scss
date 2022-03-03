@@ -71,7 +71,7 @@ hr.glow {
   position: relative;
   height: 1px;
   border: none;
-  background-color: #6e10bb;
+  background-color: var(--glow-background-color);
 }
 
 hr.glow:after {
@@ -84,7 +84,7 @@ hr.glow:after, hr.glow:before {
   top: 0;
   height: 1px;
   width: 8px;
-  background-color: #e0baff;
+  background-color: var(--glow-transition-background-color);
 }
 
 .glow-text {

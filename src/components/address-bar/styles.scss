@@ -1,4 +1,4 @@
-@use '../../../node_modules/@zer0-os/zos-theme-engine/dist/theme' as theme;
+@use '../../shared-components/theme-engine/theme' as theme;
 
 .address-bar {
   min-width: 600px;

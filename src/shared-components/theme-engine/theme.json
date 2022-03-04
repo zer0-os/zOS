@@ -51,7 +51,8 @@
     "underlayBackgroundColor": "rgba(245, 245, 245, 0.95)",
 
     "glowTextColor": "#F0F0F0",
-    "glowBackgroundColor": "#F0F0F0"
+    "glowBackgroundColor": "#F0F0F0",
+    "glowTransitionBackgroundColor": "F3F3F3"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -105,6 +106,7 @@
     "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)",
 
     "glowTextColor": "hsla(0,0%,100%,0.7)",
-    "glowBackgroundColor": "#6e10bb"
+    "glowBackgroundColor": "#6e10bb",
+    "glowTransitionBackgroundColor": "#e0baff"
   }
 }

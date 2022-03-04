@@ -12,8 +12,8 @@ import { config } from './config';
 
 import { AppSandboxContainer } from './app-sandbox/container';
 
-import './index.scss';
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
+import './index.scss';
 
 const history = createBrowserHistory();
 

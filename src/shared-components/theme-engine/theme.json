@@ -2,7 +2,7 @@
   "light": {
     "platformBackground": "radial-gradient(#FFFFFF, #BDBDBD)",
 
-    "backgroundColorPrimary": "#120D16",
+    "backgroundColorPrimary": "#FFF",
     "backgroundColorPrimaryHover": "#F0F0F0",
     "backgroundColorPrimarySelected": "#DBDBDB",
     "backgroundColorPrimaryTransparent": "rgba(245, 245, 245, 0.9)",
@@ -14,9 +14,13 @@
     "backgroundColorTertiary": "#FFFFFF",
     "backgroundColorTertiaryHover": "#F5F5F5",
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
+    "backgroundColorSidekick": "transparent",
 
     "primaryBorderColor": "#FFFFFF",
     "secondaryBorderColor": "#21152D",
+
+    "addressBarBorderColorOuter": "#FFF",
+    "addressBarBorderColorInner": "#EFEFEF",
 
     "fontColorPrimary": "#000000",
     "fontColorPrimaryHover": "#121212",
@@ -65,13 +69,17 @@
     "backgroundColorSecondary": "rgba(33, 33, 33, 1)",
     "backgroundColorSecondaryHover": "#1A1919",
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
+    "backgroundColorSidekick": "#120D16",
 
     "backgroundColorTertiary": "#000000",
     "backgroundColorTertiaryHover": "#121212",
     "backgroundColorTertiaryTransparent": "rgba(0, 0, 0, 0.95)",
 
-    "primaryBorderColor": "#472E5B",
+    "primaryBorderColor": "#232323",
     "secondaryBorderColor": "#21152D",
+
+    "addressBarBorderColorOuter": "#23142F",
+    "addressBarBorderColorInner": "#472E5B",
 
     "fontColorPrimary": "#FFFFFF",
     "fontColorPrimaryHover": "#F5F5F5",
@@ -80,8 +88,8 @@
     "fontColorTertiary": "#959595",
     "fontColorTertiaryHover": "#000000",
 
-    "accentColor": "#52cbff",
-    "accentColorMid": "rgba(0,209,255,0.1)",
+    "accentColor": "#B14EFF",
+    "accentColorMid": "#6A3991",
 
     "actionableInactiveColor": "#737373",
     "actionableActiveColor": "#FFFFFF",

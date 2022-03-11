@@ -83,7 +83,7 @@ export class Container extends React.Component<Properties, State> {
         {this.showButton && (
           <Button
             className='wallet-manager__connect-button'
-            label='Connect Wallet'
+            label='Connect'
             onClick={this.openModal}
           />
         )}

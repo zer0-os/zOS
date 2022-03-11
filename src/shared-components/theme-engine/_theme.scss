@@ -13,8 +13,13 @@ $background-color-tertiary: var(--background-color-tertiary, #000000);
 $background-color-tertiary-transparent: var(--background-color-tertiary-transparent, rgba(0, 0, 0, 0.95));
 $background-color-tertiary-hover: var(--background-color-tertiary-hover, #121212);
 
+$background-color-sidekick: var(--background-color-sidekick, #120D16);
+
 $primary-border-color: var(--primary-border-color, #3C3C3C);
 $secondary-border-color: var(--secondary-border-color, #3C3C3C);
+
+$address-bar-border-color-outer: var(--address-bar-border-color-outer, #23142F);
+$address-bar-border-color-inner: var(--address-bar-border-color-inner, #472E5B);
 
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);

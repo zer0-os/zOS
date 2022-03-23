@@ -1,9 +1,7 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
 .address-bar {
-  min-width: 600px;
-
-  border: 1px solid theme.$secondary-border-color;
+  border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
   padding: 3px;
 
@@ -11,7 +9,7 @@
   align-items: center;
 
   &__inner {
-    border: 1px solid theme.$primary-border-color;
+    border: 1px solid theme.$address-bar-border-color-inner;
     border-radius: 24px;
 
     padding: 10px;

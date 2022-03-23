@@ -4,6 +4,8 @@
 
 @import-normalize;
 
+@import 'variables';
+
 body {
   margin: 0;
   font-family: fonts.$font-family, 'Helvetica Neue Ultra Light', Helvetica, Arial, 'Lucida Grande', 'sans-serif';
@@ -11,6 +13,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  background: theme.$platform-background;
   transition: color animation.$animation-duration-double ease-out;
 
   --box-radius: 16px;
@@ -30,35 +33,57 @@ A, BUTTON {
   color: inherit;
 }
 
+.container {
+  display: flex;
+
+  &__networks {
+    flex: 0 0 $width-world-navigation;
+
+    border: 1px solid theme.$primary-border-color;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 0;
+  }
+
+  &__network, &__navigation {
+    flex: 0 0 $width-application-navigation;
+
+    border: 1px solid theme.$primary-border-color;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 0;
+  }
+
+  &__content {
+    flex: 1 0 $width-application-content;
+
+    display: flex;
+    justify-content: center;
+  }
+
+  &__sidekick {
+    flex-basis: $width-sidekick;
+
+    align-items: center;
+
+    display: flex;
+    align-items: flex-end;
+
+    background-color: theme.$background-color-sidekick;
+  }
+
+  &.main {
+    .container {
+      &__networks, &__network {
+        height: $height-main;
+      }
+    }
+  }
+}
+
+
 #root {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-
-  background: theme.$platform-background;
   transition: background animation.$animation-duration-double ease-out;
-}
-
-#platform {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-#app-sandbox {
-  position: fixed;
-  width: 70vw;
-  top: 0;
-  bottom: 0;
-  right: 15vw;
-  left: 15vw;
-  z-index: 0;
 }
 
 .border-primary {

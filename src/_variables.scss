@@ -1,0 +1,27 @@
+$width-world-navigation: 56px;
+
+$width-application-navigation: 220px;
+$width-application-content: 736px;
+$width-sidekick: 16rem;
+$height-main: 65px;
+
+$width-screen-medium: 1440px;
+$width-screen-large: 1600px;
+$width-screen-xl: 1602px;
+$width-screen-xxl: 1920px;
+
+@mixin for-screen-medium {
+  @media (max-width: $width-screen-medium - 1) { @content; }
+}
+
+@mixin for-screen-large {
+  @media (min-width: $width-screen-large) { @content; }
+}
+
+@mixin for-screen-xl {
+  @media (min-width: $width-screen-xl) { @content; }
+}
+
+@mixin for-screen-xxl {
+  @media (min-width: $width-screen-xxl) { @content; }
+}

@@ -1,7 +1,18 @@
+@use '../shared-components/theme-engine/theme' as theme;
+@import '../variables';
+
+// This can be thrown away when the sandbox app is worked on
 .app-sandbox {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  width: $width-application-content;
+}
+
+.feed {
+  overflow: hidden;
+  &__items {
+    max-width: 100%;
+  }
+
+  &-item {
+    border-color: theme.$address-bar-border-color-inner;
+  }
 }

@@ -55,7 +55,7 @@ A, BUTTON {
   }
 
   &__content {
-    flex: 1 0 736px;
+    flex: 1 0 $width-application-content;
 
     display: flex;
     justify-content: center;

@@ -1,5 +1,11 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
 .wallet-manager {
-  position: absolute;
-  right: 10px;
-  top: 10px;
+  .button {
+    background-color: theme.$background-color-primary;
+  }
+
+  &__connect-button {
+    color: theme.$font-color-primary;
+  }
 }

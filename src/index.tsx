@@ -37,7 +37,14 @@ ReactDOM.render(
 
 ReactDOM.render((
     <Router history={history}>
-      <AppSandboxContainer store={store} />
+      <div className='container'>
+        <div className='container__networks'></div>
+        <div className='container__navigation'></div>
+        <div className='container__content'>
+          <AppSandboxContainer store={store} />
+        </div>
+        <div className='container__sidekick'></div>
+      </div>
     </Router>
   ),
   document.getElementById('app-sandbox')

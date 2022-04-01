@@ -67,12 +67,18 @@ describe('WalletManager', () => {
     expect(wrapper.find(WalletSelectModal).exists()).toBe(true);
   });
 
-  it('limits wallet select modal to Metamask', () => {
+  it('should render all available wallets', () => {
     const wrapper = subject();
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
 
-    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([ WalletType.Metamask ]);
+    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([
+      WalletType.Metamask,
+      WalletType.WalletConnect,
+      WalletType.Coinbase,
+      WalletType.Fortmatic,
+      WalletType.Portis,
+    ]);
   });
 
   it('passes isConnecting of true when connection status is Connecting', () => {

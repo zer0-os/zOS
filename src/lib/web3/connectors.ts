@@ -25,7 +25,7 @@ export const walletLink = new WalletLinkConnector({
 
 export const fortmatic = new FortmaticConnector({
   chainId: Chains.Kovan,
-  apiKey: 'api_key',
+  apiKey: config.fortmaticApiKey,
 });
 
 export const portis = new PortisConnector({

@@ -13,11 +13,13 @@ export interface Properties {
 
 export class AppSandbox extends React.Component<Properties> {
   renderSelectedApp() {
-    if (this.props.selectedApp === Apps.Feed) {
-      return <FeedApp route={this.props.znsRoute} provider={this.props.web3Provider} />;
+    const { znsRoute, selectedApp: app, web3Provider } = this.props;
+
+    if (app === Apps.Feed) {
+      return <FeedApp route={{znsRoute, app}} provider={web3Provider} />;
     }
 
-    return null;
+    return <div className='error'>Error {app} application has not been implemented.</div>
   }
 
   render() {

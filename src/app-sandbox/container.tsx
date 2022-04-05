@@ -1,7 +1,8 @@
 import React from 'react';
 import { RootState } from '../store';
 import { connectContainer } from '../store/redux-container';
-import { AppSandbox, Apps } from '.';
+import { AppSandbox } from '.';
+import { Apps } from '../lib/apps';
 import { ConnectionStatus } from '../lib/web3';
 import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
 

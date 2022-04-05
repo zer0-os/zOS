@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PlatformApp, Apps } from '../../lib/apps';
 
 import './styles.scss';
@@ -10,6 +10,8 @@ export interface Properties {
 
   selectedApp: Apps;
   apps: PlatformApp[];
+
+  route: string;
 }
 
 export class AppMenu extends React.Component<Properties> {
@@ -19,7 +21,19 @@ export class AppMenu extends React.Component<Properties> {
         selected: app.type === this.props.selectedApp,
       });
 
-      return <li key={app.type} className={className}>{app.name}</li>;
+      const { type, name, imageSource } = app;
+
+      return (
+        <div>
+          <li key={type} className={className}>
+            <Link to={`/${[this.props.route, type].join('/')}`}>
+              <img src={imageSource} alt={name} />
+              {name}
+
+            </Link>
+          </li>
+        </div>
+      );
     });
   }
 

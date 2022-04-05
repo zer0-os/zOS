@@ -1,19 +1,13 @@
 import { takeLatest, put } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
 
-export function* setRoute(action) {
-  const route = action.payload;
-  // let deepestVisitedRoute = yield select(deepestRouteSelector);
-  //
-  // if (( route !== deepestVisitedRoute ) && !deepestVisitedRoute.includes(route)) {
-  //   deepestVisitedRoute = route;
-  // }
+export function* setSelectedApp(action) {
+  const selectedApp = action.payload as string;
 
-  console.log('action', action);
-  // yield put(receive({ route, 'dude' }));
+  yield put(receive(selectedApp));
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.UpdateRoute, setRoute);
+  yield takeLatest(SagaActionTypes.UpdateRoute, setSelectedApp);
 }
     

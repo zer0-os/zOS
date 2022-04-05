@@ -10,32 +10,26 @@ export enum SagaActionTypes {
   UpdateRoute = 'app/saga/updateRoute',
 }
 
-const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
-
-interface AppsDescriptor {
-  route: string,
-}
+const setSelectedApp = createAction<string>(SagaActionTypes.UpdateRoute);
 
 export interface AppsState {
-  value: AppsDescriptor,
+  selectedApp: string,
 }
 
 const initialState: AppsState = {
-  value: {
-    route: config.defaultApp,
-  },
+  selectedApp: config.defaultApp,
 };
 
 const slice = createSlice({
   name: 'apps',
   initialState,
   reducers: {
-    receive: (state, action: PayloadAction<AppsDescriptor>) => {
-      state.value = action.payload;
+    receive: (state, action: PayloadAction<string>) => {
+      state.selectedApp = action.payload;
     },
   },
 });
 
 export const { receive } = slice.actions;
 export const { reducer } =  slice;
-export { setRoute };
+export { setSelectedApp };

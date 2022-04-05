@@ -7,6 +7,7 @@ import './styles.scss';
 export interface Properties {
   className?: string;
   route: string;
+  app: string;
 
   canGoBack?: boolean;
   canGoForward?: boolean;
@@ -43,7 +44,7 @@ export class AddressBar extends React.Component<Properties> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}
+        {this.renderSegments()}/{this.props.app}
       </span>
     );
   }

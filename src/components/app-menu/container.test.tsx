@@ -39,11 +39,11 @@ describe('AppMenuContainer', () => {
     } as RootState);
 
     test('route', () => {
-      const deepestVisitedRoute = 'NetBIOS';
+      const route = 'NetBIOS';
 
-      const state = subject({ zns: { value: { deepestVisitedRoute } }});
+      const state = subject({ zns: { value: { route } }});
 
-      expect(state.route).toEqual(deepestVisitedRoute);
+      expect(state.route).toEqual(route);
     });
 
     test('selectedApp', () => {

@@ -12,7 +12,7 @@ export interface Properties {
 
 export class Container extends React.Component<Properties, {}> {
   static mapState(state: RootState): Partial<Properties> {
-    const { zns: { value: { deepestVisitedRoute: route } }, apps: { selectedApp } } = state;
+    const { zns: { value: { route } }, apps: { selectedApp } } = state;
 
     return { selectedApp, route };
   }

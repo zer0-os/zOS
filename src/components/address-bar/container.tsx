@@ -15,7 +15,7 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
-  app: Apps;
+  app: string;
 }
 
 export class Container extends React.Component<Properties> {

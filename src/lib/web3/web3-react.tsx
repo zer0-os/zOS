@@ -11,13 +11,10 @@
 import React from 'react';
 
 import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core';
-import { NetworkConnector } from '@web3-react/network-connector';
-import { InjectedConnector } from '@web3-react/injected-connector';
 import { providers } from 'ethers';
 
 import { Connectors } from '../../lib/web3';
-import { Chains } from '.';
-import { config } from '../../config';
+import * as walletConnectors from './connectors';
 
 export class ContextProvider extends React.Component {
   getLibrary = (provider) => new providers.Web3Provider(provider);
@@ -33,17 +30,26 @@ export class ContextProvider extends React.Component {
 
 export class ConnectorProvider extends React.Component {
   get(_connectorType: Connectors) {
-    return new NetworkConnector({ urls: { [Chains.Kovan]: config.INFURA_URL } });
+    return walletConnectors.network;
   }
 }
 
 export function inject<T>(ChildComponent: any) {
   const getConnector = (connectorType: Connectors) => {
-    if (connectorType === Connectors.Metamask) {
-      return new InjectedConnector({ supportedChainIds: [Chains.Kovan] });
+    switch (connectorType) {
+      case Connectors.Metamask:
+        return walletConnectors.injected;
+      case Connectors.WalletConnect:
+        return walletConnectors.walletConnect;
+      case Connectors.Coinbase:
+        return walletConnectors.walletLink;
+      case Connectors.Fortmatic:
+        return walletConnectors.fortmatic;
+      case Connectors.Portis:
+        return walletConnectors.portis;
+      default:
+        return walletConnectors.network;
     }
-
-    return new NetworkConnector({ urls: { [Chains.Kovan]: config.INFURA_URL } });
   }
 
   return class ReactWeb3Injector extends React.Component<T> {

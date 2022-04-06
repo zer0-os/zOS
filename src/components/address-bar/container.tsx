@@ -5,6 +5,7 @@ import { History } from 'history';
 import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
+import { Apps } from '../../lib/apps';
 
 interface PublicProperties {
   className?: string;
@@ -14,7 +15,7 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
-  app: string;
+  app: Apps;
 }
 
 export class Container extends React.Component<Properties> {

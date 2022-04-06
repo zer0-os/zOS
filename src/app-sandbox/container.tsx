@@ -1,7 +1,8 @@
 import React from 'react';
 import { RootState } from '../store';
 import { connectContainer } from '../store/redux-container';
-import { AppSandbox, Apps } from '.';
+import { AppSandbox } from '.';
+import { Apps } from '../lib/apps';
 import { ConnectionStatus } from '../lib/web3';
 import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
 
@@ -10,6 +11,8 @@ export interface Properties {
   connectionStatus: ConnectionStatus;
 
   providerService: ProviderService;
+
+  selectedApp: Apps;
 }
 
 interface State {
@@ -22,6 +25,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       route: state.zns.value.route,
       connectionStatus: state.web3.status,
+      selectedApp: state.apps.selectedApp as Apps,
     };
   }
 
@@ -62,7 +66,7 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <AppSandbox
-        selectedApp={Apps.Feed}
+        selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
       />

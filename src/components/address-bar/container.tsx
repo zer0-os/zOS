@@ -5,6 +5,7 @@ import { History } from 'history';
 import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
+import { Apps } from '../../lib/apps';
 
 interface PublicProperties {
   className?: string;
@@ -14,13 +15,14 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
+  app: Apps;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { zns: { value: { route, deepestVisitedRoute } } } = state;
+    const { zns: { value: { route, deepestVisitedRoute } }, apps: { selectedApp: app } } = state;
 
-    return { route, deepestVisitedRoute };
+    return { route, deepestVisitedRoute, app };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -80,6 +82,7 @@ export class Container extends React.Component<Properties> {
       <AddressBar
         className={this.props.className}
         route={this.props.route}
+        app={this.props.app}
         onBack={this.handleBack}
         onForward={this.handleForward}
         canGoBack={!this.isAtRootDomain}

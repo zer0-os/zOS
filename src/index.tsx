@@ -10,6 +10,7 @@ import { createBrowserHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
 
+import { AppMenuContainer } from './components/app-menu/container';
 import { AppSandboxContainer } from './app-sandbox/container';
 
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
@@ -24,9 +25,9 @@ ReactDOM.render(
         <Router history={history}>
           <Web3ReactContextProvider>
             <Route path='/' exact>
-              <Redirect to={`/${config.defaultZnsRoute}`} />
+              <Redirect to={`/${config.defaultZnsRoute}/${config.defaultApp}`} />
             </Route>
-            <Route path='/:znsRoute' component={ZnsRouteConnect} />
+            <Route path='/:znsRoute/:app?' component={ZnsRouteConnect} />
           </Web3ReactContextProvider>
         </Router>
       </EscapeManagerProvider>
@@ -39,7 +40,9 @@ ReactDOM.render((
     <Router history={history}>
       <div className='container'>
         <div className='container__networks'></div>
-        <div className='container__navigation'></div>
+        <div className='container__navigation'>
+          <AppMenuContainer store={store} />
+        </div>
         <div className='container__content'>
           <AppSandboxContainer store={store} />
         </div>

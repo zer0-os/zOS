@@ -73,7 +73,7 @@ export class Container extends React.Component<Properties> {
   }
 
   goToRoute(route) {
-    this.props.history.push(`/${route}`);
+    this.props.history.push(`/${[route, this.props.app].filter(Boolean).join('/')}`);
   }
 
   render() {

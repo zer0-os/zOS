@@ -13,9 +13,8 @@ export const injected = new InjectedConnector({
 });
 
 export const walletConnect = new WalletConnectConnector({
-  rpc: config.INFURA_URL,
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
+  infuraId: config.infuraId,
+  supportedChainIds: [Chains.Kovan],
 });
 
 export const walletLink = new WalletLinkConnector({
@@ -29,7 +28,7 @@ export const fortmatic = new FortmaticConnector({
 });
 
 export const portis = new PortisConnector({
-  dAppId: config.rootDomainId,
+  dAppId: config.portisDAppId,
   networks: [Chains.Kovan],
 });
 

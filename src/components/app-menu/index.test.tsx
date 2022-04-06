@@ -1,7 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-// import { Link } from 'react-router-dom';
-
 import { AppMenu } from '.';
 import { Apps } from '../../lib/apps';
 

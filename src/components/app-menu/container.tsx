@@ -10,10 +10,7 @@ export interface Properties {
   route: string;
 }
 
-interface State {
-}
-
-export class Container extends React.Component<Properties, State> {
+export class Container extends React.Component<Properties, {}> {
   static mapState(state: RootState): Partial<Properties> {
     const { zns: { value: { deepestVisitedRoute: route } }, apps: { selectedApp } } = state;
 
@@ -25,7 +22,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   availableApps() {
-    const availableApps = [Apps.Feed, Apps.Staking];
+    const availableApps = [Apps.Feed];
 
     return Object.keys(PlatformApps).filter(app => availableApps.includes(Apps[app])).map(app => PlatformApps[app]);
   }

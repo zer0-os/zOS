@@ -24,15 +24,12 @@ export class AppMenu extends React.Component<Properties> {
       const { type, name, imageSource } = app;
 
       return (
-        <div>
-          <li key={type} className={className}>
-            <Link to={`/${[this.props.route, type].join('/')}`}>
-              <img src={imageSource} alt={name} />
-              {name}
-
-            </Link>
-          </li>
-        </div>
+        <li key={type} className={className}>
+          <Link to={`/${[this.props.route, type].join('/')}`}>
+            <img src={imageSource} alt={name} />
+            {name}
+          </Link>
+        </li>
       );
     });
   }

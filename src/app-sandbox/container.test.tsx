@@ -13,6 +13,7 @@ describe('AppSandboxContainer', () => {
       route: '',
       connectionStatus: ConnectionStatus.Connected,
       providerService: { get: () => null } as ProviderService,
+      selectedApp: '',
       ...props,
     };
 
@@ -40,9 +41,10 @@ describe('AppSandboxContainer', () => {
   });
 
   it('defaults selected app to feed', () => {
-    const wrapper = subject();
+    const selectedApp = Apps.Feed;
+    const wrapper = subject({ selectedApp });
 
-    expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(Apps.Feed);
+    expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(selectedApp);
   });
 
   it('passes route to sandbox', () => {
@@ -92,6 +94,7 @@ describe('AppSandboxContainer', () => {
         status: ConnectionStatus.Connecting,
         ...(state.web3 || {}),
       },
+      apps: { selectedApp: '', ...(state.apps || {}) },
     } as any);
 
     test('connectionStatus', () => {
@@ -106,6 +109,14 @@ describe('AppSandboxContainer', () => {
       const state = subject({ zns: { value: { route } } } as RootState);
 
       expect(state).toMatchObject({ route });
+    });
+
+    test('selectedApp', () => {
+      const selectedApp = 'MS Paint';
+
+      const state = subject({ apps: { selectedApp } } as RootState);
+
+      expect(state).toMatchObject({ selectedApp });
     });
   });
 });

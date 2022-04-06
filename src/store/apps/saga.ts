@@ -10,4 +10,3 @@ export function* setSelectedApp(action) {
 export function* saga() {
   yield takeLatest(SagaActionTypes.UpdateRoute, setSelectedApp);
 }
-    

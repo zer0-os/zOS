@@ -121,6 +121,7 @@ describe('AddressBarContainer', () => {
       zns: {
         ...(state.zns || {}),
       },
+      apps: { ...(state.apps || {})},
     } as RootState);
 
     test('route', () => {

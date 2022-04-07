@@ -5,6 +5,7 @@ import { History } from 'history';
 import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
+import { routeWithApp } from './util';
 
 interface PublicProperties {
   className?: string;
@@ -73,7 +74,7 @@ export class Container extends React.Component<Properties> {
   }
 
   goToRoute(route) {
-    this.props.history.push(`/${[route, this.props.app].filter(Boolean).join('/')}`);
+    this.props.history.push(routeWithApp(route, this.props.app));
   }
 
   render() {

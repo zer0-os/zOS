@@ -34,13 +34,14 @@ describe('AddressBar', () => {
     expect(segments).toStrictEqual(['food', 'street', 'tacos']);
   });
 
-  it('renders Link to route at segment', () => {
-    const wrapper = subject({ route: 'food.street.tacos' });
+  it('renders Link to route with app at segment', () => {
+    const app = 'feed';
+    const wrapper = subject({ route: 'food.street.tacos', app });
     
     const segments = wrapper.find(Link);
 
-    expect(segments.at(0).prop('to')).toStrictEqual('food');
-    expect(segments.at(1).prop('to')).toStrictEqual('food.street');
+    expect(segments.at(0).prop('to')).toStrictEqual(`/food/${app}`);
+    expect(segments.at(1).prop('to')).toStrictEqual(`/food.street/${app}`);
   });
 
   it('renders route seperators', () => {

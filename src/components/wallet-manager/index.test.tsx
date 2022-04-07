@@ -132,6 +132,20 @@ describe('WalletManager', () => {
     expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
   });
 
+  it('should show list of wallet when status is disconnected', () => {
+    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected });
+
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+
+    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected })
+
+    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
+  });
+
   it('calls update connector when wallet selected', () => {
     const updateConnector = jest.fn();
 

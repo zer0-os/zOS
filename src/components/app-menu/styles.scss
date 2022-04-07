@@ -1,0 +1,38 @@
+.app-menu {
+  font-size: 20px;
+  color: #E6E6E6;
+
+  :link {
+    color: #E6E6E6;
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    list-style-type: none;
+    vertical-align: center;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    padding-right: 14px;
+  }
+
+  &__app {
+    height: 48px;
+    line-height: 48px;
+    padding-left: 10px;
+
+    &.selected {
+      font-weight: 600;
+
+      :link {
+        color: #FFF;
+      }
+    }
+  }
+}

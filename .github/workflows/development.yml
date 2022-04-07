@@ -6,6 +6,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_INFURA_URL: https://kovan.infura.io/v3/number123    
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -22,6 +24,7 @@ jobs:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
       REACT_APP_ROOT_DOMAIN_ID: ${{secrets.ROOT_DOMAIN_ID}}
       REACT_APP_DEFAULT_ZNS_DOMAIN: ${{secrets.DEFAULT_ZNS_DOMAIN}}
+      REACT_APP_DEFAULT_APP: ${{secrets.DEFAULT_APP}}
       REACT_APP_IPFS_BASE_URL: ${{secrets.IPFS_BASE_URL}}
     steps:
       - uses: actions/checkout@v2

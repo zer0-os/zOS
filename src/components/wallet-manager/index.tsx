@@ -72,7 +72,13 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get availableWallets() {
-    return [ WalletType.Metamask ];
+    return [
+      WalletType.Metamask,
+      WalletType.WalletConnect,
+      WalletType.Coinbase,
+      WalletType.Fortmatic,
+      WalletType.Portis,
+    ];
   }
 
   openModal = () => this.setState({ showModal: true });

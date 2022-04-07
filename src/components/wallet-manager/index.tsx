@@ -47,6 +47,13 @@ export class Container extends React.Component<Properties, State> {
       this.closeModal();
       this.setState({ walletSelected: false });
     }
+
+    if (
+      ( this.props.connectionStatus === ConnectionStatus.Disconnected ) &&
+      ( prevProps.connectionStatus !== this.props.connectionStatus )
+    ) {
+      this.setState({ walletSelected: false });
+    }
   }
 
   get showButton() {

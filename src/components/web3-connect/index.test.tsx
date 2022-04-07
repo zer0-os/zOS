@@ -4,6 +4,7 @@ import { Container, Properties } from '.';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { RootState } from '../../store';
+import { promises } from 'dns';
 
 const getWeb3 = (web3 = {}) => ({
   activate: (connector: any) => undefined,
@@ -56,7 +57,7 @@ describe('Web3Connect', () => {
 
     web3Connect.setProps({ currentConnector: Connectors.Portis });
 
-    expect(activate).toHaveBeenCalledWith(connector);
+    expect(activate).toHaveBeenCalledWith(connector, null, true);
   });
 
   it('deactivates old connector when connector changes', () => {
@@ -162,6 +163,28 @@ describe('Web3Connect', () => {
     component.setProps({ web3: getWeb3({ library, active: true }) });
 
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Connected);
+  });
+
+  it('should set connection status to disconnected when activate fail', () => {
+    const setConnectionStatus = jest.fn();
+
+    const web3 = {
+      activate: () => {}
+    } as any;
+
+    jest.spyOn(web3, 'activate').mockImplementation(() => {
+      throw new Error()
+    });
+
+    const web3Connect = subject({
+      setConnectionStatus,
+      web3,
+      currentConnector: Connectors.Infura,
+    });
+
+    web3Connect.setProps({ currentConnector: Connectors.Portis });
+
+    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
   });
 
   it('does not set address if address is empty string', () => {

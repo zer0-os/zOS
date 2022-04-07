@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
+import { routeWithApp } from './util';
+
 import './styles.scss';
 
 export interface Properties {
@@ -32,7 +34,7 @@ export class AddressBar extends React.Component<Properties> {
       return {
         elements: [
           ...elements,
-          <Link key={segment} className='address-bar__route-segment' to={route}>{segment}</Link>
+          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.props.app)}>{segment}</Link>
         ],
         route,
       };

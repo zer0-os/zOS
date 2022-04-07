@@ -168,9 +168,17 @@ describe('Web3Connect', () => {
   it('should set connection status to disconnected when activate fail', () => {
     const setConnectionStatus = jest.fn();
 
+    const web3 = {
+      activate: () => {}
+    } as any;
+
+    jest.spyOn(web3, 'activate').mockImplementation(() => {
+      throw new Error()
+    });
+
     const web3Connect = subject({
       setConnectionStatus,
-      web3: { activate: Promise.reject() } as any,
+      web3,
       currentConnector: Connectors.Infura,
     });
 

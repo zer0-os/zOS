@@ -9,6 +9,7 @@ describe('AddressBarContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       route: '',
+      app: '',
       deepestVisitedRoute: '',
       history: { push: () => undefined },
       ...props,
@@ -21,6 +22,13 @@ describe('AddressBarContainer', () => {
     const wrapper = subject({ route: 'the.cats.pajamas' });
 
     expect(wrapper.find(AddressBar).prop('route')).toBe('the.cats.pajamas');
+  });
+
+  it('passes app to address bar', () => {
+    const app = 'Winamp';
+    const wrapper = subject({ app });
+
+    expect(wrapper.find(AddressBar).prop('app')).toBe(app);
   });
 
   it('passes className to address bar', () => {
@@ -64,13 +72,14 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food',
+      app: 'feed',
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
 
     wrapper.find(AddressBar).simulate('forward');
 
-    expect(push).toHaveBeenCalledWith('/food.tacos');
+    expect(push).toHaveBeenCalledWith('/food.tacos/feed');
   });
 
   it('does not navigate when forward is called if already at deepest route', () => {
@@ -92,13 +101,14 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food.tacos.bean',
+      app: 'staking',
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
 
     wrapper.find(AddressBar).simulate('back');
 
-    expect(push).toHaveBeenCalledWith('/food.tacos');
+    expect(push).toHaveBeenCalledWith('/food.tacos/staking');
   });
 
   it('does not navigate when onBack is called if already at root route', () => {
@@ -121,6 +131,7 @@ describe('AddressBarContainer', () => {
       zns: {
         ...(state.zns || {}),
       },
+      apps: { ...(state.apps || {})},
     } as RootState);
 
     test('route', () => {

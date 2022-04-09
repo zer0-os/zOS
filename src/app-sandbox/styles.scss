@@ -4,6 +4,14 @@
 // This can be thrown away when the sandbox app is worked on
 .app-sandbox {
   width: $width-application-content;
+
+  .error {
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 200px;
+    color: red;
+  }
 }
 
 .feed {

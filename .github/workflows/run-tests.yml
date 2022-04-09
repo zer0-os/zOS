@@ -4,6 +4,8 @@ on:
     branches-ignore:
       - main
       - development
+env:
+  REACT_APP_INFURA_URL: https://kovan.infura.io/v3/number123
 jobs:
   run-tests:
     runs-on: ubuntu-latest

@@ -17,7 +17,7 @@ export interface Properties {
   connectors: { get: (connector: Connectors) => any },
   currentConnector: Connectors,
   web3: {
-    activate: (connector: any) => void,
+    activate: (connector: any, onError?: (error: Error) => void, throwErrors?: boolean) => Promise<any>,
     active: boolean,
     account: string,
     library: providers.Web3Provider,
@@ -57,6 +57,10 @@ export class Container extends React.Component<Properties, State> {
     this.props.updateConnector(Connectors.Infura);
   }
 
+  onActivateError(): void {
+    this.props.setConnectionStatus(ConnectionStatus.Disconnected);
+  }
+
   async activateCurrentConnector() {
     const { web3, connectors, currentConnector } = this.props;
 
@@ -68,8 +72,13 @@ export class Container extends React.Component<Properties, State> {
       // the new one is connected.
       web3.connector.deactivate();
     }
+    const connector = connectors.get(currentConnector);
 
-    web3.activate(connectors.get(currentConnector));
+    try {
+      await web3.activate(connector, null, true)
+    } catch (error) {
+      this.onActivateError();
+    }
   }
 
   syncGlobalsForConnectedStatus() {

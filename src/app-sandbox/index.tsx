@@ -1,12 +1,9 @@
 import React from 'react';
 
+import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 
 import './styles.scss';
-
-export enum Apps {
-  Feed = 'feed',
-}
 
 export interface Properties {
   web3Provider: any;
@@ -16,11 +13,13 @@ export interface Properties {
 
 export class AppSandbox extends React.Component<Properties> {
   renderSelectedApp() {
-    if (this.props.selectedApp === Apps.Feed) {
-      return <FeedApp route={this.props.znsRoute} provider={this.props.web3Provider} />;
+    const { znsRoute, selectedApp: app, web3Provider } = this.props;
+
+    if (app === Apps.Feed) {
+      return <FeedApp route={{znsRoute, app}} provider={web3Provider} />;
     }
 
-    return null;
+    return <div className='error'>Error {app} application has not been implemented.</div>
   }
 
   render() {

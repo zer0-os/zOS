@@ -2,7 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { App } from '@zer0-os/zos-feed';
-import { AppSandbox, Apps } from '.';
+import { AppSandbox } from '.';
+import { Apps } from '../lib/apps';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -28,9 +29,12 @@ describe('AppSandbox', () => {
   });
 
   it('passes route to feed app', () => {
-    const wrapper = subject({ selectedApp: Apps.Feed, znsRoute: 'food.tacos' });
+    const znsRoute = 'food.tacos';
+    const app = Apps.Feed;
 
-    expect(wrapper.find(App).prop('route')).toStrictEqual('food.tacos');
+    const wrapper = subject({ selectedApp: app, znsRoute });
+
+    expect(wrapper.find(App).prop('route')).toStrictEqual({ app, znsRoute });
   });
 
   it('passes provider to feed app', () => {

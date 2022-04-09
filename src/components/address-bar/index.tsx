@@ -2,11 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
+import { routeWithApp } from './util';
+
 import './styles.scss';
 
 export interface Properties {
   className?: string;
   route: string;
+  app: string;
 
   canGoBack?: boolean;
   canGoForward?: boolean;
@@ -31,7 +34,7 @@ export class AddressBar extends React.Component<Properties> {
       return {
         elements: [
           ...elements,
-          <Link key={segment} className='address-bar__route-segment' to={route}>{segment}</Link>
+          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.props.app)}>{segment}</Link>
         ],
         route,
       };
@@ -43,7 +46,7 @@ export class AddressBar extends React.Component<Properties> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}
+        {this.renderSegments()}/{this.props.app}
       </span>
     );
   }

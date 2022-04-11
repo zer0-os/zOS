@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { routeWithApp } from './util';
+import { apps } from '../../lib/apps';
 
 import './styles.scss';
 
@@ -46,7 +47,7 @@ export class AddressBar extends React.Component<Properties> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}/{this.props.app}
+        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app].name}</span>
       </span>
     );
   }

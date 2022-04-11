@@ -1,19 +1,31 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
-import {render, fireEvent, waitFor, screen} from '@testing-library/react'
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import {
+  render,
+  waitFor,
+  screen,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+  EthAddress,
+  Button,
+  WalletSelectModal,
+  WalletType,
+} from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 
 describe('WalletManager', () => {
+  const defaultProps = {
+    updateConnector: () => undefined,
+  };
   const subject = (props: any = {}) => {
     const allProps = {
-      updateConnector: () => undefined,
+      ...defaultProps,
       ...props,
     };
 
-    return render(<Container {...allProps} />);
+    return shallow(<Container {...allProps} />);
   };
 
   it('renders connect button', () => {
@@ -81,41 +93,25 @@ describe('WalletManager', () => {
     ]);
   });
 
-  it('passes isConnecting of true when connection status is Connecting', () => {
-    const wrapper = subject();
+  it('passes isConnecting of true when connection status is Connecting', async () => {
+    const user = userEvent.setup();
 
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
+    render(
+      <Container
+        {...defaultProps}
+        currentAddress=''
+        currentConnector={Connectors.Metamask}
+        connectionStatus={ConnectionStatus.Connecting}
+      />
+    );
+    const button = await screen.findByTestId('connect-button');
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
-  });
+    user.click(button);
 
-  it('passes isConnecting of true when wallet selected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
-
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
-
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
-  });
-
-  it('passes isConnecting of false when wallet selected and status becomes connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected });
-
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
-
-    // assert pre-condition
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
-
-    // re-open modal, as it will be closed at this point
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-
-    // expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
+    await waitFor(() => {
+      const element = screen.getByText('Connecting...');
+      expect(element).toBeInTheDocument();
+    });
   });
 
   it('closes wallet select modal onClose', () => {
@@ -127,35 +123,6 @@ describe('WalletManager', () => {
     expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
   });
 
-  it.only('closes wallet select modal when status is connected', async () => {
-    subject({ connectionStatus: ConnectionStatus.Disconnected });
-
-    const connectButton = await screen.getByTestId('custom-element');
-
-    fireEvent.click(connectButton);
-    // straight to Connected from Disconnected. we should not force this
-    // to pass through Connecting
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected })
-    setTimeout(() => {
-      expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
-    }, 3000);
-    
-  });
-
-  it('should show list of wallet when status is disconnected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected });
-
-
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
-
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected })
-
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
-  });
-
   it('calls update connector when wallet selected', () => {
     const updateConnector = jest.fn();
 
@@ -165,47 +132,5 @@ describe('WalletManager', () => {
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
-  });
-
-  describe.skip('mapState', () => {
-    const subject = (state: RootState) => Container.mapState(state);
-    const getState = (state: any = {}) => ({
-      ...state,
-      web3: getWeb3({
-        ...(state.web3 || {}),
-      }),
-    } as RootState);
-
-    const getWeb3 = (web3: any = {}) => ({
-      status: ConnectionStatus.Disconnected,
-      ...(web3 || {}),
-      value: {
-        address: '0x0',
-        connector: Connectors.None,
-        ...(web3.value || {}),
-      },
-    });
-
-    test('status', () => {
-      const state = subject(getState({ web3: getWeb3({ status: ConnectionStatus.Connected }) }));
-
-      expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
-    });
-
-    test('currentAddress', () => {
-      const address = '0x0000000000000000000000000000000000000002';
-
-      const state = subject(getState({ web3: getWeb3({ value: { address } }) }));
-
-      expect(state.currentAddress).toEqual(address);
-    });
-
-    test('currentConnector', () => {
-      const currentConnector = Connectors.Fortmatic;
-
-      const state = subject(getState({ web3: getWeb3({ value: { connector: currentConnector } }) }));
-
-      expect(state.currentConnector).toEqual(Connectors.Fortmatic);
-    });
   });
 });

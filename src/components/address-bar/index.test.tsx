@@ -3,11 +3,13 @@ import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 
 import { AddressBar } from '.';
+import { Apps } from '../../lib/apps';
 
 describe('AddressBar', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       route: '',
+      app: Apps.Feed,
       ...props,
     };
 

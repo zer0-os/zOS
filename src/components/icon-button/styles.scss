@@ -1,6 +1,7 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
 .icon-button {
+  cursor: pointer;
   background: none;
   border: none;
   display: inline-block;

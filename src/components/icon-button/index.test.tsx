@@ -8,16 +8,33 @@ describe('IconButton', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       getIcon: () => <path />,
+      onClick: () => undefined,
       ...props,
     };
 
     return shallow(<Component {...allProps} />);
   };
 
+  it('adds className to main element', () => {
+    const wrapper = subject({ className: 'tacos' });
+
+    expect(wrapper.find('.icon-button').hasClass('tacos')).toBe(true);
+  });
+
   it('adds class to svg element', () => {
     const wrapper = subject({ icon: Icons.ChevronLeft });
 
     expect(wrapper.find('svg.icon-button__icon').hasClass('zui-chevron-left')).toBe(true);
+  });
+
+  it('propagates click', () => {
+    const onClick = jest.fn();
+
+    const wrapper = subject({ onClick });
+
+    wrapper.find('button').simulate('click');
+
+    expect(onClick).toHaveBeenCalledOnce();
   });
 
   it('adds icon to svg element', () => {

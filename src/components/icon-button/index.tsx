@@ -7,12 +7,14 @@ import './styles.scss';
 
 interface PublicProperties {
   icon: Icons;
+  className?: string;
+
+  onClick: () => void;
 }
 
 export interface Properties extends PublicProperties {
   getIcon: (icon: Icons) => any;
 }
-
 
 export class Component extends React.Component<Properties> {
   get iconClass() {
@@ -25,11 +27,11 @@ export class Component extends React.Component<Properties> {
 
   render() {
     return (
-      <div className='icon-button'>
+      <button className={classNames('icon-button', this.props.className)} onClick={this.props.onClick}>
         <svg className={this.iconClass} fill="none" xmlns="http://www.w3.org/2000/svg">
           {this.icon}
         </svg>
-      </div>
+      </button>
     );
   }
 }

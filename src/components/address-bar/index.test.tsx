@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { Apps } from '../../lib/apps';
+import { Icons } from '../icon-button/icons';
+import { IconButton } from '../icon-button';
 
 describe('AddressBar', () => {
   const subject = (props: any = {}) => {
@@ -62,6 +64,22 @@ describe('AddressBar', () => {
     const wrapper = subject({ canGoForward: true });
 
     expect(wrapper.find('.address-bar__navigation-button').at(1).hasClass('is-actionable')).toBe(true);
+  });
+
+  it('adds correct icon for back button', () => {
+    const wrapper = subject();
+
+    const backButton = wrapper.find(IconButton).at(0);
+
+    expect(backButton.prop('icon')).toBe(Icons.ChevronLeft);
+  });
+
+  it('adds correct icon for forward button', () => {
+    const wrapper = subject();
+
+    const backButton = wrapper.find(IconButton).at(1);
+
+    expect(backButton.prop('icon')).toBe(Icons.ChevronRight);
   });
 
   it('fires onBack when back button is clicked', () => {

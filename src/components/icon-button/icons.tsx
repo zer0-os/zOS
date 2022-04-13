@@ -14,28 +14,15 @@ const icons = {
   ),
   [Icons.Sun]: (
     <>
-    <g filter="url(#filter0_d_2287_10517)">
-    <path d="M18.0003 21.3337C19.8413 21.3337 21.3337 19.8413 21.3337 18.0003C21.3337 16.1594 19.8413 14.667 18.0003 14.667C16.1594 14.667 14.667 16.1594 14.667 18.0003C14.667 19.8413 16.1594 21.3337 18.0003 21.3337Z" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M18 10.667V12.0003" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M18 24V25.3333" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.8135 12.8135L13.7601 13.7601" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M22.2402 22.2402L23.1869 23.1869" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M10.667 18H12.0003" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M24 18H25.3333" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.8135 23.1869L13.7601 22.2402" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M22.2402 13.7601L23.1869 12.8135" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-    <defs>
-    <filter id="filter0_d_2287_10517" x="0" y="0" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-    <feOffset/>
-    <feGaussianBlur stdDeviation="5"/>
-    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0"/>
-    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2287_10517"/>
-    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2287_10517" result="shape"/>
-    </filter>
-    </defs>
+      <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 1V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 21V23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.22021 4.21997L5.64021 5.63997" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18.3599 18.36L19.7799 19.78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 12H3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12H23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.22021 19.78L5.64021 18.36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18.3599 5.63997L19.7799 4.21997" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </>
   ),
   [Icons.Moon]: (

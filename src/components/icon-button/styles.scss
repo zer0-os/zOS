@@ -1,6 +1,15 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
+.icon-button {
+  background: none;
+  border: none;
+  display: inline-block;
+}
+
 .icon-button__icon {
+  width: 24px;
+  height: 24px;
+
   &.zui-chevron-left,
   &.zui-chevron-right {
     path {
@@ -11,10 +20,6 @@
   &.zui-sun {
     path {
       stroke: theme.$font-color-primary;
-    }
-
-    path:first-child {
-      fill: theme.$font-color-secondary;
     }
   }
 

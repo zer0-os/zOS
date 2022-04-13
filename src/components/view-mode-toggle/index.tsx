@@ -1,11 +1,14 @@
 import React from 'react';
+import classNames from 'classnames';
+
 import { RootState } from '../../store';
 import { setViewMode } from '../../store/theme';
 import { connectContainer } from '../../store/redux-container';
 
 import { ViewModes } from '../../shared-components/theme-engine';
 
-import DarkModeToggle from 'react-dark-mode-toggle';
+import { Icons } from '../icon-button/icons';
+import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
@@ -31,18 +34,23 @@ export class Container extends React.Component<Properties> {
     return this.props.viewMode === ViewModes.Dark;
   }
 
-  handleChange = (isDarkMode) => {
-    this.props.setViewMode(isDarkMode ? ViewModes.Dark : ViewModes.Light);
+  get icon() {
+    return this.isDarkMode ? Icons.Moon : Icons.Sun;
+  }
+
+  get className() {
+    return classNames('view-mode-toggle', {
+      dark: this.isDarkMode,
+      light: !this.isDarkMode,
+    });
+  }
+
+  handleClick = () => {
+    this.props.setViewMode(this.isDarkMode ? ViewModes.Light : ViewModes.Dark);
   }
 
   render() {
-    return (
-      <DarkModeToggle
-        className='view-mode-toggle'
-        checked={this.isDarkMode}
-        onChange={this.handleChange}
-      />
-    );
+    return <IconButton className={this.className} icon={this.icon} onClick={this.handleClick} />;
   }
 }
 

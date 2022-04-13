@@ -1,0 +1,26 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
+.icon-button__icon {
+  &.zui-chevron-left,
+  &.zui-chevron-right {
+    path {
+      fill: theme.$font-color-primary;
+    }
+  }
+
+  &.zui-sun {
+    path {
+      stroke: theme.$font-color-primary;
+    }
+
+    path:first-child {
+      fill: theme.$font-color-secondary;
+    }
+  }
+
+  &.zui-moon {
+    path {
+      stroke: theme.$font-color-primary;
+    }
+  }
+}

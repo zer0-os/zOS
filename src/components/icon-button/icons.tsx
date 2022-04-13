@@ -15,15 +15,15 @@ const icons = {
   [Icons.Sun]: (
     <>
     <g filter="url(#filter0_d_2287_10517)">
-    <path d="M18.0003 21.3337C19.8413 21.3337 21.3337 19.8413 21.3337 18.0003C21.3337 16.1594 19.8413 14.667 18.0003 14.667C16.1594 14.667 14.667 16.1594 14.667 18.0003C14.667 19.8413 16.1594 21.3337 18.0003 21.3337Z" fill="#9D9D9D" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M18 10.667V12.0003" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M18 24V25.3333" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.8135 12.8135L13.7601 13.7601" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M22.2402 22.2402L23.1869 23.1869" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M10.667 18H12.0003" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M24 18H25.3333" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.8135 23.1869L13.7601 22.2402" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M22.2402 13.7601L23.1869 12.8135" stroke="#CECECE" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18.0003 21.3337C19.8413 21.3337 21.3337 19.8413 21.3337 18.0003C21.3337 16.1594 19.8413 14.667 18.0003 14.667C16.1594 14.667 14.667 16.1594 14.667 18.0003C14.667 19.8413 16.1594 21.3337 18.0003 21.3337Z" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 10.667V12.0003" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 24V25.3333" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.8135 12.8135L13.7601 13.7601" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M22.2402 22.2402L23.1869 23.1869" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M10.667 18H12.0003" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 18H25.3333" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.8135 23.1869L13.7601 22.2402" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M22.2402 13.7601L23.1869 12.8135" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     <defs>
     <filter id="filter0_d_2287_10517" x="0" y="0" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

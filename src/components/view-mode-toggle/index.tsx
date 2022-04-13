@@ -12,8 +12,13 @@ import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
-export interface Properties {
+interface PublicProperties {
+  className?: string;
+}
+
+export interface Properties extends PublicProperties {
   viewMode: ViewModes;
+
   setViewMode: (viewMode: ViewModes) => void;
 }
 
@@ -39,7 +44,7 @@ export class Container extends React.Component<Properties> {
   }
 
   get className() {
-    return classNames('view-mode-toggle', {
+    return classNames('view-mode-toggle', this.props.className, {
       dark: this.isDarkMode,
       light: !this.isDarkMode,
     });
@@ -54,4 +59,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ViewModeToggle = connectContainer<{}>(Container);
+export const ViewModeToggle = connectContainer<PublicProperties>(Container);

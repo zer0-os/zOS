@@ -17,6 +17,12 @@ describe('ViewModeToggle', () => {
     return shallow(<Container {...allProps} />);
   };
 
+  it('adds className', () => {
+    const wrapper = subject({ className: 'tacos' });
+
+    expect(wrapper.find('.view-mode-toggle').hasClass('tacos')).toBe(true);
+  });
+
   it('adds class for Dark mode', () => {
     const wrapper = subject({ viewMode: ViewModes.Dark });
 

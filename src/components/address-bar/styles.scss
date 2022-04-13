@@ -28,22 +28,18 @@
 
   &__navigation-button {
     color: theme.$accent-color-mid;
-    background-color: theme.$accent-color-mid;
-
-    background: none;
-    border: none;
-    display: inline-block;
-
-    &-icon {
-      width: 6px;
-      height: 10px;
-    }
-
-    path {
-      fill: theme.$accent-color-mid;
-    }
+    cursor: none;
 
     padding: 10px 5px;
+
+    .icon-button__icon {
+      width: 6px;
+      height: 10px;
+
+      path {
+        fill: theme.$accent-color-mid;
+      }
+    }
 
     &.is-actionable {
       cursor: pointer;

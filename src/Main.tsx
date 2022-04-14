@@ -11,19 +11,20 @@ import './main.scss';
 export class Main extends React.Component {
   render() {
     return (
-      <div className='container main'>
-        <div className='container__networks'></div>
-        <div className='container__network'>
-          <img src='https://res.cloudinary.com/fact0ry-dev/image/upload/v1647373698/zero-assets/zer0-os/network-identifier-wilder-world.png' alt='Wilder World' />
+      <div className='app-main'>
+        <div className='container main'>
+          <div className='container__left-sidebar'>
+            <div className='container__networks'></div>
+          </div>
+          <div className='container__content'>
+            <AddressBarContainer className='main__address-bar' />
+          </div>
+          <div className='container__sidekick'>
+            <ViewModeToggle />
+            <WalletManager />
+          </div>
+          <ThemeEngine />
         </div>
-        <div className='container__content'>
-          <AddressBarContainer className='main__address-bar' />
-        </div>
-        <div className='container__sidekick'>
-          <ViewModeToggle />
-          <WalletManager />
-        </div>
-        <ThemeEngine />
       </div>
     );
   }

@@ -9,6 +9,13 @@
   align-items: center;
 
   pointer-events: auto;
+
+  &__view-mode-toggle {
+    padding: 0;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+  }
 }
 
 .main__address-bar {

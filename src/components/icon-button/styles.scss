@@ -1,0 +1,32 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
+.icon-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: inline-block;
+}
+
+.icon-button__icon {
+  width: 24px;
+  height: 24px;
+
+  &.zui-chevron-left,
+  &.zui-chevron-right {
+    path {
+      fill: theme.$font-color-primary;
+    }
+  }
+
+  &.zui-sun {
+    path {
+      stroke: theme.$font-color-primary;
+    }
+  }
+
+  &.zui-moon {
+    path {
+      stroke: theme.$font-color-primary;
+    }
+  }
+}

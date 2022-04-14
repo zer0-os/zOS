@@ -14,13 +14,14 @@ export class Main extends React.Component {
       <div className='app-main'>
         <div className='container main'>
           <div className='container__left-sidebar'>
-            <div className='container__networks'></div>
+            <div className='container__networks'>
+              <ViewModeToggle className='main__view-mode-toggle' />
+            </div>
           </div>
           <div className='container__content'>
             <AddressBarContainer className='main__address-bar' />
           </div>
           <div className='container__sidekick'>
-            <ViewModeToggle />
             <WalletManager />
           </div>
           <ThemeEngine />

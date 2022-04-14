@@ -1,6 +1,7 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
 .address-bar {
+  background-color: theme.$background-color-primary;
   border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
   padding: 3px;

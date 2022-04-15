@@ -22,9 +22,9 @@ export class Container extends React.Component<Properties, {}> {
   }
 
   availableApps() {
-    const availableApps = [Apps.Feed];
+    const availableApps = [Apps.Feed] as string[];
 
-    return Object.keys(PlatformApps).filter(app => availableApps.includes(Apps[app])).map(app => PlatformApps[app]);
+    return Object.keys(PlatformApps).filter(key => availableApps.includes(key)).map(key => PlatformApps[key]);
   }
 
   render() {

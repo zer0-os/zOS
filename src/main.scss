@@ -9,9 +9,23 @@
   align-items: center;
 
   pointer-events: auto;
+
+  &__view-mode-toggle {
+    padding: 0;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+  }
 }
 
 .main__address-bar {
   min-width: $width-application-content;
 }
 
+.app-main {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}

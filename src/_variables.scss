@@ -1,8 +1,8 @@
-$width-world-navigation: 56px;
-
+$left-content-space: 32px;
 $width-application-navigation: 220px;
 $width-application-content: 736px;
-$width-sidekick: 16rem;
+$width-world-navigation: calc((100vw - $width-application-content - $left-content-space) / 2);
+$width-sidekick: calc((100vw - $width-application-content) / 2);
 $height-main: 65px;
 
 $width-screen-medium: 1440px;

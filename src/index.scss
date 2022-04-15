@@ -36,22 +36,25 @@ A, BUTTON {
 .container {
   display: flex;
 
-  &__networks {
+  &__left-sidebar {
+    display: flex;
+    
     flex: 0 0 $width-world-navigation;
 
-    border: 1px solid theme.$primary-border-color;
-    border-top: 0;
-    border-bottom: 0;
-    border-left: 0;
+    margin-right: $left-content-space;
+
+    @include for-screen-large() {
+      justify-content: space-between;
+    }
+  }
+
+  &__networks {
+    width: 56px;
+    border-right: 1px solid theme.$primary-border-color;
   }
 
   &__network, &__navigation {
     flex: 0 0 $width-application-navigation;
-
-    border: 1px solid theme.$primary-border-color;
-    border-top: 0;
-    border-bottom: 0;
-    border-left: 0;
   }
 
   &__content {
@@ -68,8 +71,10 @@ A, BUTTON {
 
     display: flex;
     align-items: flex-end;
+    justify-content: flex-end;
 
     background-color: theme.$background-color-sidekick;
+    padding-right: 16px;
   }
 
   &.main {
@@ -114,4 +119,23 @@ hr.glow:after, hr.glow:before {
 
 .glow-text {
   text-shadow: 0 0 10px var(--glow-text-color);
+}
+
+.app-sandbox {
+  &__left-sidebar {
+    position: fixed;
+    flex: 0 0 220px;
+  }
+
+  &__navigation {
+    width: 200px;
+    border-right: 1px solid theme.$primary-border-color;
+  }
+
+  &__navigation-content {
+    position: sticky;
+    top: 0;
+
+    padding-left: 18px;
+  }
 }

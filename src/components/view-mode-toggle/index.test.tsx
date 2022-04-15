@@ -2,9 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import DarkModeToggle from 'react-dark-mode-toggle';
 import { Container } from '.';
 import { ViewModes } from '../../shared-components/theme-engine';
+import { Icons } from '../icon-button/icons';
+import { IconButton } from '../icon-button';
 
 describe('ViewModeToggle', () => {
   const subject = (props: any = {}) => {
@@ -16,38 +17,50 @@ describe('ViewModeToggle', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('renders dark mode toggle', () => {
-    const wrapper = subject();
+  it('adds className', () => {
+    const wrapper = subject({ className: 'tacos' });
 
-    expect(wrapper.find(DarkModeToggle).exists()).toBe(true);
+    expect(wrapper.find('.view-mode-toggle').hasClass('tacos')).toBe(true);
   });
 
-  it('passes true for checked when in Dark mode', () => {
+  it('adds class for Dark mode', () => {
     const wrapper = subject({ viewMode: ViewModes.Dark });
 
-    expect(wrapper.find(DarkModeToggle).prop('checked')).toBe(true);
+    expect(wrapper.find('.view-mode-toggle').hasClass('dark')).toBe(true);
   });
 
-  it('passes false for checked when in Light mode', () => {
+  it('adds class for Light mode', () => {
     const wrapper = subject({ viewMode: ViewModes.Light });
 
-    expect(wrapper.find(DarkModeToggle).prop('checked')).toBe(false);
+    expect(wrapper.find('.view-mode-toggle').hasClass('light')).toBe(true);
   });
 
-  it('sets view mode to Dark onChange of true', () => {
-    const setViewMode = jest.fn();
-    const wrapper = subject({ setViewMode });
+  it('uses moon icon when in Dark mode', () => {
+    const wrapper = subject({ viewMode: ViewModes.Dark });
 
-    wrapper.find(DarkModeToggle).simulate('change', true);
+    expect(wrapper.find(IconButton).prop('icon')).toBe(Icons.Moon);
+  });
+
+  it('uses sun icon when in Light mode', () => {
+    const wrapper = subject({ viewMode: ViewModes.Light });
+
+    expect(wrapper.find(IconButton).prop('icon')).toBe(Icons.Sun);
+  });
+
+  it('sets view mode to Dark onClick when currently Light', () => {
+    const setViewMode = jest.fn();
+    const wrapper = subject({ viewMode: ViewModes.Light, setViewMode });
+
+    wrapper.find(IconButton).simulate('click');
 
     expect(setViewMode).toHaveBeenCalledWith(ViewModes.Dark);
   });
 
-  it('sets view mode to Light onChange of false', () => {
+  it('sets view mode to Light when currently Dark onClick', () => {
     const setViewMode = jest.fn();
-    const wrapper = subject({ setViewMode });
+    const wrapper = subject({ viewMode: ViewModes.Dark, setViewMode });
 
-    wrapper.find(DarkModeToggle).simulate('change', false);
+    wrapper.find(IconButton).simulate('click');
 
     expect(setViewMode).toHaveBeenCalledWith(ViewModes.Light);
   });

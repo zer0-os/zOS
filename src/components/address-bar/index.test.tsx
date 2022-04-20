@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { Apps } from '../../lib/apps';
-import { Icons } from '../icon-button/icons';
-import { IconButton } from '../icon-button';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
 describe('AddressBar', () => {
   const subject = (props: any = {}) => {

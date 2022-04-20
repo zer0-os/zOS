@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { routeWithApp } from './util';
 import { apps } from '../../lib/apps';
 
-import { IconButton } from '../icon-button';
-import { Icons } from '../icon-button/icons';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
 

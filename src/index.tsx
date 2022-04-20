@@ -45,7 +45,7 @@ ReactDOM.render((
           <div className='app-sandbox__navigation'>
             <div className='app-sandbox__navigation-content'>
               <div className='container__network'>
-                <WilderWideLogo />
+                <WilderWideLogo className="logo-wilder-wide"/>
               </div>
               <div className='container__navigation'>
                 <AppMenuContainer store={store} />

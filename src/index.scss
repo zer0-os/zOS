@@ -130,6 +130,10 @@ hr.glow:after, hr.glow:before {
   &__navigation {
     width: 200px;
     border-right: 1px solid theme.$primary-border-color;
+
+    @include for-left-collapse() {
+      width: 54px;
+    }
   }
 
   &__navigation-content {
@@ -138,4 +142,9 @@ hr.glow:after, hr.glow:before {
 
     padding-left: 18px;
   }
+}
+
+.logo-wilder-wide {
+  position: relative;
+  left: -16px;
 }

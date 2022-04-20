@@ -1,3 +1,6 @@
+@import '../../variables';
+
+
 .app-menu {
   font-size: 20px;
   color: #E6E6E6;
@@ -31,6 +34,12 @@
 
       :link {
         color: #FFF;
+      }
+    }
+
+    &-name {
+      @include for-left-collapse() {
+        display: none;
       }
     }
   }

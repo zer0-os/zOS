@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.4.3",
     "@reduxjs/toolkit": "^1.7.1",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.20.37",

@@ -48,12 +48,12 @@ A, BUTTON {
     }
   }
 
-  &__networks {
+  &__navigation-world {
     width: 56px;
     border-right: 1px solid theme.$primary-border-color;
   }
 
-  &__network, &__navigation {
+  &__network, &__navigation-platform {
     flex: 0 0 $width-application-navigation;
   }
 
@@ -79,8 +79,7 @@ A, BUTTON {
 
   &.main {
     .container {
-      &__networks, &__network {
-        height: $height-main;
+      &__navigation-world, &__network {
       }
     }
   }
@@ -127,7 +126,7 @@ hr.glow:after, hr.glow:before {
     flex: 0 0 220px;
   }
 
-  &__navigation {
+  &__navigation-platform {
     width: 200px;
     border-right: 1px solid theme.$primary-border-color;
 

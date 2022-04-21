@@ -4,6 +4,7 @@
 @import 'variables';
 
 .main {
+  display: flex;
   position: fixed;
   width: 100%;
   height: 100vh;
@@ -12,6 +13,40 @@
   z-index: 10;
 
   pointer-events: auto;
+
+  &__navigation {
+    display: flex;
+    
+    flex: 0 0 $width-world-navigation;
+
+    margin-right: $left-content-space;
+
+    @include for-screen-large() {
+      justify-content: space-between;
+    }
+  }
+
+  &__navigation-world {
+    width: 56px;
+    border-right: 1px solid theme.$primary-border-color;
+  }
+
+  &__navigation-platform {
+    width: 200px;
+    border-right: 1px solid theme.$primary-border-color;
+
+    @include for-left-collapse() {
+      width: 54px;
+    }
+  }
+
+  &__logo {
+    margin-left: 2px;
+  }
+
+  &__app-menu-container {
+    padding-left: 18px;
+  }
 
   &__view-mode-toggle {
     padding: 0;

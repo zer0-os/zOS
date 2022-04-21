@@ -48,11 +48,6 @@ A, BUTTON {
     }
   }
 
-  &__navigation-world {
-    width: 56px;
-    border-right: 1px solid theme.$primary-border-color;
-  }
-
   &__network, &__navigation-platform {
     flex: 0 0 $width-application-navigation;
   }
@@ -134,9 +129,4 @@ hr.glow:after, hr.glow:before {
 
     padding-left: 18px;
   }
-}
-
-.logo-wilder-wide {
-  position: relative;
-  left: -16px;
 }

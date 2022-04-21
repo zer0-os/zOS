@@ -13,19 +13,15 @@ import './main.scss';
 export class Main extends React.Component {
   render() {
     return (
-      <div className='container main'>
-        <div className='container__left-sidebar'>
-          <div className='container__navigation-world'>
+      <div className='main'>
+        <div className='main__navigation'>
+          <div className='main__navigation-world'>
             <ViewModeToggle className='main__view-mode-toggle' />
           </div>
-          <div className='app-sandbox__navigation-platform'>
-            <div className='app-sandbox__navigation-content'>
-              <div className='container__network'>
-                <WilderWideLogo className="logo-wilder-wide"/>
-              </div>
-              <div className='container__navigation'>
-                <AppMenuContainer />
-              </div>
+          <div className='main__navigation-platform'>
+            <WilderWideLogo className="main__logo" />
+            <div className='main__app-menu-container'>
+              <AppMenuContainer />
             </div>
           </div>
         </div>

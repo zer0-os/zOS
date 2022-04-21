@@ -4,9 +4,12 @@
 @import 'variables';
 
 .main {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 10;
 
   pointer-events: auto;
 
@@ -20,12 +23,4 @@
 
 .main__address-bar {
   min-width: $width-application-content;
-}
-
-.app-main {
-  position: fixed;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: 10;
 }

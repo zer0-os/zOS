@@ -13,31 +13,29 @@ import './main.scss';
 export class Main extends React.Component {
   render() {
     return (
-      <div className='app-main'>
-        <div className='container main'>
-          <div className='container__left-sidebar'>
-            <div className='container__navigation-world'>
-              <ViewModeToggle className='main__view-mode-toggle' />
-            </div>
-            <div className='app-sandbox__navigation-platform'>
-              <div className='app-sandbox__navigation-content'>
-                <div className='container__network'>
-                  <WilderWideLogo className="logo-wilder-wide"/>
-                </div>
-                <div className='container__navigation'>
-                  <AppMenuContainer />
-                </div>
+      <div className='container main'>
+        <div className='container__left-sidebar'>
+          <div className='container__navigation-world'>
+            <ViewModeToggle className='main__view-mode-toggle' />
+          </div>
+          <div className='app-sandbox__navigation-platform'>
+            <div className='app-sandbox__navigation-content'>
+              <div className='container__network'>
+                <WilderWideLogo className="logo-wilder-wide"/>
+              </div>
+              <div className='container__navigation'>
+                <AppMenuContainer />
               </div>
             </div>
           </div>
-          <div className='container__content'>
-            <AddressBarContainer className='main__address-bar' />
-          </div>
-          <div className='container__sidekick'>
-            <WalletManager />
-          </div>
-          <ThemeEngine />
         </div>
+        <div className='container__content'>
+          <AddressBarContainer className='main__address-bar' />
+        </div>
+        <div className='container__sidekick'>
+          <WalletManager />
+        </div>
+        <ThemeEngine />
       </div>
     );
   }

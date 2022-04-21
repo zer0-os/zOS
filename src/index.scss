@@ -76,13 +76,6 @@ A, BUTTON {
     background-color: theme.$background-color-sidekick;
     padding-right: 16px;
   }
-
-  &.main {
-    .container {
-      &__navigation-world, &__network {
-      }
-    }
-  }
 }
 
 

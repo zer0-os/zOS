@@ -9,6 +9,7 @@ $width-screen-medium: 1440px;
 $width-screen-large: 1600px;
 $width-screen-xl: 1602px;
 $width-screen-xxl: 1920px;
+$breakpoint-collapse-menu: 1294px;
 
 @mixin for-screen-medium {
   @media (max-width: $width-screen-medium - 1) { @content; }
@@ -24,4 +25,8 @@ $width-screen-xxl: 1920px;
 
 @mixin for-screen-xxl {
   @media (min-width: $width-screen-xxl) { @content; }
+}
+
+@mixin for-left-collapse {
+  @media (max-width: $breakpoint-collapse-menu) { @content; }
 }

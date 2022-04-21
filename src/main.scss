@@ -12,10 +12,11 @@
   left: 0;
   z-index: 10;
 
-  pointer-events: auto;
+  pointer-events: none;
 
   &__navigation {
     display: flex;
+    pointer-events: auto;
     
     flex: 0 0 $width-world-navigation;
 
@@ -40,6 +41,29 @@
     }
   }
 
+  &__content {
+    width: $width-application-content;
+
+    display: flex;
+    justify-content: center;
+  }
+
+  &__address-bar {
+    pointer-events: auto;
+    min-width: $width-application-content;
+  }
+
+  &__sidekick {
+    pointer-events: auto;
+    flex-basis: $width-sidekick;
+    
+    display: flex;
+    justify-content: flex-end;
+
+    background-color: theme.$background-color-sidekick;
+    padding-right: 16px;
+  }
+
   &__logo {
     margin-left: 2px;
   }
@@ -54,18 +78,4 @@
     bottom: 16px;
     left: 16px;
   }
-  
-  &__sidekick {
-    flex-basis: $width-sidekick;
-    
-    display: flex;
-    justify-content: flex-end;
-
-    background-color: theme.$background-color-sidekick;
-    padding-right: 16px;
-  }
-}
-
-.main__address-bar {
-  min-width: $width-application-content;
 }

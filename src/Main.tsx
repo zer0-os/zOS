@@ -25,7 +25,7 @@ export class Main extends React.Component {
             </div>
           </div>
         </div>
-        <div className='container__content'>
+        <div className='main__content'>
           <AddressBarContainer className='main__address-bar' />
         </div>
         <div className='main__sidekick'>

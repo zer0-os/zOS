@@ -21,6 +21,9 @@ $secondary-border-color: var(--secondary-border-color, #3C3C3C);
 $address-bar-border-color-outer: var(--address-bar-border-color-outer, #23142F);
 $address-bar-border-color-inner: var(--address-bar-border-color-inner, #472E5B);
 
+$address-bar-background-color-outer: var(--address-bar-background-color-outer, #0A0A0A);
+$address-bar-background-color-inner: var(--address-bar-background-color-inner, #1A1022);
+
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);
 $font-color-secondary: var(--font-color-secondary);
@@ -52,3 +55,7 @@ $underlay-background: var(--underlay-background, rgba(0,0,0,0.95));
 $glow-text-color: var(--glow-text-color, hsla(0,0%,100%,0.7));
 $glow-background-color: var(--glow-background-color, #6e10bb);
 $glow-transition-background-color: var(--glow-transition-background-color, #e0baff);
+$glow-transition-background-color: var(--glow-transition-background-color, #e0baff);
+
+$filter-app-menu-image: var(--filter-app-menu-image);
+$font-color-app-menu: var(--font-color-app-menu);

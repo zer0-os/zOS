@@ -62,13 +62,6 @@ A, BUTTON {
   &__sidekick {
     flex-basis: $width-sidekick;
 
-    align-items: center;
-
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-
-    background-color: theme.$background-color-sidekick;
     padding-right: 16px;
   }
 }

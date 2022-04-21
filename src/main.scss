@@ -54,6 +54,16 @@
     bottom: 16px;
     left: 16px;
   }
+  
+  &__sidekick {
+    flex-basis: $width-sidekick;
+    
+    display: flex;
+    justify-content: flex-end;
+
+    background-color: theme.$background-color-sidekick;
+    padding-right: 16px;
+  }
 }
 
 .main__address-bar {

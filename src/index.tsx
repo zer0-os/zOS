@@ -38,11 +38,7 @@ ReactDOM.render(
 ReactDOM.render((
     <Router history={history}>
       <div className='app-sandbox-wrapper'>
-        <div className='app-sandbox-wrapper__left-spacer' />
-        <div className='app-sandbox-wrapper__content'>
-          <AppSandboxContainer store={store} />
-        </div>
-        <div className='app-sandbox-wrapper__right-spacer' />
+        <AppSandboxContainer store={store} />
       </div>
     </Router>
   ),

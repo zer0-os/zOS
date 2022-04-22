@@ -37,25 +37,14 @@ A, BUTTON {
   display: flex;
   justify-content: center;
 
-  &__left-spacer {
-    display: flex;
-    flex: 0 0 auto;
-    width: $width-world-navigation;
+  .app-sandbox {
+    position: relative;
+    width: $width-application-content;
 
-    margin-right: $left-content-space;
-  }
-
-  &__content {
-    flex: 1 0 $width-application-content;
-
-    display: flex;
-    justify-content: center;
-  }
-
-  &__right-spacer {
-    flex-basis: $width-sidekick;
-
-    padding-right: 16px;
+    @include for-static-layout() {
+      position: absolute;
+      left: $width-collapsed-navigation;
+    }
   }
 }
 

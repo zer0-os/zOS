@@ -33,23 +33,16 @@ A, BUTTON {
   color: inherit;
 }
 
-.container {
+.app-sandbox-wrapper {
   display: flex;
+  justify-content: center;
 
-  &__left-sidebar {
+  &__left-spacer {
     display: flex;
-    
-    flex: 0 0 $width-world-navigation;
+    flex: 0 0 auto;
+    width: $width-world-navigation;
 
     margin-right: $left-content-space;
-
-    @include for-screen-large() {
-      justify-content: space-between;
-    }
-  }
-
-  &__network, &__navigation-platform {
-    flex: 0 0 $width-application-navigation;
   }
 
   &__content {
@@ -59,13 +52,12 @@ A, BUTTON {
     justify-content: center;
   }
 
-  &__sidekick {
+  &__right-spacer {
     flex-basis: $width-sidekick;
 
     padding-right: 16px;
   }
 }
-
 
 #root {
   transition: background animation.$animation-duration-double ease-out;
@@ -99,27 +91,4 @@ hr.glow:after, hr.glow:before {
 
 .glow-text {
   text-shadow: 0 0 10px var(--glow-text-color);
-}
-
-.app-sandbox {
-  &__left-sidebar {
-    position: fixed;
-    flex: 0 0 220px;
-  }
-
-  &__navigation-platform {
-    width: 200px;
-    border-right: 1px solid theme.$primary-border-color;
-
-    @include for-left-collapse() {
-      width: 54px;
-    }
-  }
-
-  &__navigation-content {
-    position: sticky;
-    top: 0;
-
-    padding-left: 18px;
-  }
 }

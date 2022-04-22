@@ -37,13 +37,12 @@ ReactDOM.render(
 
 ReactDOM.render((
     <Router history={history}>
-      <div className='container'>
-        <div className='container__left-sidebar'>
-        </div>
-        <div className='container__content'>
+      <div className='app-sandbox-wrapper'>
+        <div className='app-sandbox-wrapper__left-spacer' />
+        <div className='app-sandbox-wrapper__content'>
           <AppSandboxContainer store={store} />
         </div>
-        <div className='container__sidekick'></div>
+        <div className='app-sandbox-wrapper__right-spacer' />
       </div>
     </Router>
   ),

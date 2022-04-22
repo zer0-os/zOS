@@ -9,9 +9,7 @@ import { Router, Redirect, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
-import { ReactComponent as WilderWideLogo } from './assets/images/wilder-wide-logo.svg';
 
-import { AppMenuContainer } from './components/app-menu/container';
 import { AppSandboxContainer } from './app-sandbox/container';
 
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
@@ -37,26 +35,15 @@ ReactDOM.render(
   document.getElementById('platform')
 );
 
+// The reason for the separate react app is to keep the sandbox isolated from the main app.
+// Everything contained within this render tree should be limited to what is necessary to
+// load and render the child apps. Anything exposed in this tree should also be done in
+// such a way that it won't interfere with the loaded app. (eg. pass the store directly
+// to components rather than using a provider.)
 ReactDOM.render((
     <Router history={history}>
-      <div className='container'>
-        <div className='container__left-sidebar'>
-          <div className='container__networks'></div>
-          <div className='app-sandbox__navigation'>
-            <div className='app-sandbox__navigation-content'>
-              <div className='container__network'>
-                <WilderWideLogo className="logo-wilder-wide"/>
-              </div>
-              <div className='container__navigation'>
-                <AppMenuContainer store={store} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className='container__content'>
-          <AppSandboxContainer store={store} />
-        </div>
-        <div className='container__sidekick'></div>
+      <div className='app-sandbox-wrapper'>
+        <AppSandboxContainer store={store} />
       </div>
     </Router>
   ),

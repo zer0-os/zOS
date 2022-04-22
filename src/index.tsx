@@ -35,6 +35,11 @@ ReactDOM.render(
   document.getElementById('platform')
 );
 
+// The reason for the separate react app is to keep the sandbox isolated from the main app.
+// Everything contained within this render tree should be limited to what is necessary to
+// load and render the child apps. Anything exposed in this tree should also be done in
+// such a way that it won't interfere with the loaded app. (eg. pass the store directly
+// to components rather than using a provider.)
 ReactDOM.render((
     <Router history={history}>
       <div className='app-sandbox-wrapper'>

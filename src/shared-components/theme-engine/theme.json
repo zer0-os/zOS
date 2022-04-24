@@ -16,11 +16,10 @@
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
     "backgroundColorSidekick": "transparent",
 
-    "primaryBorderColor": "#232323",
+    "primaryBorderColor": "#E6E6E6",
     "secondaryBorderColor": "#21152D",
 
     "addressBarBorderColorOuter": "#F9F9F9",
-    "addressBarBackgroundColorOuter": "#F9F9F9",
     "addressBarBorderColorInner": "#EFEFEF",
     "addressBarBackgroundColorInner": "#F2F2F2",
 
@@ -31,8 +30,7 @@
     "fontColorTertiary": "#FFFFFF",
     "fontColorTertiaryHover": "#F5F5F5",
 
-    "fontColorAppMenu": "background: linear-gradient(0deg, #404040, #404040),linear-gradient(0deg, #808080, #808080)",
-    "filterAppMenuImage": "brightness(0%)",
+    "fontColorAppMenu": "#6C6C6C",
 
     "accentColor": "#B14EFF",
     "accentColorMid": "#6A3991",
@@ -85,7 +83,6 @@
 
     "addressBarBorderColorOuter": "#23142F",
     "addressBarBorderColorInner": "#472E5B",
-    "addressBarBackgroundColorOuter": "#0A0A0A",
     "addressBarBackgroundColorInner": "#1A1022",
 
     "fontColorPrimary": "#FFFFFF",
@@ -96,7 +93,6 @@
     "fontColorTertiaryHover": "#000000",
 
     "fontColorAppMenu": "#E6E6E6",
-    "filterAppMenuImage": "brightness(100%)",
 
     "accentColor": "#B14EFF",
     "accentColorMid": "#6A3991",

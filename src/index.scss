@@ -35,9 +35,11 @@ A, BUTTON {
 
 .container {
   display: flex;
+  align-items: flex-start;
 
   &__left-sidebar {
     display: flex;
+    min-height: 100vh;
     
     flex: 0 0 $width-world-navigation;
 
@@ -62,6 +64,8 @@ A, BUTTON {
 
     display: flex;
     justify-content: center;
+
+    margin-top: 8px;
   }
 
   &__sidekick {
@@ -75,6 +79,7 @@ A, BUTTON {
 
     background-color: theme.$background-color-sidekick;
     padding-right: 16px;
+    margin-top: 8px;
   }
 
   &.main {

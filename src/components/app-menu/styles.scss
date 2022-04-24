@@ -39,10 +39,6 @@
       }
     }
 
-    &-image {
-      filter: theme.$filter-app-menu-image;
-    }
-
     &-name {
       @include for-left-collapse() {
         display: none;

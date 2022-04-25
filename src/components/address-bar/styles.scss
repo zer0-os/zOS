@@ -6,10 +6,10 @@
   border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
   padding: 3px;
-
+  
   display: flex;
   align-items: center;
-
+  
   &__inner {
     border: 1px solid theme.$address-bar-border-color-inner;
     border-radius: 24px;
@@ -21,7 +21,7 @@
   
   &__protocol,
   &__route {
-    color: theme.$font-color-tertiary;
+    color: theme.$font-color-primary;
   }
 
   &__navigation {

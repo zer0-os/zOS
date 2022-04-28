@@ -18,7 +18,7 @@ interface ZNSDropdownState {
   results: any[];
 }
 
-export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdownState> {
+export class ZNSDropdown extends React.Component<ZNSDropdownProperties, ZNSDropdownState> {
   constructor(props) {
     super(props);
 
@@ -45,7 +45,7 @@ export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdown
   }
 
   onSelect = item => {
-    this.props.onSelect(this.state.results.find(p => p.id === item.id));
+    this.props.onSelect(this.state.results.find(p => p.id === item.id).znsRoute);
   }
 
   render() {
@@ -56,7 +56,6 @@ export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdown
         itemContainerClassName={this.props.itemContainerClassName}
         findMatches={this.findMatches}
         onSelect={this.onSelect}
-        autoFocus
       />
     );
   }

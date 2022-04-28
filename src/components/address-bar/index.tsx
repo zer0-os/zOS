@@ -8,7 +8,7 @@ import { apps } from '../../lib/apps';
 import { IconButton } from '../icon-button';
 import { Icons } from '../icon-button/icons';
 
-import { Search } from '../search';
+import { ZNSDropdown } from '../zns-dropdown';
 
 import './styles.scss';
 
@@ -110,7 +110,7 @@ export class AddressBar extends React.Component<Properties, State> {
         {AddressBarMode.Search === mode &&
           <div className='address-bar__inner-search-container'>
             <div className='address-bar__inner-search'>
-              <Search api={this.props.api} onSelect={this.onSelect} />
+              <ZNSDropdown api={this.props.api} onSelect={this.onSelect} />
             </div>
           </div>
         }

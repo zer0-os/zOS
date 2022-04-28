@@ -6,31 +6,23 @@ import { newIndexForKey } from '../../lib/keyboard-search';
 
 import './styles.scss';
 
-const NEW_ITEM_ID = 'autocompleteNewItem';
-
 export let config = { debounceRate: 250 };
 
 export interface AutocompleteItem {
   id: string;
   value: string;
   summary?: string;
-  imageUrl?: string;
   searchTerm?: string; // Internal use
   route: string;
 }
 
 export interface Properties {
-  ignoreCase?: boolean;
   value: string;
   placeholder?: string;
-  readonly?: boolean;
   className?: string;
   itemContainerClassName?: string;
   findMatches: (term: string) => Promise<AutocompleteItem[]>;
   onSelect: (item: AutocompleteItem) => void;
-  createItem?: (term: string) => Promise<AutocompleteItem>;
-  autoFocus?: boolean;
-  clearOnSelection?: boolean;
 }
 
 interface State {
@@ -38,7 +30,6 @@ interface State {
   currentSelection: string;
   currentFocusIndex: number;
   matches: AutocompleteItem[];
-  staticOptions: AutocompleteItem[];
   searchComplete: boolean;
   inProgress: boolean;
 }
@@ -55,7 +46,6 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       value: this.props.value || '',
       currentSelection: this.props.value || '',
       matches: [],
-      staticOptions: [],
       searchComplete: false,
       inProgress: false,
       currentFocusIndex: 0,
@@ -82,16 +72,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
   }
 
-  getMatcher = (testValue: string) => {
-    if (this.props.ignoreCase) {
-      return (item: AutocompleteItem) => item.value.toLowerCase() === testValue.toLowerCase();
-    }
-
-    return (item: AutocompleteItem) => item.value === testValue;
-  }
-
   onChange = async event => {
-    console.log('onChange');
     const searchTerm = event.target.value;
     this.setState({ value: searchTerm });
 
@@ -106,20 +87,9 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     });
 
     const matches = await this.performSearch(searchTerm);
-console.log('matches', matches);
-    const newItemName = searchTerm.trim();
-    const staticOptions = [];
-    if (this.props.createItem && newItemName !== '') {
-      const matcher = this.getMatcher(newItemName);
-      const searchMatchFound = matches.filter(matcher).length > 0;
-      if (!searchMatchFound) {
-        staticOptions.push({ id: NEW_ITEM_ID, value: `Create '${newItemName}'`, searchTerm: newItemName });
-      }
-    }
 
     this.setState({
       matches,
-      staticOptions,
       searchComplete: true,
       inProgress: false,
       currentFocusIndex: 0,
@@ -127,26 +97,11 @@ console.log('matches', matches);
   }
 
   onSelect = async item => {
-    if (item.id === NEW_ITEM_ID) {
-      item = await this.props.createItem(item.searchTerm);
-    }
-    // Some components may have already un-mounted this component after `createItem`
-    // has completed (see src/componens/add-person-modal/index.tsx).
-    // React will yell if you attempt to set state on an unmounted component, so
-    // we need to track this state here.
-    //
-    // If the companont has aready been unmounted, then we can assume that everything
+    // If the component has aready been unmounted, then we can assume that everything
     // has been "closed". The state will be reset when it's re-constructed.
     if (this._isMounted) {
-      let newValue;
-      if (this.props.clearOnSelection) {
-        newValue = '';
-      } else {
-        newValue = item.value || '';
-      }
-
       this.setState({
-        value: newValue,
+        value: item.value || '',
         currentSelection: item.value,
         searchComplete: false,
         inProgress: false,
@@ -161,7 +116,6 @@ console.log('matches', matches);
     if (this._isMounted) {
       this.setState({
         matches: [],
-        staticOptions: [],
         searchComplete: false,
         inProgress: false,
         currentFocusIndex: 0,
@@ -183,7 +137,7 @@ console.log('matches', matches);
   }
 
   onKeyDown = (e) => {
-    const allOptions = [...this.state.matches, ...this.state.staticOptions];
+    const allOptions = [...this.state.matches];
 
     if (!allOptions.length || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter')) {
       return;
@@ -248,13 +202,8 @@ console.log('matches', matches);
   render() {
     let dropdown;
     if (this.state.searchComplete || this.state.inProgress) {
-      const allOptions = [...this.state.matches, ...this.state.staticOptions];
+      const allOptions = [...this.state.matches];
       const focusedItem = allOptions[this.state.currentFocusIndex] || {};
-
-      let staticOptions;
-      if (this.state.searchComplete && this.state.staticOptions.length) {
-        staticOptions = this.staticOptions(this.state.staticOptions, focusedItem);
-      }
 
       this.closeOnParentScroll();
 
@@ -270,7 +219,6 @@ console.log('matches', matches);
         results = (
           <>
             {this.state.searchComplete && this.results(this.state.matches, focusedItem)}
-            {staticOptions}
           </>
         );
       }
@@ -298,10 +246,8 @@ console.log('matches', matches);
           className='autocomplete-dropdown__input'
           value={this.state.value}
           placeholder={this.props.placeholder}
-          readOnly={this.props.readonly}
           onChange={this.onChange}
           onBlur={this.abortChange}
-          autoFocus={this.props.autoFocus || false}
           onKeyDown={this.onKeyDown}
         />
         {dropdown}
@@ -322,19 +268,6 @@ console.log('matches', matches);
     }
 
     return content;
-  }
-
-  staticOptions(items, focusedItem) {
-    return (
-      <div className='autocomplete-dropdown__static-options'>
-        <hr />
-        <div className='autocomplete-dropdown__items' >
-          {items.map(item => (
-            <Result isFocused={item.id === focusedItem.id} item={item} onSelect={this.onSelect} key={item.id} />
-          ))}
-        </div>
-      </div>
-    );
   }
 
   private elementHasYScroll(closestScrollParent: HTMLElement) {

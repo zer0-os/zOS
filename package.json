@@ -2,6 +2,8 @@
   "name": "zOS",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
+  "main": "./public/electron.js",
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@reduxjs/toolkit": "^1.7.1",
@@ -42,15 +44,21 @@
     "lint": "eslint src",
     "build": "craco build",
     "test": "craco test --env=node",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
+    "electron:package:mac": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "craco build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "craco build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
   "browserslist": {
     "production": [
+      "last 1 electron version",
       ">0.2%",
       "not dead",
       "not op_mini all"
     ],
     "development": [
+      "last 1 electron version",
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
@@ -60,8 +68,34 @@
     "@types/enzyme": "^3.10.10",
     "@types/react-portal": "^4.0.4",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
+    "concurrently": "^7.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^18.1.0",
+    "electron-builder": "^23.0.3",
+    "electronmon": "^2.0.2",
     "enzyme": "^3.11.0",
     "jest-extended": "^1.2.0",
-    "redux-saga-test-plan": "^4.0.4"
+    "redux-saga-test-plan": "^4.0.4",
+    "wait-on": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.electron.zos",
+    "productName": "zOS",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
   }
 }

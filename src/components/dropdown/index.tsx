@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AutocompleteDropdown from 'components/autocomplete-dropdown';
+import { AutocompleteDropdown } from '../autocomplete-dropdown';
 
 interface ZNSRecord {
   id: string;
@@ -10,7 +10,7 @@ interface ZNSRecord {
 
 interface ZNSDropdownProperties {
   itemContainerClassName?: string;
-  ZNSApi: {search: (term: string) => any};
+  api: any; //{ search: (term: string) => any };
   onSelect: (item: ZNSRecord) => void;
 }
 
@@ -19,8 +19,6 @@ interface ZNSDropdownState {
 }
 
 export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdownState> {
-  DEFAULT_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/fact0ry-themes/anon.jpg';
-
   constructor(props) {
     super(props);
 
@@ -28,17 +26,22 @@ export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdown
   }
 
   findMatches = async (term: string) => {
-    const results = await this.props.ZNSApi.search(term);
+    const api = await this.props.api;
+
+    const results = await api.search(term);
 
     this.setState({ results });
 
-    return results.map(ZNS => ({
-      id: ZNS.id,
-      value: ZNS.name,
-      summary: ZNS.summary || '',
-      type: ZNS.type,
-      imageUrl: ZNS.ZNSImage || this.DEFAULT_IMAGE_URL,
-    }));
+    return results.map(result => {
+      const { id, title, description, znsRoute } = result;
+
+      return {
+        id,
+        value: title,
+        summary: description,
+        route: znsRoute,
+      }
+    });
   }
 
   onSelect = item => {
@@ -49,7 +52,7 @@ export class Dropdown extends React.Component<ZNSDropdownProperties, ZNSDropdown
     return (
       <AutocompleteDropdown
         value=''
-        placeholder='Type to search'
+        placeholder='Search by ZERO name address (zNA)'
         itemContainerClassName={this.props.itemContainerClassName}
         findMatches={this.findMatches}
         onSelect={this.onSelect}

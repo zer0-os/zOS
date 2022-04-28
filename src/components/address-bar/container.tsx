@@ -6,6 +6,8 @@ import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { routeWithApp } from './util';
+import { client } from '@zer0-os/zos-zns';
+import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
 
 interface PublicProperties {
   className?: string;
@@ -16,6 +18,8 @@ export interface Properties extends PublicProperties {
   route: string;
   deepestVisitedRoute: string;
   app: string;
+
+  providerService: ProviderService;
 }
 
 export class Container extends React.Component<Properties> {
@@ -27,6 +31,10 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {};
+  }
+
+  znsClient() {
+    return client.get(this.props.providerService.get());
   }
 
   get isAtRootDomain() {
@@ -73,7 +81,7 @@ export class Container extends React.Component<Properties> {
     this.goToRoute(this.getNextRoute());
   }
 
-  goToRoute(route) {
+  goToRoute = route => {
     this.props.history.push(routeWithApp(route, this.props.app));
   }
 
@@ -87,12 +95,14 @@ export class Container extends React.Component<Properties> {
         onForward={this.handleForward}
         canGoBack={!this.isAtRootDomain}
         canGoForward={this.canNavigateDeeper}
+        api={this.znsClient()}
+        onSelect={this.goToRoute}
       />
     );
   }
 }
 
-const ConnectedContainer = connectContainer<any>(Container);
+const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Container));
 
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();

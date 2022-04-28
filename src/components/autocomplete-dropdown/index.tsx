@@ -2,16 +2,11 @@ import classNames from 'classnames';
 import * as debouncePromise from 'es6-promise-debounce';
 import React from 'react';
 
-import { newIndexForKey } from 'src/lib/keyboard-search';
-import { DelayedLoadingIndicator } from 'components/loading/delayed-loading-indicator';
-import { Loading } from 'components/loading';
-import { Icon } from 'components/icon';
-
-const NEW_ITEM_ID = 'autocompleteNewItem';
+import { newIndexForKey } from '../../lib/keyboard-search';
 
 import './styles.scss';
-import { Portal } from 'components/portal';
-import ProfileImage from 'components/profile-image';
+
+const NEW_ITEM_ID = 'autocompleteNewItem';
 
 export let config = { debounceRate: 250 };
 
@@ -19,9 +14,9 @@ export interface AutocompleteItem {
   id: string;
   value: string;
   summary?: string;
-  type?: 'person' | 'company';
   imageUrl?: string;
   searchTerm?: string; // Internal use
+  route: string;
 }
 
 export interface Properties {
@@ -48,7 +43,7 @@ interface State {
   inProgress: boolean;
 }
 
-export default class AutocompleteDropdown extends React.Component<Properties, State> {
+export class AutocompleteDropdown extends React.Component<Properties, State> {
   performSearch;
   private _isMounted: boolean = false;
   private anchorElement: HTMLElement;
@@ -96,6 +91,7 @@ export default class AutocompleteDropdown extends React.Component<Properties, St
   }
 
   onChange = async event => {
+    console.log('onChange');
     const searchTerm = event.target.value;
     this.setState({ value: searchTerm });
 
@@ -110,6 +106,7 @@ export default class AutocompleteDropdown extends React.Component<Properties, St
     });
 
     const matches = await this.performSearch(searchTerm);
+console.log('matches', matches);
     const newItemName = searchTerm.trim();
     const staticOptions = [];
     if (this.props.createItem && newItemName !== '') {
@@ -272,7 +269,6 @@ export default class AutocompleteDropdown extends React.Component<Properties, St
       if (!this.state.inProgress) {
         results = (
           <>
-            <div className='autocomplete-dropdown__gradient-mask top' />
             {this.state.searchComplete && this.results(this.state.matches, focusedItem)}
             {staticOptions}
           </>
@@ -280,22 +276,20 @@ export default class AutocompleteDropdown extends React.Component<Properties, St
       }
 
       dropdown = (
-        <Portal isOpened>
-          <div
-            className={classNames('autocomplete-dropdown__item-container', this.props.itemContainerClassName, this.props.className)}
-            style={position}
-          >
-            {this.state.inProgress &&
-              <DelayedLoadingIndicator>
-                <div className='autocomplete-dropdown-loading'>
-                  <div className='autocomplete-dropdown-loading__image'><Loading isLoading /></div>
-                  <div className='autocomplete-dropdown-loading__text'>Searching...</div>
-                </div>
-              </DelayedLoadingIndicator>
+        <div
+          className={classNames('autocomplete-dropdown__item-container', this.props.itemContainerClassName, this.props.className)}
+          style={position}
+        >
+          <div className='autocomplete-dropdown__results'>
+            <div className='autocomplete-dropdown__items' >
+
+            { this.state.inProgress &&
+              <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>Searching...</div>
             }
             {results}
+            </div>
           </div>
-        </Portal>
+        </div>
       );
     }
     return (
@@ -327,14 +321,7 @@ export default class AutocompleteDropdown extends React.Component<Properties, St
       ));
     }
 
-    return (
-      <div className='autocomplete-dropdown__results'>
-        <div className='autocomplete-dropdown__items' >
-          {content}
-        </div>
-        <div className='autocomplete-dropdown__gradient-mask bottom' />
-      </div>
-    );
+    return content;
   }
 
   staticOptions(items, focusedItem) {
@@ -364,40 +351,13 @@ class Result extends React.Component<{ item: AutocompleteItem, isFocused: boolea
   }
 
   render() {
+    const { item: { value, summary, route } } = this.props;
     return (
       <div className={classNames('autocomplete-dropdown-item', { 'is-focused': this.props.isFocused })} onMouseDown={this.onSelect}>
-        {this.image()}
-        <div className='autocomplete-dropdown-item__text'>
-          {this.value()}
-          {this.summary()}
+        <div className='autocomplete-dropdown-item__text' title={summary}>
+          <span className='autocomplete-dropdown-item__value'>{value}</span>&nbsp;
+          <span className='autocomplete-dropdown-item__route'>{route}</span>
         </div>
-        {this.icon()}
-      </div>
-    );
-  }
-
-  image() {
-    if (!this.props.item.imageUrl) return;
-
-    return <ProfileImage imageUrl={this.props.item.imageUrl} className='autocomplete-dropdown-item__image' size='small' />;
-  }
-
-  value() {
-    return <div className='autocomplete-dropdown-item__value'>{this.props.item.value}</div>;
-  }
-
-  summary() {
-    if (!this.props.item.summary) return;
-
-    return <div className='autocomplete-dropdown-item__description'>{this.props.item.summary}</div>;
-  }
-
-  icon() {
-    if (!this.props.item.type) return;
-
-    return (
-      <div className='autocomplete-dropdown-item__icon'>
-        <Icon iconClass={this.props.item.type === 'company' ? 'briefcase' : 'user'} />
       </div>
     );
   }

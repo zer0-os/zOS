@@ -1,5 +1,8 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
+$width-navigation: 32px;
+$width-inner: 672px;
+
 .address-bar {
   background-color: theme.$background-color-primary;
   border: 1px solid theme.$address-bar-border-color-outer;
@@ -9,21 +12,55 @@
   display: flex;
   align-items: center;
 
-  &__inner {
+  &__inner, &__inner-search {
     border: 1px solid theme.$address-bar-border-color-inner;
-    border-radius: 24px;
+    border-radius: 20px;
 
     padding: 10px;
 
     flex: 1 1 auto;
+
+    display: flex;
+
+    min-width: $width-inner;
+    color: rgba(108, 108, 108, 1);
+
+    .global-search {
+      width: 100%;
+    }
   }
   
   &__protocol,
   &__route {
     color: theme.$font-color-tertiary;
+
+    align-items: flex-start;
+  }
+
+  &__search-trigger-region {
+    flex: 1 1 auto;
+    cursor: pointer;
+  }
+
+  &__inner-search-container {
+    position: relative;
+    top: 0px;
+    padding: 0;
+    margin: 0;
+    height: 40.4px;
+    width: 600px;
+  }
+
+  &__inner-search {
+    padding: 10px 0;
+    verflow-y: scroll;
+    background-color: theme.$background-color-primary;
+    position: absolute;
+    width: 100%;
   }
 
   &__navigation {
+    min-width: $width-navigation;
     padding: 0 5px;
   }
 

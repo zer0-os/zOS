@@ -1,121 +1,163 @@
-@import 'app/theme.scss';
+@use '../../shared-components/theme-engine/theme' as theme;
 
-@mixin autocomplete-item-gradient($from) {
-  background: linear-gradient($from, transparent, $dialog-background-color);
-}
+$z-index-dropdown: 100;
+$font-size: 12px;
 
 .autocomplete-dropdown {
-  position: relative;
-  @include input-wrap-background;
+  &-item {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFF;
+    padding: 8px;
 
-  background: linear-gradient(to right, $background-color-primary-new, transparent);
-}
-
-.autocomplete-dropdown__results {
-  position: relative;
-
-  .autocomplete-dropdown__items {
-    max-height: 245px;
-    padding-bottom: 25px;
-  }
-}
-
-.autocomplete-dropdown__gradient-mask {
-  position: absolute;
-  right: 0;
-  left: 0;
-  pointer-events: none;
-
-  &.top {
-    @include autocomplete-item-gradient(to top);
-
-    top: 0;
-    height: 30px;
-    margin-left: -2px;
-    margin-right: -2px;
-    z-index: 1;
+    &__route {
+      color: #52CBFF;
+    }
   }
 
-  &.bottom {
-    @include autocomplete-item-gradient(to bottom);
+  &__input {
+    width: 98%;
+    background: inherit;
+    color: #FFF;
+    border: 0px solid;
+    outline: none;
+    padding: 0 0 0 10px;
 
-    bottom: 0;
-    height: 40px;
+    font-size: 16px;
+    ::placeholder {
+      color: rgba(108, 108, 108, 1);
+    }
+  }
+
+  &__results {
+    margin: 16px 0 0 10px;
+    overflow-y: auto;
+    max-height: 95vh;
   }
 }
 
 .autocomplete-dropdown__item-container {
-  position: absolute;
-
-  border: 2px solid $dialog-border-color;
-  border-top: none;
-  margin-top: 8px;
-  padding: 10px 0;
-
-  background-color: $dialog-background-color;
-
-  z-index: $z-index-dropdown;
+  //border: solid 1px blue;
+  //position: absolute;
+  //background-color: black;
+  //margin-left: -12px;
 }
 
-.autocomplete-dropdown__items {
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+//@mixin autocomplete-item-gradient($from) {
+//  background: linear-gradient($from, transparent, theme.$dialog-background-color);
+//}
+//
+//.autocomplete-dropdown {
+//  position: relative;
+//
+//  background: linear-gradient(to right, theme.$background-color-primary, transparent);
+//}
 
-.autocomplete-dropdown-item,
-.autocomplete-dropdown-loading {
-  @include item-font;
-  color: $font-color-secondary;
-  padding: 2px 5px 2px 15px;
-}
+//.autocomplete-dropdown__results {
+//  position: relative;
+//
+//  .autocomplete-dropdown__items {
+//    max-height: 245px;
+//    padding-bottom: 25px;
+//  }
+//}
 
-.autocomplete-dropdown-item {
-  cursor: pointer;
-
-  &.is-focused,
-  &:hover,
-  *.active {
-    color: $font-color-secondary-hover;
-    background: $background-color-secondary-hover;
-  }
-}
-.autocomplete-dropdown__no-results {
-  padding: 2px 5px 2px 15px;
-  font-size: $font-size;
-}
-
-.autocomplete-dropdown__input {
-  width: 100%;
-}
-
-.autocomplete-dropdown__static-options {
-  color: blue;
-  > hr {
-    border: 0;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(to left, rgba(79, 79, 79, 0.1) 0%, rgba(79, 79, 79, 0.6) 15%, rgba(79, 79, 79, 0.6) 85%, rgba(79, 79, 79, 0.1) 100%);
-  }
-}
-
-.autocomplete-dropdown-loading {
-  display: flex;
-
-  &__image {
-    height: 30px;
-    width: 30px;
-    margin-right: 10px;
-
-    img {
-      height:100%;
-      width: 100%;
-      object-fit: cover;
-    }
-  }
-
-  &__text {
-    height: 30px;
-    line-height: 30px;
-  }
-}
+//.autocomplete-dropdown__gradient-mask {
+//  position: absolute;
+//  right: 0;
+//  left: 0;
+//  pointer-events: none;
+//
+//  &.top {
+//    @include autocomplete-item-gradient(to top);
+//
+//    top: 0;
+//    height: 30px;
+//    margin-left: -2px;
+//    margin-right: -2px;
+//    z-index: 1;
+//  }
+//
+//  &.bottom {
+//    @include autocomplete-item-gradient(to bottom);
+//
+//    bottom: 0;
+//    height: 40px;
+//  }
+//}
+//
+//.autocomplete-dropdown__item-container {
+//  position: absolute;
+//
+//  border: 2px solid theme.$dialog-border-color;
+//  border-top: none;
+//  margin-top: 8px;
+//  padding: 10px 0;
+//
+//  background-color: theme.$dialog-background-color;
+//
+//  z-index: $z-index-dropdown;
+//}
+//
+//.autocomplete-dropdown__items {
+//  position: relative;
+//  overflow-y: auto;
+//  overflow-x: hidden;
+//}
+//
+//.autocomplete-dropdown-item,
+//.autocomplete-dropdown-loading {
+//  color: theme.$font-color-secondary;
+//  padding: 2px 5px 2px 15px;
+//}
+//
+//.autocomplete-dropdown-item {
+//  cursor: pointer;
+//
+//  &.is-focused,
+//  &:hover,
+//  *.active {
+//    color: theme.$font-color-secondary-hover;
+//    background: theme.$background-color-secondary-hover;
+//  }
+//}
+//.autocomplete-dropdown__no-results {
+//  padding: 2px 5px 2px 15px;
+//  font-size: $font-size;
+//}
+//
+//.autocomplete-dropdown__input {
+//  width: 100%;
+//}
+//
+//.autocomplete-dropdown__static-options {
+//  color: blue;
+//  > hr {
+//    border: 0;
+//    width: 100%;
+//    height: 1px;
+//    background: linear-gradient(to left, rgba(79, 79, 79, 0.1) 0%, rgba(79, 79, 79, 0.6) 15%, rgba(79, 79, 79, 0.6) 85%, rgba(79, 79, 79, 0.1) 100%);
+//  }
+//}
+//
+//.autocomplete-dropdown-loading {
+//  display: flex;
+//
+//  &__image {
+//    height: 30px;
+//    width: 30px;
+//    margin-right: 10px;
+//
+//    img {
+//      height:100%;
+//      width: 100%;
+//      object-fit: cover;
+//    }
+//  }
+//
+//  &__text {
+//    height: 30px;
+//    line-height: 30px;
+//  }
+//}

@@ -20,7 +20,7 @@
     "@web3-react/walletconnect-connector": "^6.2.13",
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "^0.5.3",
-    "@zer0-os/zos-feed": "^1.0.0",
+    "@zer0-os/zos-feed": "^1.2.0",
     "classnames": "^2.3.1",
     "ethers": "^5.5.2",
     "global": "^4.4.0",
@@ -79,8 +79,9 @@
     "wait-on": "^6.0.1"
   },
   "build": {
-    "appId": "com.electron.zos",
-    "productName": "zOS",
+    "appId": "Fact0ry.Zer0",
+    "copyright": "Copyright © Fact0ry",
+    "productName": "Zer0",
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -89,7 +90,8 @@
       "buildResources": "public"
     },
     "mac": {
-      "target": "dmg"
+      "icon": "src/assets/images/zero-white-icon.icns",
+      "target": ["dmg", "zip"]
     },
     "win": {
       "target": "nsis"

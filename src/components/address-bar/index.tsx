@@ -49,7 +49,7 @@ export class AddressBar extends React.Component<Properties> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app].name}</span>
+        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app]?.name}</span>
       </span>
     );
   }

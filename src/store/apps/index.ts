@@ -5,13 +5,13 @@ import {
 } from '@reduxjs/toolkit';
 
 import { config } from '../../config';
-import { apps, PlatformApp } from '../../lib/apps';
+import { apps, PlatformApp, Apps } from '../../lib/apps';
 
 export enum SagaActionTypes {
   UpdateApp = 'app/saga/updateApp',
 }
 
-const setSelectedApp = createAction<string>(SagaActionTypes.UpdateApp);
+const setSelectedApp = createAction<Apps>(SagaActionTypes.UpdateApp);
 
 export interface AppsState {
   selectedApp: PlatformApp,

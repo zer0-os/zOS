@@ -6,10 +6,11 @@ import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
+import { Apps } from './lib/apps';
 
 export interface Properties {
   setRoute: (route: string) => void;
-  setSelectedApp: (selectedApp: string) => void;
+  setSelectedApp: (selectedApp: Apps) => void;
 
   match: { params: { znsRoute: string, app: string } };
 }
@@ -47,7 +48,7 @@ export class Container extends React.Component<Properties> {
   }
 
   extractAppFromProps(props: Properties = this.props) {
-    return props.match.params.app;
+    return props.match.params.app as Apps;
   }
   
   render() {

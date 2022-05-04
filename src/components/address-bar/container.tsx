@@ -20,6 +20,7 @@ export interface Properties extends PublicProperties {
   app: string;
 
   providerService: ProviderService;
+  znsClient: any;
 }
 
 export class Container extends React.Component<Properties> {
@@ -34,7 +35,7 @@ export class Container extends React.Component<Properties> {
   }
 
   znsClient() {
-    return client.get(this.props.providerService.get());
+    return this.props.znsClient.get(this.props.providerService.get());
   }
 
   get isAtRootDomain() {
@@ -107,5 +108,5 @@ const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Conta
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();
 
-  return <ConnectedContainer {...props} history={history} />;
+  return <ConnectedContainer {...props} history={history} znsClient={client} />;
 }

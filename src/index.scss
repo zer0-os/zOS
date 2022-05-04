@@ -33,59 +33,21 @@ A, BUTTON {
   color: inherit;
 }
 
-.container {
+.app-sandbox-wrapper {
   display: flex;
+  justify-content: center;
 
-  &__left-sidebar {
-    display: flex;
-    
-    flex: 0 0 $width-world-navigation;
+  .app-sandbox {
+    position: relative;
+    width: $width-application-content;
+    left: 22px;
 
-    margin-right: $left-content-space;
-
-    @include for-screen-large() {
-      justify-content: space-between;
-    }
-  }
-
-  &__networks {
-    width: 56px;
-    border-right: 1px solid theme.$primary-border-color;
-  }
-
-  &__network, &__navigation {
-    flex: 0 0 $width-application-navigation;
-  }
-
-  &__content {
-    flex: 1 0 $width-application-content;
-
-    display: flex;
-    justify-content: center;
-  }
-
-  &__sidekick {
-    flex-basis: $width-sidekick;
-
-    align-items: center;
-
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-
-    background-color: theme.$background-color-sidekick;
-    padding-right: 16px;
-  }
-
-  &.main {
-    .container {
-      &__networks, &__network {
-        height: $height-main;
-      }
+    @include for-static-layout() {
+      position: absolute;
+      left: $width-collapsed-navigation;
     }
   }
 }
-
 
 #root {
   transition: background animation.$animation-duration-double ease-out;
@@ -119,25 +81,6 @@ hr.glow:after, hr.glow:before {
 
 .glow-text {
   text-shadow: 0 0 10px var(--glow-text-color);
-}
-
-.app-sandbox {
-  &__left-sidebar {
-    position: fixed;
-    flex: 0 0 220px;
-  }
-
-  &__navigation {
-    width: 200px;
-    border-right: 1px solid theme.$primary-border-color;
-  }
-
-  &__navigation-content {
-    position: sticky;
-    top: 0;
-
-    padding-left: 18px;
-  }
 }
 
 *::-webkit-scrollbar-corner {

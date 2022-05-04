@@ -26,8 +26,8 @@ export class AppMenu extends React.Component<Properties> {
       return (
         <li key={type} className={className}>
           <Link to={`/${[this.props.route, type].join('/')}`}>
-            <img src={imageSource} alt={name} />
-            {name}
+            <img className="app-menu__app-image" src={imageSource} alt={name} />
+            <span className="app-menu__app-name">{name}</span>
           </Link>
         </li>
       );

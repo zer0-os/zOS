@@ -4,8 +4,7 @@ import { RootState } from '../../store';
 
 import { Container } from '.';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { Icons } from '../icon-button/icons';
-import { IconButton } from '../icon-button';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
 describe('ViewModeToggle', () => {
   const subject = (props: any = {}) => {

@@ -4,11 +4,12 @@ $width-navigation: 32px;
 $width-inner: 672px;
 
 .address-bar {
+  height: 40px;
   background-color: theme.$background-color-primary;
   border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
   padding: 3px;
-
+  
   display: flex;
   align-items: center;
 
@@ -23,7 +24,7 @@ $width-inner: 672px;
     display: flex;
 
     min-width: $width-inner;
-    color: rgba(108, 108, 108, 1);
+    color: theme.$font-color-primary;
   }
   
   &__protocol,
@@ -62,7 +63,7 @@ $width-inner: 672px;
 
   &__navigation-button {
     color: theme.$accent-color-mid;
-    cursor: none;
+    cursor: auto;
 
     padding: 10px 5px;
 

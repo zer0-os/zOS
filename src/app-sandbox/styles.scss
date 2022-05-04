@@ -1,7 +1,6 @@
 @use '../shared-components/theme-engine/theme' as theme;
 @import '../variables';
 
-// This can be thrown away when the sandbox app is worked on
 .app-sandbox {
   width: $width-application-content;
 

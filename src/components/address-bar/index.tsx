@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { routeWithApp } from './util';
 import { apps } from '../../lib/apps';
 
-import { IconButton } from '../icon-button';
-import { Icons } from '../icon-button/icons';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
 import { ZNSDropdown } from '../zns-dropdown';
 
@@ -67,7 +66,7 @@ export class AddressBar extends React.Component<Properties, State> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app].name}</span>
+        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app]?.name}</span>
       </span>
     );
   }

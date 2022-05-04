@@ -20,6 +20,8 @@ describe('AddressBarContainer', () => {
     return shallow(<Container {...allProps} />);
   };
 
+  const getAppFor = (app: Apps) => ({ type: app });
+
   it('passes route to address bar', () => {
     const wrapper = subject({ route: 'the.cats.pajamas' });
 
@@ -27,10 +29,11 @@ describe('AddressBarContainer', () => {
   });
 
   it('passes app to address bar', () => {
-    const app = 'Winamp';
-    const wrapper = subject({ app });
+    const selectedApp = { type: Apps.Channels } as PlatformApp; 
 
-    expect(wrapper.find(AddressBar).prop('app')).toBe(app);
+    const wrapper = subject({ app: selectedApp });
+
+    expect(wrapper.find(AddressBar).prop('app')).toBe(selectedApp);
   });
 
   it('passes className to address bar', () => {
@@ -74,7 +77,7 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food',
-      app: 'feed',
+      app: getAppFor(Apps.Feed),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
@@ -103,7 +106,7 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food.tacos.bean',
-      app: 'staking',
+      app: getAppFor(Apps.Staking),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });

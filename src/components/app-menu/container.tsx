@@ -2,7 +2,7 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { AppMenu } from '.';
-import { Apps, apps as PlatformApps } from '../../lib/apps';
+import { Apps, allApps } from '../../lib/apps';
 
 export interface Properties {
   selectedApp: Apps;
@@ -21,12 +21,6 @@ export class Container extends React.Component<Properties, {}> {
     return {};
   }
 
-  availableApps() {
-    const availableApps = [Apps.Feed] as string[];
-
-    return Object.keys(PlatformApps).filter(key => availableApps.includes(key)).map(key => PlatformApps[key]);
-  }
-
   render() {
     const { selectedApp, route } = this.props;
 
@@ -34,7 +28,7 @@ export class Container extends React.Component<Properties, {}> {
       <AppMenu
         selectedApp={selectedApp}
         route={route}
-        apps={this.availableApps()}
+        apps={allApps}
       />
     );
   }

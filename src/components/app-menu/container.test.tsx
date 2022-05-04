@@ -4,7 +4,7 @@ import { RootState } from '../../store';
 
 import { Container } from './container';
 import { AppMenu } from './index';
-import { Apps, PlatformApp } from '../../lib/apps';
+import { allApps, Apps, PlatformApp } from '../../lib/apps';
 
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
@@ -22,6 +22,12 @@ describe('AppMenuContainer', () => {
     const wrapper = subject({ route });
 
     expect(wrapper.find(AppMenu).prop('route')).toBe(route);
+  });
+
+  it('passes apps to child', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(AppMenu).prop('apps')).toBe(allApps);
   });
 
   it('passes selectedApp', () => {

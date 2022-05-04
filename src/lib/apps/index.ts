@@ -24,4 +24,6 @@ Object.keys(Apps).forEach(app => {
   };
 });
 
-export { apps };
+const allApps = [ apps[Apps.Feed] ];
+
+export { apps, allApps };

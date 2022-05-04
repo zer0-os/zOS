@@ -12,7 +12,7 @@ export enum SagaActionTypes {
 
 const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
 
-interface ZnsDomainDescriptor {
+export interface ZnsDomainDescriptor {
   route: string,
   deepestVisitedRoute: string,
 }

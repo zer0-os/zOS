@@ -4,6 +4,8 @@ import { RootState } from '../../store';
 
 import { AddressBar } from '.';
 import { Container } from './container';
+import { Apps, PlatformApp } from '../../lib/apps';
+import { ZnsDomainDescriptor } from '../../store/zns';
 
 describe('AddressBarContainer', () => {
   const subject = (props: any = {}) => {
@@ -126,22 +128,35 @@ describe('AddressBarContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      ...state,
-      zns: {
-        ...(state.zns || {}),
-      },
-      apps: { ...(state.apps || {})},
-    } as RootState);
+    const subject = (state: Partial<RootState>) => {
+      const zns: any = (state.zns || {});
+
+      return Container.mapState({
+        ...state,
+        zns: {
+          ...zns,
+          value: {
+            ...(zns.value || { deepestVisitedRoute: '', route: 'yo' }),
+          },
+        },
+        apps: { ...(state.apps || {})},
+      } as RootState);
+    };
 
     test('route', () => {
-      const state = subject({ zns: { value: { route: 'what.is.this' } } });
+      const state = subject({ zns: { value: { route: 'what.is.this' } as ZnsDomainDescriptor } });
 
       expect(state.route).toEqual('what.is.this');
     });
 
+    test('app', () => {
+      const state = subject({ apps: { selectedApp: { type: Apps.Feed } as PlatformApp } });
+
+      expect(state.app).toEqual({ type: Apps.Feed });
+    });
+
     test('deepestVisitedRoute', () => {
-      const state = subject({ zns: { value: { deepestVisitedRoute: 'what.is.this' } } });
+      const state = subject({ zns: { value: { deepestVisitedRoute: 'what.is.this' } as ZnsDomainDescriptor } });
 
       expect(state.deepestVisitedRoute).toEqual('what.is.this');
     });

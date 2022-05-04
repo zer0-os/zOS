@@ -5,16 +5,16 @@ import { AppMenu } from '.';
 import { Apps, apps as PlatformApps } from '../../lib/apps';
 
 export interface Properties {
-  selectedApp: string;
+  selectedApp: Apps;
 
   route: string;
 }
 
 export class Container extends React.Component<Properties, {}> {
   static mapState(state: RootState): Partial<Properties> {
-    const { zns: { value: { route } }, apps: { selectedApp } } = state;
+    const { zns: { value: { route } }, apps: { selectedApp: { type } } } = state;
 
-    return { selectedApp, route };
+    return { selectedApp: type, route };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -32,7 +32,7 @@ export class Container extends React.Component<Properties, {}> {
 
     return (
       <AppMenu
-        selectedApp={Apps[selectedApp]}
+        selectedApp={selectedApp}
         route={route}
         apps={this.availableApps()}
       />

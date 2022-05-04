@@ -3,7 +3,7 @@ import { SagaActionTypes, receive } from '.';
 import { apps } from '../../lib/apps';
 
 export function* setSelectedApp(action) {
-  const selectedApp = action.payload as string;
+  const selectedApp = action.payload;
 
   yield put(receive(apps[selectedApp]));
 }

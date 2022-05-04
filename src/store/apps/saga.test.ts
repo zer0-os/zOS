@@ -14,6 +14,10 @@ describe('apps saga', () => {
       .withReducer(reducer)
       .run();
 
-    expect(selectedApp).toBe(selectedAppType);
+    expect(selectedApp).toMatchObject({
+      type: selectedAppType,
+      name: 'Members',
+      imageSource: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/members.svg',
+    });
   });
 });

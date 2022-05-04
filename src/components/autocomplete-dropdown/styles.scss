@@ -16,6 +16,10 @@ $font-size: 12px;
     &__route {
       color: #52CBFF;
     }
+
+    &.is-focused {
+      background-color: var(--glow-background-color);
+    }
   }
 
   &__input {

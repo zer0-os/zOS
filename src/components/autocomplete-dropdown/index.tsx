@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as debouncePromise from 'es6-promise-debounce';
+import debouncePromise from 'es6-promise-debounce';
 import React from 'react';
 
 import { newIndexForKey } from '../../lib/keyboard-search';
@@ -164,7 +164,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
 
     let closestScrollableParent = this.anchorElement;
-    while (closestScrollableParent !== document.body) {
+    while (closestScrollableParent && closestScrollableParent !== document.body) {
       if (this.elementHasYScroll(closestScrollableParent)) {
         break;
       }
@@ -249,6 +249,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
           onChange={this.onChange}
           onBlur={this.abortChange}
           onKeyDown={this.onKeyDown}
+          autoFocus
         />
         {dropdown}
       </div>
@@ -271,11 +272,11 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   }
 
   private elementHasYScroll(closestScrollParent: HTMLElement) {
-    return closestScrollParent.scrollHeight > closestScrollParent.clientHeight;
+    return closestScrollParent && closestScrollParent.scrollHeight > closestScrollParent.clientHeight;
   }
 }
 
-class Result extends React.Component<{ item: AutocompleteItem, isFocused: boolean, onSelect(AutocompleteItem) }, undefined> {
+export class Result extends React.Component<{ item: AutocompleteItem, isFocused: boolean, onSelect(AutocompleteItem) }, undefined> {
   onSelect = event => {
     // Prevent further events from happening, such as: onBlur of the input
     event.stopPropagation();

@@ -29,6 +29,18 @@ describe('AddressBar', () => {
     expect(wrapper.find('.address-bar__protocol').text().trim()).toStrictEqual('0://');
   });
 
+  it('renders app name', () => {
+    const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' }});
+    
+    expect(wrapper.find('.address-bar__route .address-bar__route-app').text().trim()).toStrictEqual('Feed');
+  });
+
+  it('does not render app name no app selected', () => {
+    const wrapper = subject({ app: null });
+    
+    expect(wrapper.find('.address-bar__route .address-bar__route-app').exists()).toBe(false);
+  });
+
   it('renders route in segments', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
     
@@ -38,13 +50,21 @@ describe('AddressBar', () => {
   });
 
   it('renders Link to route with app at segment', () => {
-    const app = 'feed';
+    const app = { type: Apps.Feed };
     const wrapper = subject({ route: 'food.street.tacos', app });
     
     const segments = wrapper.find(Link);
 
-    expect(segments.at(0).prop('to')).toStrictEqual(`/food/${app}`);
-    expect(segments.at(1).prop('to')).toStrictEqual(`/food.street/${app}`);
+    expect(segments.at(0).prop('to')).toStrictEqual('/food/feed');
+    expect(segments.at(1).prop('to')).toStrictEqual('/food.street/feed');
+  });
+
+  it('does not add app link if no selected app', () => {
+    const wrapper = subject({ route: 'food.street.tacos', app: null });
+    
+    const segments = wrapper.find(Link);
+
+    expect(segments.at(0).prop('to')).toStrictEqual('/food');
   });
 
   it('renders route seperators', () => {

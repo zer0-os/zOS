@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { routeWithApp } from './util';
+import { PlatformApp } from '../../lib/apps';
 
 interface PublicProperties {
   className?: string;
@@ -15,7 +16,7 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
-  app: string;
+  app: PlatformApp;
 }
 
 export class Container extends React.Component<Properties> {
@@ -74,7 +75,7 @@ export class Container extends React.Component<Properties> {
   }
 
   goToRoute(route) {
-    this.props.history.push(routeWithApp(route, this.props.app));
+    this.props.history.push(routeWithApp(route, this.props.app.type));
   }
 
   render() {

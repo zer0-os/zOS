@@ -1,8 +1,5 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
-$z-index-dropdown: 100;
-$font-size: 12px;
-
 .autocomplete-dropdown {
   width: 100%;
 
@@ -17,8 +14,8 @@ $font-size: 12px;
       color: #52CBFF;
     }
 
-    &.is-focused {
-      background-color: var(--glow-background-color);
+    &.is-focused, &:hover {
+      background: rgba(60,161,255,.05);
     }
   }
 
@@ -28,7 +25,8 @@ $font-size: 12px;
     color: #FFF;
     border: 0px solid;
     outline: none;
-    padding: 0 0 0 10px;
+    padding: 10px;
+    margin: 0;
 
     font-size: 16px;
 
@@ -38,8 +36,13 @@ $font-size: 12px;
   }
 
   &__results {
-    margin: 16px 0 0 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     overflow-y: auto;
     max-height: 95vh;
+  }
+
+  &-item {
+    padding-left: 20px;
   }
 }

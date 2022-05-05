@@ -91,7 +91,11 @@
     },
     "mac": {
       "icon": "src/assets/images/zero-white-icon.icns",
-      "target": ["dmg", "zip"]
+      "target": "dmg",
+      "publish": {
+        "provider": "github",
+        "releaseType": "draft"
+      }
     },
     "win": {
       "target": "nsis"

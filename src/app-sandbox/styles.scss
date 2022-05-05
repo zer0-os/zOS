@@ -4,7 +4,7 @@
 .app-sandbox {
   width: $width-application-content;
 
-  .error {
+  &__error {
     font-size: 40px;
     font-weight: bold;
     text-align: center;

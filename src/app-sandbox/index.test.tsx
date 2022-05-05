@@ -5,6 +5,7 @@ import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { Chains } from '../lib/web3';
+import { ChannelsContainer } from '../platform-apps/channels/container';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -23,10 +24,10 @@ describe('AppSandbox', () => {
     expect(wrapper.find(App).exists()).toBe(true);
   });
 
-  it('does not render Feed app container if no app is selected', () => {
+  it('renders error if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
-    expect(wrapper.find(App).exists()).toBe(false);
+    expect(wrapper.find('.app-sandbox__error').exists()).toBe(true); 
   });
 
   it('passes AppInterface properties to Feed app', () => {
@@ -48,6 +49,12 @@ describe('AppSandbox', () => {
         address: '0x0000000000000000000000000000000000000009',
       },
     });
+  });
+
+  it('renders Channels app container when Channels app selected', () => {
+    const wrapper = subject({ selectedApp: Apps.Channels });
+
+    expect(wrapper.find(ChannelsContainer).exists()).toBe(true); 
   });
 
   it('passes route to feed app', () => {

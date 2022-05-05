@@ -6,6 +6,7 @@ import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
 
 import './styles.scss';
+import {ChannelsContainer} from '../platform-apps/channels/container';
 
 export interface AppInterface {
   provider: ethers.providers.Web3Provider;
@@ -45,7 +46,11 @@ export class AppSandbox extends React.Component<Properties> {
       return <FeedApp {...this.appProperties} />;
     }
 
-    return <div className='error'>Error {selectedApp} application has not been implemented.</div>;
+    if (selectedApp === Apps.Channels) {
+      return <ChannelsContainer {...this.appProperties} />;
+    }
+
+    return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>
   }
 
   render() {

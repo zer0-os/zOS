@@ -4,7 +4,7 @@ import { RootState } from '../../store';
 
 import { Container } from './container';
 import { AppMenu } from './index';
-import { Apps } from '../../lib/apps';
+import { allApps, Apps, PlatformApp } from '../../lib/apps';
 
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
@@ -24,11 +24,18 @@ describe('AppMenuContainer', () => {
     expect(wrapper.find(AppMenu).prop('route')).toBe(route);
   });
 
+  it('passes apps to child', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(AppMenu).prop('apps')).toBe(allApps);
+  });
+
   it('passes selectedApp', () => {
     const selectedApp = Apps.Feed;
+
     const wrapper = subject({ selectedApp });
 
-    expect(wrapper.find(AppMenu).prop('selectedApp')).toBe(Apps[selectedApp]);
+    expect(wrapper.find(AppMenu).prop('selectedApp')).toBe(selectedApp);
   });
 
   describe('mapState', () => {
@@ -47,11 +54,11 @@ describe('AppMenuContainer', () => {
     });
 
     test('selectedApp', () => {
-      const selectedApp = 'Trumpet Winsock';
+      const selectedApp = { type: Apps.Channels } as PlatformApp;
 
       const state = subject({ apps: { selectedApp } });
 
-      expect(state.selectedApp).toEqual(selectedApp);
+      expect(state.selectedApp).toEqual(Apps.Channels);
     });
   });
 });

@@ -5,6 +5,8 @@ import { RootState } from '../../store';
 import { AddressBar } from '.';
 import { Container } from './container';
 import { ProviderService } from '../../lib/web3/provider-service';
+import { Apps, PlatformApp } from '../../lib/apps';
+import { ZnsDomainDescriptor } from '../../store/zns';
 
 describe('AddressBarContainer', () => {
   const subject = (props: any = {}) => {
@@ -21,6 +23,8 @@ describe('AddressBarContainer', () => {
     return shallow(<Container {...allProps} />);
   };
 
+  const getAppFor = (app: Apps) => ({ type: app });
+
   it('passes route to address bar', () => {
     const wrapper = subject({ route: 'the.cats.pajamas' });
 
@@ -28,10 +32,11 @@ describe('AddressBarContainer', () => {
   });
 
   it('passes app to address bar', () => {
-    const app = 'Winamp';
-    const wrapper = subject({ app });
+    const selectedApp = { type: Apps.Channels } as PlatformApp; 
 
-    expect(wrapper.find(AddressBar).prop('app')).toBe(app);
+    const wrapper = subject({ app: selectedApp });
+
+    expect(wrapper.find(AddressBar).prop('app')).toBe(selectedApp);
   });
 
   it('passes className to address bar', () => {
@@ -75,7 +80,7 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food',
-      app: 'feed',
+      app: getAppFor(Apps.Feed),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
@@ -104,7 +109,7 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food.tacos.bean',
-      app: 'staking',
+      app: getAppFor(Apps.Staking),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
@@ -129,22 +134,35 @@ describe('AddressBarContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      ...state,
-      zns: {
-        ...(state.zns || {}),
-      },
-      apps: { ...(state.apps || {})},
-    } as RootState);
+    const subject = (state: Partial<RootState>) => {
+      const zns: any = (state.zns || {});
+
+      return Container.mapState({
+        ...state,
+        zns: {
+          ...zns,
+          value: {
+            ...(zns.value || { deepestVisitedRoute: '', route: 'yo' }),
+          },
+        },
+        apps: { ...(state.apps || {})},
+      } as RootState);
+    };
 
     test('route', () => {
-      const state = subject({ zns: { value: { route: 'what.is.this' } } });
+      const state = subject({ zns: { value: { route: 'what.is.this' } as ZnsDomainDescriptor } });
 
       expect(state.route).toEqual('what.is.this');
     });
 
+    test('app', () => {
+      const state = subject({ apps: { selectedApp: { type: Apps.Feed } as PlatformApp } });
+
+      expect(state.app).toEqual({ type: Apps.Feed });
+    });
+
     test('deepestVisitedRoute', () => {
-      const state = subject({ zns: { value: { deepestVisitedRoute: 'what.is.this' } } });
+      const state = subject({ zns: { value: { deepestVisitedRoute: 'what.is.this' } as ZnsDomainDescriptor } });
 
       expect(state.deepestVisitedRoute).toEqual('what.is.this');
     });

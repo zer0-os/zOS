@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { routeWithApp } from './util';
-import { apps } from '../../lib/apps';
+import { PlatformApp } from '../../lib/apps';
 
 import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
@@ -19,7 +19,7 @@ export enum AddressBarMode {
 export interface Properties {
   className?: string;
   route: string;
-  app: string;
+  app: PlatformApp;
 
   canGoBack?: boolean;
   canGoForward?: boolean;
@@ -44,6 +44,14 @@ export class AddressBar extends React.Component<Properties, State> {
     return this.props.route.split('.');
   }
 
+  get hasSelectedApp() {
+    return !!this.props.app;
+  }
+
+  get app() {
+    return this.props.app || {} as PlatformApp;
+  }
+
   renderSegments() {
     const { elements } = this.routeSegments.reduce(({ elements, route }, segment, index) => {
       if (elements.length) {
@@ -55,7 +63,7 @@ export class AddressBar extends React.Component<Properties, State> {
       return {
         elements: [
           ...elements,
-          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.props.app)}>{segment}</Link>
+          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.app.type)}>{segment}</Link>
         ],
         route,
       };
@@ -67,7 +75,8 @@ export class AddressBar extends React.Component<Properties, State> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app]?.name}</span>
+        {this.renderSegments()}
+        {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
       </span>
     );
   }

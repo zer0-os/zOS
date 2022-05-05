@@ -8,6 +8,7 @@ import { AddressBar } from '.';
 import { routeWithApp } from './util';
 import { client } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
+import { PlatformApp } from '../../lib/apps';
 
 interface PublicProperties {
   className?: string;
@@ -17,10 +18,11 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
-  app: string;
 
   providerService: ProviderService;
   znsClient: any;
+
+  app: PlatformApp;
 }
 
 export class Container extends React.Component<Properties> {
@@ -83,7 +85,7 @@ export class Container extends React.Component<Properties> {
   }
 
   goToRoute = route => {
-    this.props.history.push(routeWithApp(route, this.props.app));
+    this.props.history.push(routeWithApp(route, this.props.app.type));
   }
 
   render() {

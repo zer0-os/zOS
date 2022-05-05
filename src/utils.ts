@@ -4,4 +4,5 @@ interface ElectronWindow extends Window {
 
 declare let window: ElectronWindow;
 
-export const isElectron = (): boolean => window?.isElectron;
+export const isElectron = (): boolean =>
+  typeof window !== 'undefined' && window?.isElectron;

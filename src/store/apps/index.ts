@@ -5,26 +5,27 @@ import {
 } from '@reduxjs/toolkit';
 
 import { config } from '../../config';
+import { apps, PlatformApp, Apps } from '../../lib/apps';
 
 export enum SagaActionTypes {
-  UpdateRoute = 'app/saga/updateRoute',
+  UpdateApp = 'app/saga/updateApp',
 }
 
-const setSelectedApp = createAction<string>(SagaActionTypes.UpdateRoute);
+const setSelectedApp = createAction<Apps>(SagaActionTypes.UpdateApp);
 
 export interface AppsState {
-  selectedApp: string,
+  selectedApp: PlatformApp,
 }
 
 const initialState: AppsState = {
-  selectedApp: config.defaultApp,
+  selectedApp: apps[config.defaultApp],
 };
 
 const slice = createSlice({
   name: 'apps',
   initialState,
   reducers: {
-    receive: (state, action: PayloadAction<string>) => {
+    receive: (state, action: PayloadAction<PlatformApp>) => {
       state.selectedApp = action.payload;
     },
   },

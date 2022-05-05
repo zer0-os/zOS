@@ -22,10 +22,12 @@ interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
+    const { type } = state.apps.selectedApp;
+
     return {
       route: state.zns.value.route,
       connectionStatus: state.web3.status,
-      selectedApp: state.apps.selectedApp as Apps,
+      selectedApp: type,
     };
   }
 

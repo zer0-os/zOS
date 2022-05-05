@@ -20,8 +20,10 @@ Object.keys(Apps).forEach(app => {
   apps[Apps[app]] = {
     type: Apps[app],
     name: app,
-    imageSource: ['https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps', `${Apps[app]}.svg`].join('/'),
+    imageSource: `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${Apps[app]}.svg`,
   };
 });
 
-export { apps };
+const allApps = [ apps[Apps.Feed] ];
+
+export { apps, allApps };

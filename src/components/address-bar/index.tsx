@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { routeWithApp } from './util';
-import { apps, PlatformApp } from '../../lib/apps';
+import { PlatformApp } from '../../lib/apps';
 
 import { Icons, IconButton } from '@zer0-os/zos-component-library';
 

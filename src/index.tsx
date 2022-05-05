@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
@@ -18,16 +19,16 @@ import './index.scss';
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
+const redirectToDefaults = ({ match: { params } }) => <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />;
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <EscapeManagerProvider>
         <Router history={history}>
           <Web3ReactContextProvider>
-            <Route path='/' exact>
-              <Redirect to={`/${config.defaultZnsRoute}/${config.defaultApp}`} />
-            </Route>
-            <Route path='/:znsRoute/:app?' component={ZnsRouteConnect} />
+            <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
+            <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
           </Web3ReactContextProvider>
         </Router>
       </EscapeManagerProvider>

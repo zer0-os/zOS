@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
 import { RootState } from '../store';
 import { AppSandbox } from '.';
-import { Apps } from '../lib/apps';
+import { Apps, PlatformApp } from '../lib/apps';
 import { ConnectionStatus } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
 
@@ -13,7 +13,7 @@ describe('AppSandboxContainer', () => {
       route: '',
       connectionStatus: ConnectionStatus.Connected,
       providerService: { get: () => null } as ProviderService,
-      selectedApp: '',
+      selectedApp: Apps.Channels,
       ...props,
     };
 
@@ -40,8 +40,9 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).exists()).toBe(true);
   });
 
-  it('defaults selected app to feed', () => {
+  it('passes selected app to sandbox', () => {
     const selectedApp = Apps.Feed;
+
     const wrapper = subject({ selectedApp });
 
     expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(selectedApp);
@@ -88,14 +89,14 @@ describe('AppSandboxContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: RootState) => Container.mapState({
+    const subject = (state: Partial<RootState>) => Container.mapState({
       zns: { value: { route: '' }, ...(state.zns || {}) },
       web3: {
         status: ConnectionStatus.Connecting,
         ...(state.web3 || {}),
       },
       apps: { selectedApp: '', ...(state.apps || {}) },
-    } as any);
+    } as RootState);
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } });
@@ -112,9 +113,9 @@ describe('AppSandboxContainer', () => {
     });
 
     test('selectedApp', () => {
-      const selectedApp = 'MS Paint';
+      const selectedApp = Apps.DAOS;
 
-      const state = subject({ apps: { selectedApp } } as RootState);
+      const state = subject({ apps: { selectedApp: { type: selectedApp } as PlatformApp } });
 
       expect(state).toMatchObject({ selectedApp });
     });

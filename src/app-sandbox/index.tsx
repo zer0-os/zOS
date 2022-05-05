@@ -4,9 +4,10 @@ import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
+import { ChannelsContainer } from '../platform-apps/channels/container';
+import { PlatformUser } from './container';
 
 import './styles.scss';
-import {ChannelsContainer} from '../platform-apps/channels/container';
 
 export interface AppInterface {
   provider: ethers.providers.Web3Provider;
@@ -19,6 +20,7 @@ export interface AppInterface {
 
 export interface Properties {
   web3Provider: ethers.providers.Web3Provider;
+  currentUser?: PlatformUser;
   znsRoute: string;
   address: string;
   chainId: Chains;
@@ -27,11 +29,18 @@ export interface Properties {
 
 export class AppSandbox extends React.Component<Properties> {
   get appProperties() {
-    const { znsRoute, web3Provider, address, chainId } = this.props;
+    const {
+      znsRoute,
+      web3Provider,
+      address,
+      chainId,
+      currentUser,
+    } = this.props;
 
     return {
       route: znsRoute,
       provider: web3Provider,
+      currentUser,
       web3: {
         address,
         chainId,

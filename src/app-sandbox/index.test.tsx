@@ -57,6 +57,14 @@ describe('AppSandbox', () => {
     expect(wrapper.find(ChannelsContainer).exists()).toBe(true); 
   });
 
+  it('passes currentUser to Channels app', () => {
+    const currentUser = { account: '0x000000000000000000000000000000000000000A' };
+
+    const wrapper = subject({ selectedApp: Apps.Channels, currentUser });
+
+    expect(wrapper.find(ChannelsContainer).prop('currentUser')).toStrictEqual(currentUser); 
+  });
+
   it('passes route to feed app', () => {
     const znsRoute = 'food.tacos';
 

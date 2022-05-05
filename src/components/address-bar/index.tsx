@@ -11,7 +11,7 @@ import { ZNSDropdown } from '../zns-dropdown';
 
 import './styles.scss';
 
-enum AddressBarMode {
+export enum AddressBarMode {
   Display = 'display',
   Search = 'search',
 }
@@ -30,6 +30,7 @@ export interface Properties {
   onSearch?: () => void;
   api?: any;
   onSelect?: any;
+  addressBarMode?: AddressBarMode;
 }
 
 export interface State {
@@ -37,7 +38,7 @@ export interface State {
 }
 
 export class AddressBar extends React.Component<Properties, State> {
-  state = { mode: AddressBarMode.Display };
+  state = { mode: this.props.addressBarMode || AddressBarMode.Display };
 
   get routeSegments() {
     return this.props.route.split('.');

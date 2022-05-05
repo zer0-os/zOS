@@ -1,24 +1,25 @@
 import React from 'react';
 
-import { AutocompleteDropdown } from '../autocomplete-dropdown';
+import { AutocompleteDropdown, AutocompleteItem } from '../autocomplete-dropdown';
 
 interface ZNSRecord {
   id: string;
-  name: string;
-  type: string;
+  title: string;
+  description?: string;
+  znsRoute: string;
 }
 
-interface ZNSDropdownProperties {
+export interface Properties {
   itemContainerClassName?: string;
-  api: any; //{ search: (term: string) => any };
-  onSelect: (item: ZNSRecord) => void;
+  api: { search: (term: string) => any };
+  onSelect: (route: string) => void;
 }
 
-interface ZNSDropdownState {
-  results: any[];
+interface State {
+  results: ZNSRecord[];
 }
 
-export class ZNSDropdown extends React.Component<ZNSDropdownProperties, ZNSDropdownState> {
+export class ZNSDropdown extends React.Component<Properties, State> {
   constructor(props) {
     super(props);
 
@@ -28,7 +29,7 @@ export class ZNSDropdown extends React.Component<ZNSDropdownProperties, ZNSDropd
   findMatches = async (term: string) => {
     const api = await this.props.api;
 
-    const results = await api.search(term);
+    const results: ZNSRecord[] = await api.search(term);
 
     this.setState({ results });
 
@@ -44,7 +45,7 @@ export class ZNSDropdown extends React.Component<ZNSDropdownProperties, ZNSDropd
     });
   }
 
-  onSelect = item => {
+  onSelect = (item: AutocompleteItem) => {
     this.props.onSelect(this.state.results.find(p => p.id === item.id).znsRoute);
   }
 

@@ -7,8 +7,8 @@ import React from 'react';
 import { AutocompleteDropdown, Properties, Result } from './';
 import { shallow, mount } from 'enzyme';
 
-let findMatches = jest.fn();
-let onSelect = jest.fn();
+let findMatches;
+let onSelect;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
@@ -187,7 +187,7 @@ describe('autocomplete-dropdown', () => {
 
     wrapper.update();
 
-    const option = wrapper.find("[className*='-item']").filterWhere((n) => n.text() == expectation);
+    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
     option.simulate('mouseDown');
 
     expect(onSelect).toHaveBeenCalledWith(findMatches()[0]);
@@ -209,13 +209,13 @@ describe('autocomplete-dropdown', () => {
 
     wrapper.update();
 
-    const option = wrapper.find("[className*='-item']").filterWhere((n) => n.text() == expectation);
+    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
     option.simulate('mouseDown');
 
     input = wrapper.find('input');
 
     expect(input.prop('value')).toEqual(expectation);
-    expect(wrapper.find("[className*='__items']").exists()).toBe(false);
+    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
   });
 
   it('it closes dropdown when focus lost', async () => {
@@ -231,7 +231,7 @@ describe('autocomplete-dropdown', () => {
     input.simulate('blur');
 
     expect(input.prop('value')).toEqual('original value');
-    expect(wrapper.find("[className*='__items']").exists()).toBe(false);
+    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
   });
 
 

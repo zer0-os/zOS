@@ -2,15 +2,25 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 
-import { AddressBar } from '.';
+import { AddressBar, AddressBarMode } from '.';
 import { Apps } from '../../lib/apps';
 import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
+import { ZNSDropdown } from '../zns-dropdown';
+
+let onSelect;
+
 describe('AddressBar', () => {
+  beforeEach(() => {
+    onSelect = jest.fn();
+  });
+
   const subject = (props: any = {}) => {
     const allProps = {
       route: '',
       app: Apps.Feed,
+      onSelect,
+      addressBarMode: null,
       ...props,
     };
 
@@ -99,5 +109,33 @@ describe('AddressBar', () => {
     wrapper.find('.address-bar__navigation-button').at(1).simulate('click');
 
     expect(onForward).toHaveBeenCalledOnce();
+  });
+
+  it('shows search when trigger zone is clicked', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+
+    wrapper.find('[className$="trigger-region"]').simulate('click');
+
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
+  });
+
+  it('hides search when item is selected', () => {
+    const wrapper = subject({ addressBarMode: 'search' });
+
+    wrapper.find(ZNSDropdown).simulate('Select');
+    
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+  });
+
+  it('onSelect is mapped', () => {
+    const expectation = 'zns-route';
+
+    const wrapper = subject({ addressBarMode: AddressBarMode.Search });
+
+    wrapper.find(ZNSDropdown).simulate('Select', expectation);
+
+    expect(onSelect).toHaveBeenCalledWith(expectation);
   });
 });

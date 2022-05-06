@@ -1,14 +1,16 @@
 import React from 'react';
 
-import { Channels } from '.';
+import { Connect } from './connect';
+import { PlatformUser } from '../../app-sandbox/container';
 
 export interface Properties {
   provider: any;
-  route: any; // XXX - switch this back to string
+  route: any;
+  user: PlatformUser;
 }
 
 export class ChannelsContainer extends React.Component<Properties> {
   render() {
-    return <Channels />;
+    return <Connect />;
   }
 }

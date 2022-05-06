@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "homepage": "./",
   "main": "./public/electron.js",
@@ -47,6 +47,7 @@
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
     "electron:package:mac": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:mac:publish": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js --publish=always",
     "electron:package:win": "craco build && electron-builder -w -c.extraMetadata.main=build/electron.js",
     "electron:package:linux": "craco build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
@@ -89,13 +90,13 @@
     "directories": {
       "buildResources": "public"
     },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    },
     "mac": {
       "icon": "src/assets/images/zero-white-icon.icns",
-      "target": "dmg",
-      "publish": {
-        "provider": "github",
-        "releaseType": "draft"
-      }
+      "target": "dmg"
     },
     "win": {
       "target": "nsis"

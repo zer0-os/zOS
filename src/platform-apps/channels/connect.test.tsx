@@ -18,4 +18,10 @@ describe('channels/connect', () => {
 
     expect(wrapper.find('.connect__message').text()).toBe('Please connect a wallet to continue.');
   });
+
+  it('renders message when account is present', () => {
+    const wrapper = subject({ account: '0x000000000000000000000000000000000000000A' });
+
+    expect(wrapper.find('.connect__message').text()).toBe('Connecting with account [0x000000000000000000000000000000000000000A].');
+  });
 });

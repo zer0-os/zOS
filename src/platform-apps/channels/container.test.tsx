@@ -16,24 +16,14 @@ describe('ChannelsContainer', () => {
   };
 
   it('renders connect component if no user account present', () => {
-    const wrapper = subject({ user: {} });
+    const wrapper = subject({ user: { account: '' } });
 
     expect(wrapper.find(Connect).exists()).toBe(true);
   });
 
-  // describe('mapState', () => {
-  //   const subject = (state: Partial<RootState>) => Container.mapState({
-  //     ...state,
-  //     theme: {
-  //       viewMode: ViewModes.Dark,
-  //       ...(state.theme || {}),
-  //     },
-  //   } as RootState);
+  it('passes account to connect component', () => {
+    const wrapper = subject({ user: { account: '0x000000000000000000000000000000000000000A' } });
 
-  //   test('viewMode', () => {
-  //     const state = subject({ theme: { value: { viewMode: ViewModes.Light } } });
-
-  //     expect(state.viewMode).toEqual(ViewModes.Light);
-  //   });
-  // });
+    expect(wrapper.find(Connect).prop('account')).toStrictEqual('0x000000000000000000000000000000000000000A');
+  });
 });

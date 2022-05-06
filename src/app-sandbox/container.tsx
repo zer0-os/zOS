@@ -43,6 +43,7 @@ export class Container extends React.Component<Properties, State> {
       address,
       connectionStatus: web3.status,
       selectedApp: type,
+      user: { account: address },
     };
   }
 

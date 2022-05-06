@@ -15,8 +15,8 @@ export class Connect extends React.Component<Properties> {
 
   render() {
     return (
-      <div className='connect'>
-        <div className='connect__message'>{this.message}</div>
+      <div className='channels-connect'>
+        <div className='channels-connect__message'>{this.message}</div>
       </div>
     );
   }

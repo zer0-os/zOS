@@ -4,7 +4,7 @@ import { Container, Properties } from './container';
 import { RootState } from '../store';
 import { AppSandbox } from '.';
 import { Apps, PlatformApp } from '../lib/apps';
-import { Chains, ConnectionStatus } from '../lib/web3';
+import { Chains, ConnectionStatus, Connectors } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
 
 describe('AppSandboxContainer', () => {
@@ -130,8 +130,9 @@ describe('AppSandboxContainer', () => {
         apps: { selectedApp: '', ...(state.apps || {}) },
       } as any);
 
+
     test('connectionStatus', () => {
-      const state = subject({ web3: { status: ConnectionStatus.Connected } });
+      const state = subject({ web3: { status: ConnectionStatus.Connected } as any });
 
       expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
     });
@@ -146,6 +147,18 @@ describe('AppSandboxContainer', () => {
       const state = subject({ web3: { value: { chainId: Chains.Rinkeby } } });
 
       expect(state.chainId).toEqual(Chains.Rinkeby);
+    });
+
+    test('user when connected with no account', () => {
+      const state = subject({ web3: {  status: ConnectionStatus.Connected, value: { connector: Connectors.Infura } } as any });
+
+      expect(state.user).toStrictEqual({ account: '' });
+    });
+
+    test('user with account', () => {
+      const state = subject({ web3: { value: { address: '0x000000000000000000000000000000000000000A' } } as any });
+
+      expect(state.user.account).toEqual('0x000000000000000000000000000000000000000A');
     });
 
     test('route', () => {

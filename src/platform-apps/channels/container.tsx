@@ -3,6 +3,8 @@ import React from 'react';
 import { Connect } from './connect';
 import { PlatformUser } from '../../app-sandbox/container';
 
+import './styles.scss';
+
 export interface Properties {
   provider: any;
   route: any;
@@ -11,6 +13,6 @@ export interface Properties {
 
 export class ChannelsContainer extends React.Component<Properties> {
   render() {
-    return <Connect />;
+    return <Connect account={this.props.user.account} />;
   }
 }

@@ -15,7 +15,7 @@ export interface Properties {
   address: string;
   chainId: Chains;
   connectionStatus: ConnectionStatus;
-  currentUser?: PlatformUser;
+  user?: PlatformUser;
 
   providerService: ProviderService;
 
@@ -88,7 +88,7 @@ export class Container extends React.Component<Properties, State> {
       <AppSandbox
         address={this.props.address}
         chainId={this.props.chainId}
-        currentUser={this.props.currentUser}
+        user={this.props.user}
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}

@@ -46,12 +46,12 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).exists()).toBe(true);
   });
 
-  it('passes currentUser to sandbox', () => {
-    const currentUser = { account: '0x000000000000000000000000000000000000000A' };
+  it('passes user to sandbox', () => {
+    const user = { account: '0x000000000000000000000000000000000000000A' };
 
-    const wrapper = subject({ currentUser });
+    const wrapper = subject({ user });
 
-    expect(wrapper.find(AppSandbox).prop('currentUser')).toStrictEqual(currentUser);
+    expect(wrapper.find(AppSandbox).prop('user')).toStrictEqual(user);
   });
 
   it('passes selected app to sandbox', () => {

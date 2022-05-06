@@ -57,12 +57,12 @@ describe('AppSandbox', () => {
     expect(wrapper.find(ChannelsContainer).exists()).toBe(true); 
   });
 
-  it('passes currentUser to Channels app', () => {
-    const currentUser = { account: '0x000000000000000000000000000000000000000A' };
+  it('passes user to Channels app', () => {
+    const user = { account: '0x000000000000000000000000000000000000000A' };
 
-    const wrapper = subject({ selectedApp: Apps.Channels, currentUser });
+    const wrapper = subject({ selectedApp: Apps.Channels, user });
 
-    expect(wrapper.find(ChannelsContainer).prop('currentUser')).toStrictEqual(currentUser); 
+    expect(wrapper.find(ChannelsContainer).prop('user')).toStrictEqual(user); 
   });
 
   it('passes route to feed app', () => {

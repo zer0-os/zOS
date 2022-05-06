@@ -20,7 +20,7 @@ export interface AppInterface {
 
 export interface Properties {
   web3Provider: ethers.providers.Web3Provider;
-  currentUser?: PlatformUser;
+  user?: PlatformUser;
   znsRoute: string;
   address: string;
   chainId: Chains;
@@ -34,13 +34,13 @@ export class AppSandbox extends React.Component<Properties> {
       web3Provider,
       address,
       chainId,
-      currentUser,
+      user,
     } = this.props;
 
     return {
       route: znsRoute,
       provider: web3Provider,
-      currentUser,
+      user,
       web3: {
         address,
         chainId,

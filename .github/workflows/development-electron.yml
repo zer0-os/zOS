@@ -1,7 +1,8 @@
 name: Release Electron development
 on:
   push:
-    branches:
+    branches-ignore:
+      - main
       - development
 jobs:
   test:
@@ -19,7 +20,7 @@ jobs:
   electron_release:
     permissions: write-all
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     environment: development
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}

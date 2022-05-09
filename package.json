@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "private": true,
   "homepage": "./",
   "main": "./public/electron.js",
@@ -49,6 +49,7 @@
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
     "electron:package:mac": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:mac:publish": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js --config electron/electron-builder-config.js --publish=always",
     "electron:package:win": "craco build && electron-builder -w -c.extraMetadata.main=build/electron.js",
     "electron:package:linux": "craco build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
@@ -79,27 +80,5 @@
     "jest-extended": "^1.2.0",
     "redux-saga-test-plan": "^4.0.4",
     "wait-on": "^6.0.1"
-  },
-  "build": {
-    "appId": "Fact0ry.Zer0",
-    "copyright": "Copyright © Fact0ry",
-    "productName": "Zer0",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "buildResources": "public"
-    },
-    "mac": {
-      "icon": "src/assets/images/zero-white-icon.icns",
-      "target": ["dmg", "zip"]
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": "deb"
-    }
   }
 }

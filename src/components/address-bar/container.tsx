@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { routeWithApp } from './util';
-import { client } from '@zer0-os/zos-zns';
+import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
 import { PlatformApp } from '../../lib/apps';
 
@@ -20,7 +20,7 @@ export interface Properties extends PublicProperties {
   deepestVisitedRoute: string;
 
   providerService: ProviderService;
-  znsClient: any;
+  znsClient: ZnsClientFactory;
 
   app: PlatformApp;
 }

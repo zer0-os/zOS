@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import debouncePromise from 'es6-promise-debounce';
 import React from 'react';
 
-import { newIndexForKey } from '../../lib/keyboard-search';
+import { newIndexForKey, Key } from '../../lib/keyboard-search';
 
 import './styles.scss';
 
@@ -139,14 +139,14 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   onKeyDown = (e) => {
     const allOptions = [...this.state.matches];
 
-    if (!allOptions.length || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter')) {
+    if (!allOptions.length || (e.key !== Key.ArrowDown && e.key !== Key.ArrowUp && e.key !== Key.Enter)) {
       return;
     }
 
     e.stopPropagation();
     e.preventDefault();
 
-    if (e.key === 'Enter') {
+    if (e.key === Key.Enter) {
       this.onSelect(allOptions[this.state.currentFocusIndex]);
       return;
     }

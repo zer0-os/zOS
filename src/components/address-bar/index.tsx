@@ -29,7 +29,7 @@ export interface Properties {
 
   onSearch?: () => void;
   api?: any;
-  onSelect?: any;
+  onSelect?: (route: string) => void;
   addressBarMode?: AddressBarMode;
 }
 

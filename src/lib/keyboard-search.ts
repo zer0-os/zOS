@@ -1,4 +1,14 @@
+export enum Key {
+  ArrowUp = 'ArrowUp',
+  ArrowDown = 'ArrowDown',
+  Enter = 'Enter',
+}
+
 function handleArrowUp(currentIndex: number, options: any[]): number {
+  if (!Array.isArray(options)) {
+    return 0;
+  }
+
   let newIndex;
   if (currentIndex === 0) {
     newIndex = options.length - 1;
@@ -10,6 +20,10 @@ function handleArrowUp(currentIndex: number, options: any[]): number {
 }
 
 function handleArrowDown(currentIndex: number, options: any[]): number {
+  if (!Array.isArray(options)) {
+    return 0;
+  }
+
   let newIndex;
   if (currentIndex >= options.length - 1) {
     newIndex = 0;
@@ -21,16 +35,20 @@ function handleArrowDown(currentIndex: number, options: any[]): number {
 }
 
 export function newIndexForKey(key: string, currentIndex: number, options: any[]): number {
+  if (!Array.isArray(options)) {
+    return 0;
+  }
+
   if (currentIndex === null) {
     return 0;
   }
 
   let newIndex = currentIndex;
   switch (key) {
-    case('ArrowUp'):
+    case(Key.ArrowUp):
       newIndex = handleArrowUp(currentIndex, options);
       break;
-    case('ArrowDown'):
+    case(Key.ArrowDown):
       newIndex = handleArrowDown(currentIndex, options);
       break;
   }

@@ -48,8 +48,8 @@
     "test": "craco test --env=node",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
+    "electron:package:publish": "craco build && electron-builder -m -w -c.extraMetadata.main=build/electron.js --config electron/electron-builder-config.js --publish=always",
     "electron:package:mac": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js",
-    "electron:package:mac:publish": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js --config electron/electron-builder-config.js --publish=always",
     "electron:package:win": "craco build && electron-builder -w -c.extraMetadata.main=build/electron.js",
     "electron:package:linux": "craco build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },

@@ -6,6 +6,9 @@ import { useHistory } from 'react-router-dom';
 
 import { AddressBar } from '.';
 import { routeWithApp } from './util';
+import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
+import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
+import { PlatformApp } from '../../lib/apps';
 
 interface PublicProperties {
   className?: string;
@@ -15,7 +18,11 @@ export interface Properties extends PublicProperties {
   history: History;
   route: string;
   deepestVisitedRoute: string;
-  app: string;
+
+  providerService: ProviderService;
+  znsClient: ZnsClientFactory;
+
+  app: PlatformApp;
 }
 
 export class Container extends React.Component<Properties> {
@@ -27,6 +34,10 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {};
+  }
+
+  znsClient() {
+    return this.props.znsClient.get(this.props.providerService.get());
   }
 
   get isAtRootDomain() {
@@ -73,8 +84,8 @@ export class Container extends React.Component<Properties> {
     this.goToRoute(this.getNextRoute());
   }
 
-  goToRoute(route) {
-    this.props.history.push(routeWithApp(route, this.props.app));
+  goToRoute = route => {
+    this.props.history.push(routeWithApp(route, this.props.app.type));
   }
 
   render() {
@@ -87,15 +98,17 @@ export class Container extends React.Component<Properties> {
         onForward={this.handleForward}
         canGoBack={!this.isAtRootDomain}
         canGoForward={this.canNavigateDeeper}
+        api={this.znsClient()}
+        onSelect={this.goToRoute}
       />
     );
   }
 }
 
-const ConnectedContainer = connectContainer<any>(Container);
+const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Container));
 
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();
 
-  return <ConnectedContainer {...props} history={history} />;
+  return <ConnectedContainer {...props} history={history} znsClient={client} />;
 }

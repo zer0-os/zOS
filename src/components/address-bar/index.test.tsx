@@ -2,16 +2,25 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 
-import { AddressBar } from '.';
+import { AddressBar, AddressBarMode } from '.';
 import { Apps } from '../../lib/apps';
-import { Icons } from '../icon-button/icons';
-import { IconButton } from '../icon-button';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
+
+import { ZNSDropdown } from '../zns-dropdown';
+
+let onSelect;
 
 describe('AddressBar', () => {
+  beforeEach(() => {
+    onSelect = jest.fn();
+  });
+
   const subject = (props: any = {}) => {
     const allProps = {
       route: '',
       app: Apps.Feed,
+      onSelect,
+      addressBarMode: null,
       ...props,
     };
 
@@ -30,6 +39,18 @@ describe('AddressBar', () => {
     expect(wrapper.find('.address-bar__protocol').text().trim()).toStrictEqual('0://');
   });
 
+  it('renders app name', () => {
+    const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' }});
+    
+    expect(wrapper.find('.address-bar__route .address-bar__route-app').text().trim()).toStrictEqual('Feed');
+  });
+
+  it('does not render app name no app selected', () => {
+    const wrapper = subject({ app: null });
+    
+    expect(wrapper.find('.address-bar__route .address-bar__route-app').exists()).toBe(false);
+  });
+
   it('renders route in segments', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
     
@@ -39,13 +60,21 @@ describe('AddressBar', () => {
   });
 
   it('renders Link to route with app at segment', () => {
-    const app = 'feed';
+    const app = { type: Apps.Feed };
     const wrapper = subject({ route: 'food.street.tacos', app });
     
     const segments = wrapper.find(Link);
 
-    expect(segments.at(0).prop('to')).toStrictEqual(`/food/${app}`);
-    expect(segments.at(1).prop('to')).toStrictEqual(`/food.street/${app}`);
+    expect(segments.at(0).prop('to')).toStrictEqual('/food/feed');
+    expect(segments.at(1).prop('to')).toStrictEqual('/food.street/feed');
+  });
+
+  it('does not add app link if no selected app', () => {
+    const wrapper = subject({ route: 'food.street.tacos', app: null });
+    
+    const segments = wrapper.find(Link);
+
+    expect(segments.at(0).prop('to')).toStrictEqual('/food');
   });
 
   it('renders route seperators', () => {
@@ -100,5 +129,33 @@ describe('AddressBar', () => {
     wrapper.find('.address-bar__navigation-button').at(1).simulate('click');
 
     expect(onForward).toHaveBeenCalledOnce();
+  });
+
+  it('shows search when trigger zone is clicked', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+
+    wrapper.find('[className$="trigger-region"]').simulate('click');
+
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
+  });
+
+  it('hides search when item is selected', () => {
+    const wrapper = subject({ addressBarMode: 'search' });
+
+    wrapper.find(ZNSDropdown).simulate('Select');
+    
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+  });
+
+  it('onSelect is mapped', () => {
+    const expectation = 'zns-route';
+
+    const wrapper = subject({ addressBarMode: AddressBarMode.Search });
+
+    wrapper.find(ZNSDropdown).simulate('Select', expectation);
+
+    expect(onSelect).toHaveBeenCalledWith(expectation);
   });
 });

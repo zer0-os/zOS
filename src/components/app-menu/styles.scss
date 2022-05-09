@@ -1,9 +1,14 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+@import '../../variables';
+
 .app-menu {
   font-size: 20px;
-  color: #E6E6E6;
+  color: theme.$font-color-app-menu;
 
   :link {
-    color: #E6E6E6;
+    display: flex;
+    align-items: center;
+    color: theme.$font-color-app-menu;
   }
 
   ul {
@@ -31,6 +36,12 @@
 
       :link {
         color: #FFF;
+      }
+    }
+
+    &-name {
+      @include for-left-collapse() {
+        display: none;
       }
     }
   }

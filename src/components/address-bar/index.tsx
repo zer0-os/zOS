@@ -3,28 +3,53 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { routeWithApp } from './util';
-import { apps } from '../../lib/apps';
+import { PlatformApp } from '../../lib/apps';
 
-import { IconButton } from '../icon-button';
-import { Icons } from '../icon-button/icons';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
+
+import { ZNSDropdown } from '../zns-dropdown';
 
 import './styles.scss';
+
+export enum AddressBarMode {
+  Display = 'display',
+  Search = 'search',
+}
 
 export interface Properties {
   className?: string;
   route: string;
-  app: string;
+  app: PlatformApp;
 
   canGoBack?: boolean;
   canGoForward?: boolean;
 
   onBack?: () => void;
   onForward?: () => void;
+
+  onSearch?: () => void;
+  api?: any;
+  onSelect?: (route: string) => void;
+  addressBarMode?: AddressBarMode;
 }
 
-export class AddressBar extends React.Component<Properties> {
+export interface State {
+  mode: AddressBarMode;
+}
+
+export class AddressBar extends React.Component<Properties, State> {
+  state = { mode: this.props.addressBarMode || AddressBarMode.Display };
+
   get routeSegments() {
     return this.props.route.split('.');
+  }
+
+  get hasSelectedApp() {
+    return !!this.props.app;
+  }
+
+  get app() {
+    return this.props.app || {} as PlatformApp;
   }
 
   renderSegments() {
@@ -38,7 +63,7 @@ export class AddressBar extends React.Component<Properties> {
       return {
         elements: [
           ...elements,
-          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.props.app)}>{segment}</Link>
+          <Link key={segment} className='address-bar__route-segment' to={routeWithApp(route, this.app.type)}>{segment}</Link>
         ],
         route,
       };
@@ -50,9 +75,20 @@ export class AddressBar extends React.Component<Properties> {
   renderRoute() {
     return (
       <span className='address-bar__route'>
-        {this.renderSegments()}<span className='address-bar__route-app'>{apps[this.props.app].name}</span>
+        {this.renderSegments()}
+        {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
       </span>
     );
+  }
+
+  showAddressBarMode = value => e => {
+    this.setState({ mode: value });
+  }
+
+  onSelect = route => {
+    this.setState({ mode: AddressBarMode.Display }, () => {
+      this.props.onSelect(route);
+    });
   }
 
   render() {
@@ -64,16 +100,30 @@ export class AddressBar extends React.Component<Properties> {
       'is-actionable': this.props.canGoForward,
     });
 
+    const { mode } = this.state;
+
     return (
       <div className={classNames('address-bar', this.props.className)}>
         <div className='address-bar__navigation'>
           <IconButton icon={Icons.ChevronLeft} className={backButtonClass} onClick={this.props.onBack} />
           <IconButton icon={Icons.ChevronRight} className={forwardButtonClass} onClick={this.props.onForward} />
         </div>
-        <div className='address-bar__inner'>
-          <span className='address-bar__protocol'>0://</span>
-          {this.renderRoute()}
-        </div>
+
+        {AddressBarMode.Display === mode &&
+          <div className='address-bar__inner'>
+            <span className='address-bar__protocol'>0://</span>
+            {this.renderRoute()}
+            <span className='address-bar__search-trigger-region' onClick={this.showAddressBarMode(AddressBarMode.Search)}></span>
+          </div>
+        }
+        {AddressBarMode.Search === mode &&
+          <div className='address-bar__inner-search-container'>
+            <div className='address-bar__inner-search'>
+              <ZNSDropdown api={this.props.api} onSelect={this.onSelect} />
+            </div>
+          </div>
+        }
+
       </div>
     );
   }

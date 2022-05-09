@@ -1,6 +1,6 @@
 {
   "light": {
-    "platformBackground": "radial-gradient(#FFFFFF, #BDBDBD)",
+    "platformBackground": "#FFFFFF",
 
     "backgroundColorPrimary": "#FFF",
     "backgroundColorPrimaryHover": "#F0F0F0",
@@ -16,11 +16,12 @@
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
     "backgroundColorSidekick": "transparent",
 
-    "primaryBorderColor": "#FFFFFF",
+    "primaryBorderColor": "#E6E6E6",
     "secondaryBorderColor": "#21152D",
 
-    "addressBarBorderColorOuter": "#FFF",
+    "addressBarBorderColorOuter": "#F9F9F9",
     "addressBarBorderColorInner": "#EFEFEF",
+    "addressBarBackgroundColorInner": "#F2F2F2",
 
     "fontColorPrimary": "#000000",
     "fontColorPrimaryHover": "#121212",
@@ -28,6 +29,8 @@
     "fontColorSecondaryHover": "#121212",
     "fontColorTertiary": "#FFFFFF",
     "fontColorTertiaryHover": "#F5F5F5",
+
+    "fontColorAppMenu": "#6C6C6C",
 
     "accentColor": "#B14EFF",
     "accentColorMid": "#6A3991",
@@ -80,6 +83,7 @@
 
     "addressBarBorderColorOuter": "#23142F",
     "addressBarBorderColorInner": "#472E5B",
+    "addressBarBackgroundColorInner": "#1A1022",
 
     "fontColorPrimary": "#FFFFFF",
     "fontColorPrimaryHover": "#F5F5F5",
@@ -87,6 +91,8 @@
     "fontColorSecondaryHover": "#363636",
     "fontColorTertiary": "#959595",
     "fontColorTertiaryHover": "#000000",
+
+    "fontColorAppMenu": "#E6E6E6",
 
     "accentColor": "#B14EFF",
     "accentColorMid": "#6A3991",

@@ -1,11 +1,12 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
-import { Router, Redirect, Route, HashRouter } from 'react-router-dom';
+import { Router, Redirect, Route } from 'react-router-dom';
 import { createBrowserHistory, createHashHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
@@ -18,20 +19,18 @@ import './index.scss';
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
+const redirectToDefaults = ({ match: { params } }) => <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />;
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <EscapeManagerProvider>
-        <HashRouter>
-          <Router history={history}>
-            <Web3ReactContextProvider>
-              <Route path='/' exact>
-                <Redirect to={`/${config.defaultZnsRoute}/${config.defaultApp}`} />
-              </Route>
-              <Route path='/:znsRoute/:app?' component={ZnsRouteConnect} />
-            </Web3ReactContextProvider>
-          </Router>
-        </HashRouter>
+        <Router history={history}>
+          <Web3ReactContextProvider>
+            <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
+            <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+          </Web3ReactContextProvider>
+        </Router>
       </EscapeManagerProvider>
     </Provider>
   </React.StrictMode>,

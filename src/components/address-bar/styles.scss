@@ -1,7 +1,13 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 
+@import '../../variables';
+
+$width-navigation: 32px;
+$height-address-bar: 40px;
+$height-address-bar-inner: 19px;
+
 .address-bar {
-  height: 40px;
+  height: $height-address-bar;
   background-color: theme.$background-color-primary;
   border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
@@ -9,22 +15,59 @@
   
   display: flex;
   align-items: center;
-  
-  &__inner {
+
+  &__inner, &__inner-search {
     border: 1px solid theme.$address-bar-border-color-inner;
-    border-radius: 24px;
+    border-radius: 20px;
 
     padding: 10px;
 
-    flex: 1 1 auto;
-  }
-  
-  &__protocol,
-  &__route {
     color: theme.$font-color-primary;
   }
 
+  $padding-border-factor: 10 + 1 * 2px; // padding + border * 2 from __inner
+
+  &__inner {
+    height: $height-address-bar-inner;
+    flex: 1 1 auto;
+
+    display: flex;
+  }
+
+  &__inner-search-container {
+    position: relative;
+
+    padding: 0;
+
+    height: $height-address-bar-inner + $padding-border-factor;
+    width: $width-application-content - $width-navigation - $padding-border-factor;
+  }
+
+  &__inner-search {
+    position: absolute;
+
+    padding: 0;
+    top: -5px;
+    background-color: theme.$background-color-primary;
+
+    min-height: $height-address-bar-inner + $padding-border-factor;
+    width: 100%;
+  }
+
+  &__protocol,
+  &__route {
+    color: theme.$font-color-tertiary;
+
+    align-items: flex-start;
+  }
+
+  &__search-trigger-region {
+    flex: 1 1 auto;
+    cursor: pointer;
+  }
+
   &__navigation {
+    min-width: $width-navigation;
     padding: 0 5px;
   }
 

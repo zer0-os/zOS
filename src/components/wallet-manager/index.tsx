@@ -5,6 +5,7 @@ import { connectContainer } from '../../store/redux-container';
 import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { updateConnector } from '../../store/web3';
 import  { ConnectionStatus, Connectors } from '../../lib/web3';
+import { isElectron } from '../../utils';
 
 import './styles.scss';
 
@@ -56,22 +57,31 @@ export class Container extends React.Component<Properties, State> {
     }
   }
 
-  get showButton() {
+  get showButton(): boolean {
     return !(
       ( this.props.connectionStatus === ConnectionStatus.Connected ) &&
       ( this.props.currentConnector === Connectors.Metamask )
     );
   }
 
-  get showModal() {
+  get showModal(): boolean {
     return this.state.showModal;
   }
 
-  get isConnecting() {
+  get isConnecting(): boolean {
     return this.state.walletSelected || ( this.props.connectionStatus === ConnectionStatus.Connecting );
   }
 
-  get availableWallets() {
+  get availableWallets(): WalletType[] {
+    if (isElectron()) {
+      return [
+        WalletType.WalletConnect,
+        WalletType.Coinbase,
+        WalletType.Fortmatic,
+        WalletType.Portis,
+      ];  
+    }
+
     return [
       WalletType.Metamask,
       WalletType.WalletConnect,

@@ -7,7 +7,14 @@ import { PlatformApp } from '../../lib/apps';
 
 import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
+import { ZNSDropdown } from '../zns-dropdown';
+
 import './styles.scss';
+
+export enum AddressBarMode {
+  Display = 'display',
+  Search = 'search',
+}
 
 export interface Properties {
   className?: string;
@@ -19,9 +26,20 @@ export interface Properties {
 
   onBack?: () => void;
   onForward?: () => void;
+
+  onSearch?: () => void;
+  api?: any;
+  onSelect?: (route: string) => void;
+  addressBarMode?: AddressBarMode;
 }
 
-export class AddressBar extends React.Component<Properties> {
+export interface State {
+  mode: AddressBarMode;
+}
+
+export class AddressBar extends React.Component<Properties, State> {
+  state = { mode: this.props.addressBarMode || AddressBarMode.Display };
+
   get routeSegments() {
     return this.props.route.split('.');
   }
@@ -63,6 +81,16 @@ export class AddressBar extends React.Component<Properties> {
     );
   }
 
+  showAddressBarMode = value => e => {
+    this.setState({ mode: value });
+  }
+
+  onSelect = route => {
+    this.setState({ mode: AddressBarMode.Display }, () => {
+      this.props.onSelect(route);
+    });
+  }
+
   render() {
     const backButtonClass = classNames('address-bar__navigation-button', {
       'is-actionable': this.props.canGoBack,
@@ -72,16 +100,30 @@ export class AddressBar extends React.Component<Properties> {
       'is-actionable': this.props.canGoForward,
     });
 
+    const { mode } = this.state;
+
     return (
       <div className={classNames('address-bar', this.props.className)}>
         <div className='address-bar__navigation'>
           <IconButton icon={Icons.ChevronLeft} className={backButtonClass} onClick={this.props.onBack} />
           <IconButton icon={Icons.ChevronRight} className={forwardButtonClass} onClick={this.props.onForward} />
         </div>
-        <div className='address-bar__inner'>
-          <span className='address-bar__protocol'>0://</span>
-          {this.renderRoute()}
-        </div>
+
+        {AddressBarMode.Display === mode &&
+          <div className='address-bar__inner'>
+            <span className='address-bar__protocol'>0://</span>
+            {this.renderRoute()}
+            <span className='address-bar__search-trigger-region' onClick={this.showAddressBarMode(AddressBarMode.Search)}></span>
+          </div>
+        }
+        {AddressBarMode.Search === mode &&
+          <div className='address-bar__inner-search-container'>
+            <div className='address-bar__inner-search'>
+              <ZNSDropdown api={this.props.api} onSelect={this.onSelect} />
+            </div>
+          </div>
+        }
+
       </div>
     );
   }

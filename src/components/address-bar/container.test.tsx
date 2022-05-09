@@ -4,6 +4,7 @@ import { RootState } from '../../store';
 
 import { AddressBar } from '.';
 import { Container } from './container';
+import { ProviderService } from '../../lib/web3/provider-service';
 import { Apps, PlatformApp } from '../../lib/apps';
 import { ZnsDomainDescriptor } from '../../store/zns';
 
@@ -14,6 +15,8 @@ describe('AddressBarContainer', () => {
       app: '',
       deepestVisitedRoute: '',
       history: { push: () => undefined },
+      providerService: { get: () => null } as ProviderService,
+      znsClient: { get: () => null },
       ...props,
     };
 

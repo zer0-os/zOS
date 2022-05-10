@@ -18,6 +18,22 @@ describe('AppSandbox', () => {
     return shallow(<AppSandbox {...allProps} />);
   };
 
+  it('passes store to channels app', () => {
+    const store: any = { what: 'no' };
+
+    const wrapper = subject({ selectedApp: Apps.Channels, store });
+
+    expect(wrapper.find(ChannelsContainer).prop('store')).toStrictEqual(store); 
+  });
+
+  it('does not pass store to feed app', () => {
+    const store: any = { what: 'no' };
+
+    const wrapper = subject({ selectedApp: Apps.Feed, store });
+
+    expect(wrapper.find(App).prop('store')).toBeUndefined();
+  });
+
   it('renders Feed app container when Feed app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Feed });
 

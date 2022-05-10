@@ -10,6 +10,7 @@ import { ProviderService } from '../lib/web3/provider-service';
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
+      store: {} as any,
       route: '',
       address: '',
       chainId: null,
@@ -21,6 +22,14 @@ describe('AppSandboxContainer', () => {
 
     return shallow(<Container {...allProps} />);
   };
+
+  it('passes store to child', () => {
+    const store: any = { what: 'no' };
+
+    const wrapper = subject({ store });
+
+    expect(wrapper.find(AppSandbox).prop('store')).toStrictEqual(store);
+  });
 
   it('does not render child when not connected', () => {
     const wrapper = subject({

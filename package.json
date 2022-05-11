@@ -5,6 +5,7 @@
   "main": "./public/electron.js",
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@electron/remote": "^2.0.8",
     "@reduxjs/toolkit": "^1.7.1",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.20.37",

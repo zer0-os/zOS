@@ -4,9 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 
 const isValidChannel = (channel) => [
-  // XXX - ssb multiplex channels. 
-  // 'pull-electron-ipc-main',
-  // 'pull-electron-ipc-renderer',
+  'zchain-ipc-transport-main',
+  'zchain-ipc-transport-renderer',
   'startZChainServer',
   'ZChainServerStarted',
 ].includes(channel);

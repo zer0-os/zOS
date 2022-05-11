@@ -82,7 +82,6 @@ function startServer() {
     win.loadURL(zChainServerPath);
 
     win.webContents.on('did-finish-load', () => {
-      console.log('finished load');
       resolve(win);
     });
   });
@@ -90,17 +89,19 @@ function startServer() {
 
 function setupIpcHandlers() {
   ipcMain.on('startZChainServer', async (_event) => {
-    console.log('in main -- starting ZChain server');
-
     zChainServerWindow = await startServer();
 
-    console.log('in main -- got ZChain server', zChainServerWindow);
-
-    console.log('app window: ', appWindow);
     if (isRunning(appWindow)) {
-      console.log('sending server started event');
       appWindow.webContents.send('ZChainServerStarted');
     }
+  });
+
+  ipcMain.on('zchain-ipc-transport-main', (_event, data) => {
+    isRunning(zChainServerWindow) && zChainServerWindow.webContents.send('zchain-ipc-transport-main', data);
+  });
+
+  ipcMain.on('zchain-ipc-transport-renderer', (_event, data) => {
+    isRunning(appWindow) && appWindow.webContents.send('zchain-ipc-transport-renderer', data);
   });
 }
 

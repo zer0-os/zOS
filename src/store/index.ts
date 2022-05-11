@@ -4,6 +4,7 @@ import { combineReducers } from 'redux';
 
 import { rootSaga } from './saga';
 
+import { reducer as channels } from './channels';
 import { reducer as web3 } from './web3';
 import { reducer as zns } from './zns';
 import { reducer as theme } from './theme';
@@ -16,6 +17,7 @@ const sagaMiddleware = createSagaMiddleware({
 });
 
 export const rootReducer = combineReducers({
+  channels,
   web3,
   zns,
   theme,

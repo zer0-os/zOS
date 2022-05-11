@@ -1,8 +1,7 @@
 name: Release Electron development
 on:
   push:
-    branches-ignore:
-      - main
+    branches:
       - development
 jobs:
   test:

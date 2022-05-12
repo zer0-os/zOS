@@ -29,6 +29,7 @@ jobs:
       REACT_APP_FORTMATIC_API_KEY: ${{secrets.FORTMATIC_API_KEY}}
       REACT_APP_PORTIS_DAPP_ID: ${{secrets.PORTIS_DAPP_ID}}
       REACT_APP_INFURA_ID: ${{secrets.INFURA_ID}}
+      PUBLIC_URL: https://optimistic-kare-3090a1.netlify.app
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

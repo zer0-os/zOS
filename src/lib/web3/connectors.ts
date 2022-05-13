@@ -9,12 +9,12 @@ import { Chains } from './index';
 import { config } from '../../config';
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [Chains.Kovan],
+  supportedChainIds: [Chains.Kovan, Chains.MainNet],
 });
 
 export const walletConnect = new WalletConnectConnector({
   infuraId: config.infuraId,
-  supportedChainIds: [Chains.Kovan],
+  supportedChainIds: [Chains.Kovan, Chains.MainNet],
 });
 
 export const walletLink = new WalletLinkConnector({

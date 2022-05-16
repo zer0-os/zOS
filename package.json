@@ -1,7 +1,8 @@
 {
   "name": "zOS",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
+  "homepage": "./",
   "main": "./public/electron.js",
   "dependencies": {
     "@craco/craco": "^6.4.3",

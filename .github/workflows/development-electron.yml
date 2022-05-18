@@ -16,7 +16,7 @@ jobs:
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install
       - run: npm run test
-  release_osx:
+  electron_release:
     permissions: write-all
     needs: test
     runs-on: macOS-latest
@@ -38,7 +38,7 @@ jobs:
           node-version: '16'
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install
-      - name: Build/Release Electron Zer0
+      - name: Build/Release electron
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run electron:package:mac:publish
+        run: npm run electron:package:publish

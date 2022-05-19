@@ -17,6 +17,9 @@ module.exports = function () {
       icon: 'electron/assets/images/zero-white-icon.icns',
       target: ['dmg', 'zip'],
     },
+    win: {
+      icon: 'electron/assets/images/zero-white-icon.ico',
+    },
   };
 };
 

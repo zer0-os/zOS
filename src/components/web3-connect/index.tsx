@@ -98,6 +98,7 @@ export class Container extends React.Component<Properties, State> {
       web3: {
         active: previouslyActive,
         library: previousLibrary,
+        account: previouslyAccount,
       },
     } = prevProps;
     const { web3, connectionStatus } = this.props;
@@ -105,8 +106,10 @@ export class Container extends React.Component<Properties, State> {
     if (this.props.currentConnector !== prevProps.currentConnector) {
       this.activateCurrentConnector();
     }
-
-    if (web3.active && ( !previouslyActive || ( web3.library !== previousLibrary ))) {
+    
+    if ((web3.active && ( !previouslyActive || ( web3.library !== previousLibrary ))) ||
+        web3.account !== previouslyAccount)
+    {
       this.syncGlobalsForConnectedStatus();
     }
 

@@ -13,6 +13,7 @@ export interface Properties {
   currentAddress: string;
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
+  isNotSupportedNetwork: boolean;
   updateConnector: (connector: WalletType) => void;
 }
 
@@ -29,6 +30,8 @@ export class Container extends React.Component<Properties, State> {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
+      isNotSupportedNetwork: value.isNotSupportedNetwork,
+
     };
   }
 
@@ -114,6 +117,7 @@ export class Container extends React.Component<Properties, State> {
           <WalletSelectModal
             wallets={this.availableWallets}
             isConnecting={this.isConnecting}
+            isNotSupportedNetwork={this.props.isNotSupportedNetwork}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}
           />

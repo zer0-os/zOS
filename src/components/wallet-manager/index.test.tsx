@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import { EthAddress, Button, WalletSelectModal, WalletType, ErrorNetwork, WalletSelect, Dialog } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 
@@ -32,6 +32,7 @@ describe('WalletManager', () => {
     wrapper.setProps({
       connectionStatus: ConnectionStatus.Connected,
       currentConnector: Connectors.Metamask,
+      isNotsupportedNetwork: false,
     });
 
     expect(wrapper.find(Button).exists()).toBe(false);
@@ -163,6 +164,16 @@ describe('WalletManager', () => {
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
   });
 
+  it('passes isNotSupportedNetwork of true when network is not supported', () => {
+    const wrapper = subject();
+
+    wrapper.setProps({ isNotSupportedNetwork: true });
+
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    
+    expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
+  });
+
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
     const getState = (state: any = {}) => ({
@@ -178,6 +189,7 @@ describe('WalletManager', () => {
       value: {
         address: '0x0',
         connector: Connectors.None,
+        isNotSupportedNetwork: false,
         ...(web3.value || {}),
       },
     });
@@ -202,6 +214,14 @@ describe('WalletManager', () => {
       const state = subject(getState({ web3: getWeb3({ value: { connector: currentConnector } }) }));
 
       expect(state.currentConnector).toEqual(Connectors.Fortmatic);
+    });
+
+    test('isNotSupportedNetwork', () => {
+      const isNotSupportedNetwork = true;
+
+      const state = subject(getState({ web3: getWeb3({ value: { isNotSupportedNetwork } }) }));
+
+      expect(state.isNotSupportedNetwork).toEqual(isNotSupportedNetwork);
     });
   });
 });

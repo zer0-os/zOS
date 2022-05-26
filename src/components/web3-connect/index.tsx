@@ -6,13 +6,14 @@ import { providers } from 'ethers';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
-import { setAddress, setConnectionStatus, updateConnector } from '../../store/web3';
+import { setAddress, setConnectionStatus, updateConnector, setIsNotSupportedNetwork } from '../../store/web3';
 
 export interface Properties {
   connectionStatus: ConnectionStatus,
   setConnectionStatus: (status: ConnectionStatus) => void,
   setAddress: (address: string) => void,
   updateConnector: (connector: Connectors) => void,
+  setIsNotSupportedNetwork: (isNotSupportedNetwork: boolean) => void,
   providerService: { register: (provider: any) => void },
   connectors: { get: (connector: Connectors) => any },
   currentConnector: Connectors,
@@ -44,6 +45,7 @@ export class Container extends React.Component<Properties, State> {
       setAddress,
       setConnectionStatus,
       updateConnector,
+      setIsNotSupportedNetwork,
     };
   }
 
@@ -59,6 +61,7 @@ export class Container extends React.Component<Properties, State> {
 
   onActivateError(): void {
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
+    this.props.setIsNotSupportedNetwork(true);
   }
 
   async activateCurrentConnector() {
@@ -75,7 +78,8 @@ export class Container extends React.Component<Properties, State> {
     const connector = connectors.get(currentConnector);
 
     try {
-      await web3.activate(connector, null, true)
+      await web3.activate(connector, null, true);
+      this.props.setIsNotSupportedNetwork(false);
     } catch (error) {
       this.onActivateError();
     }

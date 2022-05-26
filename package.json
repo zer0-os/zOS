@@ -18,7 +18,7 @@
     "@web3-react/portis-connector": "^6.2.11",
     "@web3-react/walletconnect-connector": "^6.2.13",
     "@web3-react/walletlink-connector": "^6.2.13",
-    "@zer0-os/zos-component-library": "^0.5.4",
+    "@zer0-os/zos-component-library": "^0.6.0",
     "@zer0-os/zos-feed": "^1.7.0",
     "@zer0-os/zos-zns": "^1.1.1",
     "classnames": "^2.3.1",

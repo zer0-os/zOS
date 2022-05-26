@@ -78,8 +78,8 @@ export class Container extends React.Component<Properties, State> {
     const connector = connectors.get(currentConnector);
 
     try {
-      await web3.activate(connector, null, true);
       this.props.setIsNotSupportedNetwork(false);
+      await web3.activate(connector, null, true);
     } catch (error) {
       this.onActivateError();
     }
@@ -106,7 +106,7 @@ export class Container extends React.Component<Properties, State> {
       },
     } = prevProps;
     const { web3, connectionStatus } = this.props;
-
+    
     if (this.props.currentConnector !== prevProps.currentConnector) {
       this.activateCurrentConnector();
     }

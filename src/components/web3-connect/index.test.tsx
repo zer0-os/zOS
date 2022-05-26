@@ -23,6 +23,7 @@ describe('Web3Connect', () => {
       setConnectionStatus: () => undefined,
       setAddress: () => undefined,
       updateConnector: () => undefined,
+      setIsNotSupportedNetwork: () => undefined,
       ...props,
       web3: getWeb3(props.web3),
       providerService: {
@@ -216,6 +217,21 @@ describe('Web3Connect', () => {
     component.setProps({ web3: getWeb3({ account: address, active: true }) });
 
     expect(setAddress).toHaveBeenCalledWith(address);
+  });
+
+  it('sets isNotSupportedNetwork when active is true', () => {
+    const setIsNotSupportedNetwork = jest.fn();
+    const isNotSupportedNetwork = false;
+
+    const component = subject({
+        setIsNotSupportedNetwork,
+        currentConnector: Connectors.Infura,
+        web3: { active: false } as any,
+      });
+
+    component.setProps({ currentConnector: Connectors.Metamask, web3: getWeb3({ active: true }) });
+    expect(setIsNotSupportedNetwork).toHaveBeenCalledWith(isNotSupportedNetwork);
+    
   });
 
   it('renders children when connectionStatus is Connected', () => {

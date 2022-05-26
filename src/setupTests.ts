@@ -6,3 +6,6 @@ import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 expect.extend(matchers);
 
 configure({ adapter: new Adapter() });
+
+// Needed for tests 
+process.env.REACT_APP_ETH_CHAIN = '1';

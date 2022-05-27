@@ -8,6 +8,8 @@ import  { ConnectionStatus, Connectors } from '../../lib/web3';
 import { isElectron } from '../../utils';
 
 import './styles.scss';
+import { getChainNameFromId } from '../../lib/web3/chains';
+import { config } from '../../config';
 
 export interface Properties {
   currentAddress: string;
@@ -77,6 +79,10 @@ export class Container extends React.Component<Properties, State> {
     return this.props.connectionStatus === ConnectionStatus.NetworkNotSupported;
   }
 
+  get getNetworkNameById() {
+    return getChainNameFromId(config.supportedChainId);
+  }
+
   get availableWallets(): WalletType[] {
     if (isElectron()) {
       return [
@@ -120,6 +126,7 @@ export class Container extends React.Component<Properties, State> {
             wallets={this.availableWallets}
             isConnecting={this.isConnecting}
             isNotSupportedNetwork={this.isNetworkNotSupported}
+            networkName={this.getNetworkNameById}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}
           />

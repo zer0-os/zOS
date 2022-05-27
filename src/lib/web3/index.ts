@@ -2,6 +2,7 @@ export enum ConnectionStatus {
   Disconnected = 'disconnected',
   Connecting = 'connecting',
   Connected = 'connected',
+  NetworkNotSupported = 'NetworkNotSupported',
 }
 
 export enum Connectors {

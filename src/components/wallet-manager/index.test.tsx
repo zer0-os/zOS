@@ -32,7 +32,6 @@ describe('WalletManager', () => {
     wrapper.setProps({
       connectionStatus: ConnectionStatus.Connected,
       currentConnector: Connectors.Metamask,
-      isNotsupportedNetwork: false,
     });
 
     expect(wrapper.find(Button).exists()).toBe(false);
@@ -166,11 +165,11 @@ describe('WalletManager', () => {
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {
     const wrapper = subject();
-
-    wrapper.setProps({ isNotSupportedNetwork: true });
-
+    
     wrapper.find('.wallet-manager__connect-button').simulate('click');
     
+    wrapper.setProps({ connectionStatus: ConnectionStatus.NetworkNotSupported });
+
     expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
   });
 
@@ -189,7 +188,6 @@ describe('WalletManager', () => {
       value: {
         address: '0x0',
         connector: Connectors.None,
-        isNotSupportedNetwork: false,
         ...(web3.value || {}),
       },
     });
@@ -217,11 +215,11 @@ describe('WalletManager', () => {
     });
 
     test('isNotSupportedNetwork', () => {
-      const isNotSupportedNetwork = true;
+      const connectionStatus = ConnectionStatus.NetworkNotSupported;
 
-      const state = subject(getState({ web3: getWeb3({ value: { isNotSupportedNetwork } }) }));
+      const state = subject(getState({ web3: getWeb3({ status: connectionStatus }) }));
 
-      expect(state.isNotSupportedNetwork).toEqual(isNotSupportedNetwork);
+      expect(state.connectionStatus).toEqual(connectionStatus);
     });
   });
 });

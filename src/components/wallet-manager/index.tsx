@@ -13,7 +13,6 @@ export interface Properties {
   currentAddress: string;
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
-  isNotSupportedNetwork: boolean;
   updateConnector: (connector: WalletType) => void;
 }
 
@@ -30,7 +29,6 @@ export class Container extends React.Component<Properties, State> {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
-      isNotSupportedNetwork: value.isNotSupportedNetwork,
 
     };
   }
@@ -53,7 +51,7 @@ export class Container extends React.Component<Properties, State> {
     }
 
     if (
-      ( this.props.connectionStatus === ConnectionStatus.Disconnected ) &&
+      ( this.props.connectionStatus === ConnectionStatus.Disconnected || this.props.connectionStatus === ConnectionStatus.NetworkNotSupported ) &&
       ( prevProps.connectionStatus !== this.props.connectionStatus )
     ) {
       this.setState({ walletSelected: false });
@@ -73,6 +71,10 @@ export class Container extends React.Component<Properties, State> {
 
   get isConnecting(): boolean {
     return this.state.walletSelected || ( this.props.connectionStatus === ConnectionStatus.Connecting );
+  }
+
+  get isNetworkNotSupported(): boolean {
+    return this.props.connectionStatus === ConnectionStatus.NetworkNotSupported;
   }
 
   get availableWallets(): WalletType[] {
@@ -117,7 +119,7 @@ export class Container extends React.Component<Properties, State> {
           <WalletSelectModal
             wallets={this.availableWallets}
             isConnecting={this.isConnecting}
-            isNotSupportedNetwork={this.props.isNotSupportedNetwork}
+            isNotSupportedNetwork={this.isNetworkNotSupported}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}
           />

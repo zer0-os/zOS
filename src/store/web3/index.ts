@@ -20,13 +20,12 @@ export interface Web3State {
   value: {
     address: string,
     connector: Connectors,
-    isNotSupportedNetwork: boolean,
   },
 }
 
 const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
-  value: { address: '', connector: Connectors.None, isNotSupportedNetwork: false },
+  value: { address: '', connector: Connectors.None },
 };
 
 const slice = createSlice({
@@ -42,12 +41,9 @@ const slice = createSlice({
     setAddress: (state, action: PayloadAction<string>) => {
       state.value.address = action.payload;
     },
-    setIsNotSupportedNetwork: (state, action: PayloadAction<boolean>) => {
-      state.value.isNotSupportedNetwork = action.payload;
-    },
   },
 });
 
-export const { setConnector, setAddress, setConnectionStatus, setIsNotSupportedNetwork } = slice.actions;
+export const { setConnector, setAddress, setConnectionStatus } = slice.actions;
 export const { reducer } =  slice;
 export { updateConnector };

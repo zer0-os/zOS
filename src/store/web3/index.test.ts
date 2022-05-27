@@ -3,7 +3,6 @@ import {
   setConnectionStatus,
   setConnector,
   setAddress,
-  setIsNotSupportedNetwork,
   Web3State,
 } from '.';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
@@ -11,13 +10,13 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 describe('web3 reducer', () => {
   const initialExistingState: Web3State = {
     status: ConnectionStatus.Disconnected,
-    value: { address: '', connector: Connectors.None, isNotSupportedNetwork: false },
+    value: { address: '', connector: Connectors.None},
   };
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       status: ConnectionStatus.Disconnected,
-      value: { address: '', connector: Connectors.None, isNotSupportedNetwork: false },
+      value: { address: '', connector: Connectors.None },
     });
   });
 
@@ -37,11 +36,5 @@ describe('web3 reducer', () => {
     const actual = reducer(initialExistingState, setAddress('0x0000000000000000000000000000000000000007'));
 
     expect(actual.value.address).toEqual('0x0000000000000000000000000000000000000007');
-  });
-
-  it('should replace existing state with new isNotSupportedNetwork', () => {
-    const actual = reducer(initialExistingState, setIsNotSupportedNetwork(true));
-
-    expect(actual.value.isNotSupportedNetwork).toEqual(true);
   });
 });

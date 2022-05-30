@@ -13,6 +13,7 @@ export interface Properties {
   itemContainerClassName?: string;
   api: { search: (term: string) => any };
   onSelect: (route: string) => void;
+  onCloseBar: () => void;
 }
 
 interface State {
@@ -57,6 +58,7 @@ export class ZNSDropdown extends React.Component<Properties, State> {
         itemContainerClassName={this.props.itemContainerClassName}
         findMatches={this.findMatches}
         onSelect={this.onSelect}
+        onCloseBar={this.props.onCloseBar}
       />
     );
   }

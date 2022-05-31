@@ -164,7 +164,7 @@ describe('Web3Connect', () => {
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Connected);
   });
 
-  it('should set connection status to disconnected when activate fail', () => {
+  it('should set connection status to networkNotSupported when activate fail', () => {
     const setConnectionStatus = jest.fn();
 
     const web3 = {
@@ -183,7 +183,7 @@ describe('Web3Connect', () => {
 
     web3Connect.setProps({ currentConnector: Connectors.Portis });
 
-    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
+    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.NetworkNotSupported);
   });
 
   it('does not set address if address is empty string', () => {

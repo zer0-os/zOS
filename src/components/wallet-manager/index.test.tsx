@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import { EthAddress, Button, WalletSelectModal, WalletType, ErrorNetwork, WalletSelect, Dialog } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 
@@ -163,6 +163,16 @@ describe('WalletManager', () => {
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
   });
 
+  it('passes isNotSupportedNetwork of true when network is not supported', () => {
+    const wrapper = subject();
+    
+    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    
+    wrapper.setProps({ connectionStatus: ConnectionStatus.NetworkNotSupported });
+
+    expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
+  });
+
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
     const getState = (state: any = {}) => ({
@@ -202,6 +212,14 @@ describe('WalletManager', () => {
       const state = subject(getState({ web3: getWeb3({ value: { connector: currentConnector } }) }));
 
       expect(state.currentConnector).toEqual(Connectors.Fortmatic);
+    });
+
+    test('isNotSupportedNetwork', () => {
+      const connectionStatus = ConnectionStatus.NetworkNotSupported;
+
+      const state = subject(getState({ web3: getWeb3({ status: connectionStatus }) }));
+
+      expect(state.connectionStatus).toEqual(connectionStatus);
     });
   });
 });

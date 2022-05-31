@@ -23,6 +23,7 @@ export interface Properties {
   itemContainerClassName?: string;
   findMatches: (term: string) => Promise<AutocompleteItem[]>;
   onSelect: (item: AutocompleteItem) => void;
+  onCloseBar: () => void;
 }
 
 interface State {
@@ -120,6 +121,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
         inProgress: false,
         currentFocusIndex: 0,
       });
+      this.props.onCloseBar();
     }
   }
 

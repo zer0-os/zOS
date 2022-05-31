@@ -158,4 +158,16 @@ describe('AddressBar', () => {
 
     expect(onSelect).toHaveBeenCalledWith(expectation);
   });
+
+  it('hides search when click outSide', () => {
+    const wrapper = subject();
+
+    wrapper.find('[className$="trigger-region"]').simulate('click');
+
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
+
+    wrapper.find(ZNSDropdown).props().onCloseBar();
+    
+    expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+  });
 });

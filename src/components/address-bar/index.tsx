@@ -85,6 +85,10 @@ export class AddressBar extends React.Component<Properties, State> {
     this.setState({ mode: value });
   }
 
+  closeAddressBarMode = () => {
+    this.setState({ mode: AddressBarMode.Display });
+  }
+
   onSelect = route => {
     this.setState({ mode: AddressBarMode.Display }, () => {
       this.props.onSelect(route);
@@ -119,7 +123,7 @@ export class AddressBar extends React.Component<Properties, State> {
         {AddressBarMode.Search === mode &&
           <div className='address-bar__inner-search-container'>
             <div className='address-bar__inner-search'>
-              <ZNSDropdown api={this.props.api} onSelect={this.onSelect} />
+              <ZNSDropdown api={this.props.api} onSelect={this.onSelect} onCloseBar={this.closeAddressBarMode} />
             </div>
           </div>
         }

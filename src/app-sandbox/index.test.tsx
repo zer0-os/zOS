@@ -10,6 +10,7 @@ describe('AppSandbox', () => {
     const allProps = {
       znsRoute: '',
       selectedApp: null,
+      isOverlayOpen: false,
       ...props,
     };
 
@@ -43,5 +44,15 @@ describe('AppSandbox', () => {
     const wrapper = subject({ selectedApp: Apps.Feed, web3Provider });
 
     expect(wrapper.find(App).prop('provider')).toStrictEqual(web3Provider);
+  });
+
+  it('renders overlay container when search selected', () => {
+    const wrapper = subject({ isOverlayOpen: true });
+
+    expect(wrapper.find('.overlay__container').exists()).toBe(true); 
+
+    wrapper.setProps({ isOverlayOpen: false });
+
+    expect(wrapper.find('.overlay__container').exists()).toBe(false); 
   });
 });

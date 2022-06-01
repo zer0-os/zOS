@@ -1,5 +1,8 @@
 @use '../shared-components/theme-engine/theme' as theme;
+@use '../modules/animation' as animation;
 @import '../variables';
+
+$speed: animation.$animation-duration;
 
 .app-sandbox {
   width: $width-application-content;
@@ -23,3 +26,49 @@
     border-color: theme.$address-bar-border-color-inner;
   }
 }
+
+.overlay {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 100;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.9);
+  transition: backdrop-filter 0.2s;
+
+  &__content {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+  }
+  
+  &__open {
+    animation: overlay_open animation.$animation-duration ease-in-out;
+    opacity: 1;
+    z-index: 3;
+  }
+  
+  &__closed {
+    animation: overlay_close animation.$animation-duration ease-in-out;
+    opacity: 0;
+  }
+  
+  &__close {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+    background: hsla(0, 0%, 100%, 0.1);
+  }
+
+  &__block{
+    display: block;
+    height: 64px;
+  }
+}
+

@@ -13,6 +13,8 @@ export interface Properties {
   providerService: ProviderService;
 
   selectedApp: Apps;
+  hasOverlayDispaly: boolean;
+  isOpen: boolean;
 }
 
 interface State {
@@ -22,12 +24,14 @@ interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { type } = state.apps.selectedApp;
+    const { apps : { selectedApp: { type }, hasOverlay: hasOverlayDispaly, isOverlayOpen: isOpen } } = state;
 
     return {
       route: state.zns.value.route,
       connectionStatus: state.web3.status,
       selectedApp: type,
+      hasOverlayDispaly,
+      isOpen,
     };
   }
 
@@ -65,13 +69,15 @@ export class Container extends React.Component<Properties, State> {
 
   render() {
     if (!this.shouldRender) return null;
-
+    
     return (
       <AppSandbox
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
-      />
+        hasOverlayDispaly={this.props.hasOverlayDispaly}
+        isOpen={this.props.isOpen}
+        />
     );
   }
 }

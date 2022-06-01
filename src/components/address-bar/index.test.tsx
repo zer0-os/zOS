@@ -9,10 +9,14 @@ import { Icons, IconButton } from '@zer0-os/zos-component-library';
 import { ZNSDropdown } from '../zns-dropdown';
 
 let onSelect;
+let setOverlay;
+let setOverlayOpen;
 
 describe('AddressBar', () => {
   beforeEach(() => {
     onSelect = jest.fn();
+    setOverlay = jest.fn();
+    setOverlayOpen = jest.fn();
   });
 
   const subject = (props: any = {}) => {
@@ -20,6 +24,8 @@ describe('AddressBar', () => {
       route: '',
       app: Apps.Feed,
       onSelect,
+      setOverlay,
+      setOverlayOpen,
       addressBarMode: null,
       ...props,
     };

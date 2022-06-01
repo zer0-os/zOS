@@ -9,6 +9,7 @@ import { routeWithApp } from './util';
 import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
 import { PlatformApp } from '../../lib/apps';
+import { setOverlay, setOverlayOpen } from '../../store/apps';
 
 interface PublicProperties {
   className?: string;
@@ -22,6 +23,9 @@ export interface Properties extends PublicProperties {
   providerService: ProviderService;
   znsClient: ZnsClientFactory;
 
+  setOverlay: (hasOverlay: boolean) => void;
+  setOverlayOpen: (isOverlayOpen: boolean) => void;
+
   app: PlatformApp;
 }
 
@@ -33,7 +37,10 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      setOverlay,
+      setOverlayOpen,
+    };
   }
 
   znsClient() {
@@ -100,6 +107,8 @@ export class Container extends React.Component<Properties> {
         canGoForward={this.canNavigateDeeper}
         api={this.znsClient()}
         onSelect={this.goToRoute}
+        setOverlay={this.props.setOverlay}
+        setOverlayOpen={this.props.setOverlayOpen}
       />
     );
   }

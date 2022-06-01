@@ -1,5 +1,8 @@
 @use '../shared-components/theme-engine/theme' as theme;
+@use '../modules/animation' as animation;
 @import '../variables';
+
+$speed: animation.$animation-duration;
 
 .app-sandbox {
   width: $width-application-content;
@@ -23,3 +26,70 @@
     border-color: theme.$address-bar-border-color-inner;
   }
 }
+
+body.no-scroll {
+  height: 100%;
+  overflow: hidden;
+}
+
+.overlay_overlay {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 900000;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.9) !important;
+  transition: -webkit-backdrop-filter 0.2s;
+  transition: backdrop-filter 0.2s;
+  transition: backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
+}
+
+.overlay_container {
+  display: flex;
+  justify-content: center;
+  margin: auto;
+}
+
+.overlay_centered {
+  align-items: center;
+}
+
+.overlay_centered > div > div {
+  margin: 0 auto;
+}
+
+.overlay_overlay > div {
+  padding: 64px;
+  width: 100%;
+  .overlay_block{
+    display: block;
+    height: 64px;
+  }
+}
+
+.overlay_open {
+  -webkit-animation: overlay_open animation.$animation-duration ease-in-out;
+  animation: overlay_open animation.$animation-duration ease-in-out;
+  opacity: 1;
+  z-index: 3;
+}
+
+.overlay_closed {
+  -webkit-animation: overlay_close animation.$animation-duration ease-in-out;
+  animation: overlay_close animation.$animation-duration ease-in-out;
+  opacity: 0;
+}
+
+.overlay_close {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  background: hsla(0, 0%, 100%, 0.1);
+}
+

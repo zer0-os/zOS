@@ -17,6 +17,7 @@ body {
   transition: color animation.$animation-duration-double ease-out;
 
   --box-radius: 16px;
+  --animation-time-short: 0.2s;
   --animation-time-medium: 0.3s;
 }
 

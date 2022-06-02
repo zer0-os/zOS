@@ -54,3 +54,17 @@ $glow-background-color: var(--glow-background-color, #6e10bb);
 $glow-transition-background-color: var(--glow-transition-background-color, #e0baff);
 
 $font-color-app-menu: var(--font-color-app-menu);
+
+$button-background-color: var(--button-background-color, linear-gradient(
+    90deg,
+    rgba(82, 87, 255, 0.25),
+    rgba(82, 203, 255, 0.25)
+  ));
+$button-box-shadow: var(--button-box-shadow, rgba(0, 209, 255, 0.2));
+$button-box-shadow-heavy: var(--button-box-shadow-heavy, rgba(0, 209, 255, 0.5));
+$button-box-shadow-light: var(--button-box-shadow-light, rgba(0, 209, 255, 0.2));
+$button-border-color: var(--button-border-color, #3ca1ff);
+$button-border-color-hover: var(--button-border-color-hover, #ffffff);
+$glow-text-white: var(--glow-text-white, 0px 0px 10px hsla(0,0%,100%,0.7));
+$button-color-grey: var(--button-color-grey, grey);
+$button-box-radius: var(--button-box-radius, 16px);

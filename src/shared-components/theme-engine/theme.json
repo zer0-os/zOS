@@ -121,6 +121,16 @@
 
     "glowTextColor": "hsla(0,0%,100%,0.7)",
     "glowBackgroundColor": "#6e10bb",
-    "glowTransitionBackgroundColor": "#e0baff"
+    "glowTransitionBackgroundColor": "#e0baff",
+
+    "button-background-color": "linear-gradient( 90deg, rgba(82, 87, 255, 0.25), rgba(82, 203, 255, 0.25))",
+    "button-box-shadow": " rgba(0, 209, 255, 0.2)",
+    "button-box-shadow-heavy": "rgba(0, 209, 255, 0.5)",
+    "button-box-shadow-light": "rgba(0, 209, 255, 0.2)",
+    "button-border-color": "#3ca1ff",
+    "button-border-color-hover": "#ffffff",
+    "glow-text-white": "0px 0px 10px hsla(0,0%,100%,0.7)",
+    "button-color-grey": "grey",
+    "button-box-radius": "16px"
   }
 }

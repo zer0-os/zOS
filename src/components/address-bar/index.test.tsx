@@ -159,7 +159,7 @@ describe('AddressBar', () => {
     expect(onSelect).toHaveBeenCalledWith(expectation);
   });
 
-  it('hides search when click outSide', () => {
+  it('hides search when click out side', () => {
     const wrapper = subject();
 
     wrapper.find('[className$="trigger-region"]').simulate('click');

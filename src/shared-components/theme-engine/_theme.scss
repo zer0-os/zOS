@@ -27,9 +27,12 @@ $font-color-secondary: var(--font-color-secondary);
 $font-color-secondary-hover: var(--font-color-secondary-hover);
 $font-color-tertiary: var(--font-color-tertiary);
 $font-color-tertiary-hover: var(--font-color-tertiary-hover);
+$font-color-heading: var(--font-color-heading);
 
-$accent-color: var(--accent-color, #52cbff);
+$accent-color: var(--accent-color);
+$accent-color-1: var(--accent-color-1);
 $accent-color-mid: var(--accent-color-mid, rgba(0,209,255,0.1));
+
 
 $actionable-inactive-color: var(--actionable-inactive-color, #737373);
 $actionable-active-color: var(--actionable-active-color, #FFFFFF);

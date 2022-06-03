@@ -29,6 +29,7 @@
     "fontColorSecondaryHover": "#121212",
     "fontColorTertiary": "#FFFFFF",
     "fontColorTertiaryHover": "#F5F5F5",
+    "fontColorHeading": "#bfbfbf",
 
     "fontColorAppMenu": "#6C6C6C",
 
@@ -91,10 +92,12 @@
     "fontColorSecondaryHover": "#363636",
     "fontColorTertiary": "#959595",
     "fontColorTertiaryHover": "#000000",
+    "fontColorHeading": "#bfbfbf",
 
     "fontColorAppMenu": "#E6E6E6",
 
     "accentColor": "#B14EFF",
+    "accentColor1": "#52cbff",
     "accentColorMid": "#6A3991",
 
     "actionableInactiveColor": "#737373",

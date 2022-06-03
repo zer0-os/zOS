@@ -9,17 +9,20 @@ import { shallow, mount } from 'enzyme';
 
 let findMatches;
 let onSelect;
+let onCloseBar;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
     findMatches = jest.fn();
     onSelect = jest.fn();
+    onCloseBar = jest.fn();
   });
 
   function subject(initialData: Partial<Properties> = {}) {
     const state: Properties = {
       findMatches,
       onSelect,
+      onCloseBar,
       value: null,
       ...initialData,
     };
@@ -31,6 +34,7 @@ describe('autocomplete-dropdown', () => {
     const state: Properties = {
       findMatches,
       onSelect,
+      onCloseBar,
       value: null,
       ...initialData,
     };

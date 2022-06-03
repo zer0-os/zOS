@@ -8,6 +8,8 @@ import  { ConnectionStatus, Connectors } from '../../lib/web3';
 import { isElectron } from '../../utils';
 
 import './styles.scss';
+import { getChainNameFromId } from '../../lib/web3/chains';
+import { config } from '../../config';
 
 export interface Properties {
   currentAddress: string;
@@ -29,6 +31,7 @@ export class Container extends React.Component<Properties, State> {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
+
     };
   }
 
@@ -50,7 +53,7 @@ export class Container extends React.Component<Properties, State> {
     }
 
     if (
-      ( this.props.connectionStatus === ConnectionStatus.Disconnected ) &&
+      ( this.props.connectionStatus === ConnectionStatus.Disconnected || this.props.connectionStatus === ConnectionStatus.NetworkNotSupported ) &&
       ( prevProps.connectionStatus !== this.props.connectionStatus )
     ) {
       this.setState({ walletSelected: false });
@@ -70,6 +73,14 @@ export class Container extends React.Component<Properties, State> {
 
   get isConnecting(): boolean {
     return this.state.walletSelected || ( this.props.connectionStatus === ConnectionStatus.Connecting );
+  }
+
+  get isNetworkNotSupported(): boolean {
+    return this.props.connectionStatus === ConnectionStatus.NetworkNotSupported;
+  }
+
+  get getNetworkNameById() {
+    return getChainNameFromId(config.supportedChainId);
   }
 
   get availableWallets(): WalletType[] {
@@ -114,6 +125,8 @@ export class Container extends React.Component<Properties, State> {
           <WalletSelectModal
             wallets={this.availableWallets}
             isConnecting={this.isConnecting}
+            isNotSupportedNetwork={this.isNetworkNotSupported}
+            networkName={this.getNetworkNameById}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}
           />

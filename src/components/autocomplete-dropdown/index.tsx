@@ -56,11 +56,10 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       this._performSearch,
       config.debounceRate
     );
-    this.escFunction = this.escFunction.bind(this);
   }
 
-  escFunction= async (event) => {
-    if (event.key === 'Escape') {
+  escFunction = (event): void => {
+    if (event.key === Key.Escape) {
       this.props.onCloseBar();
     }
   }
@@ -71,12 +70,16 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
   componentDidMount() {
     this._isMounted = true;
-    document.addEventListener('keydown', this.escFunction, false);
+    if (this.anchorElement) {
+      this.anchorElement.addEventListener('keydown', this.escFunction, false);
+    }
   }
 
   componentWillUnmount() {
     this._isMounted = false;
-    document.removeEventListener('keydown', this.escFunction, false);
+    if (this.anchorElement) {
+      this.anchorElement.removeEventListener('keydown', this.escFunction, false);
+    }
   }
 
   componentWillReceiveProps(nextProps: Properties) {

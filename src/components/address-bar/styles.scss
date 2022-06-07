@@ -73,6 +73,11 @@ $height-address-bar-inner: 19px;
     background-position: 100%;
     flex: 1 1 auto;
     cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    align-content: stretch;
   }
 
   &__navigation {
@@ -126,9 +131,10 @@ $height-address-bar-inner: 19px;
   &__route-app {
     color: #FFF;
     font-weight: 400;
-    margin-left: 10px;
+    margin-right: 24px;
     padding: 2px 8px;
     background: rgba(177, 78, 255, 0.25);
     border-radius: 12px;
+    height: 100%;
   }
 }

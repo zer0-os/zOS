@@ -23,6 +23,10 @@ $height-address-bar-inner: 19px;
     padding: 10px;
 
     color: theme.$font-color-primary;
+    &:hover {
+      background: theme.$address-bar-background-color-inner-hover;
+      border: 1px solid theme.$address-bar-border-color-inner-hover;
+    }
   }
 
   $padding-border-factor: 10 + 1 * 2px; // padding + border * 2 from __inner
@@ -48,10 +52,12 @@ $height-address-bar-inner: 19px;
 
     padding: 0;
     top: -5px;
-    background-color: theme.$background-color-primary;
 
     min-height: $height-address-bar-inner + $padding-border-factor;
-    width: 100%;
+    width: 99.7%;
+
+    background: theme.$address-bar-background-color-inner-hover;
+    border: 1px solid theme.$address-bar-border-color-inner-hover;
   }
 
   &__protocol,
@@ -62,24 +68,43 @@ $height-address-bar-inner: 19px;
   }
 
   &__search-trigger-region {
+    background-image: url(../../search-icon.svg);
+    background-repeat: no-repeat;
+    background-position: 100%;
     flex: 1 1 auto;
     cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    align-content: stretch;
   }
 
   &__navigation {
-    min-width: $width-navigation;
-    padding: 0 5px;
+    margin: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__navigation-button {
     color: theme.$accent-color-mid;
     cursor: auto;
 
-    padding: 10px 5px;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    transition: all var(--animation-time-medium) ease-in-out;
+
+    &.is-actionable:hover {
+      background-color: theme.$address-bar-border-color-outer;
+    }
 
     .icon-button__icon {
       width: 6px;
       height: 10px;
+      transform: scale(1.5);
 
       path {
         fill: theme.$accent-color-mid;
@@ -106,9 +131,10 @@ $height-address-bar-inner: 19px;
   &__route-app {
     color: #FFF;
     font-weight: 400;
-    margin-left: 10px;
+    margin-right: 24px;
     padding: 2px 8px;
     background: rgba(177, 78, 255, 0.25);
     border-radius: 12px;
+    height: 100%;
   }
 }

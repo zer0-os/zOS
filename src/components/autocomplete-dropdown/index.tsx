@@ -52,19 +52,34 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       currentFocusIndex: 0,
     };
 
-    this.performSearch = debouncePromise(this._performSearch, config.debounceRate);
+    this.performSearch = debouncePromise(
+      this._performSearch,
+      config.debounceRate
+    );
   }
 
-  _performSearch = async searchTerm => {
-    return this.props.findMatches(searchTerm);
+  escFunction = (event): void => {
+    if (event.key === Key.Escape) {
+      this.props.onCloseBar();
+    }
   }
+
+  _performSearch = async (searchTerm) => {
+    return this.props.findMatches(searchTerm);
+  };
 
   componentDidMount() {
     this._isMounted = true;
+    if (this.anchorElement) {
+      this.anchorElement.addEventListener('keydown', this.escFunction, false);
+    }
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+    if (this.anchorElement) {
+      this.anchorElement.removeEventListener('keydown', this.escFunction, false);
+    }
   }
 
   componentWillReceiveProps(nextProps: Properties) {
@@ -73,7 +88,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
   }
 
-  onChange = async event => {
+  onChange = async (event) => {
     const searchTerm = event.target.value;
     this.setState({ value: searchTerm });
 
@@ -95,9 +110,9 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       inProgress: false,
       currentFocusIndex: 0,
     });
-  }
+  };
 
-  onSelect = async item => {
+  onSelect = async (item) => {
     // If the component has aready been unmounted, then we can assume that everything
     // has been "closed". The state will be reset when it's re-constructed.
     if (this._isMounted) {
@@ -111,7 +126,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       this.props.onSelect(item);
       this.close();
     }
-  }
+  };
 
   close() {
     if (this._isMounted) {
@@ -132,16 +147,19 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       inProgress: false,
     });
     this.close();
-  }
+  };
 
   setAnchorElements = (ref: HTMLElement) => {
     this.anchorElement = ref;
-  }
+  };
 
   onKeyDown = (e) => {
     const allOptions = [...this.state.matches];
 
-    if (!allOptions.length || (e.key !== Key.ArrowDown && e.key !== Key.ArrowUp && e.key !== Key.Enter)) {
+    if (
+      !allOptions.length ||
+      (e.key !== Key.ArrowDown && e.key !== Key.ArrowUp && e.key !== Key.Enter)
+    ) {
       return;
     }
 
@@ -153,12 +171,16 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       return;
     }
 
-    const currentFocusIndex = newIndexForKey(e.key, this.state.currentFocusIndex, allOptions);
+    const currentFocusIndex = newIndexForKey(
+      e.key,
+      this.state.currentFocusIndex,
+      allOptions
+    );
 
     this.setState({
       currentFocusIndex,
     });
-  }
+  };
 
   findClosestScrollableParent() {
     if (!this.anchorElement) {
@@ -166,7 +188,10 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
 
     let closestScrollableParent = this.anchorElement;
-    while (closestScrollableParent && closestScrollableParent !== document.body) {
+    while (
+      closestScrollableParent &&
+      closestScrollableParent !== document.body
+    ) {
       if (this.elementHasYScroll(closestScrollableParent)) {
         break;
       }
@@ -220,30 +245,39 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       if (!this.state.inProgress) {
         results = (
           <>
-            {this.state.searchComplete && this.results(this.state.matches, focusedItem)}
+            {this.state.searchComplete &&
+              this.results(this.state.matches, focusedItem)}
           </>
         );
       }
 
       dropdown = (
         <div
-          className={classNames('autocomplete-dropdown__item-container', this.props.itemContainerClassName, this.props.className)}
+          className={classNames(
+            'autocomplete-dropdown__item-container',
+            this.props.itemContainerClassName,
+            this.props.className
+          )}
           style={position}
         >
           <div className='autocomplete-dropdown__results'>
-            <div className='autocomplete-dropdown__items' >
-
-            { this.state.inProgress &&
-              <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>Searching...</div>
-            }
-            {results}
+            <div className='autocomplete-dropdown__items'>
+              {this.state.inProgress && (
+                <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>
+                  Searching...
+                </div>
+              )}
+              {results}
             </div>
           </div>
         </div>
       );
     }
     return (
-      <div className={classNames('autocomplete-dropdown', this.props.className)} ref={this.setAnchorElements}>
+      <div
+        className={classNames('autocomplete-dropdown', this.props.className)}
+        ref={this.setAnchorElements}
+      >
         <input
           className='autocomplete-dropdown__input'
           value={this.state.value}
@@ -262,11 +296,18 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     let content;
     if (!items.length) {
       content = (
-        <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>No results found</div>
+        <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>
+          No results found
+        </div>
       );
     } else {
-      content = items.map(item => (
-        <Result isFocused={item.id === focusedItem.id} item={item} onSelect={this.onSelect} key={item.id} />
+      content = items.map((item) => (
+        <Result
+          isFocused={item.id === focusedItem.id}
+          item={item}
+          onSelect={this.onSelect}
+          key={item.id}
+        />
       ));
     }
 
@@ -274,24 +315,38 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   }
 
   private elementHasYScroll(closestScrollParent: HTMLElement) {
-    return closestScrollParent && closestScrollParent.scrollHeight > closestScrollParent.clientHeight;
+    return (
+      closestScrollParent &&
+      closestScrollParent.scrollHeight > closestScrollParent.clientHeight
+    );
   }
 }
 
-export class Result extends React.Component<{ item: AutocompleteItem, isFocused: boolean, onSelect(AutocompleteItem) }, undefined> {
-  onSelect = event => {
+export class Result extends React.Component<
+  { item: AutocompleteItem; isFocused: boolean; onSelect(AutocompleteItem) },
+  undefined
+> {
+  onSelect = (event) => {
     // Prevent further events from happening, such as: onBlur of the input
     event.stopPropagation();
     event.preventDefault();
     this.props.onSelect(this.props.item);
-  }
+  };
 
   render() {
-    const { item: { value, summary, route } } = this.props;
+    const {
+      item: { value, summary, route },
+    } = this.props;
     return (
-      <div className={classNames('autocomplete-dropdown-item', { 'is-focused': this.props.isFocused })} onMouseDown={this.onSelect}>
+      <div
+        className={classNames('autocomplete-dropdown-item', {
+          'is-focused': this.props.isFocused,
+        })}
+        onMouseDown={this.onSelect}
+      >
         <div className='autocomplete-dropdown-item__text' title={summary}>
-          <span className='autocomplete-dropdown-item__value'>{value}</span>&nbsp;
+          <span className='autocomplete-dropdown-item__value'>{value}</span>
+          &nbsp;
           <span className='autocomplete-dropdown-item__route'>{route}</span>
         </div>
       </div>

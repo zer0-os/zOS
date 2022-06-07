@@ -254,6 +254,22 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.text()).toEqual('No results found');
   });
 
+  it('hides search bar when pressing "escape"', async () => {
+    findMatches = () => { return [] };
+    const wrapper = subject({ findMatches });
+
+    const input = wrapper.find('input');
+
+    jest.useFakeTimers();
+    input.simulate('keydown', { key: 'ArrowUp', preventDefault: () => {}, stopPropagation: () => {} });
+    input.simulate('keydown', { key: 'Enter', preventDefault: () => {}, stopPropagation: () => {} });
+    jest.runAllTimers();
+
+    await new Promise(setImmediate);
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
+  });
+
   describe('result', () => {
     beforeEach(() => {
       onSelect = jest.fn();

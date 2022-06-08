@@ -9,12 +9,10 @@ import { Icons, IconButton } from '@zer0-os/zos-component-library';
 import { ZNSDropdown } from '../zns-dropdown';
 
 let onSelect;
-let setOverlayOpen;
 
 describe('AddressBar', () => {
   beforeEach(() => {
     onSelect = jest.fn();
-    setOverlayOpen = jest.fn();
   });
 
   const subject = (props: any = {}) => {
@@ -22,7 +20,7 @@ describe('AddressBar', () => {
       route: '',
       app: Apps.Feed,
       onSelect,
-      setOverlayOpen,
+      isOverlayOpen: false,
       addressBarMode: null,
       ...props,
     };
@@ -174,15 +172,13 @@ describe('AddressBar', () => {
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
   });
 
-  it('setOverlayOpen is called', () => {
-    const wrapper = subject({ addressBarMode: AddressBarMode.Display });
+  it('renders overlay container when search selected', () => {
+    const wrapper = subject({ });
+
+    expect(wrapper.find('.overlay--open').exists()).toBe(false); 
 
     wrapper.find('[className$="trigger-region"]').simulate('click');
 
-    expect(setOverlayOpen).toHaveBeenCalledWith(true);
-
-    wrapper.find(ZNSDropdown).props().onCloseBar();
-
-    expect(setOverlayOpen).toHaveBeenCalledWith(false);
+    expect(wrapper.find('.overlay--open').exists()).toBe(true); 
   });
 });

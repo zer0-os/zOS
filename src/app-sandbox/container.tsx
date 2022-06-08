@@ -16,7 +16,6 @@ export interface Properties {
   providerService: ProviderService;
 
   selectedApp: Apps;
-  isOverlayOpen: boolean;
 }
 
 interface State {
@@ -27,17 +26,13 @@ interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      apps: {
-        selectedApp: { type },
-        isOverlayOpen
-      },
+      apps: { selectedApp: { type } },
     } = state;
 
     return {
       route: state.zns.value.route,
       connectionStatus: state.web3.status,
       selectedApp: type,
-      isOverlayOpen,
     };
   }
 
@@ -83,7 +78,6 @@ export class Container extends React.Component<Properties, State> {
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
-        isOverlayOpen={this.props.isOverlayOpen}
       />
     );
   }

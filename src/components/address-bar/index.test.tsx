@@ -20,6 +20,7 @@ describe('AddressBar', () => {
       route: '',
       app: Apps.Feed,
       onSelect,
+      isOverlayOpen: false,
       addressBarMode: null,
       ...props,
     };
@@ -166,8 +167,18 @@ describe('AddressBar', () => {
 
     expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
 
-    wrapper.find(ZNSDropdown).props().onCloseBar();
+    wrapper.find(ZNSDropdown).props().onCloseBar(); 
     
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+  });
+
+  it('renders overlay container when search selected', () => {
+    const wrapper = subject({ });
+
+    expect(wrapper.find('.overlay--open').exists()).toBe(false); 
+
+    wrapper.find('[className$="trigger-region"]').simulate('click');
+
+    expect(wrapper.find('.overlay--open').exists()).toBe(true); 
   });
 });

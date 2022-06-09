@@ -1,5 +1,5 @@
 @use '../../shared-components/theme-engine/theme' as theme;
-
+@use '../../modules/animation' as animation;
 @import '../../variables';
 
 $width-navigation: 32px;
@@ -12,11 +12,14 @@ $height-address-bar-inner: 19px;
   border: 1px solid theme.$address-bar-border-color-outer;
   border-radius: 24px;
   padding: 3px;
-  
+
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 2;
 
-  &__inner, &__inner-search {
+  &__inner,
+  &__inner-search {
     border: 1px solid theme.$address-bar-border-color-inner;
     border-radius: 20px;
 
@@ -36,15 +39,17 @@ $height-address-bar-inner: 19px;
     flex: 1 1 auto;
 
     display: flex;
+    z-index: 2;
   }
 
   &__inner-search-container {
     position: relative;
 
     padding: 0;
+    z-index: 2;
 
     height: $height-address-bar-inner + $padding-border-factor;
-    width: $width-application-content - $width-navigation - $padding-border-factor;
+    width: 100%;
   }
 
   &__inner-search {
@@ -122,19 +127,39 @@ $height-address-bar-inner: 19px;
 
   &__route-segment:last-of-type {
     color: theme.$font-color-primary;
-    text-shadow:
-      0px 0px 6px theme.$drop-shadow-secondary-color,
+    text-shadow: 0px 0px 6px theme.$drop-shadow-secondary-color,
       0px 0px 12px theme.$drop-shadow-primary-color,
       0px 0px 24px theme.$drop-shadow-primary-color;
   }
 
   &__route-app {
-    color: #FFF;
+    color: #fff;
     font-weight: 400;
     margin-right: 24px;
     padding: 2px 8px;
     background: rgba(177, 78, 255, 0.25);
     border-radius: 12px;
     height: 100%;
+  }
+}
+
+.address-bar-container {
+  position: relative;
+}
+
+.overlay {
+  justify-content: center;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.9);
+  transition: all animation.$animation-duration;
+
+  &--open {
+    opacity: 1;
   }
 }

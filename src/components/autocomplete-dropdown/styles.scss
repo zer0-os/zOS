@@ -20,14 +20,17 @@
   }
 
   &__input {
-    width: 98%;
-    background: inherit;
+    background-image: url(../../search-icon.svg);
+    background-repeat: no-repeat;
+    background-position: 98.39%;
+    background-color: inherit;
+    width: 97%;
     color: #FFF;
     border: 0px solid;
     outline: none;
     padding: 10px;
     margin: 0;
-
+    border-radius: 20px;
     font-size: 16px;
 
     ::placeholder {

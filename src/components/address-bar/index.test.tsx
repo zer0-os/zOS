@@ -20,6 +20,7 @@ describe('AddressBar', () => {
       route: '',
       app: Apps.Feed,
       onSelect,
+      isOverlayOpen: false,
       addressBarMode: null,
       ...props,
     };
@@ -42,13 +43,13 @@ describe('AddressBar', () => {
   it('renders app name', () => {
     const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' }});
     
-    expect(wrapper.find('.address-bar__route .address-bar__route-app').text().trim()).toStrictEqual('Feed');
+    expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').text().trim()).toStrictEqual('Feed');
   });
 
   it('does not render app name no app selected', () => {
     const wrapper = subject({ app: null });
     
-    expect(wrapper.find('.address-bar__route .address-bar__route-app').exists()).toBe(false);
+    expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').exists()).toBe(false);
   });
 
   it('renders route in segments', () => {
@@ -159,15 +160,25 @@ describe('AddressBar', () => {
     expect(onSelect).toHaveBeenCalledWith(expectation);
   });
 
-  it('hides search when click outSide', () => {
+  it('hides search when click out side', () => {
     const wrapper = subject();
 
     wrapper.find('[className$="trigger-region"]').simulate('click');
 
     expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
 
-    wrapper.find(ZNSDropdown).props().onCloseBar();
+    wrapper.find(ZNSDropdown).props().onCloseBar(); 
     
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
+  });
+
+  it('renders overlay container when search selected', () => {
+    const wrapper = subject({ });
+
+    expect(wrapper.find('.overlay--open').exists()).toBe(false); 
+
+    wrapper.find('[className$="trigger-region"]').simulate('click');
+
+    expect(wrapper.find('.overlay--open').exists()).toBe(true); 
   });
 });

@@ -24,7 +24,6 @@ export interface Properties extends PublicProperties {
 
   app: PlatformApp;
 }
-
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const { zns: { value: { route, deepestVisitedRoute } }, apps: { selectedApp: app } } = state;

@@ -2,6 +2,7 @@ export enum Key {
   ArrowUp = 'ArrowUp',
   ArrowDown = 'ArrowDown',
   Enter = 'Enter',
+  Escape = 'Escape',
 }
 
 function handleArrowUp(currentIndex: number, options: any[]): number {

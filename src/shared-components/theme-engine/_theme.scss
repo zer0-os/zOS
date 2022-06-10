@@ -20,6 +20,8 @@ $secondary-border-color: var(--secondary-border-color, #3C3C3C);
 
 $address-bar-border-color-outer: var(--address-bar-border-color-outer, #23142F);
 $address-bar-border-color-inner: var(--address-bar-border-color-inner, #472E5B);
+$address-bar-border-color-inner-hover: var(--address-bar-border-color-inner-hover, #6a3991);
+$address-bar-background-color-inner-hover: var(--address-bar-background-color-inner-hover, #1a1022);
 
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);
@@ -27,9 +29,12 @@ $font-color-secondary: var(--font-color-secondary);
 $font-color-secondary-hover: var(--font-color-secondary-hover);
 $font-color-tertiary: var(--font-color-tertiary);
 $font-color-tertiary-hover: var(--font-color-tertiary-hover);
+$font-color-heading: var(--font-color-heading);
 
-$accent-color: var(--accent-color, #52cbff);
+$accent-color: var(--accent-color);
+$accent-color-1: var(--accent-color-1);
 $accent-color-mid: var(--accent-color-mid, rgba(0,209,255,0.1));
+
 
 $actionable-inactive-color: var(--actionable-inactive-color, #737373);
 $actionable-active-color: var(--actionable-active-color, #FFFFFF);

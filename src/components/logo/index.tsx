@@ -4,13 +4,16 @@ import { ReactComponent as WilderWideLogo } from '../../assets/images/wilder-wid
 import { routeWithApp } from '../address-bar/util';
 import { connectContainer } from '../../store/redux-container';
 import { RootState } from '../../store';
+import { Apps } from '../../lib/apps';
 import { config } from '../../config';
 
-interface Properties {
+interface PublicProperties {
   className?: string;
-  type?: string;
+  
 }
-
+export interface Properties extends PublicProperties {
+  type: Apps;
+}
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
@@ -41,4 +44,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const Logo = connectContainer<Properties>(Container);
+export const Logo = connectContainer<PublicProperties>(Container);

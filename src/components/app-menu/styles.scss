@@ -48,6 +48,16 @@
       align-items: center;
       justify-content: center;
       border-radius: 9999px;
+
+      @include for-left-collapse() {
+        padding: 0;
+        width: 100%;
+
+        & img {
+          padding-right: 0;
+        }
+      }
+
       &:hover {
         background-color: rgba(231, 233, 234, 0.1);
       }

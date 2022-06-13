@@ -5,11 +5,13 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { Connect } from './connect';
+import { connect } from '../../store/channels';
+
 import { PlatformUser } from '../../app-sandbox/container';
+import { Connect } from './connect';
+import { Channels } from '.';
 
 import './styles.scss';
-import {Channels} from '.';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -20,6 +22,7 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   channelsAccount: string;
+  connect: (account: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -30,7 +33,15 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { };
+    return {
+      connect,
+    };
+  }
+
+  componentDidMount() {
+    console.log('mounted');
+    this.props.connect('0x0000000000000000000000000000000000000000');
+    // this.props.connect(this.props.user.account); XXX - put back after ipc testing
   }
 
   get isConnected() {

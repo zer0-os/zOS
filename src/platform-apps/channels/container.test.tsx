@@ -20,6 +20,7 @@ describe('ChannelsContainer', () => {
     const allProps = {
       user: {},
       store: getStore(),
+      connect: () => undefined,
       ...props,
     };
 
@@ -48,6 +49,15 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ user: { account: '' } });
 
     expect(wrapper.find(Connect).exists()).toBe(true);
+  });
+
+  // XXX - this will need to get smarter when based on wallet account
+  it('connects to channels server on mount', () => {
+    const connect = jest.fn();
+
+    subject({ user: { account: '0x000000000000000000000000000000000000000A' }, connect });
+
+    expect(connect).toHaveBeenCalledWith('0x000000000000000000000000000000000000000A');
   });
 
   it('passes account to connect component', () => {

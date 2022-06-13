@@ -29,7 +29,7 @@ class IpcTransport {
   constructor(private ipc) { }
 
   init(address: string) {
-    this.send('init', { address });
+    this.send('init', address);
   }
 
   private send(method, payload) {

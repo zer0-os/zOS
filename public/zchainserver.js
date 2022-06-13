@@ -1,7 +1,11 @@
 // const Server = require('ssb-server')
 // const Config = require('ssb-config/inject')
 
+const os = require('os');
+const path = require('path');
+
 const remote = require('@electron/remote');
+const { MEOW } = require('meow-app'); 
 
 const { ipcRenderer } = require('electron');
 const localLog = console.log;
@@ -30,10 +34,31 @@ window.addEventListener('error', (e) => {
   console.error(e.error.stack || 'Uncaught ' + e.error);
 });
 
+function getFullPath(fileName) {
+  return path.join(os.homedir(), 'ids', fileName); 
+}
+
+let app = null;
+
 // Setup the SSB Server
 function init(ipcMain, _webContentsPromise) {
-  ipcMain.on('zchain-ipc-transport-main', (_,data) => {
-    console.log('got message: ', data);
+  console.log('initializing ', MEOW);
+
+  app = new MEOW();
+
+  ipcMain.on('zchain-ipc-transport-main', async (_,data) => {
+    const { method, payload } = JSON.parse(data);
+
+    console.log(`calling [${method}] with: `, payload);
+
+    // const fileName = `${payload}.json`;
+
+    if (method === 'init') {
+      // await app[method](getFullPath(fileName));
+      await app.init();
+
+      console.log(app.listFollowedPeers());
+    }
   });
 }
 

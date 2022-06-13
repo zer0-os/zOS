@@ -38,6 +38,8 @@
 
     @include for-left-collapse() {
       width: 54px;
+      padding-left: 5px;
+      padding-right: 5px;
     }
   }
 

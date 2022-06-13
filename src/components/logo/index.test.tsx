@@ -11,6 +11,7 @@ describe('Logo', () => {
     const allProps = {
       calssName: '',
       type: '',
+      defaultZnsRoute: '',
       ...props,
     };
 
@@ -23,13 +24,20 @@ describe('Logo', () => {
     expect(wrapper.find(Link).children().first().hasClass('logo')).toBe(true);
   });
 
+  it('should take back to page root', () => {
+    const wrapper = subject({ type: Apps.Feed, defaultZnsRoute: 'wilder' });
+
+    expect(wrapper.find(Link).prop('to')).toEqual('/wilder/feed');
+  });
+
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      ...state,
-      apps: {
+    const subject = (state: Partial<RootState>) =>
+      Container.mapState({
+        ...state,
+        apps: {
           selectedApp: { type: Apps.NFTS },
-        }
-    } as RootState);
+        },
+      } as RootState);
 
     test('type', () => {
       const state = subject({});

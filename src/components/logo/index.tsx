@@ -13,6 +13,7 @@ interface PublicProperties {
 }
 export interface Properties extends PublicProperties {
   type: Apps;
+  defaultZnsRoute?: string;
 }
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
@@ -27,12 +28,12 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  get defaultRoute(): string {
-    return config.defaultZnsRoute;
-  }
-
   static mapActions(_props: Properties): Partial<Properties> {
     return {};
+  }
+
+  get defaultRoute(): string {
+    return this.props.defaultZnsRoute || config.defaultZnsRoute;
   }
 
   render() {

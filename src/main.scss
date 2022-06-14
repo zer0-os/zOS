@@ -38,6 +38,8 @@
 
     @include for-left-collapse() {
       width: 54px;
+      padding-left: 5px;
+      padding-right: 5px;
     }
   }
 
@@ -66,10 +68,6 @@
 
   &__logo {
     margin-left: 2px;
-  }
-
-  &__app-menu-container {
-    padding-left: 18px;
   }
 
   &__view-mode-toggle {

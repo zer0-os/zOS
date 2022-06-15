@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { AppMenu } from '.';
 import { Apps } from '../../lib/apps';
+import { Link } from 'react-router-dom';
 
 describe('AppMenu', () => {
   const subject = (props: any = {}) => {
@@ -21,25 +22,41 @@ describe('AppMenu', () => {
 
   it('renders a menu item for each app', () => {
     const wrapper = subject({ apps: [{
-      type: 'food' as Apps,
-      name: 'Food',
+      type: Apps.DAOS,
+      name: 'DAOS',
     }, {
-      type: 'drink' as Apps,
-      name: 'Drink',
+      type: Apps.Staking,
+      name: 'Staking',
     }]});
 
     const labels = wrapper
       .find('.app-menu__app')
       .map(element => element.text().trim());
 
-    expect(labels).toStrictEqual(['Food', 'Drink']);
+    expect(labels).toStrictEqual(['DAOS', 'Staking']);
+  });
+
+  it('renders a Link for each app', () => {
+    const wrapper = subject({ route: 'what.is.this', apps: [{
+      type: Apps.DAOS,
+      name: 'DAOS',
+    }, {
+      type: Apps.Staking,
+      name: 'Staking',
+    }]});
+
+    const labels = wrapper
+      .find(Link)
+      .map(element => element.prop('to'));
+
+    expect(labels).toStrictEqual(['/what.is.this/daos', '/what.is.this/staking']);
   });
 
   it('adds selected class to selected app', () => {
     const wrapper = subject({
       apps: [{
-        type: 'food' as Apps,
-        name: 'Food',
+        type: Apps.Staking,
+        name: 'Staking',
       }, {
         type: Apps.Feed,
         name: 'Feed',

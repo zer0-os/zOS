@@ -35,6 +35,7 @@
   &__navigation-platform {
     width: 200px;
     border-right: 1px solid theme.$primary-border-color;
+    padding-left: 15px;
 
     @include for-left-collapse() {
       width: 54px;

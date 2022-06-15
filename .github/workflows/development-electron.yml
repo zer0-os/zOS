@@ -6,8 +6,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      REACT_APP_INFURA_URL: https://kovan.infura.io/v3/number123    
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

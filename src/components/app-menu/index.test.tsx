@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { AppMenu } from '.';
 import { Apps } from '../../lib/apps';
-import { Link } from 'react-router-dom';
+import { ZnsLink } from '../zns-link';
 
 describe('AppMenu', () => {
   const subject = (props: any = {}) => {
@@ -30,13 +30,13 @@ describe('AppMenu', () => {
     }]});
 
     const labels = wrapper
-      .find('.app-menu__app')
+      .find('.app-menu__app-name')
       .map(element => element.text().trim());
 
     expect(labels).toStrictEqual(['DAOS', 'Staking']);
   });
 
-  it('renders a Link for each app', () => {
+  it('renders a ZnsLink for each app', () => {
     const wrapper = subject({ route: 'what.is.this', apps: [{
       type: Apps.DAOS,
       name: 'DAOS',
@@ -45,11 +45,17 @@ describe('AppMenu', () => {
       name: 'Staking',
     }]});
 
-    const labels = wrapper
-      .find(Link)
-      .map(element => element.prop('to'));
+    const linkProps = wrapper
+      .find(ZnsLink)
+      .map(element => ({
+        route: element.prop('route'),
+        app: element.prop('app'),
+      }));
 
-    expect(labels).toStrictEqual(['/what.is.this/daos', '/what.is.this/staking']);
+    expect(linkProps).toStrictEqual([
+      { route: 'what.is.this', app: Apps.DAOS },
+      { route: 'what.is.this', app: Apps.Staking },
+    ]);
   });
 
   it('adds selected class to selected app', () => {
@@ -66,7 +72,7 @@ describe('AppMenu', () => {
 
     const feedApp = wrapper
       .find('.app-menu__app')
-      .filterWhere((app: any) => app.text().trim() === 'Feed')
+      .filterWhere((app: any) => app.find('.app-menu__app-name').text().trim() === 'Feed')
 
     expect(feedApp.hasClass('selected')).toBe(true);
   });

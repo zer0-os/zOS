@@ -1,0 +1,79 @@
+@use 'shared-components/theme-engine/theme' as theme;
+@use 'modules/animation' as animation;
+
+@import 'variables';
+
+.main {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 10;
+
+  pointer-events: none;
+
+  &__navigation {
+    display: flex;
+    pointer-events: auto;
+    
+    flex: 0 0 $width-world-navigation;
+
+    margin-right: $left-content-space;
+
+    @include for-screen-large() {
+      justify-content: space-between;
+    }
+  }
+
+  &__navigation-world {
+    width: 56px;
+    border-right: 1px solid theme.$primary-border-color;
+  }
+
+  &__navigation-platform {
+    width: 200px;
+    border-right: 1px solid theme.$primary-border-color;
+
+    @include for-left-collapse() {
+      width: 54px;
+      padding-left: 5px;
+      padding-right: 3px;
+    }
+  }
+
+  &__content {
+    padding-top: 8px;
+    width: $width-application-content;
+
+    display: flex;
+    justify-content: center;
+  }
+
+  &__address-bar {
+    pointer-events: auto;
+    min-width: $width-application-content;
+  }
+
+  &__sidekick {
+    padding: 12px 16px 0 0;
+
+    pointer-events: auto;
+    flex-basis: $width-sidekick;
+    
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__logo {
+    margin-left: 2px;
+  }
+
+  &__view-mode-toggle {
+    padding: 0;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+  }
+}

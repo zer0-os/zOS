@@ -1,0 +1,51 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
+.autocomplete-dropdown {
+  width: 100%;
+
+  &-item {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFF;
+    padding: 8px;
+
+    &__route {
+      color: #52CBFF;
+    }
+
+    &.is-focused, &:hover {
+      background: rgba(60,161,255,.05);
+    }
+  }
+
+  &__input {
+    background-image: url(../../search-icon.svg);
+    background-repeat: no-repeat;
+    background-position: 98.39%;
+    background-color: inherit;
+    width: 97%;
+    color: #FFF;
+    border: 0px solid;
+    outline: none;
+    padding: 10px;
+    margin: 0;
+    border-radius: 20px;
+    font-size: 16px;
+
+    ::placeholder {
+      color: rgba(108, 108, 108, 1);
+    }
+  }
+
+  &__results {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    max-height: 95vh;
+  }
+
+  &-item {
+    padding-left: 20px;
+  }
+}

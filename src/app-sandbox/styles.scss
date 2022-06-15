@@ -1,0 +1,30 @@
+@use '../shared-components/theme-engine/theme' as theme;
+@use '../modules/animation' as animation;
+@import '../variables';
+
+$speed: animation.$animation-duration;
+
+.app-sandbox {
+  width: $width-application-content;
+
+  .error {
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 200px;
+    color: red;
+  }
+}
+
+.feed {
+  overflow: hidden;
+  &__items {
+    max-width: 100%;
+  }
+
+  &-item {
+    border-color: theme.$address-bar-border-color-inner;
+  }
+}
+
+

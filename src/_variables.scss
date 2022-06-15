@@ -1,0 +1,38 @@
+$left-content-space: 32px;
+$width-application-navigation: 220px;
+$width-application-content: 736px;
+$width-world-navigation: calc((100vw - $width-application-content - $left-content-space) / 2);
+$width-collapsed-navigation: calc(56px + 54px + 32px); 
+$min-flex-width: calc($width-application-content + ( $width-collapsed-navigation * 2 ));
+$width-sidekick: calc((100vw - $width-application-content) / 2);
+$height-main: 65px;
+
+$width-screen-medium: 1440px;
+$width-screen-large: 1600px;
+$width-screen-xl: 1602px;
+$width-screen-xxl: 1920px;
+$breakpoint-collapse-menu: 1294px;
+
+@mixin for-static-layout {
+  @media (max-width: $min-flex-width - 1) { @content; }
+}
+
+@mixin for-screen-medium {
+  @media (max-width: $width-screen-medium - 1) { @content; }
+}
+
+@mixin for-screen-large {
+  @media (min-width: $width-screen-large) { @content; }
+}
+
+@mixin for-screen-xl {
+  @media (min-width: $width-screen-xl) { @content; }
+}
+
+@mixin for-screen-xxl {
+  @media (min-width: $width-screen-xxl) { @content; }
+}
+
+@mixin for-left-collapse {
+  @media (max-width: $breakpoint-collapse-menu) { @content; }
+}

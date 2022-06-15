@@ -1,8 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
-import { RootState } from './store';
-import { AppSandbox, Apps } from '.';
+import { RootState } from '../store';
+import { AppSandbox } from '.';
+import { Apps, PlatformApp } from '../lib/apps';
 import { ConnectionStatus } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
 
@@ -12,6 +13,7 @@ describe('AppSandboxContainer', () => {
       route: '',
       connectionStatus: ConnectionStatus.Connected,
       providerService: { get: () => null } as ProviderService,
+      selectedApp: Apps.Channels,
       ...props,
     };
 
@@ -38,10 +40,12 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).exists()).toBe(true);
   });
 
-  it('defaults selected app to feed', () => {
-    const wrapper = subject();
+  it('passes selected app to sandbox', () => {
+    const selectedApp = Apps.Feed;
 
-    expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(Apps.Feed);
+    const wrapper = subject({ selectedApp });
+
+    expect(wrapper.find(AppSandbox).prop('selectedApp')).toBe(selectedApp);
   });
 
   it('passes route to sandbox', () => {
@@ -85,13 +89,14 @@ describe('AppSandboxContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: RootState) => Container.mapState({
+    const subject = (state: Partial<RootState>) => Container.mapState({
       zns: { value: { route: '' }, ...(state.zns || {}) },
       web3: {
         status: ConnectionStatus.Connecting,
         ...(state.web3 || {}),
       },
-    } as any);
+      apps: { selectedApp: '', ...(state.apps || {}) },
+    } as RootState);
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } });
@@ -105,6 +110,14 @@ describe('AppSandboxContainer', () => {
       const state = subject({ zns: { value: { route } } } as RootState);
 
       expect(state).toMatchObject({ route });
+    });
+
+    test('selectedApp', () => {
+      const selectedApp = Apps.DAOS;
+
+      const state = subject({ apps: { selectedApp: { type: selectedApp } as PlatformApp } });
+
+      expect(state).toMatchObject({ selectedApp });
     });
   });
 });

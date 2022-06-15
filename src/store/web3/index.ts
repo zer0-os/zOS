@@ -7,7 +7,7 @@ import {
   ConnectionStatus,
   Connectors,
 } from '../../lib/web3';
-import { WalletType } from '../../shared-components/wallet-select/wallets';
+import { WalletType } from '@zer0-os/zos-component-library';
 
 export enum SagaActionTypes {
   UpdateConnector = 'web3/saga/updateConnector',

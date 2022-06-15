@@ -1,0 +1,106 @@
+@use 'modules/font' as fonts;
+@use 'modules/animation' as animation;
+@use 'shared-components/theme-engine/theme' as theme;
+
+@import-normalize;
+
+@import 'variables';
+
+body {
+  overscroll-behavior-y: none;
+  margin: 0;
+  font-family: fonts.$font-family, 'Helvetica Neue Ultra Light', Helvetica, Arial, 'Lucida Grande', 'sans-serif';
+  color: theme.$font-color-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background: theme.$platform-background;
+  transition: color animation.$animation-duration-double ease-out;
+
+  --box-radius: 16px;
+  --animation-time-short: 0.2s;
+  --animation-time-medium: 0.3s;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+A {
+  text-decoration: none;
+}
+
+A, BUTTON {
+  color: inherit;
+}
+
+.app-sandbox-wrapper {
+  display: flex;
+  justify-content: center;
+
+  .app-sandbox {
+    position: relative;
+    width: $width-application-content;
+    left: 22px;
+
+    @include for-static-layout() {
+      position: absolute;
+      left: $width-collapsed-navigation;
+    }
+  }
+}
+
+#root {
+  transition: background animation.$animation-duration-double ease-out;
+}
+
+.border-primary {
+  border: 1px solid var(--dialog-border-color);
+  border-collapse: separate;
+  box-shadow: 0 0 16px 0 var(--dialog-drop-shadow-color);
+}
+
+hr.glow {
+  position: relative;
+  height: 1px;
+  border: none;
+  background-color: var(--glow-background-color);
+}
+
+hr.glow:after {
+  right: 0;
+}
+
+hr.glow:after, hr.glow:before {
+  content: ' ';
+  position: absolute;
+  top: 0;
+  height: 1px;
+  width: 8px;
+  background-color: var(--glow-transition-background-color);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--glow-text-color);
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0);
+  height: 0;
+  width: 0;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: none;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  background-color: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(60, 161, 255, 0.2);
+}

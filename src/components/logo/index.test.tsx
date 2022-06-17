@@ -1,9 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 
-import { ZnsLink } from '../zns-link';
-import { Apps } from '../../lib/apps';
 import { Container } from '.';
 
 describe('Logo', () => {

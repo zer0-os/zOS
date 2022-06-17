@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { ZnsLink } from '../zns-link';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 import { PlatformApp, Apps } from '../../lib/apps';
 
 import './styles.scss';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ZnsLink } from '../zns-link';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 import { ReactComponent as WilderWideLogo } from '../../assets/images/wilder-wide-logo.svg';
 import { inject as injectConfig } from '../config';
 

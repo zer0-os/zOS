@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { AppMenu } from '.';
 import { Apps } from '../../lib/apps';
-import { ZnsLink } from '../zns-link';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 
 describe('AppMenu', () => {
   const subject = (props: any = {}) => {

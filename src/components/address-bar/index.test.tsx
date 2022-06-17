@@ -1,10 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ZnsLink } from '../zns-link';
 
 import { AddressBar, AddressBarMode } from '.';
 import { Apps } from '../../lib/apps';
-import { Icons, IconButton } from '@zer0-os/zos-component-library';
+import { Icons, IconButton, ZnsLink } from '@zer0-os/zos-component-library';
 
 import { ZNSDropdown } from '../zns-dropdown';
 

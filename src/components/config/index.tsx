@@ -1,5 +1,5 @@
 import React from 'react';
-import * as config from '../../config';
+import { config } from '../../config';
 
 // should probably use context for this, but we need
 // to update our usage of context to match the current

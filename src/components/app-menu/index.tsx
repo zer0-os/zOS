@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 import { PlatformApp, Apps } from '../../lib/apps';
 
 import './styles.scss';
@@ -25,10 +25,10 @@ export class AppMenu extends React.Component<Properties> {
 
       return (
         <li key={type} className={className}>
-          <Link to={`/${[this.props.route, type].join('/')}`}>
+          <ZnsLink route={this.props.route} app={type}>
             <img className="app-menu__app-image" src={imageSource} alt={name} />
             <span className="app-menu__app-name">{name}</span>
-          </Link>
+          </ZnsLink>
         </li>
       );
     });

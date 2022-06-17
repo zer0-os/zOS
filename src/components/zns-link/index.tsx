@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import classNames from 'classnames';
 
 import { Apps } from '../../lib/apps';
 
 export interface PublicProperties {
+  className?: string;
   app?: Apps;
   route: string;
 }
@@ -43,7 +45,7 @@ export class Component extends React.Component<Properties> {
   }
 
   render() {
-    return <Link to={this.fullRoute}>{this.props.children}</Link>;
+    return <Link className={classNames('zns-link', this.props.className)} to={this.fullRoute}>{this.props.children}</Link>;
   }
 }
 

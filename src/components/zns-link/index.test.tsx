@@ -15,6 +15,12 @@ describe('ZnsLink', () => {
     return shallow(<ZnsLink {...allProps}>{children}</ZnsLink>);
   };
 
+  it('adds className to child', () => {
+    const wrapper = subject({ className: 'tacos' });
+
+    expect(wrapper.find('.zns-link').hasClass('tacos')).toBe(true);
+  });
+
   it('renders link for route with app', () => {
     const wrapper = subject({ app: Apps.Feed, route: 'tacos.street.pollo' });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Link } from 'react-router-dom';
+import { ZnsLink } from '../zns-link';
 
 import { AddressBar, AddressBarMode } from '.';
 import { Apps } from '../../lib/apps';
@@ -55,27 +55,26 @@ describe('AddressBar', () => {
   it('renders route in segments', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
     
-    const segments = wrapper.find('.address-bar__route-segment').map(segment => segment.text().trim());
+    const segments = wrapper.find('.address-bar__route-segment').map(segment => segment.children().text().trim());
 
     expect(segments).toStrictEqual(['food', 'street', 'tacos']);
   });
 
-  it('renders Link to route with app at segment', () => {
+  it('renders ZnsLink to route with app at segment', () => {
     const app = { type: Apps.Feed };
     const wrapper = subject({ route: 'food.street.tacos', app });
     
-    const segments = wrapper.find(Link);
+    const segments = wrapper.find(ZnsLink);
 
-    expect(segments.at(0).prop('to')).toStrictEqual('/food/feed');
-    expect(segments.at(1).prop('to')).toStrictEqual('/food.street/feed');
-  });
+    expect(segments.at(0).props()).toMatchObject({
+      route: 'food',
+      app: Apps.Feed,
+    });
 
-  it('does not add app link if no selected app', () => {
-    const wrapper = subject({ route: 'food.street.tacos', app: null });
-    
-    const segments = wrapper.find(Link);
-
-    expect(segments.at(0).prop('to')).toStrictEqual('/food');
+    expect(segments.at(1).props()).toMatchObject({
+      route: 'food.street',
+      app: Apps.Feed,
+    });
   });
 
   it('renders route seperators', () => {

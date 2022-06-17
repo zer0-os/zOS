@@ -43,7 +43,7 @@ export class Component extends React.Component<Properties> {
   }
 
   render() {
-    return <Link to={this.fullRoute}>{this.props.children}</ Link>;
+    return <Link to={this.fullRoute}>{this.props.children}</Link>;
   }
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import { ZnsLink } from '../zns-link';
 
 import { routeWithApp } from './util';
 import { PlatformApp } from '../../lib/apps';
@@ -72,13 +72,14 @@ export class AddressBar extends React.Component<Properties, State> {
         return {
           elements: [
             ...elements,
-            <Link
+            <ZnsLink
               key={segment}
               className='address-bar__route-segment'
-              to={routeWithApp(route, this.app.type)}
+              route={route}
+              app={this.app.type}
             >
               {segment}
-            </Link>,
+            </ZnsLink>,
           ],
           route,
         };

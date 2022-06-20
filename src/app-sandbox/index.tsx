@@ -16,7 +16,7 @@ export class AppSandbox extends React.Component<Properties> {
     const { znsRoute, selectedApp: app, web3Provider } = this.props;
 
     if (app === Apps.Feed) {
-      return <FeedApp route={{ znsRoute, app }} provider={web3Provider} />;
+      return <FeedApp route={znsRoute} provider={web3Provider} />;
     }
 
     return (

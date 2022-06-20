@@ -30,11 +30,10 @@ describe('AppSandbox', () => {
 
   it('passes route to feed app', () => {
     const znsRoute = 'food.tacos';
-    const app = Apps.Feed;
 
-    const wrapper = subject({ selectedApp: app, znsRoute });
+    const wrapper = subject({ selectedApp: Apps.Feed, znsRoute });
 
-    expect(wrapper.find(App).prop('route')).toStrictEqual({ app, znsRoute });
+    expect(wrapper.find(App).prop('route')).toStrictEqual(znsRoute);
   });
 
   it('passes provider to feed app', () => {

@@ -22,6 +22,7 @@ describe('WalletManager', () => {
   };
 
   it('renders connect button', (
+
     
   ) => {
     const wrapper = subject();

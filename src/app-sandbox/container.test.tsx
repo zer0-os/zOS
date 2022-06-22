@@ -21,13 +21,17 @@ describe('AppSandboxContainer', () => {
   };
 
   it('does not render child when not connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     expect(wrapper.find(AppSandbox).exists()).toBe(false);
   });
 
   it('renders child when connecting and has been connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
 
@@ -116,7 +120,9 @@ describe('AppSandboxContainer', () => {
     test('selectedApp', () => {
       const selectedApp = Apps.DAOS;
 
-      const state = subject({ apps: { selectedApp: { type: selectedApp } as PlatformApp } });
+      const state = subject({
+        apps: { selectedApp: { type: selectedApp } as PlatformApp },
+      });
 
       expect(state).toMatchObject({ selectedApp });
     });

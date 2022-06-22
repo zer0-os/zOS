@@ -23,7 +23,14 @@ describe('zns-dropdown', () => {
   }
 
   it('findMatches maps results', async () => {
-    const apiResults = [{ id: 'zns-id', title: 'zns-title', description: 'zns-description', znsRoute: 'zns-route' }];
+    const apiResults = [
+      {
+        id: 'zns-id',
+        title: 'zns-title',
+        description: 'zns-description',
+        znsRoute: 'zns-route',
+      },
+    ];
 
     const wrapper = subject({
       api: {
@@ -35,9 +42,14 @@ describe('zns-dropdown', () => {
 
     const mappedResults = await wrapper.instance().findMatches();
 
-    expect([{ id: 'zns-id', value: 'zns-title', summary: 'zns-description', route: 'zns-route' }]).toEqual(
-      mappedResults
-    );
+    expect([
+      {
+        id: 'zns-id',
+        value: 'zns-title',
+        summary: 'zns-description',
+        route: 'zns-route',
+      },
+    ]).toEqual(mappedResults);
   });
 
   it('onSelect returns route', async () => {

@@ -75,7 +75,9 @@ describe('ViewModeToggle', () => {
       } as RootState);
 
     test('viewMode', () => {
-      const state = subject({ theme: { value: { viewMode: ViewModes.Light } } });
+      const state = subject({
+        theme: { value: { viewMode: ViewModes.Light } },
+      });
 
       expect(state.viewMode).toEqual(ViewModes.Light);
     });

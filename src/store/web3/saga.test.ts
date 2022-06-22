@@ -6,7 +6,9 @@ import { reducer } from '.';
 
 describe('web3 saga', () => {
   it('sets new connector and status to Connecting', async () => {
-    const { storeState } = await expectSaga(updateConnector, { payload: Connectors.Metamask })
+    const { storeState } = await expectSaga(updateConnector, {
+      payload: Connectors.Metamask,
+    })
       .withReducer(reducer)
       .run();
 

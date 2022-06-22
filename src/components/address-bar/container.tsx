@@ -55,7 +55,10 @@ export class Container extends React.Component<Properties> {
   }
 
   getNextRoute() {
-    let [nextRoute, ...segments] = this.props.deepestVisitedRoute.split('.');
+    let [
+      nextRoute,
+      ...segments
+    ] = this.props.deepestVisitedRoute.split('.');
 
     for (const segment of segments) {
       const workingRoute = `${nextRoute}.${segment}`;
@@ -110,5 +113,11 @@ const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Conta
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();
 
-  return <ConnectedContainer {...props} history={history} znsClient={client} />;
+  return (
+    <ConnectedContainer
+      {...props}
+      history={history}
+      znsClient={client}
+    />
+  );
 }

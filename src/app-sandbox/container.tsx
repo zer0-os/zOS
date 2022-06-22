@@ -73,7 +73,11 @@ export class Container extends React.Component<Properties, State> {
   render() {
     if (!this.shouldRender) return null;
     return (
-      <AppSandbox selectedApp={this.props.selectedApp} znsRoute={this.props.route} web3Provider={this.web3Provider} />
+      <AppSandbox
+        selectedApp={this.props.selectedApp}
+        znsRoute={this.props.route}
+        web3Provider={this.web3Provider}
+      />
     );
   }
 }

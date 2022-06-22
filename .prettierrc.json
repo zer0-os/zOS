@@ -1,6 +1,8 @@
 {
+  "plugins": ["./node_modules/prettier-plugin-multiline-arrays"],
   "singleQuote": true,
   "trailingComma": "es5",
   "jsxSingleQuote": true,
-  "printWidth": 120
+  "printWidth": 120,
+  "singleAttributePerLine": true
 }

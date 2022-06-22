@@ -91,7 +91,9 @@ describe('WalletManager', () => {
   });
 
   it('passes isConnecting of true when wallet selected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
@@ -128,7 +130,9 @@ describe('WalletManager', () => {
   });
 
   it('closes wallet select modal when status is connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
     // straight to Connected from Disconnected. we should not force this
@@ -167,7 +171,9 @@ describe('WalletManager', () => {
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
 
-    wrapper.setProps({ connectionStatus: ConnectionStatus.NetworkNotSupported });
+    wrapper.setProps({
+      connectionStatus: ConnectionStatus.NetworkNotSupported,
+    });
 
     expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
   });

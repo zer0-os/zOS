@@ -58,7 +58,13 @@ export class Container extends React.Component<Properties> {
   };
 
   render() {
-    return <IconButton className={this.className} icon={this.icon} onClick={this.handleClick} />;
+    return (
+      <IconButton
+        className={this.className}
+        icon={this.icon}
+        onClick={this.handleClick}
+      />
+    );
   }
 }
 

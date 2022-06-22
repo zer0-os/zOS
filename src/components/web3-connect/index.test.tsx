@@ -106,7 +106,12 @@ describe('Web3Connect', () => {
       <div className='the-cat-parade' />
     );
 
-    component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: true }) });
+    component.setProps({
+      web3: getWeb3({
+        library: { connection: { what: 'helloooo' } },
+        active: true,
+      }),
+    });
 
     component.setProps({ web3: getWeb3({ library, active: true }) });
 
@@ -125,7 +130,12 @@ describe('Web3Connect', () => {
       <div className='the-cat-parade' />
     );
 
-    component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: false }) });
+    component.setProps({
+      web3: getWeb3({
+        library: { connection: { what: 'helloooo' } },
+        active: false,
+      }),
+    });
 
     component.setProps({ web3: getWeb3({ library, active: false }) });
 
@@ -144,7 +154,12 @@ describe('Web3Connect', () => {
       <div className='the-cat-parade' />
     );
 
-    component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: false }) });
+    component.setProps({
+      web3: getWeb3({
+        library: { connection: { what: 'helloooo' } },
+        active: false,
+      }),
+    });
     component.setProps({ web3: getWeb3({ library, active: false }) });
     component.setProps({ web3: getWeb3({ library, active: true }) });
 

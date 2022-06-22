@@ -254,7 +254,10 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       );
     }
     return (
-      <div className={classNames('autocomplete-dropdown', this.props.className)} ref={this.setAnchorElements}>
+      <div
+        className={classNames('autocomplete-dropdown', this.props.className)}
+        ref={this.setAnchorElements}
+      >
         <input
           className='autocomplete-dropdown__input'
           value={this.state.value}
@@ -275,7 +278,12 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       content = <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>No results found</div>;
     } else {
       content = items.map((item) => (
-        <Result isFocused={item.id === focusedItem.id} item={item} onSelect={this.onSelect} key={item.id} />
+        <Result
+          isFocused={item.id === focusedItem.id}
+          item={item}
+          onSelect={this.onSelect}
+          key={item.id}
+        />
       ));
     }
 
@@ -309,7 +317,10 @@ export class Result extends React.Component<
         })}
         onMouseDown={this.onSelect}
       >
-        <div className='autocomplete-dropdown-item__text' title={summary}>
+        <div
+          className='autocomplete-dropdown-item__text'
+          title={summary}
+        >
           <span className='autocomplete-dropdown-item__value'>{value}</span>
           &nbsp;
           <span className='autocomplete-dropdown-item__route'>{route}</span>

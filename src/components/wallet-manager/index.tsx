@@ -86,7 +86,12 @@ export class Container extends React.Component<Properties, State> {
 
   get availableWallets(): WalletType[] {
     if (isElectron()) {
-      return [WalletType.WalletConnect, WalletType.Coinbase, WalletType.Fortmatic, WalletType.Portis];
+      return [
+        WalletType.WalletConnect,
+        WalletType.Coinbase,
+        WalletType.Fortmatic,
+        WalletType.Portis,
+      ];
     }
 
     return [
@@ -111,7 +116,11 @@ export class Container extends React.Component<Properties, State> {
       <div className='wallet-manager'>
         {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
         {this.showButton && (
-          <Button className='wallet-manager__connect-button' label='Connect' onClick={this.openModal} />
+          <Button
+            className='wallet-manager__connect-button'
+            label='Connect'
+            onClick={this.openModal}
+          />
         )}
         {this.showModal && (
           <WalletSelectModal

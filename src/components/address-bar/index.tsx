@@ -59,7 +59,10 @@ export class AddressBar extends React.Component<Properties, State> {
       ({ elements, route }, segment, index) => {
         if (elements.length) {
           elements.push(
-            <span key={index} className='address-bar__route-seperator'>
+            <span
+              key={index}
+              className='address-bar__route-seperator'
+            >
               .
             </span>
           );
@@ -70,7 +73,12 @@ export class AddressBar extends React.Component<Properties, State> {
         return {
           elements: [
             ...elements,
-            <ZnsLink key={segment} className='address-bar__route-segment' route={route} app={this.app.type}>
+            <ZnsLink
+              key={segment}
+              className='address-bar__route-segment'
+              route={route}
+              app={this.app.type}
+            >
               {segment}
             </ZnsLink>,
           ],
@@ -127,8 +135,16 @@ export class AddressBar extends React.Component<Properties, State> {
         {this.renderOverlay()}
         <div className={classNames('address-bar', this.props.className)}>
           <div className='address-bar__navigation'>
-            <IconButton icon={Icons.ChevronLeft} className={backButtonClass} onClick={this.props.onBack} />
-            <IconButton icon={Icons.ChevronRight} className={forwardButtonClass} onClick={this.props.onForward} />
+            <IconButton
+              icon={Icons.ChevronLeft}
+              className={backButtonClass}
+              onClick={this.props.onBack}
+            />
+            <IconButton
+              icon={Icons.ChevronRight}
+              className={forwardButtonClass}
+              onClick={this.props.onForward}
+            />
           </div>
 
           {AddressBarMode.Display === mode && (
@@ -146,7 +162,11 @@ export class AddressBar extends React.Component<Properties, State> {
           {AddressBarMode.Search === mode && (
             <div className='address-bar__inner-search-container'>
               <div className='address-bar__inner-search'>
-                <ZNSDropdown api={this.props.api} onSelect={this.onSelect} onCloseBar={this.closeAddressBarMode} />
+                <ZNSDropdown
+                  api={this.props.api}
+                  onSelect={this.onSelect}
+                  onCloseBar={this.closeAddressBarMode}
+                />
               </div>
             </div>
           )}

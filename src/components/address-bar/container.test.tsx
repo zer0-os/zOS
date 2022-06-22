@@ -52,13 +52,19 @@ describe('AddressBarContainer', () => {
   });
 
   it('passes canGoForward of true if route does not match deepestVisitedRoute', () => {
-    const wrapper = subject({ route: 'cats.alley', deepestVisitedRoute: 'cats.alley.tomcats' });
+    const wrapper = subject({
+      route: 'cats.alley',
+      deepestVisitedRoute: 'cats.alley.tomcats',
+    });
 
     expect(wrapper.find(AddressBar).prop('canGoForward')).toBe(true);
   });
 
   it('passes canGoForward of false if route is not a subset of deepestVisitedRoute', () => {
-    const wrapper = subject({ route: 'cats.barn', deepestVisitedRoute: 'cats.alley.tomcats' });
+    const wrapper = subject({
+      route: 'cats.barn',
+      deepestVisitedRoute: 'cats.alley.tomcats',
+    });
 
     expect(wrapper.find(AddressBar).prop('canGoForward')).toBe(false);
   });
@@ -150,19 +156,27 @@ describe('AddressBarContainer', () => {
     };
 
     test('route', () => {
-      const state = subject({ zns: { value: { route: 'what.is.this' } as ZnsDomainDescriptor } });
+      const state = subject({
+        zns: { value: { route: 'what.is.this' } as ZnsDomainDescriptor },
+      });
 
       expect(state.route).toEqual('what.is.this');
     });
 
     test('app', () => {
-      const state = subject({ apps: { selectedApp: { type: Apps.Feed } as PlatformApp } });
+      const state = subject({
+        apps: { selectedApp: { type: Apps.Feed } as PlatformApp },
+      });
 
       expect(state.app).toEqual({ type: Apps.Feed });
     });
 
     test('deepestVisitedRoute', () => {
-      const state = subject({ zns: { value: { deepestVisitedRoute: 'what.is.this' } as ZnsDomainDescriptor } });
+      const state = subject({
+        zns: {
+          value: { deepestVisitedRoute: 'what.is.this' } as ZnsDomainDescriptor,
+        },
+      });
 
       expect(state.deepestVisitedRoute).toEqual('what.is.this');
     });

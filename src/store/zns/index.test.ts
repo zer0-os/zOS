@@ -15,7 +15,9 @@ describe('zns reducer', () => {
   });
 
   it('should have a default deepestVisitedRoute that is a string', () => {
-    const { deepestVisitedRoute } = reducer(undefined, { type: 'unknown' }).value;
+    const { deepestVisitedRoute } = reducer(undefined, {
+      type: 'unknown',
+    }).value;
 
     expect(typeof deepestVisitedRoute).toBe('string');
   });

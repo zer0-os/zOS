@@ -67,8 +67,16 @@ describe('autocomplete-dropdown', () => {
   it('it renders match suggestions', async () => {
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
       ];
     };
 
@@ -88,8 +96,16 @@ describe('autocomplete-dropdown', () => {
   it('it sets the first item found to the "focused" one', async () => {
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
       ];
     };
 
@@ -103,14 +119,25 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
+      true,
+      false,
+    ]);
   });
 
   it('it sets the next item as to the "focused" one when hitting "down"', async () => {
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
       ];
     };
 
@@ -124,19 +151,41 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
+      true,
+      false,
+    ]);
 
-    input.simulate('keydown', { key: 'ArrowDown', preventDefault: () => {}, stopPropagation: () => {} });
+    input.simulate('keydown', {
+      key: 'ArrowDown',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
 
-    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([false, true]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
+      false,
+      true,
+    ]);
   });
 
   it('it sets the last item as to the "focused" one when hitting "up"', async () => {
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-        { id: 'result-third-id', value: 'result-third-value', route: 'result-third-route' },
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
+        {
+          id: 'result-third-id',
+          value: 'result-third-value',
+          route: 'result-third-route',
+        },
       ];
     };
 
@@ -150,18 +199,38 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
+      true,
+      false,
+      false,
+    ]);
 
-    input.simulate('keydown', { key: 'ArrowUp', preventDefault: () => {}, stopPropagation: () => {} });
+    input.simulate('keydown', {
+      key: 'ArrowUp',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
 
-    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([false, false, true]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
+      false,
+      false,
+      true,
+    ]);
   });
 
   it('it selects the currently focused option when pressing "Enter"', async () => {
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
       ];
     };
 
@@ -175,8 +244,16 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    input.simulate('keydown', { key: 'ArrowUp', preventDefault: () => {}, stopPropagation: () => {} });
-    input.simulate('keydown', { key: 'Enter', preventDefault: () => {}, stopPropagation: () => {} });
+    input.simulate('keydown', {
+      key: 'ArrowUp',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
+    input.simulate('keydown', {
+      key: 'Enter',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
 
     expect(onSelect).toHaveBeenCalledWith(findMatches()[1]);
   });
@@ -186,8 +263,16 @@ describe('autocomplete-dropdown', () => {
 
     findMatches = () => {
       return [
-        { id: 'result-first-id', value: expectation, route: 'result-first-route' },
-        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        {
+          id: 'result-first-id',
+          value: expectation,
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
       ];
     };
 
@@ -280,8 +365,16 @@ describe('autocomplete-dropdown', () => {
     const input = wrapper.find('input');
 
     jest.useFakeTimers();
-    input.simulate('keydown', { key: 'ArrowUp', preventDefault: () => {}, stopPropagation: () => {} });
-    input.simulate('keydown', { key: 'Enter', preventDefault: () => {}, stopPropagation: () => {} });
+    input.simulate('keydown', {
+      key: 'ArrowUp',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
+    input.simulate('keydown', {
+      key: 'Enter',
+      preventDefault: () => {},
+      stopPropagation: () => {},
+    });
     jest.runAllTimers();
 
     await new Promise(setImmediate);
@@ -306,7 +399,11 @@ describe('autocomplete-dropdown', () => {
     }
 
     it('verifies expected attributes are present', () => {
-      const expectation = { value: 'result-value', route: 'result-route', summary: 'result-summary' };
+      const expectation = {
+        value: 'result-value',
+        route: 'result-route',
+        summary: 'result-summary',
+      };
 
       const wrapper = subject({ item: expectation });
 

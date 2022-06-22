@@ -29,8 +29,15 @@ ReactDOM.render(
       <EscapeManagerProvider>
         <Router history={history}>
           <Web3ReactContextProvider>
-            <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
-            <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+            <Route
+              path='/:znsRoute?/'
+              exact
+              render={redirectToDefaults}
+            />
+            <Route
+              path='/:znsRoute/:app'
+              component={ZnsRouteConnect}
+            />
           </Web3ReactContextProvider>
         </Router>
       </EscapeManagerProvider>

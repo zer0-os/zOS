@@ -5,20 +5,17 @@ import { saga as zns } from './zns/saga';
 import { saga as apps } from './apps/saga';
 
 export function* rootSaga() {
-  const allSagas = [
-    web3,
-    zns,
-    apps,
-  ];
+  const allSagas = [web3, zns, apps];
 
-  yield all(Object.keys(allSagas).map(sagaName => {
-    return spawn(function*() {
-      try {
-        yield call(allSagas[sagaName]);
-      } catch (error) {
-        console.log(`Saga [${sagaName}] has failed due to error.`, error);
-      }
-    });
-  }));
+  yield all(
+    Object.keys(allSagas).map((sagaName) => {
+      return spawn(function* () {
+        try {
+          yield call(allSagas[sagaName]);
+        } catch (error) {
+          console.log(`Saga [${sagaName}] has failed due to error.`, error);
+        }
+      });
+    })
+  );
 }
-

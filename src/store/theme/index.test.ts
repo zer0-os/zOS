@@ -1,8 +1,4 @@
-import {
-  reducer,
-  setViewMode,
-  ThemeState,
-} from '.';
+import { reducer, setViewMode, ThemeState } from '.';
 
 import { ViewModes } from '../../shared-components/theme-engine';
 

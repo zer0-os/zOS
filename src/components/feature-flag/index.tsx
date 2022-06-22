@@ -17,7 +17,7 @@ export const Component = (props: Properties) => {
   }
 
   return null;
-}
+};
 
 export const FeatureFlag = inject<PublicProperties>(Component);
 

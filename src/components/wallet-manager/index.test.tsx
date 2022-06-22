@@ -2,7 +2,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { EthAddress, Button, WalletSelectModal, WalletType, ErrorNetwork, WalletSelect, Dialog } from '@zer0-os/zos-component-library';
+import {
+  EthAddress,
+  Button,
+  WalletSelectModal,
+  WalletType,
+  ErrorNetwork,
+  WalletSelect,
+  Dialog,
+} from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 
@@ -133,7 +141,7 @@ describe('WalletManager', () => {
     wrapper.find('.wallet-manager__connect-button').simulate('click');
     // straight to Connected from Disconnected. we should not force this
     // to pass through Connecting
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected })
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
   });
@@ -141,13 +149,12 @@ describe('WalletManager', () => {
   it('should show list of wallet when status is disconnected', () => {
     const wrapper = subject({ connectionStatus: ConnectionStatus.Connected });
 
-
     wrapper.find('.wallet-manager__connect-button').simulate('click');
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
     expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
 
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected })
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected });
 
     expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
   });
@@ -165,9 +172,9 @@ describe('WalletManager', () => {
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {
     const wrapper = subject();
-    
+
     wrapper.find('.wallet-manager__connect-button').simulate('click');
-    
+
     wrapper.setProps({ connectionStatus: ConnectionStatus.NetworkNotSupported });
 
     expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
@@ -175,12 +182,13 @@ describe('WalletManager', () => {
 
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
-    const getState = (state: any = {}) => ({
-      ...state,
-      web3: getWeb3({
-        ...(state.web3 || {}),
-      }),
-    } as RootState);
+    const getState = (state: any = {}) =>
+      ({
+        ...state,
+        web3: getWeb3({
+          ...(state.web3 || {}),
+        }),
+      } as RootState);
 
     const getWeb3 = (web3: any = {}) => ({
       status: ConnectionStatus.Disconnected,

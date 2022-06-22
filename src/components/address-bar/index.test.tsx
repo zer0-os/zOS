@@ -29,32 +29,32 @@ describe('AddressBar', () => {
 
   it('adds class', () => {
     const wrapper = subject({ className: 'the-class' });
-    
+
     expect(wrapper.find('.address-bar').hasClass('the-class')).toBe(true);
   });
 
   it('renders protocol', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
-    
+
     expect(wrapper.find('.address-bar__protocol').text().trim()).toStrictEqual('0://');
   });
 
   it('renders app name', () => {
-    const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' }});
-    
+    const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' } });
+
     expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').text().trim()).toStrictEqual('Feed');
   });
 
   it('does not render app name no app selected', () => {
     const wrapper = subject({ app: null });
-    
+
     expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').exists()).toBe(false);
   });
 
   it('renders route in segments', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
-    
-    const segments = wrapper.find('.address-bar__route-segment').map(segment => segment.children().text().trim());
+
+    const segments = wrapper.find('.address-bar__route-segment').map((segment) => segment.children().text().trim());
 
     expect(segments).toStrictEqual(['food', 'street', 'tacos']);
   });
@@ -62,7 +62,7 @@ describe('AddressBar', () => {
   it('renders ZnsLink to route with app at segment', () => {
     const app = { type: Apps.Feed };
     const wrapper = subject({ route: 'food.street.tacos', app });
-    
+
     const segments = wrapper.find(ZnsLink);
 
     expect(segments.at(0).props()).toMatchObject({
@@ -78,7 +78,7 @@ describe('AddressBar', () => {
 
   it('renders route seperators', () => {
     const wrapper = subject({ route: 'food.street.tacos' });
-    
+
     expect(wrapper.find('.address-bar__route-seperator')).toHaveLength(2);
   });
 
@@ -144,7 +144,7 @@ describe('AddressBar', () => {
     const wrapper = subject({ addressBarMode: 'search' });
 
     wrapper.find(ZNSDropdown).simulate('Select');
-    
+
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
   });
 
@@ -165,18 +165,18 @@ describe('AddressBar', () => {
 
     expect(wrapper.find(ZNSDropdown).exists()).toBe(true);
 
-    wrapper.find(ZNSDropdown).props().onCloseBar(); 
-    
+    wrapper.find(ZNSDropdown).props().onCloseBar();
+
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
   });
 
   it('renders overlay container when search selected', () => {
-    const wrapper = subject({ });
+    const wrapper = subject({});
 
-    expect(wrapper.find('.overlay--open').exists()).toBe(false); 
+    expect(wrapper.find('.overlay--open').exists()).toBe(false);
 
     wrapper.find('[className$="trigger-region"]').simulate('click');
 
-    expect(wrapper.find('.overlay--open').exists()).toBe(true); 
+    expect(wrapper.find('.overlay--open').exists()).toBe(true);
   });
 });

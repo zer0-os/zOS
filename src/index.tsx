@@ -19,7 +19,9 @@ import './index.scss';
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
-const redirectToDefaults = ({ match: { params } }) => <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />;
+const redirectToDefaults = ({ match: { params } }) => (
+  <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />
+);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -42,13 +44,12 @@ ReactDOM.render(
 // load and render the child apps. Anything exposed in this tree should also be done in
 // such a way that it won't interfere with the loaded app. (eg. pass the store directly
 // to components rather than using a provider.)
-ReactDOM.render((
-    <Router history={history}>
-      <div className='app-sandbox-wrapper'>
-        <AppSandboxContainer store={store} />
-      </div>
-    </Router>
-  ),
+ReactDOM.render(
+  <Router history={history}>
+    <div className='app-sandbox-wrapper'>
+      <AppSandboxContainer store={store} />
+    </div>
+  </Router>,
   document.getElementById('app-sandbox')
 );
 

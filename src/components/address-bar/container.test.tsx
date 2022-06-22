@@ -32,7 +32,7 @@ describe('AddressBarContainer', () => {
   });
 
   it('passes app to address bar', () => {
-    const selectedApp = { type: Apps.Channels } as PlatformApp; 
+    const selectedApp = { type: Apps.Channels } as PlatformApp;
 
     const wrapper = subject({ app: selectedApp });
 
@@ -135,7 +135,7 @@ describe('AddressBarContainer', () => {
 
   describe('mapState', () => {
     const subject = (state: Partial<RootState>) => {
-      const zns: any = (state.zns || {});
+      const zns: any = state.zns || {};
 
       return Container.mapState({
         ...state,
@@ -145,7 +145,7 @@ describe('AddressBarContainer', () => {
             ...(zns.value || { deepestVisitedRoute: '', route: 'yo' }),
           },
         },
-        apps: { ...(state.apps || {})},
+        apps: { ...(state.apps || {}) },
       } as RootState);
     };
 

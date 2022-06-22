@@ -4,12 +4,10 @@ import { setRoute } from './saga';
 import { rootReducer, RootState } from '..';
 
 describe('zns saga', () => {
-  const getState = (znsState) => ({ zns: { value: znsState } }) as RootState;
+  const getState = (znsState) => ({ zns: { value: znsState } } as RootState);
 
   it('sets new route', async () => {
-    const { storeState } = await expectSaga(setRoute, { payload: 'food' })
-      .withReducer(rootReducer)
-      .run();
+    const { storeState } = await expectSaga(setRoute, { payload: 'food' }).withReducer(rootReducer).run();
 
     expect(storeState.zns).toMatchObject({
       value: {

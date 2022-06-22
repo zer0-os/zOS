@@ -16,7 +16,7 @@ export interface Properties {
 
 export class AppMenu extends React.Component<Properties> {
   renderApps() {
-    return this.props.apps.map(app => {
+    return this.props.apps.map((app) => {
       const className = classNames('app-menu__app', {
         selected: app.type === this.props.selectedApp,
       });
@@ -26,8 +26,8 @@ export class AppMenu extends React.Component<Properties> {
       return (
         <li key={type} className={className}>
           <ZnsLink route={this.props.route} app={type}>
-            <img className="app-menu__app-image" src={imageSource} alt={name} />
-            <span className="app-menu__app-name">{name}</span>
+            <img className='app-menu__app-image' src={imageSource} alt={name} />
+            <span className='app-menu__app-name'>{name}</span>
           </ZnsLink>
         </li>
       );
@@ -37,9 +37,7 @@ export class AppMenu extends React.Component<Properties> {
   render() {
     return (
       <div className={classNames('app-menu', this.props.className)}>
-        <ul className='app-menu__apps'>
-          {this.renderApps()}
-        </ul>
+        <ul className='app-menu__apps'>{this.renderApps()}</ul>
       </div>
     );
   }

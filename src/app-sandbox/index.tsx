@@ -19,18 +19,10 @@ export class AppSandbox extends React.Component<Properties> {
       return <FeedApp route={znsRoute} provider={web3Provider} />;
     }
 
-    return (
-      <div className='error'>
-        Error {app} application has not been implemented.
-      </div>
-    );
+    return <div className='error'>Error {app} application has not been implemented.</div>;
   }
 
   render() {
-    return (
-      <div className='app-sandbox'>
-        {this.renderSelectedApp()}
-      </div>
-    );
+    return <div className='app-sandbox'>{this.renderSelectedApp()}</div>;
   }
 }

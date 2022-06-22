@@ -8,7 +8,7 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  config: { defaultZnsRoute: string; };
+  config: { defaultZnsRoute: string };
 }
 
 export class Container extends React.Component<Properties> {

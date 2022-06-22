@@ -65,13 +65,14 @@ describe('ViewModeToggle', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      ...state,
-      theme: {
-        viewMode: ViewModes.Dark,
-        ...(state.theme || {}),
-      },
-    } as RootState);
+    const subject = (state: Partial<RootState>) =>
+      Container.mapState({
+        ...state,
+        theme: {
+          viewMode: ViewModes.Dark,
+          ...(state.theme || {}),
+        },
+      } as RootState);
 
     test('viewMode', () => {
       const state = subject({ theme: { value: { viewMode: ViewModes.Light } } });

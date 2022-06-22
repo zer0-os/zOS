@@ -31,7 +31,7 @@ describe('Web3Connect', () => {
       },
     };
 
-    return shallow(<Container {...allProps}>{child}</ Container>);
+    return shallow(<Container {...allProps}>{child}</Container>);
   };
 
   it('calls updateConnector with Infura on mount', () => {
@@ -48,7 +48,7 @@ describe('Web3Connect', () => {
 
     const web3Connect = subject({
       connectors: {
-        get: jest.fn((c: Connectors) => c === Connectors.Portis ? connector : null),
+        get: jest.fn((c: Connectors) => (c === Connectors.Portis ? connector : null)),
       },
       web3: { activate } as any,
       currentConnector: Connectors.Infura,
@@ -78,11 +78,12 @@ describe('Web3Connect', () => {
     const library = { networkId: 3 };
     const register = jest.fn();
 
-    const component = subject({
+    const component = subject(
+      {
         providerService: { register },
         web3: { library, active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     expect(register).toHaveBeenCalledTimes(0);
@@ -97,11 +98,12 @@ describe('Web3Connect', () => {
     const library = { connection: { what: 'hey' } };
     const register = jest.fn();
 
-    const component = subject({
+    const component = subject(
+      {
         providerService: { register },
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: true }) });
@@ -115,11 +117,12 @@ describe('Web3Connect', () => {
     const library = { connection: { what: 'hey' } };
     const register = jest.fn();
 
-    const component = subject({
+    const component = subject(
+      {
         providerService: { register },
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: false }) });
@@ -133,11 +136,12 @@ describe('Web3Connect', () => {
     const library = { connection: { what: 'hey' } };
     const register = jest.fn();
 
-    const component = subject({
+    const component = subject(
+      {
         providerService: { register },
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ library: { connection: { what: 'helloooo' } }, active: false }) });
@@ -152,11 +156,12 @@ describe('Web3Connect', () => {
     const library = { networkId: 3 };
     const setConnectionStatus = jest.fn();
 
-    const component = subject({
+    const component = subject(
+      {
         setConnectionStatus,
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ library, active: true }) });
@@ -168,11 +173,11 @@ describe('Web3Connect', () => {
     const setConnectionStatus = jest.fn();
 
     const web3 = {
-      activate: () => {}
+      activate: () => {},
     } as any;
 
     jest.spyOn(web3, 'activate').mockImplementation(() => {
-      throw new Error()
+      throw new Error();
     });
 
     const web3Connect = subject({
@@ -190,11 +195,12 @@ describe('Web3Connect', () => {
     const setAddress = jest.fn();
     const address = '';
 
-    const component = subject({
+    const component = subject(
+      {
         setAddress,
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ account: address, active: true }) });
@@ -206,11 +212,12 @@ describe('Web3Connect', () => {
     const setAddress = jest.fn();
     const address = '0x0000000000000000000000000000000000000009';
 
-    const component = subject({
+    const component = subject(
+      {
         setAddress,
         web3: { active: false } as any,
       },
-      <div className='the-cat-parade' />,
+      <div className='the-cat-parade' />
     );
 
     component.setProps({ web3: getWeb3({ account: address, active: true }) });
@@ -237,12 +244,15 @@ describe('Web3Connect', () => {
   });
 
   it('does render children when connectionStatus is Connecting and has been connected', () => {
-    const component = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-      web3: getWeb3({
-        active: false,
-      }),
-    }, <div className='the-cat-parade' />);
+    const component = subject(
+      {
+        connectionStatus: ConnectionStatus.Disconnected,
+        web3: getWeb3({
+          active: false,
+        }),
+      },
+      <div className='the-cat-parade' />
+    );
 
     // initial connection is made
     component.setProps({
@@ -261,21 +271,22 @@ describe('Web3Connect', () => {
 
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
-    const getState = (state: any = {}) => ({
-      ...state,
-      web3: {
-        status: ConnectionStatus.Connecting,
-        value: { connector: Connectors.Infura },
-        ...(state.web3 || {}),
-      },
-    } as RootState);
+    const getState = (state: any = {}) =>
+      ({
+        ...state,
+        web3: {
+          status: ConnectionStatus.Connecting,
+          value: { connector: Connectors.Infura },
+          ...(state.web3 || {}),
+        },
+      } as RootState);
 
     test('status', () => {
       const state = subject(getState({ web3: { status: ConnectionStatus.Connected } }));
 
       expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
     });
-    
+
     test('currentConnector', () => {
       const state = subject(getState({ web3: { value: { connector: Connectors.Fortmatic } } }));
 

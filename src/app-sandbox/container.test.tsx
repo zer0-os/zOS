@@ -56,7 +56,7 @@ describe('AppSandboxContainer', () => {
 
   it('passes provider to sandbox', () => {
     const provider = { hey: 'what' };
-    
+
     const wrapper = subject({
       route: 'tacos.street.pollo',
       providerService: { get: () => provider } as ProviderService,
@@ -89,14 +89,15 @@ describe('AppSandboxContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      zns: { value: { route: '' }, ...(state.zns || {}) },
-      web3: {
-        status: ConnectionStatus.Connecting,
-        ...(state.web3 || {}),
-      },
-      apps: { selectedApp: '', ...(state.apps || {}) },
-    } as RootState);
+    const subject = (state: Partial<RootState>) =>
+      Container.mapState({
+        zns: { value: { route: '' }, ...(state.zns || {}) },
+        web3: {
+          status: ConnectionStatus.Connecting,
+          ...(state.web3 || {}),
+        },
+        apps: { selectedApp: '', ...(state.apps || {}) },
+      } as RootState);
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } });

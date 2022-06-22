@@ -28,7 +28,7 @@ export class Component extends React.Component<Properties> {
   setVars(viewMode: ViewModes) {
     const modeObject = this.props.theme[viewMode];
 
-    Object.keys(modeObject).forEach(prop => {
+    Object.keys(modeObject).forEach((prop) => {
       this.props.element.style.setProperty(`--${kebabCase(prop)}`, modeObject[prop]);
     });
   }

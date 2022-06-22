@@ -15,7 +15,7 @@ describe('ZnsRouteConnect', () => {
         ...(props.match || {}),
       },
     };
-    
+
     return shallow(<Container {...allProps} />);
   };
 

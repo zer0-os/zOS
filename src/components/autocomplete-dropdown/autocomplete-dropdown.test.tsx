@@ -65,10 +65,12 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it renders match suggestions', async () => {
-    findMatches = () => { return [
-      { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+      ];
+    };
 
     const wrapper = subject({ findMatches });
 
@@ -80,14 +82,16 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map(r => r.prop('item'))).toEqual(findMatches());
+    expect(wrapper.find(Result).map((r) => r.prop('item'))).toEqual(findMatches());
   });
 
   it('it sets the first item found to the "focused" one', async () => {
-    findMatches = () => { return [
-      { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+      ];
+    };
 
     const wrapper = subject({ findMatches });
 
@@ -99,14 +103,16 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map(r => r.prop('isFocused'))).toEqual([true, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false]);
   });
 
   it('it sets the next item as to the "focused" one when hitting "down"', async () => {
-    findMatches = () => { return [
-      { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+      ];
+    };
 
     const wrapper = subject({ findMatches });
 
@@ -118,19 +124,21 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map(r => r.prop('isFocused'))).toEqual([true, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false]);
 
     input.simulate('keydown', { key: 'ArrowDown', preventDefault: () => {}, stopPropagation: () => {} });
 
-    expect(wrapper.find(Result).map(r => r.prop('isFocused'))).toEqual([false, true]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([false, true]);
   });
 
   it('it sets the last item as to the "focused" one when hitting "up"', async () => {
-    findMatches = () => { return [
-      { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-      { id: 'result-third-id', value: 'result-third-value', route: 'result-third-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+        { id: 'result-third-id', value: 'result-third-value', route: 'result-third-route' },
+      ];
+    };
 
     const wrapper = subject({ findMatches });
 
@@ -142,18 +150,20 @@ describe('autocomplete-dropdown', () => {
 
     await new Promise(setImmediate);
 
-    expect(wrapper.find(Result).map(r => r.prop('isFocused'))).toEqual([true, false, false]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([true, false, false]);
 
     input.simulate('keydown', { key: 'ArrowUp', preventDefault: () => {}, stopPropagation: () => {} });
 
-    expect(wrapper.find(Result).map(r => r.prop('isFocused'))).toEqual([false, false, true]);
+    expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([false, false, true]);
   });
 
   it('it selects the currently focused option when pressing "Enter"', async () => {
-    findMatches = () => { return [
-      { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: 'result-first-value', route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+      ];
+    };
 
     const wrapper = subject({ findMatches });
 
@@ -174,10 +184,12 @@ describe('autocomplete-dropdown', () => {
   it('selecting a match triggers change event', async () => {
     const expectation = 'result-first-value';
 
-    findMatches = () => { return [
-      { id: 'result-first-id', value: expectation, route: 'result-first-route' },
-      { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
-    ]};
+    findMatches = () => {
+      return [
+        { id: 'result-first-id', value: expectation, route: 'result-first-route' },
+        { id: 'result-second-id', value: 'result-second-value', route: 'result-second-route' },
+      ];
+    };
 
     const wrapper = subjectMount({ findMatches });
 
@@ -200,7 +212,9 @@ describe('autocomplete-dropdown', () => {
   it('selecting an option verifies value and closes dropdown', async () => {
     const expectation = 'result-value';
 
-    findMatches = () => { return [{ id: 'result-id', value: expectation, route: 'result-route' }] };
+    findMatches = () => {
+      return [{ id: 'result-id', value: expectation, route: 'result-route' }];
+    };
     const wrapper = subjectMount({ findMatches });
 
     let input = wrapper.find('input');
@@ -223,7 +237,9 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it closes dropdown when focus lost', async () => {
-    findMatches = () => { return [{ id: 'result-id', value: 'result-value', route: 'result-route' }] };
+    findMatches = () => {
+      return [{ id: 'result-id', value: 'result-value', route: 'result-route' }];
+    };
     const wrapper = subject({ findMatches, value: 'original value' });
 
     const input = wrapper.find('input');
@@ -238,9 +254,10 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
   });
 
-
   it('it displays "No results found" when there are no matches', async () => {
-    findMatches = () => { return [] };
+    findMatches = () => {
+      return [];
+    };
     const wrapper = subject({ findMatches });
 
     const input = wrapper.find('input');
@@ -255,7 +272,9 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('hides search bar when pressing "escape"', async () => {
-    findMatches = () => { return [] };
+    findMatches = () => {
+      return [];
+    };
     const wrapper = subject({ findMatches });
 
     const input = wrapper.find('input');
@@ -291,9 +310,9 @@ describe('autocomplete-dropdown', () => {
 
       const wrapper = subject({ item: expectation });
 
-      Object.values(expectation).forEach(value => {
+      Object.values(expectation).forEach((value) => {
         expect(wrapper.html().includes(value)).toBe(true);
-      })
+      });
     });
-  })
+  });
 });

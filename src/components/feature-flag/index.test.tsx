@@ -17,7 +17,7 @@ describe('feature-flag', () => {
     return shallow(<FeatureFlag {...allProps}>{child}</FeatureFlag>);
   };
 
-  it('renders the child if feature flag is true', function() {
+  it('renders the child if feature flag is true', function () {
     featureFlags.tacos = true;
 
     const wrapper = subject({ featureFlag: 'tacos' }, <div className='taco-component' />);
@@ -25,7 +25,7 @@ describe('feature-flag', () => {
     expect(wrapper.hasClass('taco-component')).toBe(true);
   });
 
-  it('does not render the child if feature flag is false', function() {
+  it('does not render the child if feature flag is false', function () {
     featureFlags.tacos = false;
 
     const wrapper = subject({ featureFlag: 'tacos' }, <div className='taco-component' />);
@@ -33,7 +33,7 @@ describe('feature-flag', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
 
-  it('does not render the child if feature flag does not exist', function() {
+  it('does not render the child if feature flag does not exist', function () {
     const wrapper = subject({ featureFlag: 'tacos' }, <div className='taco-component' />);
 
     expect(wrapper.isEmptyRender()).toBe(true);

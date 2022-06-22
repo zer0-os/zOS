@@ -1,8 +1,4 @@
-import {
-  reducer,
-  receive,
-  ZnsState,
-} from '.';
+import { reducer, receive, ZnsState } from '.';
 
 describe('zns reducer', () => {
   const initialExistingState: ZnsState = {
@@ -25,10 +21,13 @@ describe('zns reducer', () => {
   });
 
   it('should replace existing state', () => {
-    const actual = reducer(initialExistingState, receive({
-      route: 'cheeseburgers',
-      deepestVisitedRoute: 'cheeseburgers.with.pickles',
-    }));
+    const actual = reducer(
+      initialExistingState,
+      receive({
+        route: 'cheeseburgers',
+        deepestVisitedRoute: 'cheeseburgers.with.pickles',
+      })
+    );
 
     expect(actual.value).toMatchObject({
       route: 'cheeseburgers',

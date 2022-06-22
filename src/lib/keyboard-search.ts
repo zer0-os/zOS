@@ -46,10 +46,10 @@ export function newIndexForKey(key: string, currentIndex: number, options: any[]
 
   let newIndex = currentIndex;
   switch (key) {
-    case(Key.ArrowUp):
+    case Key.ArrowUp:
       newIndex = handleArrowUp(currentIndex, options);
       break;
-    case(Key.ArrowDown):
+    case Key.ArrowDown:
       newIndex = handleArrowDown(currentIndex, options);
       break;
   }

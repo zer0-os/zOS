@@ -12,7 +12,14 @@ export interface Properties {
 
 export class Container extends React.Component<Properties, {}> {
   static mapState(state: RootState): Partial<Properties> {
-    const { zns: { value: { route } }, apps: { selectedApp: { type } } } = state;
+    const {
+      zns: {
+        value: { route },
+      },
+      apps: {
+        selectedApp: { type },
+      },
+    } = state;
 
     return { selectedApp: type, route };
   }
@@ -24,13 +31,7 @@ export class Container extends React.Component<Properties, {}> {
   render() {
     const { selectedApp, route } = this.props;
 
-    return (
-      <AppMenu
-        selectedApp={selectedApp}
-        route={route}
-        apps={allApps}
-      />
-    );
+    return <AppMenu selectedApp={selectedApp} route={route} apps={allApps} />;
   }
 }
 

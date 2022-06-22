@@ -19,13 +19,13 @@ describe('AppSandbox', () => {
   it('renders Feed app container when Feed app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Feed });
 
-    expect(wrapper.find(App).exists()).toBe(true); 
+    expect(wrapper.find(App).exists()).toBe(true);
   });
 
   it('does not render Feed app container if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
-    expect(wrapper.find(App).exists()).toBe(false); 
+    expect(wrapper.find(App).exists()).toBe(false);
   });
 
   it('passes route to feed app', () => {

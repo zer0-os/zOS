@@ -54,7 +54,8 @@
     "code-format:staged:fix": "pretty-quick --staged",
     "code-format:validate": "prettier --check 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "code-format:fix": "prettier --write 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
-    "precommit": "run-s format:fix lint"
+    "precommit": "run-s format:fix lint",
+    "prepare": "husky install"
   },
   "browserslist": {
     "production": [

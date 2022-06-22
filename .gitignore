@@ -27,3 +27,5 @@ yarn-error.log*
 # IDE - VSCode
 .vscode/*
 /.idea
+
+.husky/_

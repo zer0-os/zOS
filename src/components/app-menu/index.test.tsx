@@ -36,7 +36,10 @@ describe('AppMenu', () => {
 
     const labels = wrapper.find('.app-menu__app-name').map((element) => element.text().trim());
 
-    expect(labels).toStrictEqual(['DAOS', 'Staking']);
+    expect(labels).toStrictEqual([
+      'DAOS',
+      'Staking',
+    ]);
   });
 
   it('renders a ZnsLink for each app', () => {

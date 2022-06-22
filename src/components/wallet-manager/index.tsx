@@ -1,15 +1,13 @@
+import { Button, EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import React from 'react';
+import { config } from '../../config';
+import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { updateConnector } from '../../store/web3';
-import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { isElectron } from '../../utils';
-
 import './styles.scss';
-import { getChainNameFromId } from '../../lib/web3/chains';
-import { config } from '../../config';
 
 export interface Properties {
   currentAddress: string;

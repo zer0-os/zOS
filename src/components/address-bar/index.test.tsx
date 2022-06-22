@@ -56,7 +56,11 @@ describe('AddressBar', () => {
 
     const segments = wrapper.find('.address-bar__route-segment').map((segment) => segment.children().text().trim());
 
-    expect(segments).toStrictEqual(['food', 'street', 'tacos']);
+    expect(segments).toStrictEqual([
+      'food',
+      'street',
+      'tacos',
+    ]);
   });
 
   it('renders ZnsLink to route with app at segment', () => {

@@ -7,9 +7,6 @@ import {
   Button,
   WalletSelectModal,
   WalletType,
-  ErrorNetwork,
-  WalletSelect,
-  Dialog,
 } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
@@ -24,7 +21,9 @@ describe('WalletManager', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('renders connect button', () => {
+  it('renders connect button', (
+    
+  ) => {
     const wrapper = subject();
 
     const button = wrapper.find(Button);

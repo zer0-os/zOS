@@ -2,12 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import {
-  EthAddress,
-  Button,
-  WalletSelectModal,
-  WalletType,
-} from '@zer0-os/zos-component-library';
+import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 
@@ -21,11 +16,7 @@ describe('WalletManager', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('renders connect button', (
-
-    
-  
-  ) => {
+  it('renders connect button', () => {
     const wrapper = subject();
 
     const button = wrapper.find(Button);

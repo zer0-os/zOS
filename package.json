@@ -80,6 +80,7 @@
     "electron-builder": "^23.0.3",
     "electronmon": "^2.0.2",
     "enzyme": "^3.11.0",
+    "husky": "^8.0.1",
     "jest-extended": "^1.2.0",
     "prettier": "^2.7.1",
     "pretty-quick": "^3.1.3",

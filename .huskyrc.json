@@ -1,6 +1,6 @@
 {
-    "hooks": {
-        "pre-commit": "npm run code-format:staged:fix && npm run lint",
-        "pre-push": "npm run code-format:validate"
-    }
+  "hooks": {
+    "pre-commit": "npm run code-format:staged:fix && npm run lint",
+    "pre-push": "npm run code-format:validate"
+  }
 }

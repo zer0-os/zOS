@@ -19,22 +19,21 @@ describe('AppSandbox', () => {
   it('renders Feed app container when Feed app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Feed });
 
-    expect(wrapper.find(App).exists()).toBe(true); 
+    expect(wrapper.find(App).exists()).toBe(true);
   });
 
   it('does not render Feed app container if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
-    expect(wrapper.find(App).exists()).toBe(false); 
+    expect(wrapper.find(App).exists()).toBe(false);
   });
 
   it('passes route to feed app', () => {
     const znsRoute = 'food.tacos';
-    const app = Apps.Feed;
 
-    const wrapper = subject({ selectedApp: app, znsRoute });
+    const wrapper = subject({ selectedApp: Apps.Feed, znsRoute });
 
-    expect(wrapper.find(App).prop('route')).toStrictEqual({ app, znsRoute });
+    expect(wrapper.find(App).prop('route')).toStrictEqual(znsRoute);
   });
 
   it('passes provider to feed app', () => {

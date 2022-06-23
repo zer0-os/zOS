@@ -1,11 +1,6 @@
-import {
-  reducer,
-  receive,
-  AppsState,
-} from '.';
+import { reducer, receive, AppsState } from '.';
 
 import { apps, Apps } from '../../lib/apps';
-
 
 describe('apps reducer', () => {
   const initialExistingState: AppsState = {

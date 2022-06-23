@@ -23,15 +23,15 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 A {
   text-decoration: none;
 }
 
-A, BUTTON {
+A,
+BUTTON {
   color: inherit;
 }
 
@@ -72,7 +72,8 @@ hr.glow:after {
   right: 0;
 }
 
-hr.glow:after, hr.glow:before {
+hr.glow:after,
+hr.glow:before {
   content: ' ';
   position: absolute;
   top: 0;

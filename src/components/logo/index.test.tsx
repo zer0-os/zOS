@@ -1,17 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 
-import { Link } from 'react-router-dom';
-import { Apps } from '../../lib/apps';
 import { Container } from '.';
 
 describe('Logo', () => {
   const subject = (props: any = {}) => {
     const allProps = {
-      calssName: '',
-      type: '',
-      defaultZnsRoute: '',
+      className: '',
+      config: { defaultZnsRoute: '' },
       ...props,
     };
 
@@ -21,28 +18,12 @@ describe('Logo', () => {
   it('adds className', () => {
     const wrapper = subject({ className: 'logo' });
 
-    expect(wrapper.find(Link).children().first().hasClass('logo')).toBe(true);
+    expect(wrapper.find(ZnsLink).children().first().hasClass('logo')).toBe(true);
   });
 
   it('should take back to page root', () => {
-    const wrapper = subject({ type: Apps.Feed, defaultZnsRoute: 'wilder' });
+    const wrapper = subject({ config: { defaultZnsRoute: 'wilder' } });
 
-    expect(wrapper.find(Link).prop('to')).toEqual('/wilder/feed');
-  });
-
-  describe('mapState', () => {
-    const subject = (state: Partial<RootState>) =>
-      Container.mapState({
-        ...state,
-        apps: {
-          selectedApp: { type: Apps.NFTS },
-        },
-      } as RootState);
-
-    test('type', () => {
-      const state = subject({});
-
-      expect(state.type).toEqual(Apps.NFTS);
-    });
+    expect(wrapper.find(ZnsLink).prop('route')).toEqual('wilder');
   });
 });

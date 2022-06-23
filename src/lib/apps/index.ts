@@ -16,7 +16,7 @@ export interface PlatformApp {
 
 const apps: { [apps: string]: PlatformApp } = {};
 
-Object.keys(Apps).forEach(app => {
+Object.keys(Apps).forEach((app) => {
   apps[Apps[app]] = {
     type: Apps[app],
     name: app,
@@ -24,6 +24,6 @@ Object.keys(Apps).forEach(app => {
   };
 });
 
-const allApps = [ apps[Apps.Feed] ];
+const allApps = [apps[Apps.Feed]];
 
 export { apps, allApps };

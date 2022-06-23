@@ -52,17 +52,14 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       currentFocusIndex: 0,
     };
 
-    this.performSearch = debouncePromise(
-      this._performSearch,
-      config.debounceRate
-    );
+    this.performSearch = debouncePromise(this._performSearch, config.debounceRate);
   }
 
   escFunction = (event): void => {
     if (event.key === Key.Escape) {
       this.props.onCloseBar();
     }
-  }
+  };
 
   _performSearch = async (searchTerm) => {
     return this.props.findMatches(searchTerm);
@@ -156,10 +153,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   onKeyDown = (e) => {
     const allOptions = [...this.state.matches];
 
-    if (
-      !allOptions.length ||
-      (e.key !== Key.ArrowDown && e.key !== Key.ArrowUp && e.key !== Key.Enter)
-    ) {
+    if (!allOptions.length || (e.key !== Key.ArrowDown && e.key !== Key.ArrowUp && e.key !== Key.Enter)) {
       return;
     }
 
@@ -171,11 +165,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       return;
     }
 
-    const currentFocusIndex = newIndexForKey(
-      e.key,
-      this.state.currentFocusIndex,
-      allOptions
-    );
+    const currentFocusIndex = newIndexForKey(e.key, this.state.currentFocusIndex, allOptions);
 
     this.setState({
       currentFocusIndex,
@@ -188,10 +178,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
 
     let closestScrollableParent = this.anchorElement;
-    while (
-      closestScrollableParent &&
-      closestScrollableParent !== document.body
-    ) {
+    while (closestScrollableParent && closestScrollableParent !== document.body) {
       if (this.elementHasYScroll(closestScrollableParent)) {
         break;
       }
@@ -243,12 +230,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
       let results;
       if (!this.state.inProgress) {
-        results = (
-          <>
-            {this.state.searchComplete &&
-              this.results(this.state.matches, focusedItem)}
-          </>
-        );
+        results = <>{this.state.searchComplete && this.results(this.state.matches, focusedItem)}</>;
       }
 
       dropdown = (
@@ -263,9 +245,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
           <div className='autocomplete-dropdown__results'>
             <div className='autocomplete-dropdown__items'>
               {this.state.inProgress && (
-                <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>
-                  Searching...
-                </div>
+                <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>Searching...</div>
               )}
               {results}
             </div>
@@ -295,11 +275,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   results(items, focusedItem) {
     let content;
     if (!items.length) {
-      content = (
-        <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>
-          No results found
-        </div>
-      );
+      content = <div className='autocomplete-dropdown-item autocomplete-dropdown__no-results'>No results found</div>;
     } else {
       content = items.map((item) => (
         <Result
@@ -315,10 +291,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   }
 
   private elementHasYScroll(closestScrollParent: HTMLElement) {
-    return (
-      closestScrollParent &&
-      closestScrollParent.scrollHeight > closestScrollParent.clientHeight
-    );
+    return closestScrollParent && closestScrollParent.scrollHeight > closestScrollParent.clientHeight;
   }
 }
 
@@ -344,7 +317,10 @@ export class Result extends React.Component<
         })}
         onMouseDown={this.onSelect}
       >
-        <div className='autocomplete-dropdown-item__text' title={summary}>
+        <div
+          className='autocomplete-dropdown-item__text'
+          title={summary}
+        >
           <span className='autocomplete-dropdown-item__value'>{value}</span>
           &nbsp;
           <span className='autocomplete-dropdown-item__route'>{route}</span>

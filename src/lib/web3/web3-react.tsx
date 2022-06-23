@@ -19,11 +19,7 @@ export class ContextProvider extends React.Component {
   getLibrary = (provider) => new providers.Web3Provider(provider);
 
   render() {
-    return (
-      <Web3ReactProvider getLibrary={this.getLibrary}>
-        {this.props.children}
-      </Web3ReactProvider>
-    );
+    return <Web3ReactProvider getLibrary={this.getLibrary}>{this.props.children}</Web3ReactProvider>;
   }
 }
 
@@ -32,7 +28,13 @@ export function inject<T>(ChildComponent: any) {
     static contextType = getWeb3ReactContext();
 
     render() {
-      return <ChildComponent {...this.props} connectors={{ get: getConnector }} web3={this.context} />;
+      return (
+        <ChildComponent
+          {...this.props}
+          connectors={{ get: getConnector }}
+          web3={this.context}
+        />
+      );
     }
   };
 }

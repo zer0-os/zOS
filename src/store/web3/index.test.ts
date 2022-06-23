@@ -1,16 +1,10 @@
-import {
-  reducer,
-  setConnectionStatus,
-  setConnector,
-  setAddress,
-  Web3State,
-} from '.';
+import { reducer, setConnectionStatus, setConnector, setAddress, Web3State } from '.';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 
 describe('web3 reducer', () => {
   const initialExistingState: Web3State = {
     status: ConnectionStatus.Disconnected,
-    value: { address: '', connector: Connectors.None},
+    value: { address: '', connector: Connectors.None },
   };
 
   it('should handle initial state', () => {

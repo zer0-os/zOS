@@ -12,13 +12,12 @@ export interface Properties {
   setRoute: (route: string) => void;
   setSelectedApp: (selectedApp: Apps) => void;
 
-  match: { params: { znsRoute: string, app: string } };
+  match: { params: { znsRoute: string; app: string } };
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    return {
-    };
+    return {};
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -50,7 +49,7 @@ export class Container extends React.Component<Properties> {
   extractAppFromProps(props: Properties = this.props) {
     return props.match.params.app as Apps;
   }
-  
+
   render() {
     return (
       <Web3Connect>

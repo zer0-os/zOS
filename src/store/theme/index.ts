@@ -1,7 +1,4 @@
-import {
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { ViewModes } from '../../shared-components/theme-engine';
 
@@ -24,4 +21,4 @@ const slice = createSlice({
 });
 
 export const { setViewMode } = slice.actions;
-export const { reducer } =  slice;
+export const { reducer } = slice;

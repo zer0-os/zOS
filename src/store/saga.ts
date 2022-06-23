@@ -11,14 +11,15 @@ export function* rootSaga() {
     apps,
   ];
 
-  yield all(Object.keys(allSagas).map(sagaName => {
-    return spawn(function*() {
-      try {
-        yield call(allSagas[sagaName]);
-      } catch (error) {
-        console.log(`Saga [${sagaName}] has failed due to error.`, error);
-      }
-    });
-  }));
+  yield all(
+    Object.keys(allSagas).map((sagaName) => {
+      return spawn(function* () {
+        try {
+          yield call(allSagas[sagaName]);
+        } catch (error) {
+          console.log(`Saga [${sagaName}] has failed due to error.`, error);
+        }
+      });
+    })
+  );
 }
-

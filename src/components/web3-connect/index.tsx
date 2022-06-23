@@ -9,20 +9,20 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { setAddress, setConnectionStatus, updateConnector } from '../../store/web3';
 
 export interface Properties {
-  connectionStatus: ConnectionStatus,
-  setConnectionStatus: (status: ConnectionStatus) => void,
-  setAddress: (address: string) => void,
-  updateConnector: (connector: Connectors) => void,
-  providerService: { register: (provider: any) => void },
-  connectors: { get: (connector: Connectors) => any },
-  currentConnector: Connectors,
+  connectionStatus: ConnectionStatus;
+  setConnectionStatus: (status: ConnectionStatus) => void;
+  setAddress: (address: string) => void;
+  updateConnector: (connector: Connectors) => void;
+  providerService: { register: (provider: any) => void };
+  connectors: { get: (connector: Connectors) => any };
+  currentConnector: Connectors;
   web3: {
-    activate: (connector: any, onError?: (error: Error) => void, throwErrors?: boolean) => Promise<any>,
-    active: boolean,
-    account: string,
-    library: providers.Web3Provider,
-    connector: any,
-  },
+    activate: (connector: any, onError?: (error: Error) => void, throwErrors?: boolean) => Promise<any>;
+    active: boolean;
+    account: string;
+    library: providers.Web3Provider;
+    connector: any;
+  };
 }
 
 interface State {
@@ -31,7 +31,12 @@ interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { web3: { status, value: { connector } } } = state;
+    const {
+      web3: {
+        status,
+        value: { connector },
+      },
+    } = state;
 
     return {
       connectionStatus: status,
@@ -95,21 +100,18 @@ export class Container extends React.Component<Properties, State> {
   componentDidUpdate(prevProps: Properties) {
     const {
       connectionStatus: previousConnectionStatus,
-      web3: {
-        active: previouslyActive,
-        library: previousLibrary,
-        account: previouslyAccount,
-      },
+      web3: { active: previouslyActive, library: previousLibrary, account: previouslyAccount },
     } = prevProps;
     const { web3, connectionStatus } = this.props;
-    
+
     if (this.props.currentConnector !== prevProps.currentConnector) {
       this.activateCurrentConnector();
     }
-    
-    if ((web3.active && ( !previouslyActive || ( web3.library !== previousLibrary ))) ||
-        web3.account !== previouslyAccount)
-    {
+
+    if (
+      (web3.active && (!previouslyActive || web3.library !== previousLibrary)) ||
+      web3.account !== previouslyAccount
+    ) {
       this.syncGlobalsForConnectedStatus();
     }
 
@@ -119,7 +121,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get shouldRender() {
-    return ( this.props.connectionStatus === ConnectionStatus.Connected ) || this.state.hasConnected;
+    return this.props.connectionStatus === ConnectionStatus.Connected || this.state.hasConnected;
   }
 
   render() {

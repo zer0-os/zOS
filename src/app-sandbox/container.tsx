@@ -4,10 +4,7 @@ import { connectContainer } from '../store/redux-container';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { ConnectionStatus } from '../lib/web3';
-import {
-  ProviderService,
-  inject as injectProviderService,
-} from '../lib/web3/provider-service';
+import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
 
 export interface Properties {
   route: string;
@@ -26,7 +23,9 @@ interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      apps: { selectedApp: { type } },
+      apps: {
+        selectedApp: { type },
+      },
     } = state;
 
     return {
@@ -83,6 +82,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const AppSandboxContainer = injectProviderService<any>(
-  connectContainer<{}>(Container)
-);
+export const AppSandboxContainer = injectProviderService<any>(connectContainer<{}>(Container));

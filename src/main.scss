@@ -17,7 +17,7 @@
   &__navigation {
     display: flex;
     pointer-events: auto;
-    
+
     flex: 0 0 $width-world-navigation;
 
     margin-right: $left-content-space;
@@ -62,7 +62,7 @@
 
     pointer-events: auto;
     flex-basis: $width-sidekick;
-    
+
     display: flex;
     justify-content: flex-end;
   }

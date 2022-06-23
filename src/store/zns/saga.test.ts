@@ -4,12 +4,10 @@ import { setRoute } from './saga';
 import { rootReducer, RootState } from '..';
 
 describe('zns saga', () => {
-  const getState = (znsState) => ({ zns: { value: znsState } }) as RootState;
+  const getState = (znsState) => ({ zns: { value: znsState } } as RootState);
 
   it('sets new route', async () => {
-    const { storeState } = await expectSaga(setRoute, { payload: 'food' })
-      .withReducer(rootReducer)
-      .run();
+    const { storeState } = await expectSaga(setRoute, { payload: 'food' }).withReducer(rootReducer).run();
 
     expect(storeState.zns).toMatchObject({
       value: {
@@ -33,7 +31,10 @@ describe('zns saga', () => {
   });
 
   it('does not set deepest route if new route is parent of current deepest route', async () => {
-    const existingZnsState = { route: 'food.tacos', deepestVisitedRoute: 'food.tacos' };
+    const existingZnsState = {
+      route: 'food.tacos',
+      deepestVisitedRoute: 'food.tacos',
+    };
 
     const { storeState } = await expectSaga(setRoute, { payload: 'food' })
       .withReducer(rootReducer, getState(existingZnsState))
@@ -47,7 +48,10 @@ describe('zns saga', () => {
   });
 
   it('does set deepest route if new route is not parent of current deepest route', async () => {
-    const existingZnsState = { route: 'food.tacos', deepestVisitedRoute: 'food.tacos' };
+    const existingZnsState = {
+      route: 'food.tacos',
+      deepestVisitedRoute: 'food.tacos',
+    };
 
     const { storeState } = await expectSaga(setRoute, { payload: 'cats.hello' })
       .withReducer(rootReducer, getState(existingZnsState))
@@ -61,9 +65,14 @@ describe('zns saga', () => {
   });
 
   it('sets deepest route if new route is deeper than deepest route', async () => {
-    const existingZnsState = { route: 'food.tacos', deepestVisitedRoute: 'food.tacos' };
+    const existingZnsState = {
+      route: 'food.tacos',
+      deepestVisitedRoute: 'food.tacos',
+    };
 
-    const { storeState } = await expectSaga(setRoute, { payload: 'food.tacos.cheesy' })
+    const { storeState } = await expectSaga(setRoute, {
+      payload: 'food.tacos.cheesy',
+    })
       .withReducer(rootReducer, getState(existingZnsState))
       .run();
 

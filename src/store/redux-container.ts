@@ -18,7 +18,9 @@ interface IDispatchActions {
 
 // XXX
 // export function connectContainer<TPublicProps, TContainerProps>(containerComponent: IContainerComponent<TPublicProps, TContainerProps>): IConnectorComponent<TPublicProps> {
-export function connectContainer<TPublicProps>(containerComponent: IContainerComponent<TPublicProps, any>): ConnectedComponent<any, TPublicProps> {
+export function connectContainer<TPublicProps>(
+  containerComponent: IContainerComponent<TPublicProps, any>
+): ConnectedComponent<any, TPublicProps> {
   function mapStateToProps(state: RootState, props: TPublicProps) {
     return containerComponent.mapState(state, props);
   }
@@ -27,7 +29,7 @@ export function connectContainer<TPublicProps>(containerComponent: IContainerCom
     const actions = containerComponent.mapActions(props) as any;
 
     const dispatchActions: IDispatchActions = {};
-    Object.keys(actions).forEach(k => {
+    Object.keys(actions).forEach((k) => {
       dispatchActions[k] = (...args) => dispatch(actions[k](...args));
     });
 

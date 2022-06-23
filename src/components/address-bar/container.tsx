@@ -26,7 +26,12 @@ export interface Properties extends PublicProperties {
 }
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { zns: { value: { route, deepestVisitedRoute } }, apps: { selectedApp: app } } = state;
+    const {
+      zns: {
+        value: { route, deepestVisitedRoute },
+      },
+      apps: { selectedApp: app },
+    } = state;
 
     return { route, deepestVisitedRoute, app };
   }
@@ -45,13 +50,15 @@ export class Container extends React.Component<Properties> {
 
   get canNavigateDeeper() {
     return (
-      ( this.props.route !== this.props.deepestVisitedRoute ) &&
-      this.props.deepestVisitedRoute.includes(this.props.route)
+      this.props.route !== this.props.deepestVisitedRoute && this.props.deepestVisitedRoute.includes(this.props.route)
     );
   }
 
   getNextRoute() {
-    let [ nextRoute, ...segments ] = this.props.deepestVisitedRoute.split('.');
+    let [
+      nextRoute,
+      ...segments
+    ] = this.props.deepestVisitedRoute.split('.');
 
     for (const segment of segments) {
       const workingRoute = `${nextRoute}.${segment}`;
@@ -65,27 +72,24 @@ export class Container extends React.Component<Properties> {
   }
 
   getPreviousRoute() {
-    return this.props.route
-      .split('.')
-      .slice(0, -1)
-      .join('.');
+    return this.props.route.split('.').slice(0, -1).join('.');
   }
-  
+
   handleBack = () => {
     if (this.isAtRootDomain) return;
 
     this.goToRoute(this.getPreviousRoute());
-  }
+  };
 
   handleForward = () => {
     if (!this.canNavigateDeeper) return;
 
     this.goToRoute(this.getNextRoute());
-  }
+  };
 
-  goToRoute = route => {
+  goToRoute = (route) => {
     this.props.history.push(routeWithApp(route, this.props.app.type));
-  }
+  };
 
   render() {
     return (
@@ -109,5 +113,11 @@ const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Conta
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();
 
-  return <ConnectedContainer {...props} history={history} znsClient={client} />;
+  return (
+    <ConnectedContainer
+      {...props}
+      history={history}
+      znsClient={client}
+    />
+  );
 }

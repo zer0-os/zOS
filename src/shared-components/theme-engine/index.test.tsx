@@ -6,7 +6,7 @@ import { Component, Properties, ViewModes } from '.';
 describe('theme-engine', () => {
   const getElement = (setProperty = (_prop: string, _value: string) => undefined) => {
     return { style: { setProperty } } as HTMLElement;
-  }
+  };
 
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -19,7 +19,7 @@ describe('theme-engine', () => {
     return shallow(<Component {...allProps} />);
   };
 
-  it('sets css vars based on view mode', function() {
+  it('sets css vars based on view mode', function () {
     const setProperty = jest.fn();
     const theme = {
       dark: {
@@ -38,12 +38,11 @@ describe('theme-engine', () => {
       viewMode: ViewModes.Dark,
     });
 
-
     expect(setProperty).toHaveBeenCalledWith('--text-color', 'red');
     expect(setProperty).toHaveBeenCalledWith('--background-color', 'purple');
   });
 
-  it('sets css vars based on updated view mode', function() {
+  it('sets css vars based on updated view mode', function () {
     const setProperty = jest.fn();
     const theme = {
       dark: {

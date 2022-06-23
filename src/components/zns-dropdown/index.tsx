@@ -34,7 +34,7 @@ export class ZNSDropdown extends React.Component<Properties, State> {
 
     this.setState({ results });
 
-    return results.map(result => {
+    return results.map((result) => {
       const { id, title, description, znsRoute } = result;
 
       return {
@@ -42,13 +42,13 @@ export class ZNSDropdown extends React.Component<Properties, State> {
         value: title,
         summary: description,
         route: znsRoute,
-      }
+      };
     });
-  }
+  };
 
   onSelect = (item: AutocompleteItem) => {
-    this.props.onSelect(this.state.results.find(p => p.id === item.id).znsRoute);
-  }
+    this.props.onSelect(this.state.results.find((p) => p.id === item.id).znsRoute);
+  };
 
   render() {
     return (

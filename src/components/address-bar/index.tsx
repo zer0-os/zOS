@@ -59,7 +59,10 @@ export class AddressBar extends React.Component<Properties, State> {
       ({ elements, route }, segment, index) => {
         if (elements.length) {
           elements.push(
-            <span key={index} className='address-bar__route-seperator'>
+            <span
+              key={index}
+              className='address-bar__route-seperator'
+            >
               .
             </span>
           );
@@ -152,11 +155,7 @@ export class AddressBar extends React.Component<Properties, State> {
                 className='address-bar__search-trigger-region'
                 onClick={this.showAddressBarMode(AddressBarMode.Search)}
               >
-                {this.hasSelectedApp && (
-                  <span className='address-bar__route-app'>
-                    {this.app.name}
-                  </span>
-                )}
+                {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
               </span>
             </div>
           )}

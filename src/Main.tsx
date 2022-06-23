@@ -19,7 +19,7 @@ export class Main extends React.Component {
             <ViewModeToggle className='main__view-mode-toggle' />
           </div>
           <div className='main__navigation-platform'>
-            <Logo className="main__logo" />
+            <Logo className='main__logo' />
             <div className='main__app-menu-container'>
               <AppMenuContainer />
             </div>

@@ -7,7 +7,12 @@ import { config } from '../../config';
 export function inject<T>(ChildComponent: any) {
   return class ConfigInjector extends React.Component<T> {
     render() {
-      return <ChildComponent {...this.props} config={config} />;
+      return (
+        <ChildComponent
+          {...this.props}
+          config={config}
+        />
+      );
     }
   };
 }

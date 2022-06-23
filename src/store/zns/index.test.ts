@@ -1,8 +1,4 @@
-import {
-  reducer,
-  receive,
-  ZnsState,
-} from '.';
+import { reducer, receive, ZnsState } from '.';
 
 describe('zns reducer', () => {
   const initialExistingState: ZnsState = {
@@ -19,16 +15,21 @@ describe('zns reducer', () => {
   });
 
   it('should have a default deepestVisitedRoute that is a string', () => {
-    const { deepestVisitedRoute } = reducer(undefined, { type: 'unknown' }).value;
+    const { deepestVisitedRoute } = reducer(undefined, {
+      type: 'unknown',
+    }).value;
 
     expect(typeof deepestVisitedRoute).toBe('string');
   });
 
   it('should replace existing state', () => {
-    const actual = reducer(initialExistingState, receive({
-      route: 'cheeseburgers',
-      deepestVisitedRoute: 'cheeseburgers.with.pickles',
-    }));
+    const actual = reducer(
+      initialExistingState,
+      receive({
+        route: 'cheeseburgers',
+        deepestVisitedRoute: 'cheeseburgers.with.pickles',
+      })
+    );
 
     expect(actual.value).toMatchObject({
       route: 'cheeseburgers',

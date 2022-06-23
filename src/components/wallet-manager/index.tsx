@@ -1,15 +1,13 @@
+import { Button, EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import React from 'react';
+import { config } from '../../config';
+import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { updateConnector } from '../../store/web3';
-import  { ConnectionStatus, Connectors } from '../../lib/web3';
 import { isElectron } from '../../utils';
-
 import './styles.scss';
-import { getChainNameFromId } from '../../lib/web3/chains';
-import { config } from '../../config';
 
 export interface Properties {
   currentAddress: string;
@@ -25,13 +23,14 @@ export interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { web3: { status, value } } = state;
+    const {
+      web3: { status, value },
+    } = state;
 
     return {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
-
     };
   }
 
@@ -45,16 +44,17 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidUpdate(prevProps: Properties) {
     if (
-      ( this.props.connectionStatus === ConnectionStatus.Connected ) &&
-      ( prevProps.connectionStatus !== ConnectionStatus.Connected )
+      this.props.connectionStatus === ConnectionStatus.Connected &&
+      prevProps.connectionStatus !== ConnectionStatus.Connected
     ) {
       this.closeModal();
       this.setState({ walletSelected: false });
     }
 
     if (
-      ( this.props.connectionStatus === ConnectionStatus.Disconnected || this.props.connectionStatus === ConnectionStatus.NetworkNotSupported ) &&
-      ( prevProps.connectionStatus !== this.props.connectionStatus )
+      (this.props.connectionStatus === ConnectionStatus.Disconnected ||
+        this.props.connectionStatus === ConnectionStatus.NetworkNotSupported) &&
+      prevProps.connectionStatus !== this.props.connectionStatus
     ) {
       this.setState({ walletSelected: false });
     }
@@ -62,8 +62,7 @@ export class Container extends React.Component<Properties, State> {
 
   get showButton(): boolean {
     return !(
-      ( this.props.connectionStatus === ConnectionStatus.Connected ) &&
-      ( this.props.currentConnector === Connectors.Metamask )
+      this.props.connectionStatus === ConnectionStatus.Connected && this.props.currentConnector === Connectors.Metamask
     );
   }
 
@@ -72,7 +71,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get isConnecting(): boolean {
-    return this.state.walletSelected || ( this.props.connectionStatus === ConnectionStatus.Connecting );
+    return this.state.walletSelected || this.props.connectionStatus === ConnectionStatus.Connecting;
   }
 
   get isNetworkNotSupported(): boolean {
@@ -90,7 +89,7 @@ export class Container extends React.Component<Properties, State> {
         WalletType.Coinbase,
         WalletType.Fortmatic,
         WalletType.Portis,
-      ];  
+      ];
     }
 
     return [
@@ -108,11 +107,11 @@ export class Container extends React.Component<Properties, State> {
   handleWalletSelected = (connector: WalletType) => {
     this.setState({ walletSelected: true });
     this.props.updateConnector(connector);
-  }
+  };
 
   render() {
     return (
-      <div className="wallet-manager">
+      <div className='wallet-manager'>
         {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
         {this.showButton && (
           <Button

@@ -21,13 +21,17 @@ describe('AppSandboxContainer', () => {
   };
 
   it('does not render child when not connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     expect(wrapper.find(AppSandbox).exists()).toBe(false);
   });
 
   it('renders child when connecting and has been connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Disconnected });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+    });
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
 
@@ -56,7 +60,7 @@ describe('AppSandboxContainer', () => {
 
   it('passes provider to sandbox', () => {
     const provider = { hey: 'what' };
-    
+
     const wrapper = subject({
       route: 'tacos.street.pollo',
       providerService: { get: () => provider } as ProviderService,
@@ -89,14 +93,15 @@ describe('AppSandboxContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      zns: { value: { route: '' }, ...(state.zns || {}) },
-      web3: {
-        status: ConnectionStatus.Connecting,
-        ...(state.web3 || {}),
-      },
-      apps: { selectedApp: '', ...(state.apps || {}) },
-    } as RootState);
+    const subject = (state: Partial<RootState>) =>
+      Container.mapState({
+        zns: { value: { route: '' }, ...(state.zns || {}) },
+        web3: {
+          status: ConnectionStatus.Connecting,
+          ...(state.web3 || {}),
+        },
+        apps: { selectedApp: '', ...(state.apps || {}) },
+      } as RootState);
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } });
@@ -115,7 +120,9 @@ describe('AppSandboxContainer', () => {
     test('selectedApp', () => {
       const selectedApp = Apps.DAOS;
 
-      const state = subject({ apps: { selectedApp: { type: selectedApp } as PlatformApp } });
+      const state = subject({
+        apps: { selectedApp: { type: selectedApp } as PlatformApp },
+      });
 
       expect(state).toMatchObject({ selectedApp });
     });

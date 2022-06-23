@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { service, inject, ProviderService } from './provider-service';
 
-const MockComponent = function(props: { providerService: ProviderService }) {
+const MockComponent = function (props: { providerService: ProviderService }) {
   const provider: any = props.providerService.get();
 
   return <div className='chain'>{provider.chainId}</div>;

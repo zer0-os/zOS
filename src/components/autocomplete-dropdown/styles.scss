@@ -43,7 +43,7 @@
     margin-top: 10px;
     margin-bottom: 10px;
     overflow-y: auto;
-    max-height: 95vh;
+    max-height: calc(80vh - 50px);
   }
 
   &-item {

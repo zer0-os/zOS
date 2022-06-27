@@ -4,13 +4,15 @@ import { Container, Properties } from './container';
 import { RootState } from '../store';
 import { AppSandbox } from '.';
 import { Apps, PlatformApp } from '../lib/apps';
-import { ConnectionStatus } from '../lib/web3';
+import { Chains, ConnectionStatus } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
 
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       route: '',
+      address: '',
+      chainId: null,
       connectionStatus: ConnectionStatus.Connected,
       providerService: { get: () => null } as ProviderService,
       selectedApp: Apps.Channels,
@@ -58,6 +60,18 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).prop('znsRoute')).toBe('tacos.street.pollo');
   });
 
+  it('passes address to sandbox', () => {
+    const wrapper = subject({ address: '0x0000000000000000000000000000000000000009' });
+
+    expect(wrapper.find(AppSandbox).prop('address')).toBe('0x0000000000000000000000000000000000000009');
+  });
+
+  it('passes chainId to sandbox', () => {
+    const wrapper = subject({ chainId: Chains.Morden });
+
+    expect(wrapper.find(AppSandbox).prop('chainId')).toBe(Chains.Morden);
+  });
+
   it('passes provider to sandbox', () => {
     const provider = { hey: 'what' };
 
@@ -93,20 +107,37 @@ describe('AppSandboxContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) =>
+    const subject = (state: any) =>
       Container.mapState({
         zns: { value: { route: '' }, ...(state.zns || {}) },
         web3: {
           status: ConnectionStatus.Connecting,
           ...(state.web3 || {}),
+          value: {
+            address: '',
+            chainId: null,
+            ...(state?.web3?.value || {}),
+          },
         },
         apps: { selectedApp: '', ...(state.apps || {}) },
-      } as RootState);
+      } as any);
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } });
 
       expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
+    });
+
+    test('address', () => {
+      const state = subject({ web3: { value: { address: '0x0000000000000000000000000000000000000044' } } });
+
+      expect(state.address).toEqual('0x0000000000000000000000000000000000000044');
+    });
+
+    test('chainId', () => {
+      const state = subject({ web3: { value: { chainId: Chains.Rinkeby } } });
+
+      expect(state.chainId).toEqual(Chains.Rinkeby);
     });
 
     test('route', () => {

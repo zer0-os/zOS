@@ -6,7 +6,7 @@ import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 import { RootState } from '../../store';
 
 const getWeb3 = (web3 = {}) => ({
-  activate: (connector: any) => undefined,
+  activate: () => undefined,
   account: '',
   chainId: undefined,
   active: false,

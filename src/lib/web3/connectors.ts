@@ -4,7 +4,7 @@ import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 import { FortmaticConnector } from '@web3-react/fortmatic-connector';
 import { PortisConnector } from '@web3-react/portis-connector';
 import { NetworkConnector } from '@web3-react/network-connector';
-import { Connectors } from '.';
+import { Chains, Connectors } from '.';
 
 import { config } from '../../config';
 
@@ -14,12 +14,12 @@ export const get = (connectorType: Connectors) => {
   switch (connectorType) {
     case Connectors.Metamask:
       return new InjectedConnector({
-        supportedChainIds: [chainId],
+        supportedChainIds: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
       });
     case Connectors.WalletConnect:
       return new WalletConnectConnector({
         infuraId: config.infuraId,
-        supportedChainIds: [chainId],
+        supportedChainIds: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
       });
     case Connectors.Coinbase:
       return new WalletLinkConnector({
@@ -34,7 +34,7 @@ export const get = (connectorType: Connectors) => {
     case Connectors.Portis:
       return new PortisConnector({
         dAppId: config.portisDAppId,
-        networks: [chainId],
+        networks: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
       });
     default:
       return new NetworkConnector({

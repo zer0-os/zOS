@@ -6,7 +6,7 @@ import { providers } from 'ethers';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
-import { setAddress, setConnectionStatus, updateConnector } from '../../store/web3';
+import { setChain, setAddress, setConnectionStatus, updateConnector } from '../../store/web3';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
@@ -48,7 +48,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      setChain: (chainId: Chains) => undefined,
+      setChain,
       setAddress,
       setConnectionStatus,
       updateConnector,

@@ -2,12 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from '.';
 
-import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 import { RootState } from '../../store';
 
 const getWeb3 = (web3 = {}) => ({
-  activate: (connector: any) => undefined,
+  activate: () => undefined,
   account: '',
+  chainId: undefined,
   active: false,
   library: null,
   connector: null,
@@ -22,6 +23,7 @@ describe('Web3Connect', () => {
       connectionStatus: ConnectionStatus.Disconnected,
       setConnectionStatus: () => undefined,
       setAddress: () => undefined,
+      setChain: () => undefined,
       updateConnector: () => undefined,
       ...props,
       web3: getWeb3(props.web3),
@@ -40,6 +42,57 @@ describe('Web3Connect', () => {
     subject({ updateConnector });
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
+  });
+
+  it('sets chain when chain changes', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: Chains.Goerli }) });
+
+    expect(setChain).toHaveBeenCalledWith(Chains.Goerli);
+  });
+
+  it('does not set chain when chain does not change', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }) });
+    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }) });
+
+    expect(setChain).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not set chain when chain has not been set', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({ web3: getWeb3({ active: true }) });
+
+    expect(setChain).toHaveBeenCalledTimes(0);
+  });
+
+  it('sets chain if chain is null', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: null }) });
+
+    expect(setChain).toHaveBeenCalledWith(null);
+  });
+
+  it('sets chain if chain is undefined', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: undefined }) });
+
+    expect(setChain).toHaveBeenCalledWith(undefined);
   });
 
   it('activates new connector when connector changes', () => {

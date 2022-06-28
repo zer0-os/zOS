@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
+import {Chains} from '../lib/web3';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -26,6 +27,27 @@ describe('AppSandbox', () => {
     const wrapper = subject({ selectedApp: null });
 
     expect(wrapper.find(App).exists()).toBe(false);
+  });
+
+  it('passes AppInterface properties to Feed app', () => {
+    const web3Provider = { chain: '7' };
+
+    const wrapper = subject({
+      selectedApp: Apps.Feed,
+      web3Provider,
+      znsRoute: 'food.tacos',
+      chainId: Chains.MainNet,
+      address: '0x0000000000000000000000000000000000000009',
+    });
+
+    expect(wrapper.find(App).props()).toMatchObject({
+      provider: web3Provider,
+      route: 'food.tacos',
+      web3: {
+        chainId: Chains.MainNet,
+        address: '0x0000000000000000000000000000000000000009',
+      },
+    })
   });
 
   it('passes route to feed app', () => {

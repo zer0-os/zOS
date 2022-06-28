@@ -32,7 +32,7 @@ describe('web3 reducer', () => {
     expect(actual.value.address).toEqual('0x0000000000000000000000000000000000000007');
   });
 
-  it('should replace existing state with new address', () => {
+  it('should replace existing state with new chain id', () => {
     const actual = reducer(initialExistingState, setChain(Chains.Kovan));
 
     expect(actual.value.chainId).toEqual(Chains.Kovan);

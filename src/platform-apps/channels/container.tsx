@@ -5,7 +5,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { connect } from '../../store/channels';
+import { fetch as fetchChannels } from '../../store/channels';
 
 import { Channels } from '.';
 
@@ -18,24 +18,25 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  channelsAccount: string;
-  connect: (account: string) => void;
+  domainId: string;
+  fetchChannels: (domainId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const channelsAccount = state.channels.value.account;
-
-    return { channelsAccount };
+    return {
+      domainId: state.zns.value.rootDomainId,
+    };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      connect,
+      fetchChannels,
     };
   }
 
   componentDidMount() {
+    this.props.fetchChannels(this.props.domainId);
   }
 
   render() {

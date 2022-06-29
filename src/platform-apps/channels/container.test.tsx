@@ -19,7 +19,7 @@ describe('ChannelsContainer', () => {
     const allProps = {
       user: {},
       store: getStore(),
-      connect: () => undefined,
+      fetchChannels: () => undefined,
       ...props,
     };
 
@@ -35,8 +35,23 @@ describe('ChannelsContainer', () => {
     expect(wrapper.find(Provider).find(Channels).exists()).toBe(true);
   });
 
+  it('fetches channels on mount', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const fetchChannels = jest.fn();
+
+    subject({ domainId, fetchChannels });
+
+    expect(fetchChannels).toHaveBeenCalledWith(domainId);
+  });
+
   describe('mapState', () => {
     const subject = (state: Partial<RootState>) => Container.mapState({
+      zns: {
+        ...(state.zns || {}),
+        value: {
+          ...((state.zns || {}).value || { rootDomainId: '0x000000000000000000000000000000000000000A' }),
+        },
+      },
       channels: {
         // status: ConnectionStatus.Connecting,
         ...(state.channels || {}),
@@ -47,12 +62,12 @@ describe('ChannelsContainer', () => {
       },
     } as RootState);
 
-    test('channelsAccount', () => {
-      const account = '0x000000000000000000000000000000000000000A';
+    test('domainId', () => {
+      const rootDomainId = '0x000000000000000000000000000000000000000A';
 
-      const state = subject({ channels: { value: { account } } as any });
+      const state = subject({ zns: { value: { rootDomainId } } as any });
 
-      expect(state.channelsAccount).toEqual(account);
+      expect(state.domainId).toEqual(rootDomainId);
     });
   });
 });

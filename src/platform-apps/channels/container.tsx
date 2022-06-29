@@ -7,8 +7,6 @@ import { connectContainer } from '../../store/redux-container';
 
 import { connect } from '../../store/channels';
 
-import { PlatformUser } from '../../app-sandbox/container';
-import { Connect } from './connect';
 import { Channels } from '.';
 
 import './styles.scss';
@@ -17,7 +15,6 @@ interface PublicProperties {
   store: Store<RootState>;
   provider: any;
   route: any;
-  user: PlatformUser;
 }
 
 export interface Properties extends PublicProperties {
@@ -39,29 +36,12 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    console.log('mounted');
-    this.props.connect('0x0000000000000000000000000000000000000000');
-    // this.props.connect(this.props.user.account); XXX - put back after ipc testing
-  }
-
-  get isConnected() {
-    const userAccount = this.props.user.account;
-
-    return userAccount && ( this.props.channelsAccount === userAccount );
-  }
-
-  renderChildren() {
-    if (!this.isConnected) {
-      return <Connect account={this.props.user.account} />;
-    }
-
-    return <Channels />;
   }
 
   render() {
     return (
       <Provider store={this.props.store}>
-        {this.renderChildren()}
+        <Channels />
       </Provider>
     );
   }

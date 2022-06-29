@@ -1,14 +1,10 @@
-import {
-  createSlice,
-  createAction,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  Connect = 'channels/saga/connect',
+  Fetch = 'channels/saga/fetch',
 }
 
-const connect = createAction<string>(SagaActionTypes.Connect);
+const fetch = createAction<string>(SagaActionTypes.Fetch);
 
 export enum ConnectionStatus {
   Disconnected = 'disconnected',
@@ -19,8 +15,8 @@ export enum ConnectionStatus {
 export interface ChannelsState {
   status: ConnectionStatus;
   value: {
-    account: string,
-  },
+    account: string;
+  };
 }
 
 const initialState: ChannelsState = {
@@ -45,5 +41,5 @@ const slice = createSlice({
 });
 
 export const { receive, setStatus } = slice.actions;
-export const { reducer } =  slice;
-export { connect };
+export const { reducer } = slice;
+export { fetch };

@@ -10,29 +10,12 @@ const getWeb3 = (web3 = {}) => ({
   account: '',
   chainId: undefined,
   active: false,
-  chainId: null,
   library: null,
   connector: null,
   ...(web3 || {}),
 });
 
 describe('Web3Connect', () => {
-  beforeAll(()=> {
-    global.localStorage = {
-      state: {
-        'access-token': 'superHashedString'
-      },
-      setItem (key, item) {
-        this.state[key] = item
-      },
-      getItem (key) { 
-        return this.state[key]
-      },
-      removeItem (key) { 
-        this.state[key] = false
-      }
-    }
-  });
   const subject = (props: Partial<Properties> = {}, child = <div />) => {
     const allProps: Properties = {
       connectors: { get: async () => undefined },
@@ -76,8 +59,12 @@ describe('Web3Connect', () => {
 
     const wrapper = subject({ setChain });
 
-    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }) });
-    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }) });
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }),
+    });
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }),
+    });
 
     expect(setChain).toHaveBeenCalledTimes(1);
   });
@@ -95,7 +82,7 @@ describe('Web3Connect', () => {
   it('sets chain if chain is null', () => {
     const setChain = jest.fn();
 
-    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
 
     wrapper.setProps({ web3: getWeb3({ chainId: null }) });
 
@@ -105,7 +92,7 @@ describe('Web3Connect', () => {
   it('sets chain if chain is undefined', () => {
     const setChain = jest.fn();
 
-    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
 
     wrapper.setProps({ web3: getWeb3({ chainId: undefined }) });
 
@@ -145,7 +132,7 @@ describe('Web3Connect', () => {
   });
 
   it('registers provider once when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const register = jest.fn();
 
     const component = subject(
@@ -238,7 +225,7 @@ describe('Web3Connect', () => {
   });
 
   it('sets connection status to connected when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const setConnectionStatus = jest.fn();
 
     const component = subject(
@@ -384,25 +371,22 @@ describe('Web3Connect', () => {
       const updateConnector = jest.fn();
       const register = jest.fn();
       const activate = jest.fn();
-      const library = { networkId: 42 };
+      const library = { networkId: Chains.Kovan };
       const connector = { what: 'connector' };
-      const component = subject({ 
+      const component = subject({
         connectors: {
-          get: jest.fn((c: Connectors) => c === Connectors.Metamask ? connector : null),
+          get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
         },
-        updateConnector 
+        updateConnector,
       });
 
-      component.setProps({ 
+      component.setProps({
         providerService: { register },
         currentConnector: Connectors.Metamask,
-        web3: { activate, chainId: 1, active: true, library } as any,
+        web3: { activate, chainId: Chains.MainNet, active: true, library } as any,
       });
-      
-      await new Promise(setImmediate);
 
       expect(activate).toHaveBeenCalledWith(connector, null, true);
-      expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
       expect(register).toHaveBeenCalledWith(library);
     });
 
@@ -416,56 +400,19 @@ describe('Web3Connect', () => {
       const component = subject({
         connectors: { get: () => connector },
         currentConnector: Connectors.Metamask,
-        web3: { activate, chainId: 1, active: true, account: address } as any,
+        web3: { activate, chainId: Chains.MainNet, active: true, account: address } as any,
         setAddress,
         setConnectionStatus,
-        updateConnector
+        updateConnector,
       });
 
-      component.setProps({ 
+      component.setProps({
         web3: { account: '', active: false, library: null } as any,
       });
 
-      await new Promise(setImmediate);
-  
       expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
       expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
       expect(setAddress).toHaveBeenCalledWith('');
-    });
-
-    it('should maintain connected state with call localStorage', async() => {
-      const updateConnector = jest.fn();
-      const setConnectionStatus = jest.fn();
-      const setAddress = jest.fn();
-      const activate = jest.fn();
-      const address = '0x0000000000000000000000000000000000000009';
-      const library = { networkId: 42 };
-      const connector = { what: 'connector' };
-      const component = subject({
-        connectors: { get: () => connector },
-        currentConnector: Connectors.Infura,
-        web3: { activate, chainId: 1, active: true, account: address } as any,
-        setAddress,
-        setConnectionStatus,
-        updateConnector
-      });
-
-      component.setProps({ 
-        currentConnector: Connectors.Metamask,
-        web3: { activate, chainId: 1, active: true, library, account: address } as any,
-      });
-
-      await new Promise(setImmediate);
-
-      expect(global.localStorage.getItem('isWalletConnected')).toEqual('metamask')
-
-      component.setProps({ 
-        web3: { account: '', active: false, library: null } as any,
-      });
-
-      await new Promise(setImmediate);
-
-      expect(global.localStorage.getItem('isWalletConnected')).toBe(false)
     });
   });
 });

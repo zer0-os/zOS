@@ -6,7 +6,7 @@ export enum SagaActionTypes {
   UpdateConnector = 'web3/saga/updateConnector',
 }
 
-const updateConnector = createAction<Connectors | WalletType | string>(SagaActionTypes.UpdateConnector);
+const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);
 
 export interface Web3State {
   status: ConnectionStatus;

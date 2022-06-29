@@ -62,27 +62,14 @@ export class Container extends React.Component<Properties, State> {
   }
 
   setReadOnlyConnector() {
-    const connectedConnector = localStorage?.getItem('isWalletConnected');
-    if (connectedConnector){
-      this.props.updateConnector(connectedConnector);
-    }else{
-      this.props.updateConnector(Connectors.Infura);
-    }
+    this.props.updateConnector(Connectors.Infura);
   }
 
   onActivateError(): void {
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
   }
 
-  networkChanged() {
-    this.activateCurrentConnector().then(()=>{
-      this.props.updateConnector(this.props.currentConnector)
-      this.syncGlobalsForConnectedStatus();
-    });
-  }
-  
   deactivateConnector() {
-    localStorage?.removeItem('isWalletConnected');
     this.props.updateConnector(Connectors.Infura);
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
     this.props.setAddress('');
@@ -103,9 +90,6 @@ export class Container extends React.Component<Properties, State> {
 
     try {
       await web3.activate(connector, null, true);
-      if (currentConnector !== Connectors.Infura){
-        localStorage?.setItem('isWalletConnected', currentConnector);
-      }
     } catch (error) {
       this.onActivateError();
     }
@@ -128,10 +112,9 @@ export class Container extends React.Component<Properties, State> {
       web3: { chainId: prevChainId, active: previouslyActive, library: previousLibrary, account: previouslyAccount },
     } = prevProps;
     const { web3, connectionStatus } = this.props;
-    
-    //If network changed
-    if (web3.chainId && this.props.currentConnector === Connectors.Metamask && web3.chainId !== prevChainId) {
-      this.networkChanged()
+
+    if (web3.chainId !== prevChainId) {
+      this.props.setChain(web3.chainId);
     }
 
     if (this.props.currentConnector !== prevProps.currentConnector) {
@@ -145,17 +128,12 @@ export class Container extends React.Component<Properties, State> {
       this.syncGlobalsForConnectedStatus();
     }
 
-    if (!web3.account && web3.account !== previouslyAccount && !web3.active && !web3.library)
-    {
+    if (!web3.account && web3.account !== previouslyAccount && !web3.active && !web3.library) {
       this.deactivateConnector();
     }
-    
+
     if (previousConnectionStatus !== ConnectionStatus.Connected && connectionStatus === ConnectionStatus.Connected) {
       this.setState({ hasConnected: true });
-    }
-
-    if (web3.chainId !== prevChainId) {
-      this.props.setChain(web3.chainId);
     }
   }
 

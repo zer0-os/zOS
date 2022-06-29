@@ -1,13 +1,29 @@
 import { expectSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { connect } from './saga';
+import { api } from './api';
+import { fetch } from './saga';
 
-import { ConnectionStatus, setStatus } from '.';
+import { Status, setStatus } from '.';
 
-describe('channels saga', () => {
-  it('sets status to connecting', async () => {
-    await expectSaga(connect, { payload: '0x000000000000000000000000000000000000000A' })
-      .put(setStatus(ConnectionStatus.Connecting))
+describe('channels list saga', () => {
+  it('sets status to fetching', async () => {
+    await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
+      .put(setStatus(Status.Fetching))
+      .run();
+  });
+
+  it('fetches channels', async () => {
+    const id = '0x000000000000000000000000000000000000000A';
+
+    await expectSaga(fetch, { payload: id })
+      .provide([
+        [
+          matchers.call.fn(api.fetch),
+          [],
+        ],
+      ])
+      .call(api.fetch, id)
       .run();
   });
 });

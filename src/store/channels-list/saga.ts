@@ -1,10 +1,12 @@
-import { takeLatest, put } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, ConnectionStatus } from '.';
+import { takeLatest, put, call } from 'redux-saga/effects';
+import { SagaActionTypes, setStatus, Status } from '.';
+import { api } from './api';
 
-export function* connect(_action) {
-  yield put(setStatus(ConnectionStatus.Connecting));
+export function* fetch(action) {
+  yield call(api.fetch, action.payload);
+  yield put(setStatus(Status.Fetching));
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Connect, connect);
+  yield takeLatest(SagaActionTypes.Fetch, fetch);
 }

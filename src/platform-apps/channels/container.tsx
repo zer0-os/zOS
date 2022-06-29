@@ -5,7 +5,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels } from '../../store/channels';
+import { fetch as fetchChannels } from '../../store/channels-list';
 
 import { Channels } from '.';
 

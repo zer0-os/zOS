@@ -3,14 +3,14 @@ import { all, call, spawn } from 'redux-saga/effects';
 import { saga as web3 } from './web3/saga';
 import { saga as zns } from './zns/saga';
 import { saga as apps } from './apps/saga';
-import { saga as channels } from './channels/saga';
+import { saga as channelsList } from './channels-list/saga';
 
 export function* rootSaga() {
   const allSagas = [
     web3,
     zns,
     apps,
-    channels,
+    channelsList,
   ];
 
   yield all(

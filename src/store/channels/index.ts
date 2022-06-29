@@ -1,10 +1,4 @@
-import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
-
-export enum SagaActionTypes {
-  Fetch = 'channels/saga/fetch',
-}
-
-const fetch = createAction<string>(SagaActionTypes.Fetch);
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum ConnectionStatus {
   Disconnected = 'disconnected',
@@ -42,4 +36,3 @@ const slice = createSlice({
 
 export const { receive, setStatus } = slice.actions;
 export const { reducer } = slice;
-export { fetch };

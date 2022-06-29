@@ -9,6 +9,7 @@ import { reducer as web3 } from './web3';
 import { reducer as zns } from './zns';
 import { reducer as theme } from './theme';
 import { reducer as apps } from './apps';
+import { reducer as normalized } from './normalized';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -22,6 +23,7 @@ export const rootReducer = combineReducers({
   zns,
   theme,
   apps,
+  normalized,
 });
 
 export const store = configureStore({

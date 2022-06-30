@@ -5,7 +5,8 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels } from '../../store/channels-list';
+import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
+import { Channel } from '../../store/channels';
 
 import { Channels } from '.';
 
@@ -19,13 +20,17 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   domainId: string;
+  channels: Channel[];
   fetchChannels: (domainId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
+    const channels = denormalize(state.channelsList.value, state);
+
     return {
       domainId: state.zns.value.rootDomainId,
+      channels,
     };
   }
 

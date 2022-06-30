@@ -1,6 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { schema as nSchema, normalize as nNormalize, Schema } from 'normalizr';
+import { schema as nSchema, denormalize, normalize, Schema } from 'normalizr';
+import { RootState } from '.';
 
 const slice = createSlice({
   name: 'normalized',
@@ -55,14 +56,49 @@ class Normalizer {
     return this.normalizeSingle(item);
   };
 
+  public denormalize = (idOrIds: string | string[], state: RootState) => {
+    if (Array.isArray(idOrIds)) {
+      return this.denormalizeMany(idOrIds, state);
+    }
+
+    return this.denormalizeSingle(idOrIds, state);
+  };
+
   private normalizeMany(items) {
-    // this.throwIfInvalid(items); XXX
-    return nNormalize(items, this._listSchema);
+    this.throwIfInvalid(items);
+
+    return normalize(items, this._listSchema);
   }
 
   private normalizeSingle(item) {
-    // this.throwIfInvalid([item]); XXX
-    return nNormalize(item, this._schema);
+    this.throwIfInvalid([item]);
+
+    return normalize(item, this._schema);
+  }
+
+  private denormalizeSingle(id: string, state: RootState) {
+    const denormalized = denormalize(id, this._schema, state.normalized);
+
+    if (denormalized) {
+      denormalized.__denormalized = true;
+    }
+
+    return denormalized;
+  }
+
+  private denormalizeMany(ids: string[], state: RootState) {
+    const denormalizedList = denormalize(ids, this._listSchema, state.normalized);
+    return denormalizedList.map((denormalized) => ({ ...(denormalized as any), __denormalized: true }));
+  }
+
+  private throwIfInvalid(items) {
+    items.forEach((item) => {
+      if (item.__denormalized) {
+        throw new Error(
+          'Tried to normalize an object that was previously denormalized from the store. This can cause infinite loops.'
+        );
+      }
+    });
   }
 }
 
@@ -112,6 +148,7 @@ export function createNormalizedListSlice(config: NormalizedListSliceConfig) {
     },
     reducer: listSlice.reducer,
     normalize: normalizer.normalize,
+    denormalize: normalizer.denormalize,
   };
 }
 

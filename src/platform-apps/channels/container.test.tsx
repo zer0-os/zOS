@@ -12,7 +12,7 @@ describe('ChannelsContainer', () => {
     subscribe: () => undefined,
     dispatch: () => undefined,
     getState: () => undefined,
-    ...(store || {})
+    ...(store || {}),
   });
 
   const subject = (props: any = {}) => {
@@ -45,22 +45,45 @@ describe('ChannelsContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      zns: {
-        ...(state.zns || {}),
-        value: {
-          ...((state.zns || {}).value || { rootDomainId: '0x000000000000000000000000000000000000000A' }),
+    const subject = (state: any) =>
+      Container.mapState({
+        zns: {
+          ...(state.zns || {}),
+          value: {
+            ...((state.zns || {}).value || { rootDomainId: '0x000000000000000000000000000000000000000A' }),
+          },
         },
-      },
-      channels: {
-        // status: ConnectionStatus.Connecting,
-        ...(state.channels || {}),
-        value: {
-          account: '',
-          ...((state.channels || {}).value || {}),
+        channelsList: {
+          value: [],
+          ...(state.channelsList || {}),
         },
-      },
-    } as RootState);
+        normalized: {
+          ...(state.normalized || {}),
+        },
+      } as RootState);
+
+    test('channels', () => {
+      const state = subject({
+        channelsList: {
+          value: [
+            'the-id',
+            'the-second-id',
+          ],
+        },
+        normalized: {
+          channels: {
+            'the-id': { id: 'the-id', name: 'the channel' },
+            'the-second-id': { id: 'the-second-id', name: 'the second channel' },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel' },
+          },
+        },
+      });
+
+      expect(state.channels).toIncludeAllPartialMembers([
+        { id: 'the-id', name: 'the channel' },
+        { id: 'the-second-id', name: 'the second channel' },
+      ]);
+    });
 
     test('domainId', () => {
       const rootDomainId = '0x000000000000000000000000000000000000000A';

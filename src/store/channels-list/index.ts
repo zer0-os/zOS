@@ -15,5 +15,5 @@ const slice = createNormalizedListSlice({
 });
 
 export const { receiveNormalized, setStatus } = slice.actions;
-export const { reducer, normalize } = slice;
+export const { reducer, normalize, denormalize } = slice;
 export { fetch };

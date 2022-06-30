@@ -13,7 +13,7 @@ export interface AppInterface {
   web3: {
     chainId: Chains;
     address: string;
-  },
+  };
 }
 
 export interface Properties {
@@ -35,7 +35,7 @@ export class AppSandbox extends React.Component<Properties> {
         address,
         chainId,
       },
-    };;
+    };
   }
 
   renderSelectedApp() {

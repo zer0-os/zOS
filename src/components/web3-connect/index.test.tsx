@@ -389,30 +389,5 @@ describe('Web3Connect', () => {
       expect(activate).toHaveBeenCalledWith(connector, null, true);
       expect(register).toHaveBeenCalledWith(library);
     });
-
-    it('should call deactivateConnector when wallet is disconnected', async () => {
-      const updateConnector = jest.fn();
-      const setConnectionStatus = jest.fn();
-      const setAddress = jest.fn();
-      const activate = jest.fn();
-      const address = '0x0000000000000000000000000000000000000009';
-      const connector = { what: 'connector' };
-      const component = subject({
-        connectors: { get: () => connector },
-        currentConnector: Connectors.Metamask,
-        web3: { activate, chainId: Chains.MainNet, active: true, account: address } as any,
-        setAddress,
-        setConnectionStatus,
-        updateConnector,
-      });
-
-      component.setProps({
-        web3: { account: '', active: false, library: null } as any,
-      });
-
-      expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
-      expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
-      expect(setAddress).toHaveBeenCalledWith('');
-    });
   });
 });

@@ -69,12 +69,6 @@ export class Container extends React.Component<Properties, State> {
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
   }
 
-  deactivateConnector() {
-    this.props.updateConnector(Connectors.Infura);
-    this.props.setConnectionStatus(ConnectionStatus.Disconnected);
-    this.props.setAddress('');
-  }
-
   async activateCurrentConnector() {
     const { web3, connectors, currentConnector } = this.props;
 
@@ -126,10 +120,6 @@ export class Container extends React.Component<Properties, State> {
       web3.account !== previouslyAccount
     ) {
       this.syncGlobalsForConnectedStatus();
-    }
-
-    if (!web3.account && web3.account !== previouslyAccount && !web3.active && !web3.library) {
-      this.deactivateConnector();
     }
 
     if (previousConnectionStatus !== ConnectionStatus.Connected && connectionStatus === ConnectionStatus.Connected) {

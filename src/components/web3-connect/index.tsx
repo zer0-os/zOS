@@ -70,9 +70,19 @@ export class Container extends React.Component<Properties, State> {
   }
 
   deactivateConnector() {
+    if (localStorage) {
+      localStorage.removeItem('previousConnector');
+    }
     this.props.updateConnector(Connectors.Infura);
-    this.props.setConnectionStatus(ConnectionStatus.Disconnected);
     this.props.setAddress('');
+  }
+
+  reconnectPreviousConnector() {
+    const { currentConnector } = this.props;
+    if (localStorage.getItem('previousConnector') && currentConnector === Connectors.Infura) {
+      const previousConnector = localStorage.getItem('previousConnector');
+      this.props.updateConnector(Connectors[previousConnector.charAt(0).toUpperCase() + previousConnector.slice(1)]);
+    }
   }
 
   async activateCurrentConnector() {
@@ -90,6 +100,9 @@ export class Container extends React.Component<Properties, State> {
 
     try {
       await web3.activate(connector, null, true);
+      if (currentConnector && currentConnector !== Connectors.Infura && localStorage) {
+        localStorage.setItem('previousConnector', currentConnector);
+      }
     } catch (error) {
       this.onActivateError();
     }
@@ -134,6 +147,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (previousConnectionStatus !== ConnectionStatus.Connected && connectionStatus === ConnectionStatus.Connected) {
       this.setState({ hasConnected: true });
+      this.reconnectPreviousConnector();
     }
   }
 

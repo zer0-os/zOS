@@ -16,6 +16,23 @@ const getWeb3 = (web3 = {}) => ({
 });
 
 describe('Web3Connect', () => {
+  beforeAll(() => {
+    global.localStorage = {
+      state: {
+        'access-token': '',
+      },
+      setItem(key, item) {
+        this.state[key] = item;
+      },
+      getItem(key) {
+        return this.state[key];
+      },
+      removeItem(key) {
+        this.state[key] = false;
+      },
+    };
+  });
+
   const subject = (props: Partial<Properties> = {}, child = <div />) => {
     const allProps: Properties = {
       connectors: { get: async () => undefined },
@@ -411,8 +428,38 @@ describe('Web3Connect', () => {
       });
 
       expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
-      expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
       expect(setAddress).toHaveBeenCalledWith('');
+      expect(global.localStorage.getItem('previousConnector')).toBe(false);
+    });
+
+    it('should maintain connected state with call localStorage', async () => {
+      const updateConnector = jest.fn();
+      const setConnectionStatus = jest.fn();
+      const setAddress = jest.fn();
+      const activate = jest.fn();
+      const connector = { what: 'connector' };
+      const component = subject({
+        connectors: {
+          get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
+        },
+        currentConnector: Connectors.Infura,
+        web3: { activate, chainId: Chains.MainNet, active: true } as any,
+        setAddress,
+        setConnectionStatus,
+        updateConnector,
+      });
+
+      component.setProps({ currentConnector: Connectors.Metamask });
+
+      expect(activate).toHaveBeenCalledWith(connector, null, true);
+
+      //await web3.activate to connect
+      await new Promise(setImmediate);
+
+      component.setProps({ connectionStatus: ConnectionStatus.Disconnected });
+      component.setProps({ currentConnector: Connectors.Infura, connectionStatus: ConnectionStatus.Connected });
+
+      expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
     });
   });
 });

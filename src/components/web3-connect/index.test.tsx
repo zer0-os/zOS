@@ -132,7 +132,7 @@ describe('Web3Connect', () => {
   });
 
   it('registers provider once when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const register = jest.fn();
 
     const component = subject(
@@ -225,7 +225,7 @@ describe('Web3Connect', () => {
   });
 
   it('sets connection status to connected when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const setConnectionStatus = jest.fn();
 
     const component = subject(
@@ -241,7 +241,7 @@ describe('Web3Connect', () => {
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Connected);
   });
 
-  it('should set connection status to networkNotSupported when activate fail', () => {
+  it('should set connection status to Disconnected when activate fail', () => {
     const setConnectionStatus = jest.fn();
 
     const web3 = {
@@ -260,7 +260,7 @@ describe('Web3Connect', () => {
 
     web3Connect.setProps({ currentConnector: Connectors.Portis });
 
-    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.NetworkNotSupported);
+    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
   });
 
   it('does not set address if address is empty string', () => {
@@ -363,6 +363,31 @@ describe('Web3Connect', () => {
       const state = subject(getState({ web3: { value: { connector: Connectors.Fortmatic } } }));
 
       expect(state.currentConnector).toEqual(Connectors.Fortmatic);
+    });
+  });
+
+  describe('Network change', () => {
+    it('should change network', async () => {
+      const updateConnector = jest.fn();
+      const register = jest.fn();
+      const activate = jest.fn();
+      const library = { networkId: Chains.Kovan };
+      const connector = { what: 'connector' };
+      const component = subject({
+        connectors: {
+          get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
+        },
+        updateConnector,
+      });
+
+      component.setProps({
+        providerService: { register },
+        currentConnector: Connectors.Metamask,
+        web3: { activate, chainId: Chains.MainNet, active: true, library } as any,
+      });
+
+      expect(activate).toHaveBeenCalledWith(connector, null, true);
+      expect(register).toHaveBeenCalledWith(library);
     });
   });
 });

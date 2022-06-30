@@ -66,7 +66,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   onActivateError(): void {
-    this.props.setConnectionStatus(ConnectionStatus.NetworkNotSupported);
+    this.props.setConnectionStatus(ConnectionStatus.Disconnected);
   }
 
   async activateCurrentConnector() {
@@ -107,6 +107,10 @@ export class Container extends React.Component<Properties, State> {
     } = prevProps;
     const { web3, connectionStatus } = this.props;
 
+    if (web3.chainId !== prevChainId) {
+      this.props.setChain(web3.chainId);
+    }
+
     if (this.props.currentConnector !== prevProps.currentConnector) {
       this.activateCurrentConnector();
     }
@@ -120,10 +124,6 @@ export class Container extends React.Component<Properties, State> {
 
     if (previousConnectionStatus !== ConnectionStatus.Connected && connectionStatus === ConnectionStatus.Connected) {
       this.setState({ hasConnected: true });
-    }
-
-    if (web3.chainId !== prevChainId) {
-      this.props.setChain(web3.chainId);
     }
   }
 

@@ -382,6 +382,36 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
   });
 
+  it('set min height to results wrapper', async () => {
+    findMatches = () => {
+      return [
+        {
+          id: 'result-first-id',
+          value: 'result-first-value',
+          route: 'result-first-route',
+        },
+        {
+          id: 'result-second-id',
+          value: 'result-second-value',
+          route: 'result-second-route',
+        },
+      ];
+    };
+
+    const wrapper = subjectMount({ findMatches });
+
+    const input = wrapper.find('input');
+
+    expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
+    jest.useFakeTimers();
+    input.simulate('change', { target: { value: 'anything' } });
+    jest.runAllTimers();
+
+    await new Promise(setImmediate);
+
+    expect(wrapper.find('.autocomplete-dropdown__results').prop('style').height).toEqual(35);
+  });
+
   describe('result', () => {
     beforeEach(() => {
       onSelect = jest.fn();

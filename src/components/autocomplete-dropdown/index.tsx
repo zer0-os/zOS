@@ -38,9 +38,9 @@ interface State {
 
 export class AutocompleteDropdown extends React.Component<Properties, State> {
   performSearch;
+  itemsElement;
   private _isMounted: boolean = false;
   private anchorElement: HTMLElement;
-  private itemsElement: React.RefObject<HTMLInputElement>;
   private dropdownMinHeight = 35;
 
   constructor(props) {
@@ -78,9 +78,9 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.matches?.length !== this.state.matches?.length) {
+    if (this.itemsElement.current && prevState.matches?.length !== this.state.matches?.length) {
       this.setState({
-        dropdownHeight: this.itemsElement?.current?.getBoundingClientRect().height,
+        dropdownHeight: this.itemsElement.current.getBoundingClientRect().height,
       });
     }
   }
@@ -162,6 +162,10 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   setAnchorElements = (ref: HTMLElement): void => {
     this.anchorElement = ref;
   };
+
+  // setItemsElements = (ref: HTMLElement): void => {
+  //   this.itemsElement = ref;
+  // };
 
   onKeyDown = (e): void => {
     const allOptions = [...this.state.matches];

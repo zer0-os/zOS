@@ -59,8 +59,12 @@ describe('Web3Connect', () => {
 
     const wrapper = subject({ setChain });
 
-    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }) });
-    wrapper.setProps({ web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }) });
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }),
+    });
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }),
+    });
 
     expect(setChain).toHaveBeenCalledTimes(1);
   });
@@ -78,7 +82,7 @@ describe('Web3Connect', () => {
   it('sets chain if chain is null', () => {
     const setChain = jest.fn();
 
-    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
 
     wrapper.setProps({ web3: getWeb3({ chainId: null }) });
 
@@ -88,7 +92,7 @@ describe('Web3Connect', () => {
   it('sets chain if chain is undefined', () => {
     const setChain = jest.fn();
 
-    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }),  setChain });
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
 
     wrapper.setProps({ web3: getWeb3({ chainId: undefined }) });
 

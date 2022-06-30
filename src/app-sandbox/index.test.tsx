@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
-import {Chains} from '../lib/web3';
+import { Chains } from '../lib/web3';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -47,7 +47,7 @@ describe('AppSandbox', () => {
         chainId: Chains.MainNet,
         address: '0x0000000000000000000000000000000000000009',
       },
-    })
+    });
   });
 
   it('passes route to feed app', () => {

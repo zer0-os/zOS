@@ -148,11 +148,11 @@ $height-address-bar-inner: 19px;
 
 .overlay {
   justify-content: center;
-  position: absolute;
+  position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   opacity: 0;
   background: rgba(0, 0, 0, 0.9);

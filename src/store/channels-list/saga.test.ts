@@ -4,12 +4,14 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { api } from './api';
 import { fetch } from './saga';
 
-import { Status, setStatus } from '.';
+import { setStatus } from '.';
+import { rootReducer } from '..';
+import { AsyncListStatus } from '../normalized';
 
 describe('channels list saga', () => {
   it('sets status to fetching', async () => {
     await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
-      .put(setStatus(Status.Fetching))
+      .put(setStatus(AsyncListStatus.Fetching))
       .run();
   });
 
@@ -25,5 +27,42 @@ describe('channels list saga', () => {
       ])
       .call(api.fetch, id)
       .run();
+  });
+
+  it('adds channel id to channelsList state', async () => {
+    const id = 'channel-id';
+
+    const {
+      storeState: { channelsList },
+    } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
+      .provide([
+        [
+          matchers.call.fn(api.fetch),
+          [{ id }],
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(channelsList.value).toStrictEqual([id]);
+  });
+
+  it('adds channels to normalized state', async () => {
+    const id = 'channel-id';
+    const name = 'the channel';
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
+      .provide([
+        [
+          matchers.call.fn(api.fetch),
+          [{ id, name }],
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(normalized.channels[id]).toStrictEqual({ id, name });
   });
 });

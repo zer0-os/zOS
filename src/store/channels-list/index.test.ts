@@ -1,32 +1,31 @@
-import { reducer, receive, setStatus, ChannelsListState, Status } from '.';
+import { reducer, receiveNormalized, setStatus } from '.';
+import { AsyncListStatus, AsyncNormalizedListState } from '../normalized';
 
 describe('channelList reducer', () => {
-  const initialExistingState: ChannelsListState = {
-    status: Status.Idle,
-    value: { account: '' },
+  const initialExistingState: AsyncNormalizedListState = {
+    status: AsyncListStatus.Idle,
+    value: [],
   };
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      status: Status.Idle,
-      value: {
-        account: '',
-      },
+      status: AsyncListStatus.Idle,
+      value: [],
     });
   });
 
   it('should replace existing state with new state', () => {
-    const account = '0x000000000000000000000000000000000000000A';
-    const status = Status.Fetching;
+    const actual = reducer(initialExistingState, receiveNormalized(['the-id']));
 
-    const actual = reducer(initialExistingState, receive({ status, value: { account } }));
-
-    expect(actual).toStrictEqual({ status, value: { account } });
+    expect(actual).toStrictEqual({
+      value: ['the-id'],
+      status: AsyncListStatus.Idle,
+    });
   });
 
   it('should replace existing status with new status', () => {
-    const actual = reducer(initialExistingState, setStatus(Status.Fetching));
+    const actual = reducer(initialExistingState, setStatus(AsyncListStatus.Fetching));
 
-    expect(actual.status).toEqual(Status.Fetching);
+    expect(actual.status).toEqual(AsyncListStatus.Fetching);
   });
 });

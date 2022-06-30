@@ -1,4 +1,7 @@
-import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
+import { createAction } from '@reduxjs/toolkit';
+import { createNormalizedListSlice } from '../normalized';
+
+import { schema } from '../channels';
 
 export enum SagaActionTypes {
   Fetch = 'channelsList/saga/fetch',
@@ -6,39 +9,11 @@ export enum SagaActionTypes {
 
 const fetch = createAction<string>(SagaActionTypes.Fetch);
 
-export enum Status {
-  Idle = 'idle',
-  Fetching = 'fetching',
-}
-
-export interface ChannelsListState {
-  status: Status;
-  value: {
-    account: string;
-  };
-}
-
-const initialState: ChannelsListState = {
-  status: Status.Idle,
-  value: { account: '' },
-};
-
-const slice = createSlice({
+const slice = createNormalizedListSlice({
   name: 'channelsList',
-  initialState,
-  reducers: {
-    receive: (state, action: PayloadAction<ChannelsListState>) => {
-      const { value, status } = action.payload;
-
-      state.value = value;
-      state.status = status;
-    },
-    setStatus: (state, action: PayloadAction<Status>) => {
-      state.status = action.payload;
-    },
-  },
+  schema,
 });
 
-export const { receive, setStatus } = slice.actions;
-export const { reducer } = slice;
+export const { receiveNormalized, setStatus } = slice.actions;
+export const { reducer, normalize } = slice;
 export { fetch };

@@ -139,7 +139,6 @@ describe('AppSandboxContainer', () => {
         apps: { selectedApp: '', ...(state.apps || {}) },
       } as any);
 
-
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } as any });
 
@@ -159,7 +158,9 @@ describe('AppSandboxContainer', () => {
     });
 
     test('user when connected with no account', () => {
-      const state = subject({ web3: {  status: ConnectionStatus.Connected, value: { connector: Connectors.Infura } } as any });
+      const state = subject({
+        web3: { status: ConnectionStatus.Connected, value: { connector: Connectors.Infura } } as any,
+      });
 
       expect(state.user).toStrictEqual({ account: '' });
     });

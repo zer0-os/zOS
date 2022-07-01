@@ -32,13 +32,7 @@ export interface Properties {
 
 export class AppSandbox extends React.Component<Properties> {
   get appProperties() {
-    const {
-      znsRoute,
-      web3Provider,
-      address,
-      chainId,
-      user,
-    } = this.props;
+    const { znsRoute, web3Provider, address, chainId, user } = this.props;
 
     return {
       route: znsRoute,
@@ -59,10 +53,15 @@ export class AppSandbox extends React.Component<Properties> {
     }
 
     if (selectedApp === Apps.Channels) {
-      return <ChannelsContainer {...this.appProperties} store={store} />;
+      return (
+        <ChannelsContainer
+          {...this.appProperties}
+          store={store}
+        />
+      );
     }
 
-    return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>
+    return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>;
   }
 
   render() {

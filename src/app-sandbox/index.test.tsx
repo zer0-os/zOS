@@ -23,7 +23,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, store });
 
-    expect(wrapper.find(ChannelsContainer).prop('store')).toStrictEqual(store); 
+    expect(wrapper.find(ChannelsContainer).prop('store')).toStrictEqual(store);
   });
 
   it('does not pass store to feed app', () => {
@@ -43,7 +43,7 @@ describe('AppSandbox', () => {
   it('renders error if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
-    expect(wrapper.find('.app-sandbox__error').exists()).toBe(true); 
+    expect(wrapper.find('.app-sandbox__error').exists()).toBe(true);
   });
 
   it('passes AppInterface properties to Feed app', () => {
@@ -70,7 +70,7 @@ describe('AppSandbox', () => {
   it('renders Channels app container when Channels app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Channels });
 
-    expect(wrapper.find(ChannelsContainer).exists()).toBe(true); 
+    expect(wrapper.find(ChannelsContainer).exists()).toBe(true);
   });
 
   it('passes user to Channels app', () => {
@@ -78,7 +78,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, user });
 
-    expect(wrapper.find(ChannelsContainer).prop('user')).toStrictEqual(user); 
+    expect(wrapper.find(ChannelsContainer).prop('user')).toStrictEqual(user);
   });
 
   it('passes route to feed app', () => {

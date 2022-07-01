@@ -26,11 +26,11 @@ export const rootReducer = combineReducers({
   normalized,
 });
 
+export type RootState = ReturnType<typeof rootReducer>;
+
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),
 });
 
 sagaMiddleware.run(rootSaga);
-
-export type RootState = ReturnType<typeof store.getState>;

@@ -14,6 +14,6 @@ const slice = createNormalizedListSlice({
   schema,
 });
 
-export const { receiveNormalized, setStatus } = slice.actions;
+export const { receiveNormalized, setStatus, receive } = slice.actions;
 export const { reducer, normalize, denormalize } = slice;
 export { fetch };

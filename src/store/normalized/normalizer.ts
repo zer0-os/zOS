@@ -1,5 +1,4 @@
 import { schema as nSchema, denormalize, normalize, Schema } from 'normalizr';
-import { RootState } from '..';
 
 export class Normalizer {
   private _schema: nSchema.Entity;
@@ -18,7 +17,7 @@ export class Normalizer {
     return this.normalizeSingle(item);
   };
 
-  public denormalize = (idOrIds: string | string[], state: RootState) => {
+  public denormalize = (idOrIds: string | string[], state: any) => {
     if (Array.isArray(idOrIds)) {
       return this.denormalizeMany(idOrIds, state);
     }
@@ -38,7 +37,7 @@ export class Normalizer {
     return normalize(item, this._schema);
   }
 
-  private denormalizeSingle(id: string, state: RootState) {
+  private denormalizeSingle(id: string, state: any) {
     const denormalized = denormalize(id, this._schema, state.normalized);
 
     if (denormalized) {
@@ -48,7 +47,7 @@ export class Normalizer {
     return denormalized;
   }
 
-  private denormalizeMany(ids: string[], state: RootState) {
+  private denormalizeMany(ids: string[], state: any) {
     const denormalizedList = denormalize(ids, this._listSchema, state.normalized);
     return denormalizedList.map((denormalized) => ({ ...(denormalized as any), __denormalized: true }));
   }

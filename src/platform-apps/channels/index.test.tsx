@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Channels } from '.';
+import { ChannelList } from './channel-list';
 
 describe('Channels', () => {
   const subject = (props: any = {}) => {
@@ -13,9 +14,11 @@ describe('Channels', () => {
     return shallow(<Channels {...allProps} />);
   };
 
-  it('renders', () => {
-    const wrapper = subject();
+  it('passes channels to ChannelList', () => {
+    const channels = [{ id: 'one' }];
 
-    expect(wrapper.find('.channels').exists()).toBe(true);
+    const wrapper = subject({ channels });
+
+    expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
   });
 });

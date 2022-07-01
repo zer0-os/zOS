@@ -44,6 +44,14 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
+  it('passes channels to app', () => {
+    const channels = [{ id: 'one' }];
+
+    const wrapper = subject({ channels });
+
+    expect(wrapper.find(Channels).prop('channels')).toStrictEqual(channels);
+  });
+
   describe('mapState', () => {
     const subject = (state: any) =>
       Container.mapState({

@@ -47,7 +47,7 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <Channels />
+        <Channels channels={this.props.channels} />
       </Provider>
     );
   }

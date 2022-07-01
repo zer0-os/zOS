@@ -29,19 +29,37 @@ describe('channels list saga', () => {
       .run();
   });
 
+  it('sets status to Idle', async () => {
+    const id = '0x000000000000000000000000000000000000000A';
+
+    const {
+      storeState: { channelsList },
+    } = await expectSaga(fetch, { payload: id })
+      .withReducer(rootReducer)
+      .provide([
+        [
+          matchers.call.fn(api.fetch),
+          [],
+        ],
+      ])
+      .run();
+
+    expect(channelsList.status).toBe(AsyncListStatus.Idle);
+  });
+
   it('adds channel id to channelsList state', async () => {
     const id = 'channel-id';
 
     const {
       storeState: { channelsList },
     } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
+      .withReducer(rootReducer)
       .provide([
         [
           matchers.call.fn(api.fetch),
           [{ id }],
         ],
       ])
-      .withReducer(rootReducer)
       .run();
 
     expect(channelsList.value).toStrictEqual([id]);

@@ -10,6 +10,8 @@ export function* fetch(action) {
   const channels = yield call(api.fetch, action.payload);
 
   yield put(receive(channels));
+
+  yield put(setStatus(AsyncListStatus.Idle));
 }
 
 export function* saga() {

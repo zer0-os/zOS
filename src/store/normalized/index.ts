@@ -2,6 +2,8 @@ import { AnyAction, createAction, createSlice, PayloadAction } from '@reduxjs/to
 import { schema as nSchema } from 'normalizr';
 import { Creators } from './creators';
 
+const RECEIVE_PREFIX = 'normalized/receive/nested/entities';
+
 export enum AsyncListStatus {
   Idle = 'idle',
   Fetching = 'fetching',
@@ -20,13 +22,6 @@ export interface NormalizedListSliceConfig {
 export interface NormalizedSliceConfig {
   name: string;
 }
-
-const RECEIVE_PREFIX = 'normalized/receive/nested/entities';
-export const createNormalizedReceiveAction = (name: string, normalizeFunction) => {
-  return createAction(`${RECEIVE_PREFIX}/${name}`, (items) => ({
-    payload: normalizeFunction(items),
-  }));
-};
 
 const receiveNormalized = (state, action: PayloadAction<any>) => {
   const tableNames = Object.keys(action.payload);
@@ -80,6 +75,11 @@ const creators = Creators.bind(slice);
 
 export const createNormalizedSlice = creators.createNormalizedSlice;
 export const createNormalizedListSlice = creators.createNormalizedListSlice;
+export const createNormalizedReceiveAction = (name: string, normalizeFunction) => {
+  return createAction(`${RECEIVE_PREFIX}/${name}`, (items) => ({
+    payload: normalizeFunction(items),
+  }));
+};
 
 export const { receive, remove } = slice.actions;
 export const { reducer } = slice;

@@ -41,7 +41,9 @@ export class Creators {
       },
       extraReducers: (builder) => {
         builder.addCase(receive, (state, action) => {
-          state.value = action.payload.result;
+          const { result } = action.payload;
+
+          state.value = Array.isArray(result) ? result : [result];
         });
       },
     });
@@ -58,7 +60,7 @@ export class Creators {
   };
 
   public createNormalizedSlice = (config: NormalizedSliceConfig) => {
-    const { receive } = this.normalizedSlice.actions;
+    const { receive: receiveNormalized } = this.normalizedSlice.actions;
 
     const schema = new nSchema.Entity(config.name);
 
@@ -66,8 +68,16 @@ export class Creators {
 
     return {
       normalize: normalizer.normalize,
+      denormalize: normalizer.denormalize,
       schema,
-      actions: { receiveNormalized: receive },
+      actions: {
+        receiveNormalized,
+        receive: (data) => {
+          const normalized = normalizer.normalize(data);
+
+          return receiveNormalized({ ...normalized.entities });
+        },
+      },
     };
   };
 }

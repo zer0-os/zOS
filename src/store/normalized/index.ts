@@ -1,7 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { schema as nSchema, denormalize, normalize, Schema } from 'normalizr';
-import { RootState } from '.';
+import { RootState } from '..';
 
 const slice = createSlice({
   name: 'normalized',

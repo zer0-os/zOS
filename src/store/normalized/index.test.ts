@@ -1,4 +1,4 @@
-import { reducer, receive, remove } from './normalized';
+import { reducer, receive, remove } from '.';
 
 describe('normalized reducer', () => {
   const initialExistingState = {};

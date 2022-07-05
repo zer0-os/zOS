@@ -14,12 +14,26 @@ export const get = (connectorType: Connectors) => {
   switch (connectorType) {
     case Connectors.Metamask:
       return new InjectedConnector({
-        supportedChainIds: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
+        supportedChainIds: [
+          chainId,
+          Chains.MainNet,
+          Chains.Kovan,
+          Chains.Rinkeby,
+          Chains.Ropsten,
+          Chains.Goerli,
+        ],
       });
     case Connectors.WalletConnect:
       return new WalletConnectConnector({
         infuraId: config.infuraId,
-        supportedChainIds: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
+        supportedChainIds: [
+          chainId,
+          Chains.MainNet,
+          Chains.Kovan,
+          Chains.Rinkeby,
+          Chains.Ropsten,
+          Chains.Goerli,
+        ],
       });
     case Connectors.Coinbase:
       return new WalletLinkConnector({
@@ -34,7 +48,14 @@ export const get = (connectorType: Connectors) => {
     case Connectors.Portis:
       return new PortisConnector({
         dAppId: config.portisDAppId,
-        networks: [chainId, Chains.MainNet, Chains.Kovan, Chains.Rinkeby, Chains.Ropsten, Chains.Goerli],
+        networks: [
+          chainId,
+          Chains.MainNet,
+          Chains.Kovan,
+          Chains.Rinkeby,
+          Chains.Ropsten,
+          Chains.Goerli,
+        ],
       });
     default:
       return new NetworkConnector({

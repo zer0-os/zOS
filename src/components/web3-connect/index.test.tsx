@@ -382,7 +382,7 @@ describe('Web3Connect', () => {
       expect(state.currentConnector).toEqual(Connectors.Fortmatic);
     });
   });
-  
+
   describe('Network change', () => {
     it('should change network', async () => {
       const updateConnector = jest.fn();
@@ -430,7 +430,6 @@ describe('Web3Connect', () => {
       });
 
       expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
-      expect(setAddress).toHaveBeenCalledWith('');
       expect(global.localStorage.getItem('previousConnector')).toBe(false);
     });
 
@@ -445,18 +444,16 @@ describe('Web3Connect', () => {
           get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
         },
         currentConnector: Connectors.Infura,
+        connectionStatus: ConnectionStatus.Disconnected,
         web3: { activate, chainId: Chains.MainNet, active: true } as any,
         setAddress,
         setConnectionStatus,
         updateConnector,
       });
 
-      component.setProps({ currentConnector: Connectors.Metamask });
+      component.setProps({ currentConnector: Connectors.Metamask, connectionStatus: ConnectionStatus.Connected });
 
       expect(activate).toHaveBeenCalledWith(connector, null, true);
-
-      //await web3.activate to connect
-      await new Promise(setImmediate);
 
       component.setProps({ connectionStatus: ConnectionStatus.Disconnected });
       component.setProps({ currentConnector: Connectors.Infura, connectionStatus: ConnectionStatus.Connected });

@@ -5,12 +5,22 @@ import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { Chains, ConnectionStatus } from '../lib/web3';
 import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
+import { Store } from 'redux';
 
-export interface Properties {
+export interface PlatformUser {
+  account: string;
+}
+
+interface PublicProperties {
+  store: Store<RootState>;
+}
+
+export interface Properties extends PublicProperties {
   route: string;
   address: string;
   chainId: Chains;
   connectionStatus: ConnectionStatus;
+  user?: PlatformUser;
 
   providerService: ProviderService;
 
@@ -38,6 +48,7 @@ export class Container extends React.Component<Properties, State> {
       address,
       connectionStatus: web3.status,
       selectedApp: type,
+      user: { account: address },
     };
   }
 
@@ -83,6 +94,8 @@ export class Container extends React.Component<Properties, State> {
       <AppSandbox
         address={this.props.address}
         chainId={this.props.chainId}
+        store={this.props.store}
+        user={this.props.user}
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}

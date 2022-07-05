@@ -9,6 +9,11 @@ module.exports = {
       'react-router-dom': path.resolve('./node_modules/react-router-dom'),
     },
   },
+  devServer: {
+    watchOptions: {
+      ignored: '**/node_modules/**',
+    },
+  },
   jest: {
     configure: (jestConfig) => {
       return {

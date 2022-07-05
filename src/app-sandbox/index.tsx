@@ -1,9 +1,13 @@
 import React from 'react';
+import { RootState } from '../store';
+import { Store } from 'redux';
 
 import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
+import { ChannelsContainer } from '../platform-apps/channels/container';
+import { PlatformUser } from './container';
 
 import './styles.scss';
 
@@ -18,6 +22,8 @@ export interface AppInterface {
 
 export interface Properties {
   web3Provider: ethers.providers.Web3Provider;
+  store: Store<RootState>;
+  user?: PlatformUser;
   znsRoute: string;
   address: string;
   chainId: Chains;
@@ -26,11 +32,12 @@ export interface Properties {
 
 export class AppSandbox extends React.Component<Properties> {
   get appProperties() {
-    const { znsRoute, web3Provider, address, chainId } = this.props;
+    const { znsRoute, web3Provider, address, chainId, user } = this.props;
 
     return {
       route: znsRoute,
       provider: web3Provider,
+      user,
       web3: {
         address,
         chainId,
@@ -39,13 +46,22 @@ export class AppSandbox extends React.Component<Properties> {
   }
 
   renderSelectedApp() {
-    const { selectedApp } = this.props;
+    const { selectedApp, store } = this.props;
 
     if (selectedApp === Apps.Feed) {
       return <FeedApp {...this.appProperties} />;
     }
 
-    return <div className='error'>Error {selectedApp} application has not been implemented.</div>;
+    if (selectedApp === Apps.Channels) {
+      return (
+        <ChannelsContainer
+          {...this.appProperties}
+          store={store}
+        />
+      );
+    }
+
+    return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>;
   }
 
   render() {

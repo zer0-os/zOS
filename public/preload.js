@@ -1,35 +1,11 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge } = require('electron');
 
-
-const isValidChannel = (channel) => [
-  'zchain-ipc-transport-main',
-  'zchain-ipc-transport-renderer',
-  'startZChainServer',
-  'ZChainServerStarted',
-].includes(channel);
-
-const ipc = {
-  send: (channel, data) => {
-    if (!isValidChannel(channel)) return console.log(`ipc.send - invalid channel: [${channel}]`);
-
-    ipcRenderer.send(channel, data);
-  },
-  on: (channel, func) => {
-    if (!isValidChannel(channel)) return console.log(`ipc.on - invalid channel: [${channel}]`);
-
-    ipcRenderer.on(channel, (_event, ...args) => func(...args));
-  },
-  once: (channel, func) => {
-    if (!isValidChannel(channel)) return console.log(`ipc.once - invalid channel: [${channel}]`);
-
-    ipcRenderer.once(channel, (_event, ...args) => func(...args));
-  },
-};
-
+// As an example, here we use the exposeInMainWorld API to expose the browsers
+// and node versions to the main window.
+// They'll be accessible at "window.versions".
 process.once('loaded', () => {
   contextBridge.exposeInMainWorld('versions', process.versions);
   contextBridge.exposeInMainWorld('isElectron', true);
-  contextBridge.exposeInMainWorld('ipc', ipc);
 });

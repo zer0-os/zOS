@@ -1,23 +1,18 @@
 // Module to control the application lifecycle and the native browser window.
-
-const { app, BrowserWindow, protocol, ipcMain } = require('electron');
+const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
 const url = require('url');
 
-let zChainServerWindow = null;
-let appWindow = null;
-
 // Create the native browser window.
 function createWindow() {
-  appWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     // Set the path of an additional "preload" script that can be used to
     // communicate between node-land and browser-land.
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
-  appWindow.maximize();
+  mainWindow.maximize();
 
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
@@ -29,12 +24,11 @@ function createWindow() {
         slashes: true,
       })
     : 'http://localhost:3000';
-
-  appWindow.loadURL(appURL);
+  mainWindow.loadURL(appURL);
 
   // Automatically open Chrome's DevTools in development mode.
   if (!app.isPackaged) {
-    appWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
 }
 
@@ -53,68 +47,10 @@ function setupLocalFilesNormalizerProxy() {
   );
 }
 
-function startServer() {
-  return new Promise(resolve => {
-    // XXX - this is somewhat temporary to support passing console messages
-    // from the hidden renderer.
-    const remoteMain = require('@electron/remote/main');
-
-    const win = new BrowserWindow({
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-      },
-    });
-
-    remoteMain.initialize();
-    remoteMain.enable(win.webContents);
-
-    let zChainServerPath = url.format({
-      pathname: path.join(__dirname, 'zchainserver.html'),
-      protocol: 'file:',
-      slashes: true,
-    });
-
-    // if (process.env.NODE_ENV === 'development') {
-    //   zChainServerPath = `file:///${process.cwd()}/.webpack/main/ssbserver.html`;
-    // }
-
-    win.loadURL(zChainServerPath);
-
-    win.webContents.on('did-finish-load', () => {
-      resolve(win);
-    });
-  });
-}
-
-function setupIpcHandlers() {
-  ipcMain.on('startZChainServer', async (_event) => {
-    zChainServerWindow = await startServer();
-
-    if (isRunning(appWindow)) {
-      appWindow.webContents.send('ZChainServerStarted');
-    }
-  });
-
-  ipcMain.on('zchain-ipc-transport-main', (_event, data) => {
-    isRunning(zChainServerWindow) && zChainServerWindow.webContents.send('zchain-ipc-transport-main', data);
-  });
-
-  ipcMain.on('zchain-ipc-transport-renderer', (_event, data) => {
-    isRunning(appWindow) && appWindow.webContents.send('zchain-ipc-transport-renderer', data);
-  });
-}
-
-function isRunning(win) {
-  return win && !win.isDestroyed();
-}
-
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  setupIpcHandlers();
-
   createWindow();
   setupLocalFilesNormalizerProxy();
 

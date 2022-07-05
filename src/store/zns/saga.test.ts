@@ -9,7 +9,15 @@ describe('zns saga', () => {
   const getState = (znsState) => ({ zns: { value: znsState } } as RootState);
 
   it('sets new route', async () => {
-    const { storeState } = await expectSaga(setRoute, { payload: 'food' }).withReducer(rootReducer).run();
+    const { storeState } = await expectSaga(setRoute, { payload: 'food' })
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
 
     expect(storeState.zns).toMatchObject({
       value: {
@@ -68,6 +76,12 @@ describe('zns saga', () => {
 
     const { storeState } = await expectSaga(setRoute, { payload: 'food.tacos' })
       .withReducer(rootReducer, getState(existingZnsState))
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
       .run();
 
     expect(storeState.zns).toMatchObject({
@@ -85,6 +99,12 @@ describe('zns saga', () => {
 
     const { storeState } = await expectSaga(setRoute, { payload: 'food' })
       .withReducer(rootReducer, getState(existingZnsState))
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
       .run();
 
     expect(storeState.zns).toMatchObject({
@@ -102,6 +122,12 @@ describe('zns saga', () => {
 
     const { storeState } = await expectSaga(setRoute, { payload: 'cats.hello' })
       .withReducer(rootReducer, getState(existingZnsState))
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
       .run();
 
     expect(storeState.zns).toMatchObject({
@@ -120,6 +146,12 @@ describe('zns saga', () => {
     const { storeState } = await expectSaga(setRoute, {
       payload: 'food.tacos.cheesy',
     })
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
       .withReducer(rootReducer, getState(existingZnsState))
       .run();
 

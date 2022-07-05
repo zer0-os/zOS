@@ -11,7 +11,6 @@ export class ChannelList extends React.Component<Properties> {
     return (
       <div className='channel-list'>
         {this.props.channels.map((channel) => {
-          console.log('channel - ', channel);
           return (
             <div
               key={channel.id}

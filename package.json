@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "main": "./public/electron.js",
   "dependencies": {
@@ -20,7 +20,7 @@
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "0.7.1",
     "@zer0-os/zos-feed": "1.17.0",
-    "@zer0-os/zos-zns": "2.0.1",
+    "@zer0-os/zos-zns": "2.2.0",
     "classnames": "^2.3.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",
@@ -28,6 +28,7 @@
     "history": "^4.10.1",
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
+    "normalizr": "^3.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-portal": "^4.2.1",

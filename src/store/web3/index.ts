@@ -1,5 +1,5 @@
 import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
-import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 import { WalletType } from '@zer0-os/zos-component-library';
 
 export enum SagaActionTypes {
@@ -11,6 +11,7 @@ const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.Up
 export interface Web3State {
   status: ConnectionStatus;
   value: {
+    chainId: Chains;
     address: string;
     connector: Connectors;
   };
@@ -18,7 +19,7 @@ export interface Web3State {
 
 const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
-  value: { address: '', connector: Connectors.None },
+  value: { chainId: null, address: '', connector: Connectors.None },
 };
 
 const slice = createSlice({
@@ -34,9 +35,12 @@ const slice = createSlice({
     setAddress: (state, action: PayloadAction<string>) => {
       state.value.address = action.payload;
     },
+    setChain: (state, action: PayloadAction<Chains>) => {
+      state.value.chainId = action.payload;
+    },
   },
 });
 
-export const { setConnector, setAddress, setConnectionStatus } = slice.actions;
+export const { setConnector, setAddress, setChain, setConnectionStatus } = slice.actions;
 export const { reducer } = slice;
 export { updateConnector };

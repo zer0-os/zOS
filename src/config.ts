@@ -10,4 +10,5 @@ export const config = {
   portisDAppId: process.env.REACT_APP_PORTIS_DAPP_ID,
   defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.Feed,
   supportedChainId: process.env.REACT_APP_ETH_CHAIN || '1',
+  appVersion: process.env.REACT_APP_VERSION,
 };

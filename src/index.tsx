@@ -10,12 +10,14 @@ import { Router, Redirect, Route } from 'react-router-dom';
 import { createBrowserHistory, createHashHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
-import { isElectron } from './utils';
+import { isElectron, showReleaseVersionInConsole } from './utils';
 
 import { AppSandboxContainer } from './app-sandbox/container';
 
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
+
+showReleaseVersionInConsole();
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 

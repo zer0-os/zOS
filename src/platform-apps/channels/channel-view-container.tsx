@@ -9,6 +9,7 @@ import { ChannelView } from './channel-view';
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchChannel: (channelId: string) => void;
+  fetchMessages: (channelId: string) => void;
 }
 
 interface PublicProperties {
@@ -29,8 +30,10 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    if (this.props.channelId) {
-      this.props.fetchChannel(this.props.channelId);
+    const { channelId } = this.props;
+
+    if (channelId) {
+      this.loadData(channelId);
     }
   }
 
@@ -38,14 +41,26 @@ export class Container extends React.Component<Properties> {
     const { channelId } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
+      this.loadData(channelId);
+    }
+  }
+
+  get channel(): Channel {
+    return this.props.channel || ({} as Channel);
+  }
+
+  loadData(channelId: string) {
+    if (channelId !== this.channel.id) {
       this.props.fetchChannel(channelId);
     }
+
+    this.props.fetchMessages(channelId);
   }
 
   render() {
     if (!this.props.channel) return null;
 
-    return <ChannelView name={this.props.channel.name} />;
+    return <ChannelView name={this.channel.name} />;
   }
 }
 

@@ -9,6 +9,7 @@ import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
+import { ChannelViewContainer } from './channel-view-container';
 
 import './styles.scss';
 
@@ -19,6 +20,7 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
+  currentChannelId: string;
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
@@ -49,6 +51,7 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <div className='channels'>
           <ChannelList channels={this.props.channels} />
+          <ChannelViewContainer channelId={this.props.currentChannelId} />
         </div>
       </Provider>
     );

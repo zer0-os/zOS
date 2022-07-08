@@ -5,7 +5,9 @@ import { RootState } from '../../store';
 import { shallow } from 'enzyme';
 
 import { Container } from './container';
+
 import { ChannelList } from './channel-list';
+import { ChannelViewContainer } from './channel-view-container';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -50,6 +52,14 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ channels });
 
     expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
+  });
+
+  it('passes currentChannelId to ChannelViewContainer', () => {
+    const currentChannelId = 'the-channel-id';
+
+    const wrapper = subject({ currentChannelId });
+
+    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(currentChannelId);
   });
 
   describe('mapState', () => {

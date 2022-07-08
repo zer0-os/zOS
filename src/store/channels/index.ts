@@ -10,4 +10,4 @@ const slice = createNormalizedSlice({
 });
 
 export const { receiveNormalized } = slice.actions;
-export const { normalize, schema } = slice;
+export const { normalize, denormalize, schema } = slice;

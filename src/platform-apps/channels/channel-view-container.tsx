@@ -3,12 +3,12 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
+import { fetch as fetchMessages } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
-  fetchChannel: (channelId: string) => void;
   fetchMessages: (channelId: string) => void;
 }
 
@@ -26,14 +26,16 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      fetchMessages,
+    };
   }
 
   componentDidMount() {
     const { channelId } = this.props;
 
     if (channelId) {
-      this.loadData(channelId);
+      this.props.fetchMessages(channelId);
     }
   }
 
@@ -41,20 +43,12 @@ export class Container extends React.Component<Properties> {
     const { channelId } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
-      this.loadData(channelId);
+      this.props.fetchMessages(channelId);
     }
   }
 
   get channel(): Channel {
     return this.props.channel || ({} as Channel);
-  }
-
-  loadData(channelId: string) {
-    if (channelId !== this.channel.id) {
-      this.props.fetchChannel(channelId);
-    }
-
-    this.props.fetchMessages(channelId);
   }
 
   render() {

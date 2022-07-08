@@ -11,7 +11,6 @@ describe('ChannelViewContainer', () => {
     const allProps = {
       channel: null,
       channelId: '',
-      fetchChannel: () => undefined,
       fetchMessages: () => undefined,
       ...props,
     };
@@ -31,56 +30,12 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChannelView).prop('name')).toStrictEqual('first channel');
   });
 
-  it('fetches channel on mount', () => {
-    const fetchChannel = jest.fn();
-
-    subject({ fetchChannel, channelId: 'the-channel-id' });
-
-    expect(fetchChannel).toHaveBeenCalledWith('the-channel-id');
-  });
-
-  it('does not fetch channel on mount if channel already loaded', () => {
-    const fetchChannel = jest.fn();
-
-    subject({ fetchChannel, channel: { id: 'the-channel-id' }, channelId: 'the-channel-id' });
-
-    expect(fetchChannel).toHaveBeenCalledTimes(0);
-  });
-
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();
 
     subject({ fetchMessages, channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenCalledWith('the-channel-id');
-  });
-
-  it('does not fetch channel if channel id is not set', () => {
-    const fetchChannel = jest.fn();
-
-    subject({ fetchChannel, channelId: '' });
-
-    expect(fetchChannel).toHaveBeenCalledTimes(0);
-  });
-
-  it('fetches channel when channel id is set', () => {
-    const fetchChannel = jest.fn();
-
-    const wrapper = subject({ fetchChannel, channelId: '' });
-
-    wrapper.setProps({ channelId: 'the-channel-id' });
-
-    expect(fetchChannel).toHaveBeenCalledWith('the-channel-id');
-  });
-
-  it('fetches channel when channel id is updated', () => {
-    const fetchChannel = jest.fn();
-
-    const wrapper = subject({ fetchChannel, channelId: 'the-first-channel-id' });
-
-    wrapper.setProps({ channelId: 'the-channel-id' });
-
-    expect(fetchChannel).toHaveBeenLastCalledWith('the-channel-id');
   });
 
   it('fetches messages when channel id is set', () => {

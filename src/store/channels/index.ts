@@ -15,5 +15,5 @@ const slice = createNormalizedSlice({
   },
 });
 
-export const { receiveNormalized } = slice.actions;
+export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;

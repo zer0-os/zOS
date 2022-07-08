@@ -130,6 +130,37 @@ describe('ChannelViewContainer', () => {
       });
     });
 
+    test('messages', () => {
+      const state = getState({
+        normalized: {
+          messages: {
+            'the-first-message-id': { id: 'the-first-message-id', name: 'the first message' },
+            'the-second-message-id': { id: 'the-second-message-id', name: 'the second message' },
+            'the-third-message-id': { id: 'the-third-message-id', name: 'the third message' },
+          },
+          channels: {
+            'the-id': { id: 'the-id', name: 'the channel' },
+            'the-second-id': {
+              id: 'the-second-id',
+              name: 'the second channel',
+              messages: [
+                'the-second-message-id',
+                'the-third-message-id',
+              ],
+            },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel' },
+          },
+        },
+      });
+
+      const { channel } = Container.mapState(state, { channelId: 'the-second-id' });
+
+      expect(channel.messages).toIncludeAllPartialMembers([
+        { id: 'the-second-message-id', name: 'the second message' },
+        { id: 'the-third-message-id', name: 'the third message' },
+      ]);
+    });
+
     test('channel with no id set', () => {
       const state = getState({
         normalized: {

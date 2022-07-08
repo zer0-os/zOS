@@ -163,10 +163,6 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     this.anchorElement = ref;
   };
 
-  // setItemsElements = (ref: HTMLElement): void => {
-  //   this.itemsElement = ref;
-  // };
-
   onKeyDown = (e): void => {
     const allOptions = [...this.state.matches];
 

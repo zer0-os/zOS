@@ -24,6 +24,17 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChannelView).exists()).toStrictEqual(false);
   });
 
+  it('passes messages to child', () => {
+    const messages = [
+      { id: 'message-one', message: 'what' },
+      { id: 'message-two', message: 'hello' },
+    ];
+
+    const wrapper = subject({ channel: { messages } });
+
+    expect(wrapper.find(ChannelView).prop('messages')).toStrictEqual(messages);
+  });
+
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 

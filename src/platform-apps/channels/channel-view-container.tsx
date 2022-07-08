@@ -54,7 +54,12 @@ export class Container extends React.Component<Properties> {
   render() {
     if (!this.props.channel) return null;
 
-    return <ChannelView name={this.channel.name} />;
+    return (
+      <ChannelView
+        name={this.channel.name}
+        messages={this.channel.messages}
+      />
+    );
   }
 }
 

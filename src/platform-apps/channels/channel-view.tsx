@@ -1,7 +1,9 @@
 import React from 'react';
+import { Message } from '../../store/messages';
 
 export interface Properties {
   name: string;
+  messages: Message[];
 }
 
 export class ChannelView extends React.Component<Properties> {

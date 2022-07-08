@@ -1,4 +1,4 @@
-import { createNormalizedSlice } from './normalized';
+import { createNormalizedSlice } from '../normalized';
 
 export interface Message {
   id: string;

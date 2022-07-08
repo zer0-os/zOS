@@ -302,6 +302,64 @@ describe('creators', () => {
           },
         });
       });
+
+      it('should normalize multiple objects with relations', () => {
+        const flavor = new schema.Entity('flavor');
+
+        const { normalize } = subject({
+          name: 'tacos',
+          schemaDefinition: {
+            flavors: [flavor],
+          },
+        });
+
+        expect(
+          normalize([
+            {
+              id: 'what',
+              flavors: [
+                { id: 'red-flavor' },
+                { id: 'green-flavor' },
+              ],
+            },
+            {
+              id: 'here',
+              flavors: [
+                { id: 'purple-flavor' },
+                { id: 'green-flavor' },
+              ],
+            },
+          ])
+        ).toStrictEqual({
+          result: [
+            'what',
+            'here',
+          ],
+          entities: {
+            flavor: {
+              'red-flavor': { id: 'red-flavor' },
+              'green-flavor': { id: 'green-flavor' },
+              'purple-flavor': { id: 'purple-flavor' },
+            },
+            tacos: {
+              what: {
+                id: 'what',
+                flavors: [
+                  'red-flavor',
+                  'green-flavor',
+                ],
+              },
+              here: {
+                id: 'here',
+                flavors: [
+                  'purple-flavor',
+                  'green-flavor',
+                ],
+              },
+            },
+          },
+        });
+      });
     });
 
     describe('denormalize', () => {
@@ -347,6 +405,68 @@ describe('creators', () => {
         ).toIncludeAllPartialMembers([
           { id: 'what' },
           { id: 'there' },
+        ]);
+      });
+
+      it('should denormalize nested objects', () => {
+        const flavor = new schema.Entity('flavor');
+
+        const { denormalize } = subject({
+          name: 'tacos',
+          schemaDefinition: {
+            flavors: [flavor],
+          },
+        });
+
+        const state = {
+          normalized: {
+            flavor: {
+              'red-flavor': { id: 'red-flavor' },
+              'green-flavor': { id: 'green-flavor' },
+              'purple-flavor': { id: 'purple-flavor' },
+            },
+            tacos: {
+              what: {
+                id: 'what',
+                flavors: [
+                  'red-flavor',
+                  'green-flavor',
+                ],
+              },
+              there: {
+                id: 'there',
+                flavors: [
+                  'purple-flavor',
+                  'green-flavor',
+                ],
+              },
+            },
+          },
+        };
+
+        expect(
+          denormalize(
+            [
+              'what',
+              'there',
+            ],
+            state
+          )
+        ).toIncludeAllPartialMembers([
+          {
+            id: 'what',
+            flavors: [
+              { id: 'red-flavor' },
+              { id: 'green-flavor' },
+            ],
+          },
+          {
+            id: 'there',
+            flavors: [
+              { id: 'purple-flavor' },
+              { id: 'green-flavor' },
+            ],
+          },
         ]);
       });
     });

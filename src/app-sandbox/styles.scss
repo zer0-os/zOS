@@ -6,8 +6,9 @@ $speed: animation.$animation-duration;
 
 .app-sandbox {
   width: $width-application-content;
+  height: 100vh;
 
-  .error {
+  &__error {
     font-size: 40px;
     font-weight: bold;
     text-align: center;

@@ -28,6 +28,10 @@ export class Container extends React.Component<Properties, {}> {
     return {};
   }
 
+  get allApps() {
+    return allApps();
+  }
+
   render() {
     const { selectedApp, route } = this.props;
 
@@ -35,7 +39,7 @@ export class Container extends React.Component<Properties, {}> {
       <AppMenu
         selectedApp={selectedApp}
         route={route}
-        apps={allApps}
+        apps={this.allApps}
       />
     );
   }

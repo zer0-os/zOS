@@ -3,12 +3,24 @@ import { RootState } from '../store';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
-import { ConnectionStatus } from '../lib/web3';
+import { Chains, ConnectionStatus } from '../lib/web3';
 import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
+import { Store } from 'redux';
 
-export interface Properties {
+export interface PlatformUser {
+  account: string;
+}
+
+interface PublicProperties {
+  store: Store<RootState>;
+}
+
+export interface Properties extends PublicProperties {
   route: string;
+  address: string;
+  chainId: Chains;
   connectionStatus: ConnectionStatus;
+  user?: PlatformUser;
 
   providerService: ProviderService;
 
@@ -23,15 +35,20 @@ interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
+      web3,
       apps: {
         selectedApp: { type },
       },
     } = state;
+    const { chainId, address } = web3.value;
 
     return {
       route: state.zns.value.route,
-      connectionStatus: state.web3.status,
+      chainId,
+      address,
+      connectionStatus: web3.status,
       selectedApp: type,
+      user: { account: address },
     };
   }
 
@@ -72,8 +89,13 @@ export class Container extends React.Component<Properties, State> {
 
   render() {
     if (!this.shouldRender) return null;
+
     return (
       <AppSandbox
+        address={this.props.address}
+        chainId={this.props.chainId}
+        store={this.props.store}
+        user={this.props.user}
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}

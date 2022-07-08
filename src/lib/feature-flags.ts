@@ -9,15 +9,13 @@ export class FeatureFlags {
     window.localStorage.setItem('FEATURE_FLAGS.' + propName, value.toString());
   }
 
-  // XXX - example
-  //
-  // get exampleFeatureFlag() {
-  //   return this._getBoolean('exampleFeatureFlag');
-  // }
+  get channelsApp() {
+    return this._getBoolean('channelsApp');
+  }
 
-  // set exampleFeatureFlag(value: boolean) {
-  //   this._setBoolean('exampleFeatureFlag', value);
-  // }
+  set channelsApp(value: boolean) {
+    this._setBoolean('channelsApp', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

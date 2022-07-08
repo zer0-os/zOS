@@ -6,6 +6,8 @@ import { Container } from './container';
 import { AppMenu } from './index';
 import { allApps, Apps, PlatformApp } from '../../lib/apps';
 
+jest.mock('../../lib/feature-flags');
+
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {
@@ -27,7 +29,7 @@ describe('AppMenuContainer', () => {
   it('passes apps to child', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(AppMenu).prop('apps')).toBe(allApps);
+    expect(wrapper.find(AppMenu).prop('apps')).toStrictEqual(allApps());
   });
 
   it('passes selectedApp', () => {

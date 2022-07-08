@@ -41,8 +41,9 @@ BUTTON {
 
   .app-sandbox {
     position: relative;
-    width: $width-application-content;
-    left: 22px;
+    width: auto;
+    min-width: $width-application-content;
+    left: 51px;
 
     @include for-static-layout() {
       position: absolute;

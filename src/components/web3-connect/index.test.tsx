@@ -2,12 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from '.';
 
-import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 import { RootState } from '../../store';
 
 const getWeb3 = (web3 = {}) => ({
-  activate: (connector: any) => undefined,
+  activate: () => undefined,
   account: '',
+  chainId: undefined,
   active: false,
   library: null,
   connector: null,
@@ -15,6 +16,23 @@ const getWeb3 = (web3 = {}) => ({
 });
 
 describe('Web3Connect', () => {
+  beforeAll(() => {
+    global.localStorage = {
+      state: {
+        'access-token': '',
+      },
+      setItem(key, item) {
+        this.state[key] = item;
+      },
+      getItem(key) {
+        return this.state[key];
+      },
+      removeItem(key) {
+        this.state[key] = false;
+      },
+    };
+  });
+
   const subject = (props: Partial<Properties> = {}, child = <div />) => {
     const allProps: Properties = {
       connectors: { get: async () => undefined },
@@ -22,6 +40,7 @@ describe('Web3Connect', () => {
       connectionStatus: ConnectionStatus.Disconnected,
       setConnectionStatus: () => undefined,
       setAddress: () => undefined,
+      setChain: () => undefined,
       updateConnector: () => undefined,
       ...props,
       web3: getWeb3(props.web3),
@@ -40,6 +59,61 @@ describe('Web3Connect', () => {
     subject({ updateConnector });
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
+  });
+
+  it('sets chain when chain changes', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: Chains.Goerli }) });
+
+    expect(setChain).toHaveBeenCalledWith(Chains.Goerli);
+  });
+
+  it('does not set chain when chain does not change', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }),
+    });
+    wrapper.setProps({
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000033', chainId: Chains.Goerli }),
+    });
+
+    expect(setChain).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not set chain when chain has not been set', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ setChain });
+
+    wrapper.setProps({ web3: getWeb3({ active: true }) });
+
+    expect(setChain).toHaveBeenCalledTimes(0);
+  });
+
+  it('sets chain if chain is null', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: null }) });
+
+    expect(setChain).toHaveBeenCalledWith(null);
+  });
+
+  it('sets chain if chain is undefined', () => {
+    const setChain = jest.fn();
+
+    const wrapper = subject({ web3: getWeb3({ chainId: Chains.Goerli }), setChain });
+
+    wrapper.setProps({ web3: getWeb3({ chainId: undefined }) });
+
+    expect(setChain).toHaveBeenCalledWith(undefined);
   });
 
   it('activates new connector when connector changes', () => {
@@ -75,7 +149,7 @@ describe('Web3Connect', () => {
   });
 
   it('registers provider once when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const register = jest.fn();
 
     const component = subject(
@@ -168,7 +242,7 @@ describe('Web3Connect', () => {
   });
 
   it('sets connection status to connected when active is true', () => {
-    const library = { networkId: 3 };
+    const library = { networkId: Chains.Ropsten };
     const setConnectionStatus = jest.fn();
 
     const component = subject(
@@ -184,7 +258,7 @@ describe('Web3Connect', () => {
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Connected);
   });
 
-  it('should set connection status to networkNotSupported when activate fail', () => {
+  it('should set connection status to Disconnected when activate fail', () => {
     const setConnectionStatus = jest.fn();
 
     const web3 = {
@@ -203,7 +277,7 @@ describe('Web3Connect', () => {
 
     web3Connect.setProps({ currentConnector: Connectors.Portis });
 
-    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.NetworkNotSupported);
+    expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
   });
 
   it('does not set address if address is empty string', () => {
@@ -306,6 +380,85 @@ describe('Web3Connect', () => {
       const state = subject(getState({ web3: { value: { connector: Connectors.Fortmatic } } }));
 
       expect(state.currentConnector).toEqual(Connectors.Fortmatic);
+    });
+  });
+
+  describe('Network change', () => {
+    it('should change network', async () => {
+      const updateConnector = jest.fn();
+      const register = jest.fn();
+      const activate = jest.fn();
+      const library = { networkId: Chains.Kovan };
+      const connector = { what: 'connector' };
+      const component = subject({
+        connectors: {
+          get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
+        },
+        updateConnector,
+      });
+
+      component.setProps({
+        providerService: { register },
+        currentConnector: Connectors.Metamask,
+        web3: { activate, chainId: Chains.MainNet, active: true, library } as any,
+      });
+
+      expect(activate).toHaveBeenCalledWith(connector, null, true);
+      expect(register).toHaveBeenCalledWith(library);
+    });
+  });
+
+  describe('reconnect connectors', () => {
+    it('should call deactivateConnector when wallet is disconnected', async () => {
+      const updateConnector = jest.fn();
+      const setConnectionStatus = jest.fn();
+      const setAddress = jest.fn();
+      const activate = jest.fn();
+      const address = '0x0000000000000000000000000000000000000009';
+      const connector = { what: 'connector' };
+      const component = subject({
+        connectors: { get: () => connector },
+        currentConnector: Connectors.Metamask,
+        web3: { activate, chainId: Chains.MainNet, active: true, account: address } as any,
+        setAddress,
+        setConnectionStatus,
+        updateConnector,
+      });
+
+      component.setProps({
+        web3: { account: '', active: false, library: null } as any,
+      });
+
+      expect(updateConnector).toHaveBeenCalledWith(Connectors.Infura);
+      expect(global.localStorage.getItem('previousConnector')).toBe(false);
+    });
+
+    it('should maintain connected state with call localStorage', async () => {
+      const updateConnector = jest.fn();
+      const setConnectionStatus = jest.fn();
+      const setAddress = jest.fn();
+      const activate = jest.fn();
+      const connector = { what: 'connector' };
+      const component = subject({
+        connectors: {
+          get: jest.fn((c: Connectors) => (c === Connectors.Metamask ? connector : null)),
+        },
+        currentConnector: Connectors.Infura,
+        connectionStatus: ConnectionStatus.Disconnected,
+        web3: { activate, chainId: Chains.MainNet, active: true } as any,
+        setAddress,
+        setConnectionStatus,
+        updateConnector,
+      });
+
+      component.setProps({ currentConnector: Connectors.Metamask, connectionStatus: ConnectionStatus.Connected });
+
+      expect(activate).toHaveBeenCalledWith(connector, null, true);
+
+      component.setProps({ connectionStatus: ConnectionStatus.Disconnected });
+      component.setProps({ currentConnector: Connectors.Infura, connectionStatus: ConnectionStatus.Connected });
+
+      expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
     });
   });
 });

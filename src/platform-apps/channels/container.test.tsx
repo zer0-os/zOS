@@ -5,7 +5,7 @@ import { RootState } from '../../store';
 import { shallow } from 'enzyme';
 
 import { Container } from './container';
-import { Channels } from '.';
+import { ChannelList } from './channel-list';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -32,7 +32,7 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ store });
 
     expect(wrapper.find(Provider).prop('store')).toStrictEqual(store);
-    expect(wrapper.find(Provider).find(Channels).exists()).toBe(true);
+    expect(wrapper.find(Provider).find(ChannelList).exists()).toBe(true);
   });
 
   it('fetches channels on mount', () => {
@@ -44,12 +44,12 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('passes channels to app', () => {
+  it('passes channels to ChannelList', () => {
     const channels = [{ id: 'one' }];
 
     const wrapper = subject({ channels });
 
-    expect(wrapper.find(Channels).prop('channels')).toStrictEqual(channels);
+    expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
   });
 
   describe('mapState', () => {

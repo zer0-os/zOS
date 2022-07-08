@@ -8,7 +8,7 @@ import { connectContainer } from '../../store/redux-container';
 import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
-import { Channels } from '.';
+import { ChannelList } from './channel-list';
 
 import './styles.scss';
 
@@ -47,7 +47,9 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <Channels channels={this.props.channels} />
+        <div className='channels'>
+          <ChannelList channels={this.props.channels} />
+        </div>
       </Provider>
     );
   }

@@ -4,7 +4,7 @@ import { createNormalizedSlice } from '../normalized';
 
 export interface Message {
   id: string;
-  name: string;
+  message: string;
 }
 
 export enum SagaActionTypes {

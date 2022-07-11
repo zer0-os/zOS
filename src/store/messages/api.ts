@@ -5,9 +5,9 @@ export const api = {
       'tacos',
       'cats',
       'work',
-    ].map((name, index) => ({
+    ].map((message, index) => ({
       id: `message-id-${index}`,
-      name,
+      message,
     }));
   },
 };

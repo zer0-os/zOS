@@ -5,7 +5,7 @@ import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { Chains } from '../lib/web3';
-import { ChannelsContainer } from '../platform-apps/channels/container';
+import { Channels } from '../platform-apps/channels';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -23,7 +23,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, store });
 
-    expect(wrapper.find(ChannelsContainer).prop('store')).toStrictEqual(store);
+    expect(wrapper.find(Channels).prop('store')).toStrictEqual(store);
   });
 
   it('does not pass store to feed app', () => {
@@ -70,7 +70,7 @@ describe('AppSandbox', () => {
   it('renders Channels app container when Channels app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Channels });
 
-    expect(wrapper.find(ChannelsContainer).exists()).toBe(true);
+    expect(wrapper.find(Channels).exists()).toBe(true);
   });
 
   it('passes user to Channels app', () => {
@@ -78,7 +78,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, user });
 
-    expect(wrapper.find(ChannelsContainer).prop('user')).toStrictEqual(user);
+    expect(wrapper.find(Channels).prop('user')).toStrictEqual(user);
   });
 
   it('passes route to feed app', () => {

@@ -6,7 +6,7 @@ import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
-import { ChannelsContainer } from '../platform-apps/channels/container';
+import { Channels } from '../platform-apps/channels';
 import { PlatformUser } from './container';
 
 import './styles.scss';
@@ -54,7 +54,7 @@ export class AppSandbox extends React.Component<Properties> {
 
     if (selectedApp === Apps.Channels) {
       return (
-        <ChannelsContainer
+        <Channels
           {...this.appProperties}
           store={store}
         />

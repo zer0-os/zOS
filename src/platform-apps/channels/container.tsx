@@ -17,10 +17,10 @@ interface PublicProperties {
   store: Store<RootState>;
   provider: any;
   route: any;
+  channelId?: string;
 }
 
 export interface Properties extends PublicProperties {
-  currentChannelId: string;
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <div className='channels'>
           <ChannelList channels={this.props.channels} />
-          {this.props.currentChannelId && <ChannelViewContainer channelId={this.props.currentChannelId} />}
+          {this.props.channelId && <ChannelViewContainer channelId={this.props.channelId} />}
         </div>
       </Provider>
     );

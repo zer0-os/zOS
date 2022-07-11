@@ -1,3 +1,4 @@
+import { ZnsLink } from '@zer0-os/zos-component-library';
 import React from 'react';
 
 import { Channel } from '../../store/channels';
@@ -12,12 +13,13 @@ export class ChannelList extends React.Component<Properties> {
       <div className='channel-list'>
         {this.props.channels.map((channel) => {
           return (
-            <div
+            <ZnsLink
               key={channel.id}
               className='channel-list__channel'
+              to={channel.id}
             >
-              {channel.name}
-            </div>
+              <span className='channel-list__channel-name'>{channel.name}</span>
+            </ZnsLink>
           );
         })}
       </div>

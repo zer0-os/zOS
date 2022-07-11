@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <div className='channels'>
           <ChannelList channels={this.props.channels} />
-          <ChannelViewContainer channelId={this.props.currentChannelId} />
+          {this.props.currentChannelId && <ChannelViewContainer channelId={this.props.currentChannelId} />}
         </div>
       </Provider>
     );

@@ -54,6 +54,12 @@ describe('ChannelsContainer', () => {
     expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
   });
 
+  it('does not render ChannelViewContainer if no channel id', () => {
+    const wrapper = subject({ currentChannelId: '' });
+
+    expect(wrapper.find(ChannelViewContainer).exists()).toBe(false);
+  });
+
   it('passes currentChannelId to ChannelViewContainer', () => {
     const currentChannelId = 'the-channel-id';
 
@@ -65,6 +71,8 @@ describe('ChannelsContainer', () => {
   describe('mapState', () => {
     const subject = (state: any) =>
       Container.mapState({
+        currentChannelId: '',
+        ...state,
         zns: {
           ...(state.zns || {}),
           value: {
@@ -109,6 +117,14 @@ describe('ChannelsContainer', () => {
       const state = subject({ zns: { value: { rootDomainId } } as any });
 
       expect(state.domainId).toEqual(rootDomainId);
+    });
+
+    test('currentChannelId', () => {
+      const currentChannelId = '000000000000000000000000000000000000000A';
+
+      const state = subject({ currentChannelId });
+
+      expect(state.currentChannelId).toEqual(currentChannelId);
     });
   });
 });

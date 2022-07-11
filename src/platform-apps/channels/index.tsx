@@ -11,7 +11,7 @@ interface Properties {
   store: Store<RootState>;
   provider: any;
   route: any;
-  match: { path: string };
+  match: { url: string; path: string };
 }
 
 export class Component extends React.Component<Properties> {

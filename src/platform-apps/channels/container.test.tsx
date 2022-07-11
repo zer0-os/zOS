@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { RootState } from '../../store';
+import { Redirect } from 'react-router-dom';
 
 import { shallow } from 'enzyme';
 
@@ -23,6 +24,7 @@ describe('ChannelsContainer', () => {
       store: getStore(),
       fetchChannels: () => undefined,
       channelId: '',
+      match: { url: '' },
       ...props,
     };
 
@@ -59,6 +61,30 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ channelId: '' });
 
     expect(wrapper.find(ChannelViewContainer).exists()).toBe(false);
+  });
+
+  it('redirects to first channel if no channelId', () => {
+    const wrapper = subject({
+      match: { url: '/root/url' },
+      channelId: '',
+      channels: [{ id: 'the-channel-id' }],
+    });
+
+    expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/root/url/the-channel-id');
+  });
+
+  it('redirects to first channel if no channelId on update', () => {
+    const wrapper = subject({
+      match: { url: '/root/url' },
+      channelId: '',
+      channels: [],
+    });
+
+    wrapper.setProps({
+      channels: [{ id: 'the-channel-id' }],
+    });
+
+    expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/root/url/the-channel-id');
   });
 
   it('passes channelId to ChannelViewContainer', () => {

@@ -1,5 +1,8 @@
 name: Deploy Development
-
+on:
+  push:
+    branches:
+      - feature/release-version
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,7 +30,7 @@ jobs:
       REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
       REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
       REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
-      REACT_APP_VERSION: ${{secrets.APP_VERSION}}
+      REACT_APP_VERSION: $npm_package_version
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

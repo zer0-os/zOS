@@ -57,7 +57,7 @@ export class Container extends React.Component<Properties> {
     return (
       <ChannelView
         name={this.channel.name}
-        messages={this.channel.messages}
+        messages={this.channel.messages || []}
       />
     );
   }

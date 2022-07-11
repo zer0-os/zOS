@@ -35,6 +35,12 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChannelView).prop('messages')).toStrictEqual(messages);
   });
 
+  it('passes empty array for messages to child when channel has no messages', () => {
+    const wrapper = subject({ channel: { id: 'what' } });
+
+    expect(wrapper.find(ChannelView).prop('messages')).toStrictEqual([]);
+  });
+
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 

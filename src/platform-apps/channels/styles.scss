@@ -1,4 +1,34 @@
 .channels {
   width: 100%;
   height: 100%;
+
+  margin-top: 100px;
+}
+
+.channel {
+  &-list {
+    width: 190px;
+    background: #19191c;
+    padding: 10px 0;
+  }
+
+  &-list__channel {
+    padding: 10px 20px;
+    color: #737373;
+
+    &:before {
+      content: '# ';
+    }
+
+    &:hover {
+      color: #fff;
+      cursor: pointer;
+      background: #303033;
+    }
+    &--active {
+      color: #fff;
+      background: #141415;
+      border-left: 3px solid #fb216e;
+    }
+  }
 }

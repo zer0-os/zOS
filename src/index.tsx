@@ -55,9 +55,11 @@ ReactDOM.render(
 // to components rather than using a provider.)
 ReactDOM.render(
   <Router history={history}>
-    <div className='app-sandbox-wrapper'>
-      <AppSandboxContainer store={store} />
-    </div>
+    <Route path='/:znsRoute/:app'>
+      <div className='app-sandbox-wrapper'>
+        <AppSandboxContainer store={store} />
+      </div>
+    </Route>
   </Router>,
   document.getElementById('app-sandbox')
 );

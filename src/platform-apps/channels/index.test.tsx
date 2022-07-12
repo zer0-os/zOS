@@ -1,24 +1,53 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
 
 import { shallow } from 'enzyme';
 
-import { Channels } from '.';
-import { ChannelList } from './channel-list';
+import { ChannelsContainer } from './container';
+import { Component } from '.';
 
 describe('Channels', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       ...props,
+      match: {
+        path: '/the/path',
+        ...(props.match || {}),
+      },
     };
 
-    return shallow(<Channels {...allProps} />);
+    return shallow(<Component {...allProps} />);
   };
 
-  it('passes channels to ChannelList', () => {
-    const channels = [{ id: 'one' }];
+  it('adds optional channelId to path in Route', () => {
+    const wrapper = subject({ match: { path: '/the/path' } });
 
-    const wrapper = subject({ channels });
+    expect(wrapper.find(Route).prop('path')).toBe('/the/path/:channelId?');
+  });
 
-    expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
+  it('passes channelId to ChannelsContainer', () => {
+    const RouteRenderComponent: any = subject().find(Route).prop('render');
+
+    const channelId = 'the-channel-id';
+
+    const rendered = shallow(<RouteRenderComponent match={{ params: { channelId } }} />);
+
+    expect(rendered.find(ChannelsContainer).prop('channelId')).toBe('the-channel-id');
+  });
+
+  it('passes empty channelId to rendered component if no match', () => {
+    const RouteRenderComponent: any = subject().find(Route).prop('render');
+
+    const rendered = shallow(<RouteRenderComponent match={{ params: {} }} />);
+
+    expect(rendered.prop('channelId')).toBeEmpty();
+  });
+
+  it('passes provided props to rendered component', () => {
+    const RouteRenderComponent: any = subject({ route: 'the.route' }).find(Route).prop('render');
+
+    const rendered = shallow(<RouteRenderComponent match={{ params: {} }} />);
+
+    expect(rendered.prop('route')).toBe('the.route');
   });
 });

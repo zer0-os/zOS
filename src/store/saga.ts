@@ -4,14 +4,16 @@ import { saga as web3 } from './web3/saga';
 import { saga as zns } from './zns/saga';
 import { saga as apps } from './apps/saga';
 import { saga as channelsList } from './channels-list/saga';
+import { saga as messages } from './messages/saga';
 
 export function* rootSaga() {
-  const allSagas = [
+  const allSagas = {
     web3,
     zns,
     apps,
     channelsList,
-  ];
+    messages,
+  };
 
   yield all(
     Object.keys(allSagas).map((sagaName) => {

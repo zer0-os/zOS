@@ -1,11 +1,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { RootState } from '../../store';
+import { Redirect } from 'react-router-dom';
 
 import { shallow } from 'enzyme';
 
 import { Container } from './container';
-import { Channels } from '.';
+
+import { ChannelList } from './channel-list';
+import { ChannelViewContainer } from './channel-view-container';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -20,6 +23,8 @@ describe('ChannelsContainer', () => {
       user: {},
       store: getStore(),
       fetchChannels: () => undefined,
+      channelId: '',
+      match: { url: '' },
       ...props,
     };
 
@@ -32,7 +37,7 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ store });
 
     expect(wrapper.find(Provider).prop('store')).toStrictEqual(store);
-    expect(wrapper.find(Provider).find(Channels).exists()).toBe(true);
+    expect(wrapper.find(Provider).find(ChannelList).exists()).toBe(true);
   });
 
   it('fetches channels on mount', () => {
@@ -44,17 +49,56 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('passes channels to app', () => {
+  it('passes channels to ChannelList', () => {
     const channels = [{ id: 'one' }];
 
     const wrapper = subject({ channels });
 
-    expect(wrapper.find(Channels).prop('channels')).toStrictEqual(channels);
+    expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
+  });
+
+  it('does not render ChannelViewContainer if no channel id', () => {
+    const wrapper = subject({ channelId: '' });
+
+    expect(wrapper.find(ChannelViewContainer).exists()).toBe(false);
+  });
+
+  it('redirects to first channel if no channelId', () => {
+    const wrapper = subject({
+      match: { url: '/root/url' },
+      channelId: '',
+      channels: [{ id: 'the-channel-id' }],
+    });
+
+    expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/root/url/the-channel-id');
+  });
+
+  it('redirects to first channel if no channelId on update', () => {
+    const wrapper = subject({
+      match: { url: '/root/url' },
+      channelId: '',
+      channels: [],
+    });
+
+    wrapper.setProps({
+      channels: [{ id: 'the-channel-id' }],
+    });
+
+    expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/root/url/the-channel-id');
+  });
+
+  it('passes channelId to ChannelViewContainer', () => {
+    const channelId = 'the-channel-id';
+
+    const wrapper = subject({ channelId });
+
+    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(channelId);
   });
 
   describe('mapState', () => {
     const subject = (state: any) =>
       Container.mapState({
+        ...state,
         zns: {
           ...(state.zns || {}),
           value: {

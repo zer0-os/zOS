@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ChannelList } from './channel-list';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 
 describe('ChannelList', () => {
   const subject = (props: any = {}) => {
@@ -23,13 +24,33 @@ describe('ChannelList', () => {
 
     const wrapper = subject({ channels });
 
-    const textes = wrapper.find('.channel-list__channel').map((c) => c.text().trim());
+    const textes = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
 
     expect(textes).toStrictEqual([
       'first channel',
       'second channel',
       'third channel',
       'fourth channel',
+    ]);
+  });
+
+  it('renders Link to channel id', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels });
+
+    const textes = wrapper.find(ZnsLink).map((l) => l.prop('to'));
+
+    expect(textes).toStrictEqual([
+      'one',
+      'two',
+      'three',
+      'four',
     ]);
   });
 });

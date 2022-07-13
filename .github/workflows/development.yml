@@ -2,7 +2,7 @@ name: Deploy Development
 on:
   push:
     branches:
-      - feature/release-version
+      - development
 jobs:
   test:
     runs-on: ubuntu-latest

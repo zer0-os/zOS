@@ -32,7 +32,6 @@ jobs:
       REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
       REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
       NODE_ENV: development
-      REACT_APP_VERSION: ${{secrets.APP_VERSION}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

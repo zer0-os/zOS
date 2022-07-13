@@ -11,19 +11,20 @@ jest.mock('../../lib/feature-flags');
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {
-      route: '',
       selectedApp: '',
+      config: { defaultZnsRoute: '' },
       ...props,
     };
 
     return shallow(<Container {...allProps} />);
   };
 
-  it('passes route', () => {
-    const route = 'the.cats.pantaloons';
-    const wrapper = subject({ route });
+  it('passes defaultZnsRoute to route', () => {
+    const defaultZnsRoute = 'wilder';
 
-    expect(wrapper.find(AppMenu).prop('route')).toBe(route);
+    const wrapper = subject({ config: { defaultZnsRoute } });
+
+    expect(wrapper.find(AppMenu).prop('route')).toBe(defaultZnsRoute);
   });
 
   it('passes apps to child', () => {
@@ -44,17 +45,8 @@ describe('AppMenuContainer', () => {
     const subject = (state: Partial<RootState>) =>
       Container.mapState({
         ...state,
-        zns: { value: { route: '' }, ...(state.zns || {}) },
         apps: { selectedApp: '', ...(state.apps || {}) },
       } as RootState);
-
-    test('route', () => {
-      const route = 'NetBIOS';
-
-      const state = subject({ zns: { value: { route } } });
-
-      expect(state.route).toEqual(route);
-    });
 
     test('selectedApp', () => {
       const selectedApp = { type: Apps.Channels } as PlatformApp;

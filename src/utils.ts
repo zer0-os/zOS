@@ -8,5 +8,5 @@ declare let window: ElectronWindow;
 export const isElectron = (): boolean => typeof window !== 'undefined' && window?.isElectron;
 
 export const showReleaseVersionInConsole = (): void => {
-  console.log('Release version test 223:', config.appVersion);
+  console.log('Release version:', config.appVersion);
 };

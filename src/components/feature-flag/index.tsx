@@ -17,14 +17,19 @@ export const Component = (props: Properties) => {
   }
 
   return null;
-}
+};
 
 export const FeatureFlag = inject<PublicProperties>(Component);
 
 export function inject<T>(ChildComponent: any) {
   return class FeatureFlagInjector extends React.Component<T> {
     render() {
-      return <ChildComponent {...this.props} featureFlags={featureFlags} />;
+      return (
+        <ChildComponent
+          {...this.props}
+          featureFlags={featureFlags}
+        />
+      );
     }
   };
 }

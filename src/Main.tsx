@@ -3,8 +3,8 @@ import { WalletManager } from './components/wallet-manager';
 import { ViewModeToggle } from './components/view-mode-toggle';
 import { ThemeEngine } from './components/theme-engine';
 import { AddressBarContainer } from './components/address-bar/container';
-import { ReactComponent as WilderWideLogo } from './assets/images/wilder-wide-logo.svg';
 import { AppMenuContainer } from './components/app-menu/container';
+import { Logo } from './components/logo';
 
 import './main.scss';
 
@@ -19,7 +19,7 @@ export class Main extends React.Component {
             <ViewModeToggle className='main__view-mode-toggle' />
           </div>
           <div className='main__navigation-platform'>
-            <WilderWideLogo className="main__logo" />
+            <Logo className='main__logo' />
             <div className='main__app-menu-container'>
               <AppMenuContainer />
             </div>

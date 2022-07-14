@@ -1,10 +1,4 @@
-import {
-  createSlice,
-  createAction,
-  PayloadAction,
-} from '@reduxjs/toolkit';
-
-import { config } from '../../config';
+import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   UpdateRoute = 'zns/saga/updateRoute',
@@ -13,18 +7,20 @@ export enum SagaActionTypes {
 const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
 
 export interface ZnsDomainDescriptor {
-  route: string,
-  deepestVisitedRoute: string,
+  rootDomainId: string;
+  route: string;
+  deepestVisitedRoute: string;
 }
 
 export interface ZnsState {
-  value: ZnsDomainDescriptor,
+  value: ZnsDomainDescriptor;
 }
 
 const initialState: ZnsState = {
   value: {
-    route: config.defaultZnsRoute,
-    deepestVisitedRoute: config.defaultZnsRoute,
+    rootDomainId: '',
+    route: '',
+    deepestVisitedRoute: '',
   },
 };
 
@@ -39,5 +35,5 @@ const slice = createSlice({
 });
 
 export const { receive } = slice.actions;
-export const { reducer } =  slice;
+export const { reducer } = slice;
 export { setRoute };

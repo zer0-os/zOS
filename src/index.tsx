@@ -10,16 +10,20 @@ import { Router, Redirect, Route } from 'react-router-dom';
 import { createBrowserHistory, createHashHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
-import { isElectron } from './utils';
+import { isElectron, showReleaseVersionInConsole } from './utils';
 
 import { AppSandboxContainer } from './app-sandbox/container';
 
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 
+showReleaseVersionInConsole();
+
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
-const redirectToDefaults = ({ match: { params } }) => <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />;
+const redirectToDefaults = ({ match: { params } }) => (
+  <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />
+);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -27,8 +31,15 @@ ReactDOM.render(
       <EscapeManagerProvider>
         <Router history={history}>
           <Web3ReactContextProvider>
-            <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
-            <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+            <Route
+              path='/:znsRoute?/'
+              exact
+              render={redirectToDefaults}
+            />
+            <Route
+              path='/:znsRoute/:app'
+              component={ZnsRouteConnect}
+            />
           </Web3ReactContextProvider>
         </Router>
       </EscapeManagerProvider>
@@ -42,13 +53,14 @@ ReactDOM.render(
 // load and render the child apps. Anything exposed in this tree should also be done in
 // such a way that it won't interfere with the loaded app. (eg. pass the store directly
 // to components rather than using a provider.)
-ReactDOM.render((
-    <Router history={history}>
+ReactDOM.render(
+  <Router history={history}>
+    <Route path='/:znsRoute/:app'>
       <div className='app-sandbox-wrapper'>
         <AppSandboxContainer store={store} />
       </div>
-    </Router>
-  ),
+    </Route>
+  </Router>,
   document.getElementById('app-sandbox')
 );
 

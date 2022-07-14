@@ -23,7 +23,11 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { theme: { value: { viewMode } } } = state;
+    const {
+      theme: {
+        value: { viewMode },
+      },
+    } = state;
 
     return {
       viewMode,
@@ -51,10 +55,16 @@ export class Container extends React.Component<Properties> {
 
   handleClick = () => {
     this.props.setViewMode(this.isDarkMode ? ViewModes.Light : ViewModes.Dark);
-  }
+  };
 
   render() {
-    return <IconButton className={this.className} icon={this.icon} onClick={this.handleClick} />;
+    return (
+      <IconButton
+        className={this.className}
+        icon={this.icon}
+        onClick={this.handleClick}
+      />
+    );
   }
 }
 

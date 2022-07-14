@@ -1,8 +1,4 @@
-import {
-  createSlice,
-  createAction,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
 
 import { config } from '../../config';
 import { apps, PlatformApp, Apps } from '../../lib/apps';
@@ -14,7 +10,7 @@ export enum SagaActionTypes {
 const setSelectedApp = createAction<Apps>(SagaActionTypes.UpdateApp);
 
 export interface AppsState {
-  selectedApp: PlatformApp,
+  selectedApp: PlatformApp;
 }
 
 const initialState: AppsState = {
@@ -32,5 +28,5 @@ const slice = createSlice({
 });
 
 export const { receive } = slice.actions;
-export const { reducer } =  slice;
+export const { reducer } = slice;
 export { setSelectedApp };

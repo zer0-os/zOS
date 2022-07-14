@@ -10,7 +10,11 @@ export interface Properties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { theme: { value: { viewMode } } } = state;
+    const {
+      theme: {
+        value: { viewMode },
+      },
+    } = state;
 
     return {
       viewMode,

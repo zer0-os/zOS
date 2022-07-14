@@ -15,7 +15,7 @@ describe('ZnsRouteConnect', () => {
         ...(props.match || {}),
       },
     };
-    
+
     return shallow(<Container {...allProps} />);
   };
 
@@ -38,9 +38,14 @@ describe('ZnsRouteConnect', () => {
   it('sets route when updated', () => {
     const setRoute = jest.fn();
 
-    const container = subject({ setRoute, match: { params: { znsRoute: 'icecream.shop' } } });
+    const container = subject({
+      setRoute,
+      match: { params: { znsRoute: 'icecream.shop' } },
+    });
 
-    container.setProps({ match: { params: { znsRoute: 'icecream.flavors.pickle' } } });
+    container.setProps({
+      match: { params: { znsRoute: 'icecream.flavors.pickle' } },
+    });
 
     expect(setRoute).toHaveBeenNthCalledWith(2, 'icecream.flavors.pickle');
   });
@@ -56,7 +61,10 @@ describe('ZnsRouteConnect', () => {
   it('sets app when updated', () => {
     const setSelectedApp = jest.fn();
 
-    const container = subject({ setSelectedApp, match: { params: { app: 'mIRC 2.1a' } } });
+    const container = subject({
+      setSelectedApp,
+      match: { params: { app: 'mIRC 2.1a' } },
+    });
 
     container.setProps({ match: { params: { app: 'ICQ 99a' } } });
 

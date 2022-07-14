@@ -17,7 +17,7 @@
   &__navigation {
     display: flex;
     pointer-events: auto;
-    
+
     flex: 0 0 $width-world-navigation;
 
     margin-right: $left-content-space;
@@ -35,15 +35,19 @@
   &__navigation-platform {
     width: 200px;
     border-right: 1px solid theme.$primary-border-color;
+    padding-left: 15px;
 
     @include for-left-collapse() {
       width: 54px;
+      padding-left: 5px;
+      padding-right: 3px;
     }
   }
 
   &__content {
     padding-top: 8px;
-    width: $width-application-content;
+    width: 100%;
+    max-width: 800px;
 
     display: flex;
     justify-content: center;
@@ -59,17 +63,14 @@
 
     pointer-events: auto;
     flex-basis: $width-sidekick;
-    
+
     display: flex;
     justify-content: flex-end;
   }
 
   &__logo {
     margin-left: 2px;
-  }
-
-  &__app-menu-container {
-    padding-left: 18px;
+    margin-top: 7px;
   }
 
   &__view-mode-toggle {

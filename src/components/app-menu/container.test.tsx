@@ -6,6 +6,8 @@ import { Container } from './container';
 import { AppMenu } from './index';
 import { allApps, Apps, PlatformApp } from '../../lib/apps';
 
+jest.mock('../../lib/feature-flags');
+
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {
@@ -18,7 +20,7 @@ describe('AppMenuContainer', () => {
   };
 
   it('passes route', () => {
-    const route = 'the.cats.pantaloons'
+    const route = 'the.cats.pantaloons';
     const wrapper = subject({ route });
 
     expect(wrapper.find(AppMenu).prop('route')).toBe(route);
@@ -27,7 +29,7 @@ describe('AppMenuContainer', () => {
   it('passes apps to child', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(AppMenu).prop('apps')).toBe(allApps);
+    expect(wrapper.find(AppMenu).prop('apps')).toStrictEqual(allApps());
   });
 
   it('passes selectedApp', () => {
@@ -39,16 +41,17 @@ describe('AppMenuContainer', () => {
   });
 
   describe('mapState', () => {
-    const subject = (state: Partial<RootState>) => Container.mapState({
-      ...state,
-      zns: { value: { route: '' }, ...(state.zns || {}), },
-      apps: { selectedApp: '', ...(state.apps || {}) },
-    } as RootState);
+    const subject = (state: Partial<RootState>) =>
+      Container.mapState({
+        ...state,
+        zns: { value: { route: '' }, ...(state.zns || {}) },
+        apps: { selectedApp: '', ...(state.apps || {}) },
+      } as RootState);
 
     test('route', () => {
       const route = 'NetBIOS';
 
-      const state = subject({ zns: { value: { route } }});
+      const state = subject({ zns: { value: { route } } });
 
       expect(state.route).toEqual(route);
     });

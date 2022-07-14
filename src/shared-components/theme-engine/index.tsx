@@ -28,7 +28,7 @@ export class Component extends React.Component<Properties> {
   setVars(viewMode: ViewModes) {
     const modeObject = this.props.theme[viewMode];
 
-    Object.keys(modeObject).forEach(prop => {
+    Object.keys(modeObject).forEach((prop) => {
       this.props.element.style.setProperty(`--${kebabCase(prop)}`, modeObject[prop]);
     });
   }
@@ -39,5 +39,11 @@ export class Component extends React.Component<Properties> {
 }
 
 export function ThemeEngine(props: Partial<Properties>) {
-  return <Component viewMode={props.viewMode} theme={theme} element={document.documentElement} />;
+  return (
+    <Component
+      viewMode={props.viewMode}
+      theme={theme}
+      element={document.documentElement}
+    />
+  );
 }

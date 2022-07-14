@@ -13,50 +13,28 @@ import React from 'react';
 import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core';
 import { providers } from 'ethers';
 
-import { Connectors } from '../../lib/web3';
-import * as walletConnectors from './connectors';
+import { get as getConnector } from './connectors';
 
 export class ContextProvider extends React.Component {
   getLibrary = (provider) => new providers.Web3Provider(provider);
 
   render() {
-    return (
-      <Web3ReactProvider getLibrary={this.getLibrary}>
-        {this.props.children}
-      </Web3ReactProvider>
-    );
-  }
-}
-
-export class ConnectorProvider extends React.Component {
-  get(_connectorType: Connectors) {
-    return walletConnectors.network;
+    return <Web3ReactProvider getLibrary={this.getLibrary}>{this.props.children}</Web3ReactProvider>;
   }
 }
 
 export function inject<T>(ChildComponent: any) {
-  const getConnector = (connectorType: Connectors) => {
-    switch (connectorType) {
-      case Connectors.Metamask:
-        return walletConnectors.injected;
-      case Connectors.WalletConnect:
-        return walletConnectors.walletConnect;
-      case Connectors.Coinbase:
-        return walletConnectors.walletLink;
-      case Connectors.Fortmatic:
-        return walletConnectors.fortmatic;
-      case Connectors.Portis:
-        return walletConnectors.portis;
-      default:
-        return walletConnectors.network;
-    }
-  }
-
   return class ReactWeb3Injector extends React.Component<T> {
     static contextType = getWeb3ReactContext();
 
     render() {
-      return <ChildComponent {...this.props} connectors={{ get: getConnector }} web3={this.context} />;
+      return (
+        <ChildComponent
+          {...this.props}
+          connectors={{ get: getConnector }}
+          web3={this.context}
+        />
+      );
     }
   };
 }

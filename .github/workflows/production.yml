@@ -1,0 +1,51 @@
+name: Deploy Production
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+      - run: npm install
+      - run: npm run test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
+      REACT_APP_ROOT_DOMAIN_ID: ${{secrets.ROOT_DOMAIN_ID}}
+      REACT_APP_DEFAULT_ZNS_DOMAIN: ${{secrets.DEFAULT_ZNS_DOMAIN}}
+      REACT_APP_DEFAULT_APP: ${{secrets.DEFAULT_APP}}
+      REACT_APP_IPFS_BASE_URL: ${{secrets.IPFS_BASE_URL}}
+      REACT_APP_FORTMATIC_API_KEY: ${{secrets.FORTMATIC_API_KEY}}
+      REACT_APP_PORTIS_DAPP_ID: ${{secrets.PORTIS_DAPP_ID}}
+      REACT_APP_INFURA_ID: ${{secrets.INFURA_ID}}
+      REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
+      REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
+      REACT_APP_VERSION: ${{secrets.APP_VERSION}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+      - run: npm install
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Build project
+        run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
+      - run: npm install -g netlify-cli
+      - name: Deploy to netlify
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: netlify deploy --dir=build --prod

@@ -9,7 +9,6 @@ import { routeWithApp } from './util';
 import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
 import { PlatformApp } from '../../lib/apps';
-
 interface PublicProperties {
   className?: string;
 }

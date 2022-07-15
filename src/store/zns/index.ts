@@ -31,9 +31,12 @@ const slice = createSlice({
     receive: (state, action: PayloadAction<ZnsDomainDescriptor>) => {
       state.value = action.payload;
     },
+    setDeepestVisitedRoute: (state, action: PayloadAction<string>) => {
+      state.value.deepestVisitedRoute = action.payload;
+    },
   },
 });
 
-export const { receive } = slice.actions;
+export const { receive, setDeepestVisitedRoute } = slice.actions;
 export const { reducer } = slice;
 export { setRoute };

@@ -17,6 +17,7 @@ describe('AddressBarContainer', () => {
       history: { push: () => undefined },
       providerService: { get: () => null } as ProviderService,
       znsClient: { get: () => null },
+      setDeepestVisitedRoute: () => undefined,
       ...props,
     };
 
@@ -137,6 +138,18 @@ describe('AddressBarContainer', () => {
     wrapper.find(AddressBar).simulate('back');
 
     expect(push).toHaveBeenCalledTimes(0);
+  });
+
+  it('sets setDeepestVisitedRoute when switching apps', () => {
+    const setDeepestVisitedRoute = jest.fn();
+    const selectedApp = { type: Apps.Channels } as PlatformApp;
+    const route = 'wilder';
+
+    const wrapper = subject({ route: 'cats', deepestVisitedRoute: 'cats', setDeepestVisitedRoute });
+
+    wrapper.setProps({ route, app: selectedApp });
+
+    expect(setDeepestVisitedRoute).toHaveBeenCalledWith(route);
   });
 
   describe('mapState', () => {

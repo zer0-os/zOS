@@ -3,25 +3,25 @@ import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { AppMenu } from '.';
 import { Apps, allApps } from '../../lib/apps';
+import { inject as injectConfig } from '../config';
 
-export interface Properties {
+interface PublicProperties {
+  config?: { defaultZnsRoute: string };
+}
+
+export interface Properties extends PublicProperties {
   selectedApp: Apps;
-
-  route: string;
 }
 
 export class Container extends React.Component<Properties, {}> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      zns: {
-        value: { route },
-      },
       apps: {
         selectedApp: { type },
       },
     } = state;
 
-    return { selectedApp: type, route };
+    return { selectedApp: type };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -32,17 +32,21 @@ export class Container extends React.Component<Properties, {}> {
     return allApps();
   }
 
+  get defaultRoute(): string {
+    return this.props.config.defaultZnsRoute;
+  }
+
   render() {
-    const { selectedApp, route } = this.props;
+    const { selectedApp } = this.props;
 
     return (
       <AppMenu
         selectedApp={selectedApp}
-        route={route}
+        route={this.defaultRoute}
         apps={this.allApps}
       />
     );
   }
 }
 
-export const AppMenuContainer = connectContainer<any>(Container);
+export const AppMenuContainer = injectConfig<PublicProperties>(connectContainer<any>(Container));

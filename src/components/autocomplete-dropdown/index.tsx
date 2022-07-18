@@ -103,7 +103,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     this.setState({ value: searchTerm });
 
     if (searchTerm.trim() === '') {
-      this.close();
+      this.close(false);
       return;
     }
 
@@ -138,7 +138,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
   };
 
-  close(): void {
+  close(closeBar = true): void {
     if (this._isMounted) {
       this.setState({
         matches: [],
@@ -146,7 +146,9 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
         inProgress: false,
         currentFocusIndex: 0,
       });
-      this.props.onCloseBar();
+      if (closeBar) {
+        this.props.onCloseBar();
+      }
     }
   }
 

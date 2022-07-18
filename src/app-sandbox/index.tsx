@@ -17,6 +17,7 @@ export interface AppInterface {
   web3: {
     chainId: Chains;
     address: string;
+    connectWaller;
   };
 }
 
@@ -28,11 +29,12 @@ export interface Properties {
   address: string;
   chainId: Chains;
   selectedApp: Apps;
+  connectWallet: () => void;
 }
 
 export class AppSandbox extends React.Component<Properties> {
   get appProperties() {
-    const { znsRoute, web3Provider, address, chainId, user } = this.props;
+    const { znsRoute, web3Provider, address, chainId, user, connectWallet } = this.props;
 
     return {
       route: znsRoute,
@@ -41,6 +43,7 @@ export class AppSandbox extends React.Component<Properties> {
       web3: {
         address,
         chainId,
+        connectWallet,
       },
     };
   }

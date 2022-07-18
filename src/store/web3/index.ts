@@ -15,11 +15,13 @@ export interface Web3State {
     address: string;
     connector: Connectors;
   };
+  isWalletOpen: boolean;
 }
 
 const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
   value: { chainId: null, address: '', connector: Connectors.None },
+  isWalletOpen: false,
 };
 
 const slice = createSlice({
@@ -38,9 +40,12 @@ const slice = createSlice({
     setChain: (state, action: PayloadAction<Chains>) => {
       state.value.chainId = action.payload;
     },
+    setWalletOpen: (state, action: PayloadAction<boolean>) => {
+      state.isWalletOpen = action.payload;
+    },
   },
 });
 
-export const { setConnector, setAddress, setChain, setConnectionStatus } = slice.actions;
+export const { setConnector, setAddress, setChain, setConnectionStatus, setWalletOpen } = slice.actions;
 export const { reducer } = slice;
 export { updateConnector };

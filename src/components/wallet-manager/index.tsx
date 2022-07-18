@@ -5,7 +5,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-import { updateConnector } from '../../store/web3';
+import { updateConnector, Web3State, setWalletOpen } from '../../store/web3';
 import { isElectron } from '../../utils';
 import './styles.scss';
 
@@ -14,6 +14,8 @@ export interface Properties {
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
   updateConnector: (connector: WalletType) => void;
+  setWalletOpen: (isWalletOpen: boolean) => void;
+  isWalletOpen: Web3State['isWalletOpen'];
 }
 
 export interface State {
@@ -24,19 +26,21 @@ export interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      web3: { status, value },
+      web3: { status, value, isWalletOpen },
     } = state;
 
     return {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
+      isWalletOpen,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       updateConnector,
+      setWalletOpen,
     };
   }
 
@@ -67,7 +71,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get showModal(): boolean {
-    return this.state.showModal;
+    return this.props.isWalletOpen;
   }
 
   get isConnecting(): boolean {
@@ -101,8 +105,8 @@ export class Container extends React.Component<Properties, State> {
     ];
   }
 
-  openModal = () => this.setState({ showModal: true });
-  closeModal = () => this.setState({ showModal: false });
+  openModal = () => this.props.setWalletOpen(true);
+  closeModal = () => this.props.setWalletOpen(false);
 
   handleWalletSelected = (connector: WalletType) => {
     this.setState({ walletSelected: true });

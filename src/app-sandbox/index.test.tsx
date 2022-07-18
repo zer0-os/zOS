@@ -96,4 +96,16 @@ describe('AppSandbox', () => {
 
     expect(wrapper.find(App).prop('provider')).toStrictEqual(web3Provider);
   });
+
+  it('passes connectWallet to feed app', () => {
+    const web3 = { connectWallet: jest.fn() };
+
+    const wrapper = subject({ selectedApp: Apps.Feed, connectWallet: web3.connectWallet });
+
+    expect(wrapper.find(App).prop('web3')).toEqual(
+      expect.objectContaining({
+        connectWallet: web3.connectWallet,
+      })
+    );
+  });
 });

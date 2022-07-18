@@ -382,6 +382,16 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
   });
 
+  it('does not close search bar when empty value', async () => {
+    const wrapper = subject({ value: 'lets delete this' });
+
+    let input = wrapper.find('input');
+
+    input.simulate('change', { target: { value: '' } });
+
+    expect(onCloseBar).not.toHaveBeenCalled();
+  });
+
   it('set min height to results wrapper', async () => {
     findMatches = () => {
       return [

@@ -10,7 +10,7 @@ describe('WalletManager', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       updateConnector: () => undefined,
-      setWalletOpen: () => undefined,
+      setWalletModalOpen: () => undefined,
       ...props,
     };
 
@@ -61,16 +61,16 @@ describe('WalletManager', () => {
   });
 
   it('renders wallet select modal when button is clicked', () => {
-    const setWalletOpen = jest.fn();
-    const wrapper = subject({ setWalletOpen });
+    const setWalletModalOpen = jest.fn();
+    const wrapper = subject({ setWalletModalOpen });
 
     wrapper.find('.wallet-manager__connect-button').simulate('click');
 
-    expect(setWalletOpen).toHaveBeenCalledWith(true);
+    expect(setWalletModalOpen).toHaveBeenCalledWith(true);
   });
 
   it('should render all available wallets', () => {
-    const wrapper = subject({ isWalletOpen: true });
+    const wrapper = subject({ isWalletModalOpen: true });
 
     expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([
       WalletType.Metamask,
@@ -82,7 +82,7 @@ describe('WalletManager', () => {
   });
 
   it('passes isConnecting of true when connection status is Connecting', () => {
-    const wrapper = subject({ isWalletOpen: true });
+    const wrapper = subject({ isWalletModalOpen: true });
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
 
@@ -92,7 +92,7 @@ describe('WalletManager', () => {
   it('passes isConnecting of true when wallet selected', () => {
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      isWalletOpen: true,
+      isWalletModalOpen: true,
     });
 
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
@@ -101,7 +101,7 @@ describe('WalletManager', () => {
   });
 
   it('passes isConnecting of false when wallet selected and status becomes connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletOpen: true });
+    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
 
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
@@ -119,31 +119,31 @@ describe('WalletManager', () => {
   });
 
   it('closes wallet select modal onClose', () => {
-    const setWalletOpen = jest.fn();
-    const wrapper = subject({ isWalletOpen: true, setWalletOpen });
+    const setWalletModalOpen = jest.fn();
+    const wrapper = subject({ isWalletModalOpen: true, setWalletModalOpen });
 
     wrapper.find(WalletSelectModal).simulate('close');
 
-    expect(setWalletOpen).toHaveBeenCalledWith(false);
+    expect(setWalletModalOpen).toHaveBeenCalledWith(false);
   });
 
   it('closes wallet select modal when status is connected', () => {
-    const setWalletOpen = jest.fn();
+    const setWalletModalOpen = jest.fn();
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      isWalletOpen: true,
-      setWalletOpen,
+      isWalletModalOpen: true,
+      setWalletModalOpen,
     });
 
     // straight to Connected from Disconnected. we should not force this
     // to pass through Connecting
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
-    expect(setWalletOpen).toHaveBeenCalledWith(false);
+    expect(setWalletModalOpen).toHaveBeenCalledWith(false);
   });
 
   it('should show list of wallet when status is disconnected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletOpen: true });
+    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
 
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
@@ -157,7 +157,7 @@ describe('WalletManager', () => {
   it('calls update connector when wallet selected', () => {
     const updateConnector = jest.fn();
 
-    const wrapper = subject({ updateConnector, isWalletOpen: true });
+    const wrapper = subject({ updateConnector, isWalletModalOpen: true });
 
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
@@ -165,7 +165,7 @@ describe('WalletManager', () => {
   });
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {
-    const wrapper = subject({ isWalletOpen: true });
+    const wrapper = subject({ isWalletModalOpen: true });
 
     wrapper.setProps({
       connectionStatus: ConnectionStatus.NetworkNotSupported,
@@ -224,11 +224,11 @@ describe('WalletManager', () => {
       expect(state.connectionStatus).toEqual(connectionStatus);
     });
 
-    test('isWalletOpen', () => {
-      const isWalletOpenMock = true;
-      const state = subject(getState({ web3: getWeb3({ isWalletOpen: isWalletOpenMock }) }));
+    test('isWalletModalOpen', () => {
+      const isWalletModalOpenMock = true;
+      const state = subject(getState({ web3: getWeb3({ isWalletModalOpen: isWalletModalOpenMock }) }));
 
-      expect(state.isWalletOpen).toEqual(isWalletOpenMock);
+      expect(state.isWalletModalOpen).toEqual(isWalletModalOpenMock);
     });
   });
 });

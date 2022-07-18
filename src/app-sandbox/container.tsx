@@ -1,6 +1,6 @@
 import React from 'react';
 import { RootState } from '../store';
-import { setWalletOpen } from '../store/web3';
+import { setWalletModalOpen } from '../store/web3';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
@@ -26,7 +26,7 @@ export interface Properties extends PublicProperties {
   providerService: ProviderService;
 
   selectedApp: Apps;
-  setWalletOpen: (status: boolean) => void;
+  setWalletModalOpen: (status: boolean) => void;
 }
 
 interface State {
@@ -56,7 +56,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      setWalletOpen,
+      setWalletModalOpen,
     };
   }
 
@@ -92,7 +92,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   openWallet = (): void => {
-    this.props.setWalletOpen(true);
+    this.props.setWalletModalOpen(true);
   };
 
   connectWallet = (): void => {

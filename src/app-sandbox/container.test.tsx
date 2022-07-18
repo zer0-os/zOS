@@ -17,7 +17,7 @@ describe('AppSandboxContainer', () => {
       connectionStatus: ConnectionStatus.Connected,
       providerService: { get: () => null } as ProviderService,
       selectedApp: Apps.Channels,
-      setWalletOpen: () => undefined,
+      setWalletModalOpen: () => undefined,
       ...props,
     };
 
@@ -124,15 +124,15 @@ describe('AppSandboxContainer', () => {
     expect(wrapper.find(AppSandbox).prop('web3Provider')).toStrictEqual(newProvider);
   });
 
-  it('call setWalletOpen when calling connectWallet', () => {
-    const setWalletOpen = jest.fn();
+  it('call setWalletModalOpen when calling connectWallet', () => {
+    const setWalletModalOpen = jest.fn();
     const wrapper = subject({
-      setWalletOpen,
+      setWalletModalOpen,
     });
 
     wrapper.find(AppSandbox).prop('connectWallet')();
 
-    expect(setWalletOpen).toHaveBeenCalledWith(true);
+    expect(setWalletModalOpen).toHaveBeenCalledWith(true);
   });
 
   describe('mapState', () => {

@@ -17,7 +17,7 @@ export interface AppInterface {
   web3: {
     chainId: Chains;
     address: string;
-    connectWaller;
+    connectWallet;
   };
 }
 

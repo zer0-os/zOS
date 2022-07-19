@@ -9,7 +9,6 @@ import { routeWithApp } from './util';
 import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
 import { PlatformApp } from '../../lib/apps';
-import { setDeepestVisitedRoute } from '../../store/zns';
 interface PublicProperties {
   className?: string;
 }
@@ -23,7 +22,6 @@ export interface Properties extends PublicProperties {
   znsClient: ZnsClientFactory;
 
   app: PlatformApp;
-  setDeepestVisitedRoute: (route: string) => void;
 }
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
@@ -38,17 +36,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setDeepestVisitedRoute };
-  }
-
-  componentDidUpdate(prevProps: Properties) {
-    const {
-      app: { type },
-      route,
-    } = this.props;
-    if (prevProps.app.type !== type && prevProps.route !== route) {
-      this.props.setDeepestVisitedRoute(route);
-    }
+    return {};
   }
 
   znsClient() {

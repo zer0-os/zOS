@@ -2,7 +2,7 @@ import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
 
-import { setRoute } from './store/zns';
+import { setRoute, setDeepestVisitedRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
@@ -11,6 +11,7 @@ import { Apps } from './lib/apps';
 export interface Properties {
   setRoute: (route: string) => void;
   setSelectedApp: (selectedApp: Apps) => void;
+  setDeepestVisitedRoute: (route: string) => void;
 
   match: { params: { znsRoute: string; app: string } };
 }
@@ -21,7 +22,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setRoute, setSelectedApp };
+    return { setRoute, setDeepestVisitedRoute, setSelectedApp };
   }
 
   componentDidMount() {
@@ -39,6 +40,7 @@ export class Container extends React.Component<Properties> {
 
     if (selectedApp !== this.extractAppFromProps(prevProps)) {
       this.props.setSelectedApp(selectedApp);
+      this.props.setDeepestVisitedRoute(currentRoute);
     }
   }
 

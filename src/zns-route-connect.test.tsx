@@ -9,6 +9,7 @@ describe('ZnsRouteConnect', () => {
     const allProps = {
       setRoute: () => undefined,
       setSelectedApp: () => undefined,
+      setDeepestVisitedRoute: () => undefined,
       ...props,
       match: {
         params: { znsRoute: '' },
@@ -69,5 +70,20 @@ describe('ZnsRouteConnect', () => {
     container.setProps({ match: { params: { app: 'ICQ 99a' } } });
 
     expect(setSelectedApp).toHaveBeenNthCalledWith(2, 'ICQ 99a');
+  });
+
+  it('sets DeepestVisitedRoute when switching apps', () => {
+    const setDeepestVisitedRoute = jest.fn();
+    const setSelectedApp = jest.fn();
+
+    const container = subject({
+      setSelectedApp,
+      setDeepestVisitedRoute,
+      match: { params: { app: 'mIRC 2.1a' } },
+    });
+
+    container.setProps({ match: { params: { app: 'ICQ 99a', znsRoute: 'icecream.shop' } } });
+
+    expect(setDeepestVisitedRoute).toHaveBeenCalledWith('icecream.shop');
   });
 });

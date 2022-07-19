@@ -2,16 +2,15 @@ import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
 
-import { setRoute, setDeepestVisitedRoute } from './store/zns';
+import { RouteApp, setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
 
 export interface Properties {
-  setRoute: (route: string) => void;
+  setRoute: (routeApp: RouteApp) => void;
   setSelectedApp: (selectedApp: Apps) => void;
-  setDeepestVisitedRoute: (route: string) => void;
 
   match: { params: { znsRoute: string; app: string } };
 }
@@ -22,25 +21,27 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setRoute, setDeepestVisitedRoute, setSelectedApp };
+    return { setRoute, setSelectedApp };
   }
 
   componentDidMount() {
-    this.props.setRoute(this.extractRouteFromProps());
+    const routeApp: RouteApp = { route: this.extractRouteFromProps(), hasAppChanged: false };
+    this.props.setRoute(routeApp);
     this.props.setSelectedApp(this.extractAppFromProps());
   }
 
   componentDidUpdate(prevProps: Properties) {
     const currentRoute = this.extractRouteFromProps();
     const selectedApp = this.extractAppFromProps();
-
-    if (currentRoute !== this.extractRouteFromProps(prevProps)) {
-      this.props.setRoute(currentRoute);
-    }
+    let routeApp: RouteApp = { route: currentRoute, hasAppChanged: false };
 
     if (selectedApp !== this.extractAppFromProps(prevProps)) {
       this.props.setSelectedApp(selectedApp);
-      this.props.setDeepestVisitedRoute(currentRoute);
+      routeApp.hasAppChanged = true;
+    }
+
+    if (currentRoute !== this.extractRouteFromProps(prevProps)) {
+      this.props.setRoute(routeApp);
     }
   }
 

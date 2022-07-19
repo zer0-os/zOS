@@ -4,7 +4,12 @@ export enum SagaActionTypes {
   UpdateRoute = 'zns/saga/updateRoute',
 }
 
-const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
+export interface RouteApp {
+  route: string;
+  hasAppChanged: boolean;
+}
+
+const setRoute = createAction<RouteApp>(SagaActionTypes.UpdateRoute);
 
 export interface ZnsDomainDescriptor {
   rootDomainId: string;
@@ -31,12 +36,9 @@ const slice = createSlice({
     receive: (state, action: PayloadAction<ZnsDomainDescriptor>) => {
       state.value = action.payload;
     },
-    setDeepestVisitedRoute: (state, action: PayloadAction<string>) => {
-      state.value.deepestVisitedRoute = action.payload;
-    },
   },
 });
 
-export const { receive, setDeepestVisitedRoute } = slice.actions;
+export const { receive } = slice.actions;
 export const { reducer } = slice;
 export { setRoute };

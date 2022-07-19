@@ -3,13 +3,13 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from './zns-route-connect';
 import { Main } from './Main';
 import { Web3Connect } from './components/web3-connect';
+import { RouteApp } from './store/zns';
 
 describe('ZnsRouteConnect', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
       setRoute: () => undefined,
       setSelectedApp: () => undefined,
-      setDeepestVisitedRoute: () => undefined,
       ...props,
       match: {
         params: { znsRoute: '' },
@@ -30,14 +30,18 @@ describe('ZnsRouteConnect', () => {
 
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.shop';
+    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: false };
 
-    subject({ setRoute, match: { params: { znsRoute: 'icecream.shop' } } });
+    subject({ setRoute, match: { params: { znsRoute } } });
 
-    expect(setRoute).toHaveBeenCalledWith('icecream.shop');
+    expect(setRoute).toHaveBeenCalledWith(routeApp);
   });
 
   it('sets route when updated', () => {
     const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.flavors.pickle';
+    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: false };
 
     const container = subject({
       setRoute,
@@ -45,10 +49,10 @@ describe('ZnsRouteConnect', () => {
     });
 
     container.setProps({
-      match: { params: { znsRoute: 'icecream.flavors.pickle' } },
+      match: { params: { znsRoute } },
     });
 
-    expect(setRoute).toHaveBeenNthCalledWith(2, 'icecream.flavors.pickle');
+    expect(setRoute).toHaveBeenNthCalledWith(2, routeApp);
   });
 
   it('sets app when mounted', () => {
@@ -73,17 +77,18 @@ describe('ZnsRouteConnect', () => {
   });
 
   it('sets DeepestVisitedRoute when switching apps', () => {
-    const setDeepestVisitedRoute = jest.fn();
-    const setSelectedApp = jest.fn();
+    const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.flavors.pickle';
+    const app: string = 'ICQ 99a';
+    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: true };
 
     const container = subject({
-      setSelectedApp,
-      setDeepestVisitedRoute,
-      match: { params: { app: 'mIRC 2.1a' } },
+      setRoute,
+      match: { params: { app: 'mIRC 2.1a', znsRoute: 'icecream.shop' } },
     });
 
-    container.setProps({ match: { params: { app: 'ICQ 99a', znsRoute: 'icecream.shop' } } });
+    container.setProps({ match: { params: { app, znsRoute } } });
 
-    expect(setDeepestVisitedRoute).toHaveBeenCalledWith('icecream.shop');
+    expect(setRoute).toHaveBeenCalledWith(routeApp);
   });
 });

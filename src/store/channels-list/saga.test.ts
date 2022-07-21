@@ -1,12 +1,30 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { api } from './api';
+import { fetchChannels } from './api';
 import { fetch } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
 import { AsyncListStatus } from '../normalized';
+
+const MOCK_CHANNELS = [
+  { name: 'channel 1' },
+  { name: 'channel 2' },
+  { name: 'channel 3' },
+];
+const unmockedFetch = global.fetch;
+
+beforeAll(() => {
+  global.fetch = () =>
+    Promise.resolve({
+      json: () => Promise.resolve(MOCK_CHANNELS),
+    });
+});
+
+afterAll(() => {
+  global.fetch = unmockedFetch;
+});
 
 describe('channels list saga', () => {
   it('sets status to fetching', async () => {
@@ -21,11 +39,11 @@ describe('channels list saga', () => {
     await expectSaga(fetch, { payload: id })
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchChannels),
           [],
         ],
       ])
-      .call(api.fetch, id)
+      .call(fetchChannels, id)
       .run();
   });
 
@@ -38,7 +56,7 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchChannels),
           [],
         ],
       ])
@@ -56,7 +74,7 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchChannels),
           [{ id }],
         ],
       ])
@@ -74,7 +92,7 @@ describe('channels list saga', () => {
     } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchChannels),
           [{ id, name }],
         ],
       ])

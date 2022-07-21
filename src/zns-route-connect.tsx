@@ -2,11 +2,16 @@ import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
 
-import { RouteApp, setRoute } from './store/zns';
+import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
+
+interface RouteApp {
+  route: string;
+  hasAppChanged: boolean;
+}
 
 export interface Properties {
   setRoute: (routeApp: RouteApp) => void;
@@ -35,13 +40,15 @@ export class Container extends React.Component<Properties> {
     const selectedApp = this.extractAppFromProps();
     let routeApp: RouteApp = { route: currentRoute, hasAppChanged: false };
 
-    if (selectedApp !== this.extractAppFromProps(prevProps)) {
-      this.props.setSelectedApp(selectedApp);
-      routeApp.hasAppChanged = true;
+    if (currentRoute !== this.extractRouteFromProps(prevProps)) {
+      if (selectedApp !== this.extractAppFromProps(prevProps)) {
+        routeApp.hasAppChanged = true;
+      }
+      this.props.setRoute(routeApp);
     }
 
-    if (currentRoute !== this.extractRouteFromProps(prevProps)) {
-      this.props.setRoute(routeApp);
+    if (selectedApp !== this.extractAppFromProps(prevProps)) {
+      this.props.setSelectedApp(selectedApp);
     }
   }
 

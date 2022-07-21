@@ -4,13 +4,12 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { setRoute } from './saga';
 import { rootReducer, RootState } from '..';
 import { get as getResolver } from '../../lib/zns/domain-resolver';
-import { RouteApp } from '.';
 
 describe('zns saga', () => {
   const getState = (znsState) => ({ zns: { value: znsState } } as RootState);
 
   it('sets new route', async () => {
-    const routeApp: RouteApp = { route: 'food', hasAppChanged: false };
+    const routeApp = { route: 'food', hasAppChanged: false };
     const { storeState } = await expectSaga(setRoute, { payload: routeApp })
       .provide([
         [
@@ -30,7 +29,7 @@ describe('zns saga', () => {
 
   it('resolves root name', async () => {
     const resolver = { idFromName: (_name: string) => '' };
-    const routeApp: RouteApp = { route: 'food.what.hello', hasAppChanged: false };
+    const routeApp = { route: 'food.what.hello', hasAppChanged: false };
 
     expectSaga(setRoute, { payload: routeApp })
       .provide([
@@ -56,7 +55,7 @@ describe('zns saga', () => {
   it('sets rootDomainId from root', async () => {
     const domainId = '0x0000000000000000000000000000000000004444';
     const resolver = { idFromName: (_name: string) => domainId };
-    const routeApp: RouteApp = { route: 'food.what.hello', hasAppChanged: false };
+    const routeApp = { route: 'food.what.hello', hasAppChanged: false };
 
     const { storeState } = await expectSaga(setRoute, { payload: routeApp })
       .provide([
@@ -77,7 +76,7 @@ describe('zns saga', () => {
 
   it('sets deepest route to new route', async () => {
     const existingZnsState = { route: 'food', deepestVisitedRoute: 'food' };
-    const routeApp: RouteApp = { route: 'food.tacos', hasAppChanged: false };
+    const routeApp = { route: 'food.tacos', hasAppChanged: false };
 
     const { storeState } = await expectSaga(setRoute, { payload: routeApp })
       .withReducer(rootReducer, getState(existingZnsState))
@@ -102,7 +101,7 @@ describe('zns saga', () => {
       deepestVisitedRoute: 'food.tacos',
     };
 
-    const routeApp: RouteApp = { route: 'food', hasAppChanged: false };
+    const routeApp = { route: 'food', hasAppChanged: false };
 
     const { storeState } = await expectSaga(setRoute, { payload: routeApp })
       .withReducer(rootReducer, getState(existingZnsState))
@@ -127,7 +126,7 @@ describe('zns saga', () => {
       deepestVisitedRoute: 'food.tacos',
     };
 
-    const routeApp: RouteApp = { route: 'cats.hello', hasAppChanged: false };
+    const routeApp = { route: 'cats.hello', hasAppChanged: false };
 
     const { storeState } = await expectSaga(setRoute, { payload: routeApp })
       .withReducer(rootReducer, getState(existingZnsState))
@@ -152,7 +151,7 @@ describe('zns saga', () => {
       deepestVisitedRoute: 'food.tacos',
     };
 
-    const routeApp: RouteApp = { route: 'food.tacos.cheesy', hasAppChanged: false };
+    const routeApp = { route: 'food.tacos.cheesy', hasAppChanged: false };
 
     const { storeState } = await expectSaga(setRoute, {
       payload: routeApp,

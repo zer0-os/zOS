@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from './zns-route-connect';
 import { Main } from './Main';
 import { Web3Connect } from './components/web3-connect';
-import { RouteApp } from './store/zns';
 
 describe('ZnsRouteConnect', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -31,7 +30,7 @@ describe('ZnsRouteConnect', () => {
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
     const znsRoute: string = 'icecream.shop';
-    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: false };
+    const routeApp = { route: znsRoute, hasAppChanged: false };
 
     subject({ setRoute, match: { params: { znsRoute } } });
 
@@ -41,7 +40,7 @@ describe('ZnsRouteConnect', () => {
   it('sets route when updated', () => {
     const setRoute = jest.fn();
     const znsRoute: string = 'icecream.flavors.pickle';
-    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: false };
+    const routeApp = { route: znsRoute, hasAppChanged: false };
 
     const container = subject({
       setRoute,
@@ -80,7 +79,7 @@ describe('ZnsRouteConnect', () => {
     const setRoute = jest.fn();
     const znsRoute: string = 'icecream.flavors.pickle';
     const app: string = 'ICQ 99a';
-    const routeApp: RouteApp = { route: znsRoute, hasAppChanged: true };
+    const routeApp = { route: znsRoute, hasAppChanged: true };
 
     const container = subject({
       setRoute,

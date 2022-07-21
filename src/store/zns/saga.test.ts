@@ -171,4 +171,31 @@ describe('zns saga', () => {
       },
     });
   });
+
+  it('sets deepest route to new route if apps changed', async () => {
+    const existingZnsState = {
+      route: 'food.tacos',
+      deepestVisitedRoute: 'food.tacos',
+    };
+
+    const routeApp = { route: 'food', hasAppChanged: true };
+
+    const { storeState } = await expectSaga(setRoute, {
+      payload: routeApp,
+    })
+      .provide([
+        [
+          matchers.call.fn(getResolver),
+          { idFromName: () => '' },
+        ],
+      ])
+      .withReducer(rootReducer, getState(existingZnsState))
+      .run();
+
+    expect(storeState.zns).toMatchObject({
+      value: {
+        deepestVisitedRoute: routeApp.route,
+      },
+    });
+  });
 });

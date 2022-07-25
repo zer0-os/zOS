@@ -4,7 +4,7 @@ export enum SagaActionTypes {
   UpdateRoute = 'zns/saga/updateRoute',
 }
 
-const setRoute = createAction<string>(SagaActionTypes.UpdateRoute);
+const setRoute = createAction<{ route: string; hasAppChanged: boolean }>(SagaActionTypes.UpdateRoute);
 
 export interface ZnsDomainDescriptor {
   rootDomainId: string;

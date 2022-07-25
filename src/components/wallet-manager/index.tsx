@@ -5,7 +5,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-import { updateConnector } from '../../store/web3';
+import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3';
 import { isElectron } from '../../utils';
 import './styles.scss';
 
@@ -14,33 +14,36 @@ export interface Properties {
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
   updateConnector: (connector: WalletType) => void;
+  setWalletModalOpen: (isWalletModalOpen: boolean) => void;
+  isWalletModalOpen: Web3State['isWalletModalOpen'];
 }
 
 export interface State {
-  showModal: boolean;
   walletSelected: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      web3: { status, value },
+      web3: { status, value, isWalletModalOpen },
     } = state;
 
     return {
       currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
+      isWalletModalOpen,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       updateConnector,
+      setWalletModalOpen,
     };
   }
 
-  state = { showModal: false, walletSelected: false };
+  state = { walletSelected: false };
 
   componentDidUpdate(prevProps: Properties) {
     if (
@@ -67,7 +70,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get showModal(): boolean {
-    return this.state.showModal;
+    return this.props.isWalletModalOpen;
   }
 
   get isConnecting(): boolean {
@@ -101,8 +104,8 @@ export class Container extends React.Component<Properties, State> {
     ];
   }
 
-  openModal = () => this.setState({ showModal: true });
-  closeModal = () => this.setState({ showModal: false });
+  openModal = () => this.props.setWalletModalOpen(true);
+  closeModal = () => this.props.setWalletModalOpen(false);
 
   handleWalletSelected = (connector: WalletType) => {
     this.setState({ walletSelected: true });

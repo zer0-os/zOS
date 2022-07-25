@@ -1,12 +1,12 @@
 $left-content-space: 32px;
 $width-application-navigation: 220px;
 $width-application-content: 736px;
-$width-world-navigation: calc((100vw - $width-application-content - $left-content-space) / 2);
+$width-world-navigation: calc((100vw - $width-application-content) / 2);
 $width-collapsed-navigation: calc(56px + 54px + 32px);
 $min-flex-width: calc($width-application-content + ($width-collapsed-navigation * 2));
 $width-sidekick: calc((100vw - $width-application-content) / 2);
 $height-main: 65px;
-
+$width-app-sandbox: calc(100vw - $width-sidekick - $width-world-navigation);
 $width-screen-medium: 1440px;
 $width-screen-large: 1600px;
 $width-screen-xl: 1602px;

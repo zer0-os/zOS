@@ -29,14 +29,18 @@ describe('ZnsRouteConnect', () => {
 
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.shop';
+    const routeApp = { route: znsRoute, hasAppChanged: false };
 
-    subject({ setRoute, match: { params: { znsRoute: 'icecream.shop' } } });
+    subject({ setRoute, match: { params: { znsRoute } } });
 
-    expect(setRoute).toHaveBeenCalledWith('icecream.shop');
+    expect(setRoute).toHaveBeenCalledWith(routeApp);
   });
 
   it('sets route when updated', () => {
     const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.flavors.pickle';
+    const routeApp = { route: znsRoute, hasAppChanged: false };
 
     const container = subject({
       setRoute,
@@ -44,10 +48,10 @@ describe('ZnsRouteConnect', () => {
     });
 
     container.setProps({
-      match: { params: { znsRoute: 'icecream.flavors.pickle' } },
+      match: { params: { znsRoute } },
     });
 
-    expect(setRoute).toHaveBeenNthCalledWith(2, 'icecream.flavors.pickle');
+    expect(setRoute).toHaveBeenNthCalledWith(2, routeApp);
   });
 
   it('sets app when mounted', () => {
@@ -69,5 +73,21 @@ describe('ZnsRouteConnect', () => {
     container.setProps({ match: { params: { app: 'ICQ 99a' } } });
 
     expect(setSelectedApp).toHaveBeenNthCalledWith(2, 'ICQ 99a');
+  });
+
+  it('sets DeepestVisitedRoute when switching apps', () => {
+    const setRoute = jest.fn();
+    const znsRoute: string = 'icecream.flavors.pickle';
+    const app: string = 'ICQ 99a';
+    const routeApp = { route: znsRoute, hasAppChanged: true };
+
+    const container = subject({
+      setRoute,
+      match: { params: { app: 'mIRC 2.1a', znsRoute: 'icecream.shop' } },
+    });
+
+    container.setProps({ match: { params: { app, znsRoute } } });
+
+    expect(setRoute).toHaveBeenCalledWith(routeApp);
   });
 });

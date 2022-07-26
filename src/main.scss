@@ -5,6 +5,7 @@
 
 .main {
   display: flex;
+  justify-content: space-between;
   position: fixed;
   width: 100%;
   height: 100vh;
@@ -15,12 +16,15 @@
   pointer-events: none;
 
   &__navigation {
+    box-sizing: border-box;
     display: flex;
     pointer-events: auto;
 
-    flex: 0 0 $width-world-navigation;
+    width: $width-world-navigation;
 
-    margin-right: $left-content-space;
+    padding-right: $left-content-space;
+    position: relative;
+    top: 10px;
 
     @include for-screen-large() {
       justify-content: space-between;
@@ -60,9 +64,10 @@
 
   &__sidekick {
     padding: 12px 16px 0 0;
+    box-sizing: border-box;
 
     pointer-events: auto;
-    flex-basis: $width-sidekick;
+    width: $width-sidekick;
 
     display: flex;
     justify-content: flex-end;

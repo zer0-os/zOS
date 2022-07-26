@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Container, Properties } from './zns-route-connect';
+import { Container } from './zns-route-connect';
 import { Main } from './Main';
 import { Web3Connect } from './components/web3-connect';
 
 describe('ZnsRouteConnect', () => {
-  const subject = (props: Partial<Properties> = {}) => {
+  const subject = (props: any = {}) => {
     const allProps = {
       setRoute: () => undefined,
       setSelectedApp: () => undefined,
@@ -29,7 +29,7 @@ describe('ZnsRouteConnect', () => {
 
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
-    const znsRoute: string = 'icecream.shop';
+    const znsRoute = 'icecream.shop';
     const routeApp = { route: znsRoute, hasAppChanged: false };
 
     subject({ setRoute, match: { params: { znsRoute } } });
@@ -39,7 +39,7 @@ describe('ZnsRouteConnect', () => {
 
   it('sets route when updated', () => {
     const setRoute = jest.fn();
-    const znsRoute: string = 'icecream.flavors.pickle';
+    const znsRoute = 'icecream.flavors.pickle';
     const routeApp = { route: znsRoute, hasAppChanged: false };
 
     const container = subject({
@@ -77,8 +77,8 @@ describe('ZnsRouteConnect', () => {
 
   it('sets DeepestVisitedRoute when switching apps', () => {
     const setRoute = jest.fn();
-    const znsRoute: string = 'icecream.flavors.pickle';
-    const app: string = 'ICQ 99a';
+    const znsRoute = 'icecream.flavors.pickle';
+    const app = 'ICQ 99a';
     const routeApp = { route: znsRoute, hasAppChanged: true };
 
     const container = subject({

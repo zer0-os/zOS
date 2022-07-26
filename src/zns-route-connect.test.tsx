@@ -30,17 +30,15 @@ describe('ZnsRouteConnect', () => {
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
     const znsRoute = 'icecream.shop';
-    const routeApp = { route: znsRoute, hasAppChanged: false };
 
     subject({ setRoute, match: { params: { znsRoute } } });
 
-    expect(setRoute).toHaveBeenCalledWith(routeApp);
+    expect(setRoute).toHaveBeenCalledWith({ route: znsRoute, hasAppChanged: false });
   });
 
   it('sets route when updated', () => {
     const setRoute = jest.fn();
     const znsRoute = 'icecream.flavors.pickle';
-    const routeApp = { route: znsRoute, hasAppChanged: false };
 
     const container = subject({
       setRoute,
@@ -51,7 +49,7 @@ describe('ZnsRouteConnect', () => {
       match: { params: { znsRoute } },
     });
 
-    expect(setRoute).toHaveBeenNthCalledWith(2, routeApp);
+    expect(setRoute).toHaveBeenNthCalledWith(2, { route: znsRoute, hasAppChanged: false });
   });
 
   it('sets app when mounted', () => {
@@ -79,7 +77,6 @@ describe('ZnsRouteConnect', () => {
     const setRoute = jest.fn();
     const znsRoute = 'icecream.flavors.pickle';
     const app = 'ICQ 99a';
-    const routeApp = { route: znsRoute, hasAppChanged: true };
 
     const container = subject({
       setRoute,
@@ -88,6 +85,6 @@ describe('ZnsRouteConnect', () => {
 
     container.setProps({ match: { params: { app, znsRoute } } });
 
-    expect(setRoute).toHaveBeenCalledWith(routeApp);
+    expect(setRoute).toHaveBeenCalledWith({ route: znsRoute, hasAppChanged: true });
   });
 });

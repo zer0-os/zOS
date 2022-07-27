@@ -1,23 +1,23 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { api } from './api';
+import { fetchMessagesByChannelId } from './api';
 import { fetch } from './saga';
 
 import { rootReducer } from '..';
 
 describe('messages saga', () => {
   it('fetches messages', async () => {
-    const id = '0x000000000000000000000000000000000000000A';
+    const channelId = '0x000000000000000000000000000000000000000A';
 
-    await expectSaga(fetch, { payload: id })
+    await expectSaga(fetch, { payload: channelId })
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchMessagesByChannelId),
           [],
         ],
       ])
-      .call(api.fetch, id)
+      .call(fetchMessagesByChannelId, channelId)
       .run();
   });
 
@@ -37,7 +37,7 @@ describe('messages saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchMessagesByChannelId),
           messages,
         ],
       ])
@@ -59,7 +59,7 @@ describe('messages saga', () => {
     } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .provide([
         [
-          matchers.call.fn(api.fetch),
+          matchers.call.fn(fetchMessagesByChannelId),
           [{ id, name }],
         ],
       ])

@@ -1,13 +1,9 @@
-export const api = {
-  async fetch(id: string) {
-    return [
-      `this is a message in channel #${id} all about stuff`,
-      `this is a message in channel #${id} all about tacos`,
-      `this is a message in channel #${id} all about cats`,
-      `this is a message in channel #${id} all about work`,
-    ].map((message, index) => ({
-      id: `message-id-${index}`,
-      message,
-    }));
-  },
-};
+import { MessagesResponse } from './index';
+import { config } from '../../config';
+
+export async function fetchMessagesByChannelId(channelId: string): Promise<MessagesResponse> {
+  const messagesResponse = await fetch(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`);
+  const { messages } = await messagesResponse.json();
+
+  return messages;
+}

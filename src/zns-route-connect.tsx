@@ -8,8 +8,13 @@ import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
 
+interface RouteApp {
+  route: string;
+  hasAppChanged: boolean;
+}
+
 export interface Properties {
-  setRoute: (route: string) => void;
+  setRoute: (routeApp: RouteApp) => void;
   setSelectedApp: (selectedApp: Apps) => void;
 
   match: { params: { znsRoute: string; app: string } };
@@ -25,16 +30,21 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    this.props.setRoute(this.extractRouteFromProps());
+    const routeApp: RouteApp = { route: this.extractRouteFromProps(), hasAppChanged: false };
+    this.props.setRoute(routeApp);
     this.props.setSelectedApp(this.extractAppFromProps());
   }
 
   componentDidUpdate(prevProps: Properties) {
     const currentRoute = this.extractRouteFromProps();
     const selectedApp = this.extractAppFromProps();
+    let routeApp: RouteApp = { route: currentRoute, hasAppChanged: false };
 
     if (currentRoute !== this.extractRouteFromProps(prevProps)) {
-      this.props.setRoute(currentRoute);
+      if (selectedApp !== this.extractAppFromProps(prevProps)) {
+        routeApp.hasAppChanged = true;
+      }
+      this.props.setRoute(routeApp);
     }
 
     if (selectedApp !== this.extractAppFromProps(prevProps)) {

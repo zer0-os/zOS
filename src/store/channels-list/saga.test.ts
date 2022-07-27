@@ -1,17 +1,29 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { api } from './api';
+import { fetchChannels } from './api';
 import { fetch } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
 import { AsyncListStatus } from '../normalized';
 
+const MOCK_CHANNELS = [
+  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon' },
+  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon' },
+  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon' },
+];
+
 describe('channels list saga', () => {
   it('sets status to fetching', async () => {
     await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .put(setStatus(AsyncListStatus.Fetching))
+      .provide([
+        [
+          matchers.call.fn(fetchChannels),
+          MOCK_CHANNELS,
+        ],
+      ])
       .run();
   });
 
@@ -21,11 +33,11 @@ describe('channels list saga', () => {
     await expectSaga(fetch, { payload: id })
       .provide([
         [
-          matchers.call.fn(api.fetch),
-          [],
+          matchers.call.fn(fetchChannels),
+          MOCK_CHANNELS,
         ],
       ])
-      .call(api.fetch, id)
+      .call(fetchChannels, id)
       .run();
   });
 
@@ -38,8 +50,8 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(api.fetch),
-          [],
+          matchers.call.fn(fetchChannels),
+          MOCK_CHANNELS,
         ],
       ])
       .run();
@@ -47,40 +59,44 @@ describe('channels list saga', () => {
     expect(channelsList.status).toBe(AsyncListStatus.Idle);
   });
 
-  it('adds channel id to channelsList state', async () => {
-    const id = 'channel-id';
-
+  it('adds channel ids to channelsList state', async () => {
+    const ids = [
+      'channel_0001',
+      'channel_0002',
+      'channel_0003',
+    ];
     const {
       storeState: { channelsList },
     } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(api.fetch),
-          [{ id }],
+          matchers.call.fn(fetchChannels),
+          MOCK_CHANNELS,
         ],
       ])
       .run();
 
-    expect(channelsList.value).toStrictEqual([id]);
+    expect(channelsList.value).toStrictEqual(ids);
   });
 
   it('adds channels to normalized state', async () => {
-    const id = 'channel-id';
+    const url = 'channel-0099';
     const name = 'the channel';
+    const icon = 'channel-icon';
 
     const {
       storeState: { normalized },
     } = await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .provide([
         [
-          matchers.call.fn(api.fetch),
-          [{ id, name }],
+          matchers.call.fn(fetchChannels),
+          [{ url, name, icon }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({ id, name });
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon });
   });
 });

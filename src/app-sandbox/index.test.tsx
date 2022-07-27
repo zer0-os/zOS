@@ -5,7 +5,7 @@ import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { Chains } from '../lib/web3';
-import { ChannelsContainer } from '../platform-apps/channels/container';
+import { Channels } from '../platform-apps/channels';
 
 describe('AppSandbox', () => {
   const subject = (props: any) => {
@@ -23,7 +23,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, store });
 
-    expect(wrapper.find(ChannelsContainer).prop('store')).toStrictEqual(store);
+    expect(wrapper.find(Channels).prop('store')).toStrictEqual(store);
   });
 
   it('does not pass store to feed app', () => {
@@ -70,7 +70,7 @@ describe('AppSandbox', () => {
   it('renders Channels app container when Channels app selected', () => {
     const wrapper = subject({ selectedApp: Apps.Channels });
 
-    expect(wrapper.find(ChannelsContainer).exists()).toBe(true);
+    expect(wrapper.find(Channels).exists()).toBe(true);
   });
 
   it('passes user to Channels app', () => {
@@ -78,7 +78,7 @@ describe('AppSandbox', () => {
 
     const wrapper = subject({ selectedApp: Apps.Channels, user });
 
-    expect(wrapper.find(ChannelsContainer).prop('user')).toStrictEqual(user);
+    expect(wrapper.find(Channels).prop('user')).toStrictEqual(user);
   });
 
   it('passes route to feed app', () => {
@@ -95,5 +95,17 @@ describe('AppSandbox', () => {
     const wrapper = subject({ selectedApp: Apps.Feed, web3Provider });
 
     expect(wrapper.find(App).prop('provider')).toStrictEqual(web3Provider);
+  });
+
+  it('passes connectWallet to feed app', () => {
+    const web3 = { connectWallet: jest.fn() };
+
+    const wrapper = subject({ selectedApp: Apps.Feed, connectWallet: web3.connectWallet });
+
+    expect(wrapper.find(App).prop('web3')).toEqual(
+      expect.objectContaining({
+        connectWallet: web3.connectWallet,
+      })
+    );
   });
 });

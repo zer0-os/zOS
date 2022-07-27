@@ -9,7 +9,7 @@ const deepestRouteSelector = (state) => {
 };
 
 export function* setRoute(action) {
-  const route = action.payload;
+  const { route, hasAppChanged } = action.payload;
   const domainResolver = yield call(getResolver);
 
   const rootDomainId = yield call(
@@ -22,7 +22,7 @@ export function* setRoute(action) {
 
   let deepestVisitedRoute = yield select(deepestRouteSelector);
 
-  if (route !== deepestVisitedRoute && !deepestVisitedRoute.includes(route)) {
+  if (route !== deepestVisitedRoute && (!deepestVisitedRoute.includes(route) || hasAppChanged)) {
     deepestVisitedRoute = route;
   }
 

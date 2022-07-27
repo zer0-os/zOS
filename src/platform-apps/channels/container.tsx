@@ -1,5 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import getDeepProperty from 'lodash.get';
+
 import { RootState } from '../../store';
 import { Store } from 'redux';
 
@@ -8,7 +11,8 @@ import { connectContainer } from '../../store/redux-container';
 import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
-import { Channels } from '.';
+import { ChannelList } from './channel-list';
+import { ChannelViewContainer } from './channel-view-container';
 
 import './styles.scss';
 
@@ -16,6 +20,8 @@ interface PublicProperties {
   store: Store<RootState>;
   provider: any;
   route: any;
+  channelId?: string;
+  match: { url: string };
 }
 
 export interface Properties extends PublicProperties {
@@ -44,10 +50,26 @@ export class Container extends React.Component<Properties> {
     this.props.fetchChannels(this.props.domainId);
   }
 
+  renderChannelView() {
+    if (this.props.channelId) {
+      return <ChannelViewContainer channelId={this.props.channelId} />;
+    }
+
+    const defaultChannelId = getDeepProperty(this.props, 'channels[0].id', null);
+    if (defaultChannelId) {
+      return <Redirect to={`${this.props.match.url}/${defaultChannelId}`} />;
+    }
+
+    return null;
+  }
+
   render() {
     return (
       <Provider store={this.props.store}>
-        <Channels channels={this.props.channels} />
+        <div className='channels'>
+          <ChannelList channels={this.props.channels} />
+          {this.renderChannelView()}
+        </div>
       </Provider>
     );
   }

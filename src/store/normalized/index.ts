@@ -1,5 +1,5 @@
 import { AnyAction, createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { schema as nSchema } from 'normalizr';
+import { schema as nSchema, Schema } from 'normalizr';
 import { Creators } from './creators';
 
 const RECEIVE_PREFIX = 'normalized/receive/nested/entities';
@@ -21,6 +21,7 @@ export interface NormalizedListSliceConfig {
 
 export interface NormalizedSliceConfig {
   name: string;
+  schemaDefinition?: Schema;
 }
 
 const receiveNormalized = (state, action: PayloadAction<any>) => {

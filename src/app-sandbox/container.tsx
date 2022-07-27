@@ -1,5 +1,6 @@
 import React from 'react';
 import { RootState } from '../store';
+import { setWalletModalOpen } from '../store/web3';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
@@ -25,6 +26,7 @@ export interface Properties extends PublicProperties {
   providerService: ProviderService;
 
   selectedApp: Apps;
+  setWalletModalOpen: (status: boolean) => void;
 }
 
 interface State {
@@ -53,7 +55,9 @@ export class Container extends React.Component<Properties, State> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      setWalletModalOpen,
+    };
   }
 
   state = { hasConnected: false, web3Provider: null };
@@ -87,6 +91,14 @@ export class Container extends React.Component<Properties, State> {
     return this.state.web3Provider;
   }
 
+  openWallet = (): void => {
+    this.props.setWalletModalOpen(true);
+  };
+
+  connectWallet = (): void => {
+    this.openWallet();
+  };
+
   render() {
     if (!this.shouldRender) return null;
 
@@ -99,6 +111,7 @@ export class Container extends React.Component<Properties, State> {
         selectedApp={this.props.selectedApp}
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
+        connectWallet={this.connectWallet}
       />
     );
   }

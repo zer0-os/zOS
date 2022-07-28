@@ -9,6 +9,13 @@ interface Sender {
   profileImage: string;
   profileId: string;
 }
+interface Media {
+  height: string;
+  name: string;
+  type: string;
+  url: string;
+  width: string;
+}
 
 interface Media {
   height: string;

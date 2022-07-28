@@ -19,9 +19,9 @@ describe('ChannelView', () => {
   it('renders channel name', () => {
     const wrapper = subject({ name: 'first channel' });
 
-    const textes = wrapper.find('.channel-view__name').text().trim();
+    const textes = wrapper.find('.channel-view__name h1').text().trim();
 
-    expect(textes).toStrictEqual('first channel');
+    expect(textes).toStrictEqual('Welcome to #first channel');
   });
 
   it('renders a message for each message', () => {

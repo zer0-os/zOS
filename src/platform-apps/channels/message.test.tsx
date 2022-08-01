@@ -33,4 +33,16 @@ describe('message', () => {
 
     expect(wrapper.find('.message__block-icon').exists()).toBe(true);
   });
+
+  it('renders message video', () => {
+    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: 'video' } });
+
+    expect(wrapper.find('.message__block-video').exists()).toBe(true);
+  });
+
+  it('passes src prop to video', () => {
+    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: 'video' } });
+
+    expect(wrapper.find('.message__block-video video source').prop('src')).toStrictEqual('https://image.com/video.mp4');
+  });
 });

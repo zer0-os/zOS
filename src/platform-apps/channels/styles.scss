@@ -128,6 +128,29 @@
           background-color: #212121;
         }
       }
+
+      &-video {
+        background-color: #212121;
+        transition: background-color 0.3s ease-out;
+        position: relative;
+        display: inline-block;
+        margin: 15px;
+        &:before {
+          height: 100%;
+          width: 3px;
+          background-color: #c9fd51;
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        video {
+          margin-left: 3px;
+          min-height: 186px;
+          width: 330px;
+        }
+      }
     }
   }
 }

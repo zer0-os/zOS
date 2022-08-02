@@ -10,6 +10,13 @@ interface Sender {
   profileId: string;
 }
 
+interface Media {
+  height: string;
+  name: string;
+  type: string;
+  url: string;
+  width: string;
+}
 export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
@@ -17,7 +24,7 @@ export interface MessagesResponse {
 
 export interface Message {
   id: string;
-  message: string;
+  message?: string;
   createdAt: string;
   updatedAt: string;
   sender: Sender[];
@@ -26,6 +33,7 @@ export interface Message {
   hidePreview: boolean;
   // TODO: type to be defined
   preview: any;
+  media?: Media;
 }
 
 export enum SagaActionTypes {

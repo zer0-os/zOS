@@ -28,7 +28,7 @@ export class Message extends React.Component<Properties> {
       };
       this.observer = new IntersectionObserver(this.handleObserver.bind(this), options);
 
-      this.observer?.observe(this.messageRef.current);
+      this.observer.observe(this.messageRef.current);
     }
   }
 
@@ -36,8 +36,9 @@ export class Message extends React.Component<Properties> {
     this.observer?.disconnect();
   }
 
-  handleObserver() {
+  handleObserver(...args) {
     this.props.inView(this.props.createdAt);
+    this.observer.disconnect();
   }
 
   render() {

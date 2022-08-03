@@ -3,10 +3,9 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchMessages, Message, MessagesResponse } from '../../store/messages';
+import { fetch as fetchMessages, Message } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
-import { MessagesFilter } from '../../store/messages/api';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 
 export interface Properties extends PublicProperties {
@@ -18,13 +17,7 @@ interface PublicProperties {
   channelId: string;
 }
 
-interface State {
-  lastCreatedAt: MessagesFilter['lastCreatedAt'];
-  hasMoreMessages: MessagesResponse['hasMore'];
-  messages: Message[];
-}
-
-export class Container extends React.Component<Properties, State> {
+export class Container extends React.Component<Properties> {
   static mapState(state: RootState, props: Properties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
@@ -39,8 +32,6 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { lastCreatedAt: null, hasMoreMessages: false, messages: [] };
-
   componentDidMount() {
     const { channelId } = this.props;
 
@@ -49,15 +40,11 @@ export class Container extends React.Component<Properties, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Properties, prevState: State) {
+  componentDidUpdate(prevProps: Properties) {
     const { channelId } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
-      this.props.fetchMessages({ channelId, filter: { lastCreatedAt: this.state.lastCreatedAt } });
-    }
-
-    if (this.channel?.messages?.length !== prevProps.channel?.messages?.length) {
-      this.onMessagesChange();
+      this.props.fetchMessages({ channelId });
     }
   }
 
@@ -65,24 +52,10 @@ export class Container extends React.Component<Properties, State> {
     return this.props.channel || ({} as Channel);
   }
 
-  onMessagesChange(): void {
-    const lastMessage = this.channel.messages?.slice(-1)?.[0];
-    const lastCreatedAt = lastMessage?.createdAt;
-
-    this.setState({
-      lastCreatedAt,
-      hasMoreMessages: this.channel?.hasMore,
-    });
-  }
-
   onFirstMessageInViewport = (createdAt: Message['createdAt']) => {
-    if (createdAt !== this.state.lastCreatedAt) {
-      this.setState({ lastCreatedAt: createdAt });
+    const { channelId } = this.props;
 
-      const { channelId } = this.props;
-
-      this.props.fetchMessages({ channelId, filter: { lastCreatedAt: createdAt } });
-    }
+    this.props.fetchMessages({ channelId, filter: { lastCreatedAt: createdAt } });
   };
 
   render() {

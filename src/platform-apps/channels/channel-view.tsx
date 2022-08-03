@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import React from 'react';
 import { Message as MessageModel } from '../../store/messages';
 import { Message } from './message';
-import { PublicProperties as MessageProperties } from './message';
 
 export interface Properties {
   name: string;
@@ -45,7 +44,7 @@ export class ChannelView extends React.Component<Properties, State> {
 
       return (
         <Message
-          key={message.id}
+          key={message.id + index + 'khalid'}
           wrapperRef={this.channelViewRef}
           {...messagesProps}
           {...message}

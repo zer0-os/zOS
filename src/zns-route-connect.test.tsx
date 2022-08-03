@@ -5,15 +5,22 @@ import { Main } from './Main';
 import { Web3Connect } from './components/web3-connect';
 
 describe('ZnsRouteConnect', () => {
+  const getMatchForParams = (params = {}) => {
+    return {
+      params: {
+        app: 'feed',
+        znsRoute: '',
+        ...params,
+      },
+    };
+  };
+
   const subject = (props: any = {}) => {
     const allProps = {
       setRoute: () => undefined,
       setSelectedApp: () => undefined,
       ...props,
-      match: {
-        params: { znsRoute: '' },
-        ...(props.match || {}),
-      },
+      match: getMatchForParams(props?.match?.params),
     };
 
     return shallow(<Container {...allProps} />);
@@ -29,27 +36,59 @@ describe('ZnsRouteConnect', () => {
 
   it('sets route when mounted', () => {
     const setRoute = jest.fn();
-    const znsRoute = 'icecream.shop';
+    const route = 'icecream.shop';
 
-    subject({ setRoute, match: { params: { znsRoute } } });
+    subject({ setRoute, match: { params: { znsRoute: `0.${route}` } } });
 
-    expect(setRoute).toHaveBeenCalledWith({ route: znsRoute, hasAppChanged: false });
+    expect(setRoute).toHaveBeenCalledWith({ route, hasAppChanged: false });
   });
 
   it('sets route when updated', () => {
     const setRoute = jest.fn();
-    const znsRoute = 'icecream.flavors.pickle';
+    const route = 'icecream.flavors.pickle';
 
     const container = subject({
       setRoute,
-      match: { params: { znsRoute: 'icecream.shop' } },
+      match: getMatchForParams({ znsRoute: '0.icecream.shop' }),
     });
 
     container.setProps({
-      match: { params: { znsRoute } },
+      match: getMatchForParams({ znsRoute: `0.${route}` }),
     });
 
-    expect(setRoute).toHaveBeenNthCalledWith(2, { route: znsRoute, hasAppChanged: false });
+    expect(setRoute).toHaveBeenNthCalledWith(2, { route, hasAppChanged: false });
+  });
+
+  it('sets route if match does not have leading 0', () => {
+    const setRoute = jest.fn();
+    const route = 'icecream.flavors.pickle';
+
+    const container = subject({
+      setRoute,
+      match: getMatchForParams({ znsRoute: '0.icecream.shop' }),
+    });
+
+    container.setProps({
+      match: getMatchForParams({ znsRoute: route }),
+    });
+
+    expect(setRoute).toHaveBeenNthCalledWith(2, { route, hasAppChanged: false });
+  });
+
+  it('sets route if match has internal 0', () => {
+    const setRoute = jest.fn();
+    const route = 'icecream.flavors.0.pickle';
+
+    const container = subject({
+      setRoute,
+      match: getMatchForParams({ znsRoute: '0.icecream.shop' }),
+    });
+
+    container.setProps({
+      match: getMatchForParams({ znsRoute: route }),
+    });
+
+    expect(setRoute).toHaveBeenNthCalledWith(2, { route, hasAppChanged: false });
   });
 
   it('sets app when mounted', () => {
@@ -65,10 +104,10 @@ describe('ZnsRouteConnect', () => {
 
     const container = subject({
       setSelectedApp,
-      match: { params: { app: 'mIRC 2.1a' } },
+      match: getMatchForParams({ app: 'mIRC 2.1a' }),
     });
 
-    container.setProps({ match: { params: { app: 'ICQ 99a' } } });
+    container.setProps({ match: getMatchForParams({ app: 'ICQ 99a' }) });
 
     expect(setSelectedApp).toHaveBeenNthCalledWith(2, 'ICQ 99a');
   });

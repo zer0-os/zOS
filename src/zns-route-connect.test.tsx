@@ -191,20 +191,23 @@ describe('ZnsRouteConnect', () => {
     expect(setRoute).toHaveBeenNthCalledWith(2, { route, hasAppChanged: false });
   });
 
-  it('sets route if match does not have leading 0', () => {
+  it('sets route when updated with a leading 0', () => {
     const setRoute = jest.fn();
     const route = 'icecream.flavors.pickle';
 
     const container = subject({
       setRoute,
-      match: getMatchForParams({ znsRoute: '0.icecream.shop' }),
-    });
-
-    container.setProps({
       match: getMatchForParams({ znsRoute: route }),
     });
 
-    expect(setRoute).toHaveBeenNthCalledWith(2, { route, hasAppChanged: false });
+    container.setProps(
+      buildLocationProps({
+        match: getMatchForParams({ znsRoute: `0.${route}` }),
+      })
+    );
+
+    expect(setRoute).toHaveBeenCalledWith({ route, hasAppChanged: false });
+    expect(setRoute).toHaveBeenCalledTimes(1);
   });
 
   it('sets route if match has internal 0', () => {

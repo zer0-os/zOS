@@ -37,17 +37,23 @@ export class Container extends React.Component<Properties> {
   componentDidUpdate(prevProps: Properties) {
     if (this.redirectOnInvalidRoute()) return;
 
-    const route = this.extractRouteFromProps();
     const selectedApp = this.extractAppFromProps();
     const hasAppChanged = selectedApp !== this.extractAppFromProps(prevProps);
 
-    if (route !== this.extractRouteFromProps(prevProps)) {
-      this.props.setRoute({ route, hasAppChanged });
+    if (this.hasRouteChanged(prevProps)) {
+      this.props.setRoute({
+        route: this.extractRouteFromProps(),
+        hasAppChanged,
+      });
     }
 
     if (hasAppChanged) {
       this.props.setSelectedApp(selectedApp);
     }
+  }
+
+  hasRouteChanged(prevProps: Properties) {
+    return this.props.match.params.znsRoute !== prevProps.match.params.znsRoute;
   }
 
   redirectOnInvalidRoute() {

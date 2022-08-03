@@ -1,6 +1,7 @@
 import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
+import { History } from 'history';
 
 import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
@@ -13,6 +14,8 @@ export interface Properties {
   setSelectedApp: (selectedApp: Apps) => void;
 
   match: { params: { znsRoute: string; app: string } };
+  history: History;
+  location: { pathname: string; search: string };
 }
 
 export class Container extends React.Component<Properties> {
@@ -25,11 +28,15 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
+    if (this.redirectOnInvalidRoute()) return;
+
     this.props.setRoute({ route: this.extractRouteFromProps(), hasAppChanged: false });
     this.props.setSelectedApp(this.extractAppFromProps());
   }
 
   componentDidUpdate(prevProps: Properties) {
+    if (this.redirectOnInvalidRoute()) return;
+
     const route = this.extractRouteFromProps();
     const selectedApp = this.extractAppFromProps();
     const hasAppChanged = selectedApp !== this.extractAppFromProps(prevProps);
@@ -41,6 +48,21 @@ export class Container extends React.Component<Properties> {
     if (hasAppChanged) {
       this.props.setSelectedApp(selectedApp);
     }
+  }
+
+  redirectOnInvalidRoute() {
+    const {
+      location: { pathname, search },
+    } = this.props;
+
+    if (/^\/0\./.test(pathname)) return false;
+
+    this.props.history.replace({
+      pathname: pathname.replace(/^\//, '/0.'),
+      search: search || '',
+    });
+
+    return true;
   }
 
   extractRouteFromProps(props: Properties = this.props) {

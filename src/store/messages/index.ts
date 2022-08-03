@@ -1,3 +1,4 @@
+import { Payload } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice } from '../normalized';
@@ -32,7 +33,7 @@ export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
 }
 
-const fetch = createAction<string>(SagaActionTypes.Fetch);
+const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const slice = createNormalizedSlice({
   name: 'messages',
 });

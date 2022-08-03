@@ -1,3 +1,5 @@
+@use '../../modules/animation' as animation;
+
 .channels {
   width: 100%;
   height: 100%;
@@ -36,6 +38,13 @@
   &-view {
     margin-left: 20px;
     margin-top: 20px;
+    height: calc(100vh - 100px);
+    overflow-y: scroll;
+
+    &--scrolling {
+      opacity: 0;
+      transition: all 1000ms ease-out;
+    }
   }
 }
 

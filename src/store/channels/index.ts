@@ -6,6 +6,7 @@ export interface Channel {
   id: string;
   name: string;
   messages: Message[];
+  hasMore: boolean;
 }
 
 const slice = createNormalizedSlice({

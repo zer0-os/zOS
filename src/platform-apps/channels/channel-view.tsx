@@ -29,6 +29,10 @@ export class ChannelView extends React.Component<Properties, State> {
     this.scrollToBottom();
   }
 
+  setChannelViewRef = (ref) => {
+    this.channelViewRef = ref;
+  };
+
   scrollToBottom = () => {
     this.lastElementOnChannelViewRe.current?.scrollIntoView({ behavior: 'auto' });
     this.setState({ hasScrolledToBottom: true });
@@ -38,13 +42,12 @@ export class ChannelView extends React.Component<Properties, State> {
     return this.props.messages.map((message, index) => {
       let messagesProps: any = {};
 
-      if (index === 0) {
+      if (index === 0 && this.state.hasScrolledToBottom) {
         messagesProps.inView = this.firstMessageInViewHandler;
       }
-
       return (
         <Message
-          key={message.id + index + 'khalid'}
+          key={message.id}
           wrapperRef={this.channelViewRef}
           {...messagesProps}
           {...message}
@@ -61,7 +64,7 @@ export class ChannelView extends React.Component<Properties, State> {
     return (
       <div
         className={classNames('channel-view', { 'channel-view--scrolling': !this.state.hasScrolledToBottom })}
-        ref={this.channelViewRef}
+        ref={this.setChannelViewRef}
       >
         <div className='channel-view__name'>{this.props.name}</div>
         {this.renderMessages()}

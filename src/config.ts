@@ -12,4 +12,5 @@ export const config = {
   defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.Feed,
   supportedChainId: process.env.REACT_APP_ETH_CHAIN || '1',
   appVersion: process.env.REACT_APP_VERSION,
+  embedly: process.env.REACT_APP_EMBEDLY_KEY,
 };

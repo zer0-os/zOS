@@ -28,21 +28,20 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    if (this.redirectOnInvalidRoute()) return;
-
     this.props.setRoute({ route: this.extractRouteFromProps(), hasAppChanged: false });
     this.props.setSelectedApp(this.extractAppFromProps());
+
+    this.redirectOnInvalidRoute();
   }
 
   componentDidUpdate(prevProps: Properties) {
-    if (this.redirectOnInvalidRoute()) return;
-
     const selectedApp = this.extractAppFromProps();
     const hasAppChanged = selectedApp !== this.extractAppFromProps(prevProps);
+    const route = this.extractRouteFromProps();
 
-    if (this.hasRouteChanged(prevProps)) {
+    if (route !== this.extractRouteFromProps(prevProps)) {
       this.props.setRoute({
-        route: this.extractRouteFromProps(),
+        route,
         hasAppChanged,
       });
     }
@@ -50,10 +49,12 @@ export class Container extends React.Component<Properties> {
     if (hasAppChanged) {
       this.props.setSelectedApp(selectedApp);
     }
-  }
 
-  hasRouteChanged(prevProps: Properties) {
-    return this.props.match.params.znsRoute !== prevProps.match.params.znsRoute;
+    // leave redirect for last. at this point we have
+    // updated state to reflect the current url. the redirect only
+    // adds the leading zero, which should not trigger a state
+    // change, since state already matches the resulting zna.
+    this.redirectOnInvalidRoute();
   }
 
   redirectOnInvalidRoute() {

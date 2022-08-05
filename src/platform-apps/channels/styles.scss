@@ -63,46 +63,46 @@
 .messages {
   transition: opacity 0.9s ease-out;
   opacity: 1;
-  .message {
-    &__date-header {
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      margin: 20px 0 10px;
-      color: #cccccc;
-      &-date {
-        border-radius: 0;
-        background-color: theme.$background-color-secondary;
-        color: theme.$actionable-active-color;
-        transition: background-color 0.3s ease-out;
-        display: inline-block;
-        padding: 3px 20px;
-      }
-      &:before,
-      &:after {
-        content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
-        height: 1px;
-      }
-      &:before {
-        margin-left: -50%;
-        text-align: right;
-        background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
-      &:after {
-        content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
-        height: 1px;
-        background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
+  .message__header {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0 25px;
+    color: #cccccc;
+    &-date {
+      border-radius: 0;
+      background-color: theme.$background-color-secondary;
+      color: theme.$actionable-active-color;
+      transition: background-color 0.3s ease-out;
+      display: inline-block;
+      padding: 3px 20px;
     }
+    &:before,
+    &:after {
+      content: '\a0';
+      position: absolute;
+      top: 51%;
+      overflow: hidden;
+      width: 50%;
+      height: 1px;
+    }
+    &:before {
+      margin-left: -50%;
+      text-align: right;
+      background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
+    }
+    &:after {
+      content: '\a0';
+      position: absolute;
+      top: 51%;
+      overflow: hidden;
+      width: 50%;
+      height: 1px;
+      background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
+    }
+  }
 
+  .message {
     &__block {
       display: flex;
       margin-bottom: 7px;
@@ -115,21 +115,20 @@
       }
 
       &-body {
-        display: inline-block;
         background: #3e4042;
         padding: 5px 15px;
         color: #fff;
         white-space: pre-wrap;
         word-break: break-word;
-        margin-top: 25px;
-        width: 100%;
+        width: fit-content;
+        display: inline-block;
 
         .message--owner & {
           border-left: 3px solid #fb216e;
           background-color: #212121;
         }
       }
-      
+
       &-image {
         background-color: #212121;
         transition: background-color 0.3s ease-out;

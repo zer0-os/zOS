@@ -28,15 +28,13 @@ export class Message extends React.Component<MessageModel> {
   }
 
   render() {
+    const { media, message } = this.props;
     return (
       <div className='message'>
-        <div className='message__date-header'>
-          <div className='message__date-header-date'>Yesterday</div>
-        </div>
         <div className='message__block'>
           <div className='message__block-icon'></div>
-          {this.props.media && this.renderImage()}
-          {this.props.message && <div className='message__block-body'>{this.props.message}</div>}
+          {media && this.renderImage()}
+          {message && <div className='message__block-body'>{message}</div>}
         </div>
       </div>
     );

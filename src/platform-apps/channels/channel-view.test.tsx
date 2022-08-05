@@ -26,8 +26,8 @@ describe('ChannelView', () => {
 
   it('renders a message for each message', () => {
     const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
+      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
+      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
     ];
 
     const wrapper = subject({ messages });
@@ -42,8 +42,8 @@ describe('ChannelView', () => {
 
   it('renders header date', () => {
     const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
+      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
+      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
     ];
 
     const wrapper = subject({ messages });
@@ -51,23 +51,35 @@ describe('ChannelView', () => {
     expect(wrapper.find('.message__header-date').exists()).toBe(true);
   });
 
-  /*it('renders a header Date grouped by day', () => {
+  it('renders a header Date grouped by day', () => {
     const messages = [
-      { id: 'message-one', message: 'what', createdAt: '1658776625730' },
-      { id: 'message-two', message: 'hello', createdAt: '1658776625730' },
-      { id: 'message-three', message: 'who', createdAt: '1659018545428' },
-      { id: 'message-for', message: 'there', createdAt: '1659655757948' },
+      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
+      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
+      { id: 'message-three', message: 'who', createdAt: 1659018545428 },
+      { id: 'message-for', message: 'there', createdAt: 1659655757948 },
     ];
 
     const wrapper = subject({ messages });
 
     expect(wrapper.find('.message__header-date').length).toStrictEqual(3);
-  });*/
+  });
+
+  it('renders a header Date contain Today', () => {
+    const messages = [
+      { id: 'message-one', message: 'what', createdAt: new Date() },
+    ];
+
+    const wrapper = subject({ messages });
+
+    expect(wrapper.find('.message__header-date').length).toStrictEqual(1);
+
+    expect(wrapper.find('.message__header-date').text()).toEqual('Today');
+  });
 
   it('passes message prop to Message', () => {
     const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
+      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
+      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
     ];
 
     const wrapper = subject({ messages });

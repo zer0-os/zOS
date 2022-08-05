@@ -38,12 +38,10 @@
   &-view {
     margin-left: 20px;
     margin-top: 20px;
-    height: calc(100vh - 100px);
-    overflow-y: scroll;
 
-    &--scrolling {
-      opacity: 0;
-      transition: all 1000ms ease-out;
+    &__inverted-scroll {
+      // this is temporary until we finish the design
+      height: 500px;
     }
   }
 }

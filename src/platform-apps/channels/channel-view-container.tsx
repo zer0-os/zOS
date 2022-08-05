@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchMessages, Message } from '../../store/messages';
+import { fetch as fetchMessages } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
@@ -18,7 +18,7 @@ interface PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState, props: Properties): Partial<Properties> {
+  static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
     return {
@@ -52,23 +52,27 @@ export class Container extends React.Component<Properties> {
     return this.props.channel || ({} as Channel);
   }
 
-  onFirstMessageInViewport = (createdAt: Message['createdAt']) => {
-    const { channelId } = this.props;
+  fetchMore = () => {
+    const { channelId, channel } = this.props;
 
-    this.props.fetchMessages({ channelId, filter: { lastCreatedAt: createdAt } });
+    if (channel.hasMore) {
+      const oldestTimestamp = channel.messages.reduce((previousTimestamp, message: any) => {
+        return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
+      }, Date.now());
+
+      this.props.fetchMessages({ channelId, filter: { lastCreatedAt: oldestTimestamp } });
+    }
   };
 
   render() {
     if (!this.props.channel) return null;
 
     return (
-      <div>
-        <ChannelView
-          name={this.channel.name}
-          messages={this.channel.messages || []}
-          onFirstMessageInViewport={this.onFirstMessageInViewport}
-        />
-      </div>
+      <ChannelView
+        name={this.channel.name}
+        messages={this.channel.messages || []}
+        onFetchMore={this.fetchMore}
+      />
     );
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { RootState } from './store';
 import { connectContainer } from './store/redux-container';
+import { History } from 'history';
 
 import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
@@ -8,16 +9,13 @@ import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
 
-interface RouteApp {
-  route: string;
-  hasAppChanged: boolean;
-}
-
 export interface Properties {
-  setRoute: (routeApp: RouteApp) => void;
+  setRoute: (routeApp: { route: string; hasAppChanged: boolean }) => void;
   setSelectedApp: (selectedApp: Apps) => void;
 
   match: { params: { znsRoute: string; app: string } };
+  history: History;
+  location: { pathname: string; search: string };
 }
 
 export class Container extends React.Component<Properties> {
@@ -30,30 +28,52 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    const routeApp: RouteApp = { route: this.extractRouteFromProps(), hasAppChanged: false };
-    this.props.setRoute(routeApp);
+    this.props.setRoute({ route: this.extractRouteFromProps(), hasAppChanged: false });
     this.props.setSelectedApp(this.extractAppFromProps());
+
+    this.redirectOnInvalidRoute();
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const currentRoute = this.extractRouteFromProps();
     const selectedApp = this.extractAppFromProps();
-    let routeApp: RouteApp = { route: currentRoute, hasAppChanged: false };
+    const hasAppChanged = selectedApp !== this.extractAppFromProps(prevProps);
+    const route = this.extractRouteFromProps();
 
-    if (currentRoute !== this.extractRouteFromProps(prevProps)) {
-      if (selectedApp !== this.extractAppFromProps(prevProps)) {
-        routeApp.hasAppChanged = true;
-      }
-      this.props.setRoute(routeApp);
+    if (route !== this.extractRouteFromProps(prevProps)) {
+      this.props.setRoute({
+        route,
+        hasAppChanged,
+      });
     }
 
-    if (selectedApp !== this.extractAppFromProps(prevProps)) {
+    if (hasAppChanged) {
       this.props.setSelectedApp(selectedApp);
     }
+
+    // leave redirect for last. at this point we have
+    // updated state to reflect the current url. the redirect only
+    // adds the leading zero, which should not trigger a state
+    // change, since state already matches the resulting zna.
+    this.redirectOnInvalidRoute();
+  }
+
+  redirectOnInvalidRoute() {
+    const {
+      location: { pathname, search },
+    } = this.props;
+
+    if (/^\/0\./.test(pathname)) return false;
+
+    this.props.history.replace({
+      pathname: pathname.replace(/^\//, '/0.'),
+      search: search || '',
+    });
+
+    return true;
   }
 
   extractRouteFromProps(props: Properties = this.props) {
-    return props.match.params.znsRoute;
+    return props.match.params.znsRoute.replace(/^0\./, '');
   }
 
   extractAppFromProps(props: Properties = this.props) {

@@ -3,14 +3,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Message } from './message';
-import { Embed } from '../../components/link-preview/embed';
+import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 
 describe('message', () => {
   const subject = (props: any = {}) => {
     const allProps = {
-      message: '',
-      media: { url: '', name: '', type: '' },
       ...props,
     };
 
@@ -26,7 +24,7 @@ describe('message', () => {
   });
 
   it('does not renders message text', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png' } });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png' }, type: 'image' });
 
     expect(wrapper.find('.message__block-body').exists()).toBe(false);
   });
@@ -79,7 +77,22 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image img').prop('alt')).toStrictEqual('work');
   });
 
-  it('renders link preview embed', () => {
+  it('renders inkPreview when there is a message', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+    const message = 'message text accompanying link preview';
+
+    const wrapper = subject({ preview, message });
+
+    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.text().includes(message)).toBeTruthy();
+  });
+
+  it('renders LinkPreview when there is no message text', () => {
     const preview = {
       url: 'http://url.com/index.cfm',
       type: LinkPreviewType.Photo,
@@ -87,8 +100,8 @@ describe('message', () => {
       description: 'the description',
     };
 
-    const wrapper = subject({ preview });
+    const wrapper = subject({ preview, message: undefined });
 
-    expect(wrapper.find(Embed).props()).toEqual(preview);
+    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
   });
 });

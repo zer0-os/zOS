@@ -3,6 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { BackgroundImage, BackgroundImageProperties, VideoPlayer, ButtonLink } from '@zer0-os/zos-component-library';
 import { LinkPreviewType } from '../../lib/link-preview';
+import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 
 require('./styles.scss');
 
@@ -26,7 +27,7 @@ interface State {
 
 const TWITTER_LOGO = 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1622663138/zero-assets/twitter-logo.png';
 
-export class Embed extends React.Component<Properties, State> {
+export class LinkPreview extends React.Component<Properties, State> {
   state = { width: 0 };
   ref = React.createRef<HTMLDivElement>();
 
@@ -141,6 +142,7 @@ export class Embed extends React.Component<Properties, State> {
       source,
       options,
       className: 'link-preview__banner-image',
+      provider: cloudinaryProvider,
     };
 
     const ratio = this.bannerRatio;

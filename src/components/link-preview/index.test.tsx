@@ -2,11 +2,11 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { Embed, Properties } from './embed';
+import { LinkPreview, Properties } from './';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { ButtonLink } from '@zer0-os/zos-component-library';
 
-describe('embed', () => {
+describe('link-preview', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       type: LinkPreviewType.Link,
@@ -17,7 +17,7 @@ describe('embed', () => {
       ...props,
     };
 
-    return shallow(<Embed {...allProps} />);
+    return shallow(<LinkPreview {...allProps} />);
   };
 
   it('it adds provided className', function () {

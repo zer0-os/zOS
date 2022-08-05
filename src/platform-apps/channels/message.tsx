@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message as MessageModel } from '../../store/messages';
-import { Embed as LinkPreviewEmbed } from '../../components/link-preview/embed';
+import { LinkPreview } from '../../components/link-preview/';
 
 export class Message extends React.Component<MessageModel> {
   renderMedia(media) {
@@ -38,11 +38,11 @@ export class Message extends React.Component<MessageModel> {
         <div className='message__block'>
           <div className='message__block-icon'></div>
           {media && this.renderMedia(media)}
-          {message && (
+          {(message || preview) && (
             <div className='message__block-body'>
               {message}
               {preview && (
-                <LinkPreviewEmbed
+                <LinkPreview
                   url={preview.url}
                   {...preview}
                 />

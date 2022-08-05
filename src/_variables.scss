@@ -13,6 +13,10 @@ $width-screen-xl: 1602px;
 $width-screen-xxl: 1920px;
 $breakpoint-collapse-menu: 1294px;
 
+$font-size-small: 12px;
+$font-size-large: 16px;
+$font-size-xl: 20px;
+
 @mixin for-static-layout {
   @media (max-width: $min-flex-width - 1) {
     @content;

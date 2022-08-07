@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchMessages } from '../../store/messages';
+import { fetch as fetchMessages, Message } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
@@ -48,17 +48,21 @@ export class Container extends React.Component<Properties> {
     }
   }
 
+  static getOldestTimestamp(messages: Message[] = []): number {
+    return messages.reduce((previousTimestamp, message: any) => {
+      return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
+    }, Date.now());
+  }
+
   get channel(): Channel {
     return this.props.channel || ({} as Channel);
   }
 
-  fetchMore = () => {
+  fetchMore = (): void => {
     const { channelId, channel } = this.props;
 
     if (channel.hasMore) {
-      const oldestTimestamp = channel.messages.reduce((previousTimestamp, message: any) => {
-        return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
-      }, Date.now());
+      const oldestTimestamp = Container.getOldestTimestamp(channel.messages);
 
       this.props.fetchMessages({ channelId, filter: { lastCreatedAt: oldestTimestamp } });
     }

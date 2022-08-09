@@ -10,5 +10,5 @@ export async function fetchMessagesByChannelId(channelId: string, filter?: Messa
   const response = await Request.get(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`).query({
     filter: filter || {},
   });
-  return response?.body;
+  return response.body;
 }

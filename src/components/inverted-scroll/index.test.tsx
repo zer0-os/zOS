@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 
 import InvertedScroll, { Properties } from '.';
 
-describe('feature-flag', () => {
+describe('inverted-scroll', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
       ...props,

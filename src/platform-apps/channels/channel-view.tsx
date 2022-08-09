@@ -41,7 +41,10 @@ export class ChannelView extends React.Component<Properties> {
     const allMessages = messagesByDay[day];
 
     return (
-      <div className='messages'>
+      <div
+        className='messages'
+        key={day}
+      >
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
@@ -59,7 +62,9 @@ export class ChannelView extends React.Component<Properties> {
     const messagesByDay = this.getMessagesByDay();
     const groupDays = Object.keys(messagesByDay).sort((a, b) => (a > b ? 1 : -1));
 
-    return <div className='container'>{groupDays.map((day: string) => this.renderDay(day, messagesByDay))}</div>;
+    return (
+      <div className='messages__container'>{groupDays.map((day: string) => this.renderDay(day, messagesByDay))}</div>
+    );
   }
 
   render() {

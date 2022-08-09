@@ -66,7 +66,7 @@ describe('ChannelView', () => {
 
   it('renders a header Date contain Today', () => {
     const messages = [
-      { id: 'message-one', message: 'what', createdAt: new Date() },
+      { id: 'message-one', message: 'what', createdAt: Date.now() },
     ];
 
     const wrapper = subject({ messages });

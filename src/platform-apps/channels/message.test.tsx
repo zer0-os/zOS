@@ -66,15 +66,19 @@ describe('message', () => {
   });
 
   it('renders hidden time', () => {
-    const wrapper = subject({ message: 'the message', createdAt: 1659016515235 });
+    const wrapper = subject({ message: 'the message', createdAt: new Date('December 17, 1995 17:04:00').valueOf() });
 
-    expect(wrapper.find('.message__time--hidden').text()).toStrictEqual('14:55');
+    expect(wrapper.find('.message__time--hidden').text()).toStrictEqual('17:04');
   });
 
   it('renders time as first owner', () => {
-    const wrapper = subject({ message: 'the message', createdAt: 1659016515235, isFirstFromUser: true });
+    const wrapper = subject({
+      message: 'the message',
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      isFirstFromUser: true,
+    });
 
-    expect(wrapper.find('.message__time').text()).toStrictEqual('14:55');
+    expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
 
     expect(wrapper.find('.message__time--hidden').exists()).toBe(false);
   });

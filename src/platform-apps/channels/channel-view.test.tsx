@@ -1,9 +1,10 @@
 import React from 'react';
-
+import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
 
 import { ChannelView } from './channel-view';
 import { Message } from './message';
+import InvertedScroll from '../../components/inverted-scroll';
 
 describe('ChannelView', () => {
   const subject = (props: any = {}) => {
@@ -54,5 +55,36 @@ describe('ChannelView', () => {
       'what',
       'hello',
     ]);
+  });
+
+  it('renders InvertedScroll', () => {
+    const messages = [
+      { id: 'message-one', message: 'what' },
+      { id: 'message-two', message: 'hello' },
+    ];
+
+    const wrapper = subject({ messages });
+
+    expect(wrapper.find(InvertedScroll).exists()).toBe(true);
+    expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
+  });
+
+  it('renders Waypoint in case we have messages', () => {
+    const messages = [
+      { id: 'message-one', message: 'what' },
+      { id: 'message-two', message: 'hello' },
+    ];
+    const onFetchMoreSpy = jest.fn();
+
+    const wrapper = subject({ messages, onFetchMore: onFetchMoreSpy });
+
+    expect(wrapper.find(Waypoint).exists()).toBe(true);
+    expect(wrapper.find(Waypoint).prop('onEnter')).toStrictEqual(onFetchMoreSpy);
+  });
+
+  it('it should not renders Waypoint in case we do not messages', () => {
+    const wrapper = subject({ messages: [] });
+
+    expect(wrapper.find(Waypoint).exists()).toBe(false);
   });
 });

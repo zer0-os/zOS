@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 
 import { Container } from './channel-view-container';
 import { ChannelView } from './channel-view';
+import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
   const subject = (props: any = {}) => {
@@ -52,7 +53,7 @@ describe('ChannelViewContainer', () => {
 
     subject({ fetchMessages, channelId: 'the-channel-id' });
 
-    expect(fetchMessages).toHaveBeenCalledWith('the-channel-id');
+    expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('fetches messages when channel id is set', () => {
@@ -62,7 +63,7 @@ describe('ChannelViewContainer', () => {
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
-    expect(fetchMessages).toHaveBeenCalledWith('the-channel-id');
+    expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('fetches messages when channel id is updated', () => {
@@ -72,7 +73,52 @@ describe('ChannelViewContainer', () => {
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
-    expect(fetchMessages).toHaveBeenLastCalledWith('the-channel-id');
+    expect(fetchMessages).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('should call fetchMore when hasMore is true', () => {
+    const fetchMessages = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
+    ] as unknown as Message[];
+    const wrapper = subject({
+      fetchMessages,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel', messages },
+    });
+
+    wrapper.find(ChannelView).prop('onFetchMore')();
+
+    expect(fetchMessages).toHaveBeenLastCalledWith({
+      channelId: 'the-channel-id',
+      filter: {
+        lastCreatedAt: 1658776625730,
+      },
+    });
+  });
+  it('should not call fetchMore when hasMore is false', () => {
+    const fetchMessages = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
+    ] as unknown as Message[];
+    const wrapper = subject({
+      fetchMessages,
+      channelId: 'the-channel-id',
+      channel: { hasMore: false, name: 'first channel', messages },
+    });
+
+    wrapper.find(ChannelView).prop('onFetchMore')();
+
+    expect(fetchMessages).not.toHaveBeenLastCalledWith({
+      channelId: 'the-channel-id',
+      filter: {
+        lastCreatedAt: 1658776625730,
+      },
+    });
   });
 
   describe('mapState', () => {
@@ -115,6 +161,7 @@ describe('ChannelViewContainer', () => {
             'the-second-id': {
               id: 'the-second-id',
               name: 'the second channel',
+              hasMore: true,
               messages: [
                 'the-second-message-id',
                 'the-third-message-id',
@@ -131,6 +178,8 @@ describe('ChannelViewContainer', () => {
         { id: 'the-second-message-id', name: 'the second message' },
         { id: 'the-third-message-id', name: 'the third message' },
       ]);
+
+      expect(channel.hasMore).toEqual(true);
     });
 
     test('channel with no id set', () => {
@@ -147,6 +196,18 @@ describe('ChannelViewContainer', () => {
       const props = Container.mapState(state, { channelId: '' });
 
       expect(props.channel).toBeNull();
+    });
+
+    test('getOldestTimestamp with messages', () => {
+      const messages = [
+        { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
+        { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
+        { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
+      ] as unknown as Message[];
+
+      const oldestTimestamp = Container.getOldestTimestamp(messages);
+
+      expect(oldestTimestamp).toEqual(messages[1].createdAt);
     });
   });
 });

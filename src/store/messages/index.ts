@@ -35,7 +35,7 @@ export interface Message {
   message?: string;
   createdAt: string;
   updatedAt: string;
-  sender: Sender[];
+  sender: Sender;
   // TODO: type to be defined
   mentionedUsers: any;
   hidePreview: boolean;

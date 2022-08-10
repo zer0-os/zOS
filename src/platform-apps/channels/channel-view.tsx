@@ -11,12 +11,17 @@ export class ChannelView extends React.Component<Properties> {
   renderMessages() {
     return (
       <div className='messages'>
-        {this.props.messages.map((message) => (
-          <Message
-            key={message.id}
-            {...message}
-          />
-        ))}
+        {this.props.messages.map((message, index) => {
+          const isFirstFromUser = index === 0 || message.sender.userId !== this.props.messages[index - 1].sender.userId;
+
+          return (
+            <Message
+              isFirstFromUser={isFirstFromUser}
+              key={message.id}
+              {...message}
+            />
+          );
+        })}
       </div>
     );
   }

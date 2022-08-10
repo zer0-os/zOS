@@ -1,7 +1,13 @@
 import React from 'react';
+import classNames from 'classnames';
+import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 
-export class Message extends React.Component<MessageModel> {
+interface Properties extends MessageModel {
+  isFirstFromUser: boolean;
+}
+
+export class Message extends React.Component<Properties> {
   renderImage() {
     const {
       media: { type, url, name },
@@ -27,6 +33,16 @@ export class Message extends React.Component<MessageModel> {
     return '';
   }
 
+  renderTime(): React.ReactElement {
+    const createdTime = moment(this.props.createdAt).format('HH:mm');
+
+    return (
+      <div className={classNames('message__time', { 'message__time--hidden': !this.props.isFirstFromUser })}>
+        {createdTime}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className='message'>
@@ -37,6 +53,7 @@ export class Message extends React.Component<MessageModel> {
           <div className='message__block-icon'></div>
           {this.props.media && this.renderImage()}
           {this.props.message && <div className='message__block-body'>{this.props.message}</div>}
+          {this.renderTime()}
         </div>
       </div>
     );

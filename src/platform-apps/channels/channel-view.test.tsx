@@ -6,6 +6,13 @@ import { ChannelView } from './channel-view';
 import { Message } from './message';
 
 describe('ChannelView', () => {
+  const MESSAGES_TEST = [
+    { id: 'message-1', message: 'what', sender: { userId: 1 } },
+    { id: 'message-2', message: 'hello', sender: { userId: 2 } },
+    { id: 'message-3', message: 'hey', sender: { userId: 2 } },
+    { id: 'message-4', message: 'ok!', sender: { userId: 2 } },
+  ];
+
   const subject = (props: any = {}) => {
     const allProps = {
       name: '',
@@ -25,34 +32,41 @@ describe('ChannelView', () => {
   });
 
   it('renders a message for each message', () => {
-    const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
 
     expect(ids).toIncludeAllMembers([
-      'message-one',
-      'message-two',
+      'message-1',
+      'message-2',
+      'message-3',
+      'message-4',
     ]);
   });
 
   it('passes message prop to Message', () => {
-    const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     const messageTextes = wrapper.find(Message).map((m) => m.prop('message'));
 
     expect(messageTextes).toIncludeAllMembers([
       'what',
       'hello',
+      'hey',
+      'ok!',
+    ]);
+  });
+
+  it('passes isFirstFromUser prop to Message', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    const isFirstFromUserProperties = wrapper.find(Message).map((m) => m.prop('isFirstFromUser'));
+
+    expect(isFirstFromUserProperties).toIncludeAllMembers([
+      true,
+      true,
+      false,
+      false,
     ]);
   });
 });

@@ -65,6 +65,20 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
+  it('renders hidden time', () => {
+    const wrapper = subject({ message: 'the message', createdAt: 1659016515235 });
+
+    expect(wrapper.find('.message__time--hidden').text()).toStrictEqual('14:55');
+  });
+
+  it('renders time as first owner', () => {
+    const wrapper = subject({ message: 'the message', createdAt: 1659016515235, isFirstFromUser: true });
+
+    expect(wrapper.find('.message__time').text()).toStrictEqual('14:55');
+
+    expect(wrapper.find('.message__time--hidden').exists()).toBe(false);
+  });
+
   it('passes src prop to image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: 'image' } });
 

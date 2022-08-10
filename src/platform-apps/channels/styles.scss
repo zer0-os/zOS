@@ -1,3 +1,4 @@
+@use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 
 .channels {
@@ -58,6 +59,11 @@
   &-view {
     margin-left: 20px;
     margin-top: 20px;
+
+    &__inverted-scroll {
+      // this is temporary until we finish the design
+      height: 500px;
+    }
   }
 }
 .messages {

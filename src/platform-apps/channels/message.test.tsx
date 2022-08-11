@@ -29,12 +29,6 @@ describe('message', () => {
     expect(wrapper.find('.message__block-body').exists()).toBe(false);
   });
 
-  it('renders header date', () => {
-    const wrapper = subject({ message: 'the message' });
-
-    expect(wrapper.find('.message__date-header-date').exists()).toBe(true);
-  });
-
   it('renders message icon', () => {
     const wrapper = subject({ message: 'the message' });
 

@@ -46,9 +46,6 @@ export class Message extends React.Component<Properties> {
   render() {
     return (
       <div className='message'>
-        <div className='message__date-header'>
-          <div className='message__date-header-date'>Yesterday</div>
-        </div>
         <div className='message__block'>
           <div className='message__block-icon'></div>
           {this.props.media && this.renderImage()}

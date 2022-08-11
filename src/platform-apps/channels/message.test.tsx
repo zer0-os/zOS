@@ -59,22 +59,10 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
-  it('renders hidden time', () => {
+  it('renders time', () => {
     const wrapper = subject({ message: 'the message', createdAt: new Date('December 17, 1995 17:04:00').valueOf() });
 
-    expect(wrapper.find('.message__time--hidden').text()).toStrictEqual('17:04');
-  });
-
-  it('renders time as first owner', () => {
-    const wrapper = subject({
-      message: 'the message',
-      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
-      isFirstFromUser: true,
-    });
-
     expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
-
-    expect(wrapper.find('.message__time--hidden').exists()).toBe(false);
   });
 
   it('passes src prop to image', () => {

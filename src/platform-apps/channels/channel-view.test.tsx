@@ -82,16 +82,16 @@ describe('ChannelView', () => {
     ]);
   });
 
-  it('passes isFirstFromUser prop to Message', () => {
+  it('passes className prop to Message', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
-    const isFirstFromUserProperties = wrapper.find(Message).map((m) => m.prop('isFirstFromUser'));
+    const classNames = wrapper.find(Message).map((m) => m.prop('className'));
 
-    expect(isFirstFromUserProperties).toIncludeAllMembers([
-      true,
-      true,
-      false,
-      false,
+    expect(classNames).toIncludeAllMembers([
+      'messages__message messages__message--first-in-group',
+      'messages__message messages__message--first-in-group',
+      'messages__message',
+      'messages__message',
     ]);
   });
 

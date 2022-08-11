@@ -1,7 +1,13 @@
 import React from 'react';
+import classNames from 'classnames';
+import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 
-export class Message extends React.Component<MessageModel> {
+interface Properties extends MessageModel {
+  className: string;
+}
+
+export class Message extends React.Component<Properties> {
   renderImage() {
     const {
       media: { type, url, name },
@@ -27,14 +33,20 @@ export class Message extends React.Component<MessageModel> {
     return '';
   }
 
+  renderTime(): React.ReactElement {
+    const createdTime = moment(this.props.createdAt).format('HH:mm');
+
+    return <div className='message__time'>{createdTime}</div>;
+  }
+
   render() {
-    const { media, message } = this.props;
     return (
-      <div className='message'>
+      <div className={classNames('message', this.props.className)}>
         <div className='message__block'>
           <div className='message__block-icon'></div>
-          {media && this.renderImage()}
-          {message && <div className='message__block-body'>{message}</div>}
+          {this.props.media && this.renderImage()}
+          {this.props.message && <div className='message__block-body'>{this.props.message}</div>}
+          {this.renderTime()}
         </div>
       </div>
     );

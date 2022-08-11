@@ -7,6 +7,13 @@ import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
 
 describe('ChannelView', () => {
+  const MESSAGES_TEST = [
+    { id: 'message-1', message: 'what', sender: { userId: 1 }, createdAt: 1658776625730 },
+    { id: 'message-2', message: 'hello', sender: { userId: 2 }, createdAt: 1659018545428 },
+    { id: 'message-3', message: 'hey', sender: { userId: 2 }, createdAt: 1659018545428 },
+    { id: 'message-4', message: 'ok!', sender: { userId: 2 }, createdAt: 1659018545428 },
+  ];
+
   const subject = (props: any = {}) => {
     const allProps = {
       name: '',
@@ -26,43 +33,28 @@ describe('ChannelView', () => {
   });
 
   it('renders a message for each message', () => {
-    const messages = [
-      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
-      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
 
     expect(ids).toIncludeAllMembers([
-      'message-one',
-      'message-two',
+      'message-1',
+      'message-2',
+      'message-3',
+      'message-4',
     ]);
   });
 
   it('renders header date', () => {
-    const messages = [
-      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
-      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     expect(wrapper.find('.message__header-date').exists()).toBe(true);
   });
 
   it('renders a header Date grouped by day', () => {
-    const messages = [
-      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
-      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
-      { id: 'message-three', message: 'who', createdAt: 1659018545428 },
-      { id: 'message-for', message: 'there', createdAt: 1659655757948 },
-    ];
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
-    const wrapper = subject({ messages });
-
-    expect(wrapper.find('.message__header-date').length).toStrictEqual(3);
+    expect(wrapper.find('.message__header-date').length).toStrictEqual(2);
   });
 
   it('renders a header Date contain Today', () => {
@@ -78,41 +70,42 @@ describe('ChannelView', () => {
   });
 
   it('passes message prop to Message', () => {
-    const messages = [
-      { id: 'message-one', message: 'what', createdAt: 1658776625730 },
-      { id: 'message-two', message: 'hello', createdAt: 1658776625730 },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     const messageTextes = wrapper.find(Message).map((m) => m.prop('message'));
 
     expect(messageTextes).toIncludeAllMembers([
       'what',
       'hello',
+      'hey',
+      'ok!',
+    ]);
+  });
+
+  it('passes className prop to Message', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    const classNames = wrapper.find(Message).map((m) => m.prop('className'));
+
+    expect(classNames).toIncludeAllMembers([
+      'messages__message messages__message--first-in-group',
+      'messages__message messages__message--first-in-group',
+      'messages__message',
+      'messages__message',
     ]);
   });
 
   it('renders InvertedScroll', () => {
-    const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
-    ];
-
-    const wrapper = subject({ messages });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
     expect(wrapper.find(InvertedScroll).exists()).toBe(true);
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
   });
 
   it('renders Waypoint in case we have messages', () => {
-    const messages = [
-      { id: 'message-one', message: 'what' },
-      { id: 'message-two', message: 'hello' },
-    ];
     const onFetchMoreSpy = jest.fn();
 
-    const wrapper = subject({ messages, onFetchMore: onFetchMoreSpy });
+    const wrapper = subject({ messages: MESSAGES_TEST, onFetchMore: onFetchMoreSpy });
 
     expect(wrapper.find(Waypoint).exists()).toBe(true);
     expect(wrapper.find(Waypoint).prop('onEnter')).toStrictEqual(onFetchMoreSpy);

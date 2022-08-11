@@ -69,6 +69,7 @@
 .messages {
   transition: opacity 0.9s ease-out;
   opacity: 1;
+
   .message__header {
     text-align: center;
     position: relative;
@@ -111,7 +112,16 @@
   .message {
     &__block {
       display: flex;
+      justify-content: space-between;
       margin-bottom: 7px;
+
+      &:hover {
+        background-color: hsla(0, 0%, 100%, 0.03);
+
+        .message__time {
+          visibility: visible;
+        }
+      }
 
       &-icon {
         width: 32px;
@@ -178,6 +188,18 @@
           min-height: 186px;
           width: 330px;
         }
+      }
+    }
+
+    &__time {
+      font-size: 12px;
+      color: #737373;
+      visibility: hidden;
+    }
+
+    &.messages__message--first-in-group {
+      .message__time {
+        visibility: visible;
       }
     }
   }

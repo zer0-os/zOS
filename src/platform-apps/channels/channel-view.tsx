@@ -1,8 +1,9 @@
 import React from 'react';
 import { Waypoint } from 'react-waypoint';
+import classNames from 'classnames';
+import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 import { Message } from './message';
-import moment from 'moment';
 import InvertedScroll from '../../components/inverted-scroll';
 
 interface ChatMessageGroups {
@@ -51,12 +52,17 @@ export class ChannelView extends React.Component<Properties> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {allMessages.map((message) => (
-          <Message
-            key={message.id}
-            {...message}
-          />
-        ))}
+        {allMessages.map((message, index) => {
+          const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
+
+          return (
+            <Message
+              className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
+              key={message.id}
+              {...message}
+            />
+          );
+        })}
       </div>
     );
   }

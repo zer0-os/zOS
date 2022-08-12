@@ -1,7 +1,6 @@
 import React from 'react';
-
 import { shallow } from 'enzyme';
-
+import { Emoji } from 'emoji-mart';
 import { Message } from './message';
 
 describe('message', () => {
@@ -75,5 +74,20 @@ describe('message', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', name: 'work', type: 'image' } });
 
     expect(wrapper.find('.message__block-image img').prop('alt')).toStrictEqual('work');
+  });
+
+  it('renders message with emojis', () => {
+    const wrapper = subject({ message: ':kissing_heart: :stuck_out_tongue_winking_eye: and some text' });
+
+    const classNames = wrapper.find(Emoji).map((m) => m.prop('emoji'));
+
+    expect(classNames).toIncludeAllMembers([
+      ':kissing_heart:',
+      ':stuck_out_tongue_winking_eye:',
+    ]);
+
+    const textes = wrapper.find('.message__block-body').text().trim();
+
+    expect(textes).toStrictEqual('<Emoji /> <Emoji /> and some text');
   });
 });

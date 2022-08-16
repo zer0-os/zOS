@@ -2,19 +2,25 @@ import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes } from '.';
 import { receive, denormalize } from '../channels';
 
-import { fetchMessagesByChannelId, MessagesFilter } from './api';
+import { fetchMessagesByChannelId } from './api';
 
 export interface Payload {
   channelId: string;
-  filter?: MessagesFilter;
+  referenceTimestamp?: number;
 }
 
 const getState = (state) => state;
 
 export function* fetch(action) {
-  const { channelId, filter } = action.payload;
+  const { channelId, referenceTimestamp } = action.payload;
 
-  const messagesResponse = yield call(fetchMessagesByChannelId, channelId, filter);
+  let messagesResponse: any;
+
+  if (referenceTimestamp) {
+    messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
+  } else {
+    messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+  }
 
   const state = yield select(getState);
   const channel = denormalize(channelId, state) || null;

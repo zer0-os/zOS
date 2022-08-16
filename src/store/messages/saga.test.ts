@@ -15,10 +15,11 @@ describe('messages saga', () => {
       { id: 'message 3', message: 'message_0003' },
     ],
   };
+
   it('fetches messages', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
 
-    await expectSaga(fetch, { payload: { channelId, filter: {} } })
+    await expectSaga(fetch, { payload: { channelId } })
       .provide([
         [
           matchers.call.fn(fetchMessagesByChannelId),
@@ -26,7 +27,23 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelId, {})
+      .call(fetchMessagesByChannelId, channelId)
+      .run();
+  });
+
+  it('fetches messages for referenceTimestamp', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const referenceTimestamp = 1658776625730;
+
+    await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          MESSAGES_RESPONSE,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(fetchMessagesByChannelId, channelId, 1658776625730)
       .run();
   });
 
@@ -45,7 +62,7 @@ describe('messages saga', () => {
       storeState: {
         normalized: { channels },
       },
-    } = await expectSaga(fetch, { payload: { channelId, filter: {} } })
+    } = await expectSaga(fetch, { payload: { channelId } })
       .withReducer(rootReducer)
       .provide([
         [
@@ -63,18 +80,33 @@ describe('messages saga', () => {
   });
 
   it('adds messages to normalized state', async () => {
+    const response = {
+      hasMore: true,
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
+
     const {
-      storeState: { normalized },
-    } = await expectSaga(fetch, { payload: { channelId: '0x000000000000000000000000000000000000000A', filter: {} } })
+      storeState: {
+        normalized: { messages },
+      },
+    } = await expectSaga(fetch, { payload: { channelId: '0x000000000000000000000000000000000000000A' } })
       .provide([
         [
           matchers.call.fn(fetchMessagesByChannelId),
-          MESSAGES_RESPONSE,
+          response,
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.messages[MESSAGES_RESPONSE.messages[0].id]).toStrictEqual(MESSAGES_RESPONSE.messages[0]);
+    expect(messages).toMatchObject({
+      'the-first-message-id': { id: 'the-first-message-id', message: 'the first message' },
+      'the-second-message-id': { id: 'the-second-message-id', message: 'the second message' },
+      'the-third-message-id': { id: 'the-third-message-id', message: 'the third message' },
+    });
   });
 });

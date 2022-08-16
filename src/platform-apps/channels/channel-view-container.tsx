@@ -48,7 +48,7 @@ export class Container extends React.Component<Properties> {
     }
   }
 
-  static getOldestTimestamp(messages: Message[] = []): number {
+  getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
       return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
     }, Date.now());
@@ -62,9 +62,9 @@ export class Container extends React.Component<Properties> {
     const { channelId, channel } = this.props;
 
     if (channel.hasMore) {
-      const oldestTimestamp = Container.getOldestTimestamp(channel.messages);
+      const referenceTimestamp = this.getOldestTimestamp(channel.messages);
 
-      this.props.fetchMessages({ channelId, filter: { lastCreatedAt: oldestTimestamp } });
+      this.props.fetchMessages({ channelId, referenceTimestamp });
     }
   };
 

@@ -58,12 +58,25 @@ describe('messages saga', () => {
       ],
     };
 
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages: [
+              'old-message-id',
+            ],
+          },
+        },
+      },
+    };
+
     const {
       storeState: {
         normalized: { channels },
       },
     } = await expectSaga(fetch, { payload: { channelId } })
-      .withReducer(rootReducer)
+      .withReducer(rootReducer, initialState as any)
       .provide([
         [
           matchers.call.fn(fetchMessagesByChannelId),
@@ -73,6 +86,50 @@ describe('messages saga', () => {
       .run();
 
     expect(channels[channelId].messages).toStrictEqual([
+      'the-first-message-id',
+      'the-second-message-id',
+      'the-third-message-id',
+    ]);
+  });
+
+  it('appends message ids to channels state when referenceTimestamp included', async () => {
+    const channelId = 'channel-id';
+    const messageResponse = {
+      hasMore: true,
+      messages: [
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages: [
+              'the-first-message-id',
+            ],
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetch, { payload: { channelId, referenceTimestamp: 1658776625730 } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          messageResponse,
+        ],
+      ])
+      .run();
+
+    expect(channels[channelId].messages).toIncludeSameMembers([
       'the-first-message-id',
       'the-second-message-id',
       'the-third-message-id',

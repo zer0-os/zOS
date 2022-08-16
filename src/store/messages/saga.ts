@@ -33,7 +33,13 @@ export function* fetch(action) {
     messages = messagesResponse.messages;
   }
 
-  yield put(receive({ id: channelId, messages }));
+  yield put(
+    receive({
+      id: channelId,
+      messages,
+      hasMore: messagesResponse.hasMore,
+    })
+  );
 }
 
 export function* saga() {

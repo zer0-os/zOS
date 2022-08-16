@@ -47,6 +47,45 @@ describe('messages saga', () => {
       .run();
   });
 
+  it('sets hasMore on channel', async () => {
+    const channelId = 'channel-id';
+    const messageResponse = {
+      hasMore: false,
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasMore: true,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetch, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          messageResponse,
+        ],
+      ])
+      .run();
+
+    expect(channels[channelId].hasMore).toBe(false);
+  });
+
   it('adds message ids to channels state', async () => {
     const channelId = 'channel-id';
     const messageResponse = {

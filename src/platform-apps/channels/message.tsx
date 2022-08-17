@@ -30,6 +30,17 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
+    } else if (type === 'audio') {
+      return (
+        <div className='message__block-audio'>
+          <audio controls>
+            <source
+              src={url}
+              type='audio/mpeg'
+            />
+          </audio>
+        </div>
+      );
     }
     return '';
   }

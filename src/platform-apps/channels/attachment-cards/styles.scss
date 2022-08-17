@@ -1,0 +1,35 @@
+.attachment-card {
+  display: inline-block;
+  margin: 10px 10px 6px 0;
+  padding: 0 10px 0 15px;
+
+  &__info {
+    background: none;
+    border: none;
+  }
+
+  &.downloadable:hover {
+    cursor: pointer;
+
+    .attachment-card__info {
+      background: none;
+      border: none;
+      // color: $color-bright;
+    }
+    .attachment-card__icon {
+      &:hover {
+        // color: $color-bright;
+      }
+    }
+  }
+
+  &__icon {
+    padding-left: 0;
+  }
+
+  &__delete {
+    display: inline-block;
+    text-align: center;
+    padding-left: 10px;
+  }
+}

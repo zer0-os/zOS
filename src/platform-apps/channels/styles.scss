@@ -197,6 +197,24 @@
       visibility: hidden;
     }
 
+    &__image-bubble {
+      background-color: var(--card-background-color, #212121);
+      color: var(--card-text-color, #fff);
+      transition: background-color 0.3s ease-out;
+      position: relative;
+
+      &:before {
+        height: 100%;
+        width: 3px;
+        background-color: var(--accent-color, #c9fd51);
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+
     &.messages__message--first-in-group {
       .message__time {
         visibility: visible;

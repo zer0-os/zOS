@@ -46,6 +46,18 @@ describe('message', () => {
     expect(wrapper.find('.message__block-video video source').prop('src')).toStrictEqual('https://image.com/video.mp4');
   });
 
+  it('renders message audio', () => {
+    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: 'audio' } });
+
+    expect(wrapper.find('.message__block-audio').exists()).toBe(true);
+  });
+
+  it('passes src prop to audio', () => {
+    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: 'audio' } });
+
+    expect(wrapper.find('.message__block-audio audio source').prop('src')).toStrictEqual('https://image.com/audio.mp3');
+  });
+
   it('renders message image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: 'image' } });
 

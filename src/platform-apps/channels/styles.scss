@@ -189,6 +189,29 @@
           width: 330px;
         }
       }
+
+      &-audio {
+        background-color: #212121;
+        transition: background-color 0.3s ease-out;
+        position: relative;
+        display: inline-block;
+        margin: 15px;
+        &:before {
+          height: 100%;
+          width: 3px;
+          background-color: #c9fd51;
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        audio {
+          margin-left: 3px;
+          padding: 10px 15px 10px 20px;
+          width: 330px;
+        }
+      }
     }
 
     &__time {

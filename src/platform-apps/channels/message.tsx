@@ -4,15 +4,23 @@ import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 import { textToEmojis } from './utils';
 import { LinkPreview } from '../../components/link-preview/';
+import ProfileLink from './profile-link';
 
 interface Properties extends MessageModel {
   className: string;
 }
 
 export class Message extends React.Component<Properties> {
+  getProfileId(id) {
+    const user = (this.props.mentionedUsers || []).find((e) => e.id === id);
+
+    if (!user) return null;
+
+    return user.profileId;
+  }
+
   renderMedia(media) {
     const { type, url, name } = media;
-
     if (type === 'image') {
       return (
         <div className='message__block-image'>
@@ -53,11 +61,33 @@ export class Message extends React.Component<Properties> {
 
   renderMessage(message) {
     const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
-    return parts.map((part) => {
+    return parts.map((part, index) => {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
         return textToEmojis(part);
+      }
+
+      if (match[2] === 'user') {
+        const profileId = this.getProfileId(match[3]);
+        const mention = `@${match[1]}`;
+        const props = {
+          className: 'message__user-mention',
+          key: match[3] + index,
+        };
+
+        if (profileId) {
+          return (
+            <ProfileLink
+              {...props}
+              id={profileId}
+            >
+              {mention}
+            </ProfileLink>
+          );
+        }
+
+        return <span {...props}>{mention}</span>;
       }
 
       return part;

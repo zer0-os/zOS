@@ -11,8 +11,8 @@ interface Properties extends MessageModel {
 }
 
 export class Message extends React.Component<Properties> {
-  getProfileId(id) {
-    const user = (this.props.mentionedUsers || []).find((e) => e.id === id);
+  getProfileId(id: string): string | null {
+    const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
 
     if (!user) return null;
 

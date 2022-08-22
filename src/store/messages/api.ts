@@ -1,13 +1,11 @@
-export const api = {
-  async fetch(id: string) {
-    return [
-      `this is a message in channel #${id} all about stuff`,
-      `this is a message in channel #${id} all about tacos`,
-      `this is a message in channel #${id} all about cats`,
-      `this is a message in channel #${id} all about work`,
-    ].map((message, index) => ({
-      id: `message-id-${index}`,
-      message,
-    }));
-  },
-};
+import * as Request from 'superagent';
+import { MessagesResponse } from './index';
+import { config } from '../../config';
+
+export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
+  const filter = lastCreatedAt ? { lastCreatedAt } : {};
+
+  const response = await Request.get(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`).query({ filter });
+
+  return response.body;
+}

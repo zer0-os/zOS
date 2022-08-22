@@ -134,6 +134,7 @@
     "button-border-color-hover": "#ffffff",
     "glow-text-white": "0px 0px 10px hsla(0,0%,100%,0.7)",
     "button-color-grey": "grey",
-    "button-box-radius": "16px"
+    "button-box-radius": "16px",
+    "background-color-transparent": "rgba(0, 0, 0, 0.6)"
   }
 }

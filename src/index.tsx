@@ -21,9 +21,11 @@ showReleaseVersionInConsole();
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
-const redirectToDefaults = ({ match: { params } }) => (
-  <Redirect to={`/${params.znsRoute || config.defaultZnsRoute}/${config.defaultApp}`} />
-);
+const redirectToDefaults = ({ match: { params } }) => {
+  const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
+
+  return <Redirect to={`/${route}/${config.defaultApp}`} />;
+};
 
 ReactDOM.render(
   <React.StrictMode>

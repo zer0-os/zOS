@@ -2,8 +2,13 @@ $left-content-space: 32px;
 $width-world-navigation: 56px;
 $width-platform-navigation: 224px;
 $width-application-navigation: 224px;
-$width-navigation: calc($width-platform-navigation + $width-world-navigation);
-$width-collapsed-navigation: calc(56px + 54px + 32px);
+
+// these include padding/margin/border
+$width-navigation-padding: calc(15px + 1px);
+$width-collapsed-navigation-padding: calc(8px + 1px);
+
+$width-navigation: calc($width-platform-navigation + $width-world-navigation + $width-navigation-padding);
+$width-collapsed-navigation: calc(56px + 54px + $width-collapsed-navigation-padding);
 $width-application-content: 736px;
 $width-sidekick: calc((100vw - $width-application-content) / 2);
 $height-main: 65px;

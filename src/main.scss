@@ -20,24 +20,17 @@
     display: flex;
     pointer-events: auto;
 
-    width: $width-world-navigation;
-
-    padding-right: $left-content-space;
     position: relative;
     top: 10px;
-
-    @include for-screen-large() {
-      justify-content: space-between;
-    }
   }
 
   &__navigation-world {
-    width: 56px;
+    width: $width-world-navigation;
     border-right: 1px solid theme.$primary-border-color;
   }
 
   &__navigation-platform {
-    width: 200px;
+    width: $width-platform-navigation;
     border-right: 1px solid theme.$primary-border-color;
     padding-left: 15px;
 

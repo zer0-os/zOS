@@ -5,8 +5,14 @@
 $speed: animation.$animation-duration;
 
 .app-sandbox {
-  width: $width-application-content;
+  position: absolute;
   height: 100vh;
+  left: $width-navigation;
+  right: 0;
+
+  @include for-left-collapse() {
+    left: $width-collapsed-navigation;
+  }
 
   &__error {
     font-size: 40px;

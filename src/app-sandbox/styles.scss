@@ -23,6 +23,15 @@ $speed: animation.$animation-duration;
   }
 }
 
+.app-context-panel {
+  position: fixed;
+  left: $width-navigation;
+
+  @include for-left-collapse() {
+    left: $width-collapsed-navigation;
+  }
+}
+
 .feed {
   overflow: hidden;
   &__items {

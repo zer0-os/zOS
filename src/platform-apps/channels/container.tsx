@@ -13,9 +13,9 @@ import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
+import { AppLayout, AppContextPanel, AppContent } from '../../shared-components/app-layout';
 
 import './styles.scss';
-import { AppContextPanel } from '../../shared-components/app-context-panel';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -67,12 +67,12 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <div className='channels'>
+        <AppLayout className='channels'>
           <AppContextPanel>
             <ChannelList channels={this.props.channels} />
           </AppContextPanel>
-          {this.renderChannelView()}
-        </div>
+          <AppContent>{this.renderChannelView()}</AppContent>
+        </AppLayout>
       </Provider>
     );
   }

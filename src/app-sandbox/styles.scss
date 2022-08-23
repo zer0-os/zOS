@@ -23,12 +23,20 @@ $speed: animation.$animation-duration;
   }
 }
 
-.app-context-panel {
-  position: fixed;
-  left: $width-navigation;
+.app-layout {
+  position: relative;
+  width: 100%;
 
-  @include for-left-collapse() {
-    left: $width-collapsed-navigation;
+  .app-context-panel {
+    position: relative;
+    width: 224px;
+    height: 100vh;
+  }
+
+  .app-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
   }
 }
 

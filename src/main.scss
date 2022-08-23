@@ -19,12 +19,11 @@
     box-sizing: border-box;
     display: flex;
     pointer-events: auto;
-
     position: relative;
-    top: 10px;
   }
 
   &__navigation-world {
+    padding-top: 10px;
     width: $width-world-navigation;
     border-right: 1px solid theme.$primary-border-color;
   }
@@ -32,12 +31,11 @@
   &__navigation-platform {
     width: $width-platform-navigation;
     border-right: 1px solid theme.$primary-border-color;
-    padding-left: 15px;
+    padding: 10px 3px 0 15px;
 
     @include for-left-collapse() {
       width: 54px;
       padding-left: 5px;
-      padding-right: 3px;
     }
   }
 

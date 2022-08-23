@@ -4,9 +4,10 @@
 .channel {
   &-list {
     width: 100%;
+    height: 100%;
     background: #19191c;
     padding: 10px 0;
-    height: fit-content;
+    box-sizing: border-box;
   }
 
   &-view {
@@ -16,6 +17,7 @@
     padding: 20px 18px;
     margin: 100px 0 0 20px;
     border: 1px solid #19191c;
+    box-sizing: border-box;
 
     &__name {
       h1 {

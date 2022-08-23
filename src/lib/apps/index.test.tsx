@@ -7,6 +7,7 @@ describe('apps', () => {
   it('defaults to feed app', () => {
     expect(allApps()).toStrictEqual([
       apps[Apps.Feed],
+      apps[Apps.Staking],
     ]);
   });
 
@@ -15,6 +16,7 @@ describe('apps', () => {
 
     expect(allApps()).toStrictEqual([
       apps[Apps.Feed],
+      apps[Apps.Staking],
       apps[Apps.Channels],
     ]);
   });

@@ -1,13 +1,7 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
-import classNames from 'classnames';
-
-export interface Properties {
-  className?: string;
-}
-
-export class AppContextPanel extends React.Component<PropsWithChildren<Properties>> {
+export class AppContextPanel extends React.Component {
   render() {
-    return <div className={classNames('app-context-panel', this.props.className)}>{this.props.children}</div>;
+    return <div className='app-context-panel'>{this.props.children}</div>;
   }
 }

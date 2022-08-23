@@ -14,10 +14,4 @@ describe('AppContextPanel', () => {
 
     expect(wrapper.find('.app-context-panel .tacos').exists()).toBe(true);
   });
-
-  it('adds className', () => {
-    const wrapper = subject({ className: 'what' });
-
-    expect(wrapper.find('.app-context-panel').hasClass('what')).toBe(true);
-  });
 });

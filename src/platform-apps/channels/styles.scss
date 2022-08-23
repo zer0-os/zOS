@@ -1,15 +1,6 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 
-.channels {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: space-between;
-
-  margin-top: 100px;
-}
-
 .channel {
   &-list {
     width: 100%;
@@ -23,7 +14,7 @@
     width: 100%;
     height: 100%;
     padding: 20px 18px;
-    margin-left: 20px;
+    margin: 100px 0 0 20px;
     border: 1px solid #19191c;
 
     &__name {

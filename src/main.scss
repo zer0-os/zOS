@@ -40,18 +40,15 @@
     }
   }
 
-  &__content {
+  &__header {
     padding-top: 8px;
     width: 100%;
-    max-width: 800px;
-
-    display: flex;
-    justify-content: center;
   }
 
   &__address-bar {
     pointer-events: auto;
-    min-width: $width-application-content;
+    width: 100%;
+    max-width: 752px;
   }
 
   &__sidekick {

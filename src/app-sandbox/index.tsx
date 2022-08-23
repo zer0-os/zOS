@@ -4,6 +4,7 @@ import { Store } from 'redux';
 
 import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
+import StakingApp from '@zero-tech/zapp-staking';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
 import { Channels } from '../platform-apps/channels';
@@ -53,6 +54,10 @@ export class AppSandbox extends React.Component<Properties> {
 
     if (selectedApp === Apps.Feed) {
       return <FeedApp {...this.appProperties} />;
+    }
+
+    if (selectedApp === Apps.Staking) {
+      return <StakingApp {...this.appProperties} />;
     }
 
     if (selectedApp === Apps.Channels) {

@@ -132,7 +132,6 @@ export class AddressBar extends React.Component<Properties, State> {
 
     return (
       <div className={classNames('address-bar', this.props.className)}>
-        {this.renderOverlay()}
         <div className='address-bar__navigation'>
           <IconButton
             icon={Icons.ChevronLeft}
@@ -159,15 +158,18 @@ export class AddressBar extends React.Component<Properties, State> {
           </div>
         )}
         {AddressBarMode.Search === mode && (
-          <div className='address-bar__inner-search-container'>
-            <div className='address-bar__inner-search'>
-              <ZNSDropdown
-                api={this.props.api}
-                onSelect={this.onSelect}
-                onCloseBar={this.closeAddressBarMode}
-              />
+          <>
+            <div className='address-bar__underlay' />
+            <div className='address-bar__inner-search-container'>
+              <div className='address-bar__inner-search'>
+                <ZNSDropdown
+                  api={this.props.api}
+                  onSelect={this.onSelect}
+                  onCloseBar={this.closeAddressBarMode}
+                />
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     );

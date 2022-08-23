@@ -2,6 +2,24 @@
 @use '../../modules/animation' as animation;
 @import '../../variables';
 
+@keyframes partial-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
+}
+
+@keyframes partial-fadeout {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 $width-navigation: 32px;
 $height-address-bar: 40px;
 $height-address-bar-inner: 19px;
@@ -142,7 +160,7 @@ $height-address-bar-inner: 19px;
   }
 }
 
-.overlay {
+.address-bar__underlay {
   justify-content: center;
   position: fixed;
   z-index: 1;
@@ -152,9 +170,6 @@ $height-address-bar-inner: 19px;
   height: 100vh;
   opacity: 0;
   background: rgba(0, 0, 0, 0.9);
-  transition: all animation.$animation-duration;
 
-  &--open {
-    opacity: 1;
-  }
+  animation: partial-fadein animation.$animation-duration-half ease-out forwards normal;
 }

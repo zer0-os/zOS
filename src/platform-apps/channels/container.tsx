@@ -13,7 +13,7 @@ import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
-import { AppLayout, AppContextPanel, AppContent } from '../../shared-components/app-layout';
+import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
 

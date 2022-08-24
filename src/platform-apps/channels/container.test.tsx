@@ -9,7 +9,7 @@ import { Container } from './container';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
-import { AppContextPanel } from '../../shared-components/app-layout';
+import { AppContextPanel } from '@zer0-os/zos-component-library';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({

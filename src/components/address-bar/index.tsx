@@ -33,13 +33,11 @@ export interface Properties {
 
 export interface State {
   mode: AddressBarMode;
-  isOverlayOpen: boolean;
 }
 
 export class AddressBar extends React.Component<Properties, State> {
   state = {
     mode: this.props.addressBarMode || AddressBarMode.Display,
-    isOverlayOpen: false,
   };
 
   get routeSegments() {
@@ -96,11 +94,11 @@ export class AddressBar extends React.Component<Properties, State> {
   }
 
   showAddressBarMode = (value) => (e) => {
-    this.setState({ mode: value, isOverlayOpen: true });
+    this.setState({ mode: value });
   };
 
   closeAddressBarMode = () => {
-    this.setState({ mode: AddressBarMode.Display, isOverlayOpen: false });
+    this.setState({ mode: AddressBarMode.Display });
   };
 
   onSelect = (route) => {
@@ -108,16 +106,6 @@ export class AddressBar extends React.Component<Properties, State> {
       this.props.onSelect(route);
     });
   };
-
-  renderOverlay() {
-    return (
-      <div
-        className={classNames('overlay', {
-          'overlay--open': this.state.isOverlayOpen,
-        })}
-      ></div>
-    );
-  }
 
   render() {
     const backButtonClass = classNames('address-bar__navigation-button', {

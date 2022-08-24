@@ -1,0 +1,21 @@
+@use '../../modules/animation' as animation;
+
+.scroll-container {
+  height: 100%;
+  width: 100%;
+  max-height: inherit;
+  position: relative;
+
+  &__content-wrapper {
+    height: 100%;
+    width: 100%;
+    max-height: inherit;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__buffer {
+    height: 10px;
+  }
+}

@@ -1,9 +1,11 @@
+import * as Request from 'superagent';
 import { MessagesResponse } from './index';
 import { config } from '../../config';
 
-export async function fetchMessagesByChannelId(channelId: string): Promise<MessagesResponse> {
-  const messagesResponse = await fetch(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`);
-  const { messages } = await messagesResponse.json();
+export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
+  const filter = lastCreatedAt ? { lastCreatedAt } : {};
 
-  return messages;
+  const response = await Request.get(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`).query({ filter });
+
+  return response.body;
 }

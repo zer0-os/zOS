@@ -1,3 +1,4 @@
+@use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 
 .channels {
@@ -58,55 +59,70 @@
   &-view {
     margin-left: 20px;
     margin-top: 20px;
+
+    &__inverted-scroll {
+      // this is temporary until we finish the design
+      height: 500px;
+    }
   }
 }
 
 .messages {
   transition: opacity 0.9s ease-out;
   opacity: 1;
-  .message {
-    &__date-header {
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      margin: 20px 0 10px;
-      color: #cccccc;
-      &-date {
-        border-radius: 0;
-        background-color: theme.$background-color-secondary;
-        color: theme.$actionable-active-color;
-        transition: background-color 0.3s ease-out;
-        display: inline-block;
-        padding: 3px 20px;
-      }
-      &:before,
-      &:after {
-        content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
-        height: 1px;
-      }
-      &:before {
-        margin-left: -50%;
-        text-align: right;
-        background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
-      &:after {
-        content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
-        height: 1px;
-        background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
-    }
 
+  .message__header {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0 25px;
+    color: #cccccc;
+    &-date {
+      border-radius: 0;
+      background-color: theme.$background-color-secondary;
+      color: theme.$actionable-active-color;
+      transition: background-color 0.3s ease-out;
+      display: inline-block;
+      padding: 3px 20px;
+    }
+    &:before,
+    &:after {
+      content: '\a0';
+      position: absolute;
+      top: 51%;
+      overflow: hidden;
+      width: 50%;
+      height: 1px;
+    }
+    &:before {
+      margin-left: -50%;
+      text-align: right;
+      background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
+    }
+    &:after {
+      content: '\a0';
+      position: absolute;
+      top: 51%;
+      overflow: hidden;
+      width: 50%;
+      height: 1px;
+      background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
+    }
+  }
+
+  .message {
     &__block {
       display: flex;
+      justify-content: space-between;
       margin-bottom: 7px;
+
+      &:hover {
+        background-color: hsla(0, 0%, 100%, 0.03);
+
+        .message__time {
+          visibility: visible;
+        }
+      }
 
       &-icon {
         width: 32px;
@@ -116,14 +132,13 @@
       }
 
       &-body {
-        display: inline-block;
         background: #3e4042;
         padding: 5px 15px;
         color: #fff;
         white-space: pre-wrap;
         word-break: break-word;
-        margin-top: 25px;
-        width: 100%;
+        width: fit-content;
+        display: inline-block;
 
         .message--owner & {
           border-left: 3px solid #fb216e;
@@ -175,6 +190,45 @@
           width: 330px;
         }
       }
+
+      &-audio {
+        background-color: #212121;
+        transition: background-color 0.3s ease-out;
+        position: relative;
+        display: inline-block;
+        margin: 15px;
+        &:before {
+          height: 100%;
+          width: 3px;
+          background-color: #c9fd51;
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        audio {
+          margin-left: 3px;
+          padding: 10px 15px 10px 20px;
+          width: 330px;
+        }
+      }
+    }
+
+    &__time {
+      font-size: 12px;
+      color: #737373;
+      visibility: hidden;
+    }
+
+    &.messages__message--first-in-group {
+      .message__time {
+        visibility: visible;
+      }
+    }
+
+    .emoji-mart-emoji {
+      height: 19px;
     }
   }
 }

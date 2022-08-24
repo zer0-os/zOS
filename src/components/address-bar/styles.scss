@@ -124,7 +124,8 @@ $height-address-bar-inner: 19px;
       background-color: theme.$address-bar-border-color-outer;
     }
 
-    .icon-button__icon {
+    .icon-button__icon.zui-chevron-left,
+    .icon-button__icon.zui-chevron-right {
       width: 6px;
       height: 10px;
       transform: scale(1.5);
@@ -137,8 +138,11 @@ $height-address-bar-inner: 19px;
     &.is-actionable {
       cursor: pointer;
 
-      path {
-        fill: theme.$accent-color;
+      .icon-button__icon.zui-chevron-left,
+      .icon-button__icon.zui-chevron-right {
+        path {
+          fill: theme.$accent-color;
+        }
       }
     }
   }

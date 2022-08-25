@@ -11,6 +11,10 @@ $height-main: 65px;
 
 $breakpoint-collapse-menu: 1294px;
 
+$font-size-small: 12px;
+$font-size-large: 16px;
+$font-size-xl: 20px;
+
 @mixin for-left-collapse {
   @media (max-width: $breakpoint-collapse-menu) {
     @content;

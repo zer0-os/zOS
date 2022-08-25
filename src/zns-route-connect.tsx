@@ -19,7 +19,7 @@ export interface Properties {
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
+  static mapState(_state: RootState): Partial<Properties> {
     return {};
   }
 

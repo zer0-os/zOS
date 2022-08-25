@@ -58,9 +58,7 @@ ReactDOM.render(
 ReactDOM.render(
   <Router history={history}>
     <Route path='/:znsRoute/:app'>
-      <div className='app-sandbox-wrapper'>
-        <AppSandboxContainer store={store} />
-      </div>
+      <AppSandboxContainer store={store} />
     </Route>
   </Router>,
   document.getElementById('app-sandbox')

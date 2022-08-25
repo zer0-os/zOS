@@ -1,30 +1,21 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 
-.channels {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: space-between;
-
-  margin-top: 100px;
-}
-
 .channel {
   &-list {
-    width: 280px;
-    background: #19191c;
+    width: 100%;
+    height: 100%;
     padding: 10px 0;
-    margin-right: 10px;
-    height: fit-content;
+    box-sizing: border-box;
   }
+
   &-view {
     background-color: theme.$background-color-transparent;
     width: 100%;
     height: 100%;
-    padding: 20px 18px;
-    margin-left: 6px;
-    border: 1px solid #19191c;
+    padding: 100px 0 20px 20px;
+    box-sizing: border-box;
+
     &__name {
       h1 {
         font-size: 18px;
@@ -38,34 +29,24 @@
   &-list__channel {
     display: block;
     padding: 10px 20px;
-    color: #737373;
 
     &:before {
       content: '# ';
     }
 
     &:hover {
-      color: #fff;
       cursor: pointer;
       background: #303033;
     }
+
     &--active {
       color: #fff;
       background: #141415;
       border-left: 3px solid #fb216e;
     }
   }
-
-  &-view {
-    margin-left: 20px;
-    margin-top: 20px;
-
-    &__inverted-scroll {
-      // this is temporary until we finish the design
-      height: 500px;
-    }
-  }
 }
+
 .messages {
   transition: opacity 0.9s ease-out;
   opacity: 1;

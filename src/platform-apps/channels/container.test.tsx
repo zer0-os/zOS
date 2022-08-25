@@ -9,6 +9,7 @@ import { Container } from './container';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
+import { AppContextPanel } from '@zer0-os/zos-component-library';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -37,7 +38,7 @@ describe('ChannelsContainer', () => {
     const wrapper = subject({ store });
 
     expect(wrapper.find(Provider).prop('store')).toStrictEqual(store);
-    expect(wrapper.find(Provider).find(ChannelList).exists()).toBe(true);
+    expect(wrapper.find(Provider).find('.channels').exists()).toBe(true);
   });
 
   it('fetches channels on mount', () => {
@@ -47,6 +48,14 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels });
 
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
+  });
+
+  it('wraps ChannelList in AppContextPanel', () => {
+    const wrapper = subject();
+
+    const channelList = wrapper.find(AppContextPanel).find(ChannelList);
+
+    expect(channelList.exists()).toBe(true);
   });
 
   it('passes channels to ChannelList', () => {

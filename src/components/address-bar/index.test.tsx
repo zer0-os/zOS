@@ -19,7 +19,6 @@ describe('AddressBar', () => {
       route: '',
       app: Apps.Feed,
       onSelect,
-      isOverlayOpen: false,
       addressBarMode: null,
       ...props,
     };
@@ -174,13 +173,17 @@ describe('AddressBar', () => {
     expect(wrapper.find(ZNSDropdown).exists()).toBe(false);
   });
 
-  it('renders overlay container when search selected', () => {
+  it('renders underlay when search selected', () => {
     const wrapper = subject({});
 
-    expect(wrapper.find('.overlay--open').exists()).toBe(false);
+    wrapper.find('.address-bar__search-trigger-region').simulate('click');
 
-    wrapper.find('[className$="trigger-region"]').simulate('click');
+    expect(wrapper.find('.address-bar__underlay').exists()).toBe(true);
+  });
 
-    expect(wrapper.find('.overlay--open').exists()).toBe(true);
+  it('does not render underlay', () => {
+    const wrapper = subject({});
+
+    expect(wrapper.find('.address-bar__underlay').exists()).toBe(false);
   });
 });

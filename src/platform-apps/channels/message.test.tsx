@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Emoji } from 'emoji-mart';
 import { Message } from './message';
+import { LinkPreview } from '../../components/link-preview';
+import { LinkPreviewType } from '../../lib/link-preview';
 
 describe('message', () => {
   const subject = (props: any = {}) => {
     const allProps = {
-      message: '',
-      media: { url: '', name: '', type: '' },
       ...props,
     };
 
@@ -17,13 +17,13 @@ describe('message', () => {
   it('renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 
-    const textes = wrapper.find('.message__block-body').text().trim();
+    const text = wrapper.find('.message__block-body').text().trim();
 
-    expect(textes).toStrictEqual('the message');
+    expect(text).toStrictEqual('the message');
   });
 
   it('does not renders message text', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png' } });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png' }, type: 'image' });
 
     expect(wrapper.find('.message__block-body').exists()).toBe(false);
   });
@@ -86,6 +86,34 @@ describe('message', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', name: 'work', type: 'image' } });
 
     expect(wrapper.find('.message__block-image img').prop('alt')).toStrictEqual('work');
+  });
+
+  it('renders LinkPreview when there is a message', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+    const message = 'message text accompanying link preview';
+
+    const wrapper = subject({ preview, message });
+
+    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.text().includes(message)).toBeTruthy();
+  });
+
+  it('renders LinkPreview when there is no message text', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+
+    const wrapper = subject({ preview, message: undefined });
+
+    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
   });
 
   it('renders message with emojis', () => {

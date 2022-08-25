@@ -79,11 +79,11 @@ export class ChannelView extends React.Component<Properties> {
   render() {
     return (
       <div className='channel-view'>
-        <div className='channel-view__name'>
-          <h1>Welcome to #{this.props.name}</h1>
-          <span>This is the start of the channel.</span>
-        </div>
         <InvertedScroll className='channel-view__inverted-scroll'>
+          <div className='channel-view__name'>
+            <h1>Welcome to #{this.props.name}</h1>
+            <span>This is the start of the channel.</span>
+          </div>
           {this.props.messages.length && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length && this.renderMessages()}
         </InvertedScroll>

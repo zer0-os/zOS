@@ -33,13 +33,11 @@ export interface Properties {
 
 export interface State {
   mode: AddressBarMode;
-  isOverlayOpen: boolean;
 }
 
 export class AddressBar extends React.Component<Properties, State> {
   state = {
     mode: this.props.addressBarMode || AddressBarMode.Display,
-    isOverlayOpen: false,
   };
 
   get routeSegments() {
@@ -96,11 +94,11 @@ export class AddressBar extends React.Component<Properties, State> {
   }
 
   showAddressBarMode = (value) => (e) => {
-    this.setState({ mode: value, isOverlayOpen: true });
+    this.setState({ mode: value });
   };
 
   closeAddressBarMode = () => {
-    this.setState({ mode: AddressBarMode.Display, isOverlayOpen: false });
+    this.setState({ mode: AddressBarMode.Display });
   };
 
   onSelect = (route) => {
@@ -108,16 +106,6 @@ export class AddressBar extends React.Component<Properties, State> {
       this.props.onSelect(route);
     });
   };
-
-  renderOverlay() {
-    return (
-      <div
-        className={classNames('overlay', {
-          'overlay--open': this.state.isOverlayOpen,
-        })}
-      ></div>
-    );
-  }
 
   render() {
     const backButtonClass = classNames('address-bar__navigation-button', {
@@ -131,35 +119,35 @@ export class AddressBar extends React.Component<Properties, State> {
     const { mode } = this.state;
 
     return (
-      <div className='address-bar-container'>
-        {this.renderOverlay()}
-        <div className={classNames('address-bar', this.props.className)}>
-          <div className='address-bar__navigation'>
-            <IconButton
-              icon={Icons.ChevronLeft}
-              className={backButtonClass}
-              onClick={this.props.onBack}
-            />
-            <IconButton
-              icon={Icons.ChevronRight}
-              className={forwardButtonClass}
-              onClick={this.props.onForward}
-            />
-          </div>
+      <div className={classNames('address-bar', this.props.className)}>
+        <div className='address-bar__navigation'>
+          <IconButton
+            icon={Icons.ChevronLeft}
+            className={backButtonClass}
+            onClick={this.props.onBack}
+          />
+          <IconButton
+            icon={Icons.ChevronRight}
+            className={forwardButtonClass}
+            onClick={this.props.onForward}
+          />
+        </div>
 
-          {AddressBarMode.Display === mode && (
-            <div className='address-bar__inner'>
-              <span className='address-bar__protocol'>0://</span>
-              {this.renderRoute()}
-              <span
-                className='address-bar__search-trigger-region'
-                onClick={this.showAddressBarMode(AddressBarMode.Search)}
-              >
-                {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
-              </span>
-            </div>
-          )}
-          {AddressBarMode.Search === mode && (
+        {AddressBarMode.Display === mode && (
+          <div className='address-bar__inner'>
+            <span className='address-bar__protocol'>0://</span>
+            {this.renderRoute()}
+            <span
+              className='address-bar__search-trigger-region'
+              onClick={this.showAddressBarMode(AddressBarMode.Search)}
+            >
+              {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
+            </span>
+          </div>
+        )}
+        {AddressBarMode.Search === mode && (
+          <>
+            <div className='address-bar__underlay' />
             <div className='address-bar__inner-search-container'>
               <div className='address-bar__inner-search'>
                 <ZNSDropdown
@@ -169,8 +157,8 @@ export class AddressBar extends React.Component<Properties, State> {
                 />
               </div>
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     );
   }

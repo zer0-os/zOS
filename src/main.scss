@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
@@ -41,11 +41,19 @@
   }
 
   &__header {
-    position: relative;
-    left: $width-application-navigation;
-    padding: 8px 0 0 64px;
-    width: 100%;
-    height: 48px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    box-sizing: border-box;
+
+    left: calc($width-navigation + $width-application-navigation);
+    right: $width-sidekick;
+    height: 72px;
+
+    @include for-left-collapse() {
+      left: calc($width-collapsed-navigation + $width-application-navigation);
+    }
   }
 
   &__address-bar {

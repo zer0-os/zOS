@@ -37,6 +37,7 @@ $speed: animation.$animation-duration;
     height: 100%;
     padding-top: 100px;
     box-sizing: border-box;
+    border-right: 1px solid theme.$primary-border-color;
   }
 
   .app-content {
@@ -48,11 +49,17 @@ $speed: animation.$animation-duration;
   }
 }
 
-.feed {
-  overflow: hidden;
-  &__items {
-    max-width: 100%;
+.feed-app.app-layout {
+  padding-right: $width-sidekick;
+
+  .app-content {
+    display: flex;
+    justify-content: center;
   }
+}
+
+.feed {
+  overflow-x: hidden;
 
   &-item {
     border-color: theme.$address-bar-border-color-inner;

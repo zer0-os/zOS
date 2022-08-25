@@ -16,8 +16,11 @@ export interface Properties extends PublicProperties {
 interface PublicProperties {
   channelId: string;
 }
+export interface State {
+  hasNewMessages: number;
+}
 
-export class Container extends React.Component<Properties> {
+export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
@@ -32,21 +35,44 @@ export class Container extends React.Component<Properties> {
     };
   }
 
+  state = { hasNewMessages: 0 };
+
   componentDidMount() {
     const { channelId } = this.props;
-
     if (channelId) {
       this.props.fetchMessages({ channelId });
+      setInterval(() => {
+        this.props.fetchMessages({ channelId });
+      }, 30000);
     }
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId } = this.props;
+    const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.fetchMessages({ channelId });
     }
+
+    if (
+      channel &&
+      prevProps.channel &&
+      prevProps.channel.messages &&
+      channel.messages.length > prevProps.channel.messages.length
+    ) {
+      this.hasMoreMessages(prevProps.channel.messages.length);
+    }
   }
+
+  hasMoreMessages = (countMessages: number) => {
+    if (this.channel.messages.length > countMessages) {
+      this.setState({ hasNewMessages: this.channel.messages.length - countMessages });
+    }
+  };
+
+  closeIndicator = () => {
+    this.setState({ hasNewMessages: 0 });
+  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -76,6 +102,8 @@ export class Container extends React.Component<Properties> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
+        hasNewMessage={this.state.hasNewMessages}
+        closeIndicator={this.closeIndicator}
       />
     );
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
@@ -96,6 +96,31 @@ describe('ChannelViewContainer', () => {
       channelId: 'the-channel-id',
       referenceTimestamp: 1658776625730,
     });
+  });
+
+  it('should call hasMoreMessages when new messages arrive', async () => {
+    const fetchMessages = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message' },
+      { id: 'the-first-message-id', message: 'the first message' },
+    ] as unknown as Message[];
+
+    const newMessages = [
+      { id: 'the-second-message-id', message: 'the second message' },
+      { id: 'the-first-message-id', message: 'the first message' },
+      { id: 'the-third-message-id', message: 'the third message' },
+      { id: 'the-third-message-id', message: 'the third message' },
+    ] as unknown as Message[];
+
+    const wrapper = subject({
+      fetchMessages,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel', messages },
+    });
+
+    wrapper.setProps({ channel: { name: 'first channel', messages: newMessages } });
+
+    expect(wrapper.find(ChannelView).prop('hasNewMessage')).toStrictEqual(2);
   });
 
   it('should not call fetchMore when hasMore is false', () => {

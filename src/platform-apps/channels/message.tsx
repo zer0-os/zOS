@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 import { textToEmojis } from './utils';
 import { LinkPreview } from '../../components/link-preview/';
-import ProfileLink from './profile-link';
 
 interface Properties extends MessageModel {
   className: string;
@@ -78,12 +77,12 @@ export class Message extends React.Component<Properties> {
 
         if (profileId) {
           return (
-            <ProfileLink
+            <span
               {...props}
               id={profileId}
             >
               {mention}
-            </ProfileLink>
+            </span>
           );
         }
 

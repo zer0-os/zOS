@@ -1,5 +1,3 @@
-import { featureFlags } from '../feature-flags';
-
 export enum Apps {
   Feed = 'feed',
   NFTS = 'nfts',
@@ -29,11 +27,8 @@ Object.keys(Apps).forEach((app) => {
 const allApps = () => {
   const activeApps = [
     apps[Apps.Feed],
+    apps[Apps.Channels],
   ];
-
-  if (featureFlags.channelsApp) {
-    activeApps.push(apps[Apps.Channels]);
-  }
 
   return activeApps;
 };

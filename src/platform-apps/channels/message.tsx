@@ -70,20 +70,13 @@ export class Message extends React.Component<Properties> {
       if (match[2] === 'user') {
         const profileId = this.getProfileId(match[3]);
         const mention = `@${match[1]}`;
-        const props = {
+        const props: { className: string; key: string; id?: string } = {
           className: 'message__user-mention',
           key: match[3] + index,
         };
 
         if (profileId) {
-          return (
-            <span
-              {...props}
-              id={profileId}
-            >
-              {mention}
-            </span>
-          );
+          props.id = profileId;
         }
 
         return <span {...props}>{mention}</span>;

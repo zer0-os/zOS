@@ -130,4 +130,12 @@ describe('message', () => {
 
     expect(textes).toStrictEqual('<Emoji /> <Emoji /> and some text');
   });
+
+  it('renders message with mention', () => {
+    const wrapper = subject({ message: '@[HamzaKH ](user:aec3c346-a34c-4440-a9e6-d476c2671dd1)' });
+
+    const mentions = wrapper.find('.message__user-mention');
+
+    expect(mentions).toHaveLength(1);
+  });
 });

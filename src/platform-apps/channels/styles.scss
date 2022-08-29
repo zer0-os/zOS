@@ -57,6 +57,7 @@
     overflow: hidden;
     margin: 20px 0 25px;
     color: #cccccc;
+
     &-date {
       border-radius: 0;
       background-color: theme.$background-color-secondary;
@@ -210,5 +211,21 @@
     .emoji-mart-emoji {
       height: 19px;
     }
+
+    &__user-mention {
+      animation: fade-background-in 200ms ease-in forwards;
+      color: black;
+      padding: 3px;
+      border-radius: 5px;
+    }
+  }
+}
+
+@keyframes fade-background-in {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: theme.$accent-color;
   }
 }

@@ -95,14 +95,16 @@ export class Message extends React.Component<Properties> {
           <div className='message__block-icon'></div>
           {media && this.renderMedia(media)}
           {(message || preview) && (
-            <div className='message__block-body'>
-              {message && this.renderMessage(message)}
-              {preview && (
-                <LinkPreview
-                  url={preview.url}
-                  {...preview}
-                />
-              )}
+            <div className='message__block-body-wrapper'>
+              <div className='message__block-body'>
+                {message && this.renderMessage(message)}
+                {preview && (
+                  <LinkPreview
+                    url={preview.url}
+                    {...preview}
+                  />
+                )}
+              </div>
             </div>
           )}
           {this.renderTime(createdAt)}

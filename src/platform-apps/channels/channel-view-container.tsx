@@ -43,7 +43,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.fetchMessages({ channelId });
       setInterval(() => {
         this.props.fetchMessages({ channelId });
-      }, 30000);
+      }, 20000);
     }
   }
 
@@ -54,12 +54,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.fetchMessages({ channelId });
     }
 
-    if (
-      channel &&
-      prevProps.channel &&
-      prevProps.channel.messages &&
-      channel.messages.length > prevProps.channel.messages.length
-    ) {
+    if (channel && prevProps.channel && prevProps.channel.messages && channel.messages) {
       this.hasMoreMessages(prevProps.channel.messages.length);
     }
   }

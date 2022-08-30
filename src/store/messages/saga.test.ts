@@ -27,7 +27,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelId)
+      .call(fetchMessagesByChannelId, 'sendbird_group_channel_' + channelId)
       .run();
   });
 
@@ -43,7 +43,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelId, 1658776625730)
+      .call(fetchMessagesByChannelId, 'sendbird_group_channel_' + channelId, 1658776625730)
       .run();
   });
 

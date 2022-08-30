@@ -9,7 +9,7 @@ export function* fetch(action) {
 
   const channels = yield call(fetchChannels, action.payload);
   const channelsList = channels.map((channel) => ({
-    id: channel.url,
+    id: channel.url.replace('sendbird_group_channel_', ''),
     name: channel.name,
     icon: channel.icon,
   }));

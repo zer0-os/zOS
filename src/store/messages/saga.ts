@@ -19,17 +19,18 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
+  let channelIdPrefix: string = 'sendbird_group_channel_' + channelId;
 
   if (referenceTimestamp) {
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelIdPrefix, referenceTimestamp);
     messages = [
       ...existingMessages,
       ...messagesResponse.messages,
     ];
   } else {
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelIdPrefix);
     messages = messagesResponse.messages;
   }
 

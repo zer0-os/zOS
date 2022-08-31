@@ -5,6 +5,7 @@ import { fetchMessagesByChannelId } from './api';
 import { fetch } from './saga';
 
 import { rootReducer } from '..';
+import { channelIdPrefix } from '../channels-list/saga';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {
@@ -27,7 +28,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, 'sendbird_group_channel_' + channelId)
+      .call(fetchMessagesByChannelId, channelIdPrefix + channelId)
       .run();
   });
 
@@ -43,7 +44,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, 'sendbird_group_channel_' + channelId, 1658776625730)
+      .call(fetchMessagesByChannelId, channelIdPrefix + channelId, 1658776625730)
       .run();
   });
 

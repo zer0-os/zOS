@@ -2,6 +2,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes } from '.';
 import { receive } from '../channels';
+import { channelIdPrefix } from '../channels-list/saga';
 
 import { fetchMessagesByChannelId } from './api';
 
@@ -19,18 +20,18 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-  let channelIdPrefix: string = 'sendbird_group_channel_' + channelId;
+  const channelPrefix: string = channelIdPrefix + channelId;
 
   if (referenceTimestamp) {
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
-    messagesResponse = yield call(fetchMessagesByChannelId, channelIdPrefix, referenceTimestamp);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix, referenceTimestamp);
     messages = [
       ...existingMessages,
       ...messagesResponse.messages,
     ];
   } else {
-    messagesResponse = yield call(fetchMessagesByChannelId, channelIdPrefix);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix);
     messages = messagesResponse.messages;
   }
 

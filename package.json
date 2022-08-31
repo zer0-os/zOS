@@ -80,6 +80,7 @@
     "@types/react-portal": "^4.0.4",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
     "concurrently": "^7.1.0",
+    "craco-babel-loader": "^1.0.3",
     "cross-env": "^7.0.3",
     "electron": "^18.1.0",
     "electron-builder": "^23.0.3",

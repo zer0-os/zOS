@@ -112,19 +112,22 @@
         margin-right: 18px;
       }
 
-      &-body {
-        background: #3e4042;
-        padding: 5px 15px;
-        color: #fff;
-        white-space: pre-wrap;
-        word-break: break-word;
-        width: fit-content;
-        display: inline-block;
+      &-body-wrapper {
+        flex: 1 0 auto;
 
         .message--owner & {
           border-left: 3px solid #fb216e;
           background-color: #212121;
         }
+      }
+
+      &-body {
+        display: inline-block;
+        background: #3e4042;
+        padding: 5px 15px;
+        color: #fff;
+        white-space: pre-wrap;
+        word-break: break-word;
       }
 
       &-image {

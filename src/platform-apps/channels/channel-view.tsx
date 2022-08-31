@@ -84,8 +84,8 @@ export class ChannelView extends React.Component<Properties> {
             <h1>Welcome to #{this.props.name}</h1>
             <span>This is the start of the channel.</span>
           </div>
-          {this.props.messages.length && <Waypoint onEnter={this.props.onFetchMore} />}
-          {this.props.messages.length && this.renderMessages()}
+          {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+          {this.props.messages.length > 0 && this.renderMessages()}
         </InvertedScroll>
       </div>
     );

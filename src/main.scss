@@ -43,12 +43,11 @@
   &__header {
     position: absolute;
     display: flex;
-    justify-content: center;
     align-items: flex-end;
     box-sizing: border-box;
 
     left: calc($width-navigation + $width-application-navigation);
-    right: $width-sidekick;
+    right: 0;
     height: 72px;
 
     @include for-left-collapse() {
@@ -56,10 +55,30 @@
     }
   }
 
+  &__address-bar-wrapper {
+    display: flex;
+    justify-content: center;
+    flex: 1 0;
+  }
+
   &__address-bar {
     pointer-events: auto;
     width: 100%;
     max-width: 752px;
+  }
+
+  &__wallet-manager-wrapper {
+    flex: 0 0 auto;
+    width: $width-sidekick;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__wallet-manager {
+    margin-bottom: 8px;
+    pointer-events: auto;
   }
 
   &__sidekick {

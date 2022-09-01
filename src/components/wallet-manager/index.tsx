@@ -1,4 +1,5 @@
 import { Button, EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import classNames from 'classnames';
 import React from 'react';
 import { config } from '../../config';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
@@ -9,7 +10,11 @@ import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3
 import { isElectron } from '../../utils';
 import './styles.scss';
 
-export interface Properties {
+interface PublicProperties {
+  className?: string;
+}
+
+export interface Properties extends PublicProperties {
   currentAddress: string;
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
@@ -114,7 +119,7 @@ export class Container extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div className='wallet-manager'>
+      <div className={classNames('wallet-manager', this.props.className)}>
         {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
         {this.showButton && (
           <Button
@@ -138,4 +143,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const WalletManager = connectContainer<{}>(Container);
+export const WalletManager = connectContainer<PublicProperties>(Container);

@@ -1,18 +1,17 @@
 @use '../../modules/animation' as animation;
 
-.channel-view {
-  &__newMessage {
+.indicator {
+  &__new-message {
     display: flex;
     justify-content: space-between;
     position: absolute;
     left: 16px;
     right: 16px;
-    top: 0;
+    top: 100px;
     align-items: center;
     z-index: 2;
     min-height: 24px;
     text-transform: capitalize;
-    -webkit-transition: opacity 0.15s;
     transition: opacity 0.15s;
     opacity: 0.95;
     cursor: pointer;

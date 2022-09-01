@@ -17,10 +17,11 @@ interface PublicProperties {
   channelId: string;
 }
 export interface State {
-  hasNewMessages: number;
+  countNewMessage: number;
 }
 
 export class Container extends React.Component<Properties, State> {
+  fetchInterval;
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
@@ -35,13 +36,13 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { hasNewMessages: 0 };
+  state = { countNewMessage: 0 };
 
   componentDidMount() {
     const { channelId } = this.props;
     if (channelId) {
       this.props.fetchMessages({ channelId });
-      setInterval(() => {
+      this.fetchInterval = setInterval(() => {
         this.props.fetchMessages({ channelId });
       }, 20000);
     }
@@ -59,14 +60,18 @@ export class Container extends React.Component<Properties, State> {
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.fetchInterval);
+  }
+
   hasMoreMessages = (countMessages: number) => {
     if (this.channel.messages.length > countMessages) {
-      this.setState({ hasNewMessages: this.channel.messages.length - countMessages });
+      this.setState({ countNewMessage: this.channel.messages.length - countMessages });
     }
   };
 
-  closeIndicator = () => {
-    this.setState({ hasNewMessages: 0 });
+  setCountNewMessage = () => {
+    this.setState({ countNewMessage: 0 });
   };
 
   getOldestTimestamp(messages: Message[] = []): number {
@@ -97,8 +102,8 @@ export class Container extends React.Component<Properties, State> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
-        hasNewMessage={this.state.hasNewMessages}
-        closeIndicator={this.closeIndicator}
+        countNewMessage={this.state.countNewMessage}
+        setCountNewMessage={this.setCountNewMessage}
       />
     );
   }

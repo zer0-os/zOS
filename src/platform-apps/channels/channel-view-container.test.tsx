@@ -8,6 +8,10 @@ import { ChannelView } from './channel-view';
 import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   const subject = (props: any = {}) => {
     const allProps = {
       channel: null,
@@ -120,7 +124,7 @@ describe('ChannelViewContainer', () => {
 
     wrapper.setProps({ channel: { name: 'first channel', messages: newMessages } });
 
-    expect(wrapper.find(ChannelView).prop('hasNewMessage')).toStrictEqual(2);
+    expect(wrapper.find(ChannelView).prop('countNewMessage')).toStrictEqual(2);
   });
 
   it('should not call fetchMore when hasMore is false', () => {

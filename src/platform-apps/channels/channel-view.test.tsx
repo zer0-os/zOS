@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 import { ChannelView } from './channel-view';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -18,7 +19,7 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
-      hasNewMessage: 0,
+      countNewMessage: 0,
       ...props,
     };
 
@@ -116,5 +117,12 @@ describe('ChannelView', () => {
     const wrapper = subject({ messages: [] });
 
     expect(wrapper.find(Waypoint).exists()).toBe(false);
+  });
+
+  it('renders IndicatorMessage', () => {
+    const wrapper = subject({ countNewMessage: 2 });
+
+    expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
+    expect(wrapper.find(IndicatorMessage).prop('countNewMessage')).toStrictEqual(2);
   });
 });

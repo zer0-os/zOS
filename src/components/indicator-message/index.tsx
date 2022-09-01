@@ -4,31 +4,30 @@ import React from 'react';
 import './styles.scss';
 
 interface Properties {
-  hasNewMessage: number;
+  countNewMessage: number;
   className?: string;
   bottomRef?: any;
   closeIndicator: () => void;
-  scrollToBottom: () => void;
 }
 
 export class IndicatorMessage extends React.Component<Properties> {
   render() {
     return (
-      <div className={classNames('hasNewMessage', this.props.className)}>
-        {this.props.hasNewMessage > 0 && (
-          <div className='channel-view__newMessage'>
+      <div className={classNames('countNewMessage', this.props.className)}>
+        {this.props.countNewMessage > 0 && (
+          <div className='indicator__new-message'>
             <button
               type='button'
-              className='channel-view__newMessage-bar'
+              className='indicator__new-message-bar'
               aria-label='Jump to last unread message'
-              onClick={this.props.scrollToBottom}
+              onClick={this.props.closeIndicator}
             >
-              <span className='channel-view__newMessage-bar-text'>{this.props.hasNewMessage} new messages</span>
+              <span className='indicator__new-message-bar-text'>{this.props.countNewMessage} new messages</span>
             </button>
             <button
               type='button'
-              className='channel-view__newMessage-alt'
-              onClick={this.props.scrollToBottom}
+              className='indicator__new-message-alt'
+              onClick={this.props.closeIndicator}
             >
               Mark As Read
               <svg

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
-import IndicatorMessage from '../../components/indicator_message';
+import IndicatorMessage from '../../components/indicator-message';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -14,8 +14,8 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
-  closeIndicator: () => void;
-  hasNewMessage: number;
+  setCountNewMessage: () => void;
+  countNewMessage: number;
 }
 
 export class ChannelView extends React.Component<Properties> {
@@ -50,8 +50,8 @@ export class ChannelView extends React.Component<Properties> {
     });
   }
 
-  scrollToBottom = () => {
-    this.props.closeIndicator();
+  closeIndicator = () => {
+    this.props.setCountNewMessage();
     this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -94,9 +94,8 @@ export class ChannelView extends React.Component<Properties> {
     return (
       <div className='channel-view'>
         <IndicatorMessage
-          hasNewMessage={this.props.hasNewMessage}
-          closeIndicator={this.props.closeIndicator}
-          scrollToBottom={this.scrollToBottom}
+          countNewMessage={this.props.countNewMessage}
+          closeIndicator={this.closeIndicator}
         />
         <InvertedScroll className='channel-view__inverted-scroll'>
           <div className='channel-view__name'>

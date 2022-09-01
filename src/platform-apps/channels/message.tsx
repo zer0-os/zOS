@@ -4,12 +4,15 @@ import moment from 'moment';
 import { Message as MessageModel } from '../../store/messages';
 import { textToEmojis } from './utils';
 import { LinkPreview } from '../../components/link-preview/';
-
+import { CloudinaryProvider, provider } from '../../lib/cloudinary/provider';
 interface Properties extends MessageModel {
   className: string;
+  cloudinaryProvider: CloudinaryProvider;
 }
 
 export class Message extends React.Component<Properties> {
+  static defaultProps = { cloudinaryProvider: provider };
+
   getProfileId(id: string): string | null {
     const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
 
@@ -87,16 +90,24 @@ export class Message extends React.Component<Properties> {
   }
 
   render() {
-    const { message, media, preview, createdAt } = this.props;
+    const { message, media, preview, createdAt, sender } = this.props;
 
     return (
       <div className={classNames('message', this.props.className)}>
         <div className='message__block'>
-          <div className='message__block-icon'></div>
-          {media && this.renderMedia(media)}
-          {(message || preview) && (
+          <div className='message__left'>
+            <div
+              style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
+              className='message__author-avatar'
+            />
+          </div>
+          {(message || media || preview) && (
             <div className='message__block-body-wrapper'>
+              <div className='message__author-name'>
+                {sender.firstName} {sender.lastName}
+              </div>
               <div className='message__block-body'>
+                {media && this.renderMedia(media)}
                 {message && this.renderMessage(message)}
                 {preview && (
                   <LinkPreview

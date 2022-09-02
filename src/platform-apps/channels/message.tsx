@@ -116,7 +116,7 @@ export class Message extends React.Component<Properties> {
               <div className='message__author-name'>
                 {sender.firstName} {sender.lastName}
               </div>
-              <div className='message__block-body'>
+              <div className={preview ? 'message__block-preview' : 'message__block-body'}>
                 {media && this.renderMedia(media)}
                 {message && this.renderMessage(message)}
                 {preview && (

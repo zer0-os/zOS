@@ -1,19 +1,7 @@
 import { Apps, apps, allApps } from '.';
-import { featureFlags } from '../feature-flags';
-
-jest.mock('../feature-flags');
 
 describe('apps', () => {
-  it('defaults to feed app', () => {
-    expect(allApps()).toStrictEqual([
-      apps[Apps.Feed],
-      apps[Apps.Staking],
-    ]);
-  });
-
-  it('includes Channels when channelsApp feature flag is true', () => {
-    featureFlags.channelsApp = true;
-
+  it('defaults to apps: Feed, Staking, Channels', () => {
     expect(allApps()).toStrictEqual([
       apps[Apps.Feed],
       apps[Apps.Staking],

@@ -1,0 +1,88 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
+@import '../../variables';
+@import '../../animation';
+
+$link-preview-min-height: 250px;
+$weight-bold: 900;
+
+.link-preview {
+  background-color: theme.$background-color-primary;
+  margin-top: 5px;
+
+  &__body {
+    padding: 20px 8px 8px 20px;
+  }
+
+  &__banner {
+    position: relative;
+    margin-left: 3px;
+
+    &-image {
+      background-size: cover;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $weight-bold;
+    color: theme.$font-color-primary;
+    margin-bottom: 10px;
+    width: 100%;
+
+    .button-link__label {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    &-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__author-name {
+    margin-right: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__author-handle {
+    color: theme.$font-color-secondary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__description {
+    font-size: $font-size-small;
+    color: theme.$font-color-primary;
+    line-height: $font-size-large;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__footer {
+    padding: 10px 8px 8px 20px;
+  }
+
+  &__content-link {
+    font-size: $font-size-small;
+    font-weight: $weight-bold;
+  }
+
+  &__content-link.button-link,
+  &__title.button-link {
+    &:hover .button-link__label,
+    .button-link__label {
+      color: inherit;
+      background-color: transparent;
+      font-size: inherit;
+      font-weight: inherit;
+      text-transform: none;
+      line-height: normal;
+      text-align: inherit;
+      border-radius: 0;
+      padding: 0;
+    }
+  }
+}

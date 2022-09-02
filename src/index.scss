@@ -35,22 +35,6 @@ BUTTON {
   color: inherit;
 }
 
-.app-sandbox-wrapper {
-  display: flex;
-  justify-content: center;
-
-  .app-sandbox {
-    position: relative;
-    max-width: 800px;
-    width: $width-app-sandbox;
-
-    @include for-static-layout() {
-      position: absolute;
-      left: $width-collapsed-navigation;
-    }
-  }
-}
-
 #root {
   transition: background animation.$animation-duration-double ease-out;
 }

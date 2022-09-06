@@ -3,6 +3,10 @@
   "version": "0.2.11",
   "private": true,
   "main": "./public/electron.js",
+  "engines": {
+    "node": "16.17.0",
+    "npm": "8.15.0"
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@reduxjs/toolkit": "^1.7.1",

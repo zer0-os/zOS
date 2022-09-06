@@ -1,11 +1,25 @@
 import { BackgroundImageOptions } from '@zer0-os/zos-component-library';
 import { Cloudinary, Configuration } from 'cloudinary-core';
 import { config } from '../../config';
+import { Media } from '../../store/messages';
 
 interface SourceOptions {
   src: string;
   local?: boolean;
   options: BackgroundImageOptions;
+}
+
+interface ImageFetchOptions {
+  width?: number;
+  height?: number;
+  crop?: 'thumb' | 'fill' | 'lfill' | 'fit';
+  gravity?: 'auto' | 'face:auto' | 'faces:auto';
+  radius?: 'max';
+  format?: 'png' | 'jpg'; // this option only works if you don't provide an extension with the filename
+  fetch_format?: 'png' | 'jpg'; // force the format even if a different format specified in filename
+  background?: 'black' | 'transparent';
+  transformation?: any[];
+  resource_type?: 'image' | 'video';
 }
 
 export class CloudinaryProvider {
@@ -76,6 +90,24 @@ export class CloudinaryProvider {
     }
 
     return source;
+  }
+
+  fitWithinBox(media: Media, maxWidth: number, maxHeight: number): ImageFetchOptions {
+    const imageOptions = {} as ImageFetchOptions;
+
+    if (media.height >= media.width) {
+      if (media.height > maxHeight) {
+        imageOptions.height = maxHeight;
+        imageOptions.crop = 'fill';
+      }
+    } else {
+      if (media.width > maxWidth) {
+        imageOptions.width = maxWidth;
+        imageOptions.crop = 'fill';
+      }
+    }
+
+    return imageOptions;
   }
 }
 

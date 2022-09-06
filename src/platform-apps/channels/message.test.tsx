@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Emoji } from 'emoji-mart';
 import { Message } from './message';
+import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 
@@ -23,7 +24,7 @@ describe('message', () => {
   });
 
   it('does not renders message text', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png' }, type: 'image' });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png' }, type: MediaType.Image });
 
     expect(wrapper.find('.message__block-body').exists()).toBe(false);
   });
@@ -35,31 +36,31 @@ describe('message', () => {
   });
 
   it('renders message video', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: 'video' } });
+    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: MediaType.Video } });
 
     expect(wrapper.find('.message__block-video').exists()).toBe(true);
   });
 
   it('passes src prop to video', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: 'video' } });
+    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: MediaType.Video } });
 
     expect(wrapper.find('.message__block-video video source').prop('src')).toStrictEqual('https://image.com/video.mp4');
   });
 
   it('renders message audio', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: 'audio' } });
+    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: MediaType.Audio } });
 
     expect(wrapper.find('.message__block-audio').exists()).toBe(true);
   });
 
   it('passes src prop to audio', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: 'audio' } });
+    const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: MediaType.Audio } });
 
     expect(wrapper.find('.message__block-audio audio source').prop('src')).toStrictEqual('https://image.com/audio.mp3');
   });
 
   it('renders message image', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png', type: 'image' } });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 
     expect(wrapper.find('.message__block-image').exists()).toBe(true);
   });
@@ -77,13 +78,13 @@ describe('message', () => {
   });
 
   it('passes src prop to image', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png', type: 'image' } });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 
     expect(wrapper.find('.message__block-image img').prop('src')).toStrictEqual('https://image.com/image.png');
   });
 
   it('passes alt prop to image', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png', name: 'work', type: 'image' } });
+    const wrapper = subject({ media: { url: 'https://image.com/image.png', name: 'work', type: MediaType.Image } });
 
     expect(wrapper.find('.message__block-image img').prop('alt')).toStrictEqual('work');
   });
@@ -137,5 +138,40 @@ describe('message', () => {
     const mentions = wrapper.find('.message__user-mention');
 
     expect(mentions).toHaveLength(1);
+  });
+
+  describe('Lightbox', () => {
+    it('opens when image file is clicked', () => {
+      const media = { url: 'https://image.com/image.png', type: MediaType.Image };
+      const openLightbox = jest.fn();
+
+      const wrapper = subject({ media, openLightbox });
+
+      wrapper.find('[className$="-image"]').simulate('click');
+
+      expect(openLightbox).toHaveBeenCalled();
+    });
+
+    it('does not open when video file is clicked', () => {
+      const media = { url: 'https://image.com/video.mp4', type: MediaType.Video };
+      const openLightbox = jest.fn();
+
+      const wrapper = subject({ media, openLightbox });
+
+      wrapper.find('[className$="-video"]').simulate('click');
+
+      expect(openLightbox).not.toHaveBeenCalled();
+    });
+
+    it('does not open when audio file is clicked', () => {
+      const media = { url: 'https://image.com/audio.mp3', type: MediaType.Audio };
+      const openLightbox = jest.fn();
+
+      const wrapper = subject({ media, openLightbox });
+
+      wrapper.find('[className$="-audio"]').simulate('click');
+
+      expect(openLightbox).not.toHaveBeenCalled();
+    });
   });
 });

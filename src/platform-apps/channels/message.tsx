@@ -1,12 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel } from '../../store/messages';
+import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
 import { LinkPreview } from '../../components/link-preview/';
 
 interface Properties extends MessageModel {
   className: string;
+  openLightbox: any;
 }
 
 export class Message extends React.Component<Properties> {
@@ -18,18 +19,25 @@ export class Message extends React.Component<Properties> {
     return user.profileId;
   }
 
+  openLightbox = (media) => (_event) => {
+    this.props.openLightbox(media);
+  };
+
   renderMedia(media) {
     const { type, url, name } = media;
-    if (type === 'image') {
+    if (MediaType.Image === type) {
       return (
-        <div className='message__block-image'>
+        <div
+          className='message__block-image'
+          onClick={this.openLightbox(media)}
+        >
           <img
             src={url}
             alt={name}
           />
         </div>
       );
-    } else if (type === 'video') {
+    } else if (MediaType.Video === type) {
       return (
         <div className='message__block-video'>
           <video controls>
@@ -37,7 +45,7 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
-    } else if (type === 'audio') {
+    } else if (MediaType.Audio === type) {
       return (
         <div className='message__block-audio'>
           <audio controls>

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
-
 import { ChannelView } from './channel-view';
 import { Message } from './message';
+import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
+import { Lightbox } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -115,5 +116,67 @@ describe('ChannelView', () => {
     const wrapper = subject({ messages: [] });
 
     expect(wrapper.find(Waypoint).exists()).toBe(false);
+  });
+
+  describe('Lightbox', () => {
+    it('renders Lightbox when image file is is within message and LightBox has been opened', () => {
+      const imageMedia = { url: 'image.jpg', type: MediaType.Image };
+      const messages = [
+        {
+          id: 'message-1',
+          message: 'image message',
+          media: imageMedia,
+          sender: { userId: 1 },
+          createdAt: 1658776625730,
+        },
+        {
+          id: 'message-2',
+          message: 'video message',
+          media: { url: 'video.avi', type: MediaType.Video },
+          sender: { userId: 1 },
+          createdAt: 1658776625731,
+        },
+        {
+          id: 'message-3',
+          message: 'audio message',
+          media: { url: 'video.mp3', type: MediaType.Audio },
+          sender: { userId: 1 },
+          createdAt: 1658776625732,
+        },
+      ];
+      const wrapper = subject({ messages });
+      wrapper.instance().openLightbox();
+
+      expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
+    });
+
+    it('does not render Lightbox', () => {
+      const messages = [
+        {
+          id: 'message-1',
+          message: 'image message',
+          media: { url: 'image.jpg', type: MediaType.Image },
+          sender: { userId: 1 },
+          createdAt: 1658776625730,
+        },
+        {
+          id: 'message-2',
+          message: 'video message',
+          media: { url: 'video.avi', type: MediaType.Video },
+          sender: { userId: 1 },
+          createdAt: 1658776625731,
+        },
+        {
+          id: 'message-3',
+          message: 'audio message',
+          media: { url: 'video.mp3', type: MediaType.Audio },
+          sender: { userId: 1 },
+          createdAt: 1658776625732,
+        },
+      ];
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find(Lightbox).exists()).toBeFalsy();
+    });
   });
 });

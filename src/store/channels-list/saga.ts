@@ -14,6 +14,7 @@ export function* fetch(action) {
     id: channel.url.replace(channelIdPrefix, ''),
     name: channel.name,
     icon: channel.icon,
+    category: channel.category,
   }));
   yield put(receive(channelsList));
 

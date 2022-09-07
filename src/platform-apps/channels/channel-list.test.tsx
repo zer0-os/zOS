@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { ChannelList } from './channel-list';
 import { ZnsLink } from '@zer0-os/zos-component-library';
+import Collapsible from 'react-collapsible';
 
 describe('ChannelList', () => {
   const subject = (props: any = {}) => {
@@ -16,10 +17,10 @@ describe('ChannelList', () => {
 
   it('renders each channel name', () => {
     const channels = [
-      { id: 'one', name: 'first channel' },
-      { id: 'two', name: 'second channel' },
-      { id: 'three', name: 'third channel' },
-      { id: 'four', name: 'fourth channel' },
+      { id: 'one', name: 'first channel', category: 'catg1' },
+      { id: 'two', name: 'second channel', category: 'catg1' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel', category: 'catg2' },
     ];
 
     const wrapper = subject({ channels });
@@ -56,10 +57,10 @@ describe('ChannelList', () => {
 
   it('renders Link to channel id', () => {
     const channels = [
-      { id: 'one', name: 'first channel' },
-      { id: 'two', name: 'second channel' },
-      { id: 'three', name: 'third channel' },
-      { id: 'four', name: 'fourth channel' },
+      { id: 'one', name: 'first channel', category: 'catg1' },
+      { id: 'two', name: 'second channel', category: 'catg1' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel', category: 'catg2' },
     ];
 
     const wrapper = subject({ channels });
@@ -74,18 +75,32 @@ describe('ChannelList', () => {
     ]);
   });
 
-  it('adds class to current channel', () => {
+  it('renders category name', () => {
     const channels = [
-      { id: 'one', name: 'first channel' },
-      { id: 'two', name: 'second channel' },
-      { id: 'three', name: 'third channel' },
-      { id: 'four', name: 'fourth channel' },
+      { id: 'one', name: 'first channel', category: 'catg1' },
+      { id: 'two', name: 'second channel', category: 'catg1' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel', category: 'catg2' },
     ];
 
-    const wrapper = subject({ channels, currentChannelId: 'three' });
+    const wrapper = subject({ channels });
+    expect(wrapper.find('.channel-list__category-channel-name').exists()).toBe(true);
+  });
 
-    const activeChannelLink = wrapper.find(ZnsLink).at(2);
+  it('renders grouped category', () => {
+    const channels = [
+      { id: 'one', name: 'first channel', category: 'catg1' },
+      { id: 'two', name: 'second channel', category: 'catg1' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel', category: 'catg2' },
+    ];
 
-    expect(activeChannelLink.hasClass('active')).toBeTrue();
+    const wrapper = subject({ channels });
+    const textes = wrapper.find(Collapsible).map((l) => l.prop('trigger'));
+
+    expect(textes).toStrictEqual([
+      'catg1',
+      'catg2',
+    ]);
   });
 });

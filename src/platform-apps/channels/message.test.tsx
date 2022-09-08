@@ -7,8 +7,16 @@ import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 
 describe('message', () => {
+  const sender = {
+    firstName: 'John',
+    lastName: 'Doe',
+    profileId: '0cae10cb-a884-45f1-b480-f84881a99fc',
+    profileImage: 'https://image.com/image-1',
+    userId: '2769eab5-56e7-46c0-a465-c58aa2ef',
+  };
   const subject = (props: any = {}) => {
     const allProps = {
+      sender,
       ...props,
     };
 
@@ -21,18 +29,6 @@ describe('message', () => {
     const text = wrapper.find('.message__block-body').text().trim();
 
     expect(text).toStrictEqual('the message');
-  });
-
-  it('does not renders message text', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/image.png' }, type: MediaType.Image });
-
-    expect(wrapper.find('.message__block-body').exists()).toBe(false);
-  });
-
-  it('renders message icon', () => {
-    const wrapper = subject({ message: 'the message' });
-
-    expect(wrapper.find('.message__block-icon').exists()).toBe(true);
   });
 
   it('renders message video', () => {
@@ -72,7 +68,10 @@ describe('message', () => {
   });
 
   it('renders time', () => {
-    const wrapper = subject({ message: 'the message', createdAt: new Date('December 17, 1995 17:04:00').valueOf() });
+    const wrapper = subject({
+      message: 'the message',
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+    });
 
     expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
   });
@@ -138,6 +137,16 @@ describe('message', () => {
     const mentions = wrapper.find('.message__user-mention');
 
     expect(mentions).toHaveLength(1);
+  });
+
+  it('renders author avatar', () => {
+    const wrapper = subject({
+      message: 'text',
+    });
+
+    const authorAvatarElement = wrapper.find('.message__author-avatar');
+
+    expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
   });
 
   describe('Lightbox', () => {

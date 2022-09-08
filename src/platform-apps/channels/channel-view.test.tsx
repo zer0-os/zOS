@@ -145,7 +145,7 @@ describe('ChannelView', () => {
         },
       ];
       const wrapper = subject({ messages });
-      wrapper.instance().openLightbox();
+      wrapper.find(Message).at(1).simulate('imageClick');
 
       expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
     });

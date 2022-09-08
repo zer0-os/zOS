@@ -1,4 +1,4 @@
 $animation-duration: 300ms;
-$animation-duration-half: #{calc($animation-duration / 2)};
+$animation-duration-half: calc($animation-duration / 2);
 $animation-duration-double: calc($animation-duration * 2);
 $animation-duration-quadruple: calc($animation-duration * 4);

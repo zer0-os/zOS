@@ -85,7 +85,7 @@ export class ChannelView extends React.Component<Properties, State> {
           return (
             <Message
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
-              openLightbox={this.openLightbox}
+              onImageClick={this.openLightbox}
               key={message.id}
               {...message}
             />

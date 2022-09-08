@@ -7,7 +7,7 @@ import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider, provider } from '../../lib/cloudinary/provider';
 interface Properties extends MessageModel {
   className: string;
-  openLightbox: any;
+  onImageClick: () => void;
   cloudinaryProvider: CloudinaryProvider;
 }
 
@@ -22,8 +22,8 @@ export class Message extends React.Component<Properties> {
     return user.profileId;
   }
 
-  openLightbox = (media) => (_event) => {
-    this.props.openLightbox(media);
+  onImageClick = (media) => (_event) => {
+    this.props.onImageClick(media);
   };
 
   renderMedia(media) {
@@ -32,7 +32,7 @@ export class Message extends React.Component<Properties> {
       return (
         <div
           className='message__block-image'
-          onClick={this.openLightbox(media)}
+          onClick={this.onImageClick(media)}
         >
           <img
             src={url}

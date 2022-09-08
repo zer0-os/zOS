@@ -152,35 +152,35 @@ describe('message', () => {
   describe('Lightbox', () => {
     it('opens when image file is clicked', () => {
       const media = { url: 'https://image.com/image.png', type: MediaType.Image };
-      const openLightbox = jest.fn();
+      const onImageClick = jest.fn();
 
-      const wrapper = subject({ media, openLightbox });
+      const wrapper = subject({ media, onImageClick });
 
       wrapper.find('[className$="-image"]').simulate('click');
 
-      expect(openLightbox).toHaveBeenCalled();
+      expect(onImageClick).toHaveBeenCalled();
     });
 
     it('does not open when video file is clicked', () => {
       const media = { url: 'https://image.com/video.mp4', type: MediaType.Video };
-      const openLightbox = jest.fn();
+      const onImageClick = jest.fn();
 
-      const wrapper = subject({ media, openLightbox });
+      const wrapper = subject({ media, onImageClick });
 
       wrapper.find('[className$="-video"]').simulate('click');
 
-      expect(openLightbox).not.toHaveBeenCalled();
+      expect(onImageClick).not.toHaveBeenCalled();
     });
 
     it('does not open when audio file is clicked', () => {
       const media = { url: 'https://image.com/audio.mp3', type: MediaType.Audio };
-      const openLightbox = jest.fn();
+      const onImageClick = jest.fn();
 
-      const wrapper = subject({ media, openLightbox });
+      const wrapper = subject({ media, onImageClick });
 
       wrapper.find('[className$="-audio"]').simulate('click');
 
-      expect(openLightbox).not.toHaveBeenCalled();
+      expect(onImageClick).not.toHaveBeenCalled();
     });
   });
 });

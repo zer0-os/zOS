@@ -119,7 +119,7 @@ describe('ChannelView', () => {
   });
 
   describe('Lightbox', () => {
-    it('renders Lightbox when image file is is within message and LightBox has been opened', () => {
+    it('renders when image file is within message and LightBox has been opened', () => {
       const imageMedia = { url: 'image.jpg', type: MediaType.Image };
       const messages = [
         {
@@ -150,7 +150,7 @@ describe('ChannelView', () => {
       expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
     });
 
-    it('does not render Lightbox', () => {
+    it('does not render', () => {
       const messages = [
         {
           id: 'message-1',

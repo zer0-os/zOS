@@ -4,10 +4,12 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
 import { LinkPreview } from '../../components/link-preview/';
-import { CloudinaryProvider, provider } from '../../lib/cloudinary/provider';
+import { CloudinaryProvider } from '@zer0-os/zos-component-library';
+import { provider } from '../../lib/cloudinary/provider';
+
 interface Properties extends MessageModel {
   className: string;
-  onImageClick: () => void;
+  onImageClick: (media: any) => void;
   cloudinaryProvider: CloudinaryProvider;
 }
 

@@ -25,6 +25,14 @@ describe('WalletManager', () => {
     expect(button.hasClass('wallet-manager__connect-button')).toBe(true);
   });
 
+  it('adds className', () => {
+    const wrapper = subject({ className: 'tacos' });
+
+    const component = wrapper.find('.wallet-manager');
+
+    expect(component.hasClass('tacos')).toBe(true);
+  });
+
   // this will be currentWallet dependent in the future, but at the moment we only support
   // metamask
   it('does not render connect button if Metamask is connected', () => {

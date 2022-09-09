@@ -66,6 +66,14 @@ describe('ChannelsContainer', () => {
     expect(wrapper.find(ChannelList).prop('channels')).toStrictEqual(channels);
   });
 
+  it('passes channelId to ChannelList', () => {
+    const channelId = 'one';
+
+    const wrapper = subject({ channels: [{ id: 'one' }], channelId });
+
+    expect(wrapper.find(ChannelList).prop('currentChannelId')).toStrictEqual(channelId);
+  });
+
   it('does not render ChannelViewContainer if no channel id', () => {
     const wrapper = subject({ channelId: '' });
 

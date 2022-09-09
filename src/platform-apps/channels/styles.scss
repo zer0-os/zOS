@@ -1,11 +1,57 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 
+@mixin actionable-color(
+  $inactive-color: theme.$actionable-inactive-color,
+  $active-color: theme.$actionable-active-color
+) {
+  color: $inactive-color;
+
+  &:hover,
+  &.active {
+    color: $active-color;
+  }
+}
+
+@mixin actionable-background-color(
+  $hover-color: theme.$actionable-hover-background,
+  $active-color: theme.$actionable-active-background
+) {
+  background-color: transparent;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+
+  &.active {
+    background-color: $active-color;
+  }
+}
+
+@mixin actionable {
+  @include actionable-color;
+  @include actionable-background-color;
+}
+
+@mixin accent-bar {
+  position: relative;
+
+  &:before {
+    height: 100%;
+    width: 3px;
+    background-color: theme.$accent-color;
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
 .channel {
   &-list {
     width: 100%;
     height: 100%;
-    padding: 10px 0;
     box-sizing: border-box;
   }
 
@@ -26,23 +72,18 @@
     }
   }
 
+  &-list__channel-name {
+    margin-left: 3px;
+  }
+
   &-list__channel {
+    @include actionable;
+
     display: block;
     padding: 10px 20px;
 
-    &:before {
-      content: '# ';
-    }
-
-    &:hover {
-      cursor: pointer;
-      background: #303033;
-    }
-
-    &--active {
-      color: #fff;
-      background: #141415;
-      border-left: 3px solid #fb216e;
+    &.active {
+      @include accent-bar;
     }
   }
 }
@@ -94,7 +135,6 @@
   .message {
     &__block {
       display: flex;
-      justify-content: space-between;
       margin-bottom: 7px;
 
       &:hover {
@@ -106,7 +146,7 @@
       }
 
       &-body-wrapper {
-        flex: 0 1 auto;
+        flex: 1;
 
         .message--owner & {
           border-left: 3px solid #fb216e;

@@ -135,7 +135,6 @@
   .message {
     &__block {
       display: flex;
-      justify-content: space-between;
       margin-bottom: 7px;
 
       &:hover {
@@ -147,7 +146,7 @@
       }
 
       &-body-wrapper {
-        flex: 0 1 auto;
+        flex: 1;
 
         .message--owner & {
           border-left: 3px solid #fb216e;

@@ -106,7 +106,7 @@
       }
 
       &-body-wrapper {
-        flex: 1 0 auto;
+        flex: 0 1 auto;
 
         .message--owner & {
           border-left: 3px solid #fb216e;

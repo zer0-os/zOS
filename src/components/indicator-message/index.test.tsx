@@ -37,6 +37,6 @@ describe('Indicator new message', () => {
 
     wrapper.find('.indicator__new-message-bar').simulate('click');
 
-    expect(wrapper.prop('closeIndicator')).toHaveBeenCalled;
+    expect(closeIndicatorSpy).toHaveBeenCalledOnce();
   });
 });

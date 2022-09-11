@@ -1,11 +1,12 @@
 import React from 'react';
 import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
-
 import { ChannelView } from './channel-view';
 import { Message } from './message';
+import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
+import { Lightbox } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -124,5 +125,66 @@ describe('ChannelView', () => {
 
     expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
     expect(wrapper.find(IndicatorMessage).prop('countNewMessage')).toStrictEqual(2);
+  });
+  describe('Lightbox', () => {
+    it('renders when image file is within message and LightBox has been opened', () => {
+      const imageMedia = { url: 'image.jpg', type: MediaType.Image };
+      const messages = [
+        {
+          id: 'message-1',
+          message: 'image message',
+          media: imageMedia,
+          sender: { userId: 1 },
+          createdAt: 1658776625730,
+        },
+        {
+          id: 'message-2',
+          message: 'video message',
+          media: { url: 'video.avi', type: MediaType.Video },
+          sender: { userId: 1 },
+          createdAt: 1658776625731,
+        },
+        {
+          id: 'message-3',
+          message: 'audio message',
+          media: { url: 'video.mp3', type: MediaType.Audio },
+          sender: { userId: 1 },
+          createdAt: 1658776625732,
+        },
+      ];
+      const wrapper = subject({ messages });
+      wrapper.find(Message).at(1).simulate('imageClick');
+
+      expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
+    });
+
+    it('does not render', () => {
+      const messages = [
+        {
+          id: 'message-1',
+          message: 'image message',
+          media: { url: 'image.jpg', type: MediaType.Image },
+          sender: { userId: 1 },
+          createdAt: 1658776625730,
+        },
+        {
+          id: 'message-2',
+          message: 'video message',
+          media: { url: 'video.avi', type: MediaType.Video },
+          sender: { userId: 1 },
+          createdAt: 1658776625731,
+        },
+        {
+          id: 'message-3',
+          message: 'audio message',
+          media: { url: 'video.mp3', type: MediaType.Audio },
+          sender: { userId: 1 },
+          createdAt: 1658776625732,
+        },
+      ];
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find(Lightbox).exists()).toBeFalsy();
+    });
   });
 });

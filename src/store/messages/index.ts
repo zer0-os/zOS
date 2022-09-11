@@ -3,6 +3,8 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice } from '../normalized';
 
+import { LinkPreview } from '../../lib/link-preview';
+
 interface Sender {
   userId: string;
   firstName: string;
@@ -10,21 +12,22 @@ interface Sender {
   profileImage: string;
   profileId: string;
 }
-interface Media {
-  height: string;
-  name: string;
-  type: string;
-  url: string;
-  width: string;
+
+export enum MediaType {
+  Image = 'image',
+  Video = 'video',
+  Audio = 'audio',
+  File = 'file',
 }
 
-interface Media {
-  height: string;
+export interface Media {
+  height: number;
   name: string;
-  type: string;
+  type: MediaType;
   url: string;
-  width: string;
+  width: number;
 }
+
 export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
@@ -39,8 +42,7 @@ export interface Message {
   // TODO: type to be defined
   mentionedUsers: any;
   hidePreview: boolean;
-  // TODO: type to be defined
-  preview: any;
+  preview: LinkPreview;
   media?: Media;
 }
 

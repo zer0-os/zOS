@@ -17,17 +17,17 @@ describe('ChannelList', () => {
 
   it('renders each channel name', () => {
     const channels = [
-      { id: 'one', name: 'first channel', category: 'catg1' },
-      { id: 'two', name: 'second channel', category: 'catg1' },
-      { id: 'three', name: 'third channel', category: 'catg2' },
-      { id: 'four', name: 'fourth channel', category: 'catg2' },
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
     ];
 
     const wrapper = subject({ channels });
 
-    const textes = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
+    const text = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
 
-    expect(textes).toStrictEqual([
+    expect(text).toStrictEqual([
       'first channel',
       'second channel',
       'third channel',
@@ -45,9 +45,9 @@ describe('ChannelList', () => {
 
     const wrapper = subject({ channels });
 
-    const textes = wrapper.find('.channel-list__channel-name-prefix').map((c) => c.text().trim());
+    const text = wrapper.find('.channel-list__channel-name-prefix').map((c) => c.text().trim());
 
-    expect(textes).toStrictEqual([
+    expect(text).toStrictEqual([
       '#',
       '#',
       '#',
@@ -57,17 +57,17 @@ describe('ChannelList', () => {
 
   it('renders Link to channel id', () => {
     const channels = [
-      { id: 'one', name: 'first channel', category: 'catg1' },
-      { id: 'two', name: 'second channel', category: 'catg1' },
-      { id: 'three', name: 'third channel', category: 'catg2' },
-      { id: 'four', name: 'fourth channel', category: 'catg2' },
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
     ];
 
     const wrapper = subject({ channels });
 
-    const textes = wrapper.find(ZnsLink).map((l) => l.prop('to'));
+    const text = wrapper.find(ZnsLink).map((l) => l.prop('to'));
 
-    expect(textes).toStrictEqual([
+    expect(text).toStrictEqual([
       'one',
       'two',
       'three',
@@ -75,7 +75,7 @@ describe('ChannelList', () => {
     ]);
   });
 
-  it('renders category name', () => {
+  it('rpasses className prop', () => {
     const channels = [
       { id: 'one', name: 'first channel', category: 'catg1' },
       { id: 'two', name: 'second channel', category: 'catg1' },
@@ -84,7 +84,12 @@ describe('ChannelList', () => {
     ];
 
     const wrapper = subject({ channels });
-    expect(wrapper.find('.channel-list__category-channel-name').exists()).toBe(true);
+    const text = wrapper.find(Collapsible).map((l) => l.prop('className'));
+
+    expect(text).toStrictEqual([
+      'channel-list__category-channel-name',
+      'channel-list__category-channel-name',
+    ]);
   });
 
   it('renders grouped category', () => {
@@ -96,11 +101,48 @@ describe('ChannelList', () => {
     ];
 
     const wrapper = subject({ channels });
-    const textes = wrapper.find(Collapsible).map((l) => l.prop('trigger'));
+    const text = wrapper.find(Collapsible).map((l) => l.prop('trigger'));
 
-    expect(textes).toStrictEqual([
+    expect(text).toStrictEqual([
       'catg1',
       'catg2',
+    ]);
+  });
+
+  it('renders channels that don t have a category', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel', category: 'catg1' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels });
+    const text = wrapper.find(Collapsible).map((l) => l.prop('trigger'));
+
+    expect(text).toStrictEqual([
+      '#',
+      'catg1',
+      'catg2',
+    ]);
+  });
+
+  it('renders channels that don t have a category', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels });
+    const text = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
+
+    expect(text).toStrictEqual([
+      'first channel',
+      'second channel',
+      'fourth channel',
+      'third channel',
     ]);
   });
 });

@@ -1,5 +1,4 @@
 import { ZnsLink } from '@zer0-os/zos-component-library';
-import classNames from 'classnames';
 import React from 'react';
 import Collapsible from 'react-collapsible';
 
@@ -15,10 +14,11 @@ interface ChannelsCategory {
 }
 
 export class ChannelList extends React.Component<Properties> {
-  getChannelsByCategpry(channels: Channel[]): ChannelsCategory[] {
+  category(channels: Channel[]): ChannelsCategory[] {
     return channels.reduce(function (r, a) {
-      r[a.category] = r[a.category] || [];
-      r[a.category].push(a);
+      const category = a.category || '#';
+      r[category] = r[category] || [];
+      r[category].push(a);
       return r;
     }, Object.create(null));
   }
@@ -33,6 +33,7 @@ export class ChannelList extends React.Component<Properties> {
               className='channel-list__channel'
               to={channel.id}
             >
+              <span className='channel-list__channel-name-prefix'>#</span>
               <span className='channel-list__channel-name'>{channel.name}</span>
             </ZnsLink>
           );
@@ -43,7 +44,7 @@ export class ChannelList extends React.Component<Properties> {
 
   renderCategory() {
     const { channels } = this.props;
-    const channelsByCategory: ChannelsCategory[] = this.getChannelsByCategpry(channels);
+    const channelsByCategory: ChannelsCategory[] = this.category(channels);
 
     return (
       <div className='channel-list__category'>
@@ -56,10 +57,11 @@ export class ChannelList extends React.Component<Properties> {
               <Collapsible
                 className='channel-list__category-channel-name'
                 openedClassName='channel-list__category-channel-name'
+                classParentString='collapsible'
                 trigger={category}
-                open={true}
+                open
               >
-                {channelsByCategory[category].length > 0 && this.renderChannels(channelsByCategory[category])}
+                {this.renderChannels(channelsByCategory[category])}
               </Collapsible>
             </div>
           );

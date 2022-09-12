@@ -8,15 +8,12 @@ import { ChannelView } from './channel-view';
 import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
   const subject = (props: any = {}) => {
     const allProps = {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      startMessageSync: () => undefined,
       ...props,
     };
 
@@ -102,22 +99,30 @@ describe('ChannelViewContainer', () => {
     });
   });
 
+  it('startMessageSync messages when channel id is set', () => {
+    const startMessageSync = jest.fn();
+
+    const wrapper = subject({ startMessageSync, channelId: '' });
+
+    wrapper.setProps({ channelId: 'the-channel-id' });
+
+    expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
   it('should call hasMoreMessages when new messages arrive', async () => {
-    const fetchMessages = jest.fn();
+    const startMessageSync = jest.fn();
     const messages = [
-      { id: 'the-second-message-id', message: 'the second message' },
-      { id: 'the-first-message-id', message: 'the first message' },
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
     ] as unknown as Message[];
 
     const newMessages = [
-      { id: 'the-second-message-id', message: 'the second message' },
-      { id: 'the-first-message-id', message: 'the first message' },
-      { id: 'the-third-message-id', message: 'the third message' },
-      { id: 'the-third-message-id', message: 'the third message' },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 100000003 },
+      { id: 'the-fourth-message-id', message: 'the fourth message', createdAt: 100000004 },
     ] as unknown as Message[];
 
     const wrapper = subject({
-      fetchMessages,
+      startMessageSync,
       channelId: 'the-channel-id',
       channel: { hasMore: true, name: 'first channel', messages },
     });

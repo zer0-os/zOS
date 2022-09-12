@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
 import { SagaActionTypes } from '.';
 import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
@@ -14,6 +14,8 @@ export interface Payload {
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };
+
+const FETCH_CHAT_CHANNEL_INTERVAL = 10000;
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
@@ -44,6 +46,14 @@ export function* fetch(action) {
   );
 }
 
+function* syncChannelsTask(action) {
+  while (true) {
+    yield call(fetch, action);
+    yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
+  }
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
+  yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
 }

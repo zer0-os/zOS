@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchMessages, Message } from '../../store/messages';
+import { fetch as fetchMessages, Message, startMessageSync } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
@@ -11,6 +11,7 @@ import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
+  startMessageSync: (payload: PayloadFetchMessages) => void;
 }
 
 interface PublicProperties {
@@ -21,7 +22,6 @@ export interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
-  fetchInterval;
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
@@ -33,6 +33,7 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
+      startMessageSync,
     };
   }
 
@@ -40,11 +41,10 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount() {
     const { channelId } = this.props;
+
     if (channelId) {
       this.props.fetchMessages({ channelId });
-      this.fetchInterval = setInterval(() => {
-        this.props.fetchMessages({ channelId });
-      }, 20000);
+      this.props.startMessageSync({ channelId });
     }
   }
 
@@ -53,20 +53,22 @@ export class Container extends React.Component<Properties, State> {
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.fetchMessages({ channelId });
+      this.props.startMessageSync({ channelId });
     }
 
-    if (channel && prevProps.channel && prevProps.channel.messages && channel.messages) {
-      this.hasMoreMessages(prevProps.channel.messages.length);
+    if (channel && prevProps.channel && channel.messages && prevProps.channel.messages) {
+      this.hasMoreMessages(prevProps.channel.messages, channel.messages);
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.fetchInterval);
-  }
-
-  hasMoreMessages = (countMessages: number) => {
-    if (this.channel.messages.length > countMessages) {
-      this.setState({ countNewMessage: this.channel.messages.length - countMessages });
+  hasMoreMessages = (prevMessages: Message[], messages: Message[]): void => {
+    if (prevMessages.length === messages.length) {
+      const prevLastMessage = this.getLastMessage(prevMessages);
+      const lastMessage = this.getLastMessage(messages);
+      if (lastMessage.createdAt !== prevLastMessage.createdAt) {
+        const countNewMessage = this.channel.messages.filter((x) => x.createdAt > prevLastMessage.createdAt).length;
+        this.setState({ countNewMessage });
+      }
     }
   };
 
@@ -78,6 +80,10 @@ export class Container extends React.Component<Properties, State> {
     return messages.reduce((previousTimestamp, message: any) => {
       return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
     }, Date.now());
+  }
+
+  getLastMessage(messages: Message[]): Message {
+    return messages[Object.keys(messages).pop()];
   }
 
   get channel(): Channel {

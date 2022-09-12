@@ -48,13 +48,20 @@ export interface Message {
 
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
+  startMessageSync = 'messages/saga/startMessageSync',
+  SyncStart = 'CHAT_CHANNEL_SYNC_START',
+}
+
+export function syncStart() {
+  return { type: SagaActionTypes.SyncStart };
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
+const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const slice = createNormalizedSlice({
   name: 'messages',
 });
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch };
+export { fetch, startMessageSync };

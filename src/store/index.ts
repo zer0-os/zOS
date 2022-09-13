@@ -10,6 +10,7 @@ import { reducer as zns } from './zns';
 import { reducer as theme } from './theme';
 import { reducer as apps } from './apps';
 import { reducer as normalized } from './normalized';
+import { reducer as authentication } from './authentication';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -24,6 +25,7 @@ export const rootReducer = combineReducers({
   theme,
   apps,
   normalized,
+  authentication,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

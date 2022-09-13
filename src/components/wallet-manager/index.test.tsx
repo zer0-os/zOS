@@ -5,12 +5,20 @@ import { RootState } from '../../store';
 import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
+import { config } from '../../config';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       updateConnector: () => undefined,
       setWalletModalOpen: () => undefined,
+      providerService: {
+        get: () => ({
+          provider: {
+            sendAsync: jest.fn(),
+          },
+        }),
+      },
       ...props,
     };
 
@@ -36,7 +44,9 @@ describe('WalletManager', () => {
   // this will be currentWallet dependent in the future, but at the moment we only support
   // metamask
   it('does not render connect button if Metamask is connected', () => {
-    const wrapper = subject();
+    const wrapper = subject({
+      currentAddress: '0x000',
+    });
 
     wrapper.setProps({
       connectionStatus: ConnectionStatus.Connected,
@@ -109,7 +119,11 @@ describe('WalletManager', () => {
   });
 
   it('passes isConnecting of false when wallet selected and status becomes connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Connected,
+      isWalletModalOpen: true,
+      currentAddress: '0x00',
+    });
 
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
@@ -141,6 +155,7 @@ describe('WalletManager', () => {
       connectionStatus: ConnectionStatus.Disconnected,
       isWalletModalOpen: true,
       setWalletModalOpen,
+      currentAddress: '0x00',
     });
 
     // straight to Connected from Disconnected. we should not force this
@@ -180,6 +195,64 @@ describe('WalletManager', () => {
     });
 
     expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
+  });
+
+  it('call sendAsync to authorize the user', () => {
+    const sendAsync = jest.fn();
+    const authorize = jest.fn();
+    const currentAddress = '0x00';
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      isWalletModalOpen: true,
+      currentAddress,
+      providerService: {
+        get: () => ({
+          provider: {
+            sendAsync,
+          },
+        }),
+      },
+      authorize,
+    });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    expect(sendAsync).toHaveBeenCalledWith(
+      {
+        from: currentAddress,
+        method: 'personal_sign',
+        params: [
+          config.web3AuthenticationMessage,
+          currentAddress,
+        ],
+      },
+      expect.any(Function)
+    );
+  });
+
+  it('should authorize the user using the signedWeb3Token', () => {
+    const authorize = jest.fn();
+    const currentAddress = '0x00';
+    const signedWeb3Token = '0x0098';
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      isWalletModalOpen: true,
+      currentAddress,
+      providerService: {
+        get: () => ({
+          provider: {
+            sendAsync: (error, callback) => {
+              callback(null, { result: signedWeb3Token });
+            },
+          },
+        }),
+      },
+      authorize,
+    });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    expect(authorize).toHaveBeenCalledWith({ signedWeb3Token });
   });
 
   describe('mapState', () => {

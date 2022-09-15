@@ -1,16 +1,25 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel } from '../../store/messages';
+import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
+<<<<<<< HEAD
 import AttachmentCards from './attachment-cards';
 import { download } from '../../lib/api/file';
+=======
+import { LinkPreview } from '../../components/link-preview/';
+import { CloudinaryProvider } from '@zer0-os/zos-component-library';
+import { provider } from '../../lib/cloudinary/provider';
+>>>>>>> development
 
 interface Properties extends MessageModel {
   className: string;
+  onImageClick: (media: any) => void;
+  cloudinaryProvider: CloudinaryProvider;
 }
 
 export class Message extends React.Component<Properties> {
+<<<<<<< HEAD
   openAttachment = async (attachment) => {
     download(attachment.url);
   };
@@ -36,15 +45,37 @@ export class Message extends React.Component<Properties> {
       media: { type, url, name },
     } = this.props;
     if (type === 'image') {
+=======
+  static defaultProps = { cloudinaryProvider: provider };
+
+  getProfileId(id: string): string | null {
+    const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
+
+    if (!user) return null;
+
+    return user.profileId;
+  }
+
+  onImageClick = (media) => (_event) => {
+    this.props.onImageClick(media);
+  };
+
+  renderMedia(media) {
+    const { type, url, name } = media;
+    if (MediaType.Image === type) {
+>>>>>>> development
       return (
-        <div className='message__block-image'>
+        <div
+          className='message__block-image'
+          onClick={this.onImageClick(media)}
+        >
           <img
             src={url}
             alt={name}
           />
         </div>
       );
-    } else if (type === 'video') {
+    } else if (MediaType.Video === type) {
       return (
         <div className='message__block-video'>
           <video controls>
@@ -52,25 +83,54 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
+<<<<<<< HEAD
     } else if (type === 'file') {
       return this.renderAttachment({ url, name, type });
+=======
+    } else if (MediaType.Audio === type) {
+      return (
+        <div className='message__block-audio'>
+          <audio controls>
+            <source
+              src={url}
+              type='audio/mpeg'
+            />
+          </audio>
+        </div>
+      );
+>>>>>>> development
     }
     return '';
   }
 
-  renderTime(): React.ReactElement {
-    const createdTime = moment(this.props.createdAt).format('HH:mm');
+  renderTime(time): React.ReactElement {
+    const createdTime = moment(time).format('HH:mm');
 
     return <div className='message__time'>{createdTime}</div>;
   }
 
-  renderMessage() {
-    const parts = this.props.message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
-    return parts.map((part) => {
+  renderMessage(message) {
+    const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
+    return parts.map((part, index) => {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
         return textToEmojis(part);
+      }
+
+      if (match[2] === 'user') {
+        const profileId = this.getProfileId(match[3]);
+        const mention = `@${match[1]}`;
+        const props: { className: string; key: string; id?: string } = {
+          className: 'message__user-mention',
+          key: match[3] + index,
+        };
+
+        if (profileId) {
+          props.id = profileId;
+        }
+
+        return <span {...props}>{mention}</span>;
       }
 
       return part;
@@ -78,13 +138,42 @@ export class Message extends React.Component<Properties> {
   }
 
   render() {
+    const { message, media, preview, createdAt, sender } = this.props;
+
     return (
       <div className={classNames('message', this.props.className)}>
         <div className='message__block'>
+<<<<<<< HEAD
           <div className='message__block-icon'></div>
           {this.props.media && this.renderMedia()}
           {this.props.message && <div className='message__block-body'>{this.renderMessage()}</div>}
           {this.renderTime()}
+=======
+          <div className='message__left'>
+            <div
+              style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
+              className='message__author-avatar'
+            />
+          </div>
+          {(message || media || preview) && (
+            <div className='message__block-body-wrapper'>
+              <div className='message__author-name'>
+                {sender.firstName} {sender.lastName}
+              </div>
+              <div className={preview ? 'message__block-preview' : 'message__block-body'}>
+                {media && this.renderMedia(media)}
+                {message && this.renderMessage(message)}
+                {preview && (
+                  <LinkPreview
+                    url={preview.url}
+                    {...preview}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+          {this.renderTime(createdAt)}
+>>>>>>> development
         </div>
       </div>
     );

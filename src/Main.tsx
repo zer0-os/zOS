@@ -8,8 +8,6 @@ import { Logo } from './components/logo';
 
 import './main.scss';
 
-// Renamed from App to Main to reduce confusion around
-// apps & app due to the intent of this project.
 export class Main extends React.Component {
   render() {
     return (
@@ -25,11 +23,13 @@ export class Main extends React.Component {
             </div>
           </div>
         </div>
-        <div className='main__content'>
-          <AddressBarContainer className='main__address-bar' />
-        </div>
-        <div className='main__sidekick'>
-          <WalletManager />
+        <div className='main__header'>
+          <div className='main__address-bar-wrapper'>
+            <AddressBarContainer className='main__address-bar' />
+          </div>
+          <div className='main__wallet-manager-wrapper'>
+            <WalletManager className='main__wallet-manager' />
+          </div>
         </div>
         <ThemeEngine />
       </div>

@@ -1,27 +1,47 @@
+import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes } from '.';
-import { receive, denormalize } from '../channels';
+import { receive } from '../channels';
+import { channelIdPrefix } from '../channels-list/saga';
 
-import { fetchMessagesByChannelId, MessagesFilter } from './api';
+import { fetchMessagesByChannelId } from './api';
 
 export interface Payload {
   channelId: string;
-  filter?: MessagesFilter;
+  referenceTimestamp?: number;
 }
 
-const getState = (state) => state;
+const rawMessagesSelector = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
+};
 
 export function* fetch(action) {
-  const { channelId, filter } = action.payload;
+  const { channelId, referenceTimestamp } = action.payload;
 
-  const messagesResponse = yield call(fetchMessagesByChannelId, channelId, filter);
+  let messagesResponse: any;
+  let messages: any[];
+  const channelPrefix: string = channelIdPrefix + channelId;
 
-  const state = yield select(getState);
-  const channel = denormalize(channelId, state) || null;
-  const prevMessages = channel?.messages || [];
-  const messages = messagesResponse.messages.concat(prevMessages);
+  if (referenceTimestamp) {
+    const existingMessages = yield select(rawMessagesSelector(channelId));
 
-  yield put(receive({ id: channelId, ...messagesResponse, messages }));
+    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix, referenceTimestamp);
+    messages = [
+      ...existingMessages,
+      ...messagesResponse.messages,
+    ];
+  } else {
+    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix);
+    messages = messagesResponse.messages;
+  }
+
+  yield put(
+    receive({
+      id: channelId,
+      messages,
+      hasMore: messagesResponse.hasMore,
+    })
+  );
 }
 
 export function* saga() {

@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
@@ -19,47 +19,66 @@
     box-sizing: border-box;
     display: flex;
     pointer-events: auto;
-
-    width: $width-world-navigation;
-
-    padding-right: $left-content-space;
     position: relative;
-    top: 10px;
-
-    @include for-screen-large() {
-      justify-content: space-between;
-    }
   }
 
   &__navigation-world {
-    width: 56px;
+    padding-top: 10px;
+    width: $width-world-navigation;
     border-right: 1px solid theme.$primary-border-color;
   }
 
   &__navigation-platform {
-    width: 200px;
+    box-sizing: border-box;
+    width: $width-platform-navigation;
     border-right: 1px solid theme.$primary-border-color;
-    padding-left: 15px;
+    padding: 10px 3px 0 15px;
 
     @include for-left-collapse() {
       width: 54px;
       padding-left: 5px;
-      padding-right: 3px;
     }
   }
 
-  &__content {
-    padding-top: 8px;
-    width: 100%;
-    max-width: 800px;
+  &__header {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    box-sizing: border-box;
 
+    left: calc($width-navigation + $width-application-navigation);
+    right: 0;
+    height: 72px;
+
+    @include for-left-collapse() {
+      left: calc($width-collapsed-navigation + $width-application-navigation);
+    }
+  }
+
+  &__address-bar-wrapper {
     display: flex;
     justify-content: center;
+    flex: 1 0;
   }
 
   &__address-bar {
     pointer-events: auto;
-    min-width: $width-application-content;
+    width: 100%;
+    max-width: 752px;
+  }
+
+  &__wallet-manager-wrapper {
+    flex: 0 0 auto;
+    width: $width-sidekick;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__wallet-manager {
+    margin-bottom: 8px;
+    pointer-events: auto;
   }
 
   &__sidekick {

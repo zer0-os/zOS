@@ -13,6 +13,7 @@ import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
+import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
 
@@ -66,10 +67,15 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <div className='channels'>
-          <ChannelList channels={this.props.channels} />
-          {this.renderChannelView()}
-        </div>
+        <AppLayout className='channels'>
+          <AppContextPanel>
+            <ChannelList
+              channels={this.props.channels}
+              currentChannelId={this.props.channelId}
+            />
+          </AppContextPanel>
+          <AppContent>{this.renderChannelView()}</AppContent>
+        </AppLayout>
       </Provider>
     );
   }

@@ -2,20 +2,31 @@ import React from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel } from '../../store/messages';
+import { Message as MessageModel, MediaType } from '../../store/messages';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
+import { Lightbox } from '@zer0-os/zos-component-library';
+import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
 }
+
 export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
 }
 
-export class ChannelView extends React.Component<Properties> {
+export interface State {
+  lightboxMedia: any[];
+  lightboxStartIndex: number;
+  isLightboxOpen: boolean;
+}
+
+export class ChannelView extends React.Component<Properties, State> {
+  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
+
   getMessagesByDay() {
     return this.props.messages.reduce((prev, current) => {
       const createdAt = moment(current.createdAt);
@@ -27,6 +38,22 @@ export class ChannelView extends React.Component<Properties> {
       return prev;
     }, {} as ChatMessageGroups);
   }
+
+  openLightbox = (media) => {
+    const { messages } = this.props;
+
+    const lightboxMedia = messages
+      .filter((message) => !!message.media && [MediaType.Image].includes(message.media.type))
+      .map((m) => m.media);
+
+    const lightboxStartIndex = lightboxMedia.indexOf(media);
+
+    this.setState({ lightboxMedia, lightboxStartIndex, isLightboxOpen: true });
+  };
+
+  closeLightBox = () => {
+    this.setState({ isLightboxOpen: false });
+  };
 
   formatDayHeader(dateString: string): string {
     const date = moment(dateString);
@@ -58,6 +85,7 @@ export class ChannelView extends React.Component<Properties> {
           return (
             <Message
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
+              onImageClick={this.openLightbox}
               key={message.id}
               {...message}
             />
@@ -77,15 +105,25 @@ export class ChannelView extends React.Component<Properties> {
   }
 
   render() {
+    const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
+
     return (
       <div className='channel-view'>
-        <div className='channel-view__name'>
-          <h1>Welcome to #{this.props.name}</h1>
-          <span>This is the start of the channel.</span>
-        </div>
+        {isLightboxOpen && (
+          <Lightbox
+            provider={cloudinaryProvider}
+            items={lightboxMedia}
+            startingIndex={lightboxStartIndex}
+            onClose={this.closeLightBox}
+          />
+        )}
         <InvertedScroll className='channel-view__inverted-scroll'>
-          {this.props.messages.length && <Waypoint onEnter={this.props.onFetchMore} />}
-          {this.props.messages.length && this.renderMessages()}
+          <div className='channel-view__name'>
+            <h1>Welcome to #{this.props.name}</h1>
+            <span>This is the start of the channel.</span>
+          </div>
+          {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+          {this.props.messages.length > 0 && this.renderMessages()}
         </InvertedScroll>
       </div>
     );

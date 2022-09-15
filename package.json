@@ -1,8 +1,12 @@
 {
   "name": "zOS",
-  "version": "0.2.9",
+  "version": "0.2.12",
   "private": true,
   "main": "./public/electron.js",
+  "engines": {
+    "node": "16.17.0",
+    "npm": "8.15.0"
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@reduxjs/toolkit": "^1.7.1",
@@ -18,10 +22,11 @@
     "@web3-react/portis-connector": "^6.2.11",
     "@web3-react/walletconnect-connector": "^6.2.13",
     "@web3-react/walletlink-connector": "^6.2.13",
-    "@zer0-os/zos-component-library": "0.10.0",
-    "@zer0-os/zos-feed": "1.20.0",
+    "@zer0-os/zos-component-library": "0.13.0",
+    "@zer0-os/zos-feed": "1.22.0",
     "@zer0-os/zos-zns": "2.2.0",
     "axios": "^0.27.2",
+    "@zero-tech/zapp-staking": "0.2.9",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
@@ -92,5 +97,8 @@
     "pretty-quick": "^3.1.3",
     "redux-saga-test-plan": "^4.0.4",
     "wait-on": "^6.0.1"
+  },
+  "overrides": {
+    "@types/react": "^16.14.21"
   }
 }

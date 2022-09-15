@@ -76,13 +76,14 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
   });
 
-  it('should call fetchMore when hasMore is true', () => {
+  it('should call fetchMore with reference timestamp when hasMore is true', () => {
     const fetchMessages = jest.fn();
     const messages = [
       { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
       { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
       { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
     ] as unknown as Message[];
+
     const wrapper = subject({
       fetchMessages,
       channelId: 'the-channel-id',
@@ -93,11 +94,10 @@ describe('ChannelViewContainer', () => {
 
     expect(fetchMessages).toHaveBeenLastCalledWith({
       channelId: 'the-channel-id',
-      filter: {
-        lastCreatedAt: 1658776625730,
-      },
+      referenceTimestamp: 1658776625730,
     });
   });
+
   it('should not call fetchMore when hasMore is false', () => {
     const fetchMessages = jest.fn();
     const messages = [
@@ -105,6 +105,7 @@ describe('ChannelViewContainer', () => {
       { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
       { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
     ] as unknown as Message[];
+
     const wrapper = subject({
       fetchMessages,
       channelId: 'the-channel-id',
@@ -196,18 +197,6 @@ describe('ChannelViewContainer', () => {
       const props = Container.mapState(state, { channelId: '' });
 
       expect(props.channel).toBeNull();
-    });
-
-    test('getOldestTimestamp with messages', () => {
-      const messages = [
-        { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
-        { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
-        { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
-      ] as unknown as Message[];
-
-      const oldestTimestamp = Container.getOldestTimestamp(messages);
-
-      expect(oldestTimestamp).toEqual(messages[1].createdAt);
     });
   });
 });

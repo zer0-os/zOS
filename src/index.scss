@@ -18,8 +18,15 @@ body {
   transition: color animation.$animation-duration-double ease-out;
 
   --box-radius: 16px;
+  // ToDo: consolidate to -duration-half variant (below) this is used in component library
   --animation-time-short: 0.2s;
-  --animation-time-medium: 0.3s;
+  // ToDo: consolidate to -duration variant (below) this is used in component library
+  --animation-time-medium: #{animation.$animation-duration};
+
+  --animation-duration-default: #{animation.$animation-duration};
+  --animation-duration-half: #{animation.$animation-duration-half};
+  --animation-duration-double: #{animation.$animation-duration-double};
+  --animation-duration-quadruple: #{animation.$animation-duration-quadruple};
 }
 
 code {
@@ -33,22 +40,6 @@ A {
 A,
 BUTTON {
   color: inherit;
-}
-
-.app-sandbox-wrapper {
-  display: flex;
-  justify-content: center;
-
-  .app-sandbox {
-    position: relative;
-    max-width: 800px;
-    width: $width-app-sandbox;
-
-    @include for-static-layout() {
-      position: absolute;
-      left: $width-collapsed-navigation;
-    }
-  }
 }
 
 #root {

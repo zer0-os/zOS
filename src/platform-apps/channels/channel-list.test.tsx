@@ -34,6 +34,26 @@ describe('ChannelList', () => {
     ]);
   });
 
+  it('adds an octothorpe to channel name', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels });
+
+    const textes = wrapper.find('.channel-list__channel-name-prefix').map((c) => c.text().trim());
+
+    expect(textes).toStrictEqual([
+      '#',
+      '#',
+      '#',
+      '#',
+    ]);
+  });
+
   it('renders Link to channel id', () => {
     const channels = [
       { id: 'one', name: 'first channel' },
@@ -52,5 +72,20 @@ describe('ChannelList', () => {
       'three',
       'four',
     ]);
+  });
+
+  it('adds class to current channel', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels, currentChannelId: 'three' });
+
+    const activeChannelLink = wrapper.find(ZnsLink).at(2);
+
+    expect(activeChannelLink.hasClass('active')).toBeTrue();
   });
 });

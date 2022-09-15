@@ -1,7 +1,11 @@
 .attachment-card {
   display: inline-block;
-  margin: 10px 10px 6px 0;
+  margin: 10px 10px 10px 0;
   padding: 0 10px 0 15px;
+
+  &__name {
+    font-weight: bold;
+  }
 
   &__info {
     background: none;
@@ -24,7 +28,7 @@
   }
 
   &__icon {
-    padding-left: 0;
+    padding-right: 10px;
   }
 
   &__delete {

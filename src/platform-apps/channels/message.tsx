@@ -28,12 +28,12 @@ export class Message extends React.Component<Properties> {
         className='message__image-wrap'
         onClick={this.openAttachment.bind(this, attachment)}
       >
-        <div className='message__image-bubble'>
-          <AttachmentCards
-            attachments={[attachment]}
-            onAttachmentClicked={this.openAttachment.bind(this, attachment)}
-          />
-        </div>
+        {/* <div className='message__image-bubble'> */}
+        <AttachmentCards
+          attachments={[attachment]}
+          onAttachmentClicked={this.openAttachment.bind(this, attachment)}
+        />
+        {/* </div> */}
       </div>
     );
   }
@@ -72,7 +72,7 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
-    } else if (type === 'file') {
+    } else if (MediaType.File === type) {
       return this.renderAttachment({ url, name, type });
     } else if (MediaType.Audio === type) {
       return (
@@ -124,6 +124,7 @@ export class Message extends React.Component<Properties> {
   }
 
   render() {
+    console.log('khalid', this.props);
     const { message, media, preview, createdAt, sender } = this.props;
 
     return (

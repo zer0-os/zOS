@@ -23,11 +23,7 @@ export default class AttachmentCard extends React.Component<Properties, undefine
   file() {
     const content = (
       <span>
-        {/* <Icon
-          baseClass='attachment-card__icon'
-          iconClass='paper-clip'
-          size='xlarge'
-        /> */}
+        <div className='attachment-card__icon bt-paper-clip btr'></div>
         <span className='attachment-card__name'>{this.props.attachment.name}</span>
       </span>
     );

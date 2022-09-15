@@ -3,14 +3,11 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
-<<<<<<< HEAD
 import AttachmentCards from './attachment-cards';
 import { download } from '../../lib/api/file';
-=======
 import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
->>>>>>> development
 
 interface Properties extends MessageModel {
   className: string;
@@ -19,7 +16,8 @@ interface Properties extends MessageModel {
 }
 
 export class Message extends React.Component<Properties> {
-<<<<<<< HEAD
+  static defaultProps = { cloudinaryProvider: provider };
+
   openAttachment = async (attachment) => {
     download(attachment.url);
   };
@@ -40,14 +38,6 @@ export class Message extends React.Component<Properties> {
     );
   }
 
-  renderMedia() {
-    const {
-      media: { type, url, name },
-    } = this.props;
-    if (type === 'image') {
-=======
-  static defaultProps = { cloudinaryProvider: provider };
-
   getProfileId(id: string): string | null {
     const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
 
@@ -63,7 +53,6 @@ export class Message extends React.Component<Properties> {
   renderMedia(media) {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
->>>>>>> development
       return (
         <div
           className='message__block-image'
@@ -83,10 +72,8 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
-<<<<<<< HEAD
     } else if (type === 'file') {
       return this.renderAttachment({ url, name, type });
-=======
     } else if (MediaType.Audio === type) {
       return (
         <div className='message__block-audio'>
@@ -98,7 +85,6 @@ export class Message extends React.Component<Properties> {
           </audio>
         </div>
       );
->>>>>>> development
     }
     return '';
   }
@@ -143,12 +129,6 @@ export class Message extends React.Component<Properties> {
     return (
       <div className={classNames('message', this.props.className)}>
         <div className='message__block'>
-<<<<<<< HEAD
-          <div className='message__block-icon'></div>
-          {this.props.media && this.renderMedia()}
-          {this.props.message && <div className='message__block-body'>{this.renderMessage()}</div>}
-          {this.renderTime()}
-=======
           <div className='message__left'>
             <div
               style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
@@ -173,7 +153,6 @@ export class Message extends React.Component<Properties> {
             </div>
           )}
           {this.renderTime(createdAt)}
->>>>>>> development
         </div>
       </div>
     );

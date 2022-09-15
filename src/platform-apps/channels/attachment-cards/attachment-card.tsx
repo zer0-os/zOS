@@ -1,21 +1,25 @@
 import React from 'react';
 import classNames from 'classnames';
 
-// import { Icon } from 'components/icon';
-
 import './styles.scss';
-
+interface Attachment {
+  name: string;
+}
 export interface Properties {
-  attachment: { name: string };
+  attachment: Attachment;
   onRemove?: () => void;
-  onClick?: (any) => void;
+  onClick?: (Attachement) => void;
 }
 
 export default class AttachmentCard extends React.Component<Properties, undefined> {
+  hasOnClick(): boolean {
+    return typeof this.props.onClick === 'function';
+  }
+
   download = (event) => {
     event.stopPropagation();
     event.preventDefault();
-    if (this.props.onClick) {
+    if (this.hasOnClick()) {
       this.props.onClick(this.props.attachment);
     }
   };
@@ -28,7 +32,7 @@ export default class AttachmentCard extends React.Component<Properties, undefine
       </span>
     );
 
-    if (this.props.onClick) {
+    if (this.hasOnClick()) {
       return (
         <button
           className='attachment-card__info'
@@ -43,20 +47,12 @@ export default class AttachmentCard extends React.Component<Properties, undefine
   }
 
   render() {
-    const className = classNames('attachment-card', { downloadable: !!this.props.onClick });
+    const className = classNames('attachment-card', { downloadable: this.hasOnClick() });
 
     return (
       <div className={className}>
         {this.file()}
-        {this.props.onRemove && (
-          <button onClick={this.props.onRemove}>
-            {/* <Icon
-              baseClass='attachment-card__delete'
-              iconClass='times'
-              size='small'
-            /> */}
-          </button>
-        )}
+        {this.props.onRemove && <button onClick={this.props.onRemove}></button>}
       </div>
     );
   }

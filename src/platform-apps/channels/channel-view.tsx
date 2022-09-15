@@ -81,12 +81,14 @@ export class ChannelView extends React.Component<Properties, State> {
         </div>
         {allMessages.map((message, index) => {
           const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
+          const isUserOwnerOfTheMessage =  message.sender.userId === message.sender.userId;
 
           return (
             <Message
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
               onImageClick={this.openLightbox}
               key={message.id}
+              isOwner={isUserOwnerOfTheMessage}
               {...message}
             />
           );

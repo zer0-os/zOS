@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
 import AttachmentCards from './attachment-cards';
-import { download } from '../../lib/api/file';
+import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
@@ -13,27 +13,26 @@ interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   cloudinaryProvider: CloudinaryProvider;
+  isOwner?: boolean;
 }
 
 export class Message extends React.Component<Properties> {
   static defaultProps = { cloudinaryProvider: provider };
 
-  openAttachment = async (attachment) => {
+  openAttachment = async (attachment): Promise<void> => {
     download(attachment.url);
   };
 
   renderAttachment(attachment) {
     return (
       <div
-        className='message__image-wrap'
+        className='message__attachment'
         onClick={this.openAttachment.bind(this, attachment)}
       >
-        {/* <div className='message__image-bubble'> */}
         <AttachmentCards
           attachments={[attachment]}
           onAttachmentClicked={this.openAttachment.bind(this, attachment)}
         />
-        {/* </div> */}
       </div>
     );
   }
@@ -124,11 +123,10 @@ export class Message extends React.Component<Properties> {
   }
 
   render() {
-    console.log('khalid', this.props);
-    const { message, media, preview, createdAt, sender } = this.props;
+    const { message, media, preview, createdAt, sender, isOwner } = this.props;
 
     return (
-      <div className={classNames('message', this.props.className)}>
+      <div className={classNames('message', this.props.className, { 'message--owner': isOwner, 'message--media': Boolean(media) })}>
         <div className='message__block'>
           <div className='message__left'>
             <div

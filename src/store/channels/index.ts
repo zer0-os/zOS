@@ -7,6 +7,8 @@ export interface Channel {
   name: string;
   messages: Message[];
   hasMore: boolean;
+  countNewMessages: number;
+  lastMessageCreatedAt: number;
 }
 
 const slice = createNormalizedSlice({

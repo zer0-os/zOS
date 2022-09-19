@@ -20,7 +20,7 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
-      countNewMessage: 0,
+      countNewMessages: 0,
       ...props,
     };
 
@@ -121,10 +121,10 @@ describe('ChannelView', () => {
   });
 
   it('renders IndicatorMessage', () => {
-    const wrapper = subject({ countNewMessage: 2 });
+    const wrapper = subject({ countNewMessages: 2 });
 
     expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
-    expect(wrapper.find(IndicatorMessage).prop('countNewMessage')).toStrictEqual(2);
+    expect(wrapper.find(IndicatorMessage).prop('countNewMessages')).toStrictEqual(2);
   });
   describe('Lightbox', () => {
     it('renders when image file is within message and LightBox has been opened', () => {

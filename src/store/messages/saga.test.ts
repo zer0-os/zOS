@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { fetchMessagesByChannelId } from './api';
-import { fetch } from './saga';
+import { fetch, fetchNewMessages } from './saga';
 
 import { rootReducer } from '..';
 import { channelIdPrefix } from '../channels-list/saga';
@@ -85,6 +85,92 @@ describe('messages saga', () => {
       .run();
 
     expect(channels[channelId].hasMore).toBe(false);
+  });
+
+  it('sets countNewMessages on channel', async () => {
+    const channelId = 'channel-id';
+    const NEW_MESSAGES_RESPONSE = {
+      hasMore: true,
+      messages: [
+        { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
+        { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
+        { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
+      ],
+      countNewMessages: 1,
+      lastMessageCreatedAt: 10000000009,
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasMore: true,
+            countNewMessages: 0,
+            lastMessageCreatedAt: 10000000008,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetchNewMessages, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          NEW_MESSAGES_RESPONSE,
+        ],
+      ])
+      .run();
+
+    expect(channels[channelId].countNewMessages).toStrictEqual(1);
+  });
+
+  it('sets lastMessageCreatedAt on channel', async () => {
+    const channelId = 'channel-id';
+    const NEW_MESSAGES_RESPONSE = {
+      hasMore: true,
+      messages: [
+        { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
+        { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
+        { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
+      ],
+      countNewMessages: 1,
+      lastMessageCreatedAt: 10000000009,
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasMore: true,
+            countNewMessages: 0,
+            lastMessageCreatedAt: 10000000008,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetchNewMessages, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          NEW_MESSAGES_RESPONSE,
+        ],
+      ])
+      .run();
+
+    expect(channels[channelId].lastMessageCreatedAt).toStrictEqual(10000000009);
   });
 
   it('adds message ids to channels state', async () => {

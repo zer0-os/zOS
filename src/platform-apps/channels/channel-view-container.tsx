@@ -18,7 +18,7 @@ interface PublicProperties {
   channelId: string;
 }
 export interface State {
-  countNewMessage: number;
+  countNewMessages: number;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -37,7 +37,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { countNewMessage: 0 };
+  state = { countNewMessages: 0 };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -56,34 +56,24 @@ export class Container extends React.Component<Properties, State> {
       this.props.startMessageSync({ channelId });
     }
 
-    if (channel && prevProps.channel && channel.messages && prevProps.channel.messages) {
-      this.hasMoreMessages(prevProps.channel.messages, channel.messages);
+    if (
+      channel &&
+      channel.countNewMessages &&
+      prevProps.channel.countNewMessages !== channel.countNewMessages &&
+      channel.countNewMessages > 0
+    ) {
+      this.setState({ countNewMessages: channel.countNewMessages });
     }
   }
 
-  hasMoreMessages = (prevMessages: Message[], messages: Message[]): void => {
-    if (prevMessages.length === messages.length) {
-      const prevLastMessage = this.getLastMessage(prevMessages);
-      const lastMessage = this.getLastMessage(messages);
-      if (lastMessage.createdAt !== prevLastMessage.createdAt) {
-        const countNewMessage = this.channel.messages.filter((x) => x.createdAt > prevLastMessage.createdAt).length;
-        this.setState({ countNewMessage });
-      }
-    }
-  };
-
-  setCountNewMessage = () => {
-    this.setState({ countNewMessage: 0 });
+  resetCountNewMessage = () => {
+    this.setState({ countNewMessages: 0 });
   };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
       return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
     }, Date.now());
-  }
-
-  getLastMessage(messages: Message[]): Message {
-    return messages[Object.keys(messages).pop()];
   }
 
   get channel(): Channel {
@@ -108,8 +98,8 @@ export class Container extends React.Component<Properties, State> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
-        countNewMessage={this.state.countNewMessage}
-        setCountNewMessage={this.setCountNewMessage}
+        countNewMessages={this.state.countNewMessages}
+        resetCountNewMessage={this.resetCountNewMessage}
       />
     );
   }

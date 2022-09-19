@@ -17,8 +17,8 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
-  setCountNewMessage: () => void;
-  countNewMessage: number;
+  resetCountNewMessage: () => void;
+  countNewMessages: number;
 }
 export interface State {
   lightboxMedia: any[];
@@ -76,7 +76,7 @@ export class ChannelView extends React.Component<Properties, State> {
   }
 
   closeIndicator = () => {
-    this.props.setCountNewMessage();
+    this.props.resetCountNewMessage();
     this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -121,10 +121,12 @@ export class ChannelView extends React.Component<Properties, State> {
 
     return (
       <div className='channel-view'>
-        <IndicatorMessage
-          countNewMessage={this.props.countNewMessage}
-          closeIndicator={this.closeIndicator}
-        />
+        {this.props.countNewMessages > 0 && (
+          <IndicatorMessage
+            countNewMessages={this.props.countNewMessages}
+            closeIndicator={this.closeIndicator}
+          />
+        )}
         {isLightboxOpen && (
           <Lightbox
             provider={cloudinaryProvider}

@@ -32,11 +32,13 @@ export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
 }
-
+export interface MessgaeState {
+  countNewMessage: number;
+}
 export interface Message {
   id: string;
   message?: string;
-  createdAt: string;
+  createdAt: number;
   updatedAt: string;
   sender: Sender;
   // TODO: type to be defined
@@ -49,11 +51,6 @@ export interface Message {
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
   startMessageSync = 'messages/saga/startMessageSync',
-  SyncStart = 'CHAT_CHANNEL_SYNC_START',
-}
-
-export function syncStart() {
-  return { type: SagaActionTypes.SyncStart };
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);

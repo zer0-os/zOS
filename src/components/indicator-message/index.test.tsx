@@ -6,7 +6,7 @@ import IndicatorMessage from '.';
 describe('Indicator new message', () => {
   const subject = (props: any = {}) => {
     const allProps = {
-      countNewMessage: 0,
+      countNewMessages: 0,
       ...props,
     };
 
@@ -19,19 +19,9 @@ describe('Indicator new message', () => {
     expect(wrapper.hasClass('newMessages')).toBe(true);
   });
 
-  it('renders indicator when new messages arrive', () => {
-    const wrapper = subject({ countNewMessage: 0 });
-
-    expect(wrapper.find('.indicator__new-message').exists()).toBe(false);
-
-    wrapper.setProps({ countNewMessage: 2 });
-
-    expect(wrapper.find('.indicator__new-message').exists()).toBe(true);
-  });
-
   it('it should not renders indicator when click on it', () => {
     const closeIndicatorSpy = jest.fn();
-    const wrapper = subject({ countNewMessage: 3, closeIndicator: closeIndicatorSpy });
+    const wrapper = subject({ countNewMessages: 3, closeIndicator: closeIndicatorSpy });
 
     expect(wrapper.find('.indicator__new-message').exists()).toBe(true);
 

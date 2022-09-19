@@ -8,6 +8,7 @@ import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
+import { Authentication } from './components/authentication';
 
 export interface Properties {
   setRoute: (routeApp: { route: string; hasAppChanged: boolean }) => void;
@@ -82,9 +83,12 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <Web3Connect>
-        <Main />
-      </Web3Connect>
+      <>
+        <Authentication />
+        <Web3Connect>
+          <Main />
+        </Web3Connect>
+      </>
     );
   }
 }

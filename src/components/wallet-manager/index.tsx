@@ -7,11 +7,7 @@ import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3';
-import { authorize } from '../../store/authentication';
 import { isElectron } from '../../utils';
-import { inject as injectProviderService } from '../../lib/web3/provider-service';
-import Web3Utils from 'web3-utils';
-
 import './styles.scss';
 
 interface PublicProperties {
@@ -25,8 +21,6 @@ export interface Properties extends PublicProperties {
   updateConnector: (connector: WalletType) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
-  authorize: (payload: { signedWeb3Token: string }) => void;
-  providerService: { get: () => any };
 }
 
 export interface State {
@@ -51,7 +45,6 @@ export class Container extends React.Component<Properties, State> {
     return {
       updateConnector,
       setWalletModalOpen,
-      authorize,
     };
   }
 
@@ -62,7 +55,8 @@ export class Container extends React.Component<Properties, State> {
       this.props.connectionStatus === ConnectionStatus.Connected &&
       prevProps.connectionStatus !== ConnectionStatus.Connected
     ) {
-      this.onConnect();
+      this.closeModal();
+      this.setState({ walletSelected: false });
     }
 
     if (
@@ -115,41 +109,6 @@ export class Container extends React.Component<Properties, State> {
     ];
   }
 
-  onConnect(): void {
-    this.closeModal();
-    this.setState({ walletSelected: false });
-
-    this.login();
-  }
-
-  login(): void {
-    const web3Provider = this.props.providerService.get();
-
-    const method = 'personal_sign';
-    const from = Web3Utils.toHex(this.props.currentAddress.toLowerCase());
-    const params = [
-      config.web3AuthenticationMessage,
-      from,
-    ];
-
-    try {
-      web3Provider.provider.sendAsync(
-        {
-          method,
-          params,
-          from,
-        },
-        (err, res) => {
-          if (err) console.log(err);
-
-          this.props.authorize({ signedWeb3Token: res.result });
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   openModal = () => this.props.setWalletModalOpen(true);
   closeModal = () => this.props.setWalletModalOpen(false);
 
@@ -184,4 +143,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const WalletManager = injectProviderService<PublicProperties>(connectContainer<PublicProperties>(Container));
+export const WalletManager = connectContainer<PublicProperties>(Container);

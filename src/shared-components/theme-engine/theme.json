@@ -30,6 +30,7 @@
     "fontColorTertiary": "#FFFFFF",
     "fontColorTertiaryHover": "#F5F5F5",
     "fontColorHeading": "#bfbfbf",
+    "fontColorTime": "#F5F5F5",
 
     "fontColorAppMenu": "#6C6C6C",
 
@@ -93,6 +94,7 @@
     "fontColorTertiary": "#959595",
     "fontColorTertiaryHover": "#000000",
     "fontColorHeading": "#bfbfbf",
+    "fontColorTime": "#737373",
 
     "fontColorAppMenu": "#E6E6E6",
 

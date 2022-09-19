@@ -29,7 +29,14 @@ export const textToEmojis = (message: string) => {
   }
   const afterText = message.substr(stringIndex);
   if (afterText) {
-    nodes.push(<span key={nodes.length}>{afterText}</span>);
+    nodes.push(
+      <span
+        className='text-message'
+        key={nodes.length}
+      >
+        {afterText}
+      </span>
+    );
   }
 
   return nodes;

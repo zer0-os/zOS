@@ -9,6 +9,7 @@ export interface Channel {
   hasMore: boolean;
   countNewMessages: number;
   lastMessageCreatedAt: number;
+  category?: string;
 }
 
 const slice = createNormalizedSlice({

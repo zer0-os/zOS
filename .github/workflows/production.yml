@@ -32,6 +32,7 @@ jobs:
       REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
       REACT_APP_VERSION: ${{secrets.APP_VERSION}}
       REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL}}
+      REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

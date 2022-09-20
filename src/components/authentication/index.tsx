@@ -42,13 +42,13 @@ export class Container extends React.Component<Properties, State> {
       accessToken,
       currentAddress: value.address,
       connectionStatus: status,
-      authorizeUser: authorize,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       setAccessToken,
+      authorizeUser: authorize,
     };
   }
 

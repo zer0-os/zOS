@@ -84,6 +84,7 @@ describe('channels list saga', () => {
     const url = 'channel-0099';
     const name = 'the channel';
     const icon = 'channel-icon';
+    const category = 'channel-category';
 
     const {
       storeState: { normalized },
@@ -91,12 +92,12 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon }],
+          [{ url, name, icon, category }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon });
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category });
   });
 });

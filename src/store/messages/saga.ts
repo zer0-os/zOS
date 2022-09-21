@@ -4,11 +4,17 @@ import { SagaActionTypes } from '.';
 import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
 
-import { fetchMessagesByChannelId } from './api';
+import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
 
 export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
+}
+
+export interface SendPayload {
+  channelId?: string;
+  message?: string;
+  mentionedUser?: string;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -44,6 +50,15 @@ export function* fetch(action) {
   );
 }
 
+export function* send(action) {
+  const { channelId, message, mentionedUser } = action.payload;
+
+  yield call(sendMessagesByChannelId, channelId, message, mentionedUser);
+
+  yield call(fetch, { payload: { channelId } });
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
+  yield takeLatest(SagaActionTypes.Send, send);
 }

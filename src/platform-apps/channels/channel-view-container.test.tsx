@@ -13,6 +13,7 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      sendMessage: () => undefined,
       ...props,
     };
 
@@ -95,6 +96,26 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenLastCalledWith({
       channelId: 'the-channel-id',
       referenceTimestamp: 1658776625730,
+    });
+  });
+
+  it('should call sendMessage when textearea is clicked', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+    const mentionedUser = 'ef698a51-1cea-42f8-a078-c0f96ed03c9e';
+
+    const wrapper = subject({
+      sendMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')(message);
+
+    expect(sendMessage).toHaveBeenLastCalledWith({
+      channelId: 'the-channel-id',
+      message,
+      mentionedUser,
     });
   });
 

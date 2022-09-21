@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
-import { ACCESS_TOKEN_COOKIE_NAME, Container } from '.';
+import { Container } from '.';
 import { config } from '../../config';
 
 describe('Authentication', () => {
@@ -45,7 +45,7 @@ describe('Authentication', () => {
       setAccessToken,
     });
 
-    expect(getFromCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE_NAME);
+    expect(getFromCookie).toHaveBeenCalledWith(config.accessTokenCookieName);
   });
 
   it('should not set accessToken when a cookie is NOT found', () => {

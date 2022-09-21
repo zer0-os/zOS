@@ -1,9 +1,9 @@
 import React from 'react';
-import Cookies from 'js-cookie';
 import Web3Utils from 'web3-utils';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
+
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus } from '../../lib/web3';
@@ -18,18 +18,16 @@ export interface Properties {
   accessToken: string;
   currentAddress: string;
   authorizeUser: (payload: { signedWeb3Token: string }) => void;
-  getFromCookie: (cookieName: string) => string;
+  getAccessToken: () => string;
 }
 
 interface State {
   hasConnected: boolean;
 }
 
-export const ACCESS_TOKEN_COOKIE_NAME = 'zero-access-token';
-
 export class Container extends React.Component<Properties, State> {
   static defaultProps = {
-    getFromCookie: Cookies.get,
+    getAccessToken: () => localStorage.getItem(config.accessTokenCookieName),
   };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -67,15 +65,21 @@ export class Container extends React.Component<Properties, State> {
   }
 
   handleToken() {
-    const accessToken = this.props.getFromCookie(ACCESS_TOKEN_COOKIE_NAME);
+    const accessToken = this.props.getAccessToken();
 
     if (accessToken) {
       this.props.setAccessToken(accessToken);
     }
   }
 
+  hasValidAccessToken(): Boolean {
+    var decodedToken = jwtDecode<JwtPayload>(this.props.accessToken);
+
+    return decodedToken.exp * 1000 > new Date().getTime();
+  }
+
   get isLoggedIn(): Boolean {
-    return Boolean(this.props.accessToken);
+    return Boolean(this.props.accessToken) && this.hasValidAccessToken();
   }
 
   authorize(): void {

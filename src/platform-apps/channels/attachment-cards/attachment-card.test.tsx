@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { shallow } from 'enzyme';
+import AttachmentCard from './attachment-card';
 
 describe('Attachment Cards', () => {
   const subject = (props: any = {}) => {
@@ -7,26 +8,20 @@ describe('Attachment Cards', () => {
       ...props,
     };
 
-    return shallow(<ChannelList {...allProps} />);
+    return shallow(<AttachmentCard {...allProps} />);
   };
 
-  it('renders each channel name', () => {
-    const channels = [
-      { id: 'one', name: 'first channel' },
-      { id: 'two', name: 'second channel' },
-      { id: 'three', name: 'third channel' },
-      { id: 'four', name: 'fourth channel' },
-    ];
+  it('renders attachment Card card', () => {
+    const attachment = {
+      name: 'Lorem_ipsum.pdf',
+      type: 'file',
+      url: 'attachments/38d23ead-fceb-4d36-a8c3-0d0aca7f4438/Lorem_ipsum.pdf',
+    };
+    const wrapper = subject({
+      attachment,
+      onClick: jest.fn(),
+    });
 
-    const wrapper = subject({ channels });
-
-    const textes = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
-
-    expect(textes).toStrictEqual([
-      'first channel',
-      'second channel',
-      'third channel',
-      'fourth channel',
-    ]);
+    expect(wrapper.prop('className')).toBe('attachment-card downloadable');
   });
 });

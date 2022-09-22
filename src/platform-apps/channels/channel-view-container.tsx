@@ -7,10 +7,12 @@ import { fetch as fetchMessages, Message } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
+import { AuthenticationState } from '../../store/authentication/types';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
+  user: AuthenticationState['user'];
 }
 
 interface PublicProperties {
@@ -20,9 +22,13 @@ interface PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
+    const {
+      authentication: { user },
+    } = state;
 
     return {
       channel,
+      user,
     };
   }
 
@@ -76,6 +82,7 @@ export class Container extends React.Component<Properties> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
+        user={this.props.user.data}
       />
     );
   }

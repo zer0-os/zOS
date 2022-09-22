@@ -19,6 +19,10 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
+      user: {
+        isLoading: false,
+        data: null,
+      },
       ...props,
     };
 
@@ -116,6 +120,19 @@ describe('ChannelView', () => {
     const wrapper = subject({ messages: [] });
 
     expect(wrapper.find(Waypoint).exists()).toBe(false);
+  });
+
+  it('passes isOwner prop to Message', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: '2' } });
+
+    const classNames = wrapper.find(Message).map((m) => m.prop('isOwner'));
+
+    expect(classNames).toIncludeAllMembers([
+      false,
+      true,
+      false,
+      false,
+    ]);
   });
 
   describe('Lightbox', () => {

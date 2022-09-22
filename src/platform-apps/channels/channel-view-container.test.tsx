@@ -13,6 +13,10 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      user: {
+        isLoading: false,
+        data: null,
+      },
       ...props,
     };
 
@@ -127,6 +131,12 @@ describe('ChannelViewContainer', () => {
       ({
         normalized: {
           ...(state.normalized || {}),
+        },
+        authentication: {
+          user: {
+            isLoading: false,
+            data: null,
+          },
         },
       } as RootState);
 

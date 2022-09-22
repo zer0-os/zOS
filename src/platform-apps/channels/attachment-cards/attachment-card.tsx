@@ -2,13 +2,15 @@ import React from 'react';
 import classNames from 'classnames';
 
 import './styles.scss';
-interface Attachment {
+export interface Attachment {
   name: string;
+  type: string;
+  url: string;
 }
+
 export interface Properties {
   attachment: Attachment;
-  onRemove?: () => void;
-  onClick?: (Attachement) => void;
+  onClick?: (attachment: Attachment) => void;
 }
 
 export default class AttachmentCard extends React.Component<Properties, undefined> {
@@ -49,11 +51,6 @@ export default class AttachmentCard extends React.Component<Properties, undefine
   render() {
     const className = classNames('attachment-card', { downloadable: this.hasOnClick() });
 
-    return (
-      <div className={className}>
-        {this.file()}
-        {this.props.onRemove && <button onClick={this.props.onRemove}></button>}
-      </div>
-    );
+    return <div className={className}>{this.file()}</div>;
   }
 }

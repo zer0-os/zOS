@@ -7,6 +7,7 @@ import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { User } from '../../store/authentication/types';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -16,6 +17,7 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
+  user: User;
 }
 
 export interface State {
@@ -81,7 +83,8 @@ export class ChannelView extends React.Component<Properties, State> {
         </div>
         {allMessages.map((message, index) => {
           const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
-          const isUserOwnerOfTheMessage =  message.sender.userId === message.sender.userId;
+          const isUserOwnerOfTheMessage =
+            this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (
             <Message

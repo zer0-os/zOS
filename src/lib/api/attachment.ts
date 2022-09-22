@@ -13,20 +13,22 @@ export async function getAttachmentUrl(attachment: { key: string }): Promise<str
     .query({
       key: attachment.key,
     })
-    .withCredentials();
+    .withCredentials()
+    .catch((err) => console.error(err));
 
-  if (attachmentResponse.ok) {
+  if (attachmentResponse && attachmentResponse.ok) {
     return attachmentResponse.body.signedUrl;
+  } else {
+    return null;
   }
 }
 
 export function download(key: string): void {
-  // We can't just do `window.open` here, as chrome will think it's an untrusted popup and attemp to block it.
-  const win = window.open('about:blank', '_blank');
   (async () => {
     const url = await getAttachmentUrl({ key });
 
     if (url) {
+      const win = window.open('about:blank', '_blank');
       win.location.assign(url);
     }
   })();

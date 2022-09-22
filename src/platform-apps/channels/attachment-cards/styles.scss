@@ -12,18 +12,14 @@
     border: none;
   }
 
-  &.downloadable:hover {
+  &.downloadable {
     cursor: pointer;
+  }
 
+  &.downloadable:hover {
     .attachment-card__info {
       background: none;
       border: none;
-      // color: $color-bright;
-    }
-    .attachment-card__icon {
-      &:hover {
-        // color: $color-bright;
-      }
     }
   }
 

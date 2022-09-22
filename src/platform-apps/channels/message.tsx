@@ -126,7 +126,12 @@ export class Message extends React.Component<Properties> {
     const { message, media, preview, createdAt, sender, isOwner } = this.props;
 
     return (
-      <div className={classNames('message', this.props.className, { 'message--owner': isOwner, 'message--media': Boolean(media) })}>
+      <div
+        className={classNames('message', this.props.className, {
+          'message--owner': isOwner,
+          'message--media': Boolean(media),
+        })}
+      >
         <div className='message__block'>
           <div className='message__left'>
             <div

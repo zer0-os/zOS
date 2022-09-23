@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchMessages, Message, startMessageSync } from '../../store/messages';
+import { fetch as fetchMessages, Message, startMessageSync, stopSyncChannels } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
@@ -12,6 +12,7 @@ export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
+  stopSyncChannels: (payload: PayloadFetchMessages) => void;
 }
 
 interface PublicProperties {
@@ -34,6 +35,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       fetchMessages,
       startMessageSync,
+      stopSyncChannels,
     };
   }
 
@@ -44,7 +46,6 @@ export class Container extends React.Component<Properties, State> {
 
     if (channelId) {
       this.props.fetchMessages({ channelId });
-      this.props.startMessageSync({ channelId });
     }
   }
 
@@ -53,6 +54,9 @@ export class Container extends React.Component<Properties, State> {
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.fetchMessages({ channelId });
+    }
+
+    if (channelId && (channelId !== prevProps.channelId || channel.shouldSyncChannels)) {
       this.props.startMessageSync({ channelId });
     }
 
@@ -64,6 +68,11 @@ export class Container extends React.Component<Properties, State> {
     ) {
       this.setState({ countNewMessages: channel.countNewMessages });
     }
+  }
+
+  componentWillUnmount() {
+    const { channelId } = this.props;
+    this.props.stopSyncChannels({ channelId });
   }
 
   resetCountNewMessage = () => {

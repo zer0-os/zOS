@@ -19,6 +19,9 @@ const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
 
+const rawShouldSyncChannels = (channelId) => (state) =>
+  getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
+
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
@@ -45,6 +48,7 @@ export function* fetch(action) {
       id: channelId,
       messages,
       hasMore: messagesResponse.hasMore,
+      shouldSyncChannels: true,
     })
   );
 }
@@ -73,6 +77,17 @@ export function* fetchNewMessages(action) {
   );
 }
 
+export function* stopSyncChannels(action) {
+  const { channelId } = action.payload;
+
+  yield put(
+    receive({
+      id: channelId,
+      shouldSyncChannels: false,
+    })
+  );
+}
+
 function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {
   return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
 }
@@ -82,7 +97,7 @@ function filtredLastMessage(messages: Message[]): Message {
 }
 
 function* syncChannelsTask(action) {
-  while (true) {
+  while (yield select(rawShouldSyncChannels(action.payload.channelId))) {
     yield call(fetchNewMessages, action);
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
@@ -91,4 +106,5 @@ function* syncChannelsTask(action) {
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
+  yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
 }

@@ -10,6 +10,7 @@ export interface Channel {
   countNewMessages: number;
   lastMessageCreatedAt: number;
   category?: string;
+  shouldSyncChannels: boolean;
 }
 
 const slice = createNormalizedSlice({

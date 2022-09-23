@@ -15,15 +15,11 @@
 
     .message-input__input-wrapper {
       position: relative;
-      background: linear-gradient(
-        90deg,
-        var(--input-background-primary-color, #424446),
-        var(--input-background-secondary-color, rgba(66, 68, 70, 0))
-      );
+      background: linear-gradient(90deg, #424446, rgba(66, 68, 70, 0));
       padding-left: 6px;
       font-size: 12px;
       animation: fadein 1.2s ease-out forwards;
-      border-radius: var(--panel-border-radius, 0);
+      border-radius: 0;
 
       &::before {
         content: '';
@@ -32,7 +28,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: theme.$input-background-primary-color;
+        background: #424446;
         opacity: 0;
         transition: opacity 0.3s ease-out;
         border-radius: 0;
@@ -53,10 +49,11 @@
       }
 
       TEXTAREA {
-        color: theme.$font-color-primary;
+        color: #ffffff;
         word-break: break-word;
         font-size: 13.5px !important;
         height: 24px;
+        font-weight: 500;
         border: none;
         outline: none;
       }
@@ -67,7 +64,7 @@
     flex-grow: 1;
     max-width: 675px;
     width: 100%;
-    margin-left: 35px;
+    align-self: center;
     pointer-events: all;
   }
 

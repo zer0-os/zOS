@@ -17,11 +17,8 @@ export const config = {
     max_file_size: parseInt(process.env.CLOUDINARY_MAX_FILE_SIZE) || 10485760,
   },
   sentry: {
-    dsn: {
-      core: process.env.REACT_APP_SENTRY_DSN_CORE,
-      apps: process.env.REACT_APP_SENTRY_DSN_APPS,
-    },
-    environment: 'adam-zOS' || process.env.ENVIRONMENT,
-    release: 'adam-zOS' || process.env.CIRCLE_SHA1,
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    environment: process.env.NODE_ENV,
+    release: process.env.REACT_APP_VERSION,
   },
 };

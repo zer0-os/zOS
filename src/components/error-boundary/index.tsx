@@ -1,34 +1,39 @@
 import React from 'react';
-import { ILogger } from '../../lib/logger';
+import { ErrorBoundary as SentryErrorBoundary } from '@sentry/react';
 
 export interface Properties {
   children: any;
-  logger: ILogger;
+  boundary: string;
+
+  beforeCapture?: any;
 }
 
-interface State {
-  error: Error;
-}
-
-export class ErrorBoundary extends React.Component<Properties, State> {
-  constructor(props) {
-    super(props);
-
-    this.state = { error: null };
-  }
-
-  resolveApp() {
+export class ErrorBoundary extends React.Component<Properties> {
+  resolveApp = () => {
     const appFromPathname = window?.location?.pathname?.match(/.*\/(?<app>.*)(?=$)/)?.groups['app']; // '/0.wilder/feed' returns 'feed'
-    return appFromPathname || 'core';
-  }
+    return appFromPathname || undefined;
+  };
 
-  componentDidCatch(error, errorInfo) {
-    this.setState({ error });
+  beforeCapture = (scope) => {
+    const tags = {
+      'application.boundary': this.props.boundary,
+      'application.name': this.resolveApp(),
+    };
 
-    this.props.logger.capture(error, this.resolveApp(), { errorInfo });
-  }
+    scope.setTags(tags);
+
+    return scope;
+  };
 
   render() {
-    return this.props.children;
+    return (
+      <SentryErrorBoundary
+        beforeCapture={(scope) => {
+          this.beforeCapture(scope);
+        }}
+      >
+        {this.props.children}
+      </SentryErrorBoundary>
+    );
   }
 }

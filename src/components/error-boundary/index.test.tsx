@@ -5,9 +5,17 @@
 import React from 'react';
 
 import { ErrorBoundary, Properties } from './';
-import { shallow } from 'enzyme';
+import { ErrorBoundary as SentryErrorBoundary } from '@sentry/react';
+import { mount } from 'enzyme';
 
 describe('error-boundary', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {},
+    });
+  });
+
   const ChildComponent = () => null;
 
   function subject(props: Partial<Properties> = {}) {
@@ -15,50 +23,65 @@ describe('error-boundary', () => {
       ...props,
     };
 
-    return shallow(
+    return mount(
       <ErrorBoundary {...allProps}>
         <ChildComponent />
       </ErrorBoundary>
     );
   }
 
-  it('from core', () => {
-    const logger = { capture: jest.fn() };
+  it('renders children', () => {
+    const wrapper = subject();
 
-    const wrapper = subject({ logger });
-
-    const exception = new Error('New Error');
-
-    wrapper.find(ChildComponent).simulateError(exception);
-
-    expect(logger.capture).toHaveBeenCalledWith(
-      exception,
-      'core',
-      expect.objectContaining({ errorInfo: expect.anything() })
-    );
+    expect(wrapper.find(ChildComponent).exists()).toBeTruthy();
   });
 
-  it('from app', () => {
-    const expectation = 'feed';
+  describe('setTags', () => {
+    it('with app', async () => {
+      const boundary = 'apps';
+      const app = 'feed';
 
-    Object.defineProperty(window, 'location', {
-      value: {
-        pathname: `0.wilder.beasts.wolf.2101/${expectation}`,
-      },
+      const expectation = {
+        'application.boundary': boundary,
+        'application.name': app,
+      };
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          pathname: `0.wilder.beasts.wolf.2101/${app}`,
+        },
+      });
+
+      const setTags = jest.fn();
+
+      const wrapper = subject({ boundary });
+
+      const child = wrapper.find(SentryErrorBoundary);
+      child.prop('beforeCapture')({ setTags });
+
+      await wrapper.find(ChildComponent).simulateError(new Error('New Error'));
+
+      expect(setTags).toHaveBeenCalledWith(expectation);
     });
 
-    const logger = { capture: jest.fn() };
+    it('without app', async () => {
+      const boundary = 'apps';
 
-    const wrapper = subject({ logger });
+      const expectation = {
+        'application.boundary': boundary,
+        'application.name': undefined,
+      };
 
-    const exception = new Error('New Error');
+      const setTags = jest.fn();
 
-    wrapper.find(ChildComponent).simulateError(exception);
+      const wrapper = subject({ boundary });
 
-    expect(logger.capture).toHaveBeenCalledWith(
-      exception,
-      expectation,
-      expect.objectContaining({ errorInfo: expect.anything() })
-    );
+      const child = wrapper.find(SentryErrorBoundary);
+      child.prop('beforeCapture')({ setTags });
+
+      await wrapper.find(ChildComponent).simulateError(new Error('New Error'));
+
+      expect(setTags).toHaveBeenCalledWith(expectation);
+    });
   });
 });

@@ -5,6 +5,7 @@ import { ChannelView } from './channel-view';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
@@ -19,6 +20,7 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
+      countNewMessages: 0,
       ...props,
     };
 
@@ -118,6 +120,12 @@ describe('ChannelView', () => {
     expect(wrapper.find(Waypoint).exists()).toBe(false);
   });
 
+  it('renders IndicatorMessage', () => {
+    const wrapper = subject({ countNewMessages: 2 });
+
+    expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
+    expect(wrapper.find(IndicatorMessage).prop('countNewMessages')).toStrictEqual(2);
+  });
   describe('Lightbox', () => {
     it('renders when image file is within message and LightBox has been opened', () => {
       const imageMedia = { url: 'image.jpg', type: MediaType.Image };

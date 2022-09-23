@@ -6,7 +6,7 @@ import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
-import { ChatWindow } from '../../components/chat-window';
+import { MessageInput } from '../../components/message-input';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -107,7 +107,7 @@ describe('ChannelView', () => {
   it('renders ChatWindow', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
-    expect(wrapper.find(ChatWindow).exists()).toBe(true);
+    expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
   it('renders Waypoint in case we have messages', () => {

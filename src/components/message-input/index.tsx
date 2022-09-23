@@ -7,20 +7,27 @@ require('./styles.scss');
 export interface Properties {
   className?: string;
   placeholder?: string;
-  onSubmit: (content: string) => void;
+  isUserConnected?: boolean;
+  onSubmit: (message: string) => void;
 }
 
-export class MessageInput extends React.Component<Properties> {
-  submit = (e) => {
+interface State {
+  value: string;
+}
+
+export class MessageInput extends React.Component<Properties, State> {
+  state = { value: '' };
+  onSubmit = (e) => {
     if (!e.shiftKey && e.keyCode === 13 && e.target.value) {
       e.preventDefault();
       this.props.onSubmit(e.target.value);
+      this.setState({ value: '' });
     }
   };
 
-  render() {
+  renderInput() {
     return (
-      <div className={classNames('message-input', this.props.className)}>
+      <div className='message-input chat-window__new-message'>
         <div className='message-input__input-wrapper'>
           <div className='mentions-text-area message-input__textarea'>
             <div className='mentions-text-area__wrap mentions-text-area__wrap--multiLine'>
@@ -30,11 +37,21 @@ export class MessageInput extends React.Component<Properties> {
               <textarea
                 className='mentions-text-area__wrap__input'
                 placeholder={this.props.placeholder}
-                onKeyDown={this.submit}
+                onKeyDown={this.onSubmit}
+                onChange={(event) => this.setState({ value: event.target.value })}
+                value={this.state.value}
               ></textarea>
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <div className={classNames('chat-window__input-wrapper', this.props.className)}>
+        {this.props.isUserConnected && this.renderInput()}
       </div>
     );
   }

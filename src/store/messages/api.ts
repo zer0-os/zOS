@@ -17,9 +17,10 @@ export async function sendMessagesByChannelId(
   message: string,
   mentionedUser: string
 ): Promise<boolean> {
-  const response = await Request.post(`${config.ZERO_API_URL}/chatChannels/${channelId}/message`)
-    .withCredentials()
-    .send({ message, mentionedUsers: [mentionedUser] });
+  const response = await Request.post(`${config.ZERO_API_URL}/chatChannels/${channelId}/message`).send({
+    message,
+    mentionedUsers: [mentionedUser],
+  });
 
-  return response.status;
+  return response.body;
 }

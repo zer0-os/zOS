@@ -7,7 +7,7 @@ import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
-import { ChatWindow } from '../../components/chat-window';
+import { MessageInput } from '../../components/message-input';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -108,7 +108,8 @@ export class ChannelView extends React.Component<Properties, State> {
 
   renderChatWindow() {
     return (
-      <ChatWindow
+      <MessageInput
+        placeholder='Speak your truth...'
         isUserConnected={true}
         onSubmit={this.props.sendMessage}
       />

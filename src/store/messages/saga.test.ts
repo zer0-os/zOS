@@ -41,7 +41,7 @@ describe('messages saga', () => {
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
-          { status: 200 },
+          { body: 'ok' },
         ],
         [
           matchers.call.fn(fetchMessagesByChannelId),

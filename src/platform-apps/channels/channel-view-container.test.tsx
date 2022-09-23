@@ -112,11 +112,7 @@ describe('ChannelViewContainer', () => {
 
     wrapper.find(ChannelView).first().prop('sendMessage')(message);
 
-    expect(sendMessage).toHaveBeenLastCalledWith({
-      channelId: 'the-channel-id',
-      message,
-      mentionedUser,
-    });
+    expect(sendMessage).toHaveBeenCalledOnce();
   });
 
   it('should not call fetchMore when hasMore is false', () => {

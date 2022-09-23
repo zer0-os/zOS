@@ -12,14 +12,9 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
   return response.body;
 }
 
-export async function sendMessagesByChannelId(
-  channelId: string,
-  message: string,
-  mentionedUser: string
-): Promise<boolean> {
+export async function sendMessagesByChannelId(channelId: string, message: string): Promise<boolean> {
   const response = await Request.post(`${config.ZERO_API_URL}/chatChannels/${channelId}/message`).send({
     message,
-    mentionedUsers: [mentionedUser],
   });
 
   return response.body;

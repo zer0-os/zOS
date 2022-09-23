@@ -35,9 +35,8 @@ describe('messages saga', () => {
   it('send message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
-    const mentionedUser = '00000000000000A';
 
-    await expectSaga(send, { payload: { channelId, message, mentionedUser } })
+    await expectSaga(send, { payload: { channelId, message } })
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
@@ -49,7 +48,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUser)
+      .call(sendMessagesByChannelId, channelId, message)
       .call(fetchMessagesByChannelId, channelIdPrefix + channelId)
       .run();
   });

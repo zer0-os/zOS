@@ -73,9 +73,7 @@ export class Container extends React.Component<Properties> {
   handlSendMessage = (message: string): void => {
     const { channelId } = this.props;
     if (channelId) {
-      const mentionedUser = 'ef698a51-1cea-42f8-a078-c0f96ed03c9e';
-
-      this.props.sendMessage({ channelId, message, mentionedUser });
+      this.props.sendMessage({ channelId, message });
     }
   };
 

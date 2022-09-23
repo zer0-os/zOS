@@ -102,7 +102,6 @@ describe('ChannelViewContainer', () => {
   it('should call sendMessage when textearea is clicked', () => {
     const sendMessage = jest.fn();
     const message = 'test message';
-    const mentionedUser = 'ef698a51-1cea-42f8-a078-c0f96ed03c9e';
 
     const wrapper = subject({
       sendMessage,

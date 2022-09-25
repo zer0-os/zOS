@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
@@ -14,6 +14,7 @@ describe('ChannelViewContainer', () => {
       channelId: '',
       fetchMessages: () => undefined,
       sendMessage: () => undefined,
+      startMessageSync: () => undefined,
       ...props,
     };
 
@@ -112,6 +113,44 @@ describe('ChannelViewContainer', () => {
     wrapper.find(ChannelView).first().prop('sendMessage')(message);
 
     expect(sendMessage).toHaveBeenCalledOnce();
+  });
+  
+  it('startMessageSync messages when channel id is set', () => {
+    const startMessageSync = jest.fn();
+
+    const wrapper = subject({ startMessageSync, channelId: '' });
+
+    wrapper.setProps({ channelId: 'the-channel-id' });
+
+    expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('should call hasMoreMessages when new messages arrive', async () => {
+    const startMessageSync = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
+    ] as unknown as Message[];
+
+    const newMessages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 100000003 },
+      { id: 'the-fourth-message-id', message: 'the fourth message', createdAt: 100000004 },
+    ] as unknown as Message[];
+
+    const wrapper = subject({
+      startMessageSync,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel', messages },
+    });
+
+    wrapper.setProps({
+      channelId: 'the-channel-id',
+      channel: { name: 'first channel', messages: newMessages, countNewMessages: 2 },
+    });
+
+    expect(wrapper.find(ChannelView).prop('countNewMessages')).toStrictEqual(2);
   });
 
   it('should not call fetchMore when hasMore is false', () => {

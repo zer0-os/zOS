@@ -2,8 +2,7 @@ import React from 'react';
 import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
-
-import { fetch as fetchMessages, send as sendMessage, Message } from '../../store/messages';
+import { fetch as fetchMessages, send as sendMessage, Message, startMessageSync, stopSyncChannels } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
@@ -12,13 +11,18 @@ export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   sendMessage: (payload: PayloadSendMessage) => void;
+  startMessageSync: (payload: PayloadFetchMessages) => void;
+  stopSyncChannels: (payload: PayloadFetchMessages) => void;
 }
 
 interface PublicProperties {
   channelId: string;
 }
+export interface State {
+  countNewMessages: number;
+}
 
-export class Container extends React.Component<Properties> {
+export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
 
@@ -31,8 +35,12 @@ export class Container extends React.Component<Properties> {
     return {
       fetchMessages,
       sendMessage,
+      startMessageSync,
+      stopSyncChannels,
     };
   }
+
+  state = { countNewMessages: 0 };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -43,12 +51,34 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId } = this.props;
+    const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.fetchMessages({ channelId });
     }
+
+    if (channelId && (channelId !== prevProps.channelId || channel.shouldSyncChannels)) {
+      this.props.startMessageSync({ channelId });
+    }
+
+    if (
+      channel &&
+      channel.countNewMessages &&
+      prevProps.channel.countNewMessages !== channel.countNewMessages &&
+      channel.countNewMessages > 0
+    ) {
+      this.setState({ countNewMessages: channel.countNewMessages });
+    }
   }
+
+  componentWillUnmount() {
+    const { channelId } = this.props;
+    this.props.stopSyncChannels({ channelId });
+  }
+
+  resetCountNewMessage = () => {
+    this.setState({ countNewMessages: 0 });
+  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -86,6 +116,8 @@ export class Container extends React.Component<Properties> {
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
         sendMessage={this.handlSendMessage}
+        countNewMessages={this.state.countNewMessages}
+        resetCountNewMessage={this.resetCountNewMessage}
       />
     );
   }

@@ -2,7 +2,13 @@ import React from 'react';
 import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
-import { fetch as fetchMessages, send as sendMessage, Message, startMessageSync, stopSyncChannels } from '../../store/messages';
+import {
+  fetch as fetchMessages,
+  send as sendMessage,
+  Message,
+  startMessageSync,
+  stopSyncChannels,
+} from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';

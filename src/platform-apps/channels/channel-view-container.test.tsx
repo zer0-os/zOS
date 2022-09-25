@@ -114,7 +114,7 @@ describe('ChannelViewContainer', () => {
 
     expect(sendMessage).toHaveBeenCalledOnce();
   });
-  
+
   it('startMessageSync messages when channel id is set', () => {
     const startMessageSync = jest.fn();
 

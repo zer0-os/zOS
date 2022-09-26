@@ -123,8 +123,6 @@
 .messages {
   transition: opacity 0.9s ease-out;
   opacity: 1;
-  position: relative;
-  overflow: hidden;
 
   .message__header {
     text-align: center;
@@ -180,9 +178,8 @@
       }
 
       &-body-wrapper {
-        flex: 1 1;
-        width: 100%;
-        overflow: hidden;
+        flex: 1 0 auto;
+        max-width: 800px;
 
         .message--owner & {
           border-left: 3px solid #fb216e;
@@ -200,8 +197,6 @@
         font-size: 13.5px;
         font-weight: 600;
         vertical-align: baseline;
-        position: relative;
-        max-width: 800px;
       }
 
       &-preview {

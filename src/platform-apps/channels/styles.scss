@@ -210,6 +210,8 @@
         font-size: 13.5px;
         font-weight: 600;
         vertical-align: baseline;
+        position: relative;
+        max-width: 800px;
 
         .text-message {
           display: inline-block;

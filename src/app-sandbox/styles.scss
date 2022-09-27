@@ -33,11 +33,19 @@ $speed: animation.$animation-duration;
   .app-context-panel {
     flex: 1 0 auto;
     position: relative;
-    width: $width-application-navigation;
     height: 100%;
     padding-top: 90px;
     box-sizing: border-box;
     border-right: 1px solid theme.$primary-border-color;
+    transition: width animation.$animation-duration-double;
+
+    &.open {
+      width: $width-application-navigation;
+    }
+
+    &.closed {
+      width: 0;
+    }
   }
 
   .app-content {

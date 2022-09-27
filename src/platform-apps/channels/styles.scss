@@ -118,9 +118,12 @@
     }
   }
 }
+
 .messages__container {
   margin-bottom: 40px;
   .messages {
+    position: relative;
+    overflow: hidden;
     transition: opacity 0.9s ease-out;
     opacity: 1;
 
@@ -178,8 +181,9 @@
         }
 
         &-body-wrapper {
-          flex: 1 0 auto;
-          max-width: 800px;
+          flex: 1 1;
+          width: 100%;
+          overflow: hidden;
 
           .message--owner & {
             border-left: 3px solid #fb216e;
@@ -207,6 +211,8 @@
           font-size: 13.5px;
           font-weight: 500;
           vertical-align: baseline;
+          position: relative;
+          max-width: 800px;
 
           .text-message {
             display: inline-block;

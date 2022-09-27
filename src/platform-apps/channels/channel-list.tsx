@@ -1,4 +1,5 @@
 import { ZnsLink } from '@zer0-os/zos-component-library';
+import classNames from 'classnames';
 import React from 'react';
 import Collapsible from 'react-collapsible';
 
@@ -27,10 +28,13 @@ export class ChannelList extends React.Component<Properties> {
     return (
       <div className='channel-list__category-channel-list'>
         {channels.map((channel) => {
+          const className = classNames('channel-list__channel', {
+            active: channel.id === this.props.currentChannelId,
+          });
           return (
             <ZnsLink
               key={channel.id}
-              className='channel-list__channel'
+              className={className}
               to={channel.id}
             >
               <span className='channel-list__channel-name-prefix'>#</span>

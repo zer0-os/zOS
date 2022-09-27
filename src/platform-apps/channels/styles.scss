@@ -89,6 +89,8 @@
 
   &-list__category-channel-name {
     .collapsible__trigger {
+      @include actionable;
+
       height: 36px;
       display: block;
       line-height: 2;

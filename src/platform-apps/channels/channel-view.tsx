@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 
@@ -16,8 +17,9 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
+  resetCountNewMessage: () => void;
+  countNewMessages: number;
 }
-
 export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
@@ -25,6 +27,11 @@ export interface State {
 }
 
 export class ChannelView extends React.Component<Properties, State> {
+  bottomRef;
+  constructor(props) {
+    super(props);
+    this.bottomRef = React.createRef();
+  }
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   getMessagesByDay() {
@@ -68,6 +75,11 @@ export class ChannelView extends React.Component<Properties, State> {
     });
   }
 
+  closeIndicator = () => {
+    this.props.resetCountNewMessage();
+    this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
     const allMessages = messagesByDay[day];
 
@@ -109,6 +121,12 @@ export class ChannelView extends React.Component<Properties, State> {
 
     return (
       <div className='channel-view'>
+        {this.props.countNewMessages > 0 && (
+          <IndicatorMessage
+            countNewMessages={this.props.countNewMessages}
+            closeIndicator={this.closeIndicator}
+          />
+        )}
         {isLightboxOpen && (
           <Lightbox
             provider={cloudinaryProvider}
@@ -122,8 +140,9 @@ export class ChannelView extends React.Component<Properties, State> {
             <h1>Welcome to #{this.props.name}</h1>
             <span>This is the start of the channel.</span>
           </div>
-          {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
-          {this.props.messages.length > 0 && this.renderMessages()}
+          {this.props.messages.length && <Waypoint onEnter={this.props.onFetchMore} />}
+          {this.props.messages.length && this.renderMessages()}
+          <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>
     );

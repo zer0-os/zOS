@@ -20,18 +20,19 @@
     display: flex;
     pointer-events: auto;
     position: relative;
+    background-color: theme.$platform-background;
   }
 
   &__navigation-world {
     padding-top: 10px;
     width: $width-world-navigation;
-    border-right: 1px solid theme.$primary-border-color;
+    border-right: 2px solid theme.$primary-border-color;
   }
 
   &__navigation-platform {
     box-sizing: border-box;
     width: $width-platform-navigation;
-    border-right: 1px solid theme.$primary-border-color;
+    border-right: 2px solid theme.$primary-border-color;
     padding: 10px 3px 0 15px;
 
     @include for-left-collapse() {

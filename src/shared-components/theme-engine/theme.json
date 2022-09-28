@@ -14,7 +14,8 @@
     "backgroundColorTertiary": "#FFFFFF",
     "backgroundColorTertiaryHover": "#F5F5F5",
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
-    "backgroundColorSidekick": "transparent",
+
+    "backgroundColorAppPanel": "transparent",
 
     "primaryBorderColor": "#E6E6E6",
     "secondaryBorderColor": "#21152D",
@@ -74,13 +75,14 @@
     "backgroundColorSecondary": "rgba(33, 33, 33, 1)",
     "backgroundColorSecondaryHover": "#1A1919",
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
-    "backgroundColorSidekick": "#120D16",
+
+    "backgroundColorAppPanel": "#1D1D1D",
 
     "backgroundColorTertiary": "#000000",
     "backgroundColorTertiaryHover": "#121212",
     "backgroundColorTertiaryTransparent": "rgba(0, 0, 0, 0.95)",
 
-    "primaryBorderColor": "#232323",
+    "primaryBorderColor": "#808080",
     "secondaryBorderColor": "#21152D",
 
     "addressBarBorderColorOuter": "#23142F",

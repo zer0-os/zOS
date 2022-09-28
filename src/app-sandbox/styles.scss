@@ -37,14 +37,28 @@ $speed: animation.$animation-duration;
     padding-top: 90px;
     box-sizing: border-box;
     border-right: 1px solid theme.$primary-border-color;
+
+    width: $width-application-navigation;
     transition: width animation.$animation-duration-double;
 
-    &.open {
-      width: $width-application-navigation;
+    &__content {
+      opacity: 1;
+      transition: opacity animation.$animation-duration-double;
     }
 
     &.closed {
       width: 0;
+
+      .app-context-panel__content {
+        opacity: 0;
+        /**
+         * this is necessary due to weirdness with the Collapsible component.
+         * the headings are positioned in a way that they are unaffected by the
+         * container width. rather than spend more time trying to figure that out
+         * just making them invisible and un-interactable for the moment.
+         **/
+        pointer-events: none;
+      }
     }
   }
 

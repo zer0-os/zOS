@@ -54,7 +54,7 @@ $speed: animation.$animation-duration;
     }
 
     &.closed {
-      left: -calc($width-application-navigation - 8px);
+      left: calc(0px - $width-application-navigation + 8px);
 
       .app-context-panel__content {
         opacity: 0;

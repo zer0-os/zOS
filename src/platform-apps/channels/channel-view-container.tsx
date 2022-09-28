@@ -2,15 +2,21 @@ import React from 'react';
 import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
-
-import { fetch as fetchMessages, Message, startMessageSync, stopSyncChannels } from '../../store/messages';
+import {
+  fetch as fetchMessages,
+  send as sendMessage,
+  Message,
+  startMessageSync,
+  stopSyncChannels,
+} from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
-import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
+import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
+  sendMessage: (payload: PayloadSendMessage) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
 }
@@ -34,6 +40,7 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
+      sendMessage,
       startMessageSync,
       stopSyncChannels,
     };
@@ -99,6 +106,13 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  handlSendMessage = (message: string): void => {
+    const { channelId } = this.props;
+    if (channelId) {
+      this.props.sendMessage({ channelId, message });
+    }
+  };
+
   render() {
     if (!this.props.channel) return null;
 
@@ -107,6 +121,7 @@ export class Container extends React.Component<Properties, State> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
+        sendMessage={this.handlSendMessage}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}
       />

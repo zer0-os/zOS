@@ -8,6 +8,7 @@ import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { MessageInput } from '../../components/message-input';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -17,6 +18,7 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
+  sendMessage: (message: string) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
 }
@@ -116,6 +118,16 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
+  renderChatWindow() {
+    return (
+      <MessageInput
+        placeholder='Speak your truth...'
+        isUserConnected={true}
+        onSubmit={this.props.sendMessage}
+      />
+    );
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
 
@@ -140,8 +152,9 @@ export class ChannelView extends React.Component<Properties, State> {
             <h1>Welcome to #{this.props.name}</h1>
             <span>This is the start of the channel.</span>
           </div>
-          {this.props.messages.length && <Waypoint onEnter={this.props.onFetchMore} />}
-          {this.props.messages.length && this.renderMessages()}
+          {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+          {this.props.messages.length > 0 && this.renderMessages()}
+          {this.renderChatWindow()}
           <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>

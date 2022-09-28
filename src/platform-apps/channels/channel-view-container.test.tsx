@@ -13,6 +13,7 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      sendMessage: () => undefined,
       startMessageSync: () => undefined,
       ...props,
     };
@@ -97,6 +98,21 @@ describe('ChannelViewContainer', () => {
       channelId: 'the-channel-id',
       referenceTimestamp: 1658776625730,
     });
+  });
+
+  it('should call sendMessage when textearea is clicked', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+
+    const wrapper = subject({
+      sendMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')(message);
+
+    expect(sendMessage).toHaveBeenCalledOnce();
   });
 
   it('startMessageSync messages when channel id is set', () => {

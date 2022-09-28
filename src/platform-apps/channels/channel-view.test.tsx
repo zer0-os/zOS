@@ -7,6 +7,7 @@ import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
+import { MessageInput } from '../../components/message-input';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -103,6 +104,12 @@ describe('ChannelView', () => {
 
     expect(wrapper.find(InvertedScroll).exists()).toBe(true);
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
+  });
+
+  it('renders ChatWindow', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
   it('renders Waypoint in case we have messages', () => {

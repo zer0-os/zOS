@@ -13,7 +13,9 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      sendMessage: () => undefined,
       startMessageSync: () => undefined,
+      stopSyncChannels: () => undefined,
       ...props,
     };
 
@@ -59,8 +61,14 @@ describe('ChannelViewContainer', () => {
 
   it('fetches messages when channel id is set', () => {
     const fetchMessages = jest.fn();
+    const stopSyncChannels = jest.fn();
 
-    const wrapper = subject({ fetchMessages, channelId: '' });
+    const wrapper = subject({
+      fetchMessages,
+      stopSyncChannels,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
@@ -69,8 +77,14 @@ describe('ChannelViewContainer', () => {
 
   it('fetches messages when channel id is updated', () => {
     const fetchMessages = jest.fn();
+    const stopSyncChannels = jest.fn();
 
-    const wrapper = subject({ fetchMessages, channelId: 'the-first-channel-id' });
+    const wrapper = subject({
+      fetchMessages,
+      stopSyncChannels,
+      channelId: 'the-first-channel-id',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
@@ -99,12 +113,33 @@ describe('ChannelViewContainer', () => {
     });
   });
 
+  it('should call sendMessage when textearea is clicked', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+
+    const wrapper = subject({
+      sendMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')(message);
+
+    expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
   it('startMessageSync messages when channel id is set', () => {
     const startMessageSync = jest.fn();
+    const stopSyncChannels = jest.fn();
 
-    const wrapper = subject({ startMessageSync, channelId: '' });
+    const wrapper = subject({
+      startMessageSync,
+      stopSyncChannels,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
 
-    wrapper.setProps({ channelId: 'the-channel-id' });
+    wrapper.setProps({ channelId: 'the-channel-id', channel: { shouldSyncChannels: true } });
 
     expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });

@@ -8,7 +8,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
+import { fetch as fetchChannels, receiveUnreadCount, stopSyncChannels, denormalize } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
@@ -29,6 +29,8 @@ export interface Properties extends PublicProperties {
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
+  receiveUnreadCount: (domainId: string) => void;
+  stopSyncChannels: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -44,11 +46,18 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
+      receiveUnreadCount,
+      stopSyncChannels,
     };
   }
 
   componentDidMount() {
     this.props.fetchChannels(this.props.domainId);
+    this.props.receiveUnreadCount(this.props.domainId);
+  }
+
+  componentWillUnmount() {
+    this.props.stopSyncChannels();
   }
 
   renderChannelView() {

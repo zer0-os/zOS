@@ -11,6 +11,7 @@ export interface Channel {
   lastMessageCreatedAt: number;
   category?: string;
   shouldSyncChannels: boolean;
+  unreadCount?: number;
 }
 
 const slice = createNormalizedSlice({

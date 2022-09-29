@@ -24,6 +24,8 @@ describe('ChannelsContainer', () => {
       user: {},
       store: getStore(),
       fetchChannels: () => undefined,
+      receiveUnreadCount: () => undefined,
+      stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
       ...props,
@@ -48,6 +50,16 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels });
 
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
+  });
+
+  it('set receiveUnreadCount channels on mount', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const fetchChannels = jest.fn();
+    const receiveUnreadCount = jest.fn();
+
+    subject({ domainId, fetchChannels, receiveUnreadCount });
+
+    expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
   });
 
   it('wraps ChannelList in AppContextPanel', () => {

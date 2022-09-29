@@ -1,4 +1,3 @@
-import { join } from 'path';
 import * as Request from 'superagent';
 import { config } from '../../config';
 import { isEmpty } from 'lodash';
@@ -11,8 +10,11 @@ interface RequestFilter {
   include?: any;
 }
 
-function makePath(path: string) {
-  return join(`${config.ZERO_API_URL}`, path);
+function apiUrl(path: string) {
+  return [
+    config.ZERO_API_URL,
+    path,
+  ].join('');
 }
 
 export async function get<T>(path: string, filter?: RequestFilter) {
@@ -27,19 +29,19 @@ export async function get<T>(path: string, filter?: RequestFilter) {
     }
   }
 
-  const response = await Request.get<T>(makePath(path)).withCredentials().query(queryData);
+  const response = await Request.get<T>(apiUrl(path)).withCredentials().query(queryData);
 
   return response.body;
 }
 
 export async function post<T>(path: string, data: any = {}) {
-  const response = await Request.post<T>(makePath(path)).withCredentials().send(data);
+  const response = await Request.post<T>(apiUrl(path)).withCredentials().send(data);
 
   return response.body;
 }
 
 export async function put<T>(path: string, data: any = {}) {
-  const response = await Request.put<T>(makePath(path)).withCredentials().send(data);
+  const response = await Request.put<T>(apiUrl(path)).withCredentials().send(data);
 
   return response.body;
 }

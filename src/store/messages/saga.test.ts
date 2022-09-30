@@ -40,16 +40,11 @@ describe('messages saga', () => {
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
-          { body: 'ok' },
-        ],
-        [
-          matchers.call.fn(fetchMessagesByChannelId),
-          MESSAGES_RESPONSE,
+          { status: 200, body: { id: 'message 1', message } },
         ],
       ])
       .withReducer(rootReducer)
       .call(sendMessagesByChannelId, channelId, message)
-      .call(fetchMessagesByChannelId, channelIdPrefix + channelId)
       .run();
   });
 

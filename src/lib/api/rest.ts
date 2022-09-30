@@ -37,7 +37,7 @@ export async function get<T>(path: string, filter?: RequestFilter) {
 export async function post<T>(path: string, data: any = {}) {
   const response = await Request.post<T>(apiUrl(path)).withCredentials().send(data);
 
-  return response.body;
+  return response;
 }
 
 export async function put<T>(path: string, data: any = {}) {

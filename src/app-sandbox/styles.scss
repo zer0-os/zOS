@@ -39,17 +39,25 @@ $speed: animation.$animation-duration;
     width: $width-application-navigation;
     background-color: theme.$background-color-app-panel;
 
-    &__target,
-    &__target-top,
-    &__target-bottom {
-      background-color: theme.$background-color-app-panel;
-    }
-
     left: 0;
     transition: left animation.$animation-duration-double;
 
+    &__content {
+      opacity: 1;
+      transition: opacity animation.$animation-duration-double;
+    }
+
     &.closed {
       left: calc(0px - $width-application-navigation + 8px);
+
+      .app-context-panel__content {
+        opacity: 0;
+        /**
+         * content sometimes ends up in the exposed edge of the context panel.
+         * we don't want that content to be interactable when the panel is closed.
+         **/
+        pointer-events: none;
+      }
     }
   }
 

@@ -107,6 +107,24 @@ describe('ChannelList', () => {
     ]);
   });
 
+  it('renders unreadCount badge', () => {
+    const channels = [
+      { id: 'one', name: 'first channel', category: 'catg1', unreadCount: 3 },
+      { id: 'two', name: 'second channel', category: 'catg1', unreadCount: 0 },
+      { id: 'three', name: 'third channel', category: 'catg2', unreadCount: 9 },
+      { id: 'four', name: 'fourth channel', category: 'catg2', unreadCount: 13 },
+    ];
+
+    const wrapper = subject({ channels });
+    const text = wrapper.find('.channel-list__channel-unread-count').map((l) => l.text().trim());
+
+    expect(text).toStrictEqual([
+      '3',
+      '9',
+      '9+',
+    ]);
+  });
+
   it('renders grouped category', () => {
     const channels = [
       { id: 'one', name: 'first channel', category: 'catg1' },

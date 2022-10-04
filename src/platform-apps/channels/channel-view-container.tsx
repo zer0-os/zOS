@@ -70,7 +70,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.fetchMessages({ channelId });
     }
 
-    if (channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
+    if (channel && channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
       this.props.startMessageSync({ channelId });
     }
 

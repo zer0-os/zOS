@@ -125,6 +125,10 @@ export class ChannelView extends React.Component<Properties, State> {
   }
 
   renderChatWindow() {
+    if (!this.props.user) {
+      return null;
+    }
+
     return (
       <MessageInput
         placeholder='Speak your truth...'

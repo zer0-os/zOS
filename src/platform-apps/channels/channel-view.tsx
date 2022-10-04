@@ -98,6 +98,7 @@ export class ChannelView extends React.Component<Properties, State> {
         {allMessages.map((message, index) => {
           const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
           const isUserOwnerOfTheMessage =
+            // eslint-disable-next-line eqeqeq
             this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (

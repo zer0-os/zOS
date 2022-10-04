@@ -1,13 +1,17 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { authorize } from './saga';
-import { authorize as authorizeApi } from './api';
+import { authorize, getCurrentUser } from './saga';
+import { authorize as authorizeApi, fetchCurrentUser } from './api';
 
 import { reducer } from '.';
 
-const response = {
+const authorizationResponse = {
   accessToken: 'eyJh-access-token',
+};
+
+const currentUserResponse = {
+  userId: 'id-1',
 };
 
 describe('authentication saga', () => {
@@ -17,28 +21,45 @@ describe('authentication saga', () => {
       .provide([
         [
           matchers.call.fn(authorizeApi),
-          response,
+          authorizationResponse,
+        ],
+        [
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
         ],
       ])
       .call(authorizeApi, signedWeb3Token)
       .run();
   });
 
-  it('should store accessToken', async () => {
-    const { storeState } = await expectSaga(authorize, {
-      payload: { signedWeb3Token },
-    })
+  it('getCurrentUser', async () => {
+    await expectSaga(getCurrentUser)
       .provide([
         [
-          matchers.call.fn(authorizeApi),
-          response,
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
+        ],
+      ])
+      .call(fetchCurrentUser)
+      .run();
+  });
+
+  it('should store user', async () => {
+    const { storeState } = await expectSaga(getCurrentUser)
+      .provide([
+        [
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
         ],
       ])
       .withReducer(reducer)
       .run();
 
     expect(storeState).toMatchObject({
-      accessToken: response.accessToken,
+      user: {
+        data: currentUserResponse,
+        isLoading: false,
+      },
     });
   });
 });

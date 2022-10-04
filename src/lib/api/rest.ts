@@ -10,14 +10,14 @@ interface RequestFilter {
   include?: any;
 }
 
-function apiUrl(path: string) {
+function apiUrl(path: string): string {
   return [
     config.ZERO_API_URL,
     path,
   ].join('');
 }
 
-export async function get<T>(path: string, filter?: RequestFilter) {
+export function get<T>(path: string, filter?: RequestFilter) {
   let queryData;
   if (filter) {
     if (typeof filter === 'string') {
@@ -29,15 +29,11 @@ export async function get<T>(path: string, filter?: RequestFilter) {
     }
   }
 
-  const response = await Request.get<T>(apiUrl(path)).withCredentials().query(queryData);
-
-  return response.body;
+  return Request.get<T>(apiUrl(path)).withCredentials().query(queryData);
 }
 
-export async function post<T>(path: string, data: any = {}) {
-  const response = await Request.post<T>(apiUrl(path)).withCredentials().send(data);
-
-  return response;
+export function post<T>(path: string) {
+  return Request.post<T>(apiUrl(path)).withCredentials();
 }
 
 export async function put<T>(path: string, data: any = {}) {

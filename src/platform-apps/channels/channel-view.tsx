@@ -8,6 +8,7 @@ import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
 
 interface ChatMessageGroups {
@@ -18,6 +19,7 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
+  user: User;
   sendMessage: (message: string) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
@@ -95,12 +97,16 @@ export class ChannelView extends React.Component<Properties, State> {
         </div>
         {allMessages.map((message, index) => {
           const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
+          const isUserOwnerOfTheMessage =
+            // eslint-disable-next-line eqeqeq
+            this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (
             <Message
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
               onImageClick={this.openLightbox}
               key={message.id}
+              isOwner={isUserOwnerOfTheMessage}
               {...message}
             />
           );
@@ -119,6 +125,10 @@ export class ChannelView extends React.Component<Properties, State> {
   }
 
   renderChatWindow() {
+    if (!this.props.user) {
+      return null;
+    }
+
     return (
       <MessageInput
         placeholder='Speak your truth...'

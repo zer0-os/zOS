@@ -28,18 +28,30 @@ export class ChannelList extends React.Component<Properties> {
     return (
       <div className='channel-list__category-channel-list'>
         {channels.map((channel) => {
-          const className = classNames('channel-list__channel', {
+          const { unreadCount } = channel;
+
+          let unreadCountLabel = unreadCount + '';
+          if (unreadCount > 9) {
+            unreadCountLabel = '9+';
+          }
+
+          const className = classNames('channel-list__channel-info', {
             active: channel.id === this.props.currentChannelId,
           });
           return (
-            <ZnsLink
+            <div
               key={channel.id}
               className={className}
-              to={channel.id}
             >
-              <span className='channel-list__channel-name-prefix'>#</span>
-              <span className='channel-list__channel-name'>{channel.name}</span>
-            </ZnsLink>
+              <ZnsLink
+                className='channel-list__channel'
+                to={channel.id}
+              >
+                <span className='channel-list__channel-name-prefix'>#</span>
+                <span className='channel-list__channel-name'>{channel.name}</span>
+                {unreadCount > 0 && <span className='channel-list__channel-unread-count'>{unreadCountLabel}</span>}
+              </ZnsLink>
+            </div>
           );
         })}
       </div>

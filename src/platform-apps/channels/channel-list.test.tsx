@@ -85,7 +85,7 @@ describe('ChannelList', () => {
 
     const wrapper = subject({ channels, currentChannelId: 'three' });
 
-    const activeChannelLink = wrapper.find(ZnsLink).at(2);
+    const activeChannelLink = wrapper.find('.channel-list__channel-info').at(2);
 
     expect(activeChannelLink.hasClass('active')).toBeTrue();
   });
@@ -104,6 +104,24 @@ describe('ChannelList', () => {
     expect(text).toStrictEqual([
       'channel-list__category-channel-name',
       'channel-list__category-channel-name',
+    ]);
+  });
+
+  it('renders unreadCount badge', () => {
+    const channels = [
+      { id: 'one', name: 'first channel', category: 'catg1', unreadCount: 3 },
+      { id: 'two', name: 'second channel', category: 'catg1', unreadCount: 0 },
+      { id: 'three', name: 'third channel', category: 'catg2', unreadCount: 9 },
+      { id: 'four', name: 'fourth channel', category: 'catg2', unreadCount: 13 },
+    ];
+
+    const wrapper = subject({ channels });
+    const text = wrapper.find('.channel-list__channel-unread-count').map((l) => l.text().trim());
+
+    expect(text).toStrictEqual([
+      '3',
+      '9',
+      '9+',
     ]);
   });
 

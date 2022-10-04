@@ -13,6 +13,10 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      user: {
+        isLoading: false,
+        data: null,
+      },
       sendMessage: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
@@ -201,6 +205,12 @@ describe('ChannelViewContainer', () => {
       ({
         normalized: {
           ...(state.normalized || {}),
+        },
+        authentication: {
+          user: {
+            isLoading: false,
+            data: null,
+          },
         },
       } as RootState);
 

@@ -7,6 +7,7 @@ const RECEIVE_PREFIX = 'normalized/receive/nested/entities';
 export enum AsyncListStatus {
   Idle = 'idle',
   Fetching = 'fetching',
+  Stopped = 'stopped',
 }
 
 export interface AsyncNormalizedListState {

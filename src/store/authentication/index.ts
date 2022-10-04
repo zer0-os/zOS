@@ -1,28 +1,28 @@
+import { AuthenticationState } from './types';
 import { Payload } from './saga';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   Authorize = 'authentication/saga/authorize',
+  FetchCurrentUser = 'authentication/saga/fetchCurrentUser',
 }
 const authorize = createAction<Payload>(SagaActionTypes.Authorize);
+const fetchCurrentUser = createAction<Payload>(SagaActionTypes.FetchCurrentUser);
 
-interface AuthenticationState {
-  accessToken: string;
-}
 const initialState: AuthenticationState = {
-  accessToken: null,
+  user: null,
 };
 
 const slice = createSlice({
   name: 'authentication',
   initialState,
   reducers: {
-    setAccessToken: (state, action: PayloadAction<AuthenticationState['accessToken']>) => {
-      state.accessToken = action.payload;
+    setUser: (state, action: PayloadAction<AuthenticationState['user']>) => {
+      state.user = action.payload;
     },
   },
 });
 
-export const { setAccessToken } = slice.actions;
+export const { setUser } = slice.actions;
 export const { reducer } = slice;
-export { authorize };
+export { authorize, fetchCurrentUser };

@@ -1,88 +1,69 @@
 import React from 'react';
-import Cookies from 'js-cookie';
 import Web3Utils from 'web3-utils';
+
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus } from '../../lib/web3';
-import { setAccessToken } from '../../store/authentication';
 import { config } from '../../config';
-import { authorize } from '../../store/authentication';
+import { authorize, fetchCurrentUser } from '../../store/authentication';
+import { AuthenticationState } from '../../store/authentication/types';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
-  setAccessToken: (accesToken: string) => void;
   providerService: { get: () => any };
-  accessToken: string;
   currentAddress: string;
   authorizeUser: (payload: { signedWeb3Token: string }) => void;
-  getFromCookie: (cookieName: string) => string;
+  fetchCurrentUser: () => void;
+  user: AuthenticationState['user'];
 }
 
 interface State {
   hasConnected: boolean;
 }
 
-export const ACCESS_TOKEN_COOKIE_NAME = 'zero-access-token';
-
 export class Container extends React.Component<Properties, State> {
-  static defaultProps = {
-    getFromCookie: Cookies.get,
-  };
-
   static mapState(state: RootState): Partial<Properties> {
     const {
-      authentication: { accessToken },
+      authentication: { user },
       web3: { status, value },
     } = state;
 
     return {
-      accessToken,
       currentAddress: value.address,
       connectionStatus: status,
+      user,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      setAccessToken,
       authorizeUser: authorize,
+      fetchCurrentUser,
     };
   }
 
   componentDidMount() {
-    this.handleToken();
+    this.props.fetchCurrentUser();
   }
 
   componentDidUpdate(prevProps: Properties) {
     if (
       prevProps.connectionStatus !== ConnectionStatus.Connected &&
       this.props.connectionStatus === ConnectionStatus.Connected &&
-      this.props.currentAddress
+      this.props.currentAddress &&
+      !this.isLoggedIn
     ) {
       this.authorize();
     }
   }
 
-  handleToken() {
-    const accessToken = this.props.getFromCookie(ACCESS_TOKEN_COOKIE_NAME);
-
-    if (accessToken) {
-      this.props.setAccessToken(accessToken);
-    }
-  }
-
   get isLoggedIn(): Boolean {
-    return Boolean(this.props.accessToken);
+    return Boolean(this.props.user && !this.props.user.isLoading && this.props.user.data && this.props.user.data.id);
   }
 
   authorize(): void {
-    if (this.isLoggedIn) {
-      return;
-    }
-
     const web3Provider = this.props.providerService.get();
 
     const method = 'personal_sign';

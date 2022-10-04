@@ -16,6 +16,8 @@
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
     "backgroundColorAppPanel": "transparent",
+    "backgroundColorPlatformNavigation": "transparent",
+    "backgroundColorWorldNavigation": "transparent",
 
     "primaryBorderColor": "#E6E6E6",
     "secondaryBorderColor": "#21152D",
@@ -76,13 +78,15 @@
     "backgroundColorSecondaryHover": "#1A1919",
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
 
-    "backgroundColorAppPanel": "#1D1D1D",
+    "backgroundColorAppPanel": "#120D16",
+    "backgroundColorPlatformNavigation": "#1A1022",
+    "backgroundColorWorldNavigation": "#23142F",
 
     "backgroundColorTertiary": "#000000",
     "backgroundColorTertiaryHover": "#121212",
     "backgroundColorTertiaryTransparent": "rgba(0, 0, 0, 0.95)",
 
-    "primaryBorderColor": "#808080",
+    "primaryBorderColor": "#472E5B",
     "secondaryBorderColor": "#21152D",
 
     "addressBarBorderColorOuter": "#23142F",

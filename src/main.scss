@@ -26,6 +26,7 @@
     padding-top: 10px;
     width: $width-world-navigation;
     border-right: 1px solid theme.$primary-border-color;
+    background-color: theme.$background-color-world-navigation;
   }
 
   &__navigation-platform {
@@ -33,6 +34,7 @@
     width: $width-platform-navigation;
     border-right: 1px solid theme.$primary-border-color;
     padding: 10px 3px 0 15px;
+    background-color: theme.$background-color-platform-navigation;
 
     @include for-left-collapse() {
       width: 54px;

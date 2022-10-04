@@ -1,13 +1,19 @@
-import * as Request from 'superagent';
+import { get, post } from '../../lib/api/rest';
 import { MessagesResponse } from './index';
-import { config } from '../../config';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
-  const filter = lastCreatedAt ? { lastCreatedAt } : {};
+  const filter: any = {};
 
-  const response = await Request.get(`${config.ZERO_API_URL}/chatChannels/${channelId}/messages`).query({
-    filter: JSON.stringify(filter),
-  });
+  if (lastCreatedAt) {
+    filter.lastCreatedAt = lastCreatedAt;
+  }
+
+  const response = await get<any>(`/chatChannels/${channelId}/messages`).send(filter);
+  return response.body;
+}
+
+export async function sendMessagesByChannelId(channelId: string, message: string): Promise<any> {
+  const response = await post<any>(`/chatChannels/${channelId}/message`).send({ message });
 
   return response.body;
 }

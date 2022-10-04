@@ -5,9 +5,11 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
+import { MessageInput } from '../../components/message-input';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -18,8 +20,10 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
+  sendMessage: (message: string) => void;
+  resetCountNewMessage: () => void;
+  countNewMessages: number;
 }
-
 export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
@@ -27,6 +31,11 @@ export interface State {
 }
 
 export class ChannelView extends React.Component<Properties, State> {
+  bottomRef;
+  constructor(props) {
+    super(props);
+    this.bottomRef = React.createRef();
+  }
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   getMessagesByDay() {
@@ -70,6 +79,11 @@ export class ChannelView extends React.Component<Properties, State> {
     });
   }
 
+  closeIndicator = () => {
+    this.props.resetCountNewMessage();
+    this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
     const allMessages = messagesByDay[day];
 
@@ -109,11 +123,27 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
+  renderChatWindow() {
+    return (
+      <MessageInput
+        placeholder='Speak your truth...'
+        isUserConnected={true}
+        onSubmit={this.props.sendMessage}
+      />
+    );
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
 
     return (
       <div className='channel-view'>
+        {this.props.countNewMessages > 0 && (
+          <IndicatorMessage
+            countNewMessages={this.props.countNewMessages}
+            closeIndicator={this.closeIndicator}
+          />
+        )}
         {isLightboxOpen && (
           <Lightbox
             provider={cloudinaryProvider}
@@ -129,6 +159,8 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
+          {this.renderChatWindow()}
+          <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>
     );

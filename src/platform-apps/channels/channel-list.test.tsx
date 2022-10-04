@@ -75,6 +75,21 @@ describe('ChannelList', () => {
     ]);
   });
 
+  it('adds class to current channel', () => {
+    const channels = [
+      { id: 'one', name: 'first channel' },
+      { id: 'two', name: 'second channel' },
+      { id: 'three', name: 'third channel' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels, currentChannelId: 'three' });
+
+    const activeChannelLink = wrapper.find(ZnsLink).at(2);
+
+    expect(activeChannelLink.hasClass('active')).toBeTrue();
+  });
+
   it('rpasses className prop', () => {
     const channels = [
       { id: 'one', name: 'first channel', category: 'catg1' },

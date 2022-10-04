@@ -170,6 +170,32 @@
     }
 
     .message {
+      &--owner {
+        .message__block-body {
+          background-color: var(--card-background-color, #212121);
+          color: var(--card-text-color, #fff);
+          transition: background-color 0.3s ease-out;
+          position: relative;
+
+          &:before {
+            height: 100%;
+            width: 3px;
+            background-color: var(--accent-color, #c9fd51);
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+        }
+      }
+
+      &--media {
+        .message__block-body {
+          margin-left: 15px;
+        }
+      }
+
       &__block {
         display: flex;
         margin-bottom: 7px;

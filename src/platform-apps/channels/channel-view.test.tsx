@@ -21,10 +21,7 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
-      user: {
-        isLoading: false,
-        data: null,
-      },
+      user: null,
       countNewMessages: 0,
       ...props,
     };
@@ -111,9 +108,15 @@ describe('ChannelView', () => {
   });
 
   it('renders ChatWindow', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: '2' } });
 
     expect(wrapper.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('should not renders ChatWindow', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    expect(wrapper.find(MessageInput).exists()).toBe(false);
   });
 
   it('renders Waypoint in case we have messages', () => {

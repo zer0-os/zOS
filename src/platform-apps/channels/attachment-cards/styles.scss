@@ -12,6 +12,10 @@
     border: none;
   }
 
+  &__file {
+    display: flex;
+  }
+
   &.downloadable {
     cursor: pointer;
   }

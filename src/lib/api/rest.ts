@@ -30,16 +30,7 @@ export function get<T>(path: string, filter?: RequestFilter) {
   }
 
   return Request.get<T>(apiUrl(path)).withCredentials().query(queryData);
-  // const response = await Request.get<T>(apiUrl(path)).withCredentials().query(queryData);
-
-  // return response.body;
 }
-
-// export async function post<T>(path: string, data: any = {}) {
-//   const response = await Request.post<T>(apiUrl(path)).withCredentials().send(data);
-
-//   return response.body;
-// }
 
 export function post<T>(path: string) {
   return Request.post<T>(apiUrl(path)).withCredentials();

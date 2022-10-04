@@ -48,6 +48,44 @@ describe('messages saga', () => {
       .run();
   });
 
+  it('send message return a 400 satatus', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = 'hello';
+    const messages = [
+      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
+      { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
+      { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
+    ];
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(send, { payload: { channelId, message } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(sendMessagesByChannelId),
+          { status: 400, body: {} },
+        ],
+      ])
+      .call(sendMessagesByChannelId, channelId, message)
+      .run();
+
+    expect(channels[channelId].messages).toStrictEqual(messages);
+  });
+
   it('fetches messages for referenceTimestamp', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const referenceTimestamp = 1658776625730;

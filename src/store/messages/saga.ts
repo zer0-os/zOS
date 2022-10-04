@@ -62,23 +62,23 @@ export function* send(action) {
   const { channelId, message } = action.payload;
 
   const messagesResponse = yield call(sendMessagesByChannelId, channelId, message);
-  if (messagesResponse.status === 200) {
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-    const messages = [
-      ...existingMessages,
-      messagesResponse.body,
-    ];
+  if (messagesResponse.status !== 200) return;
 
-    yield put(
-      receive({
-        id: channelId,
-        messages,
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
-      })
-    );
-  }
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const messages = [
+    ...existingMessages,
+    messagesResponse.body,
+  ];
+
+  yield put(
+    receive({
+      id: channelId,
+      messages,
+      shouldSyncChannels: true,
+      countNewMessages: 0,
+      lastMessageCreatedAt: messagesResponse.body.createdAt,
+    })
+  );
 }
 
 export function* fetchNewMessages(action) {

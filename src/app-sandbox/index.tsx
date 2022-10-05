@@ -13,6 +13,7 @@ import { PlatformUser } from './container';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
+import classNames from 'classnames';
 
 export interface AppInterface {
   provider: ethers.providers.Web3Provider;
@@ -111,8 +112,14 @@ export class AppSandbox extends React.Component<Properties, State> {
   }
 
   render() {
+    const { hasContextPanel, isContextPanelOpen } = this.state.layout;
+    const className = classNames('app-sandbox', {
+      'context-panel-open': isContextPanelOpen,
+      'has-context-panel': hasContextPanel,
+    });
+
     return (
-      <div className='app-sandbox'>
+      <div className={className}>
         <AppLayoutContextProvider value={this.layoutContext}>{this.renderSelectedApp()}</AppLayoutContextProvider>
       </div>
     );

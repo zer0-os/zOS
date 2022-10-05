@@ -136,6 +136,39 @@ describe('AppSandbox', () => {
     });
   });
 
+  it('adds default classes for context panel', () => {
+    const wrapper = subject();
+
+    const sandbox = wrapper.find('.app-sandbox');
+
+    expect(sandbox.hasClass('context-panel-open')).toBeFalse();
+    expect(sandbox.hasClass('has-context-panel')).toBeFalse();
+  });
+
+  it('adds class when setHasContextPanel is called with true', () => {
+    const wrapper = subject();
+
+    const context = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    context.setHasContextPanel(true);
+
+    const sandbox = wrapper.find('.app-sandbox');
+
+    expect(sandbox.hasClass('has-context-panel')).toBeTrue();
+  });
+
+  it('adds class when setIsContextPanelOpen is called with true', () => {
+    const wrapper = subject();
+
+    const context = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    context.setIsContextPanelOpen(true);
+
+    const sandbox = wrapper.find('.app-sandbox');
+
+    expect(sandbox.hasClass('context-panel-open')).toBeTrue();
+  });
+
   it('updates hasContextPanel when setHasContextPanel is called', () => {
     const wrapper = subject();
 

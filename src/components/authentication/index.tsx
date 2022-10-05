@@ -53,14 +53,11 @@ export class Container extends React.Component<Properties, State> {
       prevProps.connectionStatus !== ConnectionStatus.Connected &&
       this.props.connectionStatus === ConnectionStatus.Connected &&
       this.props.currentAddress &&
-      !this.isLoggedIn
+      this.props.user.isLoading === false &&
+      this.props.user.data === null
     ) {
       this.authorize();
     }
-  }
-
-  get isLoggedIn(): Boolean {
-    return Boolean(this.props.user && !this.props.user.isLoading && this.props.user.data && this.props.user.data.id);
   }
 
   authorize(): void {

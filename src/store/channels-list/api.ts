@@ -1,6 +1,6 @@
-import { config } from '../../config';
+import { get } from '../../lib/api/rest';
 
 export async function fetchChannels(id: string) {
-  const channels = await fetch(`${config.ZERO_API_URL}/api/networks/${id}/chatChannels/public`);
-  return await channels.json();
+  const channels = await get<any>(`/api/networks/${id}/chatChannels`);
+  return await channels.body;
 }

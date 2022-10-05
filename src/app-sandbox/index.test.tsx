@@ -157,6 +157,20 @@ describe('AppSandbox', () => {
     expect(sandbox.hasClass('has-context-panel')).toBeTrue();
   });
 
+  it('removes class when app is updated', () => {
+    const wrapper = subject({ selectedApp: Apps.DAOS });
+
+    const context = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    context.setHasContextPanel(true);
+
+    wrapper.setProps({ selectedApp: Apps.Feed });
+
+    const sandbox = wrapper.find('.app-sandbox');
+
+    expect(sandbox.hasClass('has-context-panel')).toBeFalse();
+  });
+
   it('adds class when setIsContextPanelOpen is called with true', () => {
     const wrapper = subject();
 

@@ -21,20 +21,6 @@ $speed: animation.$animation-duration;
     padding-top: 200px;
     color: red;
   }
-
-  &.has-context-panel {
-    .app-layout {
-      transition: left animation.$animation-duration-double, width animation.$animation-duration-double;
-
-      left: calc(0px - $width-application-navigation + 8px);
-      width: calc(100% + $width-application-navigation - 8px);
-    }
-
-    &.context-panel-open .app-layout {
-      left: 0;
-      width: 100%;
-    }
-  }
 }
 
 .app-layout {
@@ -43,6 +29,18 @@ $speed: animation.$animation-duration;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+
+  &.has-context-panel {
+    transition: left animation.$animation-duration-double, width animation.$animation-duration-double;
+
+    left: calc(0px - $width-application-navigation + 8px);
+    width: calc(100% + $width-application-navigation - 8px);
+
+    &.context-panel-open {
+      left: 0;
+      width: 100%;
+    }
+  }
 
   .app-context-panel {
     flex: 1 0 auto;

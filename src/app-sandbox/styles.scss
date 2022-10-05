@@ -30,6 +30,18 @@ $speed: animation.$animation-duration;
   height: 100%;
   box-sizing: border-box;
 
+  &.has-context-panel {
+    transition: left animation.$animation-duration-double, width animation.$animation-duration-double;
+
+    left: calc(0px - $width-application-navigation + 8px);
+    width: calc(100% + $width-application-navigation - 8px);
+
+    &.context-panel-open {
+      left: 0;
+      width: 100%;
+    }
+  }
+
   .app-context-panel {
     flex: 1 0 auto;
     position: relative;
@@ -39,17 +51,12 @@ $speed: animation.$animation-duration;
     width: $width-application-navigation;
     background-color: theme.$background-color-app-panel;
 
-    left: 0;
-    transition: left animation.$animation-duration-double;
-
     &__content {
       opacity: 1;
       transition: opacity animation.$animation-duration-double;
     }
 
     &.closed {
-      left: calc(0px - $width-application-navigation + 8px);
-
       .app-context-panel__content {
         opacity: 0;
         /**

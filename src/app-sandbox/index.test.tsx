@@ -6,9 +6,10 @@ import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
 import { Chains } from '../lib/web3';
 import { Channels } from '../platform-apps/channels';
+import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 
 describe('AppSandbox', () => {
-  const subject = (props: any) => {
+  const subject = (props: any = {}) => {
     const allProps = {
       znsRoute: '',
       selectedApp: null,
@@ -107,5 +108,46 @@ describe('AppSandbox', () => {
         connectWallet: web3.connectWallet,
       })
     );
+  });
+
+  it('sets default context values', () => {
+    const wrapper = subject();
+
+    const initialValue = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    expect(initialValue).toMatchObject({
+      isContextPanelOpen: false,
+      hasContextPanel: false,
+    });
+  });
+
+  it('updates isContextPanelOpen when setIsContextPanelOpen is called', () => {
+    const wrapper = subject();
+
+    const context = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    context.setIsContextPanelOpen(true);
+
+    const value = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    expect(value).toMatchObject({
+      isContextPanelOpen: true,
+      hasContextPanel: false,
+    });
+  });
+
+  it('updates hasContextPanel when setHasContextPanel is called', () => {
+    const wrapper = subject();
+
+    const context = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    context.setHasContextPanel(true);
+
+    const value = wrapper.find(AppLayoutContextProvider).prop('value');
+
+    expect(value).toMatchObject({
+      isContextPanelOpen: false,
+      hasContextPanel: true,
+    });
   });
 });

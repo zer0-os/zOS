@@ -13,7 +13,6 @@ import { PlatformUser } from './container';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
-import classNames from 'classnames';
 
 export interface AppInterface {
   provider: ethers.providers.Web3Provider;
@@ -76,16 +75,6 @@ export class AppSandbox extends React.Component<Properties, State> {
     };
   }
 
-  componentDidUpdate(prevProps: Properties) {
-    if (prevProps.selectedApp !== this.props.selectedApp) {
-      // we need to assume that no app has a context panel by default.
-      // since it is opt-in, and affects the layout, we only want it
-      // to affect the layout for apps that explicitly include the
-      // context panel.
-      this.updateLayoutState({ hasContextPanel: false });
-    }
-  }
-
   handleSetHasContextPanel = (hasContextPanel: boolean) => this.updateLayoutState({ hasContextPanel });
   handleSetIsContextPanelOpen = (isContextPanelOpen: boolean) => this.updateLayoutState({ isContextPanelOpen });
 
@@ -122,14 +111,8 @@ export class AppSandbox extends React.Component<Properties, State> {
   }
 
   render() {
-    const { hasContextPanel, isContextPanelOpen } = this.state.layout;
-    const className = classNames('app-sandbox', {
-      'context-panel-open': isContextPanelOpen,
-      'has-context-panel': hasContextPanel,
-    });
-
     return (
-      <div className={className}>
+      <div className='app-sandbox'>
         <AppLayoutContextProvider value={this.layoutContext}>{this.renderSelectedApp()}</AppLayoutContextProvider>
       </div>
     );

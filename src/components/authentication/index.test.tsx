@@ -80,6 +80,10 @@ describe('Authentication', () => {
         }),
       },
       authorizeUser,
+      user: {
+        isLoading: false,
+        data: null,
+      },
     });
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
@@ -112,6 +116,10 @@ describe('Authentication', () => {
             },
           },
         }),
+      },
+      user: {
+        isLoading: false,
+        data: null,
       },
       authorizeUser,
     });

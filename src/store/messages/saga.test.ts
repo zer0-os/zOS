@@ -72,7 +72,7 @@ describe('messages saga', () => {
       .run();
   });
 
-  it('send message return a 400 status', async () => {
+  it.only('send message return a 400 status', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
     const messages = [
@@ -120,7 +120,7 @@ describe('messages saga', () => {
       .call(sendMessagesByChannelId, channelId, message)
       .run();
 
-    expect(channels[channelId].messages).toStrictEqual(messages);
+    expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
   });
 
   it('fetches messages for referenceTimestamp', async () => {

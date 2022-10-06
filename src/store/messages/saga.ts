@@ -81,22 +81,34 @@ export function* send(action) {
   );
 
   const messagesResponse = yield call(sendMessagesByChannelId, channelId, message);
-  if (messagesResponse.status !== 200) return;
+  const isMessageSent = messagesResponse.status === 200;
 
-  const messages = [
-    ...existingMessages,
-    messagesResponse.body,
-  ];
+  if (!isMessageSent) {
+    yield put(
+      receive({
+        id: channelId,
+        messages: [...existingMessages],
+        shouldSyncChannels: true,
+        countNewMessages: 0,
+        lastMessageCreatedAt: messagesResponse.body.createdAt,
+      })
+    );
+  } else {
+    const messages = [
+      ...existingMessages,
+      messagesResponse.body,
+    ];
 
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-      shouldSyncChannels: true,
-      countNewMessages: 0,
-      lastMessageCreatedAt: messagesResponse.body.createdAt,
-    })
-  );
+    yield put(
+      receive({
+        id: channelId,
+        messages,
+        shouldSyncChannels: true,
+        countNewMessages: 0,
+        lastMessageCreatedAt: messagesResponse.body.createdAt,
+      })
+    );
+  }
 }
 
 export function* fetchNewMessages(action) {

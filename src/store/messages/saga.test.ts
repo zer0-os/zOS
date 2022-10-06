@@ -37,14 +37,6 @@ describe('messages saga', () => {
     const message = 'hello';
 
     const initialState = {
-      // normalized: {
-      //   channels: {
-      //     [channelId]: {
-      //       id: channelId,
-      //       messages,
-      //     },
-      //   },
-      // },
       authentication: {
         user: {
           data: {
@@ -72,7 +64,7 @@ describe('messages saga', () => {
       .run();
   });
 
-  it.only('send message return a 400 status', async () => {
+  it('send message return a 400 status', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
     const messages = [

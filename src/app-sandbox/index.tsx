@@ -4,6 +4,7 @@ import { Store } from 'redux';
 
 import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
+import { App as NFTSZApp } from '@zero-tech/zapp-nfts';
 import { StakingZApp } from '@zero-tech/zapp-staking';
 import { DaosApp } from '@zero-tech/zapp-daos';
 import { Chains } from '../lib/web3';
@@ -97,6 +98,10 @@ export class AppSandbox extends React.Component<Properties, State> {
 
     if (selectedApp === Apps.Staking) {
       return <StakingZApp {...this.appProperties} />;
+    }
+
+    if (selectedApp === Apps.NFTS) {
+      return <NFTSZApp {...this.appProperties} />;
     }
 
     if (selectedApp === Apps.Channels) {

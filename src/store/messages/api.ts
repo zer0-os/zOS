@@ -12,8 +12,12 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
   return response.body;
 }
 
-export async function sendMessagesByChannelId(channelId: string, message: string): Promise<any> {
-  const response = await post<any>(`/chatChannels/${channelId}/message`).send({ message });
+export async function sendMessagesByChannelId(
+  channelId: string,
+  message: string,
+  mentionedUsers: string[]
+): Promise<any> {
+  const response = await post<any>(`/chatChannels/${channelId}/message`).send({ message, mentionedUsers });
 
   return response;
 }

@@ -10,6 +10,8 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
+import { FetchUsersPayload } from '../../store/users/saga';
+import { UserMentions } from '../../store/users';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -20,9 +22,11 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, mentionedUsers: string[]) => void;
+  fetchUsers: (payload: FetchUsersPayload) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
+  users: UserMentions[];
 }
 export interface State {
   lightboxMedia: any[];
@@ -131,9 +135,12 @@ export class ChannelView extends React.Component<Properties, State> {
 
     return (
       <MessageInput
+        className='message-input__textarea'
         placeholder='Speak your truth...'
         isUserConnected={true}
         onSubmit={this.props.sendMessage}
+        fetchUsers={this.props.fetchUsers}
+        users={this.props.users}
       />
     );
   }

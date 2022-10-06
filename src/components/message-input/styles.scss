@@ -3,6 +3,27 @@
 @import '../../variables';
 @import '../../animation';
 
+@keyframes fade-background-in {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: #c9fd51;
+  }
+}
+
+@mixin tag-highlight() {
+  mark,
+  strong {
+    animation: fade-background-in 200ms ease-in forwards;
+    color: theme.$text-on-accent;
+  }
+  mark {
+    padding: 3px;
+    border-radius: 5px;
+  }
+}
+
 .chat-window {
   &__input-wrapper {
     display: flex;
@@ -103,6 +124,8 @@
     .mentions-text-area__wrap__highlighter__substring {
       visibility: hidden;
     }
+
+    @include tag-highlight;
   }
 
   .mentions-text-area__wrap__input {
@@ -121,5 +144,26 @@
     bottom: 0px;
     overflow: hidden;
     resize: none;
+  }
+
+  .mentions-text-area__wrap__suggestions {
+    background: none !important;
+    z-index: 1000 !important;
+  }
+  .mentions-text-area__wrap__suggestions__list {
+    border: 2px solid #464646;
+  }
+  .mentions-text-area__wrap__suggestions__item {
+    padding: 5px 10px;
+  }
+  .mentions-text-area__wrap__suggestions__item--focused {
+    background-color: #141414;
+  }
+  .mentions-text-area__wrap__suggestions__item__display {
+    color: #cccccc;
+  }
+  .mentions-text-area__wrap__suggestions__item__highlight {
+    font-weight: bold;
+    color: white;
   }
 }

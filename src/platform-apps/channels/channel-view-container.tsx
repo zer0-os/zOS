@@ -9,18 +9,22 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
+import { fetch as fetchUsers, UserMentions } from '../../store/users';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
+import { FetchUsersPayload } from '../../store/users/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
+  fetchUsers: (payload: FetchUsersPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
+  users: UserMentions[];
 }
 
 interface PublicProperties {
@@ -35,17 +39,20 @@ export class Container extends React.Component<Properties, State> {
     const channel = denormalize(props.channelId, state) || null;
     const {
       authentication: { user },
+      users: { users },
     } = state;
 
     return {
       channel,
       user,
+      users,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
+      fetchUsers,
       sendMessage,
       startMessageSync,
       stopSyncChannels,
@@ -113,11 +120,19 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handlSendMessage = (message: string): void => {
+  isValidPost = (message: string): boolean => {
+    return !!message && message.trim() !== '';
+  };
+
+  handlSendMessage = (message: string, mentionedUsers: string[] = []): void => {
     const { channelId } = this.props;
-    if (channelId) {
-      this.props.sendMessage({ channelId, message });
+    if (channelId && this.isValidPost(message)) {
+      this.props.sendMessage({ channelId, message, mentionedUsers });
     }
+  };
+
+  handlFetchUsers = (payload: FetchUsersPayload): void => {
+    this.props.fetchUsers(payload);
   };
 
   render() {
@@ -130,6 +145,8 @@ export class Container extends React.Component<Properties, State> {
         onFetchMore={this.fetchMore}
         user={this.props.user.data}
         sendMessage={this.handlSendMessage}
+        fetchUsers={this.handlFetchUsers}
+        users={this.props.users}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}
       />

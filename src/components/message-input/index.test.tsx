@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { MentionsInput } from 'react-mentions';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
@@ -26,7 +26,7 @@ describe('MessageInput', () => {
   it('adds placeholder', () => {
     const wrapper = subject({ placeholder: 'Speak', isUserConnected: true });
 
-    expect(wrapper.find('textarea').prop('placeholder')).toEqual('Speak');
+    expect(wrapper.find(MentionsInput).prop('placeholder')).toEqual('Speak');
   });
 
   it('it renders the messageInput', function () {
@@ -46,7 +46,7 @@ describe('MessageInput', () => {
 
     const wrapper = subject({ onSubmit, placeholder: 'Speak', isUserConnected: true });
 
-    const textarea = wrapper.find('textarea');
+    const textarea = wrapper.find(MentionsInput);
     textarea.simulate('keydown', { preventDefault() {}, keyCode: 13, shiftKey: false, target: { value: 'Hello' } });
     expect(onSubmit).toHaveBeenCalledOnce();
   });

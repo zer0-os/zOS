@@ -18,6 +18,7 @@ describe('ChannelViewContainer', () => {
         data: null,
       },
       sendMessage: () => undefined,
+      fetchUsers: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
       ...props,
@@ -120,6 +121,7 @@ describe('ChannelViewContainer', () => {
   it('should call sendMessage when textearea is clicked', () => {
     const sendMessage = jest.fn();
     const message = 'test message';
+    const mentionedUsers = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
 
     const wrapper = subject({
       sendMessage,
@@ -127,9 +129,24 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')(message);
+    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUsers);
 
     expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call fetchUsers when mentions added in textbox', () => {
+    const fetchUsers = jest.fn();
+    const search = 'a';
+
+    const wrapper = subject({
+      fetchUsers,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('fetchUsers')({ search });
+
+    expect(fetchUsers).toHaveBeenCalledOnce();
   });
 
   it('startMessageSync messages when channel id is set', () => {
@@ -212,6 +229,7 @@ describe('ChannelViewContainer', () => {
             data: null,
           },
         },
+        users: { users: [] },
       } as RootState);
 
     test('channel', () => {

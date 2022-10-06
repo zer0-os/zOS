@@ -14,6 +14,7 @@ export interface Payload {
 export interface SendPayload {
   channelId?: string;
   message?: string;
+  mentionedUsers?: string[];
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -60,9 +61,9 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message } = action.payload;
+  const { channelId, message, mentionedUsers } = action.payload;
 
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message);
+  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUsers);
   if (messagesResponse.status !== 200) return;
 
   const existingMessages = yield select(rawMessagesSelector(channelId));

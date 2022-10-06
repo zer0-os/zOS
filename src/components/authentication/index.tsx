@@ -67,6 +67,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   handleToken() {
+    // ToDo: replace with getAccessTokenCookie
     const accessToken = this.props.getFromCookie(ACCESS_TOKEN_COOKIE_NAME);
 
     if (accessToken) {

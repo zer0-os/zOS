@@ -9,6 +9,8 @@ import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../../components/message-input';
+import { Authenticated } from '../../components/authentication/authenticated';
+import { Button as AuthenticatedButton } from '../../components/authentication/button';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -154,7 +156,10 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
-          {this.renderChatWindow()}
+          <Authenticated show>{this.renderChatWindow()}</Authenticated>
+          <Authenticated hide>
+            <AuthenticatedButton />
+          </Authenticated>
           <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>

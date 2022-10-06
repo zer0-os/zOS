@@ -11,11 +11,13 @@ import {
 } from '../../store/messages';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
+import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
+  user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
@@ -31,9 +33,13 @@ export interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
+    const {
+      authentication: { user },
+    } = state;
 
     return {
       channel,
+      user,
     };
   }
 
@@ -64,7 +70,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.fetchMessages({ channelId });
     }
 
-    if (channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
+    if (channel && channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
       this.props.startMessageSync({ channelId });
     }
 
@@ -122,6 +128,7 @@ export class Container extends React.Component<Properties, State> {
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}
+        user={this.props.user.data}
         sendMessage={this.handlSendMessage}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}

@@ -10,6 +10,8 @@ import { ethers } from 'ethers';
 import { Channels } from '../platform-apps/channels';
 import { PlatformUser } from './container';
 
+import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
+
 import './styles.scss';
 
 export interface AppInterface {
@@ -33,7 +35,31 @@ export interface Properties {
   connectWallet: () => void;
 }
 
-export class AppSandbox extends React.Component<Properties> {
+interface AppLayout {
+  hasContextPanel: Boolean;
+  isContextPanelOpen: Boolean;
+}
+
+interface State {
+  layout: AppLayout;
+}
+
+export class AppSandbox extends React.Component<Properties, State> {
+  state = {
+    layout: {
+      isContextPanelOpen: false,
+      hasContextPanel: false,
+    },
+  };
+
+  get layoutContext() {
+    return {
+      setHasContextPanel: this.handleSetHasContextPanel,
+      setIsContextPanelOpen: this.handleSetIsContextPanelOpen,
+      ...this.state.layout,
+    };
+  }
+
   get appProperties() {
     const { znsRoute, web3Provider, address, chainId, user, connectWallet } = this.props;
 
@@ -48,6 +74,18 @@ export class AppSandbox extends React.Component<Properties> {
       },
     };
   }
+
+  handleSetHasContextPanel = (hasContextPanel: boolean) => this.updateLayoutState({ hasContextPanel });
+  handleSetIsContextPanelOpen = (isContextPanelOpen: boolean) => this.updateLayoutState({ isContextPanelOpen });
+
+  updateLayoutState = (newLayout: Partial<AppLayout>) => {
+    this.setState(({ layout }) => ({
+      layout: {
+        ...layout,
+        ...newLayout,
+      },
+    }));
+  };
 
   renderSelectedApp() {
     const { selectedApp, store } = this.props;
@@ -73,6 +111,10 @@ export class AppSandbox extends React.Component<Properties> {
   }
 
   render() {
-    return <div className='app-sandbox'>{this.renderSelectedApp()}</div>;
+    return (
+      <div className='app-sandbox'>
+        <AppLayoutContextProvider value={this.layoutContext}>{this.renderSelectedApp()}</AppLayoutContextProvider>
+      </div>
+    );
   }
 }

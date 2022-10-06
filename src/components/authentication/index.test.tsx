@@ -3,10 +3,14 @@ import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
-import { ACCESS_TOKEN_COOKIE_NAME, Container } from '.';
+import { Container } from '.';
 import { config } from '../../config';
 
 describe('Authentication', () => {
+  const USER_DATA = {
+    userId: '12',
+  };
+
   const subject = (props: any = {}) => {
     const allProps = {
       providerService: {
@@ -16,54 +20,44 @@ describe('Authentication', () => {
           },
         }),
       },
-      getFromCookie: jest.fn(),
+      fetchCurrentUser: jest.fn(),
       ...props,
     };
 
     return shallow(<Container {...allProps} />);
   };
 
-  it('set accessToken when a cookie is found', () => {
-    const cookieValue = 'cookieValue';
-    const getFromCookie = jest.fn().mockReturnValue(cookieValue);
-    const setAccessToken = jest.fn();
+  it('should fetch current user', () => {
+    const fetchCurrentUser = jest.fn();
     subject({
-      getFromCookie,
-      setAccessToken,
+      fetchCurrentUser,
     });
 
-    expect(setAccessToken).toHaveBeenCalledWith(cookieValue);
+    expect(fetchCurrentUser).toHaveBeenCalledOnce();
   });
 
-  it('should get cookie', () => {
-    const cookieValue = 'cookieValue';
-    const getFromCookie = jest.fn().mockReturnValue(cookieValue);
-    const setAccessToken = jest.fn();
-
-    subject({
-      getFromCookie,
-      setAccessToken,
-    });
-
-    expect(getFromCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE_NAME);
-  });
-
-  it('should not set accessToken when a cookie is NOT found', () => {
-    const getFromCookie = jest.fn().mockReturnValue(null);
-    const setAccessToken = jest.fn();
-    subject({
-      getFromCookie,
-      setAccessToken,
-    });
-
-    expect(setAccessToken).not.toHaveBeenCalled();
-  });
-
-  it('should not authorize when no accessToken is saved', () => {
+  it('should not authorize when fetching is in progress', () => {
     const authorize = jest.fn();
 
     subject({
-      accessToken: 'accessToken-test',
+      user: {
+        isLoading: true,
+        data: null,
+      },
+      authorize,
+    });
+
+    expect(authorize).not.toHaveBeenCalled();
+  });
+
+  it('should not authorize when fetch is done and we have', () => {
+    const authorize = jest.fn();
+
+    subject({
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
       authorize,
     });
 
@@ -86,6 +80,10 @@ describe('Authentication', () => {
         }),
       },
       authorizeUser,
+      user: {
+        isLoading: false,
+        data: null,
+      },
     });
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
@@ -119,6 +117,10 @@ describe('Authentication', () => {
           },
         }),
       },
+      user: {
+        isLoading: false,
+        data: null,
+      },
       authorizeUser,
     });
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
@@ -150,7 +152,10 @@ describe('Authentication', () => {
     });
 
     const getAuthentication = (authentication: any = {}) => ({
-      accessToken: null,
+      user: {
+        isLoading: false,
+        data: null,
+      },
       ...(authentication || {}),
     });
 
@@ -169,11 +174,14 @@ describe('Authentication', () => {
     });
 
     test('accessToken', () => {
-      const accessToken = 'access-token-001';
+      const user = {
+        isLoading: false,
+        data: USER_DATA,
+      };
 
-      const state = subject(getState({ authentication: getAuthentication({ accessToken }) }));
+      const state = subject(getState({ authentication: getAuthentication({ user }) }));
 
-      expect(state.accessToken).toEqual(accessToken);
+      expect(state.user).toEqual(user);
     });
   });
 });

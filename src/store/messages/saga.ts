@@ -1,3 +1,4 @@
+import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
 import { Message, SagaActionTypes } from '.';
@@ -5,6 +6,7 @@ import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
 
 import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
+import { messageFactory } from './utils';
 
 export interface Payload {
   channelId: string;
@@ -62,10 +64,25 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message } = action.payload;
 
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const currentUser = yield select(currentUserSelector());
+
+  yield put(
+    receive({
+      id: channelId,
+      messages: [
+        ...existingMessages,
+        messageFactory(message, currentUser),
+      ],
+      shouldSyncChannels: true,
+      countNewMessages: 0,
+      lastMessageCreatedAt: 0,
+    })
+  );
+
   const messagesResponse = yield call(sendMessagesByChannelId, channelId, message);
   if (messagesResponse.status !== 200) return;
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
   const messages = [
     ...existingMessages,
     messagesResponse.body,

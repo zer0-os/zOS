@@ -29,6 +29,7 @@ const allApps = () => {
     apps[Apps.Feed],
     apps[Apps.Staking],
     apps[Apps.Channels],
+    apps[Apps.DAOS],
   ];
 
   return activeApps;

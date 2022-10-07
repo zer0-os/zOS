@@ -1,3 +1,4 @@
+import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
 import { Message, SagaActionTypes } from '.';
@@ -5,6 +6,7 @@ import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
 
 import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
+import { messageFactory } from './utils';
 
 export interface Payload {
   channelId: string;
@@ -63,24 +65,51 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUsers } = action.payload;
 
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUsers);
-  if (messagesResponse.status !== 200) return;
-
   const existingMessages = yield select(rawMessagesSelector(channelId));
-  const messages = [
-    ...existingMessages,
-    messagesResponse.body,
-  ];
+  const currentUser = yield select(currentUserSelector());
 
   yield put(
     receive({
       id: channelId,
-      messages,
+      messages: [
+        ...existingMessages,
+        messageFactory(message, currentUser),
+      ],
       shouldSyncChannels: true,
       countNewMessages: 0,
-      lastMessageCreatedAt: messagesResponse.body.createdAt,
+      lastMessageCreatedAt: 0,
     })
   );
+
+  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUsers);
+  const isMessageSent = messagesResponse.status === 200;
+
+  if (!isMessageSent) {
+    yield put(
+      receive({
+        id: channelId,
+        messages: [...existingMessages],
+        shouldSyncChannels: true,
+        countNewMessages: 0,
+        lastMessageCreatedAt: messagesResponse.body.createdAt,
+      })
+    );
+  } else {
+    const messages = [
+      ...existingMessages,
+      messagesResponse.body,
+    ];
+
+    yield put(
+      receive({
+        id: channelId,
+        messages,
+        shouldSyncChannels: true,
+        countNewMessages: 0,
+        lastMessageCreatedAt: messagesResponse.body.createdAt,
+      })
+    );
+  }
 }
 
 export function* fetchNewMessages(action) {

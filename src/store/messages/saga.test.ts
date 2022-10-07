@@ -37,6 +37,22 @@ describe('messages saga', () => {
     const message = 'hello';
     const mentionedUsers = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
 
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
     await expectSaga(send, { payload: { channelId, message, mentionedUsers } })
       .provide([
         [
@@ -44,12 +60,12 @@ describe('messages saga', () => {
           { status: 200, body: { id: 'message 1', message } },
         ],
       ])
-      .withReducer(rootReducer)
+      .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUsers)
       .run();
   });
 
-  it('send message return a 400 satatus', async () => {
+  it('send message return a 400 status', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
     const mentionedUsers = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
@@ -65,6 +81,19 @@ describe('messages saga', () => {
           [channelId]: {
             id: channelId,
             messages,
+          },
+        },
+      },
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
           },
         },
       },
@@ -85,7 +114,7 @@ describe('messages saga', () => {
       .call(sendMessagesByChannelId, channelId, message, mentionedUsers)
       .run();
 
-    expect(channels[channelId].messages).toStrictEqual(messages);
+    expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
   });
 
   it('fetches messages for referenceTimestamp', async () => {

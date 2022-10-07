@@ -27,6 +27,7 @@ Object.keys(Apps).forEach((app) => {
 const allApps = () => {
   const activeApps = [
     apps[Apps.Feed],
+    apps[Apps.NFTS],
     apps[Apps.Staking],
     apps[Apps.Channels],
     apps[Apps.DAOS],

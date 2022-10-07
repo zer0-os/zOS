@@ -27,6 +27,7 @@
     "@zer0-os/zos-feed": "1.24.0",
     "@zer0-os/zos-zns": "2.2.0",
     "@zero-tech/zapp-daos": "^0.1.2",
+    "@zero-tech/zapp-nfts": "^0.2.2",
     "@zero-tech/zapp-staking": "0.3.0",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

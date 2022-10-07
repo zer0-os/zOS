@@ -5,9 +5,10 @@ import { AuthenticationContext } from '../../context/authentication';
 export interface Properties {
   show?: boolean;
   hide?: boolean;
+  children: any;
 }
 
-export class Authenticated extends React.Component<Properties> {
+export class IfAuthenticated extends React.Component<Properties> {
   static contextType = AuthenticationContext;
 
   render() {

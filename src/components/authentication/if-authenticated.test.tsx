@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { mount } from 'enzyme';
-import { Authenticated } from './authenticated';
+import { IfAuthenticated } from './if-authenticated';
 import { AuthenticationContext } from '../../context/authentication';
 
 describe('Authentication', () => {
@@ -17,9 +17,9 @@ describe('Authentication', () => {
 
     return mount(
       <AuthenticationContext.Provider value={{ ...context }}>
-        <Authenticated {...allProps}>
+        <IfAuthenticated {...allProps}>
           <ChildComponent />
-        </Authenticated>
+        </IfAuthenticated>
       </AuthenticationContext.Provider>
     );
   };

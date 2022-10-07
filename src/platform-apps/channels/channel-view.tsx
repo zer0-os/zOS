@@ -10,8 +10,8 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
-import { Authenticated } from '../../components/authentication/authenticated';
-import { Button as AuthenticatedButton } from '../../components/authentication/button';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { Button as ConnectButton } from '../../components/authentication/button';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -126,6 +126,7 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
+  // ToDo: rename to message input or something (this is not a window)
   renderChatWindow() {
     if (!this.props.user) {
       return null;
@@ -166,10 +167,10 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
-          <Authenticated show>{this.renderChatWindow()}</Authenticated>
-          <Authenticated hide>
-            <AuthenticatedButton />
-          </Authenticated>
+          <IfAuthenticated show>{this.renderChatWindow()}</IfAuthenticated>
+          <IfAuthenticated hide>
+            <ConnectButton />
+          </IfAuthenticated>
           <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>

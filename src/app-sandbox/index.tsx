@@ -5,6 +5,7 @@ import { Store } from 'redux';
 import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
 import { StakingZApp } from '@zero-tech/zapp-staking';
+import { DaosApp } from '@zero-tech/zapp-daos';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
 import { Channels } from '../platform-apps/channels';
@@ -105,6 +106,10 @@ export class AppSandbox extends React.Component<Properties, State> {
           store={store}
         />
       );
+    }
+
+    if (selectedApp === Apps.DAOS) {
+      return <DaosApp {...this.appProperties} />;
     }
 
     return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>;

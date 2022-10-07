@@ -33,10 +33,10 @@ export interface MessagesResponse {
   messages: Message[];
 }
 export interface Message {
-  id: string;
+  id: number;
   message?: string;
   createdAt: number;
-  updatedAt: string;
+  updatedAt: number;
   sender: Sender;
   // TODO: type to be defined
   mentionedUsers: any;

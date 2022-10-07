@@ -48,7 +48,7 @@
     align-items: flex-end;
     box-sizing: border-box;
 
-    left: calc($width-navigation + $width-application-navigation);
+    left: calc($width-navigation);
     right: 0;
     height: 72px;
 

@@ -6,7 +6,6 @@ export enum Apps {
   Channels = 'channels',
   Projects = 'projects',
   Members = 'members',
-  BuyDomains = 'namespace',
 }
 
 export interface PlatformApp {
@@ -31,7 +30,6 @@ const allApps = () => {
     apps[Apps.Staking],
     apps[Apps.Channels],
     apps[Apps.DAOS],
-    apps[Apps.BuyDomains],
   ];
 
   return activeApps;

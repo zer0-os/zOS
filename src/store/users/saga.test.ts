@@ -5,44 +5,45 @@ import { fetch } from './saga';
 import { searchMyNetworks } from './api';
 
 import { reducer } from '.';
+import { channelIdPrefix } from '../channels-list/saga';
 
 describe('Users saga', () => {
   const usersResponse = [
     {
-      id: 'ce60cf6c-baff-424c-9f5a-058d2ee023c4',
-      type: 'person',
-      name: 'name test',
-      summary: 'Runner, software developer',
-      profileImage: 'https://s.gravatar.com/avatar.png',
-      handle: null,
-      rank: 0.66871976852417,
+      userId: 'ce60cf6c-baff-424c-9f5a-058d2ee023c4',
+      firstName: 'test',
+      isOnline: false,
+      lastName: 'name',
+      lastSeenAt: '2022-10-07T16:29:22.800Z',
+      profileId: '2c085571-7c37-489f-a30a-94cf25c210d3',
+      profileImage: 'https://lh3.googleusercontent.com/a-/aaa',
     },
     {
-      id: '1c879bc2-d6c9-4f5e-9ffa-bc1019eb88b8',
-      type: 'person',
-      name: 'name test 2',
-      summary: null,
-      profileImage: 'https://s.gravatar.com/avatar.png',
-      handle: null,
-      rank: 0.607927083969116,
+      userId: 'ce60cf6c-baff-424c-9f5a-058d2ee023c4',
+      firstName: 'test2',
+      isOnline: false,
+      lastName: 'name2',
+      lastSeenAt: '2022-10-07T16:29:22.800Z',
+      profileId: '2c085571-7c37-489f-a30a-94cf25c210d3',
+      profileImage: 'https://lh3.googleusercontent.com/a-/bbb',
     },
   ];
-  const search = 'na';
+  const channelId = '0x000000000000000000000000000000000000000A';
 
   it('fetch users', async () => {
-    await expectSaga(fetch, { payload: { search } })
+    await expectSaga(fetch, { payload: { channelId } })
       .provide([
         [
           matchers.call.fn(searchMyNetworks),
           usersResponse,
         ],
       ])
-      .call(searchMyNetworks, search)
+      .call(searchMyNetworks, channelIdPrefix + channelId)
       .run();
   });
 
   it('should store users', async () => {
-    const { storeState } = await expectSaga(fetch, { payload: { search } })
+    const { storeState } = await expectSaga(fetch, { payload: { channelId } })
       .provide([
         [
           matchers.call.fn(searchMyNetworks),

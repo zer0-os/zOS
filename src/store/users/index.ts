@@ -1,22 +1,13 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Member } from '../authentication/types';
 
-import { FetchUsersPayload } from './saga';
-
-export interface UserMentions {
-  handle: string;
-  id: string;
-  name: string;
-  profileImage: string;
-  rank: number;
-  summary: string;
-  type: string;
-}
+import { Payload } from './saga';
 
 export enum SagaActionTypes {
   Fetch = 'users/saga/fetch',
 }
 
-const fetch = createAction<FetchUsersPayload>(SagaActionTypes.Fetch);
+const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 
 const initialState: any = {
   users: [],
@@ -26,7 +17,7 @@ const slice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setUsers: (state, action: PayloadAction<UserMentions[]>) => {
+    setUsers: (state, action: PayloadAction<Member[]>) => {
       state.users = action.payload;
     },
   },

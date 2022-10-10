@@ -8,10 +8,8 @@ import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
-import { User } from '../../store/authentication/types';
+import { Member, User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
-import { FetchUsersPayload } from '../../store/users/saga';
-import { UserMentions } from '../../store/users';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -23,10 +21,9 @@ export interface Properties {
   onFetchMore: () => void;
   user: User;
   sendMessage: (message: string, mentionedUsers: string[]) => void;
-  fetchUsers: (payload: FetchUsersPayload) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
-  users: UserMentions[];
+  users: Member[];
 }
 export interface State {
   lightboxMedia: any[];
@@ -139,7 +136,6 @@ export class ChannelView extends React.Component<Properties, State> {
         placeholder='Speak your truth...'
         isUserConnected={true}
         onSubmit={this.props.sendMessage}
-        fetchUsers={this.props.fetchUsers}
         users={this.props.users}
       />
     );

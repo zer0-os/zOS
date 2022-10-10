@@ -152,6 +152,7 @@
   }
   .mentions-text-area__wrap__suggestions__list {
     border: 2px solid #464646;
+    background-color: theme.$background-color-primary-selected;
   }
   .mentions-text-area__wrap__suggestions__item {
     padding: 5px 10px;

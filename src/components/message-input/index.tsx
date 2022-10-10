@@ -1,9 +1,8 @@
 import React from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import classNames from 'classnames';
-import { userMentionsConfig } from './mentions';
-import { FetchUsersPayload } from '../../store/users/saga';
-import { UserMentions } from '../../store/users';
+import { userMentionsConfig } from './mentions-config';
+import { Member } from '../../store/authentication/types';
 
 require('./styles.scss');
 
@@ -12,8 +11,7 @@ export interface Properties {
   placeholder?: string;
   isUserConnected?: boolean;
   onSubmit: (message: string, mentionedUsers: string[]) => void;
-  fetchUsers: (payload: FetchUsersPayload) => void;
-  users: UserMentions[];
+  users: Member[];
 }
 
 interface State {
@@ -34,10 +32,17 @@ export class MessageInput extends React.Component<Properties, State> {
 
   loadUsers = (search: string, callback): void => {
     const { users } = this.props;
-    this.props.fetchUsers({ search });
 
     if (users.length) {
-      const result = users.map((tag) => ({ display: tag.name, id: tag.id }));
+      const result = users
+        .map((user) => ({
+          display: [
+            user.firstName,
+            user.lastName,
+          ].join(' '),
+          id: user.userId,
+        }))
+        .filter((user) => user.display.toLowerCase().includes(search.toLowerCase()));
       callback(result);
     }
   };
@@ -74,7 +79,6 @@ export class MessageInput extends React.Component<Properties, State> {
               onChange={this.contentChanged}
               onBlur={this._handleBlur}
               value={this.state.value}
-              style={this.mentionsInputStyle()}
               suggestionsPortalHost={undefined}
             >
               {this.renderMentionTypes()}
@@ -109,16 +113,5 @@ export class MessageInput extends React.Component<Properties, State> {
     if (clickedSuggestion) {
       return;
     }
-  };
-
-  private mentionsInputStyle = () => {
-    const style = {
-      suggestions: {
-        list: {
-          backgroundColor: 'black',
-        },
-      },
-    };
-    return style;
   };
 }

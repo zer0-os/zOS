@@ -1,6 +1,7 @@
 import React from 'react';
 
 import classNames from 'classnames';
+import { Key } from '../../lib/keyboard-search';
 
 require('./styles.scss');
 
@@ -17,10 +18,13 @@ interface State {
 export class MessageInput extends React.Component<Properties, State> {
   state = { value: '' };
   onSubmit = (event) => {
-    // ToDo: switch keyCode for key
-    if (!event.shiftKey && event.keyCode === 13 && event.target.value) {
+    const {
+      target: { value },
+    } = event;
+
+    if (!event.shiftKey && event.key === Key.Enter && value) {
       event.preventDefault();
-      this.props.onSubmit(event.target.value);
+      this.props.onSubmit(value);
       this.setState({ value: '' });
     }
   };

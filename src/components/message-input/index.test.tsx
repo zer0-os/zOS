@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
+import { Key } from '../../lib/keyboard-search';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -40,7 +41,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
 
     const textarea = wrapper.find('textarea');
-    textarea.simulate('keydown', { preventDefault() {}, keyCode: 13, shiftKey: false, target: { value: 'Hello' } });
+    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false, target: { value: 'Hello' } });
     expect(onSubmit).toHaveBeenCalledOnce();
   });
 });

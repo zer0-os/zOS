@@ -16,6 +16,8 @@ import { MessageInput } from '../../components/message-input';
 import { AuthenticationContext } from '../../context/authentication';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { isEmpty } from 'lodash';
+import { createStore } from 'redux';
+import { reducer } from '../../store/authentication';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -25,7 +27,7 @@ describe('ChannelView', () => {
     { id: 'message-4', message: 'ok!', sender: { userId: 2 }, createdAt: 1659018545428 },
   ];
 
-  const subject = (props: any = {}, context: any = {}) => {
+  const subject = (props: any = {}) => {
     const allProps = {
       name: '',
       messages: [],
@@ -34,15 +36,19 @@ describe('ChannelView', () => {
       ...props,
     };
 
-    if (isEmpty(context)) {
-      return shallow(<ChannelView {...allProps} />);
-    }
+    return shallow(<ChannelView {...allProps} />);
+  };
 
-    const store = {
-      authenticated: { user: { data: { id: 'uuid' } } },
-      getState: () => {},
-      subscribe: () => {},
+  const subjectWithContext = (props: any = {}, context: any = {}) => {
+    const allProps = {
+      name: '',
+      messages: [],
+      user: null,
+      countNewMessages: 0,
+      ...props,
     };
+
+    const store = createStore(reducer);
 
     return mount(
       <Provider store={store}>
@@ -132,13 +138,13 @@ describe('ChannelView', () => {
   });
 
   it('render MessageInput', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST }, { isAuthenticated: true });
+    const wrapper = subjectWithContext({ messages: MESSAGES_TEST }, { isAuthenticated: true });
 
     expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
   it('render ConnectButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST }, { isAuthenticated: false });
+    const wrapper = subjectWithContext({ messages: MESSAGES_TEST }, { isAuthenticated: false });
 
     expect(wrapper.find(ConnectButton).exists()).toBe(true);
   });

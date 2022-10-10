@@ -3,9 +3,7 @@ import React from 'react';
 import { AuthenticationContext } from './authentication';
 import { connectContainer } from '../store/redux-container';
 
-export interface PublicProperties {
-  children: any;
-}
+export interface PublicProperties {}
 
 export interface Properties {
   isAuthenticated: boolean;

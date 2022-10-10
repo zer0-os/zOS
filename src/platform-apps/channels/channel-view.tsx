@@ -11,7 +11,7 @@ import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
-import { Button as ConnectButton } from '../../components/authentication/button';
+import { Button as ConnectButton } from '../../components/authentication/button-container';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];

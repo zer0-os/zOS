@@ -5,7 +5,6 @@ import { AuthenticationContext } from '../../context/authentication';
 export interface Properties {
   show?: boolean;
   hide?: boolean;
-  children: any;
 }
 
 export class IfAuthenticated extends React.Component<Properties> {

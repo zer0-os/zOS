@@ -126,21 +126,6 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
-  // ToDo: rename to message input or something (this is not a window)
-  renderChatWindow() {
-    if (!this.props.user) {
-      return null;
-    }
-
-    return (
-      <MessageInput
-        placeholder='Speak your truth...'
-        isUserConnected={true}
-        onSubmit={this.props.sendMessage}
-      />
-    );
-  }
-
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
 
@@ -167,7 +152,12 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
-          <IfAuthenticated show>{this.renderChatWindow()}</IfAuthenticated>
+          <IfAuthenticated show>
+            <MessageInput
+              placeholder='Speak your truth...'
+              onSubmit={this.props.sendMessage}
+            />
+          </IfAuthenticated>
           <IfAuthenticated hide>
             <ConnectButton />
           </IfAuthenticated>

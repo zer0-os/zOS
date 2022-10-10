@@ -7,7 +7,6 @@ require('./styles.scss');
 export interface Properties {
   className?: string;
   placeholder?: string;
-  isUserConnected?: boolean; // ToDo: rename to authenticated
   onSubmit: (message: string) => void;
 }
 
@@ -28,8 +27,7 @@ export class MessageInput extends React.Component<Properties, State> {
 
   renderInput() {
     return (
-      // ToDo: rename chat-window
-      <div className='message-input chat-window__new-message'>
+      <div className='message-input message-input__new-message'>
         <div className='message-input__input-wrapper'>
           <div className='mentions-text-area message-input__textarea'>
             <div className='mentions-text-area__wrap mentions-text-area__wrap--multiLine'>
@@ -51,10 +49,6 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   render() {
-    return (
-      <div className={classNames('chat-window__input-wrapper', this.props.className)}>
-        {this.props.isUserConnected && this.renderInput()}
-      </div>
-    );
+    return <div className={classNames('chat-window__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
   }
 }

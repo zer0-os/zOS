@@ -118,7 +118,6 @@
   }
 
   &-list__channel {
-    line-height: 16px;
     position: relative;
     top: 1px;
     display: inline-block;
@@ -132,27 +131,25 @@
   &-list__category-channel-name {
     .collapsible__trigger {
       @include actionable;
-
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       height: 36px;
-      display: block;
-      line-height: 2;
       padding: 0 10px;
-
-      &:before {
+      &:after {
         content: '\0027E9';
         font-size: 16px;
-        width: 14px;
-        height: 14px;
-        float: right;
-        margin-right: 18%;
-        margin-top: 15px;
+        width: 4px;
+        height: 10px;
         transform: rotate(90deg);
       }
 
-      &.is-closed:before {
+      &.is-closed:after {
         content: '\0027E9';
         transform: none;
         margin-top: 0;
+        width: 6px;
+        height: 20px;
       }
 
       &:hover {
@@ -240,7 +237,7 @@
 
       &__block {
         display: flex;
-        margin-bottom: 7px;
+        margin-bottom: 3px;
 
         &:hover {
           background-color: hsla(0, 0%, 100%, 0.03);
@@ -380,7 +377,7 @@
         background-repeat: no-repeat;
         background-size: cover;
         width: 32px;
-        height: 32px;
+        height: 1px;
         overflow: hidden;
         border-radius: 50%;
       }
@@ -397,6 +394,9 @@
         .message__author-name,
         .message__author-avatar {
           visibility: visible;
+        }
+        .message__author-avatar {
+          height: 32px;
         }
 
         .message__author-name {

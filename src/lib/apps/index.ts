@@ -16,10 +16,14 @@ export interface PlatformApp {
 
 const apps: { [apps: string]: PlatformApp } = {};
 
+const appNameMap = {
+  [Apps.Channels]: 'Chat',
+};
+
 Object.keys(Apps).forEach((app) => {
   apps[Apps[app]] = {
     type: Apps[app],
-    name: app,
+    name: appNameMap[Apps[app]] || app,
     imageSource: `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${Apps[app]}.svg`,
   };
 });

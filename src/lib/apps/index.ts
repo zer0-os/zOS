@@ -14,19 +14,47 @@ export interface PlatformApp {
   imageSource: string;
 }
 
-const apps: { [apps: string]: PlatformApp } = {};
+function getImageSource(app: Apps): string {
+  return `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${app}.svg`;
+}
 
-const appNameMap = {
-  [Apps.Channels]: 'Chat',
+const apps: { [apps: string]: PlatformApp } = {
+  [Apps.Feed]: {
+    type: Apps.Feed,
+    name: 'Feed',
+    imageSource: getImageSource(Apps.Feed),
+  },
+  [Apps.NFTS]: {
+    type: Apps.NFTS,
+    name: 'NFTS',
+    imageSource: getImageSource(Apps.NFTS),
+  },
+  [Apps.DAOS]: {
+    type: Apps.DAOS,
+    name: 'DAOS',
+    imageSource: getImageSource(Apps.DAOS),
+  },
+  [Apps.Staking]: {
+    type: Apps.Staking,
+    name: 'Staking',
+    imageSource: getImageSource(Apps.Staking),
+  },
+  [Apps.Channels]: {
+    type: Apps.Channels,
+    name: 'Chat',
+    imageSource: getImageSource(Apps.Channels),
+  },
+  [Apps.Projects]: {
+    type: Apps.Projects,
+    name: 'Projects',
+    imageSource: getImageSource(Apps.Projects),
+  },
+  [Apps.Members]: {
+    type: Apps.Members,
+    name: 'Members',
+    imageSource: getImageSource(Apps.Members),
+  },
 };
-
-Object.keys(Apps).forEach((app) => {
-  apps[Apps[app]] = {
-    type: Apps[app],
-    name: appNameMap[Apps[app]] || app,
-    imageSource: `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${Apps[app]}.svg`,
-  };
-});
 
 const allApps = () => {
   const activeApps = [

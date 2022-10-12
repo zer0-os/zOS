@@ -20,11 +20,11 @@
   background-color: transparent;
 
   &:hover {
-    background-color: $hover-color;
+    background: $hover-color;
   }
 
   &.active {
-    background-color: $active-color;
+    background: $active-color;
   }
 }
 
@@ -36,6 +36,8 @@
 @mixin actionable {
   @include actionable-color;
   @include actionable-background-color;
+
+  cursor: pointer;
 }
 
 @mixin accent-bar {
@@ -62,6 +64,7 @@
       @include actionable;
 
       cursor: pointer;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       text-align: left;
@@ -150,11 +153,6 @@
         margin-top: 0;
         width: 6px;
         height: 20px;
-      }
-
-      &:hover {
-        cursor: pointer;
-        background: #303033;
       }
     }
   }

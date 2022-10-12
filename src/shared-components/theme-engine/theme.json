@@ -112,8 +112,8 @@
     "actionableColor": "#FFFFFF",
     "actionableInactiveColor": "#737373",
     "actionableActiveColor": "#FFFFFF",
-    "actionableHoverBackground": "#23142F",
-    "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
+    "actionableHoverBackground": "linear-gradient(90deg, rgba(35,20,47,1) 0%, rgba(35,20,47,0.8) 70%, rgba(35,20,47,0) 100%)",
+    "actionableActiveBackground": "linear-gradient(90deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
 
     "inputBackgroundPrimaryColor": "rgba(66, 68, 70, 1)",
     "inputBackgroundSecondaryColor": "rgba(66, 68, 70, 0)",

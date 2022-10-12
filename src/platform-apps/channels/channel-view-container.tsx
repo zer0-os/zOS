@@ -12,7 +12,7 @@ import {
 import { fetch as fetchUsers } from '../../store/users';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
-import { AuthenticationState, Member } from '../../store/authentication/types';
+import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/users/saga';
 
@@ -24,7 +24,6 @@ export interface Properties extends PublicProperties {
   fetchUsers: (payload: PayloadFetchUser) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
-  users: Member[];
 }
 
 interface PublicProperties {
@@ -39,13 +38,11 @@ export class Container extends React.Component<Properties, State> {
     const channel = denormalize(props.channelId, state) || null;
     const {
       authentication: { user },
-      users: { users },
     } = state;
 
     return {
       channel,
       user,
-      users,
     };
   }
 
@@ -143,7 +140,7 @@ export class Container extends React.Component<Properties, State> {
         onFetchMore={this.fetchMore}
         user={this.props.user.data}
         sendMessage={this.handlSendMessage}
-        users={this.props.users}
+        users={this.channel.users || []}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}
       />

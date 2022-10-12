@@ -37,13 +37,3 @@ export interface User {
 export interface AuthenticationState {
   user: UserPayload;
 }
-
-export interface Member {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  profileId: string;
-  isOnline: Boolean;
-  profileImage: string;
-  lastSeenAt: string;
-}

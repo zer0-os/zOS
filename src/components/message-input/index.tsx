@@ -2,7 +2,7 @@ import React from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
-import { Member } from '../../store/authentication/types';
+import { User } from '../../store/users';
 
 require('./styles.scss');
 
@@ -11,7 +11,7 @@ export interface Properties {
   placeholder?: string;
   isUserConnected?: boolean;
   onSubmit: (message: string, mentionedUsers: string[]) => void;
-  users: Member[];
+  users: User[];
 }
 
 interface State {
@@ -40,7 +40,7 @@ export class MessageInput extends React.Component<Properties, State> {
             user.firstName,
             user.lastName,
           ].join(' '),
-          id: user.userId,
+          id: user.id,
         }))
         .filter((user) => user.display.toLowerCase().includes(search.toLowerCase()));
       callback(result);

@@ -1,7 +1,17 @@
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Member } from '../authentication/types';
+import { createAction } from '@reduxjs/toolkit';
+import { createNormalizedSlice } from '../normalized';
 
 import { Payload } from './saga';
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profileId: string;
+  isOnline: Boolean;
+  profileImage: string;
+  lastSeenAt: string;
+}
 
 export enum SagaActionTypes {
   Fetch = 'users/saga/fetch',
@@ -9,20 +19,10 @@ export enum SagaActionTypes {
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 
-const initialState: any = {
-  users: [],
-};
-
-const slice = createSlice({
+const slice = createNormalizedSlice({
   name: 'users',
-  initialState,
-  reducers: {
-    setUsers: (state, action: PayloadAction<Member[]>) => {
-      state.users = action.payload;
-    },
-  },
 });
 
-export const { setUsers } = slice.actions;
-export const { reducer } = slice;
+export const { receiveNormalized, receive } = slice.actions;
+export const { normalize, denormalize, schema } = slice;
 export { fetch };

@@ -2,30 +2,20 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { fetch } from './saga';
-import { searchMyNetworks } from './api';
+import { fetchUsersByChannelId } from './api';
 
-import { reducer } from '.';
+import { rootReducer } from '..';
 import { channelIdPrefix } from '../channels-list/saga';
 
 describe('Users saga', () => {
   const usersResponse = [
     {
-      userId: 'ce60cf6c-baff-424c-9f5a-058d2ee023c4',
-      firstName: 'test',
-      isOnline: false,
-      lastName: 'name',
-      lastSeenAt: '2022-10-07T16:29:22.800Z',
-      profileId: '2c085571-7c37-489f-a30a-94cf25c210d3',
-      profileImage: 'https://lh3.googleusercontent.com/a-/aaa',
+      userId: 'the-first-id',
+      firstName: 'the first name',
     },
     {
-      userId: 'ce60cf6c-baff-424c-9f5a-058d2ee023c4',
-      firstName: 'test2',
-      isOnline: false,
-      lastName: 'name2',
-      lastSeenAt: '2022-10-07T16:29:22.800Z',
-      profileId: '2c085571-7c37-489f-a30a-94cf25c210d3',
-      profileImage: 'https://lh3.googleusercontent.com/a-/bbb',
+      userId: 'the-second-id',
+      firstName: 'the second name',
     },
   ];
   const channelId = '0x000000000000000000000000000000000000000A';
@@ -34,27 +24,68 @@ describe('Users saga', () => {
     await expectSaga(fetch, { payload: { channelId } })
       .provide([
         [
-          matchers.call.fn(searchMyNetworks),
+          matchers.call.fn(fetchUsersByChannelId),
           usersResponse,
         ],
       ])
-      .call(searchMyNetworks, channelIdPrefix + channelId)
+      .call(fetchUsersByChannelId, channelIdPrefix + channelId)
       .run();
   });
 
-  it('should store users', async () => {
-    const { storeState } = await expectSaga(fetch, { payload: { channelId } })
+  it('adds users ids to channels state', async () => {
+    const channelId = 'channel-id';
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            users: [
+              'old-user-id',
+            ],
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetch, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
       .provide([
         [
-          matchers.call.fn(searchMyNetworks),
+          matchers.call.fn(fetchUsersByChannelId),
           usersResponse,
         ],
       ])
-      .withReducer(reducer)
       .run();
 
-    expect(storeState).toMatchObject({
-      users: usersResponse,
+    expect(channels[channelId].users).toStrictEqual([
+      'the-first-id',
+      'the-second-id',
+    ]);
+  });
+
+  it('adds users to normalized state', async () => {
+    const {
+      storeState: {
+        normalized: { users },
+      },
+    } = await expectSaga(fetch, { payload: { channelId: '0x000000000000000000000000000000000000000A' } })
+      .provide([
+        [
+          matchers.call.fn(fetchUsersByChannelId),
+          usersResponse,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(users).toMatchObject({
+      'the-first-id': { id: 'the-first-id', firstName: 'the first name' },
+      'the-second-id': { id: 'the-second-id', firstName: 'the second name' },
     });
   });
 });

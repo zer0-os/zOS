@@ -8,7 +8,8 @@ import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
-import { Member, User } from '../../store/authentication/types';
+import { User } from '../../store/authentication/types';
+import { User as UserModel } from '../../store/users/index';
 import { MessageInput } from '../../components/message-input';
 
 interface ChatMessageGroups {
@@ -23,7 +24,7 @@ export interface Properties {
   sendMessage: (message: string, mentionedUsers: string[]) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
-  users: Member[];
+  users: UserModel[];
 }
 export interface State {
   lightboxMedia: any[];

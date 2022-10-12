@@ -21,22 +21,22 @@ function getImageSource(app: Apps): string {
 const apps: { [apps: string]: PlatformApp } = {
   [Apps.Feed]: {
     type: Apps.Feed,
-    name: 'Feed',
+    name: 'Share',
     imageSource: getImageSource(Apps.Feed),
   },
   [Apps.NFTS]: {
     type: Apps.NFTS,
-    name: 'NFTS',
+    name: 'Trade',
     imageSource: getImageSource(Apps.NFTS),
   },
   [Apps.DAOS]: {
     type: Apps.DAOS,
-    name: 'DAOS',
+    name: 'Vote',
     imageSource: getImageSource(Apps.DAOS),
   },
   [Apps.Staking]: {
     type: Apps.Staking,
-    name: 'Staking',
+    name: 'Stake',
     imageSource: getImageSource(Apps.Staking),
   },
   [Apps.Channels]: {
@@ -58,11 +58,11 @@ const apps: { [apps: string]: PlatformApp } = {
 
 const allApps = () => {
   const activeApps = [
-    apps[Apps.Feed],
-    apps[Apps.NFTS],
-    apps[Apps.Staking],
     apps[Apps.Channels],
+    apps[Apps.NFTS],
+    apps[Apps.Feed],
     apps[Apps.DAOS],
+    apps[Apps.Staking],
   ];
 
   return activeApps;

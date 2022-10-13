@@ -58,7 +58,7 @@
   "scripts": {
     "start": "craco start",
     "lint": "eslint src",
-    "build": "craco build",
+    "build": "craco build --max-old-space-size=4096",
     "test": "craco test --env=node",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",

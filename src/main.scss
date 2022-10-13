@@ -44,6 +44,7 @@
 
   &.has-context-panel.is-context-panel-open &__header {
     left: calc($width-navigation + $width-application-navigation);
+    transition: left animation.$animation-duration-triple ease-out;
 
     @include for-left-collapse() {
       left: calc($width-collapsed-navigation + $width-application-navigation);
@@ -56,7 +57,7 @@
     align-items: flex-end;
     box-sizing: border-box;
 
-    transition: left animation.$animation-duration-double;
+    transition: left animation.$animation-duration-triple ease-in;
     left: calc($width-navigation);
     right: 0;
     height: 72px;

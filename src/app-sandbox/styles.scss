@@ -31,12 +31,14 @@ $speed: animation.$animation-duration;
   box-sizing: border-box;
 
   &.has-context-panel {
-    transition: left animation.$animation-duration-double, width animation.$animation-duration-double;
+    transition: left animation.$animation-duration-triple ease-in, width animation.$animation-duration-triple ease-in;
 
     left: calc(0px - $width-application-navigation + 8px);
     width: calc(100% + $width-application-navigation - 8px);
 
     &.context-panel-open {
+      transition: left animation.$animation-duration-triple ease-out,
+        width animation.$animation-duration-triple ease-out;
       left: 0;
       width: 100%;
     }
@@ -53,12 +55,13 @@ $speed: animation.$animation-duration;
 
     &__content {
       opacity: 1;
-      transition: opacity animation.$animation-duration-double;
+      transition: opacity animation.$animation-duration-quadruple ease-in;
     }
 
     &.closed {
       .app-context-panel__content {
         opacity: 0;
+        transition: opacity animation.$animation-duration-double ease-out;
         /**
          * content sometimes ends up in the exposed edge of the context panel.
          * we don't want that content to be interactable when the panel is closed.

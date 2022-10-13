@@ -6,6 +6,7 @@ export enum Apps {
   Channels = 'channels',
   Projects = 'projects',
   Members = 'members',
+  BuyDomains = 'namespace',
 }
 
 export interface PlatformApp {
@@ -14,22 +15,61 @@ export interface PlatformApp {
   imageSource: string;
 }
 
-const apps: { [apps: string]: PlatformApp } = {};
+function getImageSource(app: Apps): string {
+  return `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${app}.svg`;
+}
 
-Object.keys(Apps).forEach((app) => {
-  apps[Apps[app]] = {
-    type: Apps[app],
-    name: app,
-    imageSource: `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${Apps[app]}.svg`,
-  };
-});
+const apps: { [apps: string]: PlatformApp } = {
+  [Apps.Feed]: {
+    type: Apps.Feed,
+    name: 'Share',
+    imageSource: getImageSource(Apps.Feed),
+  },
+  [Apps.NFTS]: {
+    type: Apps.NFTS,
+    name: 'Trade',
+    imageSource: getImageSource(Apps.NFTS),
+  },
+  [Apps.DAOS]: {
+    type: Apps.DAOS,
+    name: 'Vote',
+    imageSource: getImageSource(Apps.DAOS),
+  },
+  [Apps.Staking]: {
+    type: Apps.Staking,
+    name: 'Stake',
+    imageSource: getImageSource(Apps.Staking),
+  },
+  [Apps.Channels]: {
+    type: Apps.Channels,
+    name: 'Chat',
+    imageSource: getImageSource(Apps.Channels),
+  },
+  [Apps.Projects]: {
+    type: Apps.Projects,
+    name: 'Projects',
+    imageSource: getImageSource(Apps.Projects),
+  },
+  [Apps.Members]: {
+    type: Apps.Members,
+    name: 'Members',
+    imageSource: getImageSource(Apps.Members),
+  },
+  [Apps.BuyDomains]: {
+    type: Apps.BuyDomains,
+    name: 'Buy Domains',
+    imageSource: getImageSource(Apps.BuyDomains),
+  },
+};
 
 const allApps = () => {
   const activeApps = [
-    apps[Apps.Feed],
-    apps[Apps.Staking],
     apps[Apps.Channels],
+    apps[Apps.NFTS],
+    apps[Apps.Feed],
     apps[Apps.DAOS],
+    apps[Apps.Staking],
+    apps[Apps.BuyDomains],
   ];
 
   return activeApps;

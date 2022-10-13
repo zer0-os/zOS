@@ -38,8 +38,11 @@ $accent-color: var(--accent-color);
 $accent-color-1: var(--accent-color-1);
 $accent-color-mid: var(--accent-color-mid, rgba(0, 209, 255, 0.1));
 
+$actionable-color: var(--actionable-color, #ffffff);
 $actionable-inactive-color: var(--actionable-inactive-color, #737373);
 $actionable-active-color: var(--actionable-active-color, #ffffff);
+$actionable-hover-background-gradient: var(--actionable-hover-background-gradient, rgba(255, 255, 255, 0.1));
+$actionable-active-background-gradient: var(--actionable-active-background-gradient, rgba(0, 0, 0, 0.25));
 $actionable-hover-background: var(--actionable-hover-background, rgba(255, 255, 255, 0.1));
 $actionable-active-background: var(--actionable-active-background, rgba(0, 0, 0, 0.25));
 

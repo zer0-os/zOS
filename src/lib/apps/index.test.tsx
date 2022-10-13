@@ -8,6 +8,7 @@ describe('apps', () => {
       apps[Apps.Feed],
       apps[Apps.DAOS],
       apps[Apps.Staking],
+      apps[Apps.BuyDomains],
     ]);
   });
 });

@@ -6,6 +6,7 @@ export enum Apps {
   Channels = 'channels',
   Projects = 'projects',
   Members = 'members',
+  BuyDomains = 'namespace',
 }
 
 export interface PlatformApp {
@@ -54,6 +55,11 @@ const apps: { [apps: string]: PlatformApp } = {
     name: 'Members',
     imageSource: getImageSource(Apps.Members),
   },
+  [Apps.BuyDomains]: {
+    type: Apps.BuyDomains,
+    name: 'Buy Domains',
+    imageSource: getImageSource(Apps.BuyDomains),
+  },
 };
 
 const allApps = () => {
@@ -63,6 +69,7 @@ const allApps = () => {
     apps[Apps.Feed],
     apps[Apps.DAOS],
     apps[Apps.Staking],
+    apps[Apps.BuyDomains],
   ];
 
   return activeApps;

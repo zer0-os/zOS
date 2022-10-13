@@ -14,8 +14,8 @@
 }
 
 @mixin actionable-background-color(
-  $hover-color: theme.$actionable-hover-background,
-  $active-color: theme.$actionable-active-background
+  $hover-color: theme.$actionable-hover-background-gradient,
+  $active-color: theme.$actionable-active-background-gradient
 ) {
   background-color: transparent;
 

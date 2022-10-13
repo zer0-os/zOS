@@ -103,11 +103,12 @@
   &-view {
     width: 100%;
     height: 100%;
-    padding: 100px 0 20px 20px;
+    padding: 0 0 20px 0;
     box-sizing: border-box;
 
     &__name {
-      padding: 10px 0;
+      padding: 110px 0 10px 0;
+
       h1 {
         font-size: 18px;
         font-weight: 900;
@@ -232,12 +233,14 @@
       &--media {
         .message__block-body {
           margin-left: 15px;
+          padding: 0;
         }
       }
 
       &__block {
         display: flex;
         margin-bottom: 3px;
+        padding-left: 20px;
 
         &:hover {
           background-color: hsla(0, 0%, 100%, 0.03);
@@ -268,7 +271,8 @@
           font-size: 13.5px;
           font-weight: 500;
           vertical-align: baseline;
-          max-width: 800px;
+          max-width: 600px;
+          border-radius: 12px;
         }
 
         &-preview {
@@ -280,7 +284,7 @@
           font-weight: 500;
           vertical-align: baseline;
           position: relative;
-          max-width: 800px;
+          max-width: 600px;
 
           .text-message {
             display: inline-block;
@@ -295,7 +299,7 @@
           transition: background-color 0.3s ease-out;
           position: relative;
           display: inline-block;
-          margin: 15px;
+
           &:before {
             height: 100%;
             width: 3px;

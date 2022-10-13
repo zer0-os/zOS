@@ -9,6 +9,7 @@ $weight-bold: 900;
 .link-preview {
   background-color: theme.$background-color-primary;
   margin-top: 5px;
+  max-width: 330px;
 
   &__body {
     padding: 20px 8px 8px 20px;

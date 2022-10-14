@@ -1,68 +1,49 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-import { mount } from 'enzyme';
-import { IfAuthenticated } from './if-authenticated';
-import { AuthenticationContext } from '../../context/authentication';
+import { shallow } from 'enzyme';
+import { Component as IfAuthenticated } from './if-authenticated';
 
-describe('Authentication', () => {
+describe('IfAuthenticated', () => {
   const ChildComponent = () => null;
 
-  const subject = (props: any = {}, context = {}) => {
+  const subject = (props: any = {}) => {
     const allProps = {
       ...props,
     };
 
-    return mount(
-      <AuthenticationContext.Provider value={{ ...context }}>
-        <IfAuthenticated {...allProps}>
-          <ChildComponent />
-        </IfAuthenticated>
-      </AuthenticationContext.Provider>
+    return shallow(
+      <IfAuthenticated {...allProps}>
+        <ChildComponent />
+      </IfAuthenticated>
     );
   };
 
-  it('show when user is authenticated', () => {
-    const wrapper = subject({ show: true }, { isAuthenticated: true });
+  it('showChildren when user is authenticated', () => {
+    const wrapper = subject({ showChildren: true, context: { isAuthenticated: true } });
 
-    expect(wrapper.find(ChildComponent).exists()).toBeTruthy();
+    expect(wrapper.find(ChildComponent).exists()).toBeTrue();
   });
 
-  it('show when user is authenticated and props are implicit', () => {
-    const wrapper = subject({}, { isAuthenticated: true });
+  it('showChildren when user is authenticated and props are implicit', () => {
+    const wrapper = subject({ context: { isAuthenticated: true } });
 
-    expect(wrapper.find(ChildComponent).exists()).toBeTruthy();
+    expect(wrapper.find(ChildComponent).exists()).toBeTrue();
   });
 
-  it('does not show when user is not authenticated', () => {
-    const wrapper = subject({ show: true }, { isAuthenticated: false });
+  it('does not showChildren when user is not authenticated', () => {
+    const wrapper = subject({ showChildren: true, context: { isAuthenticated: false } });
 
-    expect(wrapper.find(ChildComponent).exists()).toBeFalsy();
+    expect(wrapper.find(ChildComponent).exists()).toBeFalse();
   });
 
-  it('does not show when user is not authenticated and props are implicit', () => {
-    const wrapper = subject({}, { isAuthenticated: false });
+  it('does not showChildren when user is not authenticated and props are implicit', () => {
+    const wrapper = subject({ context: { isAuthenticated: false } });
 
-    expect(wrapper.find(ChildComponent).exists()).toBeFalsy();
+    expect(wrapper.find(ChildComponent).exists()).toBeFalse();
   });
 
-  it('hide when user is authenticated', () => {
-    const wrapper = subject({ hide: true }, { isAuthenticated: true });
-
-    expect(wrapper.find(ChildComponent).exists()).toBeFalsy();
-  });
-
-  it('does not hide when user is not authenticated', () => {
-    const wrapper = subject({ hide: true }, { isAuthenticated: false });
-
-    expect(wrapper.find(ChildComponent).exists()).toBeTruthy();
-  });
-
-  it('explodes when both props hide and show are defined', () => {
+  it('explodes when both props hideChildren and showChildren are defined', () => {
     expect(() => {
-      subject({ hide: true, show: false }, { isAuthenticated: false });
-    }).toThrow('Both props show and hide were defined, please choose one.');
+      subject({ hideChildren: true, showChildren: false, context: { isAuthenticated: false } });
+    }).toThrow('Both props showChildren and hideChildren were defined, please choose one.');
   });
 });

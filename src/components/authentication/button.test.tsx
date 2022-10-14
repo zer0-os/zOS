@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
-import { Button } from './button';
+import { Container as Button } from './button';
 
 describe('Button', () => {
   const subject = (props: any = {}) => {

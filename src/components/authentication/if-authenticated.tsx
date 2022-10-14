@@ -1,28 +1,36 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-import { AuthenticationContext } from '../../context/authentication';
+import { AuthenticationContext, withContext } from './context';
 
-export interface Properties {
-  show?: boolean;
-  hide?: boolean;
+export interface Properties extends PublicProperties {
+  context: AuthenticationContext;
 }
 
-export class IfAuthenticated extends React.Component<Properties> {
-  static contextType = AuthenticationContext;
+interface PublicProperties {
+  showChildren?: boolean;
+  hideChildren?: boolean;
+  children: ReactNode;
+}
 
+export class Component extends React.Component<Properties> {
   render() {
-    const { show, hide } = this.props;
-    const { isAuthenticated } = this.context;
+    const {
+      showChildren,
+      hideChildren,
+      context: { isAuthenticated },
+    } = this.props;
 
-    if (show !== undefined && hide !== undefined && (show || hide))
-      throw new Error('Both props show and hide were defined, please choose one.');
+    if (showChildren !== undefined && hideChildren !== undefined && (showChildren || hideChildren))
+      throw new Error('Both props showChildren and hideChildren were defined, please choose one.');
     if (
-      (isAuthenticated && show) ||
-      (isAuthenticated && show === undefined && hide === undefined) ||
-      (!isAuthenticated && hide)
+      (isAuthenticated && showChildren) ||
+      (isAuthenticated && showChildren === undefined && hideChildren === undefined) ||
+      (!isAuthenticated && hideChildren)
     )
       return this.props.children;
 
     return null;
   }
 }
+
+export const IfAuthenticated = withContext<PublicProperties>(Component);

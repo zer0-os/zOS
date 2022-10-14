@@ -11,7 +11,7 @@ import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
-import { Button as ConnectButton } from '../../components/authentication/button-container';
+import { Button as ConnectButton } from '../../components/authentication/button';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -152,13 +152,13 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
-          <IfAuthenticated show>
+          <IfAuthenticated showChildren>
             <MessageInput
               placeholder='Speak your truth...'
               onSubmit={this.props.sendMessage}
             />
           </IfAuthenticated>
-          <IfAuthenticated hide>
+          <IfAuthenticated hideChildren>
             <ConnectButton />
           </IfAuthenticated>
           <div ref={this.bottomRef} />

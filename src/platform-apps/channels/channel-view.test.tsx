@@ -1,11 +1,6 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-import { Provider } from 'react-redux';
 import { Waypoint } from 'react-waypoint';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { ChannelView } from './channel-view';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
@@ -13,11 +8,8 @@ import InvertedScroll from '../../components/inverted-scroll';
 import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../../components/message-input';
-import { AuthenticationContext } from '../../context/authentication';
 import { Button as ConnectButton } from '../../components/authentication/button';
-import { isEmpty } from 'lodash';
-import { createStore } from 'redux';
-import { reducer } from '../../store/authentication';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -37,26 +29,6 @@ describe('ChannelView', () => {
     };
 
     return shallow(<ChannelView {...allProps} />);
-  };
-
-  const subjectWithContext = (props: any = {}, context: any = {}) => {
-    const allProps = {
-      name: '',
-      messages: [],
-      user: null,
-      countNewMessages: 0,
-      ...props,
-    };
-
-    const store = createStore(reducer);
-
-    return mount(
-      <Provider store={store}>
-        <AuthenticationContext.Provider value={{ ...context }}>
-          <ChannelView {...allProps} />
-        </AuthenticationContext.Provider>
-      </Provider>
-    );
   };
 
   it('render channel name', () => {
@@ -138,15 +110,19 @@ describe('ChannelView', () => {
   });
 
   it('render MessageInput', () => {
-    const wrapper = subjectWithContext({ messages: MESSAGES_TEST }, { isAuthenticated: true });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
-    expect(wrapper.find(MessageInput).exists()).toBe(true);
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
+    expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
   });
 
   it('render ConnectButton', () => {
-    const wrapper = subjectWithContext({ messages: MESSAGES_TEST }, { isAuthenticated: false });
+    const wrapper = subject({ messages: MESSAGES_TEST });
 
-    expect(wrapper.find(ConnectButton).exists()).toBe(true);
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ hideChildren: true });
+
+    expect(ifAuthenticated.find(ConnectButton).exists()).toBe(true);
   });
 
   it('render Waypoint in case we have messages', () => {

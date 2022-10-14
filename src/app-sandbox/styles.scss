@@ -31,14 +31,14 @@ $speed: animation.$animation-duration;
   box-sizing: border-box;
 
   &.has-context-panel {
-    transition: left animation.$animation-duration-triple ease-in, width animation.$animation-duration-triple ease-in;
+    transition: left animation.$animation-duration-double ease-in, width animation.$animation-duration-double ease-in;
 
     left: calc(0px - $width-application-navigation + 8px);
     width: calc(100% + $width-application-navigation - 8px);
 
     &.context-panel-open {
-      transition: left animation.$animation-duration-triple ease-out,
-        width animation.$animation-duration-triple ease-out;
+      transition: left animation.$animation-duration-double ease-out,
+        width animation.$animation-duration-double ease-out;
       left: 0;
       width: 100%;
     }

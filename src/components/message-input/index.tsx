@@ -3,13 +3,13 @@ import { MentionsInput, Mention } from 'react-mentions';
 import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
 import { User } from '../../store/users';
+import { Key } from '../../lib/keyboard-search';
 
 require('./styles.scss');
 
 export interface Properties {
   className?: string;
   placeholder?: string;
-  isUserConnected?: boolean;
   onSubmit: (message: string, mentionedUsers: string[]) => void;
   users: User[];
 }
@@ -21,11 +21,15 @@ interface State {
 
 export class MessageInput extends React.Component<Properties, State> {
   state = { value: '', userIds: [] };
-  onSubmit = (e): void => {
-    if (!e.shiftKey && e.keyCode === 13 && e.target.value) {
-      e.preventDefault();
-      const { value, userIds } = this.state;
-      this.props.onSubmit(value.trim(), userIds);
+  onSubmit = (event) => {
+    const {
+      target: { value },
+    } = event;
+    const { userIds } = this.state;
+
+    if (!event.shiftKey && event.key === Key.Enter && value) {
+      event.preventDefault();
+      this.props.onSubmit(value, userIds);
       this.setState({ value: '' });
     }
   };
@@ -48,6 +52,7 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   contentChanged = (e, value): void => {
+    console.log('change ', value);
     const mentionIds = this.extractUserIds(value);
     this.setState({ value, userIds: mentionIds });
   };
@@ -69,7 +74,7 @@ export class MessageInput extends React.Component<Properties, State> {
 
   renderInput() {
     return (
-      <div className='message-input chat-window__new-message'>
+      <div className='message-input chat-message__new-message'>
         <div className='message-input__input-wrapper'>
           <div className={classNames('mentions-text-area', this.props.className)}>
             <MentionsInput
@@ -90,11 +95,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   render() {
-    return (
-      <div className={classNames('chat-window__input-wrapper', this.props.className)}>
-        {this.props.isUserConnected && this.renderInput()}
-      </div>
-    );
+    return <div className={classNames('chat-message__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
   }
 
   private extractUserIds = (content): string[] => {

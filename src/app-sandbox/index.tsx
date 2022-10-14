@@ -4,12 +4,16 @@ import { Store } from 'redux';
 
 import { Apps } from '../lib/apps';
 import { App as FeedApp } from '@zer0-os/zos-feed';
+import { NFTsZApp } from '@zero-tech/zapp-nfts';
 import { StakingZApp } from '@zero-tech/zapp-staking';
+import { DaosApp } from '@zero-tech/zapp-daos';
+import { BuyDomainsZApp } from '@zero-tech/zapp-buy-domains';
 import { Chains } from '../lib/web3';
 import { ethers } from 'ethers';
 import { Channels } from '../platform-apps/channels';
 import { PlatformUser } from './container';
 
+import { AppLayout } from '../store/layout';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
@@ -33,30 +37,16 @@ export interface Properties {
   chainId: Chains;
   selectedApp: Apps;
   connectWallet: () => void;
-}
-
-interface AppLayout {
-  hasContextPanel: Boolean;
-  isContextPanelOpen: Boolean;
-}
-
-interface State {
   layout: AppLayout;
+  onUpdateLayout: (layout: Partial<AppLayout>) => void;
 }
 
-export class AppSandbox extends React.Component<Properties, State> {
-  state = {
-    layout: {
-      isContextPanelOpen: false,
-      hasContextPanel: false,
-    },
-  };
-
+export class AppSandbox extends React.Component<Properties> {
   get layoutContext() {
     return {
       setHasContextPanel: this.handleSetHasContextPanel,
       setIsContextPanelOpen: this.handleSetIsContextPanelOpen,
-      ...this.state.layout,
+      ...this.props.layout,
     };
   }
 
@@ -75,17 +65,8 @@ export class AppSandbox extends React.Component<Properties, State> {
     };
   }
 
-  handleSetHasContextPanel = (hasContextPanel: boolean) => this.updateLayoutState({ hasContextPanel });
-  handleSetIsContextPanelOpen = (isContextPanelOpen: boolean) => this.updateLayoutState({ isContextPanelOpen });
-
-  updateLayoutState = (newLayout: Partial<AppLayout>) => {
-    this.setState(({ layout }) => ({
-      layout: {
-        ...layout,
-        ...newLayout,
-      },
-    }));
-  };
+  handleSetHasContextPanel = (hasContextPanel: boolean) => this.props.onUpdateLayout({ hasContextPanel });
+  handleSetIsContextPanelOpen = (isContextPanelOpen: boolean) => this.props.onUpdateLayout({ isContextPanelOpen });
 
   renderSelectedApp() {
     const { selectedApp, store } = this.props;
@@ -98,6 +79,14 @@ export class AppSandbox extends React.Component<Properties, State> {
       return <StakingZApp {...this.appProperties} />;
     }
 
+    if (selectedApp === Apps.BuyDomains) {
+      return <BuyDomainsZApp {...this.appProperties} />;
+    }
+
+    if (selectedApp === Apps.NFTS) {
+      return <NFTsZApp {...this.appProperties} />;
+    }
+
     if (selectedApp === Apps.Channels) {
       return (
         <Channels
@@ -105,6 +94,10 @@ export class AppSandbox extends React.Component<Properties, State> {
           store={store}
         />
       );
+    }
+
+    if (selectedApp === Apps.DAOS) {
+      return <DaosApp {...this.appProperties} />;
     }
 
     return <div className='app-sandbox__error'>Error {selectedApp} application has not been implemented.</div>;

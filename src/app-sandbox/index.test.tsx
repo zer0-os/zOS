@@ -7,12 +7,15 @@ import { Apps } from '../lib/apps';
 import { Chains } from '../lib/web3';
 import { Channels } from '../platform-apps/channels';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
+import { AppLayout } from '../store/layout';
 
 describe('AppSandbox', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       znsRoute: '',
       selectedApp: null,
+      layout: {} as AppLayout,
+      updateLayout: () => undefined,
       ...props,
     };
 
@@ -110,44 +113,40 @@ describe('AppSandbox', () => {
     );
   });
 
-  it('sets default context values', () => {
-    const wrapper = subject();
+  it('sets context values from layout', () => {
+    const layout = {
+      isContextPanelOpen: false,
+      hasContextPanel: true,
+    };
+
+    const wrapper = subject({ layout });
 
     const initialValue = wrapper.find(AppLayoutContextProvider).prop('value');
 
-    expect(initialValue).toMatchObject({
-      isContextPanelOpen: false,
-      hasContextPanel: false,
-    });
+    expect(initialValue).toMatchObject(layout);
   });
 
-  it('updates isContextPanelOpen when setIsContextPanelOpen is called', () => {
-    const wrapper = subject();
+  it('calls update layout with expected value when setIsContextPanelOpen is called', () => {
+    const onUpdateLayout = jest.fn();
+
+    const wrapper = subject({ onUpdateLayout });
 
     const context = wrapper.find(AppLayoutContextProvider).prop('value');
 
     context.setIsContextPanelOpen(true);
 
-    const value = wrapper.find(AppLayoutContextProvider).prop('value');
-
-    expect(value).toMatchObject({
-      isContextPanelOpen: true,
-      hasContextPanel: false,
-    });
+    expect(onUpdateLayout).toHaveBeenCalledWith({ isContextPanelOpen: true });
   });
 
-  it('updates hasContextPanel when setHasContextPanel is called', () => {
-    const wrapper = subject();
+  it('calls onUpdateLayout with expected value when setHasContextPanel is called', () => {
+    const onUpdateLayout = jest.fn();
+
+    const wrapper = subject({ onUpdateLayout });
 
     const context = wrapper.find(AppLayoutContextProvider).prop('value');
 
     context.setHasContextPanel(true);
 
-    const value = wrapper.find(AppLayoutContextProvider).prop('value');
-
-    expect(value).toMatchObject({
-      isContextPanelOpen: false,
-      hasContextPanel: true,
-    });
+    expect(onUpdateLayout).toHaveBeenCalledWith({ hasContextPanel: true });
   });
 });

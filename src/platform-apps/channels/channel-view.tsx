@@ -11,6 +11,8 @@ import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { User as UserModel } from '../../store/users/index';
 import { MessageInput } from '../../components/message-input';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { Button as ConnectButton } from '../../components/authentication/button';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -126,22 +128,6 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
-  renderChatWindow() {
-    if (!this.props.user) {
-      return null;
-    }
-
-    return (
-      <MessageInput
-        className='message-input__textarea'
-        placeholder='Speak your truth...'
-        isUserConnected={true}
-        onSubmit={this.props.sendMessage}
-        users={this.props.users}
-      />
-    );
-  }
-
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
 
@@ -168,7 +154,16 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
-          {this.renderChatWindow()}
+          <IfAuthenticated showChildren>
+            <MessageInput
+              placeholder='Speak your truth...'
+              onSubmit={this.props.sendMessage}
+              users={this.props.users}
+            />
+          </IfAuthenticated>
+          <IfAuthenticated hideChildren>
+            <ConnectButton />
+          </IfAuthenticated>
           <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>

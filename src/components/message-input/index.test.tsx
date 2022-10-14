@@ -3,13 +3,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
+import { Key } from '../../lib/keyboard-search';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
       className: '',
       placeholder: '',
-      isUserConnected: false,
       onSubmit: () => undefined,
       ...props,
     };
@@ -24,30 +24,24 @@ describe('MessageInput', () => {
   });
 
   it('adds placeholder', () => {
-    const wrapper = subject({ placeholder: 'Speak', isUserConnected: true });
+    const wrapper = subject({ placeholder: 'Speak' });
 
     expect(wrapper.find('textarea').prop('placeholder')).toEqual('Speak');
   });
 
   it('it renders the messageInput', function () {
-    const wrapper = subject({ className: 'chat', isUserConnected: true });
-
-    expect(wrapper.find('.message-input').exists()).toBe(true);
-  });
-
-  it('it not renders the messageInput if user disconnected', function () {
     const wrapper = subject({ className: 'chat' });
 
-    expect(wrapper.find('.message-input').exists()).toBe(false);
+    expect(wrapper.find('.message-input').exists()).toBe(true);
   });
 
   it('submit message when click on textearea', () => {
     const onSubmit = jest.fn();
 
-    const wrapper = subject({ onSubmit, placeholder: 'Speak', isUserConnected: true });
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
 
     const textarea = wrapper.find('textarea');
-    textarea.simulate('keydown', { preventDefault() {}, keyCode: 13, shiftKey: false, target: { value: 'Hello' } });
+    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false, target: { value: 'Hello' } });
     expect(onSubmit).toHaveBeenCalledOnce();
   });
 });

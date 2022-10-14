@@ -21,7 +21,6 @@ describe('ChannelsContainer', () => {
 
   const subject = (props: any = {}) => {
     const allProps = {
-      user: {},
       store: getStore(),
       fetchChannels: () => undefined,
       receiveUnreadCount: () => undefined,
@@ -141,6 +140,9 @@ describe('ChannelsContainer', () => {
         normalized: {
           ...(state.normalized || {}),
         },
+        authentication: {
+          ...(state.authentication || { user: { data: { id: 'authenticated-user-id' } } }),
+        },
       } as RootState);
 
     test('channels', () => {
@@ -172,6 +174,18 @@ describe('ChannelsContainer', () => {
       const state = subject({ zns: { value: { rootDomainId } } as any });
 
       expect(state.domainId).toEqual(rootDomainId);
+    });
+
+    test('isAuthenticated', () => {
+      const state = subject({ authentication: { user: { data: { id: 'the-id' } } } as any });
+
+      expect(state.isAuthenticated).toBeTrue();
+    });
+
+    test('isAuthenticated', () => {
+      const state = subject({ authentication: { user: {} } as any });
+
+      expect(state.isAuthenticated).toBeFalse();
     });
   });
 });

@@ -23,7 +23,7 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
-  sendMessage: (message: string, mentionedUsers: string[]) => void;
+  sendMessage: (message: string, mentionedUserIds: string[]) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];

@@ -39,7 +39,7 @@ export interface Message {
   updatedAt: number;
   sender: Sender;
   // TODO: type to be defined
-  mentionedUsers: any;
+  mentionedUserIds: any;
   hidePreview: boolean;
   preview: LinkPreview;
   media?: Media;

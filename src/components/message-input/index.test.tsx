@@ -42,7 +42,8 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
 
     const textarea = wrapper.find(MentionsInput);
-    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false, target: { value: 'Hello' } });
+    textarea.simulate('change', { target: { value: 'Hello' } });
+    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
     expect(onSubmit).toHaveBeenCalledOnce();
   });
 });

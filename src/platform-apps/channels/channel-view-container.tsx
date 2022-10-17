@@ -119,14 +119,14 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  isValidPost = (message: string): boolean => {
+  isNotEmpty = (message: string): boolean => {
     return !!message && message.trim() !== '';
   };
 
-  handlSendMessage = (message: string, mentionedUsers: string[] = []): void => {
+  handlSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
     const { channelId } = this.props;
-    if (channelId && this.isValidPost(message)) {
-      this.props.sendMessage({ channelId, message, mentionedUsers });
+    if (channelId && this.isNotEmpty(message)) {
+      this.props.sendMessage({ channelId, message, mentionedUserIds });
     }
   };
 

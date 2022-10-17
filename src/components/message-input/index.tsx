@@ -10,35 +10,31 @@ require('./styles.scss');
 export interface Properties {
   className?: string;
   placeholder?: string;
-  onSubmit: (message: string, mentionedUsers: string[]) => void;
+  onSubmit: (message: string, mentionedUserIds: User['id'][]) => void;
   users: User[];
 }
 
 interface State {
   value: string;
-  userIds: string[];
+  mentionedUserIds: string[];
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  state = { value: '', userIds: [] };
+  state = { value: '', mentionedUserIds: [] };
   onSubmit = (event) => {
-    const {
-      target: { value },
-    } = event;
-    const { userIds } = this.state;
-
+    const { mentionedUserIds, value } = this.state;
     if (!event.shiftKey && event.key === Key.Enter && value) {
       event.preventDefault();
-      this.props.onSubmit(value, userIds);
-      this.setState({ value: '' });
+      this.props.onSubmit(value, mentionedUserIds);
+      this.setState({ value: '', mentionedUserIds: [] });
     }
   };
 
-  loadUsers = (search: string, callback): void => {
+  loadUsers = (search: string) => {
     const { users } = this.props;
 
     if (users.length) {
-      const result = users
+      return users
         .map((user) => ({
           display: [
             user.firstName,
@@ -47,13 +43,18 @@ export class MessageInput extends React.Component<Properties, State> {
           id: user.id,
         }))
         .filter((user) => user.display.toLowerCase().includes(search.toLowerCase()));
-      callback(result);
     }
+    return [];
   };
 
-  contentChanged = (e, value): void => {
-    const mentionIds = this.extractUserIds(value);
-    this.setState({ value, userIds: mentionIds });
+  contentChanged = (event): void => {
+    const {
+      target: { value },
+    } = event;
+
+    const mentionedUserIds = this.extractUserIds(value);
+    console.log('change -----', mentionedUserIds);
+    this.setState({ value, mentionedUserIds });
   };
 
   renderMentionTypes() {
@@ -93,11 +94,7 @@ export class MessageInput extends React.Component<Properties, State> {
     );
   }
 
-  render() {
-    return <div className={classNames('chat-message__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
-  }
-
-  private extractUserIds = (content): string[] => {
+  private extractUserIds = (content: string): string[] => {
     const search = userMentionsConfig.regexGlobal;
     const userIds: string[] = [];
     let result = search.exec(content);
@@ -109,9 +106,13 @@ export class MessageInput extends React.Component<Properties, State> {
     return userIds;
   };
 
-  private _handleBlur = (e, clickedSuggestion) => {
+  private _handleBlur = (event, clickedSuggestion) => {
     if (clickedSuggestion) {
       return;
     }
   };
+
+  render() {
+    return <div className={classNames('chat-message__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
+  }
 }

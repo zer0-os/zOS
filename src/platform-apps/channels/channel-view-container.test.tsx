@@ -161,7 +161,7 @@ describe('ChannelViewContainer', () => {
   it('should call sendMessage when textearea is clicked', () => {
     const sendMessage = jest.fn();
     const message = 'test message';
-    const mentionedUsers = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
 
     const wrapper = subject({
       sendMessage,
@@ -169,7 +169,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUsers);
+    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds);
 
     expect(sendMessage).toHaveBeenCalledOnce();
   });
@@ -254,7 +254,6 @@ describe('ChannelViewContainer', () => {
             data: null,
           },
         },
-        users: { users: [] },
       } as RootState);
 
     test('channel', () => {

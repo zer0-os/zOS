@@ -282,6 +282,10 @@
             background: #3e4042;
             padding: 5px 15px;
             margin-top: 10px;
+
+            &__link {
+              text-decoration: underline;
+            }
           }
         }
 

@@ -15,7 +15,7 @@
 
     .message-input__input-wrapper {
       position: relative;
-      background: linear-gradient(90deg, #424446, rgba(66, 68, 70, 0));
+      background: linear-gradient(to right, theme.$input-background-primary-color-inverse, transparent);
       padding-left: 6px;
       font-size: 12px;
       animation: fadein 1.2s ease-out forwards;
@@ -28,7 +28,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #424446;
+        background: theme.$input-background-primary-color-inverse;
         opacity: 0;
         transition: opacity 0.3s ease-out;
         border-radius: 0;
@@ -49,7 +49,7 @@
       }
 
       TEXTAREA {
-        color: #ffffff;
+        color: theme.$font-color-primary;
         word-break: break-word;
         font-size: 13.5px !important;
         height: 24px;

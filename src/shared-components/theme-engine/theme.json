@@ -51,6 +51,7 @@
     "actionableActiveBackgroundGradient": "rgb(0, 0, 0, 0.25)",
 
     "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
+    "inputBackgroundPrimaryColorInverse": "#E7E7E7",
     "inputBackgroundSecondaryColor": "rgba(255, 255, 255, 0)",
     "inputArrowColor": "#121212",
 
@@ -126,6 +127,7 @@
     "actionableActiveBackgroundGradient": "linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
 
     "inputBackgroundPrimaryColor": "rgba(66, 68, 70, 1)",
+    "inputBackgroundPrimaryColorInverse": "#424446",
     "inputBackgroundSecondaryColor": "rgba(66, 68, 70, 0)",
     "inputArrowColor": "#3C3C3C",
 

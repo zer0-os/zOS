@@ -1,5 +1,6 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
+@import '../../animation';
 
 @mixin actionable-color(
   $inactive-color: theme.$actionable-inactive-color,
@@ -108,6 +109,7 @@
     height: 100%;
     padding: 0 0 20px 0;
     box-sizing: border-box;
+    animation: fadein animation.$animation-duration-quadruple ease-out forwards;
 
     &__name {
       padding: 110px 0 10px 0;

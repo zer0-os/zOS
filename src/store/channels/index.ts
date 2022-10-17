@@ -1,7 +1,16 @@
 import { createNormalizedSlice } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
-import { User, schema as usersSchema } from '../users';
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profileId: string;
+  isOnline: Boolean;
+  profileImage: string;
+  lastSeenAt: string;
+}
 
 export interface Channel {
   id: string;
@@ -20,7 +29,6 @@ const slice = createNormalizedSlice({
   name: 'channels',
   schemaDefinition: {
     messages: [messageSchema],
-    users: [usersSchema],
   },
 });
 

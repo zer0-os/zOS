@@ -9,12 +9,12 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { fetch as fetchUsers } from '../../store/users';
+import { loadUsers as fetchUsers } from '../../store/channels-list';
 import { Channel, denormalize } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
-import { Payload as PayloadFetchUser } from '../../store/users/saga';
+import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;

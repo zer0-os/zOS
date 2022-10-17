@@ -2,9 +2,13 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, delay } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
-import { fetchChannels } from './api';
+import { fetchChannels, fetchUsersByChannelId } from './api';
 import { AsyncListStatus } from '../normalized';
 import { select } from 'redux-saga-test-plan/matchers';
+
+export interface Payload {
+  channelId: string;
+}
 
 export const channelIdPrefix = 'sendbird_group_channel_';
 
@@ -43,6 +47,24 @@ export function* unreadCountUpdated(action) {
   yield put(receive(channelsList));
 }
 
+export function* loadUsers(action) {
+  const { channelId } = action.payload;
+  const channelPrefix: string = channelIdPrefix + channelId;
+
+  const users = yield call(fetchUsersByChannelId, channelPrefix);
+  const formatUsers = users.map(({ userId: id, ...rest }) => ({
+    id,
+    ...rest,
+  }));
+
+  yield put(
+    receive({
+      id: channelId,
+      users: formatUsers,
+    })
+  );
+}
+
 export function* stopSyncChannels() {
   yield put(setStatus(AsyncListStatus.Stopped));
 }
@@ -58,4 +80,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
   yield takeLatest(SagaActionTypes.ReceiveUnreadCount, syncUnreadCount);
   yield takeLatest(SagaActionTypes.StopSyncChannels, stopSyncChannels);
+  yield takeLatest(SagaActionTypes.LoadUsers, loadUsers);
 }

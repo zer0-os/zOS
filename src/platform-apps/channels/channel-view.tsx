@@ -9,7 +9,7 @@ import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
-import { User as UserModel } from '../../store/users/index';
+import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';

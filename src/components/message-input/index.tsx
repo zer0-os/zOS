@@ -2,8 +2,8 @@ import React from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
-import { User } from '../../store/users';
 import { Key } from '../../lib/keyboard-search';
+import { User } from '../../store/channels';
 
 require('./styles.scss');
 
@@ -52,7 +52,6 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   contentChanged = (e, value): void => {
-    console.log('change ', value);
     const mentionIds = this.extractUserIds(value);
     this.setState({ value, userIds: mentionIds });
   };

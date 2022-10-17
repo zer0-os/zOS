@@ -6,7 +6,6 @@ import { saga as apps } from './apps/saga';
 import { saga as channelsList } from './channels-list/saga';
 import { saga as messages } from './messages/saga';
 import { saga as authentication } from './authentication/saga';
-import { saga as users } from './users/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -16,7 +15,6 @@ export function* rootSaga() {
     channelsList,
     messages,
     authentication,
-    users,
   };
 
   yield all(

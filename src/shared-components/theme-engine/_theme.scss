@@ -27,6 +27,7 @@ $address-bar-background-color-inner-hover: var(--address-bar-background-color-in
 
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);
+$font-color-primary-inverse: var(--font-color-primary-inverse);
 $font-color-secondary: var(--font-color-secondary);
 $font-color-secondary-hover: var(--font-color-secondary-hover);
 $font-color-tertiary: var(--font-color-tertiary);
@@ -64,6 +65,7 @@ $glow-background-color: var(--glow-background-color, #6e10bb);
 $glow-transition-background-color: var(--glow-transition-background-color, #e0baff);
 
 $font-color-app-menu: var(--font-color-app-menu);
+$font-color-app-menu-active: var(--font-color-app-menu-active);
 
 $button-background-color: var(
   --button-background-color,
@@ -79,3 +81,6 @@ $button-color-grey: var(--button-color-grey, grey);
 $button-box-radius: var(--button-box-radius, 16px);
 
 $background-color-transparent: var(--background-color-transparent, rgba(0, 0, 0, 0.4));
+
+$card-background-color: var(--card-background-color, #212121);
+$card-background-color-hover: var(--card-background-color, #232323);

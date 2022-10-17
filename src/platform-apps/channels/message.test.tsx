@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import Linkify from 'linkify-react';
 import { Emoji } from 'emoji-mart';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
@@ -147,6 +148,14 @@ describe('message', () => {
     const authorAvatarElement = wrapper.find('.message__author-avatar');
 
     expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
+  });
+
+  it('renders with a tag', () => {
+    const wrapper = subject({
+      message: 'http://zos.io',
+    });
+
+    expect(wrapper.find(Linkify).exists()).toBe(true);
   });
 
   describe('Lightbox', () => {

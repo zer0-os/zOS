@@ -168,40 +168,31 @@
     opacity: 1;
 
     .message__header {
-      text-align: center;
+      display: flex;
+      align-items: center;
       position: relative;
-      overflow: hidden;
       margin: 20px 0 25px;
       color: #cccccc;
 
       &-date {
         border-radius: 0;
-        background-color: theme.$background-color-secondary;
+        background-color: none;
         color: theme.$actionable-active-color;
         transition: background-color 0.3s ease-out;
-        display: inline-block;
         padding: 3px 20px;
       }
       &:before,
       &:after {
+        flex: 1 0 auto;
         content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
         height: 1px;
       }
       &:before {
-        margin-left: -50%;
         text-align: right;
         background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
       }
       &:after {
         content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
         height: 1px;
         background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
       }

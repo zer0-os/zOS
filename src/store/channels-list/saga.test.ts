@@ -17,11 +17,11 @@ const MOCK_CHANNELS = [
 describe('channels list saga', () => {
   const usersResponse = [
     {
-      userId: 'the-first-id',
+      id: 'the-first-id',
       firstName: 'the first name',
     },
     {
-      userId: 'the-second-id',
+      id: 'the-second-id',
       firstName: 'the second name',
     },
   ];
@@ -186,18 +186,15 @@ describe('channels list saga', () => {
       ])
       .run();
 
-    expect(channels[channelId].users).toStrictEqual([
-      'the-first-id',
-      'the-second-id',
-    ]);
+    expect(channels[channelId].users).toStrictEqual(usersResponse);
   });
 
   it('adds users to normalized state', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+
     const {
-      storeState: {
-        normalized: { users },
-      },
-    } = await expectSaga(loadUsers, { payload: { channelId: '0x000000000000000000000000000000000000000A' } })
+      storeState: { normalized },
+    } = await expectSaga(loadUsers, { payload: { channelId } })
       .provide([
         [
           matchers.call.fn(fetchUsersByChannelId),
@@ -207,9 +204,6 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(users).toMatchObject({
-      'the-first-id': { id: 'the-first-id', firstName: 'the first name' },
-      'the-second-id': { id: 'the-second-id', firstName: 'the second name' },
-    });
+    expect(normalized.channels[channelId].users).toStrictEqual(usersResponse);
   });
 });

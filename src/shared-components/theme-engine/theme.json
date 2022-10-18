@@ -16,6 +16,7 @@
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
     "backgroundColorAppPanel": "transparent",
+    "backgroundColorAppContent": "#EFEFEF",
     "backgroundColorPlatformNavigation": "transparent",
     "backgroundColorWorldNavigation": "transparent",
 
@@ -72,7 +73,7 @@
     "glowBackgroundColor": "#F0F0F0",
     "glowTransitionBackgroundColor": "F3F3F3",
 
-    "cardBackgroundColor": "#3e4042"
+    "cardBackgroundColor": "#FFF"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -87,6 +88,7 @@
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
 
     "backgroundColorAppPanel": "#120D16",
+    "backgroundColorAppContent": "transparent",
     "backgroundColorPlatformNavigation": "#1A1022",
     "backgroundColorWorldNavigation": "#23142F",
 

@@ -15,7 +15,7 @@
 
     .message-input__input-wrapper {
       position: relative;
-      background: linear-gradient(to right, theme.$input-background-primary-color-inverse, transparent);
+      background: linear-gradient(to right, theme.$background-color-primary, transparent);
       padding-left: 6px;
       font-size: 12px;
       animation: fadein 1.2s ease-out forwards;

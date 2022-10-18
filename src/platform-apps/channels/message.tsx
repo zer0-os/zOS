@@ -40,7 +40,7 @@ export class Message extends React.Component<Properties> {
   }
 
   getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
+    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
 
     if (!user) return null;
 

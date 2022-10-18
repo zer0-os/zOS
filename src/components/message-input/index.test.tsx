@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { MentionsInput } from 'react-mentions';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
@@ -10,7 +10,9 @@ describe('MessageInput', () => {
     const allProps: Properties = {
       className: '',
       placeholder: '',
+      users: [],
       onSubmit: () => undefined,
+      getUsersForMentions: () => undefined,
       ...props,
     };
 
@@ -26,7 +28,7 @@ describe('MessageInput', () => {
   it('adds placeholder', () => {
     const wrapper = subject({ placeholder: 'Speak' });
 
-    expect(wrapper.find('textarea').prop('placeholder')).toEqual('Speak');
+    expect(wrapper.find(MentionsInput).prop('placeholder')).toEqual('Speak');
   });
 
   it('it renders the messageInput', function () {
@@ -40,8 +42,9 @@ describe('MessageInput', () => {
 
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
 
-    const textarea = wrapper.find('textarea');
-    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false, target: { value: 'Hello' } });
+    const textarea = wrapper.find(MentionsInput);
+    textarea.simulate('change', { target: { value: 'Hello' } });
+    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
     expect(onSubmit).toHaveBeenCalledOnce();
   });
 });

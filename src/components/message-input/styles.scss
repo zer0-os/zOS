@@ -3,6 +3,27 @@
 @import '../../variables';
 @import '../../animation';
 
+@keyframes fade-background-in {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: #c9fd51;
+  }
+}
+
+@mixin tag-highlight() {
+  mark,
+  strong {
+    animation: fade-background-in 200ms ease-in forwards;
+    color: theme.$text-on-accent;
+  }
+  mark {
+    padding: 3px;
+    border-radius: 5px;
+  }
+}
+
 .chat-message {
   &__input-wrapper {
     display: flex;
@@ -43,9 +64,11 @@
       padding: 8px 0;
       font-size: 14px;
 
-      .mentions-text-area__wrap__suggestions {
-        top: unset !important;
-        bottom: 100%;
+      &__wrap {
+        &__suggestions {
+          top: unset !important;
+          bottom: 100%;
+        }
       }
 
       TEXTAREA {
@@ -88,7 +111,7 @@
 .mentions-text-area__wrap {
   position: relative;
   overflow-y: visible;
-  .mentions-text-area__wrap__highlighter {
+  &__highlighter {
     position: relative;
     box-sizing: border-box;
     width: 100%;
@@ -100,12 +123,14 @@
     border: 1px solid transparent;
     text-align: start;
 
-    .mentions-text-area__wrap__highlighter__substring {
+    &__substring {
       visibility: hidden;
     }
+
+    @include tag-highlight;
   }
 
-  .mentions-text-area__wrap__input {
+  &__input {
     display: block;
     width: 100%;
     position: absolute;
@@ -121,5 +146,27 @@
     bottom: 0px;
     overflow: hidden;
     resize: none;
+  }
+
+  &__suggestions {
+    background: none !important;
+    z-index: 1000 !important;
+    &__list {
+      border: 2px solid #464646;
+      background-color: theme.$background-color-primary-selected;
+    }
+    &__item {
+      padding: 5px 10px;
+      &--focused {
+        background-color: #141414;
+      }
+      &__display {
+        color: #cccccc;
+      }
+      &__highlight {
+        font-weight: bold;
+        color: white;
+      }
+    }
   }
 }

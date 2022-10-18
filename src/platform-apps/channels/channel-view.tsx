@@ -9,6 +9,7 @@ import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
+import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
@@ -22,9 +23,10 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, mentionedUserIds: string[]) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
+  users: UserModel[];
 }
 export interface State {
   lightboxMedia: any[];
@@ -156,6 +158,7 @@ export class ChannelView extends React.Component<Properties, State> {
             <MessageInput
               placeholder='Speak your truth...'
               onSubmit={this.props.sendMessage}
+              users={this.props.users}
             />
           </IfAuthenticated>
           <IfAuthenticated hideChildren>

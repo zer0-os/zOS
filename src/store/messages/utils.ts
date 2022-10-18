@@ -6,7 +6,7 @@ export function messageFactory(messageText: string, user: User): Message {
     createdAt: Date.now(),
     hidePreview: false,
     id: Date.now(),
-    mentionedUsers: [],
+    mentionedUserIds: [],
     message: messageText,
     sender: {
       userId: user.id,

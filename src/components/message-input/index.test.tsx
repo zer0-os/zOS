@@ -1,5 +1,5 @@
 import React from 'react';
-import { MentionsInput, Mention } from 'react-mentions';
+import { MentionsInput } from 'react-mentions';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
@@ -12,6 +12,7 @@ describe('MessageInput', () => {
       placeholder: '',
       users: [],
       onSubmit: () => undefined,
+      getUsersForMentions: () => undefined,
       ...props,
     };
 

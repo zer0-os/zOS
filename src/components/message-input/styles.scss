@@ -64,9 +64,11 @@
       padding: 8px 0;
       font-size: 14px;
 
-      .mentions-text-area__wrap__suggestions {
-        top: unset !important;
-        bottom: 100%;
+      &__wrap {
+        &__suggestions {
+          top: unset !important;
+          bottom: 100%;
+        }
       }
 
       TEXTAREA {
@@ -109,7 +111,7 @@
 .mentions-text-area__wrap {
   position: relative;
   overflow-y: visible;
-  .mentions-text-area__wrap__highlighter {
+  &__highlighter {
     position: relative;
     box-sizing: border-box;
     width: 100%;
@@ -121,14 +123,14 @@
     border: 1px solid transparent;
     text-align: start;
 
-    .mentions-text-area__wrap__highlighter__substring {
+    &__substring {
       visibility: hidden;
     }
 
     @include tag-highlight;
   }
 
-  .mentions-text-area__wrap__input {
+  &__input {
     display: block;
     width: 100%;
     position: absolute;
@@ -146,25 +148,25 @@
     resize: none;
   }
 
-  .mentions-text-area__wrap__suggestions {
+  &__suggestions {
     background: none !important;
     z-index: 1000 !important;
-  }
-  .mentions-text-area__wrap__suggestions__list {
-    border: 2px solid #464646;
-    background-color: theme.$background-color-primary-selected;
-  }
-  .mentions-text-area__wrap__suggestions__item {
-    padding: 5px 10px;
-  }
-  .mentions-text-area__wrap__suggestions__item--focused {
-    background-color: #141414;
-  }
-  .mentions-text-area__wrap__suggestions__item__display {
-    color: #cccccc;
-  }
-  .mentions-text-area__wrap__suggestions__item__highlight {
-    font-weight: bold;
-    color: white;
+    &__list {
+      border: 2px solid #464646;
+      background-color: theme.$background-color-primary-selected;
+    }
+    &__item {
+      padding: 5px 10px;
+      &--focused {
+        background-color: #141414;
+      }
+      &__display {
+        color: #cccccc;
+      }
+      &__highlight {
+        font-weight: bold;
+        color: white;
+      }
+    }
   }
 }

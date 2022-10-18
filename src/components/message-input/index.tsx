@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
 import { User } from '../../store/channels';
+import { UserForMention, getUsersForMentions } from './utils';
 
 require('./styles.scss');
 
@@ -12,6 +13,7 @@ export interface Properties {
   placeholder?: string;
   onSubmit: (message: string, mentionedUserIds: User['id'][]) => void;
   users: User[];
+  getUsersForMentions: (search: string, users: User[]) => UserForMention[];
 }
 
 interface State {
@@ -20,7 +22,10 @@ interface State {
 }
 
 export class MessageInput extends React.Component<Properties, State> {
+  static defaultProps = { getUsersForMentions };
+
   state = { value: '', mentionedUserIds: [] };
+
   onSubmit = (event) => {
     const { mentionedUserIds, value } = this.state;
     if (!event.shiftKey && event.key === Key.Enter && value) {
@@ -30,30 +35,12 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   };
 
-  loadUsers = (search: string) => {
-    const { users } = this.props;
-
-    if (users.length) {
-      return users
-        .map((user) => ({
-          display: [
-            user.firstName,
-            user.lastName,
-          ].join(' '),
-          id: user.id,
-        }))
-        .filter((user) => user.display.toLowerCase().includes(search.toLowerCase()));
-    }
-    return [];
-  };
-
   contentChanged = (event): void => {
     const {
       target: { value },
     } = event;
 
     const mentionedUserIds = this.extractUserIds(value);
-    console.log('change -----', mentionedUserIds);
     this.setState({ value, mentionedUserIds });
   };
 
@@ -61,7 +48,7 @@ export class MessageInput extends React.Component<Properties, State> {
     const mentions = [
       <Mention
         trigger='@'
-        data={this.loadUsers}
+        data={(search: string) => this.props.getUsersForMentions(search, this.props.users)}
         key='user'
         appendSpaceOnAdd
         markup={userMentionsConfig.markup}
@@ -84,7 +71,6 @@ export class MessageInput extends React.Component<Properties, State> {
               onChange={this.contentChanged}
               onBlur={this._handleBlur}
               value={this.state.value}
-              suggestionsPortalHost={undefined}
             >
               {this.renderMentionTypes()}
             </MentionsInput>

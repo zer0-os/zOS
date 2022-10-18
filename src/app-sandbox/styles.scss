@@ -6,6 +6,8 @@
 $speed: animation.$animation-duration;
 
 .app-sandbox {
+  @include root-layout-vars;
+
   position: absolute;
   height: 100vh;
   left: $width-navigation;
@@ -27,8 +29,6 @@ $speed: animation.$animation-duration;
 }
 
 .app-layout {
-  @include root-layout-vars;
-
   position: relative;
   display: flex;
   width: 100%;

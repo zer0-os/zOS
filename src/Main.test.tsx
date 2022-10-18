@@ -51,7 +51,7 @@ describe('Main', () => {
     const main = wrapper.find('.main');
 
     expect(main.hasClass('has-context-panel')).toBe(false);
-    expect(main.hasClass('is-context-panel-open')).toBe(false);
+    expect(main.hasClass('context-panel-open')).toBe(false);
   });
 
   it('adds class when hasContextPanel is true', () => {
@@ -63,7 +63,7 @@ describe('Main', () => {
   it('adds class when isContextPanelOpen is true', () => {
     const wrapper = subject({ isContextPanelOpen: true });
 
-    expect(wrapper.find('.main').hasClass('is-context-panel-open')).toBe(true);
+    expect(wrapper.find('.main').hasClass('context-panel-open')).toBe(true);
   });
 
   describe('mapState', () => {

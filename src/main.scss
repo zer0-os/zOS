@@ -2,8 +2,11 @@
 @use 'modules/animation' as animation;
 
 @import 'variables';
+@import 'layout';
 
 .main {
+  @include root-layout-vars;
+
   display: flex;
   justify-content: space-between;
   position: fixed;
@@ -30,6 +33,8 @@
   }
 
   &__navigation-platform {
+    @include layout-transition(width);
+
     box-sizing: border-box;
     width: $width-platform-navigation;
     border-right: 1px solid theme.$primary-border-color;
@@ -37,14 +42,13 @@
     background-color: theme.$background-color-platform-navigation;
 
     @include for-left-collapse() {
-      width: 54px;
+      width: $width-collapsed-platform-navigation;
       padding-left: 5px;
     }
   }
 
-  &.has-context-panel.is-context-panel-open &__header {
+  &.has-context-panel.context-panel-open &__header {
     left: calc($width-navigation + $width-application-navigation);
-    transition: left animation.$animation-duration-double ease-out;
 
     @include for-left-collapse() {
       left: calc($width-collapsed-navigation + $width-application-navigation);
@@ -57,7 +61,7 @@
     align-items: flex-end;
     box-sizing: border-box;
 
-    transition: left animation.$animation-duration-double ease-in;
+    @include layout-transition(left);
     left: $width-navigation;
     right: 0;
     height: 72px;

@@ -32,7 +32,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     const mainClassName = classNames('main', {
-      'is-context-panel-open': this.props.isContextPanelOpen,
+      'context-panel-open': this.props.isContextPanelOpen,
       'has-context-panel': this.props.hasContextPanel,
     });
 

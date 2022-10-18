@@ -1,6 +1,9 @@
 import { createNormalizedSlice } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
+import { schema as usersSchema } from '../users';
+import { createAction } from '@reduxjs/toolkit';
+import { Payload } from './saga';
 
 export interface User {
   id: string;
@@ -25,12 +28,20 @@ export interface Channel {
   unreadCount?: number;
 }
 
+export enum SagaActionTypes {
+  LoadUsers = 'channels/saga/loadUsers',
+}
+
+const loadUsers = createAction<Payload>(SagaActionTypes.LoadUsers);
+
 const slice = createNormalizedSlice({
   name: 'channels',
   schemaDefinition: {
     messages: [messageSchema],
+    users: [usersSchema],
   },
 });
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
+export { loadUsers };

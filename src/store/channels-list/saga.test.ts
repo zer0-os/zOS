@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchChannels, fetchUsersByChannelId } from './api';
-import { channelIdPrefix, fetch, loadUsers, stopSyncChannels, unreadCountUpdated } from './saga';
+import { fetchChannels } from './api';
+import { fetch, stopSyncChannels, unreadCountUpdated } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
@@ -15,17 +15,6 @@ const MOCK_CHANNELS = [
 ];
 
 describe('channels list saga', () => {
-  const usersResponse = [
-    {
-      id: 'the-first-id',
-      firstName: 'the first name',
-    },
-    {
-      id: 'the-second-id',
-      firstName: 'the second name',
-    },
-  ];
-
   it('sets status to fetching', async () => {
     await expectSaga(fetch, { payload: '0x000000000000000000000000000000000000000A' })
       .put(setStatus(AsyncListStatus.Fetching))
@@ -141,69 +130,5 @@ describe('channels list saga', () => {
     } = await expectSaga(stopSyncChannels).withReducer(rootReducer).run();
 
     expect(channelsList.status).toBe(AsyncListStatus.Stopped);
-  });
-
-  it('load users', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    await expectSaga(loadUsers, { payload: { channelId } })
-      .provide([
-        [
-          matchers.call.fn(fetchUsersByChannelId),
-          usersResponse,
-        ],
-      ])
-      .call(fetchUsersByChannelId, channelIdPrefix + channelId)
-      .run();
-  });
-
-  it('adds users ids to channels state', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            users: [
-              'old-user-id',
-            ],
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(loadUsers, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(fetchUsersByChannelId),
-          usersResponse,
-        ],
-      ])
-      .run();
-
-    expect(channels[channelId].users).toStrictEqual(usersResponse);
-  });
-
-  it('adds users to normalized state', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    const {
-      storeState: { normalized },
-    } = await expectSaga(loadUsers, { payload: { channelId } })
-      .provide([
-        [
-          matchers.call.fn(fetchUsersByChannelId),
-          usersResponse,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .run();
-
-    expect(normalized.channels[channelId].users).toStrictEqual(usersResponse);
   });
 });

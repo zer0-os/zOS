@@ -9,8 +9,7 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { loadUsers as fetchUsers } from '../../store/channels-list';
-import { Channel, denormalize } from '../../store/channels';
+import { Channel, denormalize, loadUsers as fetchUsers } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';

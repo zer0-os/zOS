@@ -15,8 +15,10 @@
     "backgroundColorTertiaryHover": "#F5F5F5",
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
-    "backgroundColorAppPanel": "transparent",
-    "backgroundColorPlatformNavigation": "transparent",
+    "backgroundColorAppPanel": "#FFF",
+    "backgroundColorAppPanelHover": "#FFF",
+    "backgroundColorAppContent": "#EFEFEF",
+    "backgroundColorPlatformNavigation": "#F5F5F5",
     "backgroundColorWorldNavigation": "transparent",
 
     "primaryBorderColor": "#E6E6E6",
@@ -24,31 +26,36 @@
 
     "addressBarBorderColorOuter": "#F9F9F9",
     "addressBarBorderColorInner": "#EFEFEF",
+    "addressBarBackgroundColorInnerHover": "#FFF",
     "addressBarBackgroundColorInner": "#F2F2F2",
 
     "fontColorPrimary": "#000000",
     "fontColorPrimaryHover": "#121212",
+    "fontColorPrimaryInverse": "#4C4B4A",
     "fontColorSecondary": "#4A4A4A",
     "fontColorSecondaryHover": "#121212",
-    "fontColorTertiary": "#FFFFFF",
+    "fontColorTertiary": "#000",
     "fontColorTertiaryHover": "#F5F5F5",
     "fontColorHeading": "#bfbfbf",
-    "fontColorTime": "#F5F5F5",
+    "fontColorTime": "#4C4B4A",
 
     "fontColorAppMenu": "#6C6C6C",
+    "fontColorAppMenuActive": "#000",
 
     "accentColor": "#B14EFF",
+    "accentColor1": "#000",
     "accentColorMid": "#6A3991",
 
     "actionableColor": "#000000",
     "actionableInactiveColor": "#737373",
     "actionableActiveColor": "rgb(18, 18, 18, 0.75)",
-    "actionableHoverBackground": "rgba(0, 0, 0, 0.05)",
+    "actionableHoverBackground": "rgba(255, 255, 255, 0.50)",
     "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
     "actionableHoverBackgroundGradient": "rgba(0, 0, 0, 0.05)",
     "actionableActiveBackgroundGradient": "rgb(0, 0, 0, 0.25)",
 
     "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
+    "inputBackgroundPrimaryColorInverse": "#E7E7E7",
     "inputBackgroundSecondaryColor": "rgba(255, 255, 255, 0)",
     "inputArrowColor": "#121212",
 
@@ -67,7 +74,9 @@
 
     "glowTextColor": "#F0F0F0",
     "glowBackgroundColor": "#F0F0F0",
-    "glowTransitionBackgroundColor": "F3F3F3"
+    "glowTransitionBackgroundColor": "F3F3F3",
+
+    "cardBackgroundColor": "#FFF"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -82,6 +91,8 @@
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
 
     "backgroundColorAppPanel": "#120D16",
+    "backgroundColorAppPanelHover": "rgba(231, 233, 234, 0.1)",
+    "backgroundColorAppContent": "transparent",
     "backgroundColorPlatformNavigation": "#1A1022",
     "backgroundColorWorldNavigation": "#23142F",
 
@@ -94,10 +105,12 @@
 
     "addressBarBorderColorOuter": "#23142F",
     "addressBarBorderColorInner": "#472E5B",
+    "addressBarBackgroundColorInnerHover": "inherit",
     "addressBarBackgroundColorInner": "#1A1022",
 
     "fontColorPrimary": "#FFFFFF",
     "fontColorPrimaryHover": "#F5F5F5",
+    "fontColorPrimaryInverse": "#CCCCCC",
     "fontColorSecondary": "#707070",
     "fontColorSecondaryHover": "#363636",
     "fontColorTertiary": "#959595",
@@ -106,6 +119,7 @@
     "fontColorTime": "#737373",
 
     "fontColorAppMenu": "#E6E6E6",
+    "fontColorAppMenuActive": "#FFF",
 
     "accentColor": "#B14EFF",
     "accentColor1": "#52cbff",
@@ -120,6 +134,7 @@
     "actionableActiveBackgroundGradient": "linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
 
     "inputBackgroundPrimaryColor": "rgba(66, 68, 70, 1)",
+    "inputBackgroundPrimaryColorInverse": "#424446",
     "inputBackgroundSecondaryColor": "rgba(66, 68, 70, 0)",
     "inputArrowColor": "#3C3C3C",
 
@@ -149,6 +164,8 @@
     "glow-text-white": "0px 0px 10px hsla(0,0%,100%,0.7)",
     "button-color-grey": "grey",
     "button-box-radius": "16px",
-    "background-color-transparent": "rgba(0, 0, 0, 0.6)"
+    "background-color-transparent": "rgba(0, 0, 0, 0.6)",
+
+    "cardBackgroundColor": "#212121"
   }
 }

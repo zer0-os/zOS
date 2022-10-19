@@ -16,6 +16,7 @@
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
     "backgroundColorAppPanel": "#FFF",
+    "backgroundColorAppPanelHover": "#FFF",
     "backgroundColorAppContent": "#EFEFEF",
     "backgroundColorPlatformNavigation": "#F5F5F5",
     "backgroundColorWorldNavigation": "transparent",
@@ -25,6 +26,7 @@
 
     "addressBarBorderColorOuter": "#F9F9F9",
     "addressBarBorderColorInner": "#EFEFEF",
+    "addressBarBackgroundColorInnerHover": "#FFF",
     "addressBarBackgroundColorInner": "#F2F2F2",
 
     "fontColorPrimary": "#000000",
@@ -32,7 +34,7 @@
     "fontColorPrimaryInverse": "#4C4B4A",
     "fontColorSecondary": "#4A4A4A",
     "fontColorSecondaryHover": "#121212",
-    "fontColorTertiary": "#FFFFFF",
+    "fontColorTertiary": "#000",
     "fontColorTertiaryHover": "#F5F5F5",
     "fontColorHeading": "#bfbfbf",
     "fontColorTime": "#4C4B4A",
@@ -41,6 +43,7 @@
     "fontColorAppMenuActive": "#000",
 
     "accentColor": "#B14EFF",
+    "accentColor1": "#000",
     "accentColorMid": "#6A3991",
 
     "actionableColor": "#000000",
@@ -88,6 +91,7 @@
     "backgroundColorSecondaryTransparent": "rgba(33, 33, 33, 0.9)",
 
     "backgroundColorAppPanel": "#120D16",
+    "backgroundColorAppPanelHover": "rgba(231, 233, 234, 0.1)",
     "backgroundColorAppContent": "transparent",
     "backgroundColorPlatformNavigation": "#1A1022",
     "backgroundColorWorldNavigation": "#23142F",
@@ -101,6 +105,7 @@
 
     "addressBarBorderColorOuter": "#23142F",
     "addressBarBorderColorInner": "#472E5B",
+    "addressBarBackgroundColorInnerHover": "inherit",
     "addressBarBackgroundColorInner": "#1A1022",
 
     "fontColorPrimary": "#FFFFFF",

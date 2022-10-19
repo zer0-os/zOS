@@ -8,6 +8,7 @@ interface RequestFilter {
   order?: string;
   offset?: number;
   include?: any;
+  [x: string]: any;
 }
 
 function apiUrl(path: string): string {

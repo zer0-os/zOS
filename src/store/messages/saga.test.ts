@@ -35,6 +35,7 @@ describe('messages saga', () => {
   it('send message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
 
     const initialState = {
       authentication: {
@@ -52,7 +53,7 @@ describe('messages saga', () => {
       },
     };
 
-    await expectSaga(send, { payload: { channelId, message } })
+    await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
@@ -60,13 +61,14 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, message)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
       .run();
   });
 
   it('send message return a 400 status', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const messages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
       { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
@@ -101,7 +103,7 @@ describe('messages saga', () => {
       storeState: {
         normalized: { channels },
       },
-    } = await expectSaga(send, { payload: { channelId, message } })
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
       .withReducer(rootReducer, initialState as any)
       .provide([
         [
@@ -109,7 +111,7 @@ describe('messages saga', () => {
           { status: 400, body: {} },
         ],
       ])
-      .call(sendMessagesByChannelId, channelId, message)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
       .run();
 
     expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));

@@ -9,16 +9,18 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { Channel, denormalize } from '../../store/channels';
+import { Channel, denormalize, loadUsers as fetchUsers } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
+import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
+  fetchUsers: (payload: PayloadFetchUser) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
 }
@@ -46,6 +48,7 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
+      fetchUsers,
       sendMessage,
       startMessageSync,
       stopSyncChannels,
@@ -59,6 +62,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (channelId) {
       this.props.fetchMessages({ channelId });
+      this.props.fetchUsers({ channelId });
     }
   }
 
@@ -68,6 +72,7 @@ export class Container extends React.Component<Properties, State> {
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
+      this.props.fetchUsers({ channelId });
     }
 
     if (channel && channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
@@ -113,10 +118,14 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handlSendMessage = (message: string): void => {
+  isNotEmpty = (message: string): boolean => {
+    return !!message && message.trim() !== '';
+  };
+
+  handlSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
     const { channelId } = this.props;
-    if (channelId) {
-      this.props.sendMessage({ channelId, message });
+    if (channelId && this.isNotEmpty(message)) {
+      this.props.sendMessage({ channelId, message, mentionedUserIds });
     }
   };
 
@@ -130,6 +139,7 @@ export class Container extends React.Component<Properties, State> {
         onFetchMore={this.fetchMore}
         user={this.props.user.data}
         sendMessage={this.handlSendMessage}
+        users={this.channel.users || []}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}
       />

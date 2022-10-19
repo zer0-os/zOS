@@ -6,6 +6,10 @@ import { fetchChannels } from './api';
 import { AsyncListStatus } from '../normalized';
 import { select } from 'redux-saga-test-plan/matchers';
 
+export interface Payload {
+  channelId: string;
+}
+
 export const channelIdPrefix = 'sendbird_group_channel_';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;

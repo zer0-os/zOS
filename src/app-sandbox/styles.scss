@@ -1,14 +1,19 @@
 @use '../shared-components/theme-engine/theme' as theme;
 @use '../modules/animation' as animation;
 @import '../variables';
+@import '../layout';
 
 $speed: animation.$animation-duration;
 
 .app-sandbox {
+  @include root-layout-vars;
+
   position: absolute;
   height: 100vh;
   left: $width-navigation;
   right: 0;
+
+  @include layout-transition(left);
 
   @include for-left-collapse() {
     left: $width-collapsed-navigation;
@@ -30,15 +35,13 @@ $speed: animation.$animation-duration;
   height: 100%;
   box-sizing: border-box;
 
-  &.has-context-panel {
-    transition: left animation.$animation-duration-double ease-in, width animation.$animation-duration-double ease-in;
+  @include layout-transition(left, width);
 
+  &.has-context-panel {
     left: calc(0px - $width-application-navigation + 8px);
     width: calc(100% + $width-application-navigation - 8px);
 
     &.context-panel-open {
-      transition: left animation.$animation-duration-double ease-out,
-        width animation.$animation-duration-double ease-out;
       left: 0;
       width: 100%;
     }

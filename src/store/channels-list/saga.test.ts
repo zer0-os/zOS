@@ -125,8 +125,6 @@ describe('channels list saga', () => {
   });
 
   it('sets status to Stopped', async () => {
-    const id = '0x000000000000000000000000000000000000000A';
-
     const {
       storeState: { channelsList },
     } = await expectSaga(stopSyncChannels).withReducer(rootReducer).run();

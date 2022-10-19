@@ -1,5 +1,6 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
+@import '../../animation';
 
 @mixin actionable-color(
   $inactive-color: theme.$actionable-inactive-color,
@@ -108,6 +109,7 @@
     height: 100%;
     padding: 0 0 20px 0;
     box-sizing: border-box;
+    animation: fadein animation.$animation-duration-quadruple ease-out forwards;
 
     &__name {
       padding: 110px 0 10px 0;
@@ -168,40 +170,31 @@
     opacity: 1;
 
     .message__header {
-      text-align: center;
+      display: flex;
+      align-items: center;
       position: relative;
-      overflow: hidden;
       margin: 20px 0 25px;
       color: #cccccc;
 
       &-date {
         border-radius: 0;
-        background-color: theme.$background-color-secondary;
+        background-color: none;
         color: theme.$actionable-active-color;
         transition: background-color 0.3s ease-out;
-        display: inline-block;
         padding: 3px 20px;
       }
       &:before,
       &:after {
+        flex: 1 0 auto;
         content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
         height: 1px;
       }
       &:before {
-        margin-left: -50%;
         text-align: right;
         background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
       }
       &:after {
         content: '\a0';
-        position: absolute;
-        top: 51%;
-        overflow: hidden;
-        width: 50%;
         height: 1px;
         background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
       }
@@ -288,6 +281,10 @@
             background-color: theme.$card-background-color;
             padding: 5px 15px;
             margin-top: 10px;
+
+            &__link {
+              text-decoration: underline;
+            }
           }
         }
 

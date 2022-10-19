@@ -1,5 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
+import Linkify from 'linkify-react';
+import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
@@ -38,7 +40,7 @@ export class Message extends React.Component<Properties> {
   }
 
   getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
+    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
 
     if (!user) return null;
 
@@ -122,6 +124,28 @@ export class Message extends React.Component<Properties> {
     });
   }
 
+  renderMessageWithLinks(): React.ReactElement {
+    const { message } = this.props;
+    const hasLinks = linkifyjs.test(message);
+
+    if (hasLinks) {
+      return (
+        <Linkify
+          options={{
+            attributes: {
+              target: '_blank',
+              class: 'text-message__link',
+            },
+          }}
+        >
+          {this.renderMessage(message)}
+        </Linkify>
+      );
+    } else {
+      return this.renderMessage(message);
+    }
+  }
+
   render() {
     const { message, media, preview, createdAt, sender, isOwner } = this.props;
 
@@ -146,7 +170,7 @@ export class Message extends React.Component<Properties> {
               </div>
               <div className={preview ? 'message__block-preview' : 'message__block-body'}>
                 {media && this.renderMedia(media)}
-                {message && this.renderMessage(message)}
+                {message && this.renderMessageWithLinks()}
                 {preview && (
                   <LinkPreview
                     url={preview.url}

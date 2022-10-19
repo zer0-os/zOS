@@ -15,9 +15,9 @@
     "backgroundColorTertiaryHover": "#F5F5F5",
     "backgroundColorTertiaryTransparent": "rgba(255, 255, 255, 0.95)",
 
-    "backgroundColorAppPanel": "transparent",
+    "backgroundColorAppPanel": "#FFF",
     "backgroundColorAppContent": "#EFEFEF",
-    "backgroundColorPlatformNavigation": "transparent",
+    "backgroundColorPlatformNavigation": "#F5F5F5",
     "backgroundColorWorldNavigation": "transparent",
 
     "primaryBorderColor": "#E6E6E6",
@@ -46,7 +46,7 @@
     "actionableColor": "#000000",
     "actionableInactiveColor": "#737373",
     "actionableActiveColor": "rgb(18, 18, 18, 0.75)",
-    "actionableHoverBackground": "rgba(0, 0, 0, 0.05)",
+    "actionableHoverBackground": "rgba(255, 255, 255, 0.50)",
     "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
     "actionableHoverBackgroundGradient": "rgba(0, 0, 0, 0.05)",
     "actionableActiveBackgroundGradient": "rgb(0, 0, 0, 0.25)",

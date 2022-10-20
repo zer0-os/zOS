@@ -85,7 +85,7 @@ describe('ChannelList', () => {
 
     const wrapper = subject({ channels, currentChannelId: 'three' });
 
-    const activeChannelLink = wrapper.find('.channel-list__channel-info').at(2);
+    const activeChannelLink = wrapper.find('.channel-list__channel').at(2);
 
     expect(activeChannelLink.hasClass('active')).toBeTrue();
   });

@@ -1,6 +1,7 @@
 @use '../../modules/animation' as animation;
 @use '../../shared-components/theme-engine/theme' as theme;
 @import '../../animation';
+@import './variables';
 
 @mixin actionable-color(
   $inactive-color: theme.$actionable-inactive-color,
@@ -62,20 +63,13 @@
     height: 100%;
     box-sizing: border-box;
     &__channel-info {
-      @include actionable;
-
       cursor: pointer;
       box-sizing: border-box;
       display: flex;
       align-items: center;
       text-align: left;
-      padding: 0 20px;
       height: 36px;
       width: 100%;
-
-      &.active {
-        @include accent-bar;
-      }
     }
     &__channel-name-prefix {
       margin-right: 3px;
@@ -112,7 +106,7 @@
     animation: fadein animation.$animation-duration-quadruple ease-out forwards;
 
     &__name {
-      padding: 110px 0 10px 0;
+      padding: 110px 0 10px 20px;
 
       h1 {
         font-size: 18px;
@@ -124,6 +118,7 @@
   }
 
   &-list__channel {
+    @include actionable;
     position: relative;
     top: 1px;
     display: inline-block;
@@ -132,6 +127,12 @@
     flex-flow: row nowrap;
     justify-content: left;
     align-items: center;
+    padding: 0 20px;
+    height: 100%;
+
+    &.active {
+      @include accent-bar;
+    }
   }
 
   &-list__category-channel-name {
@@ -281,6 +282,7 @@
             background-color: theme.$card-background-color;
             padding: 5px 15px;
             margin-top: 10px;
+            border-radius: $border-radius;
 
             &__link {
               text-decoration: underline;
@@ -293,6 +295,7 @@
           transition: background-color 0.3s ease-out;
           position: relative;
           display: inline-block;
+          cursor: pointer;
 
           &:before {
             height: 100%;

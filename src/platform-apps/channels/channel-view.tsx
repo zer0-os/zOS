@@ -27,7 +27,9 @@ export interface Properties {
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];
+  className?: string;
 }
+
 export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
@@ -132,7 +134,7 @@ export class ChannelView extends React.Component<Properties, State> {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
 
     return (
-      <div className='channel-view'>
+      <div className={classNames('channel-view', this.props.className)}>
         {this.props.countNewMessages > 0 && (
           <IndicatorMessage
             countNewMessages={this.props.countNewMessages}

@@ -103,7 +103,12 @@
     height: 100%;
     padding: 0 0 20px 0;
     box-sizing: border-box;
-    animation: fadein animation.$animation-duration-quadruple ease-out forwards;
+    visibility: hidden;
+
+    &--messages-fetched {
+      animation: fadein animation.$animation-duration-quadruple ease-out forwards;
+      visibility: visible;
+    }
 
     &__name {
       padding: 110px 0 10px 20px;

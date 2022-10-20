@@ -159,6 +159,14 @@ describe('ChannelView', () => {
     expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
     expect(wrapper.find(IndicatorMessage).prop('countNewMessages')).toStrictEqual(2);
   });
+
+  it('render with className', () => {
+    const className = 'className';
+    const wrapper = subject({ className });
+
+    expect(wrapper.find(`.${className}`).exists()).toBe(true);
+  });
+
   describe('Lightbox', () => {
     it('render when image file is within message and LightBox has been opened', () => {
       const imageMedia = { url: 'image.jpg', type: MediaType.Image };

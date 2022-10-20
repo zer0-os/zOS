@@ -204,15 +204,15 @@
     .message {
       &--owner {
         .message__block-body {
-          background-color: var(--card-background-color, #212121);
-          color: var(--card-text-color, #fff);
+          background-color: var(--card-background-color);
+          color: var(--card-text-color);
           transition: background-color 0.3s ease-out;
           position: relative;
 
           &:before {
             height: 100%;
             width: 3px;
-            background-color: var(--accent-color, #c9fd51);
+            background-color: var(--accent-color);
             content: '';
             display: block;
             position: absolute;
@@ -233,6 +233,7 @@
         display: flex;
         margin-bottom: 3px;
         padding-left: 20px;
+        color: theme.$card-text-color;
 
         &:hover {
           background-color: hsla(0, 0%, 100%, 0.03);
@@ -255,9 +256,8 @@
 
         &-body {
           display: inline-block;
-          background: #3e4042;
+          background: theme.$card-background-color;
           padding: 5px 15px;
-          color: #fff;
           white-space: pre-wrap;
           word-break: break-word;
           font-size: 13.5px;
@@ -269,7 +269,6 @@
 
         &-preview {
           display: inline-block;
-          color: #fff;
           white-space: pre-wrap;
           word-break: break-word;
           font-size: 13.5px;
@@ -280,7 +279,7 @@
 
           .text-message {
             display: inline-block;
-            background: #3e4042;
+            background-color: theme.$card-background-color;
             padding: 5px 15px;
             margin-top: 10px;
             border-radius: $border-radius;
@@ -389,7 +388,7 @@
       &__author-name {
         display: none;
         margin: 10px 0;
-        color: theme.$font-color-tertiary;
+        color: theme.$font-color-primary-inverse;
         font-size: 14px;
       }
 

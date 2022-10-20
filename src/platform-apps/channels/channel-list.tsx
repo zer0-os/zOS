@@ -35,16 +35,15 @@ export class ChannelList extends React.Component<Properties> {
             unreadCountLabel = '9+';
           }
 
-          const className = classNames('channel-list__channel-info', {
-            active: channel.id === this.props.currentChannelId,
-          });
           return (
             <div
               key={channel.id}
-              className={className}
+              className='channel-list__channel-info'
             >
               <ZnsLink
-                className='channel-list__channel'
+                className={classNames('channel-list__channel', {
+                  active: channel.id === this.props.currentChannelId,
+                })}
                 to={channel.id}
               >
                 <span className='channel-list__channel-name-prefix'>#</span>

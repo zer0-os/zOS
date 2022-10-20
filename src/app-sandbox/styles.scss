@@ -55,6 +55,7 @@ $speed: animation.$animation-duration;
     box-sizing: border-box;
     width: $width-application-navigation;
     background-color: theme.$background-color-app-panel;
+    user-select: none;
 
     &__content {
       opacity: 1;

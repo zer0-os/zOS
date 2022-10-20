@@ -54,7 +54,7 @@ export class ZNSDropdown extends React.Component<Properties, State> {
     return (
       <AutocompleteDropdown
         value=''
-        placeholder='Search by ZERO name address (zNA)'
+        placeholder='Search'
         itemContainerClassName={this.props.itemContainerClassName}
         findMatches={this.findMatches}
         onSelect={this.onSelect}

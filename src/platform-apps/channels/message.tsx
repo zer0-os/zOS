@@ -1,8 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
+import Linkify from 'linkify-react';
+import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { textToEmojis } from './utils';
+import AttachmentCards from './attachment-cards';
+import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
@@ -11,13 +15,32 @@ interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   cloudinaryProvider: CloudinaryProvider;
+  isOwner?: boolean;
 }
 
 export class Message extends React.Component<Properties> {
   static defaultProps = { cloudinaryProvider: provider };
 
+  openAttachment = async (attachment): Promise<void> => {
+    download(attachment.url);
+  };
+
+  renderAttachment(attachment) {
+    return (
+      <div
+        className='message__attachment'
+        onClick={this.openAttachment.bind(this, attachment)}
+      >
+        <AttachmentCards
+          attachments={[attachment]}
+          onAttachmentClicked={this.openAttachment.bind(this, attachment)}
+        />
+      </div>
+    );
+  }
+
   getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUsers || []).find((user) => user.id === id);
+    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
 
     if (!user) return null;
 
@@ -50,6 +73,8 @@ export class Message extends React.Component<Properties> {
           </video>
         </div>
       );
+    } else if (MediaType.File === type) {
+      return this.renderAttachment({ url, name, type });
     } else if (MediaType.Audio === type) {
       return (
         <div className='message__block-audio'>
@@ -99,11 +124,38 @@ export class Message extends React.Component<Properties> {
     });
   }
 
+  renderMessageWithLinks(): React.ReactElement {
+    const { message } = this.props;
+    const hasLinks = linkifyjs.test(message);
+
+    if (hasLinks) {
+      return (
+        <Linkify
+          options={{
+            attributes: {
+              target: '_blank',
+              class: 'text-message__link',
+            },
+          }}
+        >
+          {this.renderMessage(message)}
+        </Linkify>
+      );
+    } else {
+      return this.renderMessage(message);
+    }
+  }
+
   render() {
-    const { message, media, preview, createdAt, sender } = this.props;
+    const { message, media, preview, createdAt, sender, isOwner } = this.props;
 
     return (
-      <div className={classNames('message', this.props.className)}>
+      <div
+        className={classNames('message', this.props.className, {
+          'message--owner': isOwner,
+          'message--media': Boolean(media),
+        })}
+      >
         <div className='message__block'>
           <div className='message__left'>
             <div
@@ -116,9 +168,9 @@ export class Message extends React.Component<Properties> {
               <div className='message__author-name'>
                 {sender.firstName} {sender.lastName}
               </div>
-              <div className='message__block-body'>
+              <div className={preview ? 'message__block-preview' : 'message__block-body'}>
                 {media && this.renderMedia(media)}
-                {message && this.renderMessage(message)}
+                {message && this.renderMessageWithLinks()}
                 {preview && (
                   <LinkPreview
                     url={preview.url}

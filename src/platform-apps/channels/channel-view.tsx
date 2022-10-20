@@ -5,8 +5,14 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
 import { Message } from './message';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { User } from '../../store/authentication/types';
+import { User as UserModel } from '../../store/channels/index';
+import { MessageInput } from '../../components/message-input';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { Button as ConnectButton } from '../../components/authentication/button';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -16,8 +22,12 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
+  user: User;
+  sendMessage: (message: string, mentionedUserIds: string[]) => void;
+  resetCountNewMessage: () => void;
+  countNewMessages: number;
+  users: UserModel[];
 }
-
 export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
@@ -25,6 +35,11 @@ export interface State {
 }
 
 export class ChannelView extends React.Component<Properties, State> {
+  bottomRef;
+  constructor(props) {
+    super(props);
+    this.bottomRef = React.createRef();
+  }
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   getMessagesByDay() {
@@ -68,6 +83,11 @@ export class ChannelView extends React.Component<Properties, State> {
     });
   }
 
+  closeIndicator = () => {
+    this.props.resetCountNewMessage();
+    this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
     const allMessages = messagesByDay[day];
 
@@ -81,12 +101,16 @@ export class ChannelView extends React.Component<Properties, State> {
         </div>
         {allMessages.map((message, index) => {
           const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
+          const isUserOwnerOfTheMessage =
+            // eslint-disable-next-line eqeqeq
+            this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (
             <Message
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
               onImageClick={this.openLightbox}
               key={message.id}
+              isOwner={isUserOwnerOfTheMessage}
               {...message}
             />
           );
@@ -109,6 +133,12 @@ export class ChannelView extends React.Component<Properties, State> {
 
     return (
       <div className='channel-view'>
+        {this.props.countNewMessages > 0 && (
+          <IndicatorMessage
+            countNewMessages={this.props.countNewMessages}
+            closeIndicator={this.closeIndicator}
+          />
+        )}
         {isLightboxOpen && (
           <Lightbox
             provider={cloudinaryProvider}
@@ -124,6 +154,17 @@ export class ChannelView extends React.Component<Properties, State> {
           </div>
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
+          <IfAuthenticated showChildren>
+            <MessageInput
+              placeholder='Speak your truth...'
+              onSubmit={this.props.sendMessage}
+              users={this.props.users}
+            />
+          </IfAuthenticated>
+          <IfAuthenticated hideChildren>
+            <ConnectButton />
+          </IfAuthenticated>
+          <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>
     );

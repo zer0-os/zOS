@@ -21,9 +21,10 @@ describe('ChannelsContainer', () => {
 
   const subject = (props: any = {}) => {
     const allProps = {
-      user: {},
       store: getStore(),
       fetchChannels: () => undefined,
+      receiveUnreadCount: () => undefined,
+      stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
       ...props,
@@ -48,6 +49,16 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels });
 
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
+  });
+
+  it('set receiveUnreadCount channels on mount', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const fetchChannels = jest.fn();
+    const receiveUnreadCount = jest.fn();
+
+    subject({ domainId, fetchChannels, receiveUnreadCount });
+
+    expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
   });
 
   it('wraps ChannelList in AppContextPanel', () => {
@@ -129,6 +140,9 @@ describe('ChannelsContainer', () => {
         normalized: {
           ...(state.normalized || {}),
         },
+        authentication: {
+          ...(state.authentication || { user: { data: { id: 'authenticated-user-id' } } }),
+        },
       } as RootState);
 
     test('channels', () => {
@@ -160,6 +174,18 @@ describe('ChannelsContainer', () => {
       const state = subject({ zns: { value: { rootDomainId } } as any });
 
       expect(state.domainId).toEqual(rootDomainId);
+    });
+
+    test('isAuthenticated', () => {
+      const state = subject({ authentication: { user: { data: { id: 'the-id' } } } as any });
+
+      expect(state.isAuthenticated).toBeTrue();
+    });
+
+    test('isAuthenticated', () => {
+      const state = subject({ authentication: { user: {} } as any });
+
+      expect(state.isAuthenticated).toBeFalse();
     });
   });
 });

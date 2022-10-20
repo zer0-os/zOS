@@ -5,7 +5,11 @@ import { ChannelView } from './channel-view';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import InvertedScroll from '../../components/inverted-scroll';
+import IndicatorMessage from '../../components/indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
+import { MessageInput } from '../../components/message-input';
+import { Button as ConnectButton } from '../../components/authentication/button';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -19,13 +23,15 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
+      user: null,
+      countNewMessages: 0,
       ...props,
     };
 
     return shallow(<ChannelView {...allProps} />);
   };
 
-  it('renders channel name', () => {
+  it('render channel name', () => {
     const wrapper = subject({ name: 'first channel' });
 
     const textes = wrapper.find('.channel-view__name h1').text().trim();
@@ -33,7 +39,7 @@ describe('ChannelView', () => {
     expect(textes).toStrictEqual('Welcome to #first channel');
   });
 
-  it('renders a message for each message', () => {
+  it('render a message for each message', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
@@ -46,19 +52,19 @@ describe('ChannelView', () => {
     ]);
   });
 
-  it('renders header date', () => {
+  it('render header date', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     expect(wrapper.find('.message__header-date').exists()).toBe(true);
   });
 
-  it('renders a header Date grouped by day', () => {
+  it('render a header Date grouped by day', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     expect(wrapper.find('.message__header-date').length).toStrictEqual(2);
   });
 
-  it('renders a header Date contain Today', () => {
+  it('render a header Date contain Today', () => {
     const messages = [
       { id: 'message-one', message: 'what', createdAt: Date.now() },
     ];
@@ -96,14 +102,30 @@ describe('ChannelView', () => {
     ]);
   });
 
-  it('renders InvertedScroll', () => {
+  it('render InvertedScroll', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     expect(wrapper.find(InvertedScroll).exists()).toBe(true);
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
   });
 
-  it('renders Waypoint in case we have messages', () => {
+  it('render MessageInput', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
+    expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('render ConnectButton', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST });
+
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ hideChildren: true });
+
+    expect(ifAuthenticated.find(ConnectButton).exists()).toBe(true);
+  });
+
+  it('render Waypoint in case we have messages', () => {
     const onFetchMoreSpy = jest.fn();
 
     const wrapper = subject({ messages: MESSAGES_TEST, onFetchMore: onFetchMoreSpy });
@@ -112,14 +134,33 @@ describe('ChannelView', () => {
     expect(wrapper.find(Waypoint).prop('onEnter')).toStrictEqual(onFetchMoreSpy);
   });
 
-  it('it should not renders Waypoint in case we do not messages', () => {
+  it('it should not render Waypoint in case we do not messages', () => {
     const wrapper = subject({ messages: [] });
 
     expect(wrapper.find(Waypoint).exists()).toBe(false);
   });
 
+  it('passes isOwner prop to Message', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: '2' } });
+
+    const classNames = wrapper.find(Message).map((m) => m.prop('isOwner'));
+
+    expect(classNames).toIncludeAllMembers([
+      false,
+      true,
+      false,
+      false,
+    ]);
+  });
+
+  it('render IndicatorMessage', () => {
+    const wrapper = subject({ countNewMessages: 2 });
+
+    expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
+    expect(wrapper.find(IndicatorMessage).prop('countNewMessages')).toStrictEqual(2);
+  });
   describe('Lightbox', () => {
-    it('renders when image file is within message and LightBox has been opened', () => {
+    it('render when image file is within message and LightBox has been opened', () => {
       const imageMedia = { url: 'image.jpg', type: MediaType.Image };
       const messages = [
         {

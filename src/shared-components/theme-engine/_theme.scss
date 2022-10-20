@@ -1,4 +1,4 @@
-$platform-background: var(--platform-background, radial-gradient(#3a3b3d, #2b2b2b));
+$platform-background: var(--platform-background);
 
 $background-color-primary: var(--background-color-primary, #18181c);
 $background-color-primary-hover: var(--background-color-primary-hover, #2e2e2e);
@@ -13,7 +13,11 @@ $background-color-tertiary: var(--background-color-tertiary, #000000);
 $background-color-tertiary-transparent: var(--background-color-tertiary-transparent, rgba(0, 0, 0, 0.95));
 $background-color-tertiary-hover: var(--background-color-tertiary-hover, #121212);
 
-$background-color-sidekick: var(--background-color-sidekick, #120d16);
+$background-color-app-panel: var(--background-color-app-panel, #1d1d1d);
+$background-color-app-panel-hover: var(--background-color-app-panel-hover);
+$background-color-app-content: var(--background-color-app-content);
+$background-color-world-navigation: var(--background-color-world-navigation, #1d1d1d);
+$background-color-platform-navigation: var(--background-color-platform-navigation, #1d1d1d);
 
 $primary-border-color: var(--primary-border-color, #3c3c3c);
 $secondary-border-color: var(--secondary-border-color, #3c3c3c);
@@ -25,22 +29,28 @@ $address-bar-background-color-inner-hover: var(--address-bar-background-color-in
 
 $font-color-primary: var(--font-color-primary);
 $font-color-primary-hover: var(--font-color-primary-hover);
+$font-color-primary-inverse: var(--font-color-primary-inverse);
 $font-color-secondary: var(--font-color-secondary);
 $font-color-secondary-hover: var(--font-color-secondary-hover);
 $font-color-tertiary: var(--font-color-tertiary);
 $font-color-tertiary-hover: var(--font-color-tertiary-hover);
 $font-color-heading: var(--font-color-heading);
+$font-color-time: var(--font-color-time);
 
 $accent-color: var(--accent-color);
 $accent-color-1: var(--accent-color-1);
 $accent-color-mid: var(--accent-color-mid, rgba(0, 209, 255, 0.1));
 
+$actionable-color: var(--actionable-color, #ffffff);
 $actionable-inactive-color: var(--actionable-inactive-color, #737373);
 $actionable-active-color: var(--actionable-active-color, #ffffff);
+$actionable-hover-background-gradient: var(--actionable-hover-background-gradient, rgba(255, 255, 255, 0.1));
+$actionable-active-background-gradient: var(--actionable-active-background-gradient, rgba(0, 0, 0, 0.25));
 $actionable-hover-background: var(--actionable-hover-background, rgba(255, 255, 255, 0.1));
 $actionable-active-background: var(--actionable-active-background, rgba(0, 0, 0, 0.25));
 
 $input-background-primary-color: var(--input-background-primary-color, rgba(66, 68, 70, 1));
+$input-background-primary-color-inverse: var(--input-background-primary-color-inverse);
 $input-background-secondary-color: var(--input-background-secondary-color, rgba(66, 68, 70, 0));
 $input-arrow-color: var(--input-arrow-color, #3c3c3c);
 
@@ -58,6 +68,7 @@ $glow-background-color: var(--glow-background-color, #6e10bb);
 $glow-transition-background-color: var(--glow-transition-background-color, #e0baff);
 
 $font-color-app-menu: var(--font-color-app-menu);
+$font-color-app-menu-active: var(--font-color-app-menu-active);
 
 $button-background-color: var(
   --button-background-color,
@@ -73,3 +84,9 @@ $button-color-grey: var(--button-color-grey, grey);
 $button-box-radius: var(--button-box-radius, 16px);
 
 $background-color-transparent: var(--background-color-transparent, rgba(0, 0, 0, 0.4));
+
+$card-text-color: var(--card-text-color);
+$card-background-color: var(--card-background-color);
+$card-background-color-hover: var(--card-background-color);
+
+$text-on-accent: var(--text-on-accent, rgba(0, 0, 0, 0));

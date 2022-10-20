@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
@@ -13,6 +13,14 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      user: {
+        isLoading: false,
+        data: null,
+      },
+      sendMessage: () => undefined,
+      fetchUsers: () => undefined,
+      startMessageSync: () => undefined,
+      stopSyncChannels: () => undefined,
       ...props,
     };
 
@@ -56,24 +64,76 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
+  it('fetches users on mount', () => {
+    const fetchUsers = jest.fn();
+
+    subject({ fetchUsers, channelId: 'the-channel-id' });
+
+    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
   it('fetches messages when channel id is set', () => {
     const fetchMessages = jest.fn();
+    const stopSyncChannels = jest.fn();
 
-    const wrapper = subject({ fetchMessages, channelId: '' });
+    const wrapper = subject({
+      fetchMessages,
+      stopSyncChannels,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
+  it('fetches users when channel id is set', () => {
+    const fetchUsers = jest.fn();
+    const stopSyncChannels = jest.fn();
+
+    const wrapper = subject({
+      fetchUsers,
+      stopSyncChannels,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
+
+    wrapper.setProps({ channelId: 'the-channel-id' });
+
+    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
   it('fetches messages when channel id is updated', () => {
     const fetchMessages = jest.fn();
+    const stopSyncChannels = jest.fn();
 
-    const wrapper = subject({ fetchMessages, channelId: 'the-first-channel-id' });
+    const wrapper = subject({
+      fetchMessages,
+      stopSyncChannels,
+      channelId: 'the-first-channel-id',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
 
     wrapper.setProps({ channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('fetches users when channel id is updated', () => {
+    const fetchUsers = jest.fn();
+    const stopSyncChannels = jest.fn();
+
+    const wrapper = subject({
+      fetchUsers,
+      stopSyncChannels,
+      channelId: 'the-first-channel-id',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
+
+    wrapper.setProps({ channelId: 'the-channel-id' });
+
+    expect(fetchUsers).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('should call fetchMore with reference timestamp when hasMore is true', () => {
@@ -96,6 +156,66 @@ describe('ChannelViewContainer', () => {
       channelId: 'the-channel-id',
       referenceTimestamp: 1658776625730,
     });
+  });
+
+  it('should call sendMessage when textearea is clicked', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+
+    const wrapper = subject({
+      sendMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds);
+
+    expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
+  it('startMessageSync messages when channel id is set', () => {
+    const startMessageSync = jest.fn();
+    const stopSyncChannels = jest.fn();
+
+    const wrapper = subject({
+      startMessageSync,
+      stopSyncChannels,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+    });
+
+    wrapper.setProps({ channelId: 'the-channel-id', channel: { shouldSyncChannels: true } });
+
+    expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('should call hasMoreMessages when new messages arrive', async () => {
+    const startMessageSync = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
+    ] as unknown as Message[];
+
+    const newMessages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 100000003 },
+      { id: 'the-fourth-message-id', message: 'the fourth message', createdAt: 100000004 },
+    ] as unknown as Message[];
+
+    const wrapper = subject({
+      startMessageSync,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel', messages },
+    });
+
+    wrapper.setProps({
+      channelId: 'the-channel-id',
+      channel: { name: 'first channel', messages: newMessages, countNewMessages: 2 },
+    });
+
+    expect(wrapper.find(ChannelView).prop('countNewMessages')).toStrictEqual(2);
   });
 
   it('should not call fetchMore when hasMore is false', () => {
@@ -127,6 +247,12 @@ describe('ChannelViewContainer', () => {
       ({
         normalized: {
           ...(state.normalized || {}),
+        },
+        authentication: {
+          user: {
+            isLoading: false,
+            data: null,
+          },
         },
       } as RootState);
 

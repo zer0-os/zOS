@@ -6,6 +6,7 @@ import { AppSandbox } from '.';
 import { Apps, PlatformApp } from '../lib/apps';
 import { Chains, ConnectionStatus, Connectors } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
+import { AppLayout } from '../store/layout';
 
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -18,6 +19,8 @@ describe('AppSandboxContainer', () => {
       providerService: { get: () => null } as ProviderService,
       selectedApp: Apps.Channels,
       setWalletModalOpen: () => undefined,
+      layout: {} as AppLayout,
+      updateLayout: () => undefined,
       ...props,
     };
 
@@ -135,9 +138,36 @@ describe('AppSandboxContainer', () => {
     expect(setWalletModalOpen).toHaveBeenCalledWith(true);
   });
 
+  it('propagates onUpdateLayout', () => {
+    const updateLayout = jest.fn();
+    const wrapper = subject({ updateLayout });
+
+    wrapper.find(AppSandbox).simulate('updateLayout', { isContextPanelOpen: true });
+
+    expect(updateLayout).toHaveBeenCalledWith({ isContextPanelOpen: true });
+  });
+
+  it('passes layout to child', () => {
+    const layout = {
+      isContextPanelOpen: false,
+      hasContextPanel: true,
+    };
+
+    const wrapper = subject({ layout });
+
+    expect(wrapper.find(AppSandbox).prop('layout')).toBe(layout);
+  });
+
   describe('mapState', () => {
     const subject = (state: any) =>
       Container.mapState({
+        layout: {
+          value: {
+            isContextPanelOpen: false,
+            hasContextPanel: true,
+          },
+          ...(state.layout || {}),
+        },
         zns: { value: { route: '' }, ...(state.zns || {}) },
         web3: {
           status: ConnectionStatus.Connecting,
@@ -150,6 +180,21 @@ describe('AppSandboxContainer', () => {
         },
         apps: { selectedApp: '', ...(state.apps || {}) },
       } as any);
+
+    test('layout', () => {
+      const layout = {
+        isContextPanelOpen: false,
+        hasContextPanel: true,
+      };
+
+      const state = subject({
+        layout: {
+          value: layout,
+        } as any,
+      });
+
+      expect(state.layout).toEqual(layout);
+    });
 
     test('connectionStatus', () => {
       const state = subject({ web3: { status: ConnectionStatus.Connected } as any });

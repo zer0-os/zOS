@@ -8,11 +8,11 @@
     cursor: pointer;
     font-size: 16px;
     font-weight: 400;
-    color: #fff;
+    color: theme.$font-color-primary;
     padding: 8px;
 
     &__route {
-      color: #52cbff;
+      color: theme.$accent-color-1;
     }
 
     &.is-focused,
@@ -27,7 +27,7 @@
     background-position: 98.39%;
     background-color: inherit;
     width: 97%;
-    color: #fff;
+    color: theme.$font-color-primary-inverse;
     border: 0px solid;
     outline: none;
     padding: 10px;
@@ -35,8 +35,8 @@
     border-radius: 20px;
     font-size: 16px;
 
-    ::placeholder {
-      color: rgba(108, 108, 108, 1);
+    &::placeholder {
+      color: theme.$font-color-primary;
     }
   }
 

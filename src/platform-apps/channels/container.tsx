@@ -8,12 +8,13 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels, denormalize } from '../../store/channels-list';
+import { fetch as fetchChannels, receiveUnreadCount, stopSyncChannels, denormalize } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
 import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-library';
+import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
 
 import './styles.scss';
 
@@ -29,6 +30,9 @@ export interface Properties extends PublicProperties {
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
+  receiveUnreadCount: (domainId: string) => void;
+  stopSyncChannels: () => void;
+  isAuthenticated: boolean;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,17 +42,32 @@ export class Container extends React.Component<Properties> {
     return {
       domainId: state.zns.value.rootDomainId,
       channels,
+      isAuthenticated: !!state.authentication.user?.data,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
+      receiveUnreadCount,
+      stopSyncChannels,
     };
   }
 
   componentDidMount() {
     this.props.fetchChannels(this.props.domainId);
+    this.props.receiveUnreadCount(this.props.domainId);
+  }
+
+  componentWillUnmount() {
+    this.props.stopSyncChannels();
+  }
+
+  get authenticationContext() {
+    const { isAuthenticated } = this.props;
+    return {
+      isAuthenticated,
+    };
   }
 
   renderChannelView() {
@@ -67,15 +86,17 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <AppLayout className='channels'>
-          <AppContextPanel>
-            <ChannelList
-              channels={this.props.channels}
-              currentChannelId={this.props.channelId}
-            />
-          </AppContextPanel>
-          <AppContent>{this.renderChannelView()}</AppContent>
-        </AppLayout>
+        <AuthenticationContextProvider value={this.authenticationContext}>
+          <AppLayout className='channels'>
+            <AppContextPanel>
+              <ChannelList
+                channels={this.props.channels}
+                currentChannelId={this.props.channelId}
+              />
+            </AppContextPanel>
+            <AppContent>{this.renderChannelView()}</AppContent>
+          </AppLayout>
+        </AuthenticationContextProvider>
       </Provider>
     );
   }

@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { fetchChannels } from './api';
-import { fetch } from './saga';
+import { fetch, stopSyncChannels, unreadCountUpdated } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
@@ -84,6 +84,8 @@ describe('channels list saga', () => {
     const url = 'channel-0099';
     const name = 'the channel';
     const icon = 'channel-icon';
+    const category = 'channel-category';
+    const unreadCount = 1;
 
     const {
       storeState: { normalized },
@@ -91,12 +93,42 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon }],
+          [{ url, name, icon, category, unreadCount }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon });
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount });
+  });
+
+  it('set unreadCountUpdated on channels', async () => {
+    const url = 'channel-1';
+    const name = 'the channel';
+    const icon = 'channel-icon';
+    const category = 'channel-category';
+    const unreadCount = 1;
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(unreadCountUpdated, { payload: '0x000000000000000000000000000000000000000A' })
+      .provide([
+        [
+          matchers.call.fn(fetchChannels),
+          [{ url, name, icon, category, unreadCount }],
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount });
+  });
+
+  it('sets status to Stopped', async () => {
+    const {
+      storeState: { channelsList },
+    } = await expectSaga(stopSyncChannels).withReducer(rootReducer).run();
+
+    expect(channelsList.status).toBe(AsyncListStatus.Stopped);
   });
 });

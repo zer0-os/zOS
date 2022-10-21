@@ -172,6 +172,28 @@ describe('WalletManager', () => {
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
   });
 
+  it('calls update connector when disconnect btn clicked', () => {
+    const updateConnector = jest.fn();
+    const currentAddress = '0x0000000000000000000000000000000000000001';
+
+    const wrapper = subject({ updateConnector, currentAddress });
+
+    wrapper.find(EthAddress).simulate('click');
+
+    expect(updateConnector).toHaveBeenCalledWith('none');
+  });
+
+  it('render connect button after disconnected', () => {
+    const updateConnector = jest.fn();
+    const currentAddress = '0x0000000000000000000000000000000000000001';
+
+    const wrapper = subject({ updateConnector, currentAddress });
+
+    wrapper.find(EthAddress).simulate('click');
+
+    expect(wrapper.find(Button).exists()).toBe(true);
+  });
+
   it('passes isNotSupportedNetwork of true when network is not supported', () => {
     const wrapper = subject({ isWalletModalOpen: true });
 

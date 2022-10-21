@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { authorize, getCurrentUser } from './saga';
-import { authorize as authorizeApi, fetchCurrentUser } from './api';
+import { authorize, clearSession, getCurrentUser } from './saga';
+import { authorize as authorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
 
 import { reducer } from '.';
 
@@ -41,6 +41,18 @@ describe('authentication saga', () => {
         ],
       ])
       .call(fetchCurrentUser)
+      .run();
+  });
+
+  it('clearSession', async () => {
+    await expectSaga(clearSession)
+      .provide([
+        [
+          matchers.call.fn(clearSessionApi),
+          true,
+        ],
+      ])
+      .call(clearSessionApi)
       .run();
   });
 

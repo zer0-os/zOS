@@ -129,6 +129,11 @@
     &:hover {
       background-color: theme.$background-color-app-panel-hover;
       border-radius: 9999px;
+      transition-duration: var(--animation-time-medium);
+    }
+
+    .icon-button__icon {
+      vertical-align: middle;
     }
   }
 }

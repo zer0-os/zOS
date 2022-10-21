@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { RootState } from '../../store';
 
 import { connectContainer } from '../../store/redux-container';
@@ -30,6 +31,7 @@ interface PublicProperties {
 }
 export interface State {
   countNewMessages: number;
+  isFirstMessagesFetchDone: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -55,7 +57,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { countNewMessages: 0 };
+  state = { countNewMessages: 0, isFirstMessagesFetchDone: false };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -86,6 +88,12 @@ export class Container extends React.Component<Properties, State> {
       channel.countNewMessages > 0
     ) {
       this.setState({ countNewMessages: channel.countNewMessages });
+    }
+
+    if (!this.state.isFirstMessagesFetchDone && channel && Boolean(channel.messages)) {
+      this.setState({
+        isFirstMessagesFetchDone: true,
+      });
     }
   }
 
@@ -134,6 +142,7 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <ChannelView
+        className={classNames({ 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone })}
         name={this.channel.name}
         messages={this.channel.messages || []}
         onFetchMore={this.fetchMore}

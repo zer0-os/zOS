@@ -25,6 +25,8 @@
     height: 22px;
     vertical-align: middle;
     padding-right: 14px;
+
+    filter: theme.$icon-color-filter-app-menu;
   }
 
   &__app {

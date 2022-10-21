@@ -18,7 +18,7 @@ export interface Properties extends PublicProperties {
   currentAddress: string;
   currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
-  updateConnector: (connector: WalletType) => void;
+  updateConnector: (connector: WalletType | Connectors.None) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
 }
@@ -67,6 +67,10 @@ export class Container extends React.Component<Properties, State> {
       this.setState({ walletSelected: false });
     }
   }
+
+  handleDisconnect = () => {
+    this.props.updateConnector(Connectors.None);
+  };
 
   get showButton(): boolean {
     return !(
@@ -120,7 +124,12 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className={classNames('wallet-manager', this.props.className)}>
-        {this.props.currentAddress && <EthAddress address={this.props.currentAddress} />}
+        {this.props.currentAddress && (
+          <EthAddress
+            address={this.props.currentAddress}
+            onClick={this.handleDisconnect}
+          />
+        )}
         {this.showButton && (
           <Button
             className='wallet-manager__connect-button'

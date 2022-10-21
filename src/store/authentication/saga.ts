@@ -22,6 +22,12 @@ export function* authorize(action) {
 
 export function* clearSession() {
   yield call(clearSessionApi);
+  yield put(
+    setUser({
+      data: null,
+      isLoading: false,
+    })
+  );
 }
 
 export function* getCurrentUser() {

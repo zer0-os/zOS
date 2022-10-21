@@ -64,6 +64,7 @@ export class Container extends React.Component<Properties, State> {
     if (
       prevProps.connectionStatus !== ConnectionStatus.Connected &&
       this.props.connectionStatus === ConnectionStatus.Connected &&
+      this.props.user.isLoading === false &&
       !this.props.currentAddress &&
       this.props.user.data !== null
     ) {

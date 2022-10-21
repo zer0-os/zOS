@@ -18,8 +18,8 @@
     "backgroundColorAppPanel": "#FFF",
     "backgroundColorAppPanelHover": "#FFF",
     "backgroundColorAppContent": "#EFEFEF",
-    "backgroundColorPlatformNavigation": "#F5F5F5",
-    "backgroundColorWorldNavigation": "transparent",
+    "backgroundColorPlatformNavigation": "#F3F3F3",
+    "backgroundColorWorldNavigation": "#F6F6F6",
 
     "primaryBorderColor": "#E6E6E6",
     "secondaryBorderColor": "#21152D",

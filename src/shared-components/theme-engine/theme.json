@@ -36,12 +36,12 @@
     "fontColorSecondaryHover": "#121212",
     "fontColorTertiary": "#000",
     "fontColorTertiaryHover": "#F5F5F5",
-    "fontColorHeading": "#bfbfbf",
+    "fontColorHeading": "#606060",
     "fontColorTime": "#4C4B4A",
 
     "fontColorAppMenu": "#6C6C6C",
     "fontColorAppMenuActive": "#000",
-    "iconColorFilterAppMenu": "invert(48%) sepia(1%) saturate(856%) hue-rotate(330deg) brightness(85%) contrast(83%)",
+    "iconColorFilter": "invert(48%) sepia(1%) saturate(856%) hue-rotate(330deg) brightness(85%) contrast(83%)",
 
     "accentColor": "#B14EFF",
     "accentColor1": "#000",
@@ -121,7 +121,7 @@
 
     "fontColorAppMenu": "#E6E6E6",
     "fontColorAppMenuActive": "#FFF",
-    "iconColorFilterAppMenu": "",
+    "iconColorFilter": "",
 
     "accentColor": "#B14EFF",
     "accentColor1": "#52cbff",

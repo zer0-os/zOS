@@ -2,7 +2,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
 
-import { authorize as authorizeApi, fetchCurrentUser } from './api';
+import { authorize as authorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -20,6 +20,16 @@ export function* authorize(action) {
   yield call(getCurrentUser);
 }
 
+export function* clearSession() {
+  yield call(clearSessionApi);
+  yield put(
+    setUser({
+      data: null,
+      isLoading: false,
+    })
+  );
+}
+
 export function* getCurrentUser() {
   yield put(setUser({ data: null, isLoading: true }));
   const user = yield call(fetchCurrentUser);
@@ -34,5 +44,6 @@ export function* getCurrentUser() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.Authorize, authorize);
+  yield takeLatest(SagaActionTypes.ClearSession, clearSession);
   yield takeLatest(SagaActionTypes.FetchCurrentUser, getCurrentUser);
 }

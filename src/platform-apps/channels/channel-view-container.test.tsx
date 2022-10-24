@@ -8,6 +8,9 @@ import { ChannelView } from './channel-view';
 import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
+  const USER_DATA = {
+    userId: '12',
+  };
   const subject = (props: any = {}) => {
     const allProps = {
       channel: null,
@@ -88,18 +91,22 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
-  it('fetches users when channel id is set', () => {
+  it('fetches users when users is set', () => {
     const fetchUsers = jest.fn();
     const stopSyncChannels = jest.fn();
 
     const wrapper = subject({
       fetchUsers,
-      stopSyncChannels,
-      channelId: '',
+      channelId: 'the-channel-id',
       channel: { name: 'first channel', shouldSyncChannels: false },
     });
 
-    wrapper.setProps({ channelId: 'the-channel-id' });
+    wrapper.setProps({
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
+    });
 
     expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
@@ -118,22 +125,6 @@ describe('ChannelViewContainer', () => {
     wrapper.setProps({ channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
-  });
-
-  it('fetches users when channel id is updated', () => {
-    const fetchUsers = jest.fn();
-    const stopSyncChannels = jest.fn();
-
-    const wrapper = subject({
-      fetchUsers,
-      stopSyncChannels,
-      channelId: 'the-first-channel-id',
-      channel: { name: 'first channel', shouldSyncChannels: false },
-    });
-
-    wrapper.setProps({ channelId: 'the-channel-id' });
-
-    expect(fetchUsers).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('should call fetchMore with reference timestamp when hasMore is true', () => {

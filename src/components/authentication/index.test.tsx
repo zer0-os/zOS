@@ -21,6 +21,7 @@ describe('Authentication', () => {
         }),
       },
       fetchCurrentUser: jest.fn(),
+      clearSession: jest.fn(),
       ...props,
     };
 
@@ -126,6 +127,22 @@ describe('Authentication', () => {
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(authorizeUser).toHaveBeenCalledWith({ signedWeb3Token });
+  });
+
+  it('should call clearSession when disconnect btn clicked', () => {
+    const clearSession = jest.fn();
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
+      clearSession,
+    });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    expect(clearSession).toHaveBeenCalled();
   });
 
   describe('mapState', () => {

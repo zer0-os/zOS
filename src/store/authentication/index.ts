@@ -4,9 +4,11 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   Authorize = 'authentication/saga/authorize',
+  ClearSession = 'authentication/saga/clearSession',
   FetchCurrentUser = 'authentication/saga/fetchCurrentUser',
 }
 const authorize = createAction<Payload>(SagaActionTypes.Authorize);
+const clearSession = createAction<Payload>(SagaActionTypes.ClearSession);
 const fetchCurrentUser = createAction<Payload>(SagaActionTypes.FetchCurrentUser);
 
 const initialState: AuthenticationState = {
@@ -25,4 +27,4 @@ const slice = createSlice({
 
 export const { setUser } = slice.actions;
 export const { reducer } = slice;
-export { authorize, fetchCurrentUser };
+export { authorize, fetchCurrentUser, clearSession };

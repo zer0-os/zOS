@@ -4,6 +4,7 @@
 .app-menu {
   font-size: 20px;
   color: theme.$font-color-app-menu;
+  user-select: none;
 
   :link {
     display: flex;

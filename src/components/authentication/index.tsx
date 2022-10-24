@@ -7,7 +7,7 @@ import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus } from '../../lib/web3';
 import { config } from '../../config';
-import { authorize, fetchCurrentUser } from '../../store/authentication';
+import { authorize, fetchCurrentUser, clearSession } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 
 export interface Properties {
@@ -15,6 +15,7 @@ export interface Properties {
   providerService: { get: () => any };
   currentAddress: string;
   authorizeUser: (payload: { signedWeb3Token: string }) => void;
+  clearSession: () => void;
   fetchCurrentUser: () => void;
   user: AuthenticationState['user'];
 }
@@ -41,6 +42,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       authorizeUser: authorize,
       fetchCurrentUser,
+      clearSession,
     };
   }
 
@@ -58,6 +60,20 @@ export class Container extends React.Component<Properties, State> {
     ) {
       this.authorize();
     }
+
+    if (
+      prevProps.connectionStatus !== ConnectionStatus.Connected &&
+      this.props.connectionStatus === ConnectionStatus.Connected &&
+      this.props.user.isLoading === false &&
+      !this.props.currentAddress &&
+      this.props.user.data !== null
+    ) {
+      this.logout();
+    }
+  }
+
+  logout(): void {
+    this.props.clearSession();
   }
 
   authorize(): void {

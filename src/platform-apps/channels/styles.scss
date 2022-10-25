@@ -213,6 +213,8 @@
           color: var(--card-text-color);
           transition: background-color 0.3s ease-out;
           position: relative;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
 
           &:before {
             height: 100%;

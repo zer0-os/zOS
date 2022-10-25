@@ -90,6 +90,18 @@ export class ChannelView extends React.Component<Properties, State> {
     this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  isShowIndicator = (): boolean => {
+    if (this.props.countNewMessages > 0 && this.bottomRef.current) {
+      const { bottom } = this.bottomRef.current?.getBoundingClientRect();
+      if (window.innerHeight + 50 < bottom) {
+        return true;
+      }
+      this.props.resetCountNewMessage();
+      return false;
+    }
+    return false;
+  };
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
     const allMessages = messagesByDay[day];
 
@@ -135,7 +147,7 @@ export class ChannelView extends React.Component<Properties, State> {
 
     return (
       <div className={classNames('channel-view', this.props.className)}>
-        {this.props.countNewMessages > 0 && (
+        {this.isShowIndicator() && (
           <IndicatorMessage
             countNewMessages={this.props.countNewMessages}
             closeIndicator={this.closeIndicator}

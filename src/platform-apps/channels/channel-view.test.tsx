@@ -153,11 +153,10 @@ describe('ChannelView', () => {
     ]);
   });
 
-  it('render IndicatorMessage', () => {
+  it('it should not render IndicatorMessage at first', () => {
     const wrapper = subject({ countNewMessages: 2 });
 
-    expect(wrapper.find(IndicatorMessage).exists()).toBe(true);
-    expect(wrapper.find(IndicatorMessage).prop('countNewMessages')).toStrictEqual(2);
+    expect(wrapper.find(IndicatorMessage).exists()).toBe(false);
   });
 
   it('render with className', () => {

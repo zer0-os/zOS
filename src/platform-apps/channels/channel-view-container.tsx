@@ -74,6 +74,9 @@ export class Container extends React.Component<Properties, State> {
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
+      this.setState({
+        isFirstMessagesFetchDone: false,
+      });
     }
 
     if (

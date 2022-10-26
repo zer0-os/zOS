@@ -1,4 +1,5 @@
 @use '../../shared-components/theme-engine/theme' as theme;
+@use '../../modules/animation' as animation;
 
 @import '../../variables';
 @import '../../platform-apps/channels/variables';
@@ -152,6 +153,7 @@
   &__suggestions {
     background: none !important;
     z-index: 1000 !important;
+    animation: fadein animation.$animation-duration-double ease-in-out;
     &__list {
       border: 2px solid #464646;
       background-color: theme.$background-color-primary-selected;

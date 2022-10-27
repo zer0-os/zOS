@@ -1,9 +1,9 @@
-import { ZnsLink } from '@zer0-os/zos-component-library';
-import classNames from 'classnames';
 import React from 'react';
+import classNames from 'classnames';
 import Collapsible from 'react-collapsible';
 
 import { Channel } from '../../store/channels';
+import { ChannelListLink } from './channel-list-link';
 
 export interface Properties {
   channels: Channel[];
@@ -40,7 +40,7 @@ export class ChannelList extends React.Component<Properties> {
               key={channel.id}
               className='channel-list__channel-info'
             >
-              <ZnsLink
+              <ChannelListLink
                 className={classNames('channel-list__channel', {
                   active: channel.id === this.props.currentChannelId,
                 })}
@@ -49,7 +49,7 @@ export class ChannelList extends React.Component<Properties> {
                 <span className='channel-list__channel-name-prefix'>#</span>
                 <span className='channel-list__channel-name'>{channel.name}</span>
                 {unreadCount > 0 && <span className='channel-list__channel-unread-count'>{unreadCountLabel}</span>}
-              </ZnsLink>
+              </ChannelListLink>
             </div>
           );
         })}

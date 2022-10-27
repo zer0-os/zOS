@@ -1,7 +1,6 @@
 .attachment-card {
   display: inline-block;
-  margin: 10px 10px 10px 0;
-  padding: 0 10px 0 15px;
+  padding: 10px 10px 10px 15px;
 
   &__name {
     font-weight: bold;
@@ -10,6 +9,10 @@
   &__info {
     background: none;
     border: none;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   &__file {

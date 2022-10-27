@@ -3,15 +3,16 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ZnsLink } from '@zer0-os/zos-component-library';
-import { ChannelListLink } from './channel-list-link';
+import { Component } from './channel-list-link';
 
 describe('ChannelListLink', () => {
   const subject = (props: any = {}) => {
     const allProps = {
+      to: 'link-to',
       ...props,
     };
 
-    return shallow(<ChannelListLink {...allProps} />);
+    return shallow(<Component {...allProps} />);
   };
 
   it('renders Link', () => {
@@ -21,6 +22,21 @@ describe('ChannelListLink', () => {
     const link = wrapper.find(ZnsLink).prop('to');
 
     expect(link).toBe(to);
+  });
+
+  it('trigger click on mouse down', () => {
+    const innerRef = {
+      current: {
+        click: jest.fn(),
+      },
+    };
+
+    const wrapper = subject({ innerRef });
+
+    const link = wrapper.find(ZnsLink);
+    link.simulate('mouseDown');
+
+    expect(innerRef.current.click).toHaveBeenCalledOnce();
   });
 
   it('passes className prop', () => {

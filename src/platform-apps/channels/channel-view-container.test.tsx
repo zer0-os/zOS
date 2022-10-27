@@ -93,7 +93,6 @@ describe('ChannelViewContainer', () => {
 
   it('fetches users when users is set', () => {
     const fetchUsers = jest.fn();
-    const stopSyncChannels = jest.fn();
 
     const wrapper = subject({
       fetchUsers,
@@ -106,6 +105,26 @@ describe('ChannelViewContainer', () => {
         isLoading: false,
         data: USER_DATA,
       },
+    });
+
+    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('fetches users when channel id is updated', () => {
+    const fetchUsers = jest.fn();
+
+    const wrapper = subject({
+      fetchUsers,
+      channelId: 'the-first-channel-id',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
+    });
+
+    wrapper.setProps({
+      channelId: 'the-channel-id',
     });
 
     expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });

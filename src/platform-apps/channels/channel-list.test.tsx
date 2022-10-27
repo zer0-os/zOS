@@ -3,7 +3,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ChannelList } from './channel-list';
-import { ZnsLink } from '@zer0-os/zos-component-library';
 import Collapsible from 'react-collapsible';
 import { ChannelListLink } from './channel-list-link';
 

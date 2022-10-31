@@ -28,7 +28,7 @@
     "@zer0-os/zos-zns": "2.3.0",
     "@zero-tech/zapp-buy-domains": "^0.1.1",
     "@zero-tech/zapp-daos": "^0.3.0",
-    "@zero-tech/zapp-nfts": "0.4.3",
+    "@zero-tech/zapp-nfts": "^0.4.3",
     "@zero-tech/zapp-staking": "0.4.7",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

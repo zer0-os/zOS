@@ -30,6 +30,7 @@ export interface AppInterface {
 }
 
 export interface Properties {
+  sandboxRef: React.RefObject<HTMLDivElement>;
   web3Provider: ethers.providers.Web3Provider;
   store: Store<RootState>;
   user?: PlatformUser;
@@ -113,7 +114,11 @@ export class AppSandbox extends React.Component<Properties> {
     });
 
     return (
-      <div className={className}>
+      <div
+        className={className}
+        ref={this.props.sandboxRef}
+        style={{ paddingLeft: this.props.layout.scrollbarWidth }}
+      >
         <AppLayoutContextProvider value={this.layoutContext}>{this.renderSelectedApp()}</AppLayoutContextProvider>
       </div>
     );

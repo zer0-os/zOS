@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { RootState } from '../store';
 import { setWalletModalOpen } from '../store/web3';
 import { connectContainer } from '../store/redux-container';
@@ -67,6 +67,11 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
+  /** Ref for tracking width of sandbox element */
+  sandboxRef;
+  /** Observer for responding to sandbox element size changes */
+  observer;
+
   state = { hasConnected: false, web3Provider: null };
 
   componentDidMount() {
@@ -76,6 +81,7 @@ export class Container extends React.Component<Properties, State> {
         web3Provider: this.props.providerService.get(),
       });
     }
+    this.sandboxRef = createRef();
   }
 
   componentDidUpdate(prevProps: Properties) {
@@ -87,6 +93,19 @@ export class Container extends React.Component<Properties, State> {
         hasConnected: true,
         web3Provider: this.props.providerService.get(),
       });
+    }
+
+    // Attach observer to container to track sandbox size changes
+    if (this.sandboxRef?.current && !this.observer) {
+      this.observer = new ResizeObserver(this.handleSandboxResize);
+      this.observer.observe(this.sandboxRef.current);
+    }
+  }
+
+  componentWillUnmount() {
+    // Detach observer
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 
@@ -106,11 +125,26 @@ export class Container extends React.Component<Properties, State> {
     this.openWallet();
   };
 
+  /**
+   * Handles sandbox element size changes.
+   * Updates layout state with the current sandbox scrollbar width.
+   */
+  handleSandboxResize = (): void => {
+    const { current: containerElement } = this.sandboxRef;
+    const { offsetWidth, clientWidth } = containerElement;
+    const scrollbarWidth = offsetWidth - clientWidth;
+
+    if (this.props.layout.scrollbarWidth !== scrollbarWidth) {
+      this.props.updateLayout({ scrollbarWidth });
+    }
+  };
+
   render() {
     if (!this.shouldRender) return null;
 
     return (
       <AppSandbox
+        sandboxRef={this.sandboxRef}
         address={this.props.address}
         chainId={this.props.chainId}
         store={this.props.store}

@@ -12,6 +12,8 @@ $speed: animation.$animation-duration;
   height: 100vh;
   left: $width-navigation;
   right: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   @include layout-transition(left);
 

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface AppLayout {
+  scrollbarWidth: number;
   hasContextPanel: boolean;
   isContextPanelOpen: boolean;
 }
@@ -11,6 +12,7 @@ export interface LayoutState {
 
 const initialState: LayoutState = {
   value: {
+    scrollbarWidth: 0,
     isContextPanelOpen: false,
     hasContextPanel: false,
   },

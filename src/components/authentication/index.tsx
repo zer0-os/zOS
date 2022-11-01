@@ -5,15 +5,17 @@ import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
-import { ConnectionStatus } from '../../lib/web3';
+import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { config } from '../../config';
 import { authorize, fetchCurrentUser, clearSession } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
+import { updateConnector } from '../../store/web3';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
   providerService: { get: () => any };
   currentAddress: string;
+  updateConnector: (Connectors) => void;
   authorizeUser: (payload: { signedWeb3Token: string }) => void;
   clearSession: () => void;
   fetchCurrentUser: () => void;
@@ -43,6 +45,7 @@ export class Container extends React.Component<Properties, State> {
       authorizeUser: authorize,
       fetchCurrentUser,
       clearSession,
+      updateConnector,
     };
   }
 
@@ -94,7 +97,10 @@ export class Container extends React.Component<Properties, State> {
           from,
         },
         (err, res) => {
-          if (err) console.log(err);
+          if (err) {
+            this.props.updateConnector(Connectors.None);
+            console.log(err);
+          }
 
           this.props.authorizeUser({ signedWeb3Token: res.result });
         }

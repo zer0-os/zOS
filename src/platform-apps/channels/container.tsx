@@ -42,7 +42,7 @@ export class Container extends React.Component<Properties> {
     return {
       domainId: state.zns.value.rootDomainId,
       channels,
-      isAuthenticated: !!state.authentication.user?.data,
+      isAuthenticated: !!state.authentication.user?.data && !!state.web3.value.address,
     };
   }
 

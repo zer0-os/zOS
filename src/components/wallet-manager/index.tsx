@@ -21,6 +21,7 @@ export interface Properties extends PublicProperties {
   updateConnector: (connector: WalletType | Connectors.None) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
+  isAuthenticated: boolean;
 }
 
 export interface State {
@@ -38,6 +39,7 @@ export class Container extends React.Component<Properties, State> {
       currentAddress: value.address,
       connectionStatus: status,
       isWalletModalOpen,
+      isAuthenticated: !!state.authentication.user?.data && !!value.address,
     };
   }
 
@@ -73,9 +75,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   get showButton(): boolean {
-    return !(
-      this.props.connectionStatus === ConnectionStatus.Connected && this.props.currentConnector === Connectors.Metamask
-    );
+    return !this.props.isAuthenticated;
   }
 
   get showModal(): boolean {
@@ -124,7 +124,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className={classNames('wallet-manager', this.props.className)}>
-        {this.props.currentAddress && (
+        {this.props.isAuthenticated && (
           <EthAddress
             address={this.props.currentAddress}
             onClick={this.handleDisconnect}

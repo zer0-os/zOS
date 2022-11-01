@@ -10,6 +10,7 @@ import { Container } from './container';
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
 import { AppContextPanel } from '@zer0-os/zos-component-library';
+import { Connectors } from '../../lib/web3';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -142,6 +143,14 @@ describe('ChannelsContainer', () => {
         },
         authentication: {
           ...(state.authentication || { user: { data: { id: 'authenticated-user-id' } } }),
+        },
+        web3: {
+          ...(state.web3 || {
+            value: {
+              address: '0x0',
+              connector: Connectors.None,
+            },
+          }),
         },
       } as RootState);
 

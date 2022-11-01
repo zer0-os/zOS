@@ -41,6 +41,7 @@ describe('WalletManager', () => {
     wrapper.setProps({
       connectionStatus: ConnectionStatus.Connected,
       currentConnector: Connectors.Metamask,
+      isAuthenticated: true,
     });
 
     expect(wrapper.find(Button).exists()).toBe(false);
@@ -49,7 +50,7 @@ describe('WalletManager', () => {
   it('renders wallet address when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ currentAddress });
+    const wrapper = subject({ currentAddress, isAuthenticated: true });
 
     expect(wrapper.find(EthAddress).prop('address')).toBe(currentAddress);
   });
@@ -57,7 +58,7 @@ describe('WalletManager', () => {
   it('does not render wallet address when not set', () => {
     const currentAddress = '';
 
-    const wrapper = subject({ currentAddress });
+    const wrapper = subject({ currentAddress, isAuthenticated: false });
 
     expect(wrapper.find(EthAddress).exists()).toBe(false);
   });
@@ -176,7 +177,7 @@ describe('WalletManager', () => {
     const updateConnector = jest.fn();
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ updateConnector, currentAddress });
+    const wrapper = subject({ updateConnector, currentAddress, isAuthenticated: true });
 
     wrapper.find(EthAddress).simulate('click');
 
@@ -187,9 +188,13 @@ describe('WalletManager', () => {
     const updateConnector = jest.fn();
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ updateConnector, currentAddress });
+    const wrapper = subject({ updateConnector, currentAddress, isAuthenticated: true });
 
     wrapper.find(EthAddress).simulate('click');
+
+    wrapper.setProps({
+      isAuthenticated: false,
+    });
 
     expect(wrapper.find(Button).exists()).toBe(true);
   });
@@ -212,6 +217,9 @@ describe('WalletManager', () => {
         web3: getWeb3({
           ...(state.web3 || {}),
         }),
+        authentication: getAuthentication({
+          ...(state.authentication || {}),
+        }),
       } as RootState);
 
     const getWeb3 = (web3: any = {}) => ({
@@ -222,6 +230,14 @@ describe('WalletManager', () => {
         connector: Connectors.None,
         ...(web3.value || {}),
       },
+    });
+
+    const getAuthentication = (authentication: any = {}) => ({
+      user: {
+        isLoading: false,
+        data: null,
+      },
+      ...(authentication || {}),
     });
 
     test('status', () => {

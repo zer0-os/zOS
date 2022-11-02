@@ -9,7 +9,7 @@ describe('apps reducer', () => {
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      selectedApp: apps[Apps.Feed],
+      selectedApp: apps[Apps.NFTS],
     });
   });
 

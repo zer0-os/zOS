@@ -79,7 +79,10 @@
 
     "buttonBorderColorHover": "#2a8eea",
 
-    "cardBackgroundColor": "#FFF"
+    "cardBackgroundColor": "#FFF",
+
+    "generalScrollColor": "#f0f0f0",
+    "generalScrollThumbColor": "#353535"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -170,6 +173,9 @@
     "buttonBoxRadius": "16px",
     "backgroundColorTransparent": "rgba(0, 0, 0, 0.6)",
 
-    "cardBackgroundColor": "#212121"
+    "cardBackgroundColor": "#212121",
+
+    "generalScrollColor": "#353535",
+    "generalScrollThumbColor": "#7E7E7E"
   }
 }

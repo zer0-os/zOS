@@ -151,11 +151,32 @@ describe('AppSandboxContainer', () => {
     const layout = {
       isContextPanelOpen: false,
       hasContextPanel: true,
+      scrollbarWidth: 0,
     };
 
     const wrapper = subject({ layout });
 
     expect(wrapper.find(AppSandbox).prop('layout')).toBe(layout);
+  });
+
+  it('update layout with scrollbarWith', () => {
+    const updateLayout = jest.fn();
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      updateLayout,
+    });
+
+    (wrapper.instance() as any).sandboxRef = {
+      current: {
+        clientWidth: 10,
+        offsetWidth: 100,
+      },
+    };
+    (wrapper.instance() as any).handleSandboxResize();
+
+    expect(updateLayout).toHaveBeenCalledWith({
+      scrollbarWidth: 90,
+    });
   });
 
   describe('mapState', () => {

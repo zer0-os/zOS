@@ -191,4 +191,19 @@ describe('AppSandbox', () => {
     expect(sandbox.hasClass('context-panel-open')).toBe(true);
     expect(sandbox.hasClass('has-context-panel')).toBe(true);
   });
+
+  it('sets scrollbarWith', () => {
+    const layout = {
+      scrollbarWidth: 50,
+    };
+    const sandboxRef = jest.fn();
+
+    const wrapper = subject({ layout, sandboxRef });
+
+    const sandbox = wrapper.find('.app-sandbox');
+
+    expect(sandbox.props().style).toEqual({
+      paddingLeft: layout.scrollbarWidth,
+    });
+  });
 });

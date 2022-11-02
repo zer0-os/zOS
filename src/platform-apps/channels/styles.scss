@@ -106,7 +106,7 @@
     visibility: hidden;
 
     &--messages-fetched {
-      animation: fadein animation.$animation-duration-quadruple ease-out forwards;
+      animation: fadein animation.$animation-duration-double ease-out forwards;
       visibility: visible;
     }
 

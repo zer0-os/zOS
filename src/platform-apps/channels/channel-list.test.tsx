@@ -3,8 +3,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ChannelList } from './channel-list';
+import { ZnsLink } from '@zer0-os/zos-component-library';
 import Collapsible from 'react-collapsible';
-import { ChannelListLink } from './channel-list-link';
 
 describe('ChannelList', () => {
   const subject = (props: any = {}) => {
@@ -65,7 +65,7 @@ describe('ChannelList', () => {
 
     const wrapper = subject({ channels });
 
-    const text = wrapper.find(ChannelListLink).map((l) => l.prop('to'));
+    const text = wrapper.find(ZnsLink).map((l) => l.prop('to'));
 
     expect(text).toStrictEqual([
       'one',

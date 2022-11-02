@@ -419,10 +419,13 @@
       }
 
       &__user-mention {
-        animation: fade-background-in 200ms ease-in forwards;
+        background-color: theme.$accent-color;
         color: black;
         padding: 3px;
         border-radius: 5px;
+        margin-bottom: 0.8px;
+        margin-top: 0.8px;
+        display: inline-block;
       }
     }
   }

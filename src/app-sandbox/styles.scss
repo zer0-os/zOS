@@ -91,12 +91,13 @@ $speed: animation.$animation-duration;
   .app-content {
     display: flex;
     justify-content: center;
-    overflow: unset;
   }
 }
 
 .feed {
-  overflow: unset;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
 
   &-item {
     border-color: theme.$address-bar-border-color-inner;

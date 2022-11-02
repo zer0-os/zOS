@@ -13,6 +13,7 @@ describe('layout reducer', () => {
       value: {
         isContextPanelOpen: false,
         hasContextPanel: false,
+        scrollbarWidth: 0,
       },
     });
   });

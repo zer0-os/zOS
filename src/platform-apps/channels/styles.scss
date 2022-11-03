@@ -10,6 +10,7 @@
   color: $inactive-color;
 
   &:hover,
+  &:active,
   &.active {
     color: $active-color;
   }
@@ -25,7 +26,8 @@
     background: $hover-color;
   }
 
-  &.active {
+  &.active,
+  &:active {
     background: $active-color;
   }
 }
@@ -135,7 +137,8 @@
     padding: 0 20px;
     height: 100%;
 
-    &.active {
+    &.active,
+    &:active {
       @include accent-bar;
     }
   }

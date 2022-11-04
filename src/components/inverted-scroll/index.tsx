@@ -1,7 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-
+import debounce from 'lodash.debounce';
 import './styles.scss';
+
+const SCROLL_HEIGHT_FIXER_DELAY_MS = 5;
+const SCROLL_HEIGHT_FIXER_ITERATIONS = 1000;
 
 export interface Properties {
   className?: string;
@@ -13,6 +16,11 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
 
   getSnapshotBeforeUpdate() {
     if (this.scrollWrapper) {
+      console.log('khalid - ', {
+        scrollHeight: this.scrollWrapper.scrollHeight,
+        scrollTop: this.scrollWrapper.scrollTop,
+        clientHeight: this.scrollWrapper.clientHeight,
+      });
       return {
         scrollHeight: this.scrollWrapper.scrollHeight,
         scrollTop: this.scrollWrapper.scrollTop,
@@ -38,7 +46,7 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
       : 0;
 
     const isSnapshotHeightSame = snapshot && snapshot.scrollHeight === this.scrollWrapper.scrollHeight;
-
+    // debugger;
     if (distanceFromBottomPixels < 200) {
       if (!isSnapshotHeightSame) {
         this.scrollToBottom();
@@ -50,7 +58,10 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
   }
 
   scrollToBottom() {
+    console.log('khalid- scrollToBottom', this.scrollWrapper.scrollHeight);
     this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+
+    this.scrollFixer();
   }
 
   setScrollWrapper = (element: HTMLElement) => {
@@ -61,6 +72,24 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
     this.scrollWrapper = element;
 
     this.scrollToBottom();
+  };
+
+  fixScroll = debounce((oldScrollHeight: number, iterations: number = 0) => {
+    if (this.scrollWrapper.scrollHeight !== oldScrollHeight) {
+      this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+      // Schedule another fix scroll again incase more load in with current scroll height
+      this.fixScroll(this.scrollWrapper.scrollHeight);
+    } else if (iterations < SCROLL_HEIGHT_FIXER_ITERATIONS) {
+      // Schedule another until iterations run out
+      // Will be cancelled if scrolling upwards.
+      this.fixScroll(oldScrollHeight, iterations + 1);
+    }
+  }, SCROLL_HEIGHT_FIXER_DELAY_MS);
+
+  scrollFixer = () => {
+    const oldScrollHeight = this.scrollWrapper.scrollHeight;
+
+    this.fixScroll(oldScrollHeight);
   };
 
   render() {

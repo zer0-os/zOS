@@ -16,11 +16,6 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
 
   getSnapshotBeforeUpdate() {
     if (this.scrollWrapper) {
-      console.log('khalid - ', {
-        scrollHeight: this.scrollWrapper.scrollHeight,
-        scrollTop: this.scrollWrapper.scrollTop,
-        clientHeight: this.scrollWrapper.clientHeight,
-      });
       return {
         scrollHeight: this.scrollWrapper.scrollHeight,
         scrollTop: this.scrollWrapper.scrollTop,
@@ -46,7 +41,7 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
       : 0;
 
     const isSnapshotHeightSame = snapshot && snapshot.scrollHeight === this.scrollWrapper.scrollHeight;
-    // debugger;
+
     if (distanceFromBottomPixels < 200) {
       if (!isSnapshotHeightSame) {
         this.scrollToBottom();
@@ -58,7 +53,6 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
   }
 
   scrollToBottom() {
-    console.log('khalid- scrollToBottom', this.scrollWrapper.scrollHeight);
     this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
 
     this.scrollFixer();

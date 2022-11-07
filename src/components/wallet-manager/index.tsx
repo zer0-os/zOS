@@ -1,4 +1,4 @@
-import { Button, EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import { EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import React from 'react';
 import { config } from '../../config';
@@ -8,7 +8,9 @@ import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3';
 import { isElectron } from '../../utils';
+import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
+import { IfAuthenticated } from '../authentication/if-authenticated';
 
 interface PublicProperties {
   className?: string;
@@ -21,7 +23,6 @@ export interface Properties extends PublicProperties {
   updateConnector: (connector: WalletType | Connectors.None) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
-  isAuthenticated: boolean;
 }
 
 export interface State {
@@ -39,7 +40,6 @@ export class Container extends React.Component<Properties, State> {
       currentAddress: value.address,
       connectionStatus: status,
       isWalletModalOpen,
-      isAuthenticated: !!state.authentication.user?.data && !!value.address,
     };
   }
 
@@ -75,7 +75,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   get showButton(): boolean {
-    return !this.props.isAuthenticated;
+    return !this.context.isAuthenticated;
   }
 
   get showModal(): boolean {
@@ -124,19 +124,15 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <div className={classNames('wallet-manager', this.props.className)}>
-        {this.props.isAuthenticated && (
+        <IfAuthenticated showChildren>
           <EthAddress
             address={this.props.currentAddress}
             onClick={this.handleDisconnect}
           />
-        )}
-        {this.showButton && (
-          <Button
-            className='wallet-manager__connect-button'
-            label='Connect'
-            onClick={this.openModal}
-          />
-        )}
+        </IfAuthenticated>
+        <IfAuthenticated hideChildren>
+          <ConnectButton />
+        </IfAuthenticated>
         {this.showModal && (
           <WalletSelectModal
             wallets={this.availableWallets}

@@ -13,6 +13,7 @@ describe('MessageInput', () => {
       users: [],
       onSubmit: () => undefined,
       getUsersForMentions: () => undefined,
+      onMessageInputRendered: () => undefined,
       ...props,
     };
 
@@ -46,5 +47,15 @@ describe('MessageInput', () => {
     textarea.simulate('change', { target: { value: 'Hello' } });
     textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
     expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('call after render', () => {
+    const onMessageInputRendered = jest.fn();
+
+    subject({ onMessageInputRendered });
+
+    expect(onMessageInputRendered).toHaveBeenCalledWith({
+      current: null,
+    });
   });
 });

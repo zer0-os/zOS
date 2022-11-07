@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../store';
 
@@ -153,6 +153,12 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
+    if (textareaRef && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
   render() {
     if (!this.props.channel) return null;
 
@@ -167,6 +173,7 @@ export class Container extends React.Component<Properties, State> {
         users={this.channel.users || []}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}
+        onMessageInputRendered={this.onMessageInputRendered}
       />
     );
   }

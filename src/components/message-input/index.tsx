@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
@@ -14,6 +14,7 @@ export interface Properties {
   onSubmit: (message: string, mentionedUserIds: User['id'][]) => void;
   users: User[];
   getUsersForMentions: (search: string, users: User[]) => UserForMention[];
+  onMessageInputRendered: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
 }
 
 interface State {
@@ -25,6 +26,22 @@ export class MessageInput extends React.Component<Properties, State> {
   static defaultProps = { getUsersForMentions };
 
   state = { value: '', mentionedUserIds: [] };
+
+  private textareaRef: RefObject<HTMLTextAreaElement>;
+
+  constructor(props) {
+    super(props);
+
+    this.textareaRef = React.createRef<HTMLTextAreaElement>();
+  }
+
+  componentDidMount() {
+    this.props.onMessageInputRendered(this.textareaRef);
+  }
+
+  componentDidUpdate() {
+    this.props.onMessageInputRendered(this.textareaRef);
+  }
 
   onSubmit = (event) => {
     const { mentionedUserIds, value } = this.state;
@@ -65,6 +82,7 @@ export class MessageInput extends React.Component<Properties, State> {
         <div className='message-input__input-wrapper'>
           <div className={classNames('mentions-text-area', this.props.className)}>
             <MentionsInput
+              inputRef={this.textareaRef}
               className='mentions-text-area__wrap'
               placeholder={this.props.placeholder}
               onKeyDown={this.onSubmit}

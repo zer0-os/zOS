@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
 import { Key } from '../../lib/keyboard-search';
+import { min } from 'moment';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -13,6 +14,7 @@ describe('MessageInput', () => {
       users: [],
       onSubmit: () => undefined,
       getUsersForMentions: () => undefined,
+      onMessageInputRendered: () => undefined,
       ...props,
     };
 
@@ -46,5 +48,15 @@ describe('MessageInput', () => {
     textarea.simulate('change', { target: { value: 'Hello' } });
     textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
     expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('call after render', () => {
+    const onMessageInputRendered = jest.fn();
+
+    subject({ onMessageInputRendered });
+
+    expect(onMessageInputRendered).toHaveBeenCalledWith({
+      current: null,
+    });
   });
 });

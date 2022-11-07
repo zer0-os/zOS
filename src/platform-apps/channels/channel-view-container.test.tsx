@@ -252,6 +252,20 @@ describe('ChannelViewContainer', () => {
     });
   });
 
+  it('should call focus on message input render', () => {
+    const textareaRef = {
+      current: {
+        focus: jest.fn(),
+      },
+    };
+
+    const wrapper = subject();
+
+    (wrapper.instance() as any).onMessageInputRendered(textareaRef);
+
+    expect(textareaRef.current.focus).toHaveBeenCalled();
+  });
+
   describe('mapState', () => {
     const getState = (state: any) =>
       ({

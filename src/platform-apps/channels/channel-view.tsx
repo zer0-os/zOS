@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -28,6 +28,7 @@ export interface Properties {
   countNewMessages: number;
   users: UserModel[];
   className?: string;
+  onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
 }
 
 export interface State {
@@ -170,6 +171,7 @@ export class ChannelView extends React.Component<Properties, State> {
           {this.props.messages.length > 0 && this.renderMessages()}
           <IfAuthenticated showChildren>
             <MessageInput
+              onMessageInputRendered={this.props.onMessageInputRendered}
               placeholder='Speak your truth...'
               onSubmit={this.props.sendMessage}
               users={this.props.users}

@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
 import { Key } from '../../lib/keyboard-search';
-import { min } from 'moment';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {

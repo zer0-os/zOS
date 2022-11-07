@@ -10,6 +10,7 @@
   color: $inactive-color;
 
   &:hover,
+  &:active,
   &.active {
     color: $active-color;
   }
@@ -25,7 +26,8 @@
     background: $hover-color;
   }
 
-  &.active {
+  &.active,
+  &:active {
     background: $active-color;
   }
 }
@@ -106,7 +108,7 @@
     visibility: hidden;
 
     &--messages-fetched {
-      animation: fadein animation.$animation-duration-quadruple ease-out forwards;
+      animation: fadein animation.$animation-duration-double ease-out forwards;
       visibility: visible;
     }
 
@@ -135,7 +137,8 @@
     padding: 0 20px;
     height: 100%;
 
-    &.active {
+    &.active,
+    &:active {
       @include accent-bar;
     }
   }
@@ -423,6 +426,9 @@
         color: black;
         padding: 3px;
         border-radius: 5px;
+        margin-bottom: 0.8px;
+        margin-top: 0.8px;
+        display: inline-block;
       }
     }
   }

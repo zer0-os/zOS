@@ -8,7 +8,8 @@ import { AddressBar } from '.';
 import { routeWithApp } from './util';
 import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
-import { PlatformApp } from '../../lib/apps';
+import { Apps, PlatformApp } from '../../lib/apps';
+import { config } from '../../config';
 interface PublicProperties {
   className?: string;
 }
@@ -86,8 +87,19 @@ export class Container extends React.Component<Properties> {
     this.goToRoute(this.getNextRoute());
   };
 
+  getSelectedApp = (): string => {
+    if (
+      ![
+        Apps.Feed,
+        Apps.NFTS,
+      ].includes(this.props.app.type)
+    )
+      return config.defaultApp;
+    return this.props.app.type;
+  };
+
   goToRoute = (route) => {
-    this.props.history.push(routeWithApp(route, this.props.app.type));
+    this.props.history.push(routeWithApp(route, this.getSelectedApp()));
   };
 
   render() {

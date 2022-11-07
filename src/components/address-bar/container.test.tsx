@@ -7,6 +7,7 @@ import { Container } from './container';
 import { ProviderService } from '../../lib/web3/provider-service';
 import { Apps, PlatformApp } from '../../lib/apps';
 import { ZnsDomainDescriptor } from '../../store/zns';
+import { config } from '../../config';
 
 describe('AddressBarContainer', () => {
   const subject = (props: any = {}) => {
@@ -112,6 +113,7 @@ describe('AddressBarContainer', () => {
 
   it('navigates to previous route when onBack is called', () => {
     const push = jest.fn();
+    const defaultApp = config.defaultApp;
 
     const wrapper = subject({
       route: 'food.tacos.bean',
@@ -122,7 +124,7 @@ describe('AddressBarContainer', () => {
 
     wrapper.find(AddressBar).simulate('back');
 
-    expect(push).toHaveBeenCalledWith('/food.tacos/staking');
+    expect(push).toHaveBeenCalledWith(`/food.tacos/${defaultApp}`);
   });
 
   it('does not navigate when onBack is called if already at root route', () => {
@@ -137,6 +139,22 @@ describe('AddressBarContainer', () => {
     wrapper.find(AddressBar).simulate('back');
 
     expect(push).toHaveBeenCalledTimes(0);
+  });
+
+  it('navigates to right routeApp if searching outside', () => {
+    const push = jest.fn();
+    const defaultApp = config.defaultApp;
+
+    const wrapper = subject({
+      route: 'food',
+      app: getAppFor(Apps.Channels),
+      deepestVisitedRoute: 'food.tacos.bean.pinto',
+      history: { push },
+    });
+
+    wrapper.find(AddressBar).simulate('forward');
+
+    expect(push).toHaveBeenCalledWith(`/food.tacos/${defaultApp}`);
   });
 
   describe('mapState', () => {

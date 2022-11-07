@@ -74,10 +74,6 @@ export class Container extends React.Component<Properties, State> {
     this.props.updateConnector(Connectors.None);
   };
 
-  get showButton(): boolean {
-    return !this.context.isAuthenticated;
-  }
-
   get showModal(): boolean {
     return this.props.isWalletModalOpen;
   }

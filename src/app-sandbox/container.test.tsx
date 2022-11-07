@@ -21,6 +21,7 @@ describe('AppSandboxContainer', () => {
       setWalletModalOpen: () => undefined,
       layout: {} as AppLayout,
       updateLayout: () => undefined,
+      isAuthenticated: false,
       ...props,
     };
 
@@ -169,6 +170,9 @@ describe('AppSandboxContainer', () => {
           ...(state.layout || {}),
         },
         zns: { value: { route: '' }, ...(state.zns || {}) },
+        authentication: {
+          ...(state.authentication || { user: { data: { id: 'authenticated-user-id' } } }),
+        },
         web3: {
           status: ConnectionStatus.Connecting,
           ...(state.web3 || {}),
@@ -244,6 +248,21 @@ describe('AppSandboxContainer', () => {
       });
 
       expect(state).toMatchObject({ selectedApp });
+    });
+
+    test('isAuthenticated', () => {
+      const state = subject({
+        web3: { value: { address: '0x0000000000000000000000000000000000000044' } },
+        authentication: { user: { data: { id: 'the-id' } } } as any,
+      });
+
+      expect(state.isAuthenticated).toBeTrue();
+    });
+
+    test('isAuthenticated to be false', () => {
+      const state = subject({ web3: { value: { address: '' } }, authentication: { user: {} } as any });
+
+      expect(state.isAuthenticated).toBeFalse();
     });
   });
 });

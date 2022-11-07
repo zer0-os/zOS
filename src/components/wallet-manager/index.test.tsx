@@ -5,6 +5,8 @@ import { RootState } from '../../store';
 import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
+import { IfAuthenticated } from '../authentication/if-authenticated';
+import { Button as ConnectButton } from '../../components/authentication/button';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
@@ -20,9 +22,9 @@ describe('WalletManager', () => {
   it('renders connect button', () => {
     const wrapper = subject();
 
-    const button = wrapper.find(Button);
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ hideChildren: true });
 
-    expect(button.hasClass('wallet-manager__connect-button')).toBe(true);
+    expect(ifAuthenticated.find(ConnectButton).exists()).toBe(true);
   });
 
   it('adds className', () => {
@@ -50,32 +52,25 @@ describe('WalletManager', () => {
   it('renders wallet address when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ currentAddress, isAuthenticated: true });
+    const wrapper = subject({ currentAddress });
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
-    expect(wrapper.find(EthAddress).prop('address')).toBe(currentAddress);
+    expect(ifAuthenticated.find(EthAddress).exists()).toBe(true);
   });
 
   it('does not render wallet address when not set', () => {
     const currentAddress = '';
 
-    const wrapper = subject({ currentAddress, isAuthenticated: false });
+    const wrapper = subject({ currentAddress });
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: false });
 
-    expect(wrapper.find(EthAddress).exists()).toBe(false);
+    expect(ifAuthenticated.find(EthAddress).exists()).toBe(false);
   });
 
   it('does not render wallet select modal', () => {
     const wrapper = subject();
 
     expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
-  });
-
-  it('renders wallet select modal when button is clicked', () => {
-    const setWalletModalOpen = jest.fn();
-    const wrapper = subject({ setWalletModalOpen });
-
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
-
-    expect(setWalletModalOpen).toHaveBeenCalledWith(true);
   });
 
   it('should render all available wallets', () => {
@@ -122,7 +117,7 @@ describe('WalletManager', () => {
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     // re-open modal, as it will be closed at this point
-    wrapper.find('.wallet-manager__connect-button').simulate('click');
+    wrapper.find(ConnectButton).simulate('click');
 
     expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
   });
@@ -177,7 +172,7 @@ describe('WalletManager', () => {
     const updateConnector = jest.fn();
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ updateConnector, currentAddress, isAuthenticated: true });
+    const wrapper = subject({ updateConnector, currentAddress });
 
     wrapper.find(EthAddress).simulate('click');
 
@@ -188,15 +183,15 @@ describe('WalletManager', () => {
     const updateConnector = jest.fn();
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ updateConnector, currentAddress, isAuthenticated: true });
+    const wrapper = subject({ updateConnector, currentAddress });
 
     wrapper.find(EthAddress).simulate('click');
 
     wrapper.setProps({
-      isAuthenticated: false,
+      currentAddress: '',
     });
 
-    expect(wrapper.find(Button).exists()).toBe(true);
+    expect(wrapper.find(ConnectButton).exists()).toBe(true);
   });
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {

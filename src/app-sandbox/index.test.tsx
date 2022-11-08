@@ -16,6 +16,7 @@ describe('AppSandbox', () => {
       selectedApp: null,
       layout: {} as AppLayout,
       updateLayout: () => undefined,
+      authenticationContext: () => false,
       ...props,
     };
 

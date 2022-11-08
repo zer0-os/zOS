@@ -5,7 +5,7 @@ export interface AuthenticationContext {
 }
 
 export const Context = React.createContext<AuthenticationContext>({
-  isAuthenticated: true,
+  isAuthenticated: false,
 });
 
 export function withContext<T>(Component: any) {

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import classNames from 'classnames';
 import { connectContainer } from '../../store/redux-container';
 import { setWalletModalOpen } from '../../store/web3';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
@@ -8,6 +8,7 @@ import './styles.scss';
 
 export interface Properties {
   setWalletModalOpen: (status: boolean) => void;
+  className: string;
 }
 
 export class Container extends React.Component<Properties> {
@@ -29,7 +30,7 @@ export class Container extends React.Component<Properties> {
     return (
       <div
         onClick={this.openModal}
-        className='authentication__connect-wrapper'
+        className={classNames(this.props.className, 'authentication__connect-wrapper')}
       >
         <ComponentButton>Connect</ComponentButton>
       </div>

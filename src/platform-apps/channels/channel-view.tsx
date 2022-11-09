@@ -178,7 +178,7 @@ export class ChannelView extends React.Component<Properties, State> {
             />
           </IfAuthenticated>
           <IfAuthenticated hideChildren>
-            <ConnectButton />
+            <ConnectButton className='authentication__connect-wrapper--with-space' />
           </IfAuthenticated>
           <div ref={this.bottomRef} />
         </InvertedScroll>

@@ -15,6 +15,7 @@ import { PlatformUser } from './container';
 
 import { AppLayout } from '../store/layout';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
+import { AuthenticationContext, Provider as AuthenticationContextProvider } from '../components/authentication/context';
 
 import './styles.scss';
 import classNames from 'classnames';
@@ -38,6 +39,7 @@ export interface Properties {
   chainId: Chains;
   selectedApp: Apps;
   connectWallet: () => void;
+  authenticationContext: AuthenticationContext;
   layout: AppLayout;
   onUpdateLayout: (layout: Partial<AppLayout>) => void;
 }
@@ -114,7 +116,11 @@ export class AppSandbox extends React.Component<Properties> {
 
     return (
       <div className={className}>
-        <AppLayoutContextProvider value={this.layoutContext}>{this.renderSelectedApp()}</AppLayoutContextProvider>
+        <AppLayoutContextProvider value={this.layoutContext}>
+          <AuthenticationContextProvider value={this.props.authenticationContext}>
+            {this.renderSelectedApp()}
+          </AuthenticationContextProvider>
+        </AppLayoutContextProvider>
       </div>
     );
   }

@@ -31,6 +31,7 @@ export interface Properties extends PublicProperties {
 
   layout: AppLayout;
   updateLayout: (layout: Partial<AppLayout>) => void;
+  isAuthenticated: boolean;
 }
 
 interface State {
@@ -57,6 +58,7 @@ export class Container extends React.Component<Properties, State> {
       selectedApp: type,
       user: { account: address },
       layout: layout.value,
+      isAuthenticated: !!state.authentication.user?.data && !!address,
     };
   }
 
@@ -98,6 +100,13 @@ export class Container extends React.Component<Properties, State> {
     return this.state.web3Provider;
   }
 
+  get authenticationContext() {
+    const { isAuthenticated } = this.props;
+    return {
+      isAuthenticated,
+    };
+  }
+
   openWallet = (): void => {
     this.props.setWalletModalOpen(true);
   };
@@ -119,6 +128,7 @@ export class Container extends React.Component<Properties, State> {
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
         connectWallet={this.connectWallet}
+        authenticationContext={this.authenticationContext}
         layout={this.props.layout}
         onUpdateLayout={this.props.updateLayout}
       />

@@ -129,6 +129,34 @@ describe('Authentication', () => {
     expect(authorizeUser).toHaveBeenCalledWith({ signedWeb3Token });
   });
 
+  it('should call updateConnector when sendAsync return error', () => {
+    const updateConnector = jest.fn();
+    const currentAddress = '0x00';
+    const signedWeb3Token = '0x0098';
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Disconnected,
+      currentAddress,
+      providerService: {
+        get: () => ({
+          provider: {
+            sendAsync: (error, callback) => {
+              callback({ error: 'error connection' }, null);
+            },
+          },
+        }),
+      },
+      user: {
+        isLoading: false,
+        data: null,
+      },
+      updateConnector,
+    });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
+  });
+
   it('should call clearSession when disconnect btn clicked', () => {
     const clearSession = jest.fn();
 

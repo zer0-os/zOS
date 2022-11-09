@@ -10,6 +10,7 @@ import { Container } from './container';
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
 import { AppContextPanel } from '@zer0-os/zos-component-library';
+import { Connectors } from '../../lib/web3';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -140,8 +141,13 @@ describe('ChannelsContainer', () => {
         normalized: {
           ...(state.normalized || {}),
         },
-        authentication: {
-          ...(state.authentication || { user: { data: { id: 'authenticated-user-id' } } }),
+        web3: {
+          ...(state.web3 || {
+            value: {
+              address: '0x0',
+              connector: Connectors.None,
+            },
+          }),
         },
       } as RootState);
 
@@ -174,18 +180,6 @@ describe('ChannelsContainer', () => {
       const state = subject({ zns: { value: { rootDomainId } } as any });
 
       expect(state.domainId).toEqual(rootDomainId);
-    });
-
-    test('isAuthenticated', () => {
-      const state = subject({ authentication: { user: { data: { id: 'the-id' } } } as any });
-
-      expect(state.isAuthenticated).toBeTrue();
-    });
-
-    test('isAuthenticated', () => {
-      const state = subject({ authentication: { user: {} } as any });
-
-      expect(state.isAuthenticated).toBeFalse();
     });
   });
 });

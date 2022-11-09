@@ -4,6 +4,7 @@ import { Container } from './zns-route-connect';
 import { Main } from './Main';
 import { Web3Connect } from './components/web3-connect';
 import { Authentication } from './components/authentication';
+import { ViewModes } from './shared-components/theme-engine';
 
 describe('ZnsRouteConnect', () => {
   const getMatchForParams = (params = {}) => {

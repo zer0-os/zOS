@@ -8,7 +8,7 @@ import './styles.scss';
 
 export interface Properties {
   setWalletModalOpen: (status: boolean) => void;
-  className: string;
+  className?: string;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,4 +38,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const Button = connectContainer<{}>(Container);
+export const Button = connectContainer<{ className?: string }>(Container);

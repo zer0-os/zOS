@@ -154,7 +154,7 @@ $height-address-bar-inner: 19px;
   }
 
   &__route-app {
-    color: #fff;
+    color: theme.$font-color-primary;
     font-weight: 400;
     margin-right: 24px;
     padding: 2px 8px;

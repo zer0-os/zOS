@@ -10,6 +10,7 @@ import { Container } from './container';
 import { ChannelList } from './channel-list';
 import { ChannelViewContainer } from './channel-view-container';
 import { AppContextPanel } from '@zer0-os/zos-component-library';
+import { Connectors } from '../../lib/web3';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -21,9 +22,10 @@ describe('ChannelsContainer', () => {
 
   const subject = (props: any = {}) => {
     const allProps = {
-      user: {},
       store: getStore(),
       fetchChannels: () => undefined,
+      receiveUnreadCount: () => undefined,
+      stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
       ...props,
@@ -48,6 +50,16 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels });
 
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
+  });
+
+  it('set receiveUnreadCount channels on mount', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const fetchChannels = jest.fn();
+    const receiveUnreadCount = jest.fn();
+
+    subject({ domainId, fetchChannels, receiveUnreadCount });
+
+    expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
   });
 
   it('wraps ChannelList in AppContextPanel', () => {
@@ -128,6 +140,14 @@ describe('ChannelsContainer', () => {
         },
         normalized: {
           ...(state.normalized || {}),
+        },
+        web3: {
+          ...(state.web3 || {
+            value: {
+              address: '0x0',
+              connector: Connectors.None,
+            },
+          }),
         },
       } as RootState);
 

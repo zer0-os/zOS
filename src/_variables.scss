@@ -1,22 +1,3 @@
-$left-content-space: 32px;
-$width-world-navigation: 56px;
-$width-platform-navigation: 224px;
-$width-application-navigation: 224px;
-
-$width-navigation: calc($width-platform-navigation + $width-world-navigation);
-$width-collapsed-navigation: calc(56px + 54px);
-$width-application-content: 736px;
-$width-sidekick: 117px;
-$height-main: 65px;
-
-$breakpoint-collapse-menu: 1294px;
-
 $font-size-small: 12px;
 $font-size-large: 16px;
 $font-size-xl: 20px;
-
-@mixin for-left-collapse {
-  @media (max-width: $breakpoint-collapse-menu) {
-    @content;
-  }
-}

@@ -7,6 +7,7 @@ import { Apps } from '../lib/apps';
 import { Chains, ConnectionStatus } from '../lib/web3';
 import { ProviderService, inject as injectProviderService } from '../lib/web3/provider-service';
 import { Store } from 'redux';
+import { AppLayout, update as updateLayout } from '../store/layout';
 
 export interface PlatformUser {
   account: string;
@@ -27,6 +28,10 @@ export interface Properties extends PublicProperties {
 
   selectedApp: Apps;
   setWalletModalOpen: (status: boolean) => void;
+
+  layout: AppLayout;
+  updateLayout: (layout: Partial<AppLayout>) => void;
+  isAuthenticated: boolean;
 }
 
 interface State {
@@ -37,6 +42,7 @@ interface State {
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
+      layout,
       web3,
       apps: {
         selectedApp: { type },
@@ -51,12 +57,15 @@ export class Container extends React.Component<Properties, State> {
       connectionStatus: web3.status,
       selectedApp: type,
       user: { account: address },
+      layout: layout.value,
+      isAuthenticated: !!state.authentication.user?.data && !!address,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       setWalletModalOpen,
+      updateLayout,
     };
   }
 
@@ -91,6 +100,13 @@ export class Container extends React.Component<Properties, State> {
     return this.state.web3Provider;
   }
 
+  get authenticationContext() {
+    const { isAuthenticated } = this.props;
+    return {
+      isAuthenticated,
+    };
+  }
+
   openWallet = (): void => {
     this.props.setWalletModalOpen(true);
   };
@@ -112,6 +128,9 @@ export class Container extends React.Component<Properties, State> {
         znsRoute={this.props.route}
         web3Provider={this.web3Provider}
         connectWallet={this.connectWallet}
+        authenticationContext={this.authenticationContext}
+        layout={this.props.layout}
+        onUpdateLayout={this.props.updateLayout}
       />
     );
   }

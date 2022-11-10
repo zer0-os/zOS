@@ -1,0 +1,42 @@
+.attachment-card {
+  display: inline-block;
+  padding: 10px 10px 10px 15px;
+
+  &__name {
+    font-weight: bold;
+  }
+
+  &__info {
+    background: none;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__file {
+    display: flex;
+  }
+
+  &.downloadable {
+    cursor: pointer;
+  }
+
+  &.downloadable:hover {
+    .attachment-card__info {
+      background: none;
+      border: none;
+    }
+  }
+
+  &__icon {
+    padding-right: 10px;
+  }
+
+  &__delete {
+    display: inline-block;
+    text-align: center;
+    padding-left: 10px;
+  }
+}

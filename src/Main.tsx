@@ -1,4 +1,6 @@
 import React from 'react';
+import { RootState } from './store';
+import { connectContainer } from './store/redux-container';
 import { WalletManager } from './components/wallet-manager';
 import { ViewModeToggle } from './components/view-mode-toggle';
 import { ThemeEngine } from './components/theme-engine';
@@ -7,11 +9,35 @@ import { AppMenuContainer } from './components/app-menu/container';
 import { Logo } from './components/logo';
 
 import './main.scss';
+import classNames from 'classnames';
 
-export class Main extends React.Component {
+export interface Properties {
+  hasContextPanel: boolean;
+  isContextPanelOpen: boolean;
+}
+
+export class Container extends React.Component<Properties> {
+  static mapState(state: RootState): Partial<Properties> {
+    const layout = state.layout.value;
+
+    return {
+      hasContextPanel: layout.hasContextPanel,
+      isContextPanelOpen: layout.isContextPanelOpen,
+    };
+  }
+
+  static mapActions(_state: RootState): Partial<Properties> {
+    return {};
+  }
+
   render() {
+    const mainClassName = classNames('main', {
+      'context-panel-open': this.props.isContextPanelOpen,
+      'has-context-panel': this.props.hasContextPanel,
+    });
+
     return (
-      <div className='main'>
+      <div className={mainClassName}>
         <div className='main__navigation'>
           <div className='main__navigation-world'>
             <ViewModeToggle className='main__view-mode-toggle' />
@@ -36,3 +62,5 @@ export class Main extends React.Component {
     );
   }
 }
+
+export const Main = connectContainer<{}>(Container);

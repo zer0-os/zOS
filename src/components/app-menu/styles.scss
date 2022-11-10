@@ -1,9 +1,10 @@
 @use '../../shared-components/theme-engine/theme' as theme;
-@import '../../variables';
+@import '../../layout';
 
 .app-menu {
   font-size: 20px;
   color: theme.$font-color-app-menu;
+  user-select: none;
 
   :link {
     display: flex;
@@ -25,6 +26,8 @@
     height: 22px;
     vertical-align: middle;
     padding-right: 14px;
+
+    filter: theme.$icon-color-filter;
   }
 
   &__app {
@@ -37,7 +40,7 @@
       font-weight: 600;
 
       :link {
-        color: #fff;
+        color: var(--font-color-app-menu-active);
       }
     }
 
@@ -60,7 +63,7 @@
       }
 
       &:hover {
-        background-color: rgba(231, 233, 234, 0.1);
+        background-color: theme.$background-color-app-panel-hover;
       }
     }
 

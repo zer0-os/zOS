@@ -8,6 +8,8 @@ import { setSelectedApp } from './store/apps';
 import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
+import { Authentication } from './components/authentication';
+import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 
 export interface Properties {
   setRoute: (routeApp: { route: string; hasAppChanged: boolean }) => void;
@@ -16,11 +18,14 @@ export interface Properties {
   match: { params: { znsRoute: string; app: string } };
   history: History;
   location: { pathname: string; search: string };
+  isAuthenticated: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(_state: RootState): Partial<Properties> {
-    return {};
+    return {
+      isAuthenticated: !!_state.authentication.user?.data && !!_state.web3.value.address,
+    };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -80,11 +85,23 @@ export class Container extends React.Component<Properties> {
     return props.match.params.app as Apps;
   }
 
+  get authenticationContext() {
+    const { isAuthenticated } = this.props;
+    return {
+      isAuthenticated,
+    };
+  }
+
   render() {
     return (
-      <Web3Connect>
-        <Main />
-      </Web3Connect>
+      <>
+        <Authentication />
+        <Web3Connect>
+          <AuthenticationContextProvider value={this.authenticationContext}>
+            <Main />
+          </AuthenticationContextProvider>
+        </Web3Connect>
+      </>
     );
   }
 }

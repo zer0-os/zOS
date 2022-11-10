@@ -9,11 +9,17 @@ export const config = {
   ipfsBaseUrl: process.env.REACT_APP_IPFS_BASE_URL,
   fortmaticApiKey: process.env.REACT_APP_FORTMATIC_API_KEY,
   portisDAppId: process.env.REACT_APP_PORTIS_DAPP_ID,
-  defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.Feed,
+  defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.NFTS,
   supportedChainId: process.env.REACT_APP_ETH_CHAIN || '1',
   appVersion: process.env.REACT_APP_VERSION,
   cloudinary: {
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'fact0ry-dev',
     max_file_size: parseInt(process.env.CLOUDINARY_MAX_FILE_SIZE) || 10485760,
+  },
+  web3AuthenticationMessage: process.env.REACT_APP_WEB3_AUTHENTICATE_MESSAGE,
+  sentry: {
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    environment: process.env.NODE_ENV,
+    release: process.env.REACT_APP_VERSION,
   },
 };

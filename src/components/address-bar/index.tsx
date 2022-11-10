@@ -93,7 +93,7 @@ export class AddressBar extends React.Component<Properties, State> {
     return <span className='address-bar__route'>{this.renderSegments()}</span>;
   }
 
-  showAddressBarMode = (value) => (_event) => {
+  showAddressBarMode = (value) => () => {
     this.setState({ mode: value });
   };
 

@@ -8,15 +8,7 @@ import { ViewModes } from '../../shared-components/theme-engine';
 describe('viewMode saga', () => {
   beforeAll(() => {
     global.localStorage = {
-      state: {
-        'view-mode': '',
-      },
-      setItem(key, item) {
-        this.state[key] = item;
-      },
-      getItem(key) {
-        return this.state[key];
-      },
+      setItem: jest.fn(),
     };
   });
 
@@ -26,5 +18,11 @@ describe('viewMode saga', () => {
     } = await expectSaga(setViewMode, { payload: ViewModes.Light }).withReducer(reducer).run();
 
     expect(value.viewMode).toEqual(ViewModes.Light);
+  });
+
+  it('call localStorage', async () => {
+    expectSaga(setViewMode, { payload: ViewModes.Light }).withReducer(reducer).run();
+
+    expect(localStorage.setItem).toHaveBeenCalled();
   });
 });

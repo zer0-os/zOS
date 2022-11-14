@@ -4,7 +4,7 @@ import { connectContainer } from '../../store/redux-container';
 
 import { ThemeEngine as ThemeEngineComponent, ViewModes } from '../../shared-components/theme-engine';
 import { setViewMode } from '../../store/theme';
-import { savedViewMode } from '../../store/theme/saga';
+import { keyStorageLightMode } from '../../store/theme/saga';
 
 export interface Properties {
   viewMode: ViewModes;
@@ -29,12 +29,12 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    const viewMode = this.getSavedViewMode(savedViewMode) === 'true' ? ViewModes.Light : ViewModes.Dark;
+    const viewMode = this.isLightModeIsSaved(keyStorageLightMode) === 'true' ? ViewModes.Light : ViewModes.Dark;
     this.props.setViewMode(viewMode);
   }
 
-  getSavedViewMode = (savedViewMode: string): string => {
-    return localStorage.getItem(savedViewMode);
+  isLightModeIsSaved = (keyStorageLightMode: string): string => {
+    return localStorage.getItem(keyStorageLightMode);
   };
 
   get isDarkMode() {

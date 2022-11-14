@@ -1,5 +1,6 @@
 export interface AuthorizationResponse {
-  accessToken: string;
+  accessToken?: string;
+  nonceToken?: string;
 }
 
 interface Wallet {

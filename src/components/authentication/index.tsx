@@ -7,7 +7,7 @@ import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { config } from '../../config';
-import { authorize, fetchCurrentUser, clearSession } from '../../store/authentication';
+import { nonceOrAuthorize, fetchCurrentUser, clearSession } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
 
@@ -16,7 +16,7 @@ export interface Properties {
   providerService: { get: () => any };
   currentAddress: string;
   updateConnector: (Connectors) => void;
-  authorizeUser: (payload: { signedWeb3Token: string }) => void;
+  nonceOrAuthorize: (payload: { signedWeb3Token: string }) => void;
   clearSession: () => void;
   fetchCurrentUser: () => void;
   user: AuthenticationState['user'];
@@ -42,7 +42,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      authorizeUser: authorize,
+      nonceOrAuthorize,
       fetchCurrentUser,
       clearSession,
       updateConnector,
@@ -102,7 +102,7 @@ export class Container extends React.Component<Properties, State> {
             console.log(err);
           }
 
-          this.props.authorizeUser({ signedWeb3Token: res.result });
+          this.props.nonceOrAuthorize({ signedWeb3Token: res.result });
         }
       );
     } catch (error) {

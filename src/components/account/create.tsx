@@ -3,15 +3,22 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { config } from '../../config';
+import { fetchCurrentUser } from '../../store/authentication';
 import { createAndAuthorize } from '../../store/authentication/api';
-import { AuthenticationState } from '../../store/authentication/types';
+import { AuthenticationState, AuthorizationResponse } from '../../store/authentication/types';
 
 export interface Properties {
   currentAddress: string;
+  fetchCurrentUser: () => void;
   user: AuthenticationState['user'];
+
+  createAndAuthorize: (nonce: string, user: object, inviteCode: string) => Promise<AuthorizationResponse>;
+  inviteCode: string;
 }
 
 export class Container extends React.Component<Properties> {
+  static defaultProps = { createAndAuthorize, inviteCode: config.inviteCode.dejaVu };
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
@@ -25,30 +32,38 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return {
+      fetchCurrentUser,
+    };
   }
 
-  componentDidUpdate(prevProps: Properties) {
+  componentDidUpdate = async (prevProps: Properties) => {
     const {
       user: { nonce },
       currentAddress,
+      createAndAuthorize,
+      fetchCurrentUser,
+      inviteCode,
     } = this.props;
-    const inviteCode = config.inviteCode.dejaVu;
 
     if (nonce && currentAddress && prevProps.user?.nonce !== nonce) {
-      createAndAuthorize(nonce, this.user(currentAddress), inviteCode).catch((error) => {
-        const {
-          response: {
-            body: { code },
-          },
-        } = error;
+      const authResult = await createAndAuthorize(nonce, this.user(currentAddress), inviteCode)
+        .then((response) => response)
+        .catch((error) => {
+          const {
+            response: {
+              body: { code },
+            },
+          } = error;
 
-        if (/USER_HANDLE_ALREADY_EXISTS/.test(code)) {
-          console.log('Sorry that user handle has already been taken');
-        }
-      });
+          if (/USER_HANDLE_ALREADY_EXISTS/.test(code)) {
+            console.log('Sorry that user handle has already been taken');
+          }
+        });
+
+      if (authResult) fetchCurrentUser();
     }
-  }
+  };
 
   user(currentAddress) {
     const handle = [

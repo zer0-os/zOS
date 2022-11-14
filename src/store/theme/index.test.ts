@@ -1,4 +1,4 @@
-import { reducer, setViewMode, ThemeState } from '.';
+import { receive, reducer, setViewMode, ThemeState } from '.';
 
 import { ViewModes } from '../../shared-components/theme-engine';
 
@@ -13,8 +13,8 @@ describe('theme reducer', () => {
     expect(viewMode).toBe(ViewModes.Dark);
   });
 
-  it('should replace existing state', () => {
-    const actual = reducer(initialExistingState, setViewMode(ViewModes.Dark));
+  it('should replace existing state with new mode', () => {
+    const actual = reducer(initialExistingState, receive(ViewModes.Dark));
 
     expect(actual.value).toMatchObject({ viewMode: ViewModes.Dark });
   });

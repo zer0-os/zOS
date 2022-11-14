@@ -37,7 +37,7 @@ describe('Authentication', () => {
     expect(fetchCurrentUser).toHaveBeenCalledOnce();
   });
 
-  it('should not authorize when fetching is in progress', () => {
+  it('should not nonceOrAuthorize when fetching is in progress', () => {
     const authorize = jest.fn();
 
     subject({
@@ -51,7 +51,7 @@ describe('Authentication', () => {
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('should not authorize when fetch is done and we have', () => {
+  it('should not nonceOrAuthorize when fetch is done and we have', () => {
     const authorize = jest.fn();
 
     subject({
@@ -65,7 +65,7 @@ describe('Authentication', () => {
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('call sendAsync to authorize the user', () => {
+  it('call sendAsync to nonceOrAuthorize the user', () => {
     const sendAsync = jest.fn();
     const authorizeUser = jest.fn();
     const currentAddress = '0x00';
@@ -101,7 +101,7 @@ describe('Authentication', () => {
     );
   });
 
-  it('should authorize the user using the signedWeb3Token', () => {
+  it('should nonceOrAuthorize the user using the signedWeb3Token', () => {
     const authorizeUser = jest.fn();
     const currentAddress = '0x00';
     const signedWeb3Token = '0x0098';

@@ -1,5 +1,6 @@
 export interface AuthorizationResponse {
-  accessToken: string;
+  accessToken?: string;
+  nonceToken?: string;
 }
 
 interface Wallet {
@@ -16,8 +17,9 @@ interface ProfileSummary {
 }
 
 export interface UserPayload {
-  isLoading: boolean;
-  data: User;
+  isLoading?: boolean;
+  data?: User;
+  nonce?: string;
 }
 
 export interface User {

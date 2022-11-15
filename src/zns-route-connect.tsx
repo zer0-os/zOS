@@ -9,6 +9,7 @@ import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
 import { Authentication } from './components/authentication';
+import { Create as CreateAccount } from './components/account/create';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 
 export interface Properties {
@@ -96,6 +97,7 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         <Authentication />
+        <CreateAccount />
         <Web3Connect>
           <AuthenticationContextProvider value={this.authenticationContext}>
             <Main />

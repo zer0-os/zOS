@@ -22,4 +22,7 @@ export const config = {
     environment: process.env.NODE_ENV,
     release: process.env.REACT_APP_VERSION,
   },
+  sendBird: {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+  },
 };

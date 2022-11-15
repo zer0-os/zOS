@@ -15,6 +15,9 @@ import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
+import { ChatConnect } from './chat-connect/chat-connect';
+import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -24,6 +27,9 @@ export interface Properties extends PublicProperties {
   fetchUsers: (payload: PayloadFetchUser) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
+  context: {
+    isAuthenticated: boolean;
+  };
 }
 
 interface PublicProperties {
@@ -93,7 +99,12 @@ export class Container extends React.Component<Properties, State> {
       });
     }
 
-    if (channel && channel.shouldSyncChannels && (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)) {
+    if (
+      !this.props.context.isAuthenticated &&
+      channel &&
+      channel.shouldSyncChannels &&
+      (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)
+    ) {
       this.props.startMessageSync({ channelId });
     }
 
@@ -115,7 +126,9 @@ export class Container extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     const { channelId } = this.props;
-    this.props.stopSyncChannels({ channelId });
+    if (!this.props.context.isAuthenticated) {
+      this.props.stopSyncChannels({ channelId });
+    }
   }
 
   resetCountNewMessage = () => {
@@ -163,20 +176,27 @@ export class Container extends React.Component<Properties, State> {
     if (!this.props.channel) return null;
 
     return (
-      <ChannelView
-        className={classNames({ 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone })}
-        name={this.channel.name}
-        messages={this.channel.messages || []}
-        onFetchMore={this.fetchMore}
-        user={this.props.user.data}
-        sendMessage={this.handlSendMessage}
-        users={this.channel.users || []}
-        countNewMessages={this.state.countNewMessages}
-        resetCountNewMessage={this.resetCountNewMessage}
-        onMessageInputRendered={this.onMessageInputRendered}
-      />
+      <>
+        <IfAuthenticated showChildren>
+          <ChatConnect />
+        </IfAuthenticated>
+        <ChannelView
+          className={classNames({ 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone })}
+          name={this.channel.name}
+          messages={this.channel.messages || []}
+          onFetchMore={this.fetchMore}
+          user={this.props.user.data}
+          sendMessage={this.handlSendMessage}
+          users={this.channel.users || []}
+          countNewMessages={this.state.countNewMessages}
+          resetCountNewMessage={this.resetCountNewMessage}
+          onMessageInputRendered={this.onMessageInputRendered}
+        />
+      </>
     );
   }
 }
 
-export const ChannelViewContainer = connectContainer<PublicProperties>(Container);
+export const ChannelViewContainer = withAuthenticationContext<PublicProperties>(
+  connectContainer<PublicProperties>(Container)
+);

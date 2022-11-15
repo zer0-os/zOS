@@ -147,6 +147,24 @@ export function* stopSyncChannels(action) {
   );
 }
 
+export function* receiveNewMessage(action) {
+  const { channelId: channelIdWithPrefix, message } = action.payload;
+
+  const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
+
+  const currentMessages = yield select(rawMessagesSelector(channelId));
+
+  yield put(
+    receive({
+      id: channelId,
+      messages: [
+        ...currentMessages,
+        message,
+      ],
+    })
+  );
+}
+
 function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {
   return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
 }
@@ -167,4 +185,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
+  yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
 }

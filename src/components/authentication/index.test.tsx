@@ -67,7 +67,7 @@ describe('Authentication', () => {
 
   it('call sendAsync to authorize the user', () => {
     const sendAsync = jest.fn();
-    const authorizeUser = jest.fn();
+    const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
 
     const wrapper = subject({
@@ -80,7 +80,7 @@ describe('Authentication', () => {
           },
         }),
       },
-      authorizeUser,
+      nonceOrAuthorize,
       user: {
         isLoading: false,
         data: null,
@@ -102,7 +102,7 @@ describe('Authentication', () => {
   });
 
   it('should authorize the user using the signedWeb3Token', () => {
-    const authorizeUser = jest.fn();
+    const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
     const signedWeb3Token = '0x0098';
 
@@ -122,17 +122,16 @@ describe('Authentication', () => {
         isLoading: false,
         data: null,
       },
-      authorizeUser,
+      nonceOrAuthorize,
     });
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
-    expect(authorizeUser).toHaveBeenCalledWith({ signedWeb3Token });
+    expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
   });
 
   it('should call updateConnector when sendAsync return error', () => {
     const updateConnector = jest.fn();
     const currentAddress = '0x00';
-    const signedWeb3Token = '0x0098';
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,

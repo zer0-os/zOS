@@ -3,11 +3,11 @@ import { Payload } from './saga';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  Authorize = 'authentication/saga/authorize',
+  NonceOrAuthorize = 'authentication/saga/nonceOrAuthorize',
   ClearSession = 'authentication/saga/clearSession',
   FetchCurrentUser = 'authentication/saga/fetchCurrentUser',
 }
-const authorize = createAction<Payload>(SagaActionTypes.Authorize);
+const nonceOrAuthorize = createAction<Payload>(SagaActionTypes.NonceOrAuthorize);
 const clearSession = createAction<Payload>(SagaActionTypes.ClearSession);
 const fetchCurrentUser = createAction<Payload>(SagaActionTypes.FetchCurrentUser);
 
@@ -27,4 +27,4 @@ const slice = createSlice({
 
 export const { setUser } = slice.actions;
 export const { reducer } = slice;
-export { authorize, fetchCurrentUser, clearSession };
+export { nonceOrAuthorize, fetchCurrentUser, clearSession };

@@ -126,9 +126,7 @@ export class Container extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     const { channelId } = this.props;
-    if (!this.props.context.isAuthenticated) {
-      this.props.stopSyncChannels({ channelId });
-    }
+    this.props.stopSyncChannels({ channelId });
   }
 
   resetCountNewMessage = () => {

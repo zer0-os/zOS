@@ -1,7 +1,8 @@
-@import 'app/theme.scss';
+@use '../../../shared-components/theme-engine/theme' as theme;
+@import '../../../variables';
 
 .status-indicator {
-  z-index: $z-index-loading-bar;
+  z-index: 10000;
   position: fixed;
   top: 0;
   left: 50%;
@@ -9,24 +10,26 @@
   width: 350px;
   padding: 10px;
   pointer-events: none;
-  background-color: $black;
+  background-color: black;
   text-align: center;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 
   &__message {
-    color: $color-accent;
+    color: theme.$accent-color;
     font-size: $font-size-large;
   }
 
   &__reconnect-button {
-    @include text-highlight;
+    cursor: pointer;
     font-size: $font-size-large;
-    font-weight: $weight-extra-bold;
+    font-weight: 900;
     text-decoration: underline;
     padding: 0 10px;
     cursor: pointer;
     pointer-events: auto;
     float: right;
+    background: none;
+    border: none;
   }
 }

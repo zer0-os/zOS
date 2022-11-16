@@ -35,12 +35,12 @@ export class Chat {
     return userPromise;
   }
 
-  initChat(events: RealtimeChatEvents) {
+  initChat(events: RealtimeChatEvents): void {
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
   }
 
-  initConnectionHandlers(events: RealtimeChatEvents) {
+  initConnectionHandlers(events: RealtimeChatEvents): void {
     const connectionHandler = new this.sb.ConnectionHandler();
 
     connectionHandler.onReconnectStarted = () => events.reconnectStart();
@@ -50,7 +50,7 @@ export class Chat {
     this.sb.addConnectionHandler('connectionHandler', connectionHandler);
   }
 
-  initChannelHandlers(events: RealtimeChatEvents) {
+  initChannelHandlers(events: RealtimeChatEvents): void {
     const channelHandler = new this.sb.ChannelHandler();
 
     channelHandler.onMessageReceived = (channel, message) => {
@@ -62,7 +62,7 @@ export class Chat {
     chat.sb.addChannelHandler('chatHandler', channelHandler);
   }
 
-  reconnect() {
+  reconnect(): void {
     this.sb.reconnect();
   }
 

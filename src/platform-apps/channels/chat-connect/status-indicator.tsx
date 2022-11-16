@@ -1,6 +1,6 @@
 import React from 'react';
 
-// require('./styles.scss');
+import './styles.scss';
 
 export interface Properties {
   onForceReconnect: () => void;

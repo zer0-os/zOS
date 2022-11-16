@@ -23,6 +23,6 @@ export const config = {
     release: process.env.REACT_APP_VERSION,
   },
   inviteCode: {
-    dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU || '29e012b1-9893-412d-997e-0c5c8296af2d',
+    dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU,
   },
 };

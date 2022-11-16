@@ -35,6 +35,7 @@ jobs:
       NODE_ENV: development
       REACT_APP_VERSION: ${{secrets.APP_VERSION}}
       REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
+      REACT_APP_INVITE_CODE_DEJAVU: ${{secrets.INVITE_CODE_DEJAVU}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

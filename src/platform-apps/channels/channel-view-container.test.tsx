@@ -24,6 +24,9 @@ describe('ChannelViewContainer', () => {
       fetchUsers: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
+      context: {
+        isAuthenticated: false,
+      },
       ...props,
     };
 
@@ -198,6 +201,29 @@ describe('ChannelViewContainer', () => {
     wrapper.setProps({ channelId: 'the-channel-id', channel: { shouldSyncChannels: true } });
 
     expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('should sync channel when user is authenticated', () => {
+    const startMessageSync = jest.fn();
+
+    const wrapper = subject({
+      startMessageSync,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+      context: {
+        isAuthenticated: false,
+      },
+    });
+
+    wrapper.setProps({
+      channelId: 'the-channel-id',
+      channel: { shouldSyncChannels: true },
+      context: {
+        isAuthenticated: true,
+      },
+    });
+
+    expect(startMessageSync).not.toHaveBeenCalled();
   });
 
   it('should call hasMoreMessages when new messages arrive', async () => {

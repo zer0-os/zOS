@@ -26,6 +26,6 @@ export const config = {
     appId: process.env.REACT_APP_SENDBIRD_APP_ID,
   },
   inviteCode: {
-    dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU || '29e012b1-9893-412d-997e-0c5c8296af2d',
+    dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU,
   },
 };

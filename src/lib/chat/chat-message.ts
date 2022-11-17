@@ -39,18 +39,9 @@ export const getChatMember = (sbMember: any): ChatMember => {
   return chatMember;
 };
 
-function getSender(sendbirdUser, isAdmin) {
+function getSender(sendbirdUser) {
   if (sendbirdUser) {
     return getChatMember(sendbirdUser);
-  } else if (isAdmin) {
-    return {
-      profileImage: null,
-      firstName: 'Zero',
-      lastName: 'Admin',
-      userId: null,
-      profileId: null,
-      isOnline: false,
-    };
   }
 
   return null;
@@ -119,7 +110,7 @@ export function map(sendbirdMessage) {
     parentMessageText,
     createdAt,
     updatedAt,
-    sender: getSender(sender, messageType === 'admin'),
+    sender: getSender(sender),
     ...extractMessageData(data, messageType === 'file'),
   } as unknown as Message;
 }

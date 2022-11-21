@@ -16,6 +16,7 @@ import { ChannelViewContainer } from './channel-view-container';
 import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
+import { AuthenticationState } from '../../store/authentication/types';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -31,13 +32,19 @@ export interface Properties extends PublicProperties {
   fetchChannels: (domainId: string) => void;
   receiveUnreadCount: (domainId: string) => void;
   stopSyncChannels: () => void;
+  user: AuthenticationState['user'];
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const channels = denormalize(state.channelsList.value, state);
 
+    const {
+      authentication: { user },
+    } = state;
+
     return {
+      user,
       domainId: state.zns.value.rootDomainId,
       channels,
     };
@@ -54,6 +61,13 @@ export class Container extends React.Component<Properties> {
   componentDidMount() {
     this.props.fetchChannels(this.props.domainId);
     this.props.receiveUnreadCount(this.props.domainId);
+  }
+
+  componentDidUpdate(prevProps: Properties) {
+    if (prevProps.user.data !== this.props.user.data && this.props.user.data === null) {
+      this.props.fetchChannels(this.props.domainId);
+      this.props.receiveUnreadCount(this.props.domainId);
+    }
   }
 
   componentWillUnmount() {

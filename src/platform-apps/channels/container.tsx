@@ -64,7 +64,7 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    if (prevProps.user.data !== this.props.user.data && this.props.user.data === null) {
+    if (prevProps.user.data !== this.props.user.data) {
       this.props.fetchChannels(this.props.domainId);
       this.props.receiveUnreadCount(this.props.domainId);
     }

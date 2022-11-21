@@ -50,12 +50,14 @@ export enum SagaActionTypes {
   Send = 'messages/saga/send',
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
+  receiveNewMessage = 'messages/saga/receiveNewMessage',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
+const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -63,4 +65,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, startMessageSync, stopSyncChannels };
+export { fetch, send, startMessageSync, stopSyncChannels, receiveNewMessage };

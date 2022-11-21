@@ -30,9 +30,11 @@ export interface Channel {
 
 export enum SagaActionTypes {
   LoadUsers = 'channels/saga/loadUsers',
+  JoinChannel = 'channels/saga/joinChannel',
 }
 
 const loadUsers = createAction<Payload>(SagaActionTypes.LoadUsers);
+const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -44,4 +46,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { loadUsers };
+export { loadUsers, joinChannel };

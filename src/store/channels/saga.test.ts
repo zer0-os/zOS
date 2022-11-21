@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchUsersByChannelId } from './api';
-import { channelIdPrefix, loadUsers } from './saga';
+import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
+import { channelIdPrefix, joinChannel, loadUsers } from './saga';
 
 import { rootReducer } from '..';
 
@@ -28,6 +28,19 @@ describe('channels list saga', () => {
         ],
       ])
       .call(fetchUsersByChannelId, channelIdPrefix + channelId)
+      .run();
+  });
+
+  it('join channel', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    await expectSaga(joinChannel, { payload: { channelId } })
+      .provide([
+        [
+          matchers.call.fn(joinChannelAPI),
+          usersResponse,
+        ],
+      ])
+      .call(joinChannelAPI, channelIdPrefix + channelId)
       .run();
   });
 

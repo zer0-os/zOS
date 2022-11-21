@@ -16,6 +16,7 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      joinChannel: () => undefined,
       user: {
         isLoading: false,
         data: null,
@@ -182,6 +183,20 @@ describe('ChannelViewContainer', () => {
     wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds);
 
     expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call joinChannel when join button is clicked', () => {
+    const joinChannel = jest.fn();
+
+    const wrapper = subject({
+      joinChannel,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('joinChannel')();
+
+    expect(joinChannel).toHaveBeenCalledOnce();
   });
 
   it('startMessageSync messages when channel id is set', () => {

@@ -10,11 +10,12 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { Channel, denormalize, loadUsers as fetchUsers } from '../../store/channels';
+import { Channel, denormalize, loadUsers as fetchUsers, joinChannel } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
+import { Payload as PayloadJoinChannel } from '../../store/channels/saga';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -22,6 +23,7 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
+  joinChannel: (payload: PayloadJoinChannel) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
 }
@@ -54,6 +56,7 @@ export class Container extends React.Component<Properties, State> {
       sendMessage,
       startMessageSync,
       stopSyncChannels,
+      joinChannel,
     };
   }
 
@@ -153,6 +156,13 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  handlJoinChannel = (): void => {
+    const { channelId } = this.props;
+    if (channelId) {
+      this.props.joinChannel({ channelId });
+    }
+  };
+
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
     if (textareaRef && textareaRef.current) {
       textareaRef.current.focus();
@@ -170,6 +180,7 @@ export class Container extends React.Component<Properties, State> {
         onFetchMore={this.fetchMore}
         user={this.props.user.data}
         sendMessage={this.handlSendMessage}
+        joinChannel={this.handlJoinChannel}
         users={this.channel.users || []}
         countNewMessages={this.state.countNewMessages}
         resetCountNewMessage={this.resetCountNewMessage}

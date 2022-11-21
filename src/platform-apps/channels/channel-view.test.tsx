@@ -10,6 +10,7 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../../components/message-input';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -19,11 +20,19 @@ describe('ChannelView', () => {
     { id: 'message-4', message: 'ok!', sender: { userId: 2 }, createdAt: 1659018545428 },
   ];
 
+  const USERS_TEST = [
+    { id: 'userId-1', firstName: 'what', lastName: 'test' },
+    { id: 'userId-2', firstName: 'hello', lastName: 'test' },
+    { id: 'userId-3', firstName: 'hey', lastName: 'test' },
+  ];
+
   const subject = (props: any = {}) => {
     const allProps = {
       name: '',
       messages: [],
+      users: [],
       user: null,
+      joinChannel: () => undefined,
       countNewMessages: 0,
       ...props,
     };
@@ -110,11 +119,40 @@ describe('ChannelView', () => {
   });
 
   it('render MessageInput', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST });
+    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: USERS_TEST[0] });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
     expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('shout not render MessageInput if user not a member', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' } });
+
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
+    expect(ifAuthenticated.find(MessageInput).exists()).toBe(false);
+  });
+
+  it('render joinButton', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' } });
+
+    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(true);
+  });
+
+  it('should not render joinButton', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: USERS_TEST[0] });
+
+    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(false);
+  });
+
+  it('should joinChannel when click joinButton', () => {
+    const joinChannel = jest.fn();
+    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' }, joinChannel });
+
+    wrapper.find('.channel-view__join-wrapper').simulate('click');
+
+    expect(joinChannel).toHaveBeenCalled();
   });
 
   it('render ConnectButton', () => {

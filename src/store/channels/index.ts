@@ -33,6 +33,7 @@ export interface Channel {
   unreadCount?: number;
   groupChannelType: GroupChannelType;
   icon?: string;
+  messageIdCache?: string;
 }
 
 export enum SagaActionTypes {

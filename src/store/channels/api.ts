@@ -6,8 +6,8 @@ export async function fetchUsersByChannelId(channelId: string): Promise<any> {
   return response.body;
 }
 
-export async function joinChannel(channelId: string): Promise<any> {
+export async function joinChannel(channelId: string): Promise<number> {
   const response = await post<any>(`/chatChannels/${channelId}/join`);
 
-  return response.body;
+  return response.status;
 }

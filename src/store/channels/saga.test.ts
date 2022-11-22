@@ -37,6 +37,10 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(joinChannelAPI),
+          200,
+        ],
+        [
+          matchers.call.fn(fetchUsersByChannelId),
           usersResponse,
         ],
       ])

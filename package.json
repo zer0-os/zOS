@@ -27,7 +27,7 @@
     "@zer0-os/zos-feed": "^1.29.0",
     "@zer0-os/zos-zns": "2.3.1",
     "@zero-tech/zapp-buy-domains": "^0.2.1",
-    "@zero-tech/zapp-daos": "^0.3.1",
+    "@zero-tech/zapp-daos": "^0.4.0",
     "@zero-tech/zapp-nfts": "^0.5.2",
     "@zero-tech/zapp-staking": "0.4.8",
     "classnames": "^2.3.1",

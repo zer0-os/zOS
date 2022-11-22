@@ -15,6 +15,11 @@ export interface User {
   lastSeenAt: string;
 }
 
+export enum GroupChannelType {
+  Public = 'public',
+  Private = 'private',
+}
+
 export interface Channel {
   id: string;
   name: string;
@@ -26,6 +31,8 @@ export interface Channel {
   category?: string;
   shouldSyncChannels: boolean;
   unreadCount?: number;
+  groupChannelType: GroupChannelType;
+  icon?: string;
 }
 
 export enum SagaActionTypes {

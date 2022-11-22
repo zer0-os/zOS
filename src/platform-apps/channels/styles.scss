@@ -140,6 +140,20 @@
     &.active,
     &:active {
       @include accent-bar;
+
+      .channel-list__private-icon path {
+        stroke: theme.$actionable-active-color;
+      }
+    }
+
+    &:hover {
+      .channel-list__private-icon path {
+        stroke: theme.$actionable-active-color;
+      }
+    }
+
+    .channel-list__private-icon path {
+      stroke: theme.$actionable-inactive-color;
     }
   }
 

@@ -1,5 +1,7 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
+import { Sender } from 'sendbird';
 import { SagaActionTypes, receive } from '.';
+import { User } from '.';
 
 import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
 
@@ -14,15 +16,11 @@ export function* loadUsers(action) {
   const channelPrefix: string = channelIdPrefix + channelId;
 
   const users = yield call(fetchUsersByChannelId, channelPrefix);
-  const formatUsers = users.map(({ userId: id, ...rest }) => ({
-    id,
-    ...rest,
-  }));
 
   yield put(
     receive({
       id: channelId,
-      users: formatUsers,
+      users: formatUsers(users),
     })
   );
 }
@@ -31,15 +29,22 @@ export function* joinChannel(action) {
   const { channelId } = action.payload;
   const channelPrefix: string = channelIdPrefix + channelId;
 
-  yield call(joinChannelAPI, channelPrefix);
+  yield call(joinChannelAPI, channelId);
   const users = yield call(fetchUsersByChannelId, channelPrefix);
 
   yield put(
     receive({
       id: channelId,
-      users,
+      users: formatUsers(users),
     })
   );
+}
+
+function formatUsers(users): User[] {
+  return users.map(({ userId: id, ...rest }) => ({
+    id,
+    ...rest,
+  }));
 }
 
 export function* saga() {

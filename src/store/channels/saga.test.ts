@@ -44,7 +44,7 @@ describe('channels list saga', () => {
           usersResponse,
         ],
       ])
-      .call(joinChannelAPI, channelIdPrefix + channelId)
+      .call(joinChannelAPI, channelId)
       .run();
   });
 

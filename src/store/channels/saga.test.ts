@@ -1,10 +1,11 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchUsersByChannelId } from './api';
-import { channelIdPrefix, loadUsers } from './saga';
+import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
+import { channelIdPrefix, joinChannel, loadUsers } from './saga';
 
 import { rootReducer } from '..';
+import { fetchChannels } from '../channels-list/api';
 
 describe('channels list saga', () => {
   const usersResponse = [
@@ -19,7 +20,8 @@ describe('channels list saga', () => {
   ];
 
   it('load users', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
+
     await expectSaga(loadUsers, { payload: { channelId } })
       .provide([
         [
@@ -29,6 +31,38 @@ describe('channels list saga', () => {
       ])
       .call(fetchUsersByChannelId, channelIdPrefix + channelId)
       .run();
+  });
+
+  it('join channel and add hasJoined to channel state', async () => {
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasJoined: false,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(joinChannel, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(joinChannelAPI),
+          200,
+        ],
+      ])
+      .call(joinChannelAPI, channelId)
+      .run();
+
+    expect(channels[channelId].hasJoined).toEqual(true);
   });
 
   it('adds users ids to channels state', async () => {
@@ -68,7 +102,7 @@ describe('channels list saga', () => {
   });
 
   it('adds users to normalized state', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
 
     const {
       storeState: {

@@ -28,6 +28,7 @@ export function* fetch(action) {
       icon: currentChannel.icon,
       category: currentChannel.category,
       unreadCount: currentChannel.unreadCount,
+      hasJoined: currentChannel.hasJoined,
     };
 
     if (currentChannel.groupChannelType) {
@@ -50,6 +51,7 @@ export function* unreadCountUpdated(action) {
       icon: channel.icon,
       category: channel.category,
       unreadCount: channel.unreadCount ? channel.unreadCount : 0,
+      hasJoined: channel.hasJoined,
     };
   });
 

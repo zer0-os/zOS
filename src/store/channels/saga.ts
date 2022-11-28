@@ -1,9 +1,7 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
-import getDeepProperty from 'lodash.get';
 import { SagaActionTypes, receive } from '.';
 import { select } from 'redux-saga-test-plan/matchers';
 import { User } from '.';
-import { fetch as fetchChannels } from '../channels-list/saga';
 
 import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
 
@@ -11,7 +9,6 @@ export interface Payload {
   channelId: string;
 }
 
-const rawAsyncRootDomainId = () => (state) => getDeepProperty(state, 'zns.value.rootDomainId', '');
 export const channelIdPrefix = 'sendbird_group_channel_';
 
 export function* loadUsers(action) {
@@ -30,10 +27,15 @@ export function* loadUsers(action) {
 
 export function* joinChannel(action) {
   const { channelId } = action.payload;
-  const domainId = yield select(rawAsyncRootDomainId());
 
   yield call(joinChannelAPI, channelId);
-  yield call(fetchChannels, { payload: domainId });
+
+  yield put(
+    receive({
+      id: channelId,
+      hasJoined: true,
+    })
+  );
 }
 
 function formatUsers(users): User[] {

@@ -7,12 +7,6 @@ import { channelIdPrefix, joinChannel, loadUsers } from './saga';
 import { rootReducer } from '..';
 import { fetchChannels } from '../channels-list/api';
 
-const MOCK_CHANNELS = [
-  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
-];
-
 describe('channels list saga', () => {
   const usersResponse = [
     {
@@ -26,7 +20,8 @@ describe('channels list saga', () => {
   ];
 
   it('load users', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
+
     await expectSaga(loadUsers, { payload: { channelId } })
       .provide([
         [
@@ -38,21 +33,36 @@ describe('channels list saga', () => {
       .run();
   });
 
-  it('join channel', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    await expectSaga(joinChannel, { payload: { channelId } })
+  it('join channel and add hasJoined to channel state', async () => {
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasJoined: false,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(joinChannel, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
       .provide([
         [
           matchers.call.fn(joinChannelAPI),
           200,
         ],
-        [
-          matchers.call.fn(fetchChannels),
-          MOCK_CHANNELS,
-        ],
       ])
       .call(joinChannelAPI, channelId)
       .run();
+
+    expect(channels[channelId].hasJoined).toEqual(true);
   });
 
   it('adds users ids to channels state', async () => {
@@ -92,7 +102,7 @@ describe('channels list saga', () => {
   });
 
   it('adds users to normalized state', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
 
     const {
       storeState: {

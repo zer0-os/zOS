@@ -26,6 +26,9 @@ const rawMessagesSelector = (channelId) => (state) => {
 const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
+const getCachedMessageId = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdCache`, '');
+};
 
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
@@ -68,16 +71,19 @@ export function* send(action) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
+  const temporaryMessage = messageFactory(message, currentUser);
+
   yield put(
     receive({
       id: channelId,
       messages: [
         ...existingMessages,
-        messageFactory(message, currentUser),
+        temporaryMessage,
       ],
       shouldSyncChannels: true,
       countNewMessages: 0,
       lastMessageCreatedAt: 0,
+      messageIdCache: temporaryMessage.id,
     })
   );
 
@@ -92,21 +98,7 @@ export function* send(action) {
         shouldSyncChannels: true,
         countNewMessages: 0,
         lastMessageCreatedAt: messagesResponse.body.createdAt,
-      })
-    );
-  } else {
-    const messages = [
-      ...existingMessages,
-      messagesResponse.body,
-    ];
-
-    yield put(
-      receive({
-        id: channelId,
-        messages,
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
+        messageIdCache: '',
       })
     );
   }
@@ -152,15 +144,19 @@ export function* receiveNewMessage(action) {
 
   const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
 
+  const cachedMessageId = yield select(getCachedMessageId(channelId));
   const currentMessages = yield select(rawMessagesSelector(channelId));
+
+  const messages = [
+    ...currentMessages,
+    message,
+  ].filter((messageId) => messageId !== cachedMessageId);
 
   yield put(
     receive({
       id: channelId,
-      messages: [
-        ...currentMessages,
-        message,
-      ],
+      messages,
+      messageIdCache: '',
     })
   );
 }

@@ -28,6 +28,9 @@ describe('ChannelsContainer', () => {
       stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
+      user: {
+        data: null,
+      },
       ...props,
     };
 
@@ -140,6 +143,9 @@ describe('ChannelsContainer', () => {
         },
         normalized: {
           ...(state.normalized || {}),
+        },
+        authentication: {
+          ...(state.authentication || {}),
         },
         web3: {
           ...(state.web3 || {

@@ -1,3 +1,4 @@
+import { Channel } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, delay } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
@@ -20,14 +21,22 @@ export function* fetch(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
   const channels = yield call(fetchChannels, action.payload);
-  const channelsList = channels.map((channel) => ({
-    id: channel.url.replace(channelIdPrefix, ''),
-    name: channel.name,
-    icon: channel.icon,
-    category: channel.category,
-    unreadCount: channel.unreadCount,
-    hasJoined: channel.hasJoined,
-  }));
+  const channelsList = channels.map((currentChannel) => {
+    const channel: Partial<Channel> = {
+      id: currentChannel.url.replace(channelIdPrefix, ''),
+      name: currentChannel.name,
+      icon: currentChannel.icon,
+      category: currentChannel.category,
+      unreadCount: currentChannel.unreadCount,
+      hasJoined: currentChannel.hasJoined,
+    };
+
+    if (currentChannel.groupChannelType) {
+      channel.groupChannelType = currentChannel.groupChannelType;
+    }
+
+    return channel;
+  });
   yield put(receive(channelsList));
 
   yield put(setStatus(AsyncListStatus.Idle));

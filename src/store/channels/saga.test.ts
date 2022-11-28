@@ -5,6 +5,13 @@ import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
 import { channelIdPrefix, joinChannel, loadUsers } from './saga';
 
 import { rootReducer } from '..';
+import { fetchChannels } from '../channels-list/api';
+
+const MOCK_CHANNELS = [
+  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
+];
 
 describe('channels list saga', () => {
   const usersResponse = [
@@ -38,6 +45,10 @@ describe('channels list saga', () => {
         [
           matchers.call.fn(joinChannelAPI),
           200,
+        ],
+        [
+          matchers.call.fn(fetchChannels),
+          MOCK_CHANNELS,
         ],
       ])
       .call(joinChannelAPI, channelId)

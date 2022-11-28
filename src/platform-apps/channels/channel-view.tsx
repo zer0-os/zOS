@@ -24,6 +24,7 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
+  hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[]) => void;
   joinChannel: () => void;
   resetCountNewMessage: () => void;
@@ -106,10 +107,9 @@ export class ChannelView extends React.Component<Properties, State> {
   };
 
   isMemberChannel = (): boolean => {
-    const { user, users } = this.props;
-    if (!user || !users) return false;
+    const { hasJoined } = this.props;
 
-    return users.some((member) => member.id === user.id);
+    return hasJoined;
   };
 
   renderDay(day: string, messagesByDay: ChatMessageGroups) {

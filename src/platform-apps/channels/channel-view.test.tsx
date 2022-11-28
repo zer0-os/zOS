@@ -20,17 +20,11 @@ describe('ChannelView', () => {
     { id: 'message-4', message: 'ok!', sender: { userId: 2 }, createdAt: 1659018545428 },
   ];
 
-  const USERS_TEST = [
-    { id: 'userId-1', firstName: 'what', lastName: 'test' },
-    { id: 'userId-2', firstName: 'hello', lastName: 'test' },
-    { id: 'userId-3', firstName: 'hey', lastName: 'test' },
-  ];
-
   const subject = (props: any = {}) => {
     const allProps = {
       name: '',
       messages: [],
-      users: [],
+      hasJoined: false,
       user: null,
       joinChannel: () => undefined,
       countNewMessages: 0,
@@ -119,7 +113,7 @@ describe('ChannelView', () => {
   });
 
   it('render MessageInput', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: USERS_TEST[0] });
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
@@ -127,7 +121,7 @@ describe('ChannelView', () => {
   });
 
   it('shout not render MessageInput if user not a member', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
@@ -135,20 +129,20 @@ describe('ChannelView', () => {
   });
 
   it('render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
 
     expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(true);
   });
 
   it('should not render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: USERS_TEST[0] });
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, user: { id: 'userId-test' } });
 
     expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(false);
   });
 
   it('should joinChannel when click joinButton', () => {
     const joinChannel = jest.fn();
-    const wrapper = subject({ messages: MESSAGES_TEST, users: USERS_TEST, user: { id: 'userId-test' }, joinChannel });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' }, joinChannel });
 
     wrapper.find('.channel-view__join-wrapper').simulate('click');
 

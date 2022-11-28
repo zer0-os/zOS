@@ -26,6 +26,7 @@ export interface Channel {
   category?: string;
   shouldSyncChannels: boolean;
   unreadCount?: number;
+  hasJoined?: boolean;
 }
 
 export enum SagaActionTypes {

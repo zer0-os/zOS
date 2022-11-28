@@ -26,6 +26,7 @@ export function* fetch(action) {
     icon: channel.icon,
     category: channel.category,
     unreadCount: channel.unreadCount,
+    hasJoined: channel.hasJoined,
   }));
   yield put(receive(channelsList));
 
@@ -41,6 +42,7 @@ export function* unreadCountUpdated(action) {
       icon: channel.icon,
       category: channel.category,
       unreadCount: channel.unreadCount ? channel.unreadCount : 0,
+      hasJoined: channel.hasJoined,
     };
   });
 

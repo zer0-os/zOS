@@ -197,6 +197,7 @@ export class Container extends React.Component<Properties, State> {
           sendMessage={this.handlSendMessage}
           joinChannel={this.handlJoinChannel}
           users={this.channel.users || []}
+          hasJoined={this.channel.hasJoined || false}
           countNewMessages={this.state.countNewMessages}
           resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}

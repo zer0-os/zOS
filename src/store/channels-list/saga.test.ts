@@ -9,9 +9,9 @@ import { rootReducer } from '..';
 import { AsyncListStatus } from '../normalized';
 
 const MOCK_CHANNELS = [
-  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon' },
-  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon' },
-  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon' },
+  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
 ];
 
 describe('channels list saga', () => {
@@ -86,6 +86,7 @@ describe('channels list saga', () => {
     const icon = 'channel-icon';
     const category = 'channel-category';
     const unreadCount = 1;
+    const hasJoined = true;
 
     const {
       storeState: { normalized },
@@ -93,13 +94,13 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon, category, unreadCount }],
+          [{ url, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount });
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount, hasJoined });
   });
 
   it('set unreadCountUpdated on channels', async () => {
@@ -108,6 +109,7 @@ describe('channels list saga', () => {
     const icon = 'channel-icon';
     const category = 'channel-category';
     const unreadCount = 1;
+    const hasJoined = true;
 
     const {
       storeState: { normalized },
@@ -115,13 +117,13 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon, category, unreadCount }],
+          [{ url, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount });
+    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount, hasJoined });
   });
 
   it('sets status to Stopped', async () => {

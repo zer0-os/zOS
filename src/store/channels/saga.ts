@@ -27,17 +27,8 @@ export function* loadUsers(action) {
 
 export function* joinChannel(action) {
   const { channelId } = action.payload;
-  const channelPrefix: string = channelIdPrefix + channelId;
 
   yield call(joinChannelAPI, channelId);
-  const users = yield call(fetchUsersByChannelId, channelPrefix);
-
-  yield put(
-    receive({
-      id: channelId,
-      users: formatUsers(users),
-    })
-  );
 }
 
 function formatUsers(users): User[] {

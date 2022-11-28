@@ -39,10 +39,6 @@ describe('channels list saga', () => {
           matchers.call.fn(joinChannelAPI),
           200,
         ],
-        [
-          matchers.call.fn(fetchUsersByChannelId),
-          usersResponse,
-        ],
       ])
       .call(joinChannelAPI, channelId)
       .run();

@@ -67,7 +67,7 @@ describe('messages saga', () => {
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
       .run();
-    expect(channels[channelId].messageIdCache).not.toStrictEqual('');
+    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
 
   it('send message return a 400 status', async () => {
@@ -120,7 +120,7 @@ describe('messages saga', () => {
       .run();
 
     expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
-    expect(channels[channelId].messageIdCache).toStrictEqual('');
+    expect(channels[channelId].messageIdsCache.length).toEqual(1);
   });
 
   it('fetches messages for referenceTimestamp', async () => {

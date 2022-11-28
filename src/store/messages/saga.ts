@@ -26,8 +26,8 @@ const rawMessagesSelector = (channelId) => (state) => {
 const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
-const getCachedMessageId = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdCache`, '');
+const getCachedMessageIds = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdsCache`, []);
 };
 
 const rawShouldSyncChannels = (channelId) => (state) =>
@@ -67,11 +67,16 @@ export function* fetch(action) {
 
 export function* send(action) {
   const { channelId, message, mentionedUserIds } = action.payload;
+  // cloning the array to be able to push new cache id
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
 
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
   const temporaryMessage = messageFactory(message, currentUser);
+
+  // add cache message id to prevent having double messages when we receive the message from sendbird.
+  cachedMessageIds.push(temporaryMessage.id);
 
   yield put(
     receive({
@@ -83,7 +88,7 @@ export function* send(action) {
       shouldSyncChannels: true,
       countNewMessages: 0,
       lastMessageCreatedAt: 0,
-      messageIdCache: temporaryMessage.id,
+      messageIdsCache: cachedMessageIds,
     })
   );
 
@@ -98,7 +103,7 @@ export function* send(action) {
         shouldSyncChannels: true,
         countNewMessages: 0,
         lastMessageCreatedAt: messagesResponse.body.createdAt,
-        messageIdCache: '',
+        messageIdsCache: cachedMessageIds,
       })
     );
   }
@@ -144,19 +149,32 @@ export function* receiveNewMessage(action) {
 
   const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
 
-  const cachedMessageId = yield select(getCachedMessageId(channelId));
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
 
-  const messages = [
+  let messages = [
     ...currentMessages,
     message,
-  ].filter((messageId) => messageId !== cachedMessageId);
+  ];
+
+  if (cachedMessageIds.length) {
+    const firstCachedMessageId = cachedMessageIds[0];
+
+    messages = messages.filter((messageId) => {
+      if (messageId === firstCachedMessageId) {
+        cachedMessageIds.shift();
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
 
   yield put(
     receive({
       id: channelId,
       messages,
-      messageIdCache: '',
+      messageIdsCache: cachedMessageIds,
     })
   );
 }

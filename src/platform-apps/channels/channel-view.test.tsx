@@ -120,7 +120,7 @@ describe('ChannelView', () => {
     expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
   });
 
-  it('shout not render MessageInput if user not a member', () => {
+  it('should not render MessageInput if user not a member', () => {
     const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });

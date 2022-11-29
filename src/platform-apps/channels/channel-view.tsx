@@ -106,12 +106,6 @@ export class ChannelView extends React.Component<Properties, State> {
     return false;
   };
 
-  isMemberChannel = (): boolean => {
-    const { hasJoined } = this.props;
-
-    return hasJoined;
-  };
-
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
     const allMessages = messagesByDay[day];
 
@@ -165,6 +159,7 @@ export class ChannelView extends React.Component<Properties, State> {
 
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
+    const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
       <div className={classNames('channel-view', this.props.className)}>
@@ -190,7 +185,7 @@ export class ChannelView extends React.Component<Properties, State> {
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
           <IfAuthenticated showChildren>
-            {this.isMemberChannel() && (
+            {isMemberOfChannel && (
               <MessageInput
                 onMessageInputRendered={this.props.onMessageInputRendered}
                 placeholder='Speak your truth...'
@@ -198,7 +193,7 @@ export class ChannelView extends React.Component<Properties, State> {
                 users={this.props.users}
               />
             )}
-            {!this.isMemberChannel() && this.renderJoinButton()}
+            {!isMemberOfChannel && this.renderJoinButton()}
           </IfAuthenticated>
           <IfAuthenticated hideChildren>
             <ConnectButton className='authentication__connect-wrapper--with-space' />

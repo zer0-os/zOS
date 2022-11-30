@@ -1,6 +1,5 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
-import { select } from 'redux-saga-test-plan/matchers';
 import { User } from '.';
 
 import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';

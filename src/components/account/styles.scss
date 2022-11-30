@@ -1,0 +1,65 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+@import '../../variables';
+
+.profile-prompt {
+  padding: 40px;
+  background: #141118;
+  box-shadow: 12px 11px 54px #040304;
+  border-radius: 16px;
+
+  &__head {
+    border-bottom: 1px solid #37273f;
+    font-size: $font-size-xl;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }
+
+  &__title {
+    font-size: $font-size-large;
+    padding: 0;
+    margin: 0 0 10px 0;
+  }
+
+  &__text {
+    font-size: $font-size-small;
+    color: #a09fa6;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__picture {
+    margin-top: 32px;
+    margin-bottom: 32px;
+  }
+
+  &__input-text {
+    background: transparent;
+    border: 1px solid #404040;
+    border-radius: 8px;
+    height: 40px;
+    width: 100%;
+    margin-top: 16px;
+    color: white;
+  }
+
+  &__display-name {
+    margin-bottom: 40px;
+  }
+
+  &__submit {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__image-upload {
+    margin-top: 20px;
+  }
+
+  &__connection-status {
+    color: #58c573;
+  }
+  &__address-value {
+    font-weight: 700;
+    font-size: 16px;
+  }
+}

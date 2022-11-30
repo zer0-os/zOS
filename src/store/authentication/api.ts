@@ -30,3 +30,8 @@ export async function createAndAuthorize(
 ): Promise<AuthorizationResponse> {
   return await post('/accounts/createAndAuthorize').set('Authorization', `Nonce ${nonce}`).send({ user, inviteCode });
 }
+
+export async function updateImageProfile(profileId: string, imageFile: any): Promise<AuthorizationResponse> {
+  debugger;
+  return await post('/upload/avatar').send({ profileId, imageFile });
+}

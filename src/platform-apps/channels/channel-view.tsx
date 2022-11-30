@@ -13,6 +13,7 @@ import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
+import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -23,8 +24,10 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
+  hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[]) => void;
   deleteMessage: (messageId: number) => void;
+  joinChannel: () => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];
@@ -146,8 +149,20 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
+  renderJoinButton() {
+    return (
+      <div
+        onClick={this.props.joinChannel}
+        className={classNames(this.props.className, 'channel-view__join-wrapper')}
+      >
+        <ComponentButton>Join Channel</ComponentButton>
+      </div>
+    );
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
+    const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
       <div className={classNames('channel-view', this.props.className)}>
@@ -173,12 +188,15 @@ export class ChannelView extends React.Component<Properties, State> {
           {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
           {this.props.messages.length > 0 && this.renderMessages()}
           <IfAuthenticated showChildren>
-            <MessageInput
-              onMessageInputRendered={this.props.onMessageInputRendered}
-              placeholder='Speak your truth...'
-              onSubmit={this.props.sendMessage}
-              users={this.props.users}
-            />
+            {isMemberOfChannel && (
+              <MessageInput
+                onMessageInputRendered={this.props.onMessageInputRendered}
+                placeholder='Speak your truth...'
+                onSubmit={this.props.sendMessage}
+                users={this.props.users}
+              />
+            )}
+            {!isMemberOfChannel && this.renderJoinButton()}
           </IfAuthenticated>
           <IfAuthenticated hideChildren>
             <ConnectButton className='authentication__connect-wrapper--with-space' />

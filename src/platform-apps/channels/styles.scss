@@ -122,6 +122,16 @@
         margin-bottom: 1px;
       }
     }
+
+    &__join-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+
+      &--with-space {
+        padding-bottom: 20px;
+      }
+    }
   }
 
   &-list__channel {

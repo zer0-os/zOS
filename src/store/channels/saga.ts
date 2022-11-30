@@ -1,7 +1,7 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
 
-import { fetchUsersByChannelId } from './api';
+import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
 
 export interface Payload {
   channelId: string;
@@ -27,6 +27,20 @@ export function* loadUsers(action) {
   );
 }
 
+export function* joinChannel(action) {
+  const { channelId } = action.payload;
+
+  yield call(joinChannelAPI, channelId);
+
+  yield put(
+    receive({
+      id: channelId,
+      hasJoined: true,
+    })
+  );
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.LoadUsers, loadUsers);
+  yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
 }

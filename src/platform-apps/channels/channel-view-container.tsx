@@ -11,11 +11,12 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { Channel, denormalize, loadUsers as fetchUsers } from '../../store/channels';
+import { Channel, denormalize, loadUsers as fetchUsers, joinChannel } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
+import { Payload as PayloadJoinChannel } from '../../store/channels/saga';
 import { ChatConnect } from './chat-connect/chat-connect';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
@@ -27,6 +28,7 @@ export interface Properties extends PublicProperties {
   sendMessage: (payload: PayloadSendMessage) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
+  joinChannel: (payload: PayloadJoinChannel) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   context: {
@@ -63,6 +65,7 @@ export class Container extends React.Component<Properties, State> {
       startMessageSync,
       stopSyncChannels,
       deleteMessage,
+      joinChannel,
     };
   }
 
@@ -160,7 +163,7 @@ export class Container extends React.Component<Properties, State> {
     return !!message && message.trim() !== '';
   };
 
-  handlSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
+  handleSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
     const { channelId } = this.props;
     if (channelId && this.isNotEmpty(message)) {
       this.props.sendMessage({ channelId, message, mentionedUserIds });
@@ -171,6 +174,13 @@ export class Container extends React.Component<Properties, State> {
     const { channelId } = this.props;
     if (channelId && messageId) {
       this.props.deleteMessage({ channelId, messageId });
+    }
+  };
+
+  handleJoinChannel = (): void => {
+    const { channelId } = this.props;
+    if (channelId) {
+      this.props.joinChannel({ channelId });
     }
   };
 
@@ -194,9 +204,11 @@ export class Container extends React.Component<Properties, State> {
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
-          sendMessage={this.handlSendMessage}
           deleteMessage={this.handlDeleteMessage}
+          sendMessage={this.handleSendMessage}
+          joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}
+          hasJoined={this.channel.hasJoined || false}
           countNewMessages={this.state.countNewMessages}
           resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}

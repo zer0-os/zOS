@@ -27,6 +27,9 @@ const rawMessagesSelector = (channelId) => (state) => {
 const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
+const getCachedMessageIds = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdsCache`, []);
+};
 
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
@@ -65,20 +68,28 @@ export function* fetch(action) {
 
 export function* send(action) {
   const { channelId, message, mentionedUserIds } = action.payload;
+  // cloning the array to be able to push new cache id
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
 
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
+
+  const temporaryMessage = messageFactory(message, currentUser);
+
+  // add cache message id to prevent having double messages when we receive the message from sendbird.
+  cachedMessageIds.push(temporaryMessage.id);
 
   yield put(
     receive({
       id: channelId,
       messages: [
         ...existingMessages,
-        messageFactory(message, currentUser),
+        temporaryMessage,
       ],
       shouldSyncChannels: true,
       countNewMessages: 0,
       lastMessageCreatedAt: 0,
+      messageIdsCache: cachedMessageIds,
     })
   );
 
@@ -93,21 +104,7 @@ export function* send(action) {
         shouldSyncChannels: true,
         countNewMessages: 0,
         lastMessageCreatedAt: messagesResponse.body.createdAt,
-      })
-    );
-  } else {
-    const messages = [
-      ...existingMessages,
-      messagesResponse.body,
-    ];
-
-    yield put(
-      receive({
-        id: channelId,
-        messages,
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
+        messageIdsCache: cachedMessageIds,
       })
     );
   }
@@ -160,15 +157,32 @@ export function* receiveNewMessage(action) {
 
   const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
 
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
+
+  let messages = [
+    ...currentMessages,
+    message,
+  ];
+
+  if (cachedMessageIds.length) {
+    const firstCachedMessageId = cachedMessageIds[0];
+
+    messages = messages.filter((messageId) => {
+      if (messageId === firstCachedMessageId) {
+        cachedMessageIds.shift();
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
 
   yield put(
     receive({
       id: channelId,
-      messages: [
-        ...currentMessages,
-        message,
-      ],
+      messages,
+      messageIdsCache: cachedMessageIds,
     })
   );
 }

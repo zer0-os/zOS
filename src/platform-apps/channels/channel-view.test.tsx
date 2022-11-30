@@ -10,6 +10,7 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../../components/message-input';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
@@ -23,7 +24,9 @@ describe('ChannelView', () => {
     const allProps = {
       name: '',
       messages: [],
+      hasJoined: false,
       user: null,
+      joinChannel: () => undefined,
       countNewMessages: 0,
       ...props,
     };
@@ -110,11 +113,40 @@ describe('ChannelView', () => {
   });
 
   it('render MessageInput', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST });
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
     expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('should not render MessageInput if user not a member', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
+
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
+    expect(ifAuthenticated.find(MessageInput).exists()).toBe(false);
+  });
+
+  it('render joinButton', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
+
+    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(true);
+  });
+
+  it('should not render joinButton', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, user: { id: 'userId-test' } });
+
+    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(false);
+  });
+
+  it('should joinChannel when click joinButton', () => {
+    const joinChannel = jest.fn();
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' }, joinChannel });
+
+    wrapper.find('.channel-view__join-wrapper').simulate('click');
+
+    expect(joinChannel).toHaveBeenCalled();
   });
 
   it('render ConnectButton', () => {

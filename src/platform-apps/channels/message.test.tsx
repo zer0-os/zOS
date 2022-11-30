@@ -77,6 +77,14 @@ describe('message', () => {
     expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
   });
 
+  it('renders menu of delete', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    expect(wrapper.find('.message__menu-item').exists()).toBe(true);
+  });
+
   it('passes src prop to image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 

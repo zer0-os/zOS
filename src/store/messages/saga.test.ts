@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
-import { fetch, send, fetchNewMessages, stopSyncChannels } from './saga';
+import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi } from './api';
+import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage } from './saga';
 
 import { rootReducer } from '..';
 import { channelIdPrefix } from '../channels-list/saga';
@@ -130,6 +130,26 @@ describe('messages saga', () => {
       ])
       .withReducer(rootReducer)
       .call(fetchMessagesByChannelId, channelIdPrefix + channelId, 1658776625730)
+      .run();
+  });
+
+  it('delete message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const messageId = 123456;
+
+    await expectSaga(deleteMessage, { payload: { channelId, messageId } })
+      .provide([
+        [
+          matchers.call.fn(deleteMessageApi),
+          {},
+        ],
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          MESSAGES_RESPONSE,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(deleteMessageApi, channelId, messageId)
       .run();
   });
 

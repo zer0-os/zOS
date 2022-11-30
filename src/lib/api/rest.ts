@@ -43,6 +43,6 @@ export async function put<T>(path: string, data: any = {}) {
   return response.body;
 }
 
-export async function del<T>(path: string) {
-  return await Request.delete<T>(apiUrl(path)).withCredentials();
+export function del<T>(path: string) {
+  return Request.delete<T>(apiUrl(path)).withCredentials();
 }

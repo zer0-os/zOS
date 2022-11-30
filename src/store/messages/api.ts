@@ -1,4 +1,4 @@
-import { get, post } from '../../lib/api/rest';
+import { del, get, post } from '../../lib/api/rest';
 import { MessagesResponse } from './index';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -18,6 +18,12 @@ export async function sendMessagesByChannelId(
   mentionedUserIds: string[]
 ): Promise<any> {
   const response = await post<any>(`/chatChannels/${channelId}/message`).send({ message, mentionedUserIds });
+
+  return response;
+}
+
+export async function deleteMessageApi(channelId: string, messageId: number): Promise<any> {
+  const response = await del<any>(`/chatChannels/${channelId}/message`).send({ message: { id: messageId } });
 
   return response;
 }

@@ -24,6 +24,7 @@ export interface Properties {
   onFetchMore: () => void;
   user: User;
   sendMessage: (message: string, mentionedUserIds: string[]) => void;
+  deleteMessage: (messageId: number) => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];
@@ -125,7 +126,9 @@ export class ChannelView extends React.Component<Properties, State> {
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
               onImageClick={this.openLightbox}
               key={message.id}
+              messageId={message.id}
               isOwner={isUserOwnerOfTheMessage}
+              onDelete={this.props.deleteMessage}
               {...message}
             />
           );

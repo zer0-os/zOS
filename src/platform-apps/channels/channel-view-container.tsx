@@ -6,6 +6,7 @@ import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
   send as sendMessage,
+  deleteMessage,
   Message,
   startMessageSync,
   stopSyncChannels,
@@ -24,6 +25,7 @@ export interface Properties extends PublicProperties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
+  deleteMessage: (payload: PayloadFetchMessages) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
@@ -60,6 +62,7 @@ export class Container extends React.Component<Properties, State> {
       sendMessage,
       startMessageSync,
       stopSyncChannels,
+      deleteMessage,
     };
   }
 
@@ -164,6 +167,13 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  handlDeleteMessage = (messageId: number): void => {
+    const { channelId } = this.props;
+    if (channelId && messageId) {
+      this.props.deleteMessage({ channelId, messageId });
+    }
+  };
+
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
     if (textareaRef && textareaRef.current) {
       textareaRef.current.focus();
@@ -185,6 +195,7 @@ export class Container extends React.Component<Properties, State> {
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
           sendMessage={this.handlSendMessage}
+          deleteMessage={this.handlDeleteMessage}
           users={this.channel.users || []}
           countNewMessages={this.state.countNewMessages}
           resetCountNewMessage={this.resetCountNewMessage}

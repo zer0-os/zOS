@@ -160,14 +160,14 @@ export class Container extends React.Component<Properties, State> {
     return !!message && message.trim() !== '';
   };
 
-  handlSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
+  handleSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
     const { channelId } = this.props;
     if (channelId && this.isNotEmpty(message)) {
       this.props.sendMessage({ channelId, message, mentionedUserIds });
     }
   };
 
-  handlJoinChannel = (): void => {
+  handleJoinChannel = (): void => {
     const { channelId } = this.props;
     if (channelId) {
       this.props.joinChannel({ channelId });
@@ -194,8 +194,8 @@ export class Container extends React.Component<Properties, State> {
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
-          sendMessage={this.handlSendMessage}
-          joinChannel={this.handlJoinChannel}
+          sendMessage={this.handleSendMessage}
+          joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}
           hasJoined={this.channel.hasJoined || false}
           countNewMessages={this.state.countNewMessages}

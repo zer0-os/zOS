@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, FormEvent } from 'react';
 import { Dialog } from '@zer0-os/zos-component-library';
 
 import { RootState } from '../../store';
@@ -7,7 +7,9 @@ import { config } from '../../config';
 import { fetchCurrentUser } from '../../store/authentication';
 import { createAndAuthorize, updateImageProfile } from '../../store/authentication/api';
 import { AuthenticationState, AuthorizationResponse } from '../../store/authentication/types';
-import { ImageUpload } from '../image-upload/image-upload';
+import { ImageUpload } from '../image-upload';
+import { Button } from '@zer0-os/zos-component-library';
+
 import './styles.scss';
 
 export interface Properties {
@@ -23,10 +25,11 @@ export interface Properties {
 interface State {
   displayName: string;
   showDialog: boolean;
+  profileImage: File;
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { displayName: '', showDialog: false };
+  state = { displayName: '', showDialog: false, profileImage: null };
   static defaultProps = { createAndAuthorize, updateImageProfile, inviteCode: config.inviteCode.dejaVu };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -54,25 +57,55 @@ export class Container extends React.Component<Properties, State> {
     } = this.props;
 
     if (nonce && currentAddress && prevProps.user?.nonce !== nonce) {
-      console.log('ahsdjhasjdhasjhd');
       this.setState({
         showDialog: true,
       });
+    }
+
+    if (
+      this.state.showDialog &&
+      this.props.user.isLoading === false &&
+      prevProps.user &&
+      prevProps.user.data === null &&
+      this.props.user.data !== null
+    ) {
+      this.updateProfileImage();
     }
   };
 
   shortAddress = (): string => {
     const { currentAddress } = this.props;
 
-    return [
-      currentAddress.slice(0, 6),
-      '...',
-      currentAddress.slice(-4),
-    ].join('');
+    if (!currentAddress) {
+      return '';
+    } else {
+      return [
+        currentAddress.slice(0, 6),
+        '...',
+        currentAddress.slice(-4),
+      ].join('');
+    }
   };
 
-  onSubmit = async (event) => {
-    event.preventDefault();
+  closeDialog() {
+    this.setState({
+      showDialog: false,
+    });
+  }
+
+  updateProfileImage = async (): Promise<void> => {
+    const profileId = this.props.user.data.profileId;
+
+    try {
+      await this.props.updateImageProfile(profileId, this.state.profileImage);
+      this.closeDialog();
+    } catch (error) {
+      console.log('updating image profile failed. error:', error);
+    }
+  };
+
+  onSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
 
     const {
       user: { nonce },
@@ -85,15 +118,8 @@ export class Container extends React.Component<Properties, State> {
 
     const user = { handle, firstName: this.state.displayName || handle, lastName: '' };
 
-    // debugger;
-    // return
     const authorizationResult = await createAndAuthorize(nonce, user, inviteCode)
-      .then((response) => {
-        console.log(response);
-        debugger;
-        // updateImageProfile(response)
-        return response;
-      })
+      .then((response) => response)
       .catch((error) => {
         const {
           response: {
@@ -117,10 +143,10 @@ export class Container extends React.Component<Properties, State> {
     });
   };
 
-  handleClose = () => {};
-
   onImageChange = (file: File): void => {
-    console.log('file', file);
+    this.setState({
+      profileImage: file,
+    });
   };
 
   render() {
@@ -129,7 +155,7 @@ export class Container extends React.Component<Properties, State> {
     }
 
     return (
-      <Dialog onClose={this.handleClose}>
+      <Dialog>
         <form
           className='profile-prompt'
           onSubmit={this.onSubmit}
@@ -161,10 +187,7 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <div className='profile-prompt__submit'>
-            <input
-              type='submit'
-              value='Create Account'
-            />
+            <Button onClick={this.onSubmit}>Create Account</Button>
           </div>
         </form>
       </Dialog>

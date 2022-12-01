@@ -31,7 +31,6 @@ export async function createAndAuthorize(
   return await post('/accounts/createAndAuthorize').set('Authorization', `Nonce ${nonce}`).send({ user, inviteCode });
 }
 
-export async function updateImageProfile(profileId: string, imageFile: any): Promise<AuthorizationResponse> {
-  debugger;
-  return await post('/upload/avatar').send({ profileId, imageFile });
+export async function updateImageProfile(profileId: string, profileImage: File): Promise<AuthorizationResponse> {
+  return await post(`/upload/avatar?profileId=${profileId}`).attach('file', profileImage);
 }

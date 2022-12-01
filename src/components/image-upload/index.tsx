@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import './styles.scss';
 
-interface Properties {
+export interface Properties {
   onChange: (file: File) => void;
 }
 

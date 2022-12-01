@@ -1,3 +1,5 @@
+@use '../../../shared-components/theme-engine/theme' as theme;
+
 .message__menu {
   &-item {
     visibility: hidden;
@@ -12,14 +14,12 @@
 
     &__icon {
       padding: 0 10px;
-      display: inline-block;
-      font: normal normal normal 14px/1 Black Tie;
       font-size: 14px;
       font-weight: 900;
       display: inline-block;
       cursor: pointer;
       transform: translate(0);
-      color: white;
+      color: theme.$actionable-color;
     }
   }
 
@@ -37,12 +37,12 @@
     &__underlay {
       z-index: 100;
       position: fixed;
-      right: 0;
       top: 0;
       bottom: 0;
       left: 0;
+      right: 0;
       opacity: 0;
-      background-color: rgba(24, 24, 28, 0.95);
+      background-color: theme.$underlay-tooltip-background;
     }
 
     &.active {
@@ -55,24 +55,24 @@
 
     &__content {
       position: relative;
-      background: #000;
+      background: theme.$background-color-tertiary;
       border-radius: 6px;
       cursor: pointer;
       z-index: 200;
       ul {
         padding: 10px 0;
         margin: 0;
-        li {
+        .delete-button {
           height: 30px;
           align-items: center;
           display: flex;
           overflow: hidden;
           padding: 0 20px;
           cursor: pointer;
-          color: #737373;
+          color: theme.$actionable-inactive-color;
           &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
+            background-color: theme.$actionable-hover-background-tooltip;
+            color: theme.$actionable-color;
           }
           span {
             font-family: Inter Regular;
@@ -102,8 +102,6 @@
   background: var(--dialog-background-color);
   border-radius: var(--box-radius);
   overflow: hidden;
-  -webkit-filter: drop-shadow(0 20px 20px var(--drop-shadow-secondary-color));
-  filter: drop-shadow(0 20px 20px var(--drop-shadow-secondary-color));
 
   hr {
     margin: 0 33px;
@@ -118,7 +116,7 @@
     h3 {
       font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: theme.$actionable-color;
     }
   }
 
@@ -134,7 +132,7 @@
     flex-direction: row-reverse;
 
     &-button {
-      color: white;
+      color: theme.$actionable-color;
       text-transform: uppercase;
       cursor: pointer;
       margin-left: 30px;

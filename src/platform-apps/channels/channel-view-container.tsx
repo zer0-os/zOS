@@ -170,7 +170,7 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handlDeleteMessage = (messageId: number): void => {
+  handleDeleteMessage = (messageId: number): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
       this.props.deleteMessage({ channelId, messageId });
@@ -204,7 +204,7 @@ export class Container extends React.Component<Properties, State> {
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
-          deleteMessage={this.handlDeleteMessage}
+          deleteMessage={this.handleDeleteMessage}
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}

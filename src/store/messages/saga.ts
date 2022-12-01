@@ -137,8 +137,16 @@ export function* fetchNewMessages(action) {
 export function* deleteMessage(action) {
   const { channelId, messageId } = action.payload;
 
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+
+  yield put(
+    receive({
+      id: channelId,
+      messages: existingMessages.filter((id) => id !== messageId),
+    })
+  );
+
   yield call(deleteMessageApi, channelId, messageId);
-  yield call(fetch, { payload: { channelId } });
 }
 
 export function* stopSyncChannels(action) {

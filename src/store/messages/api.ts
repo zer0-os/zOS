@@ -22,8 +22,8 @@ export async function sendMessagesByChannelId(
   return response;
 }
 
-export async function deleteMessageApi(channelId: string, messageId: number): Promise<any> {
+export async function deleteMessageApi(channelId: string, messageId: number): Promise<number> {
   const response = await del<any>(`/chatChannels/${channelId}/message`).send({ message: { id: messageId } });
 
-  return response;
+  return response.status;
 }

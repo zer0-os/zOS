@@ -54,6 +54,7 @@
     "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
     "actionableHoverBackgroundGradient": "rgba(0, 0, 0, 0.05)",
     "actionableActiveBackgroundGradient": "rgb(0, 0, 0, 0.25)",
+    "actionableHoverBackgroundTooltip": "rgb(0, 0, 0, 0.25)",
 
     "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
     "inputBackgroundPrimaryColorInverse": "#E7E7E7",
@@ -156,7 +157,8 @@
     "dialogBackgroundColor": "#10052e",
     "dialogDropShadowColor": "rgb(196 29 255 / 20%)",
 
-    "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)",
+    "underlayBackgroundColor": "rgba(0, 0, 0, 0.95)",
+    "underlayTooltipBackgroundColor": "rgba(24, 24, 28, 0.95)",
 
     "glowTextColor": "hsla(0,0%,100%,0.7)",
     "glowBackgroundColor": "#6e10bb",

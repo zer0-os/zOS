@@ -18,7 +18,6 @@ interface Properties extends MessageModel {
   onDelete: (messageId: number) => void;
   cloudinaryProvider: CloudinaryProvider;
   isOwner?: boolean;
-  isDeleteModalOpen?: boolean;
   messageId?: number;
 }
 

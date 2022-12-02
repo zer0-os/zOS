@@ -152,22 +152,27 @@ export function* receiveNewMessage(action) {
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
 
-  let messages = [
-    ...currentMessages,
-    message,
-  ];
+  let messages = [];
 
   if (cachedMessageIds.length) {
+    messages = [
+      ...currentMessages,
+    ];
     const firstCachedMessageId = cachedMessageIds[0];
 
-    messages = messages.filter((messageId) => {
+    messages = messages.map((messageId) => {
       if (messageId === firstCachedMessageId) {
         cachedMessageIds.shift();
-        return false;
+        return message;
       } else {
-        return true;
+        return messageId;
       }
     });
+  } else {
+    messages = [
+      ...currentMessages,
+      message,
+    ];
   }
 
   yield put(

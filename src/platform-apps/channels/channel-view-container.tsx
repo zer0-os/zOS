@@ -6,6 +6,7 @@ import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
   send as sendMessage,
+  deleteMessage,
   Message,
   startMessageSync,
   stopSyncChannels,
@@ -25,6 +26,7 @@ export interface Properties extends PublicProperties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
+  deleteMessage: (payload: PayloadFetchMessages) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
@@ -62,6 +64,7 @@ export class Container extends React.Component<Properties, State> {
       sendMessage,
       startMessageSync,
       stopSyncChannels,
+      deleteMessage,
       joinChannel,
     };
   }
@@ -167,6 +170,13 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  handleDeleteMessage = (messageId: number): void => {
+    const { channelId } = this.props;
+    if (channelId && messageId) {
+      this.props.deleteMessage({ channelId, messageId });
+    }
+  };
+
   handleJoinChannel = (): void => {
     const { channelId } = this.props;
     if (channelId) {
@@ -194,6 +204,7 @@ export class Container extends React.Component<Properties, State> {
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
+          deleteMessage={this.handleDeleteMessage}
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}

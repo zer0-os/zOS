@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
-import { fetch, send, fetchNewMessages, stopSyncChannels } from './saga';
+import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi } from './api';
+import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage } from './saga';
 
 import { rootReducer } from '..';
 import { channelIdPrefix } from '../channels-list/saga';
@@ -137,6 +137,46 @@ describe('messages saga', () => {
       .withReducer(rootReducer)
       .call(fetchMessagesByChannelId, channelIdPrefix + channelId, 1658776625730)
       .run();
+  });
+
+  it('delete message', async () => {
+    const channelId = '280251425_833da2e2748a78a747786a9de295dd0c339a2d95';
+    const messages = [
+      { id: 1, message: 'This is my first message' },
+      { id: 2, message: 'I will delete this message' },
+      { id: 3, message: 'This is my third message' },
+    ];
+
+    const messageIdToDelete = messages[1].id;
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages: messages.map((m) => m.id),
+          },
+        },
+        messages,
+      },
+    };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(deleteMessage, { payload: { channelId, messageId: messageIdToDelete } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(deleteMessageApi),
+          200,
+        ],
+      ])
+      .run();
+
+    expect(normalized.channels[channelId].messages).toEqual([
+      messages[0].id,
+      messages[2].id,
+    ]);
   });
 
   it('sets hasMore on channel', async () => {

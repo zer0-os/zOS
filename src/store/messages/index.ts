@@ -48,6 +48,7 @@ export interface Message {
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
   Send = 'messages/saga/send',
+  DeleteMessage = 'messages/saga/deleteMessage',
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
   receiveNewMessage = 'messages/saga/receiveNewMessage',
@@ -55,6 +56,7 @@ export enum SagaActionTypes {
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
+const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
 const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
@@ -65,4 +67,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, startMessageSync, stopSyncChannels, receiveNewMessage };
+export { fetch, send, startMessageSync, stopSyncChannels, receiveNewMessage, deleteMessage };

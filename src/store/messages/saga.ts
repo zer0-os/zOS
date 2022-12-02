@@ -5,12 +5,13 @@ import { Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
+import { deleteMessageApi, fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
 import { messageFactory } from './utils';
 
 export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
+  messageId?: number;
 }
 
 export interface SendPayload {
@@ -133,6 +134,21 @@ export function* fetchNewMessages(action) {
   );
 }
 
+export function* deleteMessage(action) {
+  const { channelId, messageId } = action.payload;
+
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+
+  yield put(
+    receive({
+      id: channelId,
+      messages: existingMessages.filter((id) => id !== messageId),
+    })
+  );
+
+  yield call(deleteMessageApi, channelId, messageId);
+}
+
 export function* stopSyncChannels(action) {
   const { channelId } = action.payload;
 
@@ -197,6 +213,7 @@ function* syncChannelsTask(action) {
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
   yield takeLatest(SagaActionTypes.Send, send);
+  yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);

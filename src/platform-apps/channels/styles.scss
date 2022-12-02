@@ -198,7 +198,7 @@
   margin-bottom: 40px;
   .messages {
     position: relative;
-    overflow: hidden;
+    overflow: inherit;
     transition: opacity 0.9s ease-out;
     opacity: 1;
 
@@ -400,6 +400,19 @@
         color: theme.$font-color-time;
         padding-top: 6px;
         padding-right: 28px;
+      }
+
+      &__menu {
+        position: relative;
+        overflow: visible;
+        width: 10px;
+        margin-top: 7px;
+
+        &-item {
+          .icon {
+            padding: 0px 10px;
+          }
+        }
       }
 
       &__left {

@@ -10,12 +10,15 @@ import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
+import MessageMenu from './messages-menu';
 
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
+  onDelete: (messageId: number) => void;
   cloudinaryProvider: CloudinaryProvider;
   isOwner?: boolean;
+  messageId?: number;
 }
 
 export class Message extends React.Component<Properties> {
@@ -94,6 +97,24 @@ export class Message extends React.Component<Properties> {
     const createdTime = moment(time).format('HH:mm');
 
     return <div className='message__time'>{createdTime}</div>;
+  }
+
+  canDeleteMessage = (): boolean => {
+    return this.props.isOwner;
+  };
+
+  deleteMessage = (): void => this.props.onDelete(this.props.messageId);
+
+  renderMenu(): React.ReactElement {
+    return (
+      <div className='message__menu'>
+        <MessageMenu
+          className='message__menu-item'
+          canEdit={this.canDeleteMessage()}
+          onDelete={this.deleteMessage}
+        />
+      </div>
+    );
   }
 
   renderMessage(message) {
@@ -181,6 +202,7 @@ export class Message extends React.Component<Properties> {
             </div>
           )}
           {this.renderTime(createdAt)}
+          {this.renderMenu()}
         </div>
       </div>
     );

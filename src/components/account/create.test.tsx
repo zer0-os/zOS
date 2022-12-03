@@ -90,6 +90,10 @@ describe('CreateAccount', () => {
     });
 
     expect(fetchCurrentUser).not.toHaveBeenCalled();
+
+    setTimeout(() => {
+      expect(wrapper.find('.input__error-message').exists()).toBe(true);
+    }, 0);
   });
 
   it('does not call without nonce', async () => {

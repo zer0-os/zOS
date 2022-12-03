@@ -11,6 +11,7 @@ import { ImageUpload } from '../image-upload';
 import { Button } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
+import classNames from 'classnames';
 
 export interface Properties {
   currentAddress: string;
@@ -26,10 +27,18 @@ interface State {
   displayName: string;
   showDialog: boolean;
   profileImage: File;
+  displayNameError: string;
+  error: string;
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { displayName: '', showDialog: false, profileImage: null };
+  state = {
+    displayName: '',
+    showDialog: false,
+    profileImage: null,
+    displayNameError: '',
+    error: '',
+  };
   static defaultProps = { createAndAuthorize, updateImageProfile, inviteCode: config.inviteCode.dejaVu };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -100,7 +109,11 @@ export class Container extends React.Component<Properties, State> {
       await this.props.updateImageProfile(profileId, this.state.profileImage);
       this.closeDialog();
     } catch (error) {
-      console.log('updating image profile failed. error:', error);
+      if (typeof error === 'string') {
+        this.setState({ error: error });
+      } else {
+        this.setState({ error: 'updating image profile failed.' });
+      }
     }
   };
 
@@ -128,7 +141,13 @@ export class Container extends React.Component<Properties, State> {
         } = error;
 
         if (/USER_HANDLE_ALREADY_EXISTS/.test(code)) {
-          console.log('Sorry that user handle has already been taken');
+          this.setState({
+            displayNameError: 'Sorry, that name has already been claimed, Please try again',
+          });
+        } else if (typeof error === 'string') {
+          this.setState({ error });
+        } else {
+          this.setState({ error: 'Creating user failed' });
         }
       });
 
@@ -148,6 +167,40 @@ export class Container extends React.Component<Properties, State> {
       profileImage: file,
     });
   };
+
+  renderError(message: string) {
+    return (
+      <div className='input__error-message'>
+        <svg
+          width='16'
+          height='16'
+          viewBox='0 0 16 16'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+          className='input__error-message-icon'
+        >
+          <g clip-path='url(#clip0_5179_13261)'>
+            <path
+              d='M8.00004 5.33333V8M8.00004 10.6667H8.00671M14.6667 8C14.6667 11.6819 11.6819 14.6667 8.00004 14.6667C4.31814 14.6667 1.33337 11.6819 1.33337 8C1.33337 4.3181 4.31814 1.33333 8.00004 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8Z'
+              stroke='#FF6369'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+          </g>
+          <defs>
+            <clipPath id='clip0_5179_13261'>
+              <rect
+                width='16'
+                height='16'
+                fill='white'
+              />
+            </clipPath>
+          </defs>
+        </svg>
+        <span>{message}</span>
+      </div>
+    );
+  }
 
   render() {
     if (!this.state.showDialog) {
@@ -181,10 +234,15 @@ export class Container extends React.Component<Properties, State> {
             <input
               type='text'
               value={this.state.displayName}
-              className='profile-prompt__input-text'
+              className={classNames('profile-prompt__input-text', {
+                input__error: Boolean(this.state.displayNameError),
+              })}
               onChange={this.onDisplayNameChange}
             />
+            {Boolean(this.state.displayNameError) && this.renderError(this.state.displayNameError)}
           </div>
+
+          {Boolean(this.state.error) && this.renderError(this.state.error)}
 
           <div className='profile-prompt__submit'>
             <Button onClick={this.onSubmit}>Create Account</Button>

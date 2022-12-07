@@ -3,7 +3,11 @@ import React from 'react';
 import { chat, Chat } from '../../../lib/chat';
 import { StatusIndicator } from './status-indicator';
 import { connectContainer } from '../../../store/redux-container';
-import { Message, receiveNewMessage as receiveNewMessageAction } from '../../../store/messages';
+import {
+  Message,
+  receiveNewMessage as receiveNewMessageAction,
+  receiveDeleteMessage as receiveDeleteMessageAction,
+} from '../../../store/messages';
 import { fetchChatAccessToken, receiveIsReconnecting } from '../../../store/chat';
 import { RootState } from '../../../store';
 import { UserPayload } from '../../../store/authentication/types';
@@ -15,6 +19,7 @@ export interface Properties {
   reconnectStart: () => void;
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
+  receiveDeleteMessage: (channelId: string, messageId: number) => void;
   fetchChatAccessToken: () => void;
   user: UserPayload;
   isReconnecting: boolean;
@@ -40,6 +45,8 @@ export class Container extends React.Component<Properties> {
       reconnectStart: () => receiveIsReconnecting(true),
       reconnectStop: () => receiveIsReconnecting(false),
       receiveNewMessage: (channelId: string, message: Message) => receiveNewMessageAction({ channelId, message }),
+      receiveDeleteMessage: (channelId: string, messageId: number) =>
+        receiveDeleteMessageAction({ channelId, messageId }),
       fetchChatAccessToken,
     };
   }
@@ -70,12 +77,13 @@ export class Container extends React.Component<Properties> {
     const userId = this.props.user.data.id;
     await this.chat.setUserId(userId, this.props.chatAccessToken);
 
-    const { reconnectStart, reconnectStop, receiveNewMessage } = this.props;
+    const { reconnectStart, reconnectStop, receiveNewMessage, receiveDeleteMessage } = this.props;
 
     this.chat.initChat({
       reconnectStart,
       reconnectStop,
       receiveNewMessage,
+      receiveDeleteMessage,
     });
   }
 

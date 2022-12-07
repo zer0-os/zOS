@@ -1,4 +1,4 @@
-import { Payload, SendPayload } from './saga';
+import { Payload, SendPayload, DeleteMessageActionParameter } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice } from '../normalized';
@@ -52,6 +52,7 @@ export enum SagaActionTypes {
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
   receiveNewMessage = 'messages/saga/receiveNewMessage',
+  receiveDeleteMessage = 'messages/saga/receiveDeleteMessage',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
@@ -60,6 +61,7 @@ const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
 const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
+const receiveDeleteMessage = createAction<DeleteMessageActionParameter>(SagaActionTypes.receiveDeleteMessage);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -67,4 +69,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, startMessageSync, stopSyncChannels, receiveNewMessage, deleteMessage };
+export { fetch, send, startMessageSync, stopSyncChannels, receiveNewMessage, deleteMessage, receiveDeleteMessage };

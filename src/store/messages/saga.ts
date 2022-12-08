@@ -20,6 +20,11 @@ export interface SendPayload {
   mentionedUserIds?: string[];
 }
 
+export interface DeleteMessageActionParameter {
+  channelId?: string;
+  messageId?: number;
+}
+
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };
@@ -149,6 +154,24 @@ export function* deleteMessage(action) {
   yield call(deleteMessageApi, channelId, messageId);
 }
 
+export function* receiveDelete(action) {
+  const { channelId: channelIdWithPrefix, messageId } = action.payload;
+  const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
+
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+
+  if (existingMessages.length === 0) {
+    return;
+  }
+
+  yield put(
+    receive({
+      id: channelId,
+      messages: existingMessages.filter((id) => id !== messageId),
+    })
+  );
+}
+
 export function* stopSyncChannels(action) {
   const { channelId } = action.payload;
 
@@ -222,4 +245,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
+  yield takeLatest(SagaActionTypes.receiveDeleteMessage, receiveDelete);
 }

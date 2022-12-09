@@ -14,6 +14,7 @@ describe('MessageInput', () => {
       onSubmit: () => undefined,
       getUsersForMentions: () => undefined,
       onMessageInputRendered: () => undefined,
+      renderAfterInput: () => undefined,
       ...props,
     };
 
@@ -36,6 +37,13 @@ describe('MessageInput', () => {
     const wrapper = subject({ className: 'chat' });
 
     expect(wrapper.find('.message-input').exists()).toBe(true);
+  });
+
+  it('should call editActions', function () {
+    const renderAfterInput = jest.fn();
+    subject({ renderAfterInput, className: 'chat' });
+
+    expect(renderAfterInput).toHaveBeenCalled();
   });
 
   it('submit message when click on textearea', () => {

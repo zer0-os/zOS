@@ -24,6 +24,7 @@ describe('ChannelViewContainer', () => {
       sendMessage: () => undefined,
       fetchUsers: () => undefined,
       deleteMessage: () => undefined,
+      editMessage: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
       context: {
@@ -216,6 +217,23 @@ describe('ChannelViewContainer', () => {
     wrapper.find(ChannelView).first().prop('deleteMessage')(messageId);
 
     expect(deleteMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call editMessage', () => {
+    const editMessage = jest.fn();
+    const messageId = 2345221;
+    const message = 'update message';
+    const mentionedUserIds = [];
+
+    const wrapper = subject({
+      editMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('editMessage')(messageId, message, mentionedUserIds);
+
+    expect(editMessage).toHaveBeenCalledOnce();
   });
 
   it('startMessageSync messages when channel id is set', () => {

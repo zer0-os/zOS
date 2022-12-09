@@ -10,6 +10,7 @@ interface Properties {
   canEdit: boolean;
 
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 export interface State {
@@ -30,11 +31,22 @@ export class MessageMenu extends React.Component<Properties> {
     if (this.props.onDelete && this.props.canEdit) {
       menuItems.push(
         <li
-          className='delete-button'
+          className='menu-button delete-item'
           key='delete'
           onClick={this.toggleDeleteDialog}
         >
           <span>Delete</span>
+        </li>
+      );
+    }
+    if (this.props.onEdit && this.props.canEdit) {
+      menuItems.push(
+        <li
+          className='menu-button edit-item'
+          key='edit'
+          onClick={this.props.onEdit}
+        >
+          <span>Edit</span>
         </li>
       );
     }
@@ -58,6 +70,10 @@ export class MessageMenu extends React.Component<Properties> {
   };
 
   get showDeleteModal(): boolean {
+    return this.state.deleteDialogIsOpen;
+  }
+
+  get showEditInput(): boolean {
     return this.state.deleteDialogIsOpen;
   }
 

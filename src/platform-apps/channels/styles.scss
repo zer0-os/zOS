@@ -253,6 +253,12 @@
             top: 0;
             left: 0;
           }
+          &.chat-message__input-wrapper {
+            background: none;
+            &:before {
+              background: none;
+            }
+          }
         }
       }
 
@@ -280,7 +286,7 @@
         &-body-wrapper {
           flex: 1 1;
           width: 100%;
-          overflow: hidden;
+          overflow: inherit;
 
           .message--owner & {
             border-left: 3px solid #fb216e;

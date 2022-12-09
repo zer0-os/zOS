@@ -11,18 +11,30 @@ import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
 import MessageMenu from './messages-menu';
+import { MessageInput } from '../../components/message-input';
+import { User } from '../../store/channels';
+import { User as UserModel } from '../../store/channels/index';
+import EditMessageActions from './messages-menu/edit-message-actions';
 
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   onDelete: (messageId: number) => void;
+  onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][]) => void;
   cloudinaryProvider: CloudinaryProvider;
+  users: UserModel[];
   isOwner?: boolean;
   messageId?: number;
 }
 
-export class Message extends React.Component<Properties> {
+export interface State {
+  isEditing: boolean;
+}
+export class Message extends React.Component<Properties, State> {
   static defaultProps = { cloudinaryProvider: provider };
+  state = {
+    isEditing: false,
+  } as State;
 
   openAttachment = async (attachment): Promise<void> => {
     download(attachment.url);
@@ -104,6 +116,21 @@ export class Message extends React.Component<Properties> {
   };
 
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
+  toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
+  editMessage = (content: string, mentionedUserIds: string[]) => {
+    console.log('edit message', content);
+    this.props.onEdit(this.props.messageId, content, mentionedUserIds);
+    this.toggleEdit();
+  };
+
+  editActions = (value: string, mentionedUserIds: string[]) => {
+    return (
+      <EditMessageActions
+        onEdit={this.editMessage.bind(this, value, mentionedUserIds)}
+        onCancel={this.toggleEdit}
+      />
+    );
+  };
 
   renderMenu(): React.ReactElement {
     return (
@@ -112,6 +139,7 @@ export class Message extends React.Component<Properties> {
           className='message__menu-item'
           canEdit={this.canDeleteMessage()}
           onDelete={this.deleteMessage}
+          onEdit={this.toggleEdit}
         />
       </div>
     );
@@ -189,16 +217,32 @@ export class Message extends React.Component<Properties> {
               <div className='message__author-name'>
                 {sender.firstName} {sender.lastName}
               </div>
-              <div className={preview ? 'message__block-preview' : 'message__block-body'}>
-                {media && this.renderMedia(media)}
-                {message && this.renderMessageWithLinks()}
-                {preview && (
-                  <LinkPreview
-                    url={preview.url}
-                    {...preview}
-                  />
-                )}
-              </div>
+              {!this.state.isEditing && (
+                <div
+                  className={classNames(
+                    'message__block-content',
+                    preview ? 'message__block-preview' : 'message__block-body'
+                  )}
+                >
+                  {media && this.renderMedia(media)}
+                  {message && this.renderMessageWithLinks()}
+                  {preview && (
+                    <LinkPreview
+                      url={preview.url}
+                      {...preview}
+                    />
+                  )}
+                </div>
+              )}
+              {this.state.isEditing && this.props.message && (
+                <MessageInput
+                  className='message__block-body'
+                  initialValue={this.props.message}
+                  onSubmit={this.editMessage}
+                  users={this.props.users}
+                  renderAfterInput={this.editActions}
+                />
+              )}
             </div>
           )}
           {this.renderTime(createdAt)}

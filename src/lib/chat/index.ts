@@ -8,6 +8,7 @@ interface RealtimeChatEvents {
   reconnectStart: () => void;
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
+  receiveDeleteMessage: (channelId: string, messageId: number) => void;
 }
 
 export class Chat {
@@ -57,6 +58,10 @@ export class Chat {
       if (channel.isGroupChannel()) {
         events.receiveNewMessage(channel.url, this.mapMessage(message));
       }
+    };
+
+    channelHandler.onMessageDeleted = (channel, messageId) => {
+      events.receiveDeleteMessage(channel.url, parseInt(messageId as any)); // It is documented to return a number. But is actually a string
     };
 
     chat.sb.addChannelHandler('chatHandler', channelHandler);

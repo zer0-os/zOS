@@ -98,6 +98,35 @@ describe('message', () => {
     expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
+  it('renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(true);
+  });
+
+  it('should not renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 0,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
+  it('should not renders edited indicator when onEdit clicked', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
   it('should not renders message input', () => {
     const wrapper = subject({
       message: 'the message',

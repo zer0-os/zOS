@@ -307,6 +307,14 @@
           border-radius: 12px;
         }
 
+        &-edited {
+          padding-left: 7px;
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 14px;
+          color: theme.$actionable-inactive-color;
+        }
+
         &-preview {
           display: inline-block;
           white-space: pre-wrap;

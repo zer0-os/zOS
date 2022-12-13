@@ -36,8 +36,8 @@ const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };
 
-const listMessagesSelector = () => (state) => {
-  return getDeepProperty(state, 'normalized.messages', []);
+const messageSelector = (messageId) => (state) => {
+  return getDeepProperty(state, `normalized.messages[${messageId}]`, []);
 };
 
 const rawLastMessageSelector = (channelId) => (state) => {
@@ -167,13 +167,14 @@ export function* deleteMessage(action) {
 
 export function* editMessage(action) {
   const { channelId, messageId, message, mentionedUserIds } = action.payload;
-  const existingMessages = yield select(listMessagesSelector());
+  const selectedMessage = yield select(messageSelector(messageId));
+  const existingMessages = yield select(rawMessagesSelector(channelId));
 
-  const messages = Object.values(existingMessages).map((currentMessage: any) => {
-    if (messageId === currentMessage.id) {
-      return { ...currentMessage, message };
+  const messages = existingMessages.map((id) => {
+    if (messageId === id) {
+      return { ...selectedMessage, updatedAt: Date.now(), message };
     } else {
-      return currentMessage;
+      return id;
     }
   });
 
@@ -185,7 +186,7 @@ export function* editMessage(action) {
   );
 
   const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds);
-  const isMessageSent = messagesResponse.status === 200;
+  const isMessageSent = messagesResponse === 200;
 
   if (!isMessageSent) {
     yield put(

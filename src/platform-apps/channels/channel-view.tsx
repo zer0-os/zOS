@@ -131,6 +131,7 @@ export class ChannelView extends React.Component<Properties, State> {
               onImageClick={this.openLightbox}
               key={message.id}
               messageId={message.id}
+              updatedAt={message.updatedAt}
               users={this.props.users}
               isOwner={isUserOwnerOfTheMessage}
               onDelete={this.props.deleteMessage}

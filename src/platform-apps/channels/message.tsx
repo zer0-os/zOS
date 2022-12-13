@@ -25,6 +25,7 @@ interface Properties extends MessageModel {
   users: UserModel[];
   isOwner?: boolean;
   messageId?: number;
+  updatedAt: number;
 }
 
 export interface State {
@@ -232,6 +233,9 @@ export class Message extends React.Component<Properties, State> {
                     />
                   )}
                 </div>
+              )}
+              {!!this.props.updatedAt && !this.state.isEditing && (
+                <span className='message__block-edited'>(edited)</span>
               )}
               {this.state.isEditing && this.props.message && (
                 <MessageInput

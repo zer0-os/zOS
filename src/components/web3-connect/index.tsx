@@ -66,6 +66,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   onActivateError(): void {
+    this.props.updateConnector(Connectors.None);
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
   }
 

@@ -110,6 +110,17 @@
   }
 }
 
+.message {
+  &__block-body {
+    .message-input__input-wrapper {
+      background: none;
+      &::before {
+        background: none;
+      }
+    }
+  }
+}
+
 .mentions-text-area__wrap {
   position: relative;
   overflow-y: visible;

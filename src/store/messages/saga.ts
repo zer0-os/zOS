@@ -5,13 +5,20 @@ import { Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
 import { channelIdPrefix } from '../channels-list/saga';
 
-import { deleteMessageApi, fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
+import { deleteMessageApi, fetchMessagesByChannelId, sendMessagesByChannelId, editMessageApi } from './api';
 import { messageFactory } from './utils';
 
 export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
   messageId?: number;
+}
+
+export interface EditPayload {
+  channelId: string;
+  messageId?: number;
+  message?: string;
+  mentionedUserIds?: string[];
 }
 
 export interface SendPayload {
@@ -27,6 +34,10 @@ export interface DeleteMessageActionParameter {
 
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
+};
+
+const messageSelector = (messageId) => (state) => {
+  return getDeepProperty(state, `normalized.messages[${messageId}]`, []);
 };
 
 const rawLastMessageSelector = (channelId) => (state) => {
@@ -154,6 +165,39 @@ export function* deleteMessage(action) {
   yield call(deleteMessageApi, channelId, messageId);
 }
 
+export function* editMessage(action) {
+  const { channelId, messageId, message, mentionedUserIds } = action.payload;
+  const selectedMessage = yield select(messageSelector(messageId));
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+
+  const messages = existingMessages.map((id) => {
+    if (messageId === id) {
+      return { ...selectedMessage, updatedAt: Date.now(), message };
+    } else {
+      return id;
+    }
+  });
+
+  yield put(
+    receive({
+      id: channelId,
+      messages,
+    })
+  );
+
+  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds);
+  const isMessageSent = messagesResponse === 200;
+
+  if (!isMessageSent) {
+    yield put(
+      receive({
+        id: channelId,
+        messages: [...existingMessages],
+      })
+    );
+  }
+}
+
 export function* receiveDelete(action) {
   const { channelId: channelIdWithPrefix, messageId } = action.payload;
   const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
@@ -242,6 +286,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
+  yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);

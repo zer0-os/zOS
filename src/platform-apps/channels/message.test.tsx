@@ -6,6 +6,9 @@ import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
+import { MessageInput } from '../../components/message-input';
+import MessageMenu from './messages-menu';
+import EditMessageActions from './messages-menu/edit-message-actions';
 
 describe('message', () => {
   const sender = {
@@ -77,12 +80,59 @@ describe('message', () => {
     expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
   });
 
-  it('renders menu of delete', () => {
+  it('renders message menu of items', () => {
     const wrapper = subject({
       message: 'the message',
     });
 
     expect(wrapper.find('.message__menu-item').exists()).toBe(true);
+  });
+
+  it('renders message input', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(true);
+  });
+
+  it('should not renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 0,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
+  it('should not renders edited indicator when onEdit clicked', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
+  it('should not renders message input', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    expect(wrapper.find(MessageInput).exists()).toBe(false);
   });
 
   it('passes src prop to image', () => {

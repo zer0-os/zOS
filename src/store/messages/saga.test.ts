@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi } from './api';
-import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage, receiveDelete } from './saga';
+import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi, editMessageApi } from './api';
+import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage, editMessage, receiveDelete } from './saga';
 
 import { rootReducer } from '..';
 import { channelIdPrefix } from '../channels-list/saga';
@@ -68,6 +68,29 @@ describe('messages saga', () => {
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
       .run();
     expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
+  });
+
+  it('edit message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = 'update message';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const messages = [
+      { id: 1, message: 'message_0001', createdAt: 10000000007 },
+      { id: 2, message: 'message_0002', createdAt: 10000000008 },
+      { id: 3, message: 'message_0003', createdAt: 10000000009 },
+    ];
+    const messageIdToEdit = messages[1].id;
+
+    await expectSaga(editMessage, { payload: { channelId, messageId: messageIdToEdit, message, mentionedUserIds } })
+      .provide([
+        [
+          matchers.call.fn(editMessageApi),
+          { status: 200 },
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(editMessageApi, channelId, messageIdToEdit, message, mentionedUserIds)
+      .run();
   });
 
   it('send message return a 400 status', async () => {

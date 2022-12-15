@@ -12,9 +12,11 @@ export interface Properties {
   className?: string;
   placeholder?: string;
   onSubmit: (message: string, mentionedUserIds: User['id'][]) => void;
+  initialValue?: string;
   users: User[];
   getUsersForMentions: (search: string, users: User[]) => UserForMention[];
-  onMessageInputRendered: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
+  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
+  renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
 }
 
 interface State {
@@ -25,7 +27,7 @@ interface State {
 export class MessageInput extends React.Component<Properties, State> {
   static defaultProps = { getUsersForMentions };
 
-  state = { value: '', mentionedUserIds: [] };
+  state = { value: this.props.initialValue || '', mentionedUserIds: [] };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
 
@@ -36,11 +38,15 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   componentDidMount() {
-    this.props.onMessageInputRendered(this.textareaRef);
+    if (this.props.onMessageInputRendered) {
+      this.props.onMessageInputRendered(this.textareaRef);
+    }
   }
 
   componentDidUpdate() {
-    this.props.onMessageInputRendered(this.textareaRef);
+    if (this.props.onMessageInputRendered) {
+      this.props.onMessageInputRendered(this.textareaRef);
+    }
   }
 
   onSubmit = (event) => {
@@ -80,7 +86,7 @@ export class MessageInput extends React.Component<Properties, State> {
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__input-wrapper'>
-          <div className={classNames('mentions-text-area', this.props.className)}>
+          <div className='mentions-text-area'>
             <MentionsInput
               inputRef={this.textareaRef}
               className='mentions-text-area__wrap'
@@ -92,6 +98,7 @@ export class MessageInput extends React.Component<Properties, State> {
             >
               {this.renderMentionTypes()}
             </MentionsInput>
+            {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
           </div>
         </div>
       </div>

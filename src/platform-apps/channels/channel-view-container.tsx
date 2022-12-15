@@ -7,6 +7,7 @@ import {
   fetch as fetchMessages,
   send as sendMessage,
   deleteMessage,
+  editMessage,
   Message,
   startMessageSync,
   stopSyncChannels,
@@ -14,7 +15,11 @@ import {
 import { Channel, denormalize, loadUsers as fetchUsers, joinChannel } from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
-import { Payload as PayloadFetchMessages, SendPayload as PayloadSendMessage } from '../../store/messages/saga';
+import {
+  EditPayload,
+  Payload as PayloadFetchMessages,
+  SendPayload as PayloadSendMessage,
+} from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
 import { Payload as PayloadJoinChannel } from '../../store/channels/saga';
 import { ChatConnect } from './chat-connect/chat-connect';
@@ -27,6 +32,7 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
+  editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
@@ -66,6 +72,7 @@ export class Container extends React.Component<Properties, State> {
       stopSyncChannels,
       deleteMessage,
       joinChannel,
+      editMessage,
     };
   }
 
@@ -177,6 +184,13 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  handleEditMessage = (messageId: number, message: string, mentionedUserIds: string[]): void => {
+    const { channelId } = this.props;
+    if (channelId && messageId) {
+      this.props.editMessage({ channelId, messageId, message, mentionedUserIds });
+    }
+  };
+
   handleJoinChannel = (): void => {
     const { channelId } = this.props;
     if (channelId) {
@@ -205,6 +219,7 @@ export class Container extends React.Component<Properties, State> {
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}
+          editMessage={this.handleEditMessage}
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}

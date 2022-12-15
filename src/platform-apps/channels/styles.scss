@@ -253,6 +253,12 @@
             top: 0;
             left: 0;
           }
+          &.chat-message__input-wrapper {
+            background: none;
+            &:before {
+              background: none;
+            }
+          }
         }
       }
 
@@ -280,7 +286,7 @@
         &-body-wrapper {
           flex: 1 1;
           width: 100%;
-          overflow: hidden;
+          overflow: inherit;
 
           .message--owner & {
             border-left: 3px solid #fb216e;
@@ -299,6 +305,14 @@
           vertical-align: baseline;
           max-width: 600px;
           border-radius: 12px;
+        }
+
+        &-edited {
+          padding-left: 7px;
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 14px;
+          color: theme.$actionable-inactive-color;
         }
 
         &-preview {

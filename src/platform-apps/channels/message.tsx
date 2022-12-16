@@ -55,6 +55,24 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
+  openAttachment = async (attachment): Promise<void> => {
+    download(attachment.url);
+  };
+
+  renderAttachment(attachment) {
+    return (
+      <div
+        className='message__attachment'
+        onClick={this.openAttachment.bind(this, attachment)}
+      >
+        <AttachmentCards
+          attachments={[attachment]}
+          onAttachmentClicked={this.openAttachment.bind(this, attachment)}
+        />
+      </div>
+    );
+  }
+
   getProfileId(id: string): string | null {
     const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
 

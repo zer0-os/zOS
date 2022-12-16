@@ -51,6 +51,8 @@ $speed: animation.$animation-duration;
     flex: 1 0 auto;
     position: relative;
     height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 90px;
     box-sizing: border-box;
     width: $width-application-navigation;

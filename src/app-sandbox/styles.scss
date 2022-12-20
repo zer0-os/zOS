@@ -60,6 +60,10 @@ $speed: animation.$animation-duration;
     &__content {
       opacity: 1;
       transition: opacity animation.$animation-duration-quadruple ease-in;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: inherit;
     }
 
     &.closed {

@@ -1,9 +1,13 @@
 import { get, post } from '../../lib/api/rest';
 
 export async function fetchUsersByChannelId(channelId: string): Promise<any> {
-  const response = await get<any>(`/chatChannels/${channelId}/members`);
-
-  return response.body;
+  return await get<any>(`/chatChannels/${channelId}/members`)
+    .catch((_error) => {
+      return null;
+    })
+    .then((response) => {
+      return response.body;
+    });
 }
 
 export async function joinChannel(channelId: string): Promise<number> {

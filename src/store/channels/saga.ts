@@ -14,17 +14,20 @@ export function* loadUsers(action) {
   const channelPrefix: string = channelIdPrefix + channelId;
 
   const users = yield call(fetchUsersByChannelId, channelPrefix);
-  const formatUsers = users.map(({ userId: id, ...rest }) => ({
-    id,
-    ...rest,
-  }));
 
-  yield put(
-    receive({
-      id: channelId,
-      users: formatUsers,
-    })
-  );
+  if (users) {
+    const formatUsers = users.map(({ userId: id, ...rest }) => ({
+      id,
+      ...rest,
+    }));
+
+    yield put(
+      receive({
+        id: channelId,
+        users: formatUsers,
+      })
+    );
+  }
 }
 
 export function* joinChannel(action) {

@@ -11,8 +11,6 @@ export interface Payload {
   channelId: string;
 }
 
-export const channelIdPrefix = 'sendbird_group_channel_';
-
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
@@ -23,7 +21,7 @@ export function* fetch(action) {
   const channels = yield call(fetchChannels, action.payload);
   const channelsList = channels.map((currentChannel) => {
     const channel: Partial<Channel> = {
-      id: currentChannel.url.replace(channelIdPrefix, ''),
+      id: currentChannel.url,
       name: currentChannel.name,
       icon: currentChannel.icon,
       category: currentChannel.category,
@@ -46,7 +44,7 @@ export function* unreadCountUpdated(action) {
   const channels = yield call(fetchChannels, action.payload);
   const channelsList = yield channels.map((channel) => {
     return {
-      id: channel.url.replace(channelIdPrefix, ''),
+      id: channel.url,
       name: channel.name,
       icon: channel.icon,
       category: channel.category,

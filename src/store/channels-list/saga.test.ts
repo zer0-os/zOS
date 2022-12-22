@@ -9,9 +9,9 @@ import { rootReducer } from '..';
 import { AsyncListStatus } from '../normalized';
 
 const MOCK_CHANNELS = [
-  { name: 'channel 1', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 2', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 3', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 2', id: 'channel_0002', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
+  { name: 'channel 3', id: 'channel_0003', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
 ];
 
 describe('channels list saga', () => {
@@ -81,7 +81,7 @@ describe('channels list saga', () => {
   });
 
   it('adds channels to normalized state', async () => {
-    const url = 'channel-0099';
+    const id = 'channel-0099';
     const name = 'the channel';
     const icon = 'channel-icon';
     const category = 'channel-category';
@@ -94,17 +94,17 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon, category, unreadCount, hasJoined }],
+          [{ id: id, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels[id]).toStrictEqual({ id: id, name, icon, category, unreadCount, hasJoined });
   });
 
   it('set unreadCountUpdated on channels', async () => {
-    const url = 'channel-1';
+    const id = 'channel-1';
     const name = 'the channel';
     const icon = 'channel-icon';
     const category = 'channel-category';
@@ -117,13 +117,13 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ url, name, icon, category, unreadCount, hasJoined }],
+          [{ id: id, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[url]).toStrictEqual({ id: url, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels[id]).toStrictEqual({ id: id, name, icon, category, unreadCount, hasJoined });
   });
 
   it('sets status to Stopped', async () => {

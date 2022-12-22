@@ -21,7 +21,7 @@ export function* fetch(action) {
   const channels = yield call(fetchChannels, action.payload);
   const channelsList = channels.map((currentChannel) => {
     const channel: Partial<Channel> = {
-      id: currentChannel.url,
+      id: currentChannel.id,
       name: currentChannel.name,
       icon: currentChannel.icon,
       category: currentChannel.category,
@@ -44,7 +44,7 @@ export function* unreadCountUpdated(action) {
   const channels = yield call(fetchChannels, action.payload);
   const channelsList = yield channels.map((channel) => {
     return {
-      id: channel.url,
+      id: channel.id,
       name: channel.name,
       icon: channel.icon,
       category: channel.category,

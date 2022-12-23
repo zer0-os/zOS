@@ -1,9 +1,9 @@
+import { channelIdPrefix } from './../channels/saga';
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
 import { Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
-import { channelIdPrefix } from '../channels-list/saga';
 
 import { deleteMessageApi, fetchMessagesByChannelId, sendMessagesByChannelId, editMessageApi } from './api';
 import { messageFactory } from './utils';

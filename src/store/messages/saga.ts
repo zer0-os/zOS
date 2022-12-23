@@ -1,4 +1,3 @@
-import { channelIdPrefix } from './../channels/saga';
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
@@ -57,17 +56,16 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-  const channelPrefix: string = channelIdPrefix + channelId;
 
   if (referenceTimestamp) {
     const existingMessages = yield select(rawMessagesSelector(channelId));
-    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix, referenceTimestamp);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
     messages = [
       ...existingMessages,
       ...messagesResponse.messages,
     ];
   } else {
-    messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix);
+    messagesResponse = yield call(fetchMessagesByChannelId, channelId);
     messages = messagesResponse.messages;
   }
 
@@ -128,10 +126,9 @@ export function* send(action) {
 
 export function* fetchNewMessages(action) {
   const { channelId } = action.payload;
-  const channelPrefix: string = channelIdPrefix + channelId;
   let countNewMessages: number = 0;
 
-  const messagesResponse = yield call(fetchMessagesByChannelId, channelPrefix);
+  const messagesResponse = yield call(fetchMessagesByChannelId, channelId);
   const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
   if (lastMessageCreatedAt > 0) {
     countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
@@ -199,8 +196,7 @@ export function* editMessage(action) {
 }
 
 export function* receiveDelete(action) {
-  const { channelId: channelIdWithPrefix, messageId } = action.payload;
-  const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
+  const { channelId, messageId } = action.payload;
 
   const existingMessages = yield select(rawMessagesSelector(channelId));
 
@@ -228,9 +224,7 @@ export function* stopSyncChannels(action) {
 }
 
 export function* receiveNewMessage(action) {
-  const { channelId: channelIdWithPrefix, message } = action.payload;
-
-  const channelId = channelIdWithPrefix.replace(channelIdPrefix, '');
+  const { channelId, message } = action.payload;
 
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));

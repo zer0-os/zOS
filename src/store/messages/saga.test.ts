@@ -1,3 +1,4 @@
+import { channelIdPrefix } from './../channels/saga';
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
@@ -5,7 +6,6 @@ import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi, ed
 import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage, editMessage, receiveDelete } from './saga';
 
 import { rootReducer } from '..';
-import { channelIdPrefix } from '../channels-list/saga';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {

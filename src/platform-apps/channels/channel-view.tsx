@@ -14,6 +14,7 @@ import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
+import { Media } from '../../components/message-input/utils';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -25,7 +26,7 @@ export interface Properties {
   onFetchMore: () => void;
   user: User;
   hasJoined: boolean;
-  sendMessage: (message: string, mentionedUserIds: string[]) => void;
+  sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
   deleteMessage: (messageId: number) => void;
   editMessage: (messageId: number, message: string, mentionedUserIds: string[]) => void;
   joinChannel: () => void;

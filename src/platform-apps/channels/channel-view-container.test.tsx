@@ -22,6 +22,7 @@ describe('ChannelViewContainer', () => {
         data: null,
       },
       sendMessage: () => undefined,
+      uploadMedia: () => undefined,
       fetchUsers: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
@@ -185,9 +186,30 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds);
+    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds, []);
 
     expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call uploadMedia when media is uploaded', () => {
+    const uploadMedia = jest.fn();
+    const media = [
+      {
+        id: 'id image 1',
+        url: 'url media',
+        name: 'image 1',
+      },
+    ];
+
+    const wrapper = subject({
+      uploadMedia,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')('', [], media);
+
+    expect(uploadMedia).toHaveBeenCalledOnce();
   });
 
   it('should call joinChannel when join button is clicked', () => {

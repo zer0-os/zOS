@@ -1,4 +1,11 @@
-import { Payload, SendPayload, EditPayload, DeleteMessageActionParameter } from './saga';
+import {
+  Payload,
+  SendPayload,
+  DeleteMessageActionParameter,
+  QueryUploadPayload,
+  MediaPyload,
+  EditPayload,
+} from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice } from '../normalized';
@@ -32,6 +39,10 @@ export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
 }
+export interface infoUploadResponse {
+  apiUrl: string;
+  query: QueryUploadPayload;
+}
 export interface Message {
   id: number;
   message?: string;
@@ -54,6 +65,7 @@ export enum SagaActionTypes {
   stopSyncChannels = 'messages/saga/stopSyncChannels',
   receiveNewMessage = 'messages/saga/receiveNewMessage',
   receiveDeleteMessage = 'messages/saga/receiveDeleteMessage',
+  UploadMedia = 'messages/saga/uploadMedia',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
@@ -64,6 +76,7 @@ const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync)
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
 const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
 const receiveDeleteMessage = createAction<DeleteMessageActionParameter>(SagaActionTypes.receiveDeleteMessage);
+const uploadMedia = createAction<MediaPyload>(SagaActionTypes.UploadMedia);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -80,4 +93,5 @@ export {
   deleteMessage,
   editMessage,
   receiveDeleteMessage,
+  uploadMedia,
 };

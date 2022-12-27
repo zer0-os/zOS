@@ -2,10 +2,9 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
-import { channelIdPrefix, joinChannel, loadUsers } from './saga';
+import { joinChannel, loadUsers } from './saga';
 
 import { rootReducer } from '..';
-import { fetchChannels } from '../channels-list/api';
 
 describe('channels list saga', () => {
   const usersResponse = [
@@ -29,7 +28,7 @@ describe('channels list saga', () => {
           usersResponse,
         ],
       ])
-      .call(fetchUsersByChannelId, channelIdPrefix + channelId)
+      .call(fetchUsersByChannelId, channelId)
       .run();
   });
 

@@ -5,7 +5,6 @@ import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi, ed
 import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage, editMessage, receiveDelete } from './saga';
 
 import { rootReducer } from '..';
-import { channelIdPrefix } from '../channels-list/saga';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {
@@ -28,7 +27,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelIdPrefix + channelId)
+      .call(fetchMessagesByChannelId, channelId)
       .run();
   });
 
@@ -158,7 +157,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelIdPrefix + channelId, 1658776625730)
+      .call(fetchMessagesByChannelId, channelId, 1658776625730)
       .run();
   });
 
@@ -227,7 +226,7 @@ describe('messages saga', () => {
     const {
       storeState: { normalized },
     } = await expectSaga(receiveDelete, {
-      payload: { channelId: channelIdPrefix + channelId, messageId: messageIdToDelete },
+      payload: { channelId, messageId: messageIdToDelete },
     })
       .withReducer(rootReducer, initialState as any)
       .run();

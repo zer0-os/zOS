@@ -94,13 +94,13 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ id: id, name, icon, category, unreadCount, hasJoined }],
+          [{ id, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({ id: id, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels[id]).toStrictEqual({ id, name, icon, category, unreadCount, hasJoined });
   });
 
   it('set unreadCountUpdated on channels', async () => {
@@ -117,13 +117,13 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ id: id, name, icon, category, unreadCount, hasJoined }],
+          [{ id, name, icon, category, unreadCount, hasJoined }],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({ id: id, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels[id]).toStrictEqual({ id, name, icon, category, unreadCount, hasJoined });
   });
 
   it('sets status to Stopped', async () => {

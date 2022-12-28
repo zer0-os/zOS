@@ -25,7 +25,7 @@ interface State {
   width: number;
 }
 
-const TWITTER_LOGO = 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1622663138/zero-assets/twitter-logo.png';
+const TWITTER_LOGO = cloudinaryProvider.getSource({ src: 'twitter-logo.png', local: false, options: {} });
 
 export class LinkPreview extends React.Component<Properties, State> {
   state = { width: 0 };

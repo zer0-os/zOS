@@ -1,3 +1,5 @@
+import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+
 export enum Apps {
   Feed = 'feed',
   NFTS = 'nfts',
@@ -16,6 +18,8 @@ export interface PlatformApp {
 }
 
 function getImageSource(app: Apps): string {
+  // debugger
+  // console.log('khalid pp', app, cloudinaryProvider.getSource({ src: `zero-assets/zer0-os/apps/${app}.svg`, local: false, options: {} }));
   return `https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/${app}.svg`;
 }
 

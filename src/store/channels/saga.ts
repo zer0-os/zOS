@@ -1,10 +1,19 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
 
-import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
+import {
+  fetchUsersByChannelId,
+  joinChannel as joinChannelAPI,
+  markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI,
+} from './api';
 
 export interface Payload {
   channelId: string;
+}
+
+export interface MarkAsReadPayload {
+  channelId: string;
+  userId: string;
 }
 
 export function* loadUsers(action) {
@@ -40,7 +49,26 @@ export function* joinChannel(action) {
   );
 }
 
+/**
+ * Marks all messages as "read" in a channel for a specific user (queries zero-api & sendbird).
+ */
+export function* markAllMessagesAsReadInChannel(action) {
+  const { channelId, userId } = action.payload;
+
+  const status = yield call(markAllMessagesAsReadAPI, channelId, userId);
+
+  if (status === 200) {
+    yield put(
+      receive({
+        id: channelId,
+        unreadCount: 0,
+      })
+    );
+  }
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.LoadUsers, loadUsers);
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
+  yield takeLatest(SagaActionTypes.markAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
 }

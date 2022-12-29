@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import { ImageModel } from './image-model';
-import ImageSizes from './image-sizes';
+import { ImageModel } from './types';
+import ImageSizes from './types';
 
 export interface Properties {
   image: ImageModel;

@@ -39,7 +39,7 @@ export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
 }
-export interface infoUploadResponse {
+export interface InfoUploadResponse {
   apiUrl: string;
   query: QueryUploadPayload;
 }

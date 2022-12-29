@@ -19,7 +19,6 @@ export interface Image {
   url: string;
   name: string;
   nativeFile?: File;
-  //giphy?: IGif;
 }
 
 export const dropzoneToMedia = (files: any[]) => {

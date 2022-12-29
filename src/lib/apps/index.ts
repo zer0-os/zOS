@@ -1,5 +1,3 @@
-import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
-
 export enum Apps {
   Feed = 'feed',
   NFTS = 'nfts',

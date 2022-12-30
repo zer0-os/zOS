@@ -1,5 +1,4 @@
 import { User } from '../../store/channels';
-import * as uuid from 'node-uuid';
 
 export interface Media {
   id: string;
@@ -31,7 +30,7 @@ export const dropzoneToMedia = (files: any[]) => {
       mediaType = 'audio';
     }
 
-    return { id: uuid.v4(), url: URL.createObjectURL(file), name: file.name, nativeFile: file, mediaType };
+    return { id: Date.now().toString(), url: URL.createObjectURL(file), name: file.name, nativeFile: file, mediaType };
   });
 
   return images;

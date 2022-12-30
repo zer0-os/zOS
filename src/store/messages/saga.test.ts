@@ -5,10 +5,8 @@ import {
   fetchMessagesByChannelId,
   sendMessagesByChannelId,
   deleteMessageApi,
-  uploadMedia as uploadMediaApi,
   editMessageApi,
-  getInfo,
-  uploadFileMessage,
+  uploadFileMessage as uploadFileMessageApi,
 } from './api';
 import {
   fetch,
@@ -18,7 +16,7 @@ import {
   deleteMessage,
   receiveDelete,
   editMessage,
-  uploadMedia,
+  uploadFileMessage,
 } from './saga';
 
 import { rootReducer } from '..';
@@ -178,7 +176,7 @@ describe('messages saga', () => {
       .run();
   });
 
-  it('get upload info', async () => {
+  it('upload file message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const media = [
       {
@@ -189,29 +187,16 @@ describe('messages saga', () => {
         mediaType: 'image',
       },
     ];
-    const uploadResponse = {
-      api_key: '762656835581739',
-      signature: '87762828920920909090985',
-      timestamp: 1672150996,
-    };
 
-    await expectSaga(uploadMedia, { payload: { channelId, media } })
+    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
       .provide([
         [
-          matchers.call.fn(getInfo),
-          uploadResponse,
-        ],
-        [
-          matchers.call.fn(uploadMediaApi),
-          {},
-        ],
-        [
-          matchers.call.fn(uploadFileMessage),
-          {},
+          matchers.call.fn(uploadFileMessageApi),
+          200,
         ],
       ])
       .withReducer(rootReducer)
-      .call(getInfo)
+      .call(uploadFileMessageApi, channelId, media[0].nativeFile)
       .run();
   });
 

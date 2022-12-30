@@ -7,11 +7,9 @@ import { receive } from '../channels';
 import {
   deleteMessageApi,
   fetchMessagesByChannelId,
-  getInfo,
   sendMessagesByChannelId,
   editMessageApi,
-  uploadMedia as uploadMediaApi,
-  uploadFileMessage,
+  uploadFileMessage as uploadFileMessageApi,
 } from './api';
 import { messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
@@ -222,13 +220,11 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadMedia(action) {
+export function* uploadFileMessage(action) {
   const { channelId, media } = action.payload;
+  if (!media.length) return;
   for (const file of media) {
-    const uploadInfo = yield call(getInfo);
-    if (!uploadInfo) return;
-    yield call(uploadMediaApi, uploadInfo, file.nativeFile);
-    yield call(uploadFileMessage, channelId, file.nativeFile);
+    yield call(uploadFileMessageApi, channelId, file.nativeFile);
   }
 }
 
@@ -322,5 +318,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
   yield takeLatest(SagaActionTypes.receiveDeleteMessage, receiveDelete);
-  yield takeLatest(SagaActionTypes.UploadMedia, uploadMedia);
+  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
 }

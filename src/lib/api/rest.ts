@@ -41,10 +41,6 @@ export function put<T>(path: string) {
   return Request.put<T>(apiUrl(path)).withCredentials();
 }
 
-export function postNative<T>(path: string) {
-  return Request.post<T>(path);
-}
-
 export function del<T>(path: string) {
   return Request.delete<T>(apiUrl(path)).withCredentials();
 }

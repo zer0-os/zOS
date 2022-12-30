@@ -6,7 +6,7 @@ import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
   send as sendMessage,
-  uploadMedia,
+  uploadFileMessage,
   deleteMessage,
   editMessage,
   Message,
@@ -34,7 +34,7 @@ export interface Properties extends PublicProperties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
-  uploadMedia: (payload: MediaPyload) => void;
+  uploadFileMessage: (payload: MediaPyload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
@@ -72,7 +72,7 @@ export class Container extends React.Component<Properties, State> {
       fetchMessages,
       fetchUsers,
       sendMessage,
-      uploadMedia,
+      uploadFileMessage,
       startMessageSync,
       stopSyncChannels,
       deleteMessage,
@@ -182,7 +182,7 @@ export class Container extends React.Component<Properties, State> {
     }
 
     if (channelId && media.length) {
-      this.props.uploadMedia({ channelId, media });
+      this.props.uploadFileMessage({ channelId, media });
     }
   };
 

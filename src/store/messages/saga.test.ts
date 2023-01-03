@@ -192,7 +192,12 @@ describe('messages saga', () => {
       .provide([
         [
           matchers.call.fn(uploadFileMessageApi),
-          200,
+          {
+            id: 'id image 1',
+            url: 'url media',
+            name: 'image 1',
+            type: 'image',
+          },
         ],
       ])
       .withReducer(rootReducer)

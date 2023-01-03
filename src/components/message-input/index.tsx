@@ -1,17 +1,21 @@
 import React, { RefObject } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
+import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
 import { User } from '../../store/channels';
-import { UserForMention, getUsersForMentions } from './utils';
+import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePreview } from './utils';
+import Menu from './menu';
+import ImageCards from '../../platform-apps/channels/image-cards';
+import { config } from '../../config';
 
 require('./styles.scss');
 
 export interface Properties {
   className?: string;
   placeholder?: string;
-  onSubmit: (message: string, mentionedUserIds: User['id'][]) => void;
+  onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
   initialValue?: string;
   users: User[];
   getUsersForMentions: (search: string, users: User[]) => UserForMention[];
@@ -22,12 +26,13 @@ export interface Properties {
 interface State {
   value: string;
   mentionedUserIds: string[];
+  media: any[];
 }
 
 export class MessageInput extends React.Component<Properties, State> {
   static defaultProps = { getUsersForMentions };
 
-  state = { value: this.props.initialValue || '', mentionedUserIds: [] };
+  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [] };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
 
@@ -41,6 +46,7 @@ export class MessageInput extends React.Component<Properties, State> {
     if (this.props.onMessageInputRendered) {
       this.props.onMessageInputRendered(this.textareaRef);
     }
+    window.addEventListener('paste', this.clipboardEvent);
   }
 
   componentDidUpdate() {
@@ -49,12 +55,21 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   }
 
-  onSubmit = (event) => {
-    const { mentionedUserIds, value } = this.state;
+  componentWillUnmount() {
+    window.removeEventListener('paste', this.clipboardEvent);
+  }
+
+  get images() {
+    return this.state.media.filter((m) => m.mediaType === 'image');
+  }
+
+  onSubmit = (event): void => {
+    const { mentionedUserIds, value, media } = this.state;
     if (!event.shiftKey && event.key === Key.Enter && value) {
       event.preventDefault();
-      this.props.onSubmit(value, mentionedUserIds);
-      this.setState({ value: '', mentionedUserIds: [] });
+
+      this.props.onSubmit(value, mentionedUserIds, media);
+      this.setState({ value: '', mentionedUserIds: [], media: [] });
     }
   };
 
@@ -65,6 +80,15 @@ export class MessageInput extends React.Component<Properties, State> {
 
     const mentionedUserIds = this.extractUserIds(value);
     this.setState({ value, mentionedUserIds });
+  };
+
+  removeMediaPreview = (mediaToRemove: { id: string }) => {
+    const media = this.state.media;
+
+    this.setState({
+      media: media.filter((m) => m.id !== mediaToRemove.id),
+    });
+    this.props.onMessageInputRendered(this.textareaRef);
   };
 
   renderMentionTypes() {
@@ -82,24 +106,83 @@ export class MessageInput extends React.Component<Properties, State> {
     return mentions;
   }
 
+  mediaSelected = (newMedia: Media[]): void => {
+    this.setState({
+      media: [
+        ...this.state.media,
+        ...newMedia,
+      ],
+    });
+    this.props.onMessageInputRendered(this.textareaRef);
+  };
+
+  imagesSelected = (acceptedFiles): void => {
+    const newImages: Media[] = dropzoneToMedia(acceptedFiles);
+
+    if (newImages.length) {
+      this.mediaSelected(newImages);
+    }
+  };
+
+  clipboardEvent = async (event) => {
+    const items = event.clipboardData.items;
+
+    const newImages: any[] = Array.from(items)
+      .filter((item: any) => item.kind === 'file' && /image\/*/.test(item.type))
+      .map((file: any) => file.getAsFile())
+      .filter(Boolean);
+
+    if (newImages.length !== 0) {
+      this.imagesSelected(await addImagePreview(newImages));
+    }
+  };
+
+  get mimeTypes() {
+    return { 'image/*': [] };
+  }
+
   renderInput() {
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__input-wrapper'>
-          <div className='mentions-text-area'>
-            <MentionsInput
-              inputRef={this.textareaRef}
-              className='mentions-text-area__wrap'
-              placeholder={this.props.placeholder}
-              onKeyDown={this.onSubmit}
-              onChange={this.contentChanged}
-              onBlur={this._handleBlur}
-              value={this.state.value}
-            >
-              {this.renderMentionTypes()}
-            </MentionsInput>
-            {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
-          </div>
+          <Dropzone
+            onDrop={this.imagesSelected}
+            noClick
+            accept={this.mimeTypes}
+            maxSize={config.cloudinary.max_file_size}
+          >
+            {({ getRootProps }) => (
+              <div {...getRootProps({ className: 'mentions-text-area' })}>
+                <ImageCards
+                  images={this.images}
+                  border
+                  onRemoveImage={this.removeMediaPreview}
+                  size='small'
+                />
+                <MentionsInput
+                  inputRef={this.textareaRef}
+                  className='mentions-text-area__wrap'
+                  placeholder={this.props.placeholder}
+                  onKeyDown={this.onSubmit}
+                  onChange={this.contentChanged}
+                  onBlur={this._handleBlur}
+                  value={this.state.value}
+                >
+                  {this.renderMentionTypes()}
+                </MentionsInput>
+
+                <div className='message-input__icons'>
+                  <Menu
+                    onSelected={this.mediaSelected}
+                    mimeTypes={this.mimeTypes}
+                    maxSize={config.cloudinary.max_file_size}
+                  />
+                </div>
+                {this.props.renderAfterInput &&
+                  this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
+              </div>
+            )}
+          </Dropzone>
         </div>
       </div>
     );

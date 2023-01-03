@@ -4,13 +4,33 @@ import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
 import { Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
 
-import { deleteMessageApi, fetchMessagesByChannelId, sendMessagesByChannelId, editMessageApi } from './api';
+import {
+  deleteMessageApi,
+  fetchMessagesByChannelId,
+  sendMessagesByChannelId,
+  editMessageApi,
+  uploadFileMessage as uploadFileMessageApi,
+} from './api';
 import { messageFactory } from './utils';
+import { Media as MediaUtils } from '../../components/message-input/utils';
 
 export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
   messageId?: number;
+}
+export interface QueryUploadPayload {
+  api_key: string;
+  signature: string;
+  timestamp: number;
+}
+export interface FileUploadResult {
+  name: string;
+  url: string;
+  width?: number;
+  height?: number;
+  type: 'image' | 'video' | 'file' | 'audio';
+  meta?: any;
 }
 
 export interface EditPayload {
@@ -24,6 +44,11 @@ export interface SendPayload {
   channelId?: string;
   message?: string;
   mentionedUserIds?: string[];
+}
+
+export interface MediaPyload {
+  channelId?: string;
+  media: MediaUtils[];
 }
 
 export interface DeleteMessageActionParameter {
@@ -195,6 +220,14 @@ export function* editMessage(action) {
   }
 }
 
+export function* uploadFileMessage(action) {
+  const { channelId, media } = action.payload;
+  if (!media.length) return;
+  for (const file of media) {
+    yield call(uploadFileMessageApi, channelId, file.nativeFile);
+  }
+}
+
 export function* receiveDelete(action) {
   const { channelId, messageId } = action.payload;
 
@@ -285,4 +318,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
   yield takeLatest(SagaActionTypes.receiveDeleteMessage, receiveDelete);
+  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
 }

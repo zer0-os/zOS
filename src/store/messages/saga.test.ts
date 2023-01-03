@@ -1,8 +1,23 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId, deleteMessageApi, editMessageApi } from './api';
-import { fetch, send, fetchNewMessages, stopSyncChannels, deleteMessage, editMessage, receiveDelete } from './saga';
+import {
+  fetchMessagesByChannelId,
+  sendMessagesByChannelId,
+  deleteMessageApi,
+  editMessageApi,
+  uploadFileMessage as uploadFileMessageApi,
+} from './api';
+import {
+  fetch,
+  send,
+  fetchNewMessages,
+  stopSyncChannels,
+  deleteMessage,
+  receiveDelete,
+  editMessage,
+  uploadFileMessage,
+} from './saga';
 
 import { rootReducer } from '..';
 
@@ -158,6 +173,30 @@ describe('messages saga', () => {
       ])
       .withReducer(rootReducer)
       .call(fetchMessagesByChannelId, channelId, 1658776625730)
+      .run();
+  });
+
+  it('upload file message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const media = [
+      {
+        id: 'id image 1',
+        url: 'url media',
+        name: 'image 1',
+        nativeFile: { path: 'Screen Shot 2022-12-07 at 18.39.01.png' },
+        mediaType: 'image',
+      },
+    ];
+
+    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
+      .provide([
+        [
+          matchers.call.fn(uploadFileMessageApi),
+          200,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(uploadFileMessageApi, channelId, media[0].nativeFile)
       .run();
   });
 

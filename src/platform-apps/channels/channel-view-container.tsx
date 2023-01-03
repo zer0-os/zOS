@@ -6,6 +6,7 @@ import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
   send as sendMessage,
+  uploadFileMessage,
   deleteMessage,
   editMessage,
   Message,
@@ -19,18 +20,21 @@ import {
   EditPayload,
   Payload as PayloadFetchMessages,
   SendPayload as PayloadSendMessage,
+  MediaPyload,
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
 import { Payload as PayloadJoinChannel } from '../../store/channels/saga';
 import { ChatConnect } from './chat-connect/chat-connect';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
+import { Media } from '../../components/message-input/utils';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
+  uploadFileMessage: (payload: MediaPyload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
@@ -68,6 +72,7 @@ export class Container extends React.Component<Properties, State> {
       fetchMessages,
       fetchUsers,
       sendMessage,
+      uploadFileMessage,
       startMessageSync,
       stopSyncChannels,
       deleteMessage,
@@ -170,10 +175,14 @@ export class Container extends React.Component<Properties, State> {
     return !!message && message.trim() !== '';
   };
 
-  handleSendMessage = (message: string, mentionedUserIds: string[] = []): void => {
+  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
     const { channelId } = this.props;
     if (channelId && this.isNotEmpty(message)) {
       this.props.sendMessage({ channelId, message, mentionedUserIds });
+    }
+
+    if (channelId && media.length) {
+      this.props.uploadFileMessage({ channelId, media });
     }
   };
 

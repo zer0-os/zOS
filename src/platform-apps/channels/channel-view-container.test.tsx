@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
@@ -26,6 +25,7 @@ describe('ChannelViewContainer', () => {
       fetchUsers: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
+      markAsRead: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
       context: {
@@ -65,6 +65,25 @@ describe('ChannelViewContainer', () => {
 
     expect(wrapper.find(ChannelView).prop('name')).toStrictEqual('first channel');
   });
+
+  /* TODO: check how to set "isFirstMessageFetchDone" state to `true`
+  it('should mark all messages as read when unReadCount > 0', () => {
+    const markAsRead = jest.fn(); 
+    const wrapper = subject({ 
+      markAsRead,
+      channelId: 'the-channel-id',
+      user: {
+        isLoading: false,
+        data: { id: 'user-id' },
+      },
+      channel: { name: 'the channel', unreadCount: 3 } 
+    });
+
+    wrapper.setProps({}); // trigger didUpdate
+    
+    expect(markAsRead).toHaveBeenCalledWith({ channelId: 'the-channel-id', user: { data: { id: 'user-id' } } });
+  });
+  */
 
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();

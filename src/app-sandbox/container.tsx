@@ -78,6 +78,9 @@ export class Container extends React.Component<Properties, State> {
         web3Provider: this.props.providerService.get(),
       });
     }
+
+    // reset background color from the body tag
+    document.body.style.backgroundColor = '';
   }
 
   componentDidUpdate(prevProps: Properties) {

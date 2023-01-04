@@ -47,11 +47,11 @@ export class ChannelList extends React.Component<Properties> {
                 to={channel.id}
               >
                 <span className='channel-list__channel-name-prefix'>#</span>
+                <span className='channel-list__channel-name'>{channel.name}</span>
+                {unreadCount > 0 && <span className='channel-list__channel-unread-count'>{unreadCountLabel}</span>}
                 {channel.groupChannelType === GroupChannelType.Private && (
                   <span className='channel-list__channel-private-icon'>{this.lockIcon()}</span>
                 )}
-                <span className='channel-list__channel-name'>{channel.name}</span>
-                {unreadCount > 0 && <span className='channel-list__channel-unread-count'>{unreadCountLabel}</span>}
               </ZnsLink>
             </div>
           );

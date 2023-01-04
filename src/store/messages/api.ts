@@ -1,5 +1,5 @@
 import { del, get, post, put } from '../../lib/api/rest';
-import { MessagesResponse } from './index';
+import { Media, MessagesResponse } from './index';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
   const filter: any = {};
@@ -41,8 +41,8 @@ export async function editMessageApi(
   return response.status;
 }
 
-export async function uploadFileMessage(channelId: string, media: File): Promise<number> {
+export async function uploadFileMessage(channelId: string, media: File): Promise<Media> {
   const response = await post<any>(`/upload/chatChannels/${channelId}/message`).attach('file', media);
 
-  return response.status;
+  return response.body;
 }

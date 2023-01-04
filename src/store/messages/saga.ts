@@ -222,10 +222,22 @@ export function* editMessage(action) {
 
 export function* uploadFileMessage(action) {
   const { channelId, media } = action.payload;
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+
   if (!media.length) return;
+
+  let messages = [...existingMessages];
   for (const file of media) {
-    yield call(uploadFileMessageApi, channelId, file.nativeFile);
+    const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
+    messages.push(messagesResponse);
   }
+
+  yield put(
+    receive({
+      id: channelId,
+      messages
+    })
+  );
 }
 
 export function* receiveDelete(action) {

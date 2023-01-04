@@ -235,7 +235,7 @@ export function* uploadFileMessage(action) {
   yield put(
     receive({
       id: channelId,
-      messages,
+      messages
     })
   );
 }

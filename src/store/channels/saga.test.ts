@@ -1,8 +1,12 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchUsersByChannelId, joinChannel as joinChannelAPI } from './api';
-import { joinChannel, loadUsers } from './saga';
+import {
+  fetchUsersByChannelId,
+  joinChannel as joinChannelAPI,
+  markAllMessagesAsReadInChannel as markAllMessagesAsReadInChannelAPI,
+} from './api';
+import { joinChannel, loadUsers, markAllMessagesAsReadInChannel } from './saga';
 
 import { rootReducer } from '..';
 
@@ -121,5 +125,20 @@ describe('channels list saga', () => {
       'the-first-id': { id: 'the-first-id', firstName: 'the first name' },
       'the-second-id': { id: 'the-second-id', firstName: 'the second name' },
     });
+  });
+
+  it('mark all messages as read', async () => {
+    const channelId = '236844224_56299bcd523ac9084181f2422d0d0cfe9df72db4';
+    const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
+
+    await expectSaga(markAllMessagesAsReadInChannel, { payload: { channelId, userId } })
+      .provide([
+        [
+          matchers.call.fn(markAllMessagesAsReadInChannelAPI),
+          200,
+        ],
+      ])
+      .call(markAllMessagesAsReadInChannelAPI, channelId, userId)
+      .run();
   });
 });

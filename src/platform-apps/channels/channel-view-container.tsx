@@ -148,7 +148,6 @@ export class Container extends React.Component<Properties, State> {
       });
     }
 
-    // mark all messages as "read" after channel load/join
     if (this.state.isFirstMessagesFetchDone && channel && channel.unreadCount > 0 && user.data) {
       this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }

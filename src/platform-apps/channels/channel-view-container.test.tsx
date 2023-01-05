@@ -25,7 +25,7 @@ describe('ChannelViewContainer', () => {
       fetchUsers: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
-      markAsRead: () => undefined,
+      markAllMessagesAsReadInChannel: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
       context: {
@@ -68,9 +68,9 @@ describe('ChannelViewContainer', () => {
 
   /* TODO: check how to set "isFirstMessageFetchDone" state to `true`
   it('should mark all messages as read when unReadCount > 0', () => {
-    const markAsRead = jest.fn(); 
+    const markAllMessagesAsReadInChannel = jest.fn(); 
     const wrapper = subject({ 
-      markAsRead,
+      markAllMessagesAsReadInChannel,
       channelId: 'the-channel-id',
       user: {
         isLoading: false,
@@ -81,7 +81,7 @@ describe('ChannelViewContainer', () => {
 
     wrapper.setProps({}); // trigger didUpdate
     
-    expect(markAsRead).toHaveBeenCalledWith({ channelId: 'the-channel-id', user: { data: { id: 'user-id' } } });
+    expect(markAllMessagesAsReadInChannel).toHaveBeenCalledWith({ channelId: 'the-channel-id', user: { data: { id: 'user-id' } } });
   });
   */
 

@@ -57,4 +57,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { loadUsers, joinChannel, markAsRead };
+export { loadUsers, joinChannel, markAllMessagesAsReadInChannel };

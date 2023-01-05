@@ -13,7 +13,13 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { Channel, denormalize, loadUsers as fetchUsers, joinChannel, markAsRead } from '../../store/channels';
+import {
+  Channel,
+  denormalize,
+  loadUsers as fetchUsers,
+  joinChannel,
+  markAllMessagesAsReadInChannel,
+} from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -39,7 +45,7 @@ export interface Properties extends PublicProperties {
   editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  markAsRead: (payload: MarkAsReadPayload) => void;
+  markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   context: {
@@ -78,7 +84,7 @@ export class Container extends React.Component<Properties, State> {
       stopSyncChannels,
       deleteMessage,
       joinChannel,
-      markAsRead,
+      markAllMessagesAsReadInChannel,
       editMessage,
     };
   }
@@ -144,7 +150,7 @@ export class Container extends React.Component<Properties, State> {
 
     // mark all messages as "read" after channel load/join
     if (this.state.isFirstMessagesFetchDone && channel && channel.unreadCount > 0 && user.data) {
-      this.props.markAsRead({ channelId, userId: user.data.id });
+      this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
   }
 

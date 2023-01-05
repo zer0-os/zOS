@@ -16,7 +16,7 @@ export async function joinChannel(channelId: string): Promise<number> {
   return response.status;
 }
 
-export async function markAllMessagesAsReadInChannel(channelId: string, userId: string) {
+export async function markAllMessagesAsReadInChannel(channelId: string, userId: string): Promise<number> {
   const response = await put<any>(`/chatChannels/${channelId}/messages/mark-as-read`).send({ id: userId });
 
   return response.status;

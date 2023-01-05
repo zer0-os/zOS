@@ -1,4 +1,5 @@
 import { del, get, post, put } from '../../lib/api/rest';
+import { LinkPreview } from '../../lib/link-preview';
 import { Media, MessagesResponse } from './index';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -44,5 +45,13 @@ export async function editMessageApi(
 export async function uploadFileMessage(channelId: string, media: File): Promise<Media> {
   const response = await post<any>(`/upload/chatChannels/${channelId}/message`).attach('file', media);
 
+  return response.body;
+}
+
+export async function getLinkPreviews(link: string): Promise<LinkPreview> {
+  const filter: any = {};
+  filter.url = link;
+
+  const response = await get<any>('/linkPreviews').send(filter);
   return response.body;
 }

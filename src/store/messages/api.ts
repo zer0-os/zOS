@@ -52,6 +52,6 @@ export async function getLinkPreviews(link: string): Promise<LinkPreview> {
   const filter: any = {};
   filter.url = link;
 
-  const response = await get<any>('/linkPreviews').send(filter);
+  const response = await get<any>('/linkPreviews', filter);
   return response.body;
 }

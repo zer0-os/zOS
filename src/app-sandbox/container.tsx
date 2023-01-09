@@ -32,6 +32,7 @@ export interface Properties extends PublicProperties {
   layout: AppLayout;
   updateLayout: (layout: Partial<AppLayout>) => void;
   isAuthenticated: boolean;
+  document?: Document;
 }
 
 interface State {
@@ -40,6 +41,10 @@ interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
+  defaultProps = {
+    document,
+  };
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       layout,
@@ -80,7 +85,9 @@ export class Container extends React.Component<Properties, State> {
     }
 
     // reset background color from the body tag
-    document.body.style.backgroundColor = '';
+    if (this.props.document) {
+      document.body.style.backgroundColor = '';
+    }
   }
 
   componentDidUpdate(prevProps: Properties) {

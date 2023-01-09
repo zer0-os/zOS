@@ -13,7 +13,13 @@ import {
   startMessageSync,
   stopSyncChannels,
 } from '../../store/messages';
-import { Channel, denormalize, loadUsers as fetchUsers, joinChannel } from '../../store/channels';
+import {
+  Channel,
+  denormalize,
+  loadUsers as fetchUsers,
+  joinChannel,
+  markAllMessagesAsReadInChannel,
+} from '../../store/channels';
 import { ChannelView } from './channel-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -23,7 +29,7 @@ import {
   MediaPyload,
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
-import { Payload as PayloadJoinChannel } from '../../store/channels/saga';
+import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/saga';
 import { ChatConnect } from './chat-connect/chat-connect';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
@@ -39,6 +45,7 @@ export interface Properties extends PublicProperties {
   editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
+  markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   context: {
@@ -77,6 +84,7 @@ export class Container extends React.Component<Properties, State> {
       stopSyncChannels,
       deleteMessage,
       joinChannel,
+      markAllMessagesAsReadInChannel,
       editMessage,
     };
   }
@@ -85,7 +93,6 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount() {
     const { channelId } = this.props;
-
     if (channelId) {
       this.props.fetchMessages({ channelId });
       this.props.fetchUsers({ channelId });
@@ -93,7 +100,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId, channel } = this.props;
+    const { channelId, channel, user } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
@@ -139,6 +146,10 @@ export class Container extends React.Component<Properties, State> {
       this.setState({
         isFirstMessagesFetchDone: true,
       });
+    }
+
+    if (this.state.isFirstMessagesFetchDone && channel && channel.unreadCount > 0 && user.data) {
+      this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
   }
 

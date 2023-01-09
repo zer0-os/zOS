@@ -10,8 +10,9 @@ import {
   sendMessagesByChannelId,
   editMessageApi,
   uploadFileMessage as uploadFileMessageApi,
+  getLinkPreviews,
 } from './api';
-import { messageFactory } from './utils';
+import { extractLink, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 
 export interface Payload {
@@ -113,7 +114,12 @@ export function* send(action) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = messageFactory(message, currentUser);
+  let temporaryMessage = messageFactory(message, currentUser);
+  const preview = yield getPreview(message);
+
+  if (preview) {
+    temporaryMessage = { ...temporaryMessage, preview };
+  }
 
   // add cache message id to prevent having double messages when we receive the message from sendbird.
   cachedMessageIds.push(temporaryMessage.id);
@@ -304,6 +310,13 @@ export function* receiveNewMessage(action) {
       messageIdsCache: cachedMessageIds,
     })
   );
+}
+
+function* getPreview(message) {
+  const link: linkifyType[] = extractLink(message);
+  if (!link.length) return;
+
+  return yield call(getLinkPreviews, link[0].href);
 }
 
 function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {

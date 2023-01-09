@@ -335,10 +335,12 @@
             padding: 5px 15px;
             margin-top: 10px;
             border-radius: $border-radius;
+          }
+        }
 
-            &__link {
-              text-decoration: underline;
-            }
+        .text-message {
+          &__link {
+            text-decoration: underline;
           }
         }
 

@@ -175,9 +175,9 @@ export class Message extends React.Component<Properties, State> {
 
   renderMessageWithLinks(): React.ReactElement {
     const { message } = this.props;
-    const hasLinks = linkifyjs.test(message);
+    const hasLinks = linkifyjs.find(message);
 
-    if (hasLinks) {
+    if (hasLinks.length) {
       return (
         <Linkify
           options={{

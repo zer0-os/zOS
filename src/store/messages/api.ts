@@ -49,8 +49,7 @@ export async function uploadFileMessage(channelId: string, media: File): Promise
 }
 
 export async function getLinkPreviews(link: string): Promise<LinkPreview> {
-  const filter: any = {};
-  filter.url = link;
+  const filter: any = { url: link };
 
   const response = await get<any>('/linkPreviews', filter);
   return response.body;

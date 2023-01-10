@@ -58,13 +58,13 @@
   &__header {
     position: absolute;
     display: flex;
-    align-items: flex-end;
-    box-sizing: border-box;
+    align-items: center;
+    background: linear-gradient(180deg, #0a0a0a 27.08%, rgba(10, 10, 10, 0) 84.9%);
 
     @include layout-transition(left);
     left: $width-navigation;
     right: 0;
-    height: 72px;
+    height: 96px;
 
     @include for-left-collapse() {
       left: $width-collapsed-navigation;

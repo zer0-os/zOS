@@ -5,8 +5,6 @@ import Dropzone from 'react-dropzone';
 
 import Menu, { Properties } from './menu';
 
-let featureFlags: any = {};
-
 describe('Menu', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {

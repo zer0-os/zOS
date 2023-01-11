@@ -31,7 +31,6 @@
     "@zero-tech/zapp-nfts": "^0.7.0",
     "@zero-tech/zapp-staking": "0.4.8",
     "classnames": "^2.3.1",
-    "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",
     "global": "^4.4.0",

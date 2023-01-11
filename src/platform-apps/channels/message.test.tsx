@@ -8,7 +8,6 @@ import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../../components/message-input';
 import MessageMenu from './messages-menu';
-import EditMessageActions from './messages-menu/edit-message-actions';
 
 describe('message', () => {
   const sender = {

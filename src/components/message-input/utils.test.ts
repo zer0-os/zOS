@@ -1,4 +1,3 @@
-import React from 'react';
 import { User } from '../../store/channels';
 import { getUsersForMentions } from './utils';
 

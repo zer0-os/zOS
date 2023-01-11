@@ -10,7 +10,6 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../../components/message-input';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
-import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 
 describe('ChannelView', () => {
   const MESSAGES_TEST = [

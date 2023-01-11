@@ -12,7 +12,6 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 
 describe('MessageInput', () => {
-  const window = jest.fn();
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
       className: '',

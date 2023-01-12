@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Linkify from 'linkify-react';
-import { Emoji } from 'emoji-mart';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../../components/link-preview';
@@ -172,21 +171,6 @@ describe('message', () => {
     const wrapper = subject({ preview, message: undefined });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(preview);
-  });
-
-  it('renders message with emojis', () => {
-    const wrapper = subject({ message: ':kissing_heart: :stuck_out_tongue_winking_eye: and some text' });
-
-    const classNames = wrapper.find(Emoji).map((m) => m.prop('emoji'));
-
-    expect(classNames).toIncludeAllMembers([
-      ':kissing_heart:',
-      ':stuck_out_tongue_winking_eye:',
-    ]);
-
-    const textes = wrapper.find('.message__block-body').text().trim();
-
-    expect(textes).toStrictEqual('<Emoji /> <Emoji /> and some text');
   });
 
   it('renders message with mention', () => {

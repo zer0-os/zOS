@@ -4,7 +4,6 @@ import Linkify from 'linkify-react';
 import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
-import { textToEmojis } from './utils';
 import AttachmentCards from './attachment-cards';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../../components/link-preview/';
@@ -151,7 +150,7 @@ export class Message extends React.Component<Properties, State> {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return textToEmojis(part);
+        return part;
       }
 
       if (match[2] === 'user') {

@@ -13,7 +13,12 @@ $speed: animation.$animation-duration;
   left: $width-navigation;
   right: 0;
 
+  &.sidekick-panel-open {
+    right: $width-sidekick;
+  }
+
   @include layout-transition(left);
+  @include layout-sidekick-transition(right);
 
   @include for-left-collapse() {
     left: $width-collapsed-navigation;

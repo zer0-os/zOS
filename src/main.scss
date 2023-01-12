@@ -55,6 +55,10 @@
     }
   }
 
+  &.sidekick-panel-open &__header {
+    right: $width-sidekick;
+  }
+
   &__header {
     position: absolute;
     display: flex;
@@ -62,6 +66,8 @@
     background: linear-gradient(180deg, #0a0a0a 27.08%, rgba(10, 10, 10, 0) 84.9%);
 
     @include layout-transition(left);
+    @include layout-sidekick-transition(right);
+
     left: $width-navigation;
     right: 0;
     height: 96px;
@@ -104,14 +110,12 @@
   }
 
   &__sidekick {
-    padding: 12px 16px 0 0;
     box-sizing: border-box;
-
+    position: relative;
     pointer-events: auto;
     width: $width-sidekick;
 
     display: flex;
-    justify-content: flex-end;
   }
 
   &__logo {
@@ -135,5 +139,23 @@
     .icon-button__icon {
       vertical-align: middle;
     }
+  }
+}
+
+@keyframes sidekick-slide-in {
+  0% {
+    right: 0;
+  }
+  100% {
+    right: $width-sidekick;
+  }
+}
+
+@keyframes sidekick-slide-out {
+  0% {
+    right: $width-sidekick;
+  }
+  100% {
+    right: 0;
   }
 }

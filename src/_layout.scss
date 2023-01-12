@@ -16,6 +16,7 @@ $breakpoint-collapse-menu: 1294px;
 
 @mixin root-layout-vars {
   --layout-transition-easing-function: ease-in;
+  --layout-app-content-right-padding: 64px;
 
   &.context-panel-open {
     --layout-transition-easing-function: ease-out;

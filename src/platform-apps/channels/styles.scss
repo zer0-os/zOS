@@ -116,6 +116,10 @@
       visibility: visible;
     }
 
+    &__main {
+      padding-right: var(--layout-app-content-right-padding);
+    }
+
     &__name {
       padding: 110px 0 10px 20px;
 

@@ -101,7 +101,7 @@ describe('ChannelViewContainer', () => {
 
     subject({ fetchUsers, channelId: 'the-channel-id' });
 
-    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+    expect(fetchUsers).not.toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('fetches messages when channel id is set', () => {
@@ -127,6 +127,9 @@ describe('ChannelViewContainer', () => {
       fetchUsers,
       channelId: 'the-channel-id',
       channel: { name: 'first channel', shouldSyncChannels: false },
+      context: {
+        isAuthenticated: true,
+      },
     });
 
     wrapper.setProps({
@@ -149,6 +152,9 @@ describe('ChannelViewContainer', () => {
       user: {
         isLoading: false,
         data: USER_DATA,
+      },
+      context: {
+        isAuthenticated: true,
       },
     });
 

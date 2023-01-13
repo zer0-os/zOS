@@ -95,7 +95,7 @@ export class Container extends React.Component<Properties, State> {
     const { channelId } = this.props;
     if (channelId) {
       this.props.fetchMessages({ channelId });
-      this.props.fetchUsers({ channelId });
+      this.fetchChannelMembers(channelId);
     }
   }
 
@@ -105,7 +105,7 @@ export class Container extends React.Component<Properties, State> {
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
-      this.props.fetchUsers({ channelId });
+      this.fetchChannelMembers(channelId);
       this.setState({
         isFirstMessagesFetchDone: false,
       });
@@ -118,7 +118,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.user.data !== null
     ) {
       this.props.fetchMessages({ channelId });
-      this.props.fetchUsers({ channelId });
+      this.fetchChannelMembers(channelId);
       this.setState({
         isFirstMessagesFetchDone: false,
       });
@@ -156,6 +156,12 @@ export class Container extends React.Component<Properties, State> {
   componentWillUnmount() {
     const { channelId } = this.props;
     this.props.stopSyncChannels({ channelId });
+  }
+
+  fetchChannelMembers(channelId: string): void {
+    if (this.props.context.isAuthenticated) {
+      this.props.fetchUsers({ channelId });
+    }
   }
 
   resetCountNewMessage = () => {

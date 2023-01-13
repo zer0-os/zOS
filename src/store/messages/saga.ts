@@ -173,7 +173,8 @@ export function* fetchNewMessages(action) {
       messages: messagesResponse.messages,
       hasMore: messagesResponse.hasMore,
       countNewMessages,
-      lastMessageCreatedAt: lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
+      lastMessageCreatedAt:
+        lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
     })
   );
 }

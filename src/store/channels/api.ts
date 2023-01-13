@@ -6,7 +6,7 @@ export async function fetchUsersByChannelId(channelId: string): Promise<any> {
       return null;
     })
     .then((response) => {
-      return response.body;
+      return response?.body;
     });
 }
 

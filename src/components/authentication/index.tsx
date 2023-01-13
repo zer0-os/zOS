@@ -98,7 +98,6 @@ export class Container extends React.Component<Properties, State> {
       (err, res) => {
         if (err) {
           this.props.updateConnector(Connectors.None);
-          console.log(err);
           return;
         }
 

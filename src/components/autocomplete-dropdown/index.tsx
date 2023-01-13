@@ -92,7 +92,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps: Properties) {
+  UNSAFE_componentWillReceiveProps(nextProps: Properties) {
     if (nextProps.value !== this.props.value) {
       this.setState({ value: nextProps.value || '' });
     }

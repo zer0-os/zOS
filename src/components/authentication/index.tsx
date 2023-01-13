@@ -89,25 +89,22 @@ export class Container extends React.Component<Properties, State> {
       from,
     ];
 
-    try {
-      web3Provider.provider.sendAsync(
-        {
-          method,
-          params,
-          from,
-        },
-        (err, res) => {
-          if (err) {
-            this.props.updateConnector(Connectors.None);
-            console.log(err);
-          }
-
-          this.props.nonceOrAuthorize({ signedWeb3Token: res.result });
+    web3Provider.provider.sendAsync(
+      {
+        method,
+        params,
+        from,
+      },
+      (err, res) => {
+        if (err) {
+          this.props.updateConnector(Connectors.None);
+          console.log(err);
+          return;
         }
-      );
-    } catch (error) {
-      console.log(error);
-    }
+
+        this.props.nonceOrAuthorize({ signedWeb3Token: res.result });
+      }
+    );
   }
 
   render() {

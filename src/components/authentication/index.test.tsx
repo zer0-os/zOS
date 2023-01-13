@@ -131,6 +131,7 @@ describe('Authentication', () => {
 
   it('should call updateConnector when sendAsync return error', () => {
     const updateConnector = jest.fn();
+    const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
 
     const wrapper = subject({
@@ -150,10 +151,12 @@ describe('Authentication', () => {
         data: null,
       },
       updateConnector,
+      nonceOrAuthorize,
     });
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
+    expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
   it('should call clearSession when disconnect btn clicked', () => {

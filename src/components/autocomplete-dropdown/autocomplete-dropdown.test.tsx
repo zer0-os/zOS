@@ -48,16 +48,8 @@ describe('autocomplete-dropdown', () => {
 
   it('it renders match suggestions', async () => {
     const searchResults = [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
     ];
 
     const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
@@ -69,16 +61,8 @@ describe('autocomplete-dropdown', () => {
 
   it('it sets the first item found to the "focused" one', async () => {
     const findMatches = stubSearchFor('anything', [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
     ]);
 
     const wrapper = subject({ findMatches });
@@ -93,21 +77,9 @@ describe('autocomplete-dropdown', () => {
 
   it('it sets the next item as to the "focused" one when hitting "down"', async () => {
     const findMatches = stubSearchFor('anything', [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
-      {
-        id: 'result-third-id',
-        value: 'result-third-value',
-        route: 'result-third-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
+      stubResult('third'),
     ]);
 
     const wrapper = subject({ findMatches });
@@ -136,21 +108,9 @@ describe('autocomplete-dropdown', () => {
 
   it('it sets the last item as to the "focused" one when hitting "up"', async () => {
     const findMatches = stubSearchFor('anything', [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
-      {
-        id: 'result-third-id',
-        value: 'result-third-value',
-        route: 'result-third-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
+      stubResult('third'),
     ]);
 
     const wrapper = subject({ findMatches });
@@ -179,16 +139,8 @@ describe('autocomplete-dropdown', () => {
 
   it('it selects the currently focused option when pressing "Enter"', async () => {
     const searchResults = [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
     ];
     const findMatches = stubSearchFor('anything', searchResults);
 
@@ -212,19 +164,11 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('selecting a match triggers change event', async () => {
-    const expectation = 'result-first-value';
     const searchResults = [
-      {
-        id: 'result-first-id',
-        value: expectation,
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
+      stubResult('first'),
+      stubResult('second'),
     ];
+    const valueToSelect = searchResults[0].value;
     const findMatches = stubSearchFor('anything', searchResults);
 
     const wrapper = subject({ findMatches });
@@ -237,7 +181,7 @@ describe('autocomplete-dropdown', () => {
       .find(Result)
       .findWhere((n) => {
         const match = n.prop('item') as any;
-        return match.value === expectation;
+        return match.value === valueToSelect;
       })
       .first();
     option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
@@ -246,9 +190,11 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('selecting an option verifies value and closes dropdown', async () => {
-    const expectation = 'result-value';
-
-    const findMatches = stubSearchFor('anything', [{ id: 'result-id', value: expectation, route: 'result-route' }]);
+    const searchResults = [
+      stubResult('first'),
+    ];
+    const valueToSelect = searchResults[0].value;
+    const findMatches = stubSearchFor('anything', searchResults);
     const wrapper = subject({ findMatches });
 
     await performSearch(wrapper, 'anything');
@@ -259,18 +205,18 @@ describe('autocomplete-dropdown', () => {
       .find(Result)
       .findWhere((n) => {
         const match = n.prop('item') as any;
-        return match.value === expectation;
+        return match.value === valueToSelect;
       })
       .first();
     option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
 
-    expect(wrapper.find('input').prop('value')).toEqual(expectation);
+    expect(wrapper.find('input').prop('value')).toEqual(valueToSelect);
     expect(wrapper.find(Result).exists()).toBe(false);
   });
 
   it('it closes dropdown when focus lost', async () => {
     const findMatches = () => {
-      return [{ id: 'result-id', value: 'result-value', route: 'result-route' }];
+      return [stubResult('result')];
     };
     const wrapper = subject({ findMatches, value: 'original value' });
 
@@ -334,18 +280,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('set min height to results wrapper', async () => {
-    const findMatches = stubSearchFor('anything', [
-      {
-        id: 'result-first-id',
-        value: 'result-first-value',
-        route: 'result-first-route',
-      },
-      {
-        id: 'result-second-id',
-        value: 'result-second-value',
-        route: 'result-second-route',
-      },
-    ]);
+    const findMatches = stubSearchFor('anything', []);
 
     const wrapper = subject({ findMatches });
     expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
@@ -411,5 +346,13 @@ function stubSearchFor(expectedSearch, results) {
       return results;
     }
     return [];
+  };
+}
+
+function stubResult(prefix) {
+  return {
+    id: `${prefix}-id`,
+    value: `${prefix}-value`,
+    route: `${prefix}-route`,
   };
 }

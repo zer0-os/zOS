@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AutocompleteDropdown, Properties, Result } from './';
 import { shallow } from 'enzyme';
+import { Key } from '../../lib/keyboard-search';
 
 let onSelect;
 let onCloseBar;
@@ -92,12 +93,7 @@ describe('autocomplete-dropdown', () => {
       false,
     ]);
 
-    const input = wrapper.find('input');
-    input.simulate('keydown', {
-      key: 'ArrowDown',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowDown);
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       false,
@@ -123,12 +119,7 @@ describe('autocomplete-dropdown', () => {
       false,
     ]);
 
-    const input = wrapper.find('input');
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowUp);
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       false,
@@ -148,17 +139,8 @@ describe('autocomplete-dropdown', () => {
 
     await performSearch(wrapper, 'anything');
 
-    const input = wrapper.find('input');
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-    input.simulate('keydown', {
-      key: 'Enter',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowUp);
+    pressKey(wrapper, Key.Enter);
 
     expect(onSelect).toHaveBeenCalledWith(searchResults[1]);
   });
@@ -249,19 +231,9 @@ describe('autocomplete-dropdown', () => {
     };
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
     jest.useFakeTimers();
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-    input.simulate('keydown', {
-      key: 'Enter',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowUp);
+    pressKey(wrapper, Key.Enter);
     jest.runAllTimers();
 
     await new Promise(setImmediate);
@@ -355,4 +327,13 @@ function stubResult(prefix) {
     value: `${prefix}-value`,
     route: `${prefix}-route`,
   };
+}
+
+function pressKey(wrapper, key) {
+  const input = wrapper.find('input');
+  input.simulate('keydown', {
+    key,
+    preventDefault: () => {},
+    stopPropagation: () => {},
+  });
 }

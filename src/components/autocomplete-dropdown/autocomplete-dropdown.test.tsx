@@ -66,13 +66,7 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('item'))).toEqual(findMatches());
   });
@@ -95,13 +89,7 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
@@ -127,19 +115,14 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
       false,
     ]);
 
+    const input = wrapper.find('input');
     input.simulate('keydown', {
       key: 'ArrowDown',
       preventDefault: () => {},
@@ -175,13 +158,7 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
@@ -189,6 +166,7 @@ describe('autocomplete-dropdown', () => {
       false,
     ]);
 
+    const input = wrapper.find('input');
     input.simulate('keydown', {
       key: 'ArrowUp',
       preventDefault: () => {},
@@ -220,14 +198,9 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
+    await performSearch(wrapper, 'anything');
+
     const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
-
     input.simulate('keydown', {
       key: 'ArrowUp',
       preventDefault: () => {},
@@ -262,13 +235,7 @@ describe('autocomplete-dropdown', () => {
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     wrapper.update();
 
@@ -292,13 +259,7 @@ describe('autocomplete-dropdown', () => {
     };
     const wrapper = subject({ findMatches });
 
-    let input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     wrapper.update();
 
@@ -311,9 +272,7 @@ describe('autocomplete-dropdown', () => {
       .first();
     option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
 
-    input = wrapper.find('input');
-
-    expect(input.prop('value')).toEqual(expectation);
+    expect(wrapper.find('input').prop('value')).toEqual(expectation);
     expect(wrapper.find(Result).exists()).toBe(false);
   });
 
@@ -341,13 +300,7 @@ describe('autocomplete-dropdown', () => {
     };
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'someSearch' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'someSearch');
 
     expect(wrapper.text()).toEqual('No results found');
   });
@@ -405,15 +358,9 @@ describe('autocomplete-dropdown', () => {
     };
 
     const wrapper = subject({ findMatches });
-
-    const input = wrapper.find('input');
-
     expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
 
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find('.autocomplete-dropdown__results').prop('style').height).toEqual(35);
   });
@@ -456,4 +403,14 @@ function inputEvent(attrs = {}) {
     stopPropagation: () => {},
     ...attrs,
   };
+}
+
+async function performSearch(dropdown, searchString) {
+  const input = dropdown.find('input');
+  // Fake the timers because we debounce search requests
+  jest.useFakeTimers();
+  input.simulate('change', { target: { value: searchString } });
+  jest.runAllTimers();
+  // Release the thread so the async search can complete
+  await new Promise(setImmediate);
 }

@@ -1,11 +1,7 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
 
 import { AutocompleteDropdown, Properties, Result } from './';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 
 let findMatches;
 let onSelect;
@@ -28,18 +24,6 @@ describe('autocomplete-dropdown', () => {
     };
 
     return shallow(<AutocompleteDropdown {...state} />);
-  }
-
-  function subjectMount(initialData: Partial<Properties> = {}) {
-    const state: Properties = {
-      findMatches,
-      onSelect,
-      onCloseBar,
-      value: null,
-      ...initialData,
-    };
-
-    return mount(<AutocompleteDropdown {...state} />);
   }
 
   it('it renders input', () => {
@@ -276,7 +260,7 @@ describe('autocomplete-dropdown', () => {
       ];
     };
 
-    const wrapper = subjectMount({ findMatches });
+    const wrapper = subject({ findMatches });
 
     const input = wrapper.find('input');
 
@@ -288,8 +272,14 @@ describe('autocomplete-dropdown', () => {
 
     wrapper.update();
 
-    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
-    option.simulate('mouseDown');
+    const option = wrapper
+      .find(Result)
+      .findWhere((n) => {
+        const match = n.prop('item') as any;
+        return match.value === expectation;
+      })
+      .first();
+    option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
 
     expect(onSelect).toHaveBeenCalledWith(findMatches()[0]);
   });
@@ -300,25 +290,31 @@ describe('autocomplete-dropdown', () => {
     findMatches = () => {
       return [{ id: 'result-id', value: expectation, route: 'result-route' }];
     };
-    const wrapper = subjectMount({ findMatches });
+    const wrapper = subject({ findMatches });
 
     let input = wrapper.find('input');
 
     jest.useFakeTimers();
-    input.simulate('change', { target: { value: expectation } });
+    input.simulate('change', { target: { value: 'anything' } });
     jest.runAllTimers();
 
     await new Promise(setImmediate);
 
     wrapper.update();
 
-    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
-    option.simulate('mouseDown');
+    const option = wrapper
+      .find(Result)
+      .findWhere((n) => {
+        const match = n.prop('item') as any;
+        return match.value === expectation;
+      })
+      .first();
+    option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
 
     input = wrapper.find('input');
 
     expect(input.prop('value')).toEqual(expectation);
-    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
+    expect(wrapper.find(Result).exists()).toBe(false);
   });
 
   it('it closes dropdown when focus lost', async () => {
@@ -408,7 +404,7 @@ describe('autocomplete-dropdown', () => {
       ];
     };
 
-    const wrapper = subjectMount({ findMatches });
+    const wrapper = subject({ findMatches });
 
     const input = wrapper.find('input');
 
@@ -453,3 +449,11 @@ describe('autocomplete-dropdown', () => {
     });
   });
 });
+
+function inputEvent(attrs = {}) {
+  return {
+    preventDefault: () => {},
+    stopPropagation: () => {},
+    ...attrs,
+  };
+}

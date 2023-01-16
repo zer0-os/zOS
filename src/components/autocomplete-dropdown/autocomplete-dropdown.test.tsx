@@ -189,14 +189,9 @@ describe('autocomplete-dropdown', () => {
     const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches });
 
-    jest.useFakeTimers();
-    pressKey(wrapper, Key.ArrowUp);
-    pressKey(wrapper, Key.Enter);
-    jest.runAllTimers();
+    pressKeyOn(wrapper, Key.Escape);
 
-    await new Promise(setImmediate);
-
-    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
+    expect(onCloseBar).toHaveBeenCalled();
   });
 
   it('does not close search bar when empty value', async () => {
@@ -296,8 +291,11 @@ function stubResults(num) {
 }
 
 function pressKey(wrapper, key) {
-  const input = wrapper.find('input');
-  input.simulate('keydown', {
+  pressKeyOn(wrapper.find('input'), key);
+}
+
+function pressKeyOn(node, key) {
+  node.simulate('keydown', {
     key,
     preventDefault: () => {},
     stopPropagation: () => {},

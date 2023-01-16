@@ -73,3 +73,14 @@ export const getUsersForMentions = (search: string, users: User[]): UserForMenti
   }
   return [];
 };
+
+export function windowClipboard() {
+  return {
+    addPasteListener: (handler) => {
+      window.addEventListener('paste', handler);
+    },
+    removePasteListener: (handler) => {
+      window.removeEventListener('paste', handler);
+    },
+  };
+}

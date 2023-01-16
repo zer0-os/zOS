@@ -54,6 +54,7 @@
     "actionableActiveBackground": "rgb(0, 0, 0, 0.25)",
     "actionableHoverBackgroundGradient": "rgba(0, 0, 0, 0.05)",
     "actionableActiveBackgroundGradient": "rgb(0, 0, 0, 0.25)",
+    "actionableHoverBackgroundTooltip": "rgb(0, 0, 0, 0.25)",
 
     "inputBackgroundPrimaryColor": "rgba(255, 255, 255, 1)",
     "inputBackgroundPrimaryColorInverse": "#E7E7E7",
@@ -79,7 +80,10 @@
 
     "buttonBorderColorHover": "#2a8eea",
 
-    "cardBackgroundColor": "#FFF"
+    "cardBackgroundColor": "#FFF",
+
+    "generalScrollColor": "#f0f0f0",
+    "generalScrollThumbColor": "#353535"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -153,7 +157,8 @@
     "dialogBackgroundColor": "#10052e",
     "dialogDropShadowColor": "rgb(196 29 255 / 20%)",
 
-    "underlayBackgroundColor": "rgba(24, 24, 28, 0.95)",
+    "underlayBackgroundColor": "rgba(0, 0, 0, 0.95)",
+    "underlayTooltipBackgroundColor": "rgba(24, 24, 28, 0.95)",
 
     "glowTextColor": "hsla(0,0%,100%,0.7)",
     "glowBackgroundColor": "#6e10bb",
@@ -170,6 +175,9 @@
     "buttonBoxRadius": "16px",
     "backgroundColorTransparent": "rgba(0, 0, 0, 0.6)",
 
-    "cardBackgroundColor": "#212121"
+    "cardBackgroundColor": "#212121",
+
+    "generalScrollColor": "#353535",
+    "generalScrollThumbColor": "#7E7E7E"
   }
 }

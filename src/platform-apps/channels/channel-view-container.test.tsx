@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
@@ -16,14 +15,22 @@ describe('ChannelViewContainer', () => {
       channel: null,
       channelId: '',
       fetchMessages: () => undefined,
+      joinChannel: () => undefined,
       user: {
         isLoading: false,
         data: null,
       },
       sendMessage: () => undefined,
+      uploadFileMessage: () => undefined,
       fetchUsers: () => undefined,
+      deleteMessage: () => undefined,
+      editMessage: () => undefined,
+      markAllMessagesAsReadInChannel: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
+      context: {
+        isAuthenticated: false,
+      },
       ...props,
     };
 
@@ -59,6 +66,28 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChannelView).prop('name')).toStrictEqual('first channel');
   });
 
+  it('should mark all messages as read when unReadCount > 0', () => {
+    const markAllMessagesAsReadInChannel = jest.fn();
+    const messages = [
+      { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
+      { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
+      { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
+    ] as unknown as Message[];
+
+    const wrapper = subject({
+      markAllMessagesAsReadInChannel,
+      channelId: 'the-channel-id',
+      user: {
+        isLoading: false,
+        data: { id: 'user-id' },
+      },
+      channel: { name: 'the channel', unreadCount: 3, messages },
+    });
+
+    wrapper.setProps({}); // trigger didUpdate
+    expect(markAllMessagesAsReadInChannel).toHaveBeenCalledWith({ channelId: 'the-channel-id', userId: 'user-id' });
+  });
+
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();
 
@@ -72,7 +101,7 @@ describe('ChannelViewContainer', () => {
 
     subject({ fetchUsers, channelId: 'the-channel-id' });
 
-    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+    expect(fetchUsers).not.toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('fetches messages when channel id is set', () => {
@@ -98,6 +127,9 @@ describe('ChannelViewContainer', () => {
       fetchUsers,
       channelId: 'the-channel-id',
       channel: { name: 'first channel', shouldSyncChannels: false },
+      context: {
+        isAuthenticated: true,
+      },
     });
 
     wrapper.setProps({
@@ -120,6 +152,9 @@ describe('ChannelViewContainer', () => {
       user: {
         isLoading: false,
         data: USER_DATA,
+      },
+      context: {
+        isAuthenticated: true,
       },
     });
 
@@ -179,9 +214,76 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds);
+    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds, []);
 
     expect(sendMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call uploadFileMessage when media is uploaded', () => {
+    const uploadFileMessage = jest.fn();
+    const media = [
+      {
+        id: 'id image 1',
+        url: 'url media',
+        name: 'image 1',
+      },
+    ];
+
+    const wrapper = subject({
+      uploadFileMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('sendMessage')('', [], media);
+
+    expect(uploadFileMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call joinChannel when join button is clicked', () => {
+    const joinChannel = jest.fn();
+
+    const wrapper = subject({
+      joinChannel,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('joinChannel')();
+
+    expect(joinChannel).toHaveBeenCalledOnce();
+  });
+
+  it('should call deleteMessage', () => {
+    const deleteMessage = jest.fn();
+    const messageId = 2345221;
+
+    const wrapper = subject({
+      deleteMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('deleteMessage')(messageId);
+
+    expect(deleteMessage).toHaveBeenCalledOnce();
+  });
+
+  it('should call editMessage', () => {
+    const editMessage = jest.fn();
+    const messageId = 2345221;
+    const message = 'update message';
+    const mentionedUserIds = [];
+
+    const wrapper = subject({
+      editMessage,
+      channelId: 'the-channel-id',
+      channel: { hasMore: true, name: 'first channel' },
+    });
+
+    wrapper.find(ChannelView).first().prop('editMessage')(messageId, message, mentionedUserIds);
+
+    expect(editMessage).toHaveBeenCalledOnce();
   });
 
   it('startMessageSync messages when channel id is set', () => {
@@ -198,6 +300,29 @@ describe('ChannelViewContainer', () => {
     wrapper.setProps({ channelId: 'the-channel-id', channel: { shouldSyncChannels: true } });
 
     expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('should sync channel when user is authenticated', () => {
+    const startMessageSync = jest.fn();
+
+    const wrapper = subject({
+      startMessageSync,
+      channelId: '',
+      channel: { name: 'first channel', shouldSyncChannels: false },
+      context: {
+        isAuthenticated: false,
+      },
+    });
+
+    wrapper.setProps({
+      channelId: 'the-channel-id',
+      channel: { shouldSyncChannels: true },
+      context: {
+        isAuthenticated: true,
+      },
+    });
+
+    expect(startMessageSync).not.toHaveBeenCalled();
   });
 
   it('should call hasMoreMessages when new messages arrive', async () => {

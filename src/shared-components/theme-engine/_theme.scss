@@ -40,6 +40,7 @@ $font-color-time: var(--font-color-time);
 $accent-color: var(--accent-color);
 $accent-color-1: var(--accent-color-1);
 $accent-color-mid: var(--accent-color-mid, rgba(0, 209, 255, 0.1));
+$actionable-hover-background-tooltip: var(--actionable-hover-background-tooltip, rgba(255, 255, 255, 0.1));
 
 $actionable-color: var(--actionable-color, #ffffff);
 $actionable-inactive-color: var(--actionable-inactive-color, #737373);
@@ -62,6 +63,7 @@ $dialog-drop-shadow-color: var(--dialog-drop-shadow-color, rgb(196 29 255 / 20%)
 $dialog-background-color: var(--dialog-background-color, #10052e);
 
 $underlay-background: var(--underlay-background, rgba(0, 0, 0, 0.95));
+$underlay-tooltip-background: var(--underlay-tooltip-background, rgba(24, 24, 28, 0.95));
 
 $glow-text-color: var(--glow-text-color, hsla(0, 0%, 100%, 0.7));
 $glow-background-color: var(--glow-background-color, #6e10bb);

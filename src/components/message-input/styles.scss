@@ -110,6 +110,17 @@
   }
 }
 
+.message {
+  &__block-body {
+    .message-input__input-wrapper {
+      background: none;
+      &::before {
+        background: none;
+      }
+    }
+  }
+}
+
 .mentions-text-area__wrap {
   position: relative;
   overflow-y: visible;
@@ -170,6 +181,36 @@
         font-weight: bold;
         color: white;
       }
+    }
+  }
+}
+
+.message-input__icons {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 1%;
+  bottom: 0;
+  padding-bottom: 2px;
+  .btn-plus {
+    font-size: 17px;
+    color: theme.$actionable-color;
+    transition-duration: var(--animation-time-medium);
+    display: inline-flex;
+    padding: 0 4px;
+    width: 23px;
+    height: 30px;
+    border-radius: 9999px;
+    cursor: pointer;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    &::before {
+      content: '\271B';
+    }
+    &:hover {
+      background-color: theme.$background-color-secondary;
     }
   }
 }

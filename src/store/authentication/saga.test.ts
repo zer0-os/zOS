@@ -1,13 +1,18 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { authorize, clearSession, getCurrentUser } from './saga';
-import { authorize as authorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
+import { setUser } from '.';
+import { nonceOrAuthorize, clearSession, getCurrentUser } from './saga';
+import { nonceOrAuthorize as nonceOrAuthorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
 
 import { reducer } from '.';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
+};
+
+const nonceResponse = {
+  nonceToken: 'expiring-nonce-token',
 };
 
 const currentUserResponse = {
@@ -16,11 +21,12 @@ const currentUserResponse = {
 
 describe('authentication saga', () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
-  it('authorize', async () => {
-    await expectSaga(authorize, { payload: { signedWeb3Token } })
+
+  it('nonceOrAuthorize with accessToken', async () => {
+    await expectSaga(nonceOrAuthorize, { payload: { signedWeb3Token } })
       .provide([
         [
-          matchers.call.fn(authorizeApi),
+          matchers.call.fn(nonceOrAuthorizeApi),
           authorizationResponse,
         ],
         [
@@ -28,7 +34,20 @@ describe('authentication saga', () => {
           currentUserResponse,
         ],
       ])
-      .call(authorizeApi, signedWeb3Token)
+      .call(nonceOrAuthorizeApi, signedWeb3Token)
+      .run();
+  });
+
+  it('nonceOrAuthorize with nonceToken', async () => {
+    await expectSaga(nonceOrAuthorize, { payload: { signedWeb3Token } })
+      .provide([
+        [
+          matchers.call.fn(nonceOrAuthorizeApi),
+          nonceResponse,
+        ],
+      ])
+      .call(nonceOrAuthorizeApi, signedWeb3Token)
+      .put(setUser({ nonce: nonceResponse.nonceToken }))
       .run();
   });
 

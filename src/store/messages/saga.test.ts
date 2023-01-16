@@ -1,11 +1,25 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, sendMessagesByChannelId } from './api';
-import { fetch, send, fetchNewMessages, stopSyncChannels } from './saga';
+import {
+  fetchMessagesByChannelId,
+  sendMessagesByChannelId,
+  deleteMessageApi,
+  editMessageApi,
+  uploadFileMessage as uploadFileMessageApi,
+} from './api';
+import {
+  fetch,
+  send,
+  fetchNewMessages,
+  stopSyncChannels,
+  deleteMessage,
+  receiveDelete,
+  editMessage,
+  uploadFileMessage,
+} from './saga';
 
 import { rootReducer } from '..';
-import { channelIdPrefix } from '../channels-list/saga';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {
@@ -28,7 +42,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelIdPrefix + channelId)
+      .call(fetchMessagesByChannelId, channelId)
       .run();
   });
 
@@ -53,7 +67,11 @@ describe('messages saga', () => {
       },
     };
 
-    await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
@@ -62,6 +80,30 @@ describe('messages saga', () => {
       ])
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
+      .run();
+    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
+  });
+
+  it('edit message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = 'update message';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const messages = [
+      { id: 1, message: 'message_0001', createdAt: 10000000007 },
+      { id: 2, message: 'message_0002', createdAt: 10000000008 },
+      { id: 3, message: 'message_0003', createdAt: 10000000009 },
+    ];
+    const messageIdToEdit = messages[1].id;
+
+    await expectSaga(editMessage, { payload: { channelId, messageId: messageIdToEdit, message, mentionedUserIds } })
+      .provide([
+        [
+          matchers.call.fn(editMessageApi),
+          { status: 200 },
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(editMessageApi, channelId, messageIdToEdit, message, mentionedUserIds)
       .run();
   });
 
@@ -115,6 +157,7 @@ describe('messages saga', () => {
       .run();
 
     expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
+    expect(channels[channelId].messageIdsCache.length).toEqual(1);
   });
 
   it('fetches messages for referenceTimestamp', async () => {
@@ -129,8 +172,113 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelIdPrefix + channelId, 1658776625730)
+      .call(fetchMessagesByChannelId, channelId, 1658776625730)
       .run();
+  });
+
+  it('upload file message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const media = [
+      {
+        id: 'id image 1',
+        url: 'url media',
+        name: 'image 1',
+        nativeFile: { path: 'Screen Shot 2022-12-07 at 18.39.01.png' },
+        mediaType: 'image',
+      },
+    ];
+
+    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
+      .provide([
+        [
+          matchers.call.fn(uploadFileMessageApi),
+          {
+            id: 'id image 1',
+            url: 'url media',
+            name: 'image 1',
+            type: 'image',
+          },
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(uploadFileMessageApi, channelId, media[0].nativeFile)
+      .run();
+  });
+
+  it('delete message', async () => {
+    const channelId = '280251425_833da2e2748a78a747786a9de295dd0c339a2d95';
+    const messages = [
+      { id: 1, message: 'This is my first message' },
+      { id: 2, message: 'I will delete this message' },
+      { id: 3, message: 'This is my third message' },
+    ];
+
+    const messageIdToDelete = messages[1].id;
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages: messages.map((m) => m.id),
+          },
+        },
+        messages,
+      },
+    };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(deleteMessage, { payload: { channelId, messageId: messageIdToDelete } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(deleteMessageApi),
+          200,
+        ],
+      ])
+      .run();
+
+    expect(normalized.channels[channelId].messages).toEqual([
+      messages[0].id,
+      messages[2].id,
+    ]);
+  });
+
+  it('receive delete message', async () => {
+    const channelId = '280251425_833da2e2748a78a747786a9de295dd0c339a2d95';
+    const messages = [
+      { id: 1, message: 'This is my first message' },
+      { id: 2, message: 'I will delete this message' },
+      { id: 3, message: 'This is my third message' },
+    ];
+
+    const messageIdToDelete = messages[1].id;
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            messages: messages.map((m) => m.id),
+          },
+        },
+        messages,
+      },
+    };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(receiveDelete, {
+      payload: { channelId, messageId: messageIdToDelete },
+    })
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(normalized.channels[channelId].messages).toEqual([
+      messages[0].id,
+      messages[2].id,
+    ]);
   });
 
   it('sets hasMore on channel', async () => {

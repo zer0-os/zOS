@@ -15,6 +15,11 @@ export interface User {
   lastSeenAt: string;
 }
 
+export enum GroupChannelType {
+  Public = 'public',
+  Private = 'private',
+}
+
 export interface Channel {
   id: string;
   name: string;
@@ -26,13 +31,21 @@ export interface Channel {
   category?: string;
   shouldSyncChannels: boolean;
   unreadCount?: number;
+  hasJoined?: boolean;
+  groupChannelType: GroupChannelType;
+  icon?: string;
+  messageIdsCache?: string[];
 }
 
 export enum SagaActionTypes {
   LoadUsers = 'channels/saga/loadUsers',
+  JoinChannel = 'channels/saga/joinChannel',
+  markAllMessagesAsReadInChannel = 'channels/saga/markAllMessagesAsReadInChannel',
 }
 
 const loadUsers = createAction<Payload>(SagaActionTypes.LoadUsers);
+const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
+const markAllMessagesAsReadInChannel = createAction<Payload>(SagaActionTypes.markAllMessagesAsReadInChannel);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -44,4 +57,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { loadUsers };
+export { loadUsers, joinChannel, markAllMessagesAsReadInChannel };

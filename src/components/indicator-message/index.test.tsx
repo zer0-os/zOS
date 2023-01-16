@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ZnsLink } from '@zer0-os/zos-component-library';
 import IndicatorMessage from '.';
 
 describe('Indicator new message', () => {

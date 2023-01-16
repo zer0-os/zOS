@@ -4,22 +4,37 @@ import Linkify from 'linkify-react';
 import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
-import { textToEmojis } from './utils';
 import AttachmentCards from './attachment-cards';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../../components/link-preview/';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
+import MessageMenu from './messages-menu';
+import { MessageInput } from '../../components/message-input';
+import { User } from '../../store/channels';
+import { User as UserModel } from '../../store/channels/index';
+import EditMessageActions from './messages-menu/edit-message-actions';
 
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
+  onDelete: (messageId: number) => void;
+  onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][]) => void;
   cloudinaryProvider: CloudinaryProvider;
+  users: UserModel[];
   isOwner?: boolean;
+  messageId?: number;
+  updatedAt: number;
 }
 
-export class Message extends React.Component<Properties> {
+export interface State {
+  isEditing: boolean;
+}
+export class Message extends React.Component<Properties, State> {
   static defaultProps = { cloudinaryProvider: provider };
+  state = {
+    isEditing: false,
+  } as State;
 
   openAttachment = async (attachment): Promise<void> => {
     download(attachment.url);
@@ -96,13 +111,46 @@ export class Message extends React.Component<Properties> {
     return <div className='message__time'>{createdTime}</div>;
   }
 
+  canDeleteMessage = (): boolean => {
+    return this.props.isOwner;
+  };
+
+  deleteMessage = (): void => this.props.onDelete(this.props.messageId);
+  toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
+  editMessage = (content: string, mentionedUserIds: string[]) => {
+    this.props.onEdit(this.props.messageId, content, mentionedUserIds);
+    this.toggleEdit();
+  };
+
+  editActions = (value: string, mentionedUserIds: string[]) => {
+    return (
+      <EditMessageActions
+        onEdit={this.editMessage.bind(this, value, mentionedUserIds)}
+        onCancel={this.toggleEdit}
+      />
+    );
+  };
+
+  renderMenu(): React.ReactElement {
+    return (
+      <div className='message__menu'>
+        <MessageMenu
+          className='message__menu-item'
+          canEdit={this.canDeleteMessage()}
+          onDelete={this.deleteMessage}
+          onEdit={this.toggleEdit}
+        />
+      </div>
+    );
+  }
+
   renderMessage(message) {
     const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
     return parts.map((part, index) => {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return textToEmojis(part);
+        return part;
       }
 
       if (match[2] === 'user') {
@@ -126,9 +174,9 @@ export class Message extends React.Component<Properties> {
 
   renderMessageWithLinks(): React.ReactElement {
     const { message } = this.props;
-    const hasLinks = linkifyjs.test(message);
+    const hasLinks = linkifyjs.find(message);
 
-    if (hasLinks) {
+    if (hasLinks.length) {
       return (
         <Linkify
           options={{
@@ -168,19 +216,39 @@ export class Message extends React.Component<Properties> {
               <div className='message__author-name'>
                 {sender.firstName} {sender.lastName}
               </div>
-              <div className={preview ? 'message__block-preview' : 'message__block-body'}>
-                {media && this.renderMedia(media)}
-                {message && this.renderMessageWithLinks()}
-                {preview && (
-                  <LinkPreview
-                    url={preview.url}
-                    {...preview}
-                  />
-                )}
-              </div>
+              {!this.state.isEditing && (
+                <div
+                  className={classNames(
+                    'message__block-content',
+                    preview ? 'message__block-preview' : 'message__block-body'
+                  )}
+                >
+                  {media && this.renderMedia(media)}
+                  {message && this.renderMessageWithLinks()}
+                  {preview && (
+                    <LinkPreview
+                      url={preview.url}
+                      {...preview}
+                    />
+                  )}
+                </div>
+              )}
+              {!!this.props.updatedAt && !this.state.isEditing && (
+                <span className='message__block-edited'>(edited)</span>
+              )}
+              {this.state.isEditing && this.props.message && (
+                <MessageInput
+                  className='message__block-body'
+                  initialValue={this.props.message}
+                  onSubmit={this.editMessage}
+                  users={this.props.users}
+                  renderAfterInput={this.editActions}
+                />
+              )}
             </div>
           )}
           {this.renderTime(createdAt)}
+          {this.renderMenu()}
         </div>
       </div>
     );

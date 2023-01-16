@@ -98,6 +98,10 @@
       line-height: 21px;
       margin-left: 3px;
     }
+
+    &__channel-private-icon {
+      margin-left: 5px;
+    }
   }
 
   &-view {
@@ -112,6 +116,10 @@
       visibility: visible;
     }
 
+    &__main {
+      padding-right: var(--layout-app-content-right-padding);
+    }
+
     &__name {
       padding: 110px 0 10px 20px;
 
@@ -122,6 +130,16 @@
         margin-bottom: 1px;
       }
     }
+
+    &__join-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+
+      &--with-space {
+        padding-bottom: 20px;
+      }
+    }
   }
 
   &-list__channel {
@@ -129,17 +147,31 @@
     position: relative;
     top: 1px;
     display: inline-block;
-    width: calc(100% - 46px);
+    width: calc(100% - 26px);
     display: flex;
     flex-flow: row nowrap;
     justify-content: left;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 0 0 20px;
     height: 100%;
 
     &.active,
     &:active {
       @include accent-bar;
+
+      .channel-list__private-icon path {
+        stroke: theme.$actionable-active-color;
+      }
+    }
+
+    &:hover {
+      .channel-list__private-icon path {
+        stroke: theme.$actionable-active-color;
+      }
+    }
+
+    .channel-list__private-icon path {
+      stroke: theme.$actionable-inactive-color;
     }
   }
 
@@ -174,7 +206,7 @@
   margin-bottom: 40px;
   .messages {
     position: relative;
-    overflow: hidden;
+    overflow: inherit;
     transition: opacity 0.9s ease-out;
     opacity: 1;
 
@@ -229,12 +261,18 @@
             top: 0;
             left: 0;
           }
+          &.chat-message__input-wrapper {
+            background: none;
+            &:before {
+              background: none;
+            }
+          }
         }
       }
 
       &--media {
         .message__block-body {
-          margin-left: 15px;
+          margin: 15px 0 15px 15px;
           padding: 0;
         }
       }
@@ -256,7 +294,7 @@
         &-body-wrapper {
           flex: 1 1;
           width: 100%;
-          overflow: hidden;
+          overflow: inherit;
 
           .message--owner & {
             border-left: 3px solid #fb216e;
@@ -277,6 +315,14 @@
           border-radius: 12px;
         }
 
+        &-edited {
+          padding-left: 7px;
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 14px;
+          color: theme.$actionable-inactive-color;
+        }
+
         &-preview {
           display: inline-block;
           white-space: pre-wrap;
@@ -293,10 +339,12 @@
             padding: 5px 15px;
             margin-top: 10px;
             border-radius: $border-radius;
+          }
+        }
 
-            &__link {
-              text-decoration: underline;
-            }
+        .text-message {
+          &__link {
+            text-decoration: underline;
           }
         }
 
@@ -376,6 +424,19 @@
         color: theme.$font-color-time;
         padding-top: 6px;
         padding-right: 28px;
+      }
+
+      &__menu {
+        position: relative;
+        overflow: visible;
+        width: 10px;
+        margin-top: 7px;
+
+        &-item {
+          .icon {
+            padding: 0px 10px;
+          }
+        }
       }
 
       &__left {

@@ -37,12 +37,10 @@ export function post<T>(path: string) {
   return Request.post<T>(apiUrl(path)).withCredentials();
 }
 
-export async function put<T>(path: string, data: any = {}) {
-  const response = await Request.put<T>(apiUrl(path)).withCredentials().send(data);
-
-  return response.body;
+export function put<T>(path: string) {
+  return Request.put<T>(apiUrl(path)).withCredentials();
 }
 
-export async function del<T>(path: string) {
-  return await Request.delete<T>(apiUrl(path)).withCredentials();
+export function del<T>(path: string) {
+  return Request.delete<T>(apiUrl(path)).withCredentials();
 }

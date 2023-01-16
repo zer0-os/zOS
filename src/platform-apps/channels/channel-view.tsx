@@ -13,6 +13,8 @@ import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../../components/message-input';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
+import { Button as ComponentButton } from '@zer0-os/zos-component-library';
+import { Media } from '../../components/message-input/utils';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -23,7 +25,11 @@ export interface Properties {
   messages: MessageModel[];
   onFetchMore: () => void;
   user: User;
-  sendMessage: (message: string, mentionedUserIds: string[]) => void;
+  hasJoined: boolean;
+  sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
+  deleteMessage: (messageId: number) => void;
+  editMessage: (messageId: number, message: string, mentionedUserIds: string[]) => void;
+  joinChannel: () => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];
@@ -125,7 +131,12 @@ export class ChannelView extends React.Component<Properties, State> {
               className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
               onImageClick={this.openLightbox}
               key={message.id}
+              messageId={message.id}
+              updatedAt={message.updatedAt}
+              users={this.props.users}
               isOwner={isUserOwnerOfTheMessage}
+              onDelete={this.props.deleteMessage}
+              onEdit={this.props.editMessage}
               {...message}
             />
           );
@@ -143,8 +154,20 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
+  renderJoinButton() {
+    return (
+      <div
+        onClick={this.props.joinChannel}
+        className={classNames(this.props.className, 'channel-view__join-wrapper')}
+      >
+        <ComponentButton>Join Channel</ComponentButton>
+      </div>
+    );
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
+    const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
       <div className={classNames('channel-view', this.props.className)}>
@@ -163,24 +186,29 @@ export class ChannelView extends React.Component<Properties, State> {
           />
         )}
         <InvertedScroll className='channel-view__inverted-scroll'>
-          <div className='channel-view__name'>
-            <h1>Welcome to #{this.props.name}</h1>
-            <span>This is the start of the channel.</span>
+          <div className='channel-view__main'>
+            <div className='channel-view__name'>
+              <h1>Welcome to #{this.props.name}</h1>
+              <span>This is the start of the channel.</span>
+            </div>
+            {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+            {this.props.messages.length > 0 && this.renderMessages()}
+            <IfAuthenticated showChildren>
+              {isMemberOfChannel && (
+                <MessageInput
+                  onMessageInputRendered={this.props.onMessageInputRendered}
+                  placeholder='Speak your truth...'
+                  onSubmit={this.props.sendMessage}
+                  users={this.props.users}
+                />
+              )}
+              {!isMemberOfChannel && this.renderJoinButton()}
+            </IfAuthenticated>
+            <IfAuthenticated hideChildren>
+              <ConnectButton className='authentication__connect-wrapper--with-space' />
+            </IfAuthenticated>
+            <div ref={this.bottomRef} />
           </div>
-          {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
-          {this.props.messages.length > 0 && this.renderMessages()}
-          <IfAuthenticated showChildren>
-            <MessageInput
-              onMessageInputRendered={this.props.onMessageInputRendered}
-              placeholder='Speak your truth...'
-              onSubmit={this.props.sendMessage}
-              users={this.props.users}
-            />
-          </IfAuthenticated>
-          <IfAuthenticated hideChildren>
-            <ConnectButton className='authentication__connect-wrapper--with-space' />
-          </IfAuthenticated>
-          <div ref={this.bottomRef} />
         </InvertedScroll>
       </div>
     );

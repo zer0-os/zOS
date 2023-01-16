@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 import { ChannelList } from './channel-list';
 import { ZnsLink } from '@zer0-os/zos-component-library';
 import Collapsible from 'react-collapsible';
+import { GroupChannelType } from '../../store/channels';
 
 describe('ChannelList', () => {
   const subject = (props: any = {}) => {
@@ -177,5 +178,28 @@ describe('ChannelList', () => {
       'fourth channel',
       'third channel',
     ]);
+  });
+
+  it('renders private channels and the lock icon', () => {
+    const channels = [
+      { id: 'one', name: 'first channel', groupChannelType: GroupChannelType.Private },
+      { id: 'two', name: 'second channel', groupChannelType: GroupChannelType.Public },
+      { id: 'three', name: 'third channel', category: 'catg2' },
+      { id: 'four', name: 'fourth channel' },
+    ];
+
+    const wrapper = subject({ channels });
+    const text = wrapper.find('.channel-list__channel-name').map((c) => c.text().trim());
+
+    expect(text).toStrictEqual([
+      'first channel',
+      'second channel',
+      'fourth channel',
+      'third channel',
+    ]);
+
+    const privateIcon = wrapper.find('.channel-list__channel-private-icon');
+
+    expect(privateIcon.exists()).toBe(true);
   });
 });

@@ -6,6 +6,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -33,6 +35,8 @@ jobs:
       REACT_APP_VERSION: ${{secrets.APP_VERSION}}
       REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL}}
       REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
+      REACT_APP_SENDBIRD_APP_ID: ${{secrets.SENDBIRD_APP_ID}}
+      REACT_APP_INVITE_CODE_DEJAVU: ${{secrets.INVITE_CODE_DEJAVU}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

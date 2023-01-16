@@ -6,6 +6,20 @@ import { ThemeEngine, ViewModes } from '../../shared-components/theme-engine';
 import { Container } from '.';
 
 describe('ThemeEngine', () => {
+  beforeAll(() => {
+    global.localStorage = {
+      state: {
+        'view-mode': '',
+      },
+      setItem(key, item) {
+        this.state[key] = item;
+      },
+      getItem(key) {
+        return this.state[key];
+      },
+    };
+  });
+
   const subject = (props: any = {}) => {
     const allProps = {
       updateConnector: () => undefined,
@@ -16,9 +30,21 @@ describe('ThemeEngine', () => {
   };
 
   it('passes viewMode to theme engine', () => {
-    const wrapper = subject({ viewMode: ViewModes.Dark });
+    const setViewMode = jest.fn();
+    const wrapper = subject({ setViewMode, viewMode: ViewModes.Dark });
 
     expect(wrapper.find(ThemeEngine).prop('viewMode')).toBe(ViewModes.Dark);
+  });
+
+  it('sets setViewMode on mount even', () => {
+    const setViewMode = jest.fn();
+    global.localStorage.setItem('viewMode:isLight', 'true');
+
+    subject({
+      setViewMode,
+    });
+
+    expect(setViewMode).toHaveBeenCalledWith(ViewModes.Light);
   });
 
   describe('mapState', () => {

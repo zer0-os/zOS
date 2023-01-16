@@ -2,7 +2,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
 
-import { authorize as authorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
+import { nonceOrAuthorize as nonceOrAuthorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -12,12 +12,16 @@ export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
 
-export function* authorize(action) {
+export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
 
-  yield call(authorizeApi, signedWeb3Token);
+  const { nonceToken: nonce = undefined } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
 
-  yield call(getCurrentUser);
+  if (nonce) {
+    yield put(setUser({ nonce }));
+  } else {
+    yield call(getCurrentUser);
+  }
 }
 
 export function* clearSession() {
@@ -26,6 +30,7 @@ export function* clearSession() {
     setUser({
       data: null,
       isLoading: false,
+      nonce: null,
     })
   );
 }
@@ -43,7 +48,7 @@ export function* getCurrentUser() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Authorize, authorize);
+  yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
   yield takeLatest(SagaActionTypes.ClearSession, clearSession);
   yield takeLatest(SagaActionTypes.FetchCurrentUser, getCurrentUser);
 }

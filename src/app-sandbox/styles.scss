@@ -60,6 +60,10 @@ $speed: animation.$animation-duration;
     &__content {
       opacity: 1;
       transition: opacity animation.$animation-duration-quadruple ease-in;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: inherit;
     }
 
     &.closed {
@@ -82,6 +86,7 @@ $speed: animation.$animation-duration;
     overflow: hidden;
     box-sizing: border-box;
     background-color: theme.$background-color-app-content;
+    padding-left: 64px;
   }
 }
 

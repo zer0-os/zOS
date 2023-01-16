@@ -1,4 +1,11 @@
-import { Payload, SendPayload } from './saga';
+import {
+  Payload,
+  SendPayload,
+  DeleteMessageActionParameter,
+  QueryUploadPayload,
+  MediaPyload,
+  EditPayload,
+} from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice } from '../normalized';
@@ -32,6 +39,10 @@ export interface MessagesResponse {
   hasMore: boolean;
   messages: Message[];
 }
+export interface InfoUploadResponse {
+  apiUrl: string;
+  query: QueryUploadPayload;
+}
 export interface Message {
   id: number;
   message?: string;
@@ -48,14 +59,24 @@ export interface Message {
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
   Send = 'messages/saga/send',
+  DeleteMessage = 'messages/saga/deleteMessage',
+  EditMessage = 'messages/saga/editMessage',
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
+  receiveNewMessage = 'messages/saga/receiveNewMessage',
+  receiveDeleteMessage = 'messages/saga/receiveDeleteMessage',
+  uploadFileMessage = 'messages/saga/uploadFileMessage',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
+const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
+const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
+const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
+const receiveDeleteMessage = createAction<DeleteMessageActionParameter>(SagaActionTypes.receiveDeleteMessage);
+const uploadFileMessage = createAction<MediaPyload>(SagaActionTypes.uploadFileMessage);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -63,4 +84,14 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, startMessageSync, stopSyncChannels };
+export {
+  fetch,
+  send,
+  startMessageSync,
+  stopSyncChannels,
+  receiveNewMessage,
+  deleteMessage,
+  editMessage,
+  receiveDeleteMessage,
+  uploadFileMessage,
+};

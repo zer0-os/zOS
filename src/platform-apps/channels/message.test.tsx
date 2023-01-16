@@ -1,11 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Linkify from 'linkify-react';
-import { Emoji } from 'emoji-mart';
 import { Message } from './message';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../../components/link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
+import { MessageInput } from '../../components/message-input';
+import MessageMenu from './messages-menu';
 
 describe('message', () => {
   const sender = {
@@ -77,6 +78,61 @@ describe('message', () => {
     expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
   });
 
+  it('renders message menu of items', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    expect(wrapper.find('.message__menu-item').exists()).toBe(true);
+  });
+
+  it('renders message input', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find(MessageInput).exists()).toBe(true);
+  });
+
+  it('renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(true);
+  });
+
+  it('should not renders edited indicator', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 0,
+    });
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
+  it('should not renders edited indicator when onEdit clicked', () => {
+    const wrapper = subject({
+      message: 'the message',
+      updatedAt: 86276372,
+    });
+
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
+  });
+
+  it('should not renders message input', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
+
+    expect(wrapper.find(MessageInput).exists()).toBe(false);
+  });
+
   it('passes src prop to image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 
@@ -115,21 +171,6 @@ describe('message', () => {
     const wrapper = subject({ preview, message: undefined });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(preview);
-  });
-
-  it('renders message with emojis', () => {
-    const wrapper = subject({ message: ':kissing_heart: :stuck_out_tongue_winking_eye: and some text' });
-
-    const classNames = wrapper.find(Emoji).map((m) => m.prop('emoji'));
-
-    expect(classNames).toIncludeAllMembers([
-      ':kissing_heart:',
-      ':stuck_out_tongue_winking_eye:',
-    ]);
-
-    const textes = wrapper.find('.message__block-body').text().trim();
-
-    expect(textes).toStrictEqual('<Emoji /> <Emoji /> and some text');
   });
 
   it('renders message with mention', () => {

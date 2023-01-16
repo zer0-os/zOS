@@ -22,6 +22,7 @@ describe('AppSandboxContainer', () => {
       layout: {} as AppLayout,
       updateLayout: () => undefined,
       isAuthenticated: false,
+      document: null,
       ...props,
     };
 

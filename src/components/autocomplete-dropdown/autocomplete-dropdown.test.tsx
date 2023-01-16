@@ -159,14 +159,7 @@ describe('autocomplete-dropdown', () => {
 
     wrapper.update();
 
-    const option = wrapper
-      .find(Result)
-      .findWhere((n) => {
-        const match = n.prop('item') as any;
-        return match.value === valueToSelect;
-      })
-      .first();
-    option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
+    selectOption(wrapper, valueToSelect);
 
     expect(onSelect).toHaveBeenCalledWith(searchResults[0]);
   });
@@ -183,14 +176,7 @@ describe('autocomplete-dropdown', () => {
 
     wrapper.update();
 
-    const option = wrapper
-      .find(Result)
-      .findWhere((n) => {
-        const match = n.prop('item') as any;
-        return match.value === valueToSelect;
-      })
-      .first();
-    option.shallow().find('.autocomplete-dropdown-item').simulate('mouseDown', inputEvent());
+    selectOption(wrapper, valueToSelect);
 
     expect(wrapper.find('input').prop('value')).toEqual(valueToSelect);
     expect(wrapper.find(Result).exists()).toBe(false);
@@ -336,4 +322,14 @@ function pressKey(wrapper, key) {
     preventDefault: () => {},
     stopPropagation: () => {},
   });
+}
+
+function selectOption(component, value) {
+  component
+    .find(Result)
+    .findWhere((n) => (n.prop('item') as any).value === value)
+    .first()
+    .shallow()
+    .find('.autocomplete-dropdown-item')
+    .simulate('mouseDown', inputEvent());
 }

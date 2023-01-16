@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface AppLayout {
   hasContextPanel: boolean;
   isContextPanelOpen: boolean;
+  isSidekickOpen: boolean;
 }
 
 export interface LayoutState {
@@ -12,6 +13,7 @@ export interface LayoutState {
 const initialState: LayoutState = {
   value: {
     isContextPanelOpen: false,
+    isSidekickOpen: true,
     hasContextPanel: false,
   },
 };

@@ -72,6 +72,8 @@
     "dialogBackgroundColor": "#CCCCCC",
     "dialogDropShadowColor": "#CCCCCC",
 
+    "sidekickbackgroundcolor": "#F6F6F6",
+
     "underlayBackgroundColor": "rgba(245, 245, 245, 0.95)",
 
     "glowTextColor": "#F0F0F0",
@@ -156,6 +158,8 @@
     "dialogBorderColor": "rgba(175,76,255,.403921568627451)",
     "dialogBackgroundColor": "#10052e",
     "dialogDropShadowColor": "rgb(196 29 255 / 20%)",
+
+    "sidekickbackgroundcolor": "#0F0F0F",
 
     "underlayBackgroundColor": "rgba(0, 0, 0, 0.95)",
     "underlayTooltipBackgroundColor": "rgba(24, 24, 28, 0.95)",

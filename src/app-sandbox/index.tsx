@@ -107,10 +107,11 @@ export class AppSandbox extends React.Component<Properties> {
   }
 
   render() {
-    const { hasContextPanel, isContextPanelOpen } = this.props.layout;
+    const { hasContextPanel, isContextPanelOpen, isSidekickOpen } = this.props.layout;
 
     const className = classNames('app-sandbox', {
       'context-panel-open': isContextPanelOpen,
+      'sidekick-panel-open': isSidekickOpen && this.props.authenticationContext.isAuthenticated,
       'has-context-panel': hasContextPanel,
     });
 

@@ -5,7 +5,7 @@
 import React from 'react';
 
 import { ErrorBoundary, Properties } from './';
-import { ErrorBoundary as SentryErrorBoundary } from '@sentry/react';
+import { ErrorBoundary as SentryErrorBoundary, Scope } from '@sentry/react';
 import { mount } from 'enzyme';
 
 describe('error-boundary', () => {
@@ -20,6 +20,8 @@ describe('error-boundary', () => {
 
   function subject(props: Partial<Properties> = {}) {
     const allProps: Properties = {
+      children: null,
+      boundary: '',
       ...props,
     };
 
@@ -52,12 +54,12 @@ describe('error-boundary', () => {
         },
       });
 
-      const setTags = jest.fn();
+      const setTags: Scope['setTags'] = jest.fn();
 
       const wrapper = subject({ boundary });
 
       const child = wrapper.find(SentryErrorBoundary);
-      child.prop('beforeCapture')({ setTags });
+      child.prop('beforeCapture')({ setTags } as Scope, null, null);
 
       await wrapper.find(ChildComponent).simulateError(new Error('New Error'));
 
@@ -72,12 +74,12 @@ describe('error-boundary', () => {
         'application.name': undefined,
       };
 
-      const setTags = jest.fn();
+      const setTags: Scope['setTags'] = jest.fn();
 
       const wrapper = subject({ boundary });
 
       const child = wrapper.find(SentryErrorBoundary);
-      child.prop('beforeCapture')({ setTags });
+      child.prop('beforeCapture')({ setTags } as Scope, null, null);
 
       await wrapper.find(ChildComponent).simulateError(new Error('New Error'));
 

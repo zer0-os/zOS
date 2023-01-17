@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AutocompleteDropdown, Properties, Result } from './';
+import { AutocompleteDropdown, AutocompleteItem, Properties, Result, ResultProperties } from './';
 import { shallow } from 'enzyme';
 import { Key } from '../../lib/keyboard-search';
 
@@ -220,9 +220,9 @@ describe('autocomplete-dropdown', () => {
       onSelect = jest.fn();
     });
 
-    function subject(initialData = {}) {
-      const props: Properties = {
-        item: {},
+    function subject(initialData: Partial<ResultProperties> = {}) {
+      const props: ResultProperties = {
+        item: {} as AutocompleteItem,
         isFocused: false,
         onSelect,
         ...initialData,
@@ -232,17 +232,18 @@ describe('autocomplete-dropdown', () => {
     }
 
     it('verifies expected attributes are present', () => {
-      const expectation = {
+      const item = {
+        id: 'result-id',
         value: 'result-value',
         route: 'result-route',
         summary: 'result-summary',
       };
 
-      const wrapper = subject({ item: expectation });
+      const wrapper = subject({ item });
 
-      Object.values(expectation).forEach((value) => {
-        expect(wrapper.html().includes(value)).toBe(true);
-      });
+      expect(wrapper.find('.autocomplete-dropdown-item__value').text()).toEqual(item.value);
+      expect(wrapper.find('.autocomplete-dropdown-item__route').text()).toEqual(item.route);
+      expect(wrapper.find('.autocomplete-dropdown-item__text').prop('title')).toEqual(item.summary);
     });
   });
 });

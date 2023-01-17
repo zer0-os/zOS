@@ -2,7 +2,6 @@ import React from 'react';
 
 import { ZNSDropdown, Properties } from './';
 import { shallow } from 'enzyme';
-import { AutocompleteItem } from '../autocomplete-dropdown';
 
 let onSelect;
 let onCloseBar;

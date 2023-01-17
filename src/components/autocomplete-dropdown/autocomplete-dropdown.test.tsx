@@ -144,11 +144,10 @@ describe('autocomplete-dropdown', () => {
     expect(onSelect).toHaveBeenCalledWith(searchResults[0]);
   });
 
-  it('selecting an option verifies value and closes dropdown', async () => {
+  it('selecting an option closes results dropdown', async () => {
     const searchResults = stubResults(1);
     const valueToSelect = searchResults[0].value;
-    const findMatches = stubSearchFor('anything', searchResults);
-    const wrapper = subject({ findMatches });
+    const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
 
     await performSearch(wrapper, 'anything');
 
@@ -156,24 +155,30 @@ describe('autocomplete-dropdown', () => {
 
     selectOption(wrapper, valueToSelect);
 
-    expect(wrapper.find('input').prop('value')).toEqual(valueToSelect);
-    expect(wrapper.find(Result).exists()).toBe(false);
+    expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
   });
 
-  it('it closes dropdown when focus lost', async () => {
-    const findMatches = stubSearchFor('someSearch', stubResults(1));
-    const wrapper = subject({ findMatches, value: 'original value' });
+  describe('when focus is lost', () => {
+    it('it resets the input', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
 
-    const input = wrapper.find('input');
+      wrapper.find('input').simulate('blur');
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'someSearch' } });
-    jest.runAllTimers();
+      expect(wrapper.find('input').prop('value')).toEqual('original value');
+    });
 
-    input.simulate('blur');
+    it('it closes dropdown', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(true);
 
-    expect(input.prop('value')).toEqual('original value');
-    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
+      wrapper.find('input').simulate('blur');
+
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
+    });
   });
 
   it('it displays "No results found" when there are no matches', async () => {

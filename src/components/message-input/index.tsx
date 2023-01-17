@@ -54,7 +54,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get clipboard() {
-    return this.props.clipboard || windowClipboard();
+    return this.props.clipboard || windowClipboard;
   }
 
   componentDidUpdate() {

@@ -17,6 +17,10 @@ describe('ThemeEngine', () => {
       getItem(key) {
         return this.state[key];
       },
+      removeItem(_) {},
+      length: 0,
+      clear: () => {},
+      key: (_) => '',
     };
   });
 

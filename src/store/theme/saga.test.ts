@@ -9,6 +9,11 @@ describe('viewMode saga', () => {
   beforeAll(() => {
     global.localStorage = {
       setItem: jest.fn(),
+      getItem: (_) => '',
+      removeItem: () => {},
+      length: 0,
+      clear: () => {},
+      key: (_) => '',
     };
   });
 

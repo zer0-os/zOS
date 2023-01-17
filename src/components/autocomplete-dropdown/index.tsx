@@ -23,7 +23,6 @@ export interface Properties {
   itemContainerClassName?: string;
   findMatches: (term: string) => Promise<AutocompleteItem[]>;
   onSelect: (item: AutocompleteItem) => void;
-  onCloseBar?: () => void;
   onCancel: () => void;
 }
 
@@ -129,16 +128,9 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       });
 
       this.props.onSelect(item);
-      this.close();
+      this.closeResults();
     }
   };
-
-  close(): void {
-    this.closeResults();
-    if (this._isMounted) {
-      this.props.onCloseBar && this.props.onCloseBar();
-    }
-  }
 
   closeResults(): void {
     if (!this._isMounted) {
@@ -159,7 +151,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       searchComplete: false,
       inProgress: false,
     });
-    this.close();
+    this.closeResults();
     this.props.onCancel();
   };
 
@@ -217,7 +209,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
     }
 
     closestScrollableParent.onscroll = () => {
-      this.close();
+      this.abortChange();
       closestScrollableParent.onscroll = null;
     };
   }

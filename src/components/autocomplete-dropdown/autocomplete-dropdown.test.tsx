@@ -5,13 +5,11 @@ import { shallow } from 'enzyme';
 import { Key } from '../../lib/keyboard-search';
 
 let onSelect;
-let onCloseBar;
 let onCancel;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
     onSelect = jest.fn();
-    onCloseBar = jest.fn();
     onCancel = jest.fn();
   });
 
@@ -19,7 +17,6 @@ describe('autocomplete-dropdown', () => {
     const state: Properties = {
       findMatches: null,
       onSelect,
-      onCloseBar,
       onCancel,
       value: null,
       ...initialData,
@@ -212,16 +209,6 @@ describe('autocomplete-dropdown', () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('hides search bar when pressing "escape"', async () => {
-    const findMatches = stubSearchFor('someSearch', stubResults(1));
-    const wrapper = subject({ findMatches });
-
-    pressKeyOn(wrapper, Key.Escape);
-
-    // TODO: Remove this event
-    expect(onCloseBar).toHaveBeenCalled();
-  });
-
   it('closes search results when input cleared', async () => {
     const findMatches = stubSearchFor('anything', stubResults(1));
     const wrapper = subject({ findMatches });
@@ -242,16 +229,6 @@ describe('autocomplete-dropdown', () => {
     input.simulate('change', { target: { value: '' } });
 
     expect(onCancel).not.toHaveBeenCalled();
-  });
-
-  it('does not close search bar when empty value', async () => {
-    const wrapper = subject({ value: 'lets delete this' });
-
-    let input = wrapper.find('input');
-
-    input.simulate('change', { target: { value: '' } });
-
-    expect(onCloseBar).not.toHaveBeenCalled();
   });
 
   it('set min height to results wrapper', async () => {

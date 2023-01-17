@@ -150,10 +150,7 @@ describe('AppSandboxContainer', () => {
   });
 
   it('passes layout to child', () => {
-    const layout = {
-      isContextPanelOpen: false,
-      hasContextPanel: true,
-    };
+    const layout = {} as AppLayout;
 
     const wrapper = subject({ layout });
 

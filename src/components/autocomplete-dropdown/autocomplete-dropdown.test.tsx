@@ -125,10 +125,11 @@ describe('autocomplete-dropdown', () => {
     pressKey(wrapper, Key.ArrowUp);
     pressKey(wrapper, Key.Enter);
 
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[1].value);
     expect(onSelect).toHaveBeenCalledWith(searchResults[1]);
   });
 
-  it('selecting a match triggers change event', async () => {
+  it('it selects the item via mouse', async () => {
     const searchResults = stubResults(2);
     const valueToSelect = searchResults[0].value;
     const findMatches = stubSearchFor('anything', searchResults);
@@ -136,11 +137,10 @@ describe('autocomplete-dropdown', () => {
     const wrapper = subject({ findMatches });
 
     await performSearch(wrapper, 'anything');
-
     wrapper.update();
-
     selectOption(wrapper, valueToSelect);
 
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[0].value);
     expect(onSelect).toHaveBeenCalledWith(searchResults[0]);
   });
 

@@ -8,6 +8,9 @@ import { Chains, ConnectionStatus, Connectors } from '../lib/web3';
 import { ProviderService } from '../lib/web3/provider-service';
 import { AppLayout } from '../store/layout';
 
+// Don't load full external projects
+jest.mock('.', () => ({ AppSandbox: () => <></> }));
+
 describe('AppSandboxContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {

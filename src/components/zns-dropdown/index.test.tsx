@@ -5,18 +5,20 @@ import { shallow } from 'enzyme';
 import { AutocompleteItem } from '../autocomplete-dropdown';
 
 let onSelect;
+let onCloseBar;
 let api;
 
 describe('zns-dropdown', () => {
   beforeEach(() => {
     onSelect = jest.fn();
+    onCloseBar = jest.fn();
     api = jest.fn();
   });
 
   function subject(initialData: Partial<Properties> = {}) {
     const state: Properties = {
-      onCloseBar: () => {},
       onSelect,
+      onCloseBar,
       api,
       ...initialData,
     };
@@ -72,7 +74,6 @@ describe('zns-dropdown', () => {
         znsRoute: 'zns-route-second',
       },
     ];
-
     const wrapper = subject({
       api: {
         search: async () => {
@@ -80,12 +81,42 @@ describe('zns-dropdown', () => {
         },
       },
     });
-
     await dropdownInstance(wrapper).findMatches('search-string');
 
-    dropdownInstance(wrapper).onSelect({ id: 'zns-id-first' } as AutocompleteItem);
+    wrapper.find('AutocompleteDropdown').simulate('select', { id: 'zns-id-first' });
 
     expect(onSelect).toHaveBeenCalledWith(apiResults[0].znsRoute);
+  });
+
+  it('announces close event when result is selected', async () => {
+    const apiResults = [
+      {
+        id: 'zns-id-first',
+        title: 'zns-title-first',
+        description: 'zns-description-first',
+        znsRoute: 'zns-route-first',
+      },
+    ];
+    const wrapper = subject({
+      api: {
+        search: async () => {
+          return apiResults;
+        },
+      },
+    });
+    await dropdownInstance(wrapper).findMatches('search-string');
+
+    wrapper.find('AutocompleteDropdown').simulate('select', { id: 'zns-id-first' });
+
+    expect(onCloseBar).toHaveBeenCalled();
+  });
+
+  it('announces close event when dropdown edit is cancelled', async () => {
+    const wrapper = subject();
+
+    wrapper.find('AutocompleteDropdown').simulate('cancel');
+
+    expect(onCloseBar).toHaveBeenCalled();
   });
 });
 

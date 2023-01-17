@@ -48,6 +48,7 @@ export class ZNSDropdown extends React.Component<Properties, State> {
 
   onSelect = (item: AutocompleteItem) => {
     this.props.onSelect(this.state.results.find((p) => p.id === item.id).znsRoute);
+    this.props.onCloseBar();
   };
 
   render() {
@@ -58,7 +59,7 @@ export class ZNSDropdown extends React.Component<Properties, State> {
         itemContainerClassName={this.props.itemContainerClassName}
         findMatches={this.findMatches}
         onSelect={this.onSelect}
-        onCloseBar={this.props.onCloseBar}
+        onCancel={this.props.onCloseBar}
       />
     );
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme'; // relative path of the file you plan to mock
+import { shallow } from 'enzyme';
 
 import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';

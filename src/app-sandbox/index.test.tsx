@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow } from 'enzyme'; // relative path of the file you plan to mock
 
 import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
@@ -8,6 +8,23 @@ import { Chains } from '../lib/web3';
 import { Channels } from '../platform-apps/channels';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 import { AppLayout } from '../store/layout';
+
+// Don't load full external projects
+jest.mock('@zero-tech/zapp-nfts', () => {
+  return {};
+});
+jest.mock('@zero-tech/zapp-staking', () => {
+  return {};
+});
+jest.mock('@zero-tech/zapp-daos', () => {
+  return {};
+});
+jest.mock('@zero-tech/zapp-buy-domains', () => {
+  return {};
+});
+jest.mock('@zer0-os/zos-feed', () => {
+  return { App: () => <></> };
+});
 
 describe('AppSandbox', () => {
   const subject = (props: any = {}) => {

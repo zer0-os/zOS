@@ -62,7 +62,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
   escFunction = (event): void => {
     if (event.key === Key.Escape) {
-      this.props.onCloseBar();
+      this.abortChange();
     }
   };
 
@@ -72,9 +72,6 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
   componentDidMount() {
     this._isMounted = true;
-    if (this.anchorElement) {
-      this.anchorElement.addEventListener('keydown', this.escFunction, false);
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -87,9 +84,6 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     this._isMounted = false;
-    if (this.anchorElement) {
-      this.anchorElement.removeEventListener('keydown', this.escFunction, false);
-    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: Properties) {
@@ -281,6 +275,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       <div
         className={classNames('autocomplete-dropdown', this.props.className)}
         ref={this.setAnchorElements}
+        onKeyDown={this.escFunction}
       >
         <input
           className='autocomplete-dropdown__input'

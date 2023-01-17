@@ -48,10 +48,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it renders match suggestions', async () => {
-    const searchResults = [
-      stubResult('first'),
-      stubResult('second'),
-    ];
+    const searchResults = stubResults(2);
 
     const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
 
@@ -61,10 +58,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it sets the first item found to the "focused" one', async () => {
-    const findMatches = stubSearchFor('anything', [
-      stubResult('first'),
-      stubResult('second'),
-    ]);
+    const findMatches = stubSearchFor('anything', stubResults(2));
 
     const wrapper = subject({ findMatches });
 
@@ -77,11 +71,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it sets the next item as to the "focused" one when hitting "down"', async () => {
-    const findMatches = stubSearchFor('anything', [
-      stubResult('first'),
-      stubResult('second'),
-      stubResult('third'),
-    ]);
+    const findMatches = stubSearchFor('anything', stubResults(3));
 
     const wrapper = subject({ findMatches });
 
@@ -103,11 +93,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it sets the last item as to the "focused" one when hitting "up"', async () => {
-    const findMatches = stubSearchFor('anything', [
-      stubResult('first'),
-      stubResult('second'),
-      stubResult('third'),
-    ]);
+    const findMatches = stubSearchFor('anything', stubResults(3));
 
     const wrapper = subject({ findMatches });
 
@@ -129,10 +115,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it selects the currently focused option when pressing "Enter"', async () => {
-    const searchResults = [
-      stubResult('first'),
-      stubResult('second'),
-    ];
+    const searchResults = stubResults(2);
     const findMatches = stubSearchFor('anything', searchResults);
 
     const wrapper = subject({ findMatches });
@@ -146,10 +129,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('selecting a match triggers change event', async () => {
-    const searchResults = [
-      stubResult('first'),
-      stubResult('second'),
-    ];
+    const searchResults = stubResults(2);
     const valueToSelect = searchResults[0].value;
     const findMatches = stubSearchFor('anything', searchResults);
 
@@ -165,9 +145,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('selecting an option verifies value and closes dropdown', async () => {
-    const searchResults = [
-      stubResult('first'),
-    ];
+    const searchResults = stubResults(1);
     const valueToSelect = searchResults[0].value;
     const findMatches = stubSearchFor('anything', searchResults);
     const wrapper = subject({ findMatches });
@@ -183,9 +161,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it closes dropdown when focus lost', async () => {
-    const findMatches = () => {
-      return [stubResult('result')];
-    };
+    const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches, value: 'original value' });
 
     const input = wrapper.find('input');
@@ -201,9 +177,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it displays "No results found" when there are no matches', async () => {
-    const findMatches = () => {
-      return [];
-    };
+    const findMatches = stubSearchFor('someSearch', []);
     const wrapper = subject({ findMatches });
 
     await performSearch(wrapper, 'someSearch');
@@ -212,9 +186,7 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('hides search bar when pressing "escape"', async () => {
-    const findMatches = () => {
-      return [];
-    };
+    const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches });
 
     jest.useFakeTimers();
@@ -313,6 +285,14 @@ function stubResult(prefix) {
     value: `${prefix}-value`,
     route: `${prefix}-route`,
   };
+}
+
+function stubResults(num) {
+  const results = [];
+  for (let i = 1; i <= num; i++) {
+    results.push(stubResult(i));
+  }
+  return results;
 }
 
 function pressKey(wrapper, key) {

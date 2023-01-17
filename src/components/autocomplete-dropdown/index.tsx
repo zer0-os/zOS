@@ -24,6 +24,7 @@ export interface Properties {
   findMatches: (term: string) => Promise<AutocompleteItem[]>;
   onSelect: (item: AutocompleteItem) => void;
   onCloseBar: () => void;
+  onCancel: () => void;
 }
 
 interface State {
@@ -159,6 +160,7 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
       inProgress: false,
     });
     this.close();
+    this.props.onCancel();
   };
 
   setAnchorElements = (ref: HTMLElement): void => {

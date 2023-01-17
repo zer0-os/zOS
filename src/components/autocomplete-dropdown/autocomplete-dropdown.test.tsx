@@ -6,11 +6,13 @@ import { Key } from '../../lib/keyboard-search';
 
 let onSelect;
 let onCloseBar;
+let onCancel;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
     onSelect = jest.fn();
     onCloseBar = jest.fn();
+    onCancel = jest.fn();
   });
 
   function subject(initialData: Partial<Properties> = {}) {
@@ -18,6 +20,7 @@ describe('autocomplete-dropdown', () => {
       findMatches: null,
       onSelect,
       onCloseBar,
+      onCancel,
       value: null,
       ...initialData,
     };
@@ -179,6 +182,16 @@ describe('autocomplete-dropdown', () => {
 
       expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
     });
+
+    it('it announces cancel', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
+
+      wrapper.find('input').simulate('blur');
+
+      expect(onCancel).toHaveBeenCalled();
+    });
   });
 
   it('it displays "No results found" when there are no matches', async () => {
@@ -190,12 +203,22 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.text()).toEqual('No results found');
   });
 
+  it('announces cancel when "escape" is pressed', async () => {
+    const findMatches = stubSearchFor('someSearch', stubResults(1));
+    const wrapper = subject({ findMatches });
+
+    pressKeyOn(wrapper, Key.Escape);
+
+    expect(onCancel).toHaveBeenCalled();
+  });
+
   it('hides search bar when pressing "escape"', async () => {
     const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches });
 
     pressKeyOn(wrapper, Key.Escape);
 
+    // TODO: Remove this event
     expect(onCloseBar).toHaveBeenCalled();
   });
 
@@ -209,6 +232,16 @@ describe('autocomplete-dropdown', () => {
     wrapper.find('input').simulate('change', { target: { value: '' } });
 
     expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
+  });
+
+  it('does not announce cancel when value cleared', async () => {
+    const wrapper = subject({ value: 'lets delete this' });
+
+    let input = wrapper.find('input');
+
+    input.simulate('change', { target: { value: '' } });
+
+    expect(onCancel).not.toHaveBeenCalled();
   });
 
   it('does not close search bar when empty value', async () => {

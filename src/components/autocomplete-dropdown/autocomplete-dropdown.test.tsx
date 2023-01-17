@@ -194,6 +194,18 @@ describe('autocomplete-dropdown', () => {
     expect(onCloseBar).toHaveBeenCalled();
   });
 
+  it('closes search results when input cleared', async () => {
+    const findMatches = stubSearchFor('anything', stubResults(1));
+    const wrapper = subject({ findMatches });
+    await performSearch(wrapper, 'anything');
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(true);
+
+    wrapper.find('input').simulate('change', { target: { value: '' } });
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
+  });
+
   it('does not close search bar when empty value', async () => {
     const wrapper = subject({ value: 'lets delete this' });
 

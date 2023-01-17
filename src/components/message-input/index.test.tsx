@@ -1,6 +1,10 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import { MentionsInput } from 'react-mentions';
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
 import { Key } from '../../lib/keyboard-search';
@@ -25,6 +29,19 @@ describe('MessageInput', () => {
     };
 
     return shallow(<MessageInput {...allProps}>{child}</MessageInput>);
+  };
+  const subjectMount = (props: Partial<Properties>, child: any = <div />) => {
+    const allProps: Properties = {
+      className: '',
+      placeholder: '',
+      users: [],
+      onSubmit: () => undefined,
+      getUsersForMentions: () => undefined,
+      onMessageInputRendered: () => undefined,
+      ...props,
+    };
+
+    return mount(<MessageInput {...allProps}>{child}</MessageInput>);
   };
 
   it('adds className', () => {

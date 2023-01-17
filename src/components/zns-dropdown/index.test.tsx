@@ -2,6 +2,7 @@ import React from 'react';
 
 import { ZNSDropdown, Properties } from './';
 import { shallow } from 'enzyme';
+import { AutocompleteItem } from '../autocomplete-dropdown';
 
 let onSelect;
 let api;
@@ -14,6 +15,7 @@ describe('zns-dropdown', () => {
 
   function subject(initialData: Partial<Properties> = {}) {
     const state: Properties = {
+      onCloseBar: () => {},
       onSelect,
       api,
       ...initialData,
@@ -34,13 +36,16 @@ describe('zns-dropdown', () => {
 
     const wrapper = subject({
       api: {
-        search: async () => {
-          return apiResults;
+        search: async (searchString) => {
+          if (searchString === 'search-string') {
+            return apiResults;
+          }
+          return [];
         },
       },
     });
 
-    const mappedResults = await wrapper.instance().findMatches();
+    const mappedResults = await dropdownInstance(wrapper).findMatches('search-string');
 
     expect([
       {
@@ -76,10 +81,14 @@ describe('zns-dropdown', () => {
       },
     });
 
-    await wrapper.instance().findMatches();
+    await dropdownInstance(wrapper).findMatches('search-string');
 
-    wrapper.instance().onSelect(apiResults[0]);
+    dropdownInstance(wrapper).onSelect({ id: 'zns-id-first' } as AutocompleteItem);
 
     expect(onSelect).toHaveBeenCalledWith(apiResults[0].znsRoute);
   });
 });
+
+function dropdownInstance(wrapper) {
+  return wrapper.instance() as ZNSDropdown;
+}

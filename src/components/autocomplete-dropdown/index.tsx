@@ -314,10 +314,12 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
   }
 }
 
-export class Result extends React.Component<
-  { item: AutocompleteItem; isFocused: boolean; onSelect(AutocompleteItem) },
-  undefined
-> {
+export interface ResultProperties {
+  item: AutocompleteItem;
+  isFocused: boolean;
+  onSelect(AutocompleteItem);
+}
+export class Result extends React.Component<ResultProperties, undefined> {
   onSelect = (event): void => {
     // Prevent further events from happening, such as: onBlur of the input
     event.stopPropagation();

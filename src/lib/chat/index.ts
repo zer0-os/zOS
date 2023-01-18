@@ -55,13 +55,15 @@ export class Chat {
     const channelHandler = new this.sb.ChannelHandler();
 
     channelHandler.onMessageReceived = (channel, message) => {
+      const id = channel.url.replace('sendbird_group_channel_', '');
       if (channel.isGroupChannel()) {
-        events.receiveNewMessage(channel.url, this.mapMessage(message));
+        events.receiveNewMessage(id, this.mapMessage(message));
       }
     };
 
     channelHandler.onMessageDeleted = (channel, messageId) => {
-      events.receiveDeleteMessage(channel.url, parseInt(messageId as any)); // It is documented to return a number. But is actually a string
+      const id = channel.url.replace('sendbird_group_channel_', '');
+      events.receiveDeleteMessage(id, parseInt(messageId as any)); // It is documented to return a number. But is actually a string
     };
 
     chat.sb.addChannelHandler('chatHandler', channelHandler);

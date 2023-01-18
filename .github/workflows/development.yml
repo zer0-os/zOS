@@ -2,6 +2,7 @@ name: Deploy Development
 on:
   push:
     branches:
+      - main
       - development
 jobs:
   validate:

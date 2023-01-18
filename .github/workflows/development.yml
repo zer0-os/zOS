@@ -4,7 +4,7 @@ on:
     branches:
       - development
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
@@ -15,9 +15,11 @@ jobs:
           node-version: '16'
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install
+      - run: npm run lint
+      - run: npx tsc
       - run: npm run test
   deploy:
-    needs: test
+    needs: validate
     runs-on: ubuntu-latest
     environment: development
     env:

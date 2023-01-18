@@ -5,19 +5,19 @@ import { shallow } from 'enzyme';
 import { Key } from '../../lib/keyboard-search';
 
 let onSelect;
-let onCloseBar;
+let onCancel;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
     onSelect = jest.fn();
-    onCloseBar = jest.fn();
+    onCancel = jest.fn();
   });
 
   function subject(initialData: Partial<Properties> = {}) {
     const state: Properties = {
       findMatches: null,
       onSelect,
-      onCloseBar,
+      onCancel,
       value: null,
       ...initialData,
     };
@@ -125,10 +125,11 @@ describe('autocomplete-dropdown', () => {
     pressKey(wrapper, Key.ArrowUp);
     pressKey(wrapper, Key.Enter);
 
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[1].value);
     expect(onSelect).toHaveBeenCalledWith(searchResults[1]);
   });
 
-  it('selecting a match triggers change event', async () => {
+  it('it selects the item via mouse', async () => {
     const searchResults = stubResults(2);
     const valueToSelect = searchResults[0].value;
     const findMatches = stubSearchFor('anything', searchResults);
@@ -136,19 +137,17 @@ describe('autocomplete-dropdown', () => {
     const wrapper = subject({ findMatches });
 
     await performSearch(wrapper, 'anything');
-
     wrapper.update();
-
     selectOption(wrapper, valueToSelect);
 
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[0].value);
     expect(onSelect).toHaveBeenCalledWith(searchResults[0]);
   });
 
-  it('selecting an option verifies value and closes dropdown', async () => {
+  it('selecting an option closes results dropdown', async () => {
     const searchResults = stubResults(1);
     const valueToSelect = searchResults[0].value;
-    const findMatches = stubSearchFor('anything', searchResults);
-    const wrapper = subject({ findMatches });
+    const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
 
     await performSearch(wrapper, 'anything');
 
@@ -156,24 +155,40 @@ describe('autocomplete-dropdown', () => {
 
     selectOption(wrapper, valueToSelect);
 
-    expect(wrapper.find('input').prop('value')).toEqual(valueToSelect);
-    expect(wrapper.find(Result).exists()).toBe(false);
+    expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
   });
 
-  it('it closes dropdown when focus lost', async () => {
-    const findMatches = stubSearchFor('someSearch', stubResults(1));
-    const wrapper = subject({ findMatches, value: 'original value' });
+  describe('when focus is lost', () => {
+    it('it resets the input', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
 
-    const input = wrapper.find('input');
+      wrapper.find('input').simulate('blur');
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'someSearch' } });
-    jest.runAllTimers();
+      expect(wrapper.find('input').prop('value')).toEqual('original value');
+    });
 
-    input.simulate('blur');
+    it('it closes dropdown', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(true);
 
-    expect(input.prop('value')).toEqual('original value');
-    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
+      wrapper.find('input').simulate('blur');
+
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
+    });
+
+    it('it announces cancel', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
+
+      wrapper.find('input').simulate('blur');
+
+      expect(onCancel).toHaveBeenCalled();
+    });
   });
 
   it('it displays "No results found" when there are no matches', async () => {
@@ -185,23 +200,35 @@ describe('autocomplete-dropdown', () => {
     expect(wrapper.text()).toEqual('No results found');
   });
 
-  it('hides search bar when pressing "escape"', async () => {
+  it('announces cancel when "escape" is pressed', async () => {
     const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches });
 
     pressKeyOn(wrapper, Key.Escape);
 
-    expect(onCloseBar).toHaveBeenCalled();
+    expect(onCancel).toHaveBeenCalled();
   });
 
-  it('does not close search bar when empty value', async () => {
+  it('closes search results when input cleared', async () => {
+    const findMatches = stubSearchFor('anything', stubResults(1));
+    const wrapper = subject({ findMatches });
+    await performSearch(wrapper, 'anything');
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(true);
+
+    wrapper.find('input').simulate('change', { target: { value: '' } });
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
+  });
+
+  it('does not announce cancel when value cleared', async () => {
     const wrapper = subject({ value: 'lets delete this' });
 
     let input = wrapper.find('input');
 
     input.simulate('change', { target: { value: '' } });
 
-    expect(onCloseBar).not.toHaveBeenCalled();
+    expect(onCancel).not.toHaveBeenCalled();
   });
 
   it('set min height to results wrapper', async () => {

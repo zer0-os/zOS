@@ -277,16 +277,19 @@ export function* stopSyncChannels(action) {
 
 export function* receiveNewMessage(action) {
   const { channelId, message } = action.payload;
+  const channelIdWithoutPrefix = channelId.replace('sendbird_group_channel_', '');
 
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
-  const currentMessages = yield select(rawMessagesSelector(channelId));
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelIdWithoutPrefix)))];
+  const currentMessages = yield select(rawMessagesSelector(channelIdWithoutPrefix));
 
   let messages = [];
+  let cachedMessageLength = 0;
 
   if (cachedMessageIds.length) {
     messages = [
       ...currentMessages,
     ];
+    cachedMessageLength = cachedMessageIds.length;
     const firstCachedMessageId = cachedMessageIds[0];
 
     messages = messages.map((messageId) => {
@@ -297,7 +300,9 @@ export function* receiveNewMessage(action) {
         return messageId;
       }
     });
-  } else {
+  }
+
+  if (cachedMessageLength === cachedMessageIds.length) {
     messages = [
       ...currentMessages,
       message,
@@ -306,7 +311,7 @@ export function* receiveNewMessage(action) {
 
   yield put(
     receive({
-      id: channelId,
+      id: channelIdWithoutPrefix,
       messages,
       messageIdsCache: cachedMessageIds,
     })

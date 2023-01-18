@@ -9,6 +9,13 @@ import { Channels } from '../platform-apps/channels';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 import { AppLayout } from '../store/layout';
 
+// Don't load full external projects
+jest.mock('@zero-tech/zapp-nfts', () => ({}));
+jest.mock('@zero-tech/zapp-staking', () => ({}));
+jest.mock('@zero-tech/zapp-daos', () => ({}));
+jest.mock('@zero-tech/zapp-buy-domains', () => ({}));
+jest.mock('@zer0-os/zos-feed', () => ({ App: () => <></> }));
+
 describe('AppSandbox', () => {
   const subject = (props: any = {}) => {
     const allProps = {

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
 import { User } from '../../store/channels';
-import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePreview } from './utils';
+import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
@@ -21,6 +21,10 @@ export interface Properties {
   getUsersForMentions: (search: string, users: User[]) => UserForMention[];
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
+  clipboard?: {
+    addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
+    removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
+  };
 }
 
 interface State {
@@ -46,7 +50,11 @@ export class MessageInput extends React.Component<Properties, State> {
     if (this.props.onMessageInputRendered) {
       this.props.onMessageInputRendered(this.textareaRef);
     }
-    window.addEventListener('paste', this.clipboardEvent);
+    this.clipboard.addPasteListener(this.clipboardEvent);
+  }
+
+  get clipboard() {
+    return this.props.clipboard || windowClipboard();
   }
 
   componentDidUpdate() {
@@ -56,7 +64,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('paste', this.clipboardEvent);
+    this.clipboard.removePasteListener(this.clipboardEvent);
   }
 
   get images() {

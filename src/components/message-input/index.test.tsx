@@ -1,10 +1,6 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
 import { MentionsInput } from 'react-mentions';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
 import { Key } from '../../lib/keyboard-search';
@@ -21,23 +17,14 @@ describe('MessageInput', () => {
       getUsersForMentions: () => undefined,
       onMessageInputRendered: () => undefined,
       renderAfterInput: () => undefined,
+      clipboard: {
+        addPasteListener: (_) => {},
+        removePasteListener: (_) => {},
+      },
       ...props,
     };
 
     return shallow(<MessageInput {...allProps}>{child}</MessageInput>);
-  };
-  const subjectMount = (props: Partial<Properties>, child: any = <div />) => {
-    const allProps: Properties = {
-      className: '',
-      placeholder: '',
-      users: [],
-      onSubmit: () => undefined,
-      getUsersForMentions: () => undefined,
-      onMessageInputRendered: () => undefined,
-      ...props,
-    };
-
-    return mount(<MessageInput {...allProps}>{child}</MessageInput>);
   };
 
   it('adds className', () => {
@@ -47,9 +34,10 @@ describe('MessageInput', () => {
   });
 
   it('adds placeholder', () => {
-    const wrapper = subjectMount({ placeholder: 'Speak' });
+    const wrapper = subject({ placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
 
-    expect(wrapper.find(MentionsInput).prop('placeholder')).toEqual('Speak');
+    expect(dropzone.find(MentionsInput).prop('placeholder')).toEqual('Speak');
   });
 
   it('it renders the messageInput', function () {
@@ -60,18 +48,20 @@ describe('MessageInput', () => {
 
   it('should call editActions', function () {
     const renderAfterInput = jest.fn();
-    subjectMount({ renderAfterInput, className: 'chat' });
+    const wrapper = subject({ renderAfterInput, className: 'chat' });
+    const _dropzone = wrapper.find(Dropzone).shallow();
 
     expect(renderAfterInput).toHaveBeenCalled();
   });
 
-  it('submit message when click on textearea', () => {
+  it('submit message when click on textarea', () => {
     const onSubmit = jest.fn();
-    const wrapper = subjectMount({ onSubmit, placeholder: 'Speak' });
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
 
-    const textarea = wrapper.find(MentionsInput).find('textarea');
-    textarea.simulate('change', { target: { value: 'Hello' } });
-    textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
     expect(onSubmit).toHaveBeenCalledOnce();
   });

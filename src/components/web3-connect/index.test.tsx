@@ -30,6 +30,9 @@ describe('Web3Connect', () => {
       removeItem(key) {
         this.state[key] = false;
       },
+      length: 0,
+      clear: () => {},
+      key: (_) => '',
     };
   });
 

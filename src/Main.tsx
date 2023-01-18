@@ -10,10 +10,16 @@ import { Logo } from './components/logo';
 
 import './main.scss';
 import classNames from 'classnames';
+import { Sidekick } from './components/sidekick/index';
+import { withContext as withAuthenticationContext } from './components/authentication/context';
 
 export interface Properties {
   hasContextPanel: boolean;
   isContextPanelOpen: boolean;
+  isSidekickOpen: boolean;
+  context: {
+    isAuthenticated: boolean;
+  };
 }
 
 export class Container extends React.Component<Properties> {
@@ -23,6 +29,7 @@ export class Container extends React.Component<Properties> {
     return {
       hasContextPanel: layout.hasContextPanel,
       isContextPanelOpen: layout.isContextPanelOpen,
+      isSidekickOpen: layout.isSidekickOpen,
     };
   }
 
@@ -33,6 +40,7 @@ export class Container extends React.Component<Properties> {
   render() {
     const mainClassName = classNames('main', {
       'context-panel-open': this.props.isContextPanelOpen,
+      'sidekick-panel-open': this.props.isSidekickOpen && this.props.context.isAuthenticated,
       'has-context-panel': this.props.hasContextPanel,
     });
 
@@ -57,10 +65,11 @@ export class Container extends React.Component<Properties> {
             <WalletManager className='main__wallet-manager' />
           </div>
         </div>
+        <Sidekick className='main__sidekick' />
         <ThemeEngine />
       </div>
     );
   }
 }
 
-export const Main = connectContainer<{}>(Container);
+export const Main = withAuthenticationContext<{}>(connectContainer<{}>(Container));

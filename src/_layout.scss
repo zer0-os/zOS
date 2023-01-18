@@ -9,7 +9,7 @@ $width-application-navigation: 224px;
 $width-navigation: calc($width-platform-navigation + $width-world-navigation);
 $width-collapsed-navigation: calc($width-world-navigation + $width-collapsed-platform-navigation);
 $width-application-content: 736px;
-$width-sidekick: 117px;
+$width-sidekick: 220px;
 $height-main: 65px;
 
 $breakpoint-collapse-menu: 1294px;
@@ -17,9 +17,14 @@ $breakpoint-collapse-menu: 1294px;
 @mixin root-layout-vars {
   --layout-transition-easing-function: ease-in;
   --layout-app-content-right-padding: 64px;
+  --sidekick-transition-easing-function: ease-out;
 
   &.context-panel-open {
     --layout-transition-easing-function: ease-out;
+  }
+
+  &.sidekick-panel-open {
+    --sidekick-transition-easing-function: ease-in;
   }
 }
 
@@ -30,6 +35,10 @@ $breakpoint-collapse-menu: 1294px;
   } @else {
     transition: $first-prop animation.$animation-duration-double var(--layout-transition-easing-function);
   }
+}
+
+@mixin layout-sidekick-transition($first-prop) {
+  transition: $first-prop animation.$animation-duration-double var(--sidekick-transition-easing-function);
 }
 
 @mixin for-left-collapse {

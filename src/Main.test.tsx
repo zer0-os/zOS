@@ -10,8 +10,12 @@ import { AddressBarContainer } from './components/address-bar/container';
 describe('Main', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      isSidekickOpen: false,
       hasContextPanel: false,
       isContextPanelOpen: false,
+      context: {
+        isAuthenticated: false,
+      },
       ...props,
     };
 

@@ -1,45 +1,28 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
 
-import { AutocompleteDropdown, Properties, Result } from './';
-import { shallow, mount } from 'enzyme';
+import { AutocompleteDropdown, AutocompleteItem, Properties, Result, ResultProperties } from './';
+import { shallow } from 'enzyme';
+import { Key } from '../../lib/keyboard-search';
 
-let findMatches;
 let onSelect;
-let onCloseBar;
+let onCancel;
 
 describe('autocomplete-dropdown', () => {
   beforeEach(() => {
-    findMatches = jest.fn();
     onSelect = jest.fn();
-    onCloseBar = jest.fn();
+    onCancel = jest.fn();
   });
 
   function subject(initialData: Partial<Properties> = {}) {
     const state: Properties = {
-      findMatches,
+      findMatches: null,
       onSelect,
-      onCloseBar,
+      onCancel,
       value: null,
       ...initialData,
     };
 
     return shallow(<AutocompleteDropdown {...state} />);
-  }
-
-  function subjectMount(initialData: Partial<Properties> = {}) {
-    const state: Properties = {
-      findMatches,
-      onSelect,
-      onCloseBar,
-      value: null,
-      ...initialData,
-    };
-
-    return mount(<AutocompleteDropdown {...state} />);
   }
 
   it('it renders input', () => {
@@ -65,59 +48,21 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it renders match suggestions', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const searchResults = stubResults(2);
 
-    const wrapper = subject({ findMatches });
+    const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
 
-    const input = wrapper.find('input');
+    await performSearch(wrapper, 'anything');
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
-
-    expect(wrapper.find(Result).map((r) => r.prop('item'))).toEqual(findMatches());
+    expect(wrapper.find(Result).map((r) => r.prop('item'))).toEqual(searchResults);
   });
 
   it('it sets the first item found to the "focused" one', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const findMatches = stubSearchFor('anything', stubResults(2));
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
@@ -126,78 +71,33 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it sets the next item as to the "focused" one when hitting "down"', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const findMatches = stubSearchFor('anything', stubResults(3));
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
+      false,
       false,
     ]);
 
-    input.simulate('keydown', {
-      key: 'ArrowDown',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowDown);
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       false,
       true,
+      false,
     ]);
   });
 
   it('it sets the last item as to the "focused" one when hitting "up"', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-        {
-          id: 'result-third-id',
-          value: 'result-third-value',
-          route: 'result-third-route',
-        },
-      ];
-    };
+    const findMatches = stubSearchFor('anything', stubResults(3));
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       true,
@@ -205,11 +105,7 @@ describe('autocomplete-dropdown', () => {
       false,
     ]);
 
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
+    pressKey(wrapper, Key.ArrowUp);
 
     expect(wrapper.find(Result).map((r) => r.prop('isFocused'))).toEqual([
       false,
@@ -219,205 +115,129 @@ describe('autocomplete-dropdown', () => {
   });
 
   it('it selects the currently focused option when pressing "Enter"', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const searchResults = stubResults(2);
+    const findMatches = stubSearchFor('anything', searchResults);
 
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
+    await performSearch(wrapper, 'anything');
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
+    pressKey(wrapper, Key.ArrowUp);
+    pressKey(wrapper, Key.Enter);
 
-    await new Promise(setImmediate);
-
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-    input.simulate('keydown', {
-      key: 'Enter',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-
-    expect(onSelect).toHaveBeenCalledWith(findMatches()[1]);
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[1].value);
+    expect(onSelect).toHaveBeenCalledWith(searchResults[1]);
   });
 
-  it('selecting a match triggers change event', async () => {
-    const expectation = 'result-first-value';
+  it('it selects the item via mouse', async () => {
+    const searchResults = stubResults(2);
+    const valueToSelect = searchResults[0].value;
+    const findMatches = stubSearchFor('anything', searchResults);
 
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: expectation,
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const wrapper = subject({ findMatches });
 
-    const wrapper = subjectMount({ findMatches });
+    await performSearch(wrapper, 'anything');
+    wrapper.update();
+    selectOption(wrapper, valueToSelect);
 
-    const input = wrapper.find('input');
+    expect(wrapper.find('input').prop('value')).toEqual(searchResults[0].value);
+    expect(onSelect).toHaveBeenCalledWith(searchResults[0]);
+  });
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
+  it('selecting an option closes results dropdown', async () => {
+    const searchResults = stubResults(1);
+    const valueToSelect = searchResults[0].value;
+    const wrapper = subject({ findMatches: stubSearchFor('anything', searchResults) });
 
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     wrapper.update();
 
-    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
-    option.simulate('mouseDown');
+    selectOption(wrapper, valueToSelect);
 
-    expect(onSelect).toHaveBeenCalledWith(findMatches()[0]);
+    expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
   });
 
-  it('selecting an option verifies value and closes dropdown', async () => {
-    const expectation = 'result-value';
+  describe('when focus is lost', () => {
+    it('it resets the input', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
 
-    findMatches = () => {
-      return [{ id: 'result-id', value: expectation, route: 'result-route' }];
-    };
-    const wrapper = subjectMount({ findMatches });
+      wrapper.find('input').simulate('blur');
 
-    let input = wrapper.find('input');
+      expect(wrapper.find('input').prop('value')).toEqual('original value');
+    });
 
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: expectation } });
-    jest.runAllTimers();
+    it('it closes dropdown', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(true);
 
-    await new Promise(setImmediate);
+      wrapper.find('input').simulate('blur');
 
-    wrapper.update();
+      expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
+    });
 
-    const option = wrapper.find('[className*="-item"]').filterWhere((n) => n.text() === expectation);
-    option.simulate('mouseDown');
+    it('it announces cancel', async () => {
+      const findMatches = stubSearchFor('someSearch', stubResults(1));
+      const wrapper = subject({ findMatches, value: 'original value' });
+      await performSearch(wrapper, 'someSearch');
 
-    input = wrapper.find('input');
+      wrapper.find('input').simulate('blur');
 
-    expect(input.prop('value')).toEqual(expectation);
-    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
-  });
-
-  it('it closes dropdown when focus lost', async () => {
-    findMatches = () => {
-      return [{ id: 'result-id', value: 'result-value', route: 'result-route' }];
-    };
-    const wrapper = subject({ findMatches, value: 'original value' });
-
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'someSearch' } });
-    jest.runAllTimers();
-
-    input.simulate('blur');
-
-    expect(input.prop('value')).toEqual('original value');
-    expect(wrapper.find('[className*="__items"]').exists()).toBe(false);
+      expect(onCancel).toHaveBeenCalled();
+    });
   });
 
   it('it displays "No results found" when there are no matches', async () => {
-    findMatches = () => {
-      return [];
-    };
+    const findMatches = stubSearchFor('someSearch', []);
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
-
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'someSearch' } });
-    jest.runAllTimers();
-
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'someSearch');
 
     expect(wrapper.text()).toEqual('No results found');
   });
 
-  it('hides search bar when pressing "escape"', async () => {
-    findMatches = () => {
-      return [];
-    };
+  it('announces cancel when "escape" is pressed', async () => {
+    const findMatches = stubSearchFor('someSearch', stubResults(1));
     const wrapper = subject({ findMatches });
 
-    const input = wrapper.find('input');
+    pressKeyOn(wrapper, Key.Escape);
 
-    jest.useFakeTimers();
-    input.simulate('keydown', {
-      key: 'ArrowUp',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-    input.simulate('keydown', {
-      key: 'Enter',
-      preventDefault: () => {},
-      stopPropagation: () => {},
-    });
-    jest.runAllTimers();
+    expect(onCancel).toHaveBeenCalled();
+  });
 
-    await new Promise(setImmediate);
+  it('closes search results when input cleared', async () => {
+    const findMatches = stubSearchFor('anything', stubResults(1));
+    const wrapper = subject({ findMatches });
+    await performSearch(wrapper, 'anything');
+
+    expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(true);
+
+    wrapper.find('input').simulate('change', { target: { value: '' } });
 
     expect(wrapper.find('.autocomplete-dropdown__item-container').exists()).toBe(false);
   });
 
-  it('does not close search bar when empty value', async () => {
+  it('does not announce cancel when value cleared', async () => {
     const wrapper = subject({ value: 'lets delete this' });
 
     let input = wrapper.find('input');
 
     input.simulate('change', { target: { value: '' } });
 
-    expect(onCloseBar).not.toHaveBeenCalled();
+    expect(onCancel).not.toHaveBeenCalled();
   });
 
   it('set min height to results wrapper', async () => {
-    findMatches = () => {
-      return [
-        {
-          id: 'result-first-id',
-          value: 'result-first-value',
-          route: 'result-first-route',
-        },
-        {
-          id: 'result-second-id',
-          value: 'result-second-value',
-          route: 'result-second-route',
-        },
-      ];
-    };
+    const findMatches = stubSearchFor('anything', []);
 
-    const wrapper = subjectMount({ findMatches });
-
-    const input = wrapper.find('input');
-
+    const wrapper = subject({ findMatches });
     expect(wrapper.find('.autocomplete-dropdown__results').exists()).toBe(false);
-    jest.useFakeTimers();
-    input.simulate('change', { target: { value: 'anything' } });
-    jest.runAllTimers();
 
-    await new Promise(setImmediate);
+    await performSearch(wrapper, 'anything');
 
     expect(wrapper.find('.autocomplete-dropdown__results').prop('style').height).toEqual(35);
   });
@@ -427,9 +247,9 @@ describe('autocomplete-dropdown', () => {
       onSelect = jest.fn();
     });
 
-    function subject(initialData = {}) {
-      const props: Properties = {
-        item: {},
+    function subject(initialData: Partial<ResultProperties> = {}) {
+      const props: ResultProperties = {
+        item: {} as AutocompleteItem,
         isFocused: false,
         onSelect,
         ...initialData,
@@ -439,17 +259,83 @@ describe('autocomplete-dropdown', () => {
     }
 
     it('verifies expected attributes are present', () => {
-      const expectation = {
+      const item = {
+        id: 'result-id',
         value: 'result-value',
         route: 'result-route',
         summary: 'result-summary',
       };
 
-      const wrapper = subject({ item: expectation });
+      const wrapper = subject({ item });
 
-      Object.values(expectation).forEach((value) => {
-        expect(wrapper.html().includes(value)).toBe(true);
-      });
+      expect(wrapper.find('.autocomplete-dropdown-item__value').text()).toEqual(item.value);
+      expect(wrapper.find('.autocomplete-dropdown-item__route').text()).toEqual(item.route);
+      expect(wrapper.find('.autocomplete-dropdown-item__text').prop('title')).toEqual(item.summary);
     });
   });
 });
+
+function inputEvent(attrs = {}) {
+  return {
+    preventDefault: () => {},
+    stopPropagation: () => {},
+    ...attrs,
+  };
+}
+
+async function performSearch(dropdown, searchString) {
+  const input = dropdown.find('input');
+  // Fake the timers because we debounce search requests
+  jest.useFakeTimers();
+  input.simulate('change', { target: { value: searchString } });
+  jest.runAllTimers();
+  // Release the thread so the async search can complete
+  await new Promise(setImmediate);
+}
+
+function stubSearchFor(expectedSearch, results) {
+  return (search) => {
+    if (search === expectedSearch) {
+      return results;
+    }
+    return [];
+  };
+}
+
+function stubResult(prefix) {
+  return {
+    id: `${prefix}-id`,
+    value: `${prefix}-value`,
+    route: `${prefix}-route`,
+  };
+}
+
+function stubResults(num) {
+  const results = [];
+  for (let i = 1; i <= num; i++) {
+    results.push(stubResult(i));
+  }
+  return results;
+}
+
+function pressKey(wrapper, key) {
+  pressKeyOn(wrapper.find('input'), key);
+}
+
+function pressKeyOn(node, key) {
+  node.simulate('keydown', {
+    key,
+    preventDefault: () => {},
+    stopPropagation: () => {},
+  });
+}
+
+function selectOption(component, value) {
+  component
+    .find(Result)
+    .findWhere((n) => (n.prop('item') as any).value === value)
+    .first()
+    .shallow()
+    .find('.autocomplete-dropdown-item')
+    .simulate('mouseDown', inputEvent());
+}

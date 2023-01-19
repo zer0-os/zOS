@@ -1,0 +1,17 @@
+name: Create Tag
+on:
+  push:
+    branches:
+      - main
+      - 'hotfix/**'
+    paths:
+      - package.json
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: ./.github/create-tag

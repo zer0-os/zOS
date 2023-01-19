@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -e
+
+help() {
+  echo -e "Usage: $0"
+  echo -e ""
+  echo -e "Creates a base branch for the hotfix and a local working branch to start development on"
+  echo -e ""
+  echo -e "Note: This assumes that you have access to push to GitHub."
+  echo -e ""
+}
+
+while getopts ":hdc:b:" opt; do
+  case $opt in
+    h)
+      help
+      exit 0
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      echo ""
+      help
+      exit 1
+  esac
+done
+
+ensure_git_is_installed() {
+  command -v git >/dev/null 2>&1 || { echo >&2 "You need have the 'git' command installed in order to continue.  Aborting."; exit 1; }
+}
+
+ensure_working_tree_is_clean() {
+  [ -z "$(git diff --stat)" ] || { echo >&2 "Git working tree is dirty.  Aborting."; exit 1; }
+}
+
+fetch_origin() {
+  echo "Fetching origin..."
+  git fetch origin
+}
+
+get_latest_version() {
+  echo $(git tag | sort -V | tail -1)
+}
+
+ask_for_version() {
+  read -p "Please enter the desired version: " INPUT_VERSION
+  echo "${INPUT_VERSION}"
+}
+
+confirm_version() {
+  VERSION=$1
+  while true; do
+      read -p "Will prepare a hotfix branch for version [${VERSION}]. Is this correct? (Yn) " yn
+      case $yn in
+          [Yy] ) break;;
+          [Nn] ) VERSION=$(ask_for_version);;
+          '' ) break;;
+          * ) echo "Please answer y or n.";;
+      esac
+  done
+
+  echo "${VERSION}"
+}
+
+create_base_branch_on_remote() {
+  SOURCE=$1
+  DESTINATION=$2
+  echo "Creating hotfix base branch [${DESTINATION}]"
+  git push origin ${SOURCE}:refs/heads/${DESTINATION}
+}
+
+create_local_working_branch() {
+  SOURCE=$1
+  DESTINATION=$2
+  echo "Creating local working branch [${DESTINATION}]"
+  echo "Feel free to rename it as you like."
+  git switch -c $DESTINATION $SOURCE
+}
+
+ensure_git_is_installed
+ensure_working_tree_is_clean
+fetch_origin
+
+VERSION=$(get_latest_version)
+VERSION=$(confirm_version ${VERSION})
+BASE_BRANCH="hotfix/${VERSION}"
+WORKING_BRANCH="${VERSION}-working-hotfix"
+
+create_base_branch_on_remote $VERSION $BASE_BRANCH
+create_local_working_branch $VERSION $WORKING_BRANCH

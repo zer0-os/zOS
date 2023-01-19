@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 'hotfix/**'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false

@@ -1,0 +1,42 @@
+name: 'Create Release'
+on:
+  push:
+    tags:
+      - '**'
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: false
+        type: string
+
+jobs:
+  create_release:
+    name: 'Create Release'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Print variable if not empty
+        if: "${{ github.event.inputs.tag != '' }}"
+        run: 'echo "RELEASE_TAG=${{github.event.inputs.tag}}" >> $GITHUB_ENV'
+
+      - name: 'Determine tag'
+        if: "${{ github.event.inputs.tag == '' }}"
+        run: 'echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV'
+
+      - name: 'Create release'
+        uses: 'actions/github-script@v5'
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          script: |
+            try {
+              await github.rest.repos.createRelease({
+                draft: true,
+                generate_release_notes: true,
+                name: "Release ${{process.env.RELEASE_TAG}}",
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: process.env.RELEASE_TAG,
+              });
+            } catch (error) {
+              core.setFailed(error.message);
+            }

@@ -110,5 +110,5 @@ create_tag $VERSION
 push_to_origin $DRY_RUN $VERSION
 
 if [[ "$DRY_RUN" == "no" ]]; then
-  echo "To deploy, visit https://github.com/zer0-os/zOS/releases/new and create a release for ${VERSION}"
+  echo "To deploy, visit https://github.com/zer0-os/zOS/releases and publish the release [${VERSION}]"
 fi

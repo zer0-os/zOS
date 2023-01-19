@@ -12,6 +12,7 @@ export const isElectron = (): boolean => typeof window !== 'undefined' && window
 export const showReleaseVersionInConsole = (): void => {
   console.log('Main update');
   console.log('Release version:', config.appVersion);
+  console.log('This is a hotfix');
 };
 
 export const initializeErrorBoundary = () => {

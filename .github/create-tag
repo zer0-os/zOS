@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+TAG="v$(npm pkg get version | tr -d \")"
+git fetch --tags # In case only a shallow clone was done
+if ! git tag | grep "${TAG}"; then
+  git tag ${TAG}
+  git push -u origin $TAG
+else
+  echo "'${TAG}' already exists. No action taken."
+fi

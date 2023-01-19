@@ -14,7 +14,7 @@ jobs:
     name: 'Create Release'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Print variable if not empty. This is my big change
+      - name: Print variable if not empty. This is my big change. Oh no, abug! This is the fix
         if: "${{ github.event.inputs.tag != '' }}"
         run: 'echo "RELEASE_TAG=${{github.event.inputs.tag}}" >> $GITHUB_ENV'
 

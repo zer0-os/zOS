@@ -55,6 +55,10 @@ ensure_git_is_installed() {
   command -v git >/dev/null 2>&1 || { echo >&2 "You need have the 'git' command installed in order to continue.  Aborting."; exit 1; }
 }
 
+ensure_working_tree_is_clean() {
+  [ -z "$(git diff --stat)" ] || { echo >&2 "Git working tree is dirty.  Aborting."; exit 1; }
+}
+
 fetch_origin() {
   echo "Fetching origin..."
   git fetch origin
@@ -98,6 +102,7 @@ if [[ "$DRY_RUN" == "yes" ]]; then
 fi
 
 ensure_git_is_installed
+ensure_working_tree_is_clean
 fetch_origin
 checkout_main
 

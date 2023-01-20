@@ -69,7 +69,7 @@ export class Container extends React.Component<Properties, State> {
           'direct-message-chat--minimized': this.state.isMinimized,
         })}
       >
-        <div className='direct-message-chat_content'>
+        <div className='direct-message-chat__content'>
           <div
             className='direct-message-chat__header direct-message-chat__header'
             onClick={this.handleHeaderClick}

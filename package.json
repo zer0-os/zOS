@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@giphy/react-components": "^6.5.2",
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^7.13.0",
     "@types/jest": "^24.9.1",
@@ -30,6 +31,7 @@
     "@zero-tech/zapp-daos": "^0.4.0",
     "@zero-tech/zapp-nfts": "^0.7.5",
     "@zero-tech/zapp-staking": "0.4.8",
+    "@zero-tech/zui": "^0.12.0",
     "classnames": "^2.3.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",

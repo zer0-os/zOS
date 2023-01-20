@@ -1,14 +1,20 @@
 import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
-
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
 import { AppLayout, update as updateLayout } from '../../store/layout';
+import { ActiveUsers } from '../../platform-apps/channels/active-users';
 
-require('./styles.scss');
+import './styles.scss';
+
+enum Tabs {
+  NETWORK,
+  MESSAGES,
+  NOTIFICATIONS,
+}
 
 interface PublicProperties {
   className?: string;
@@ -21,9 +27,12 @@ export interface Properties extends PublicProperties {
 
 export interface State {
   isOpen: boolean;
+  activeTab: Tabs;
 }
 
 export class Container extends React.Component<Properties, State> {
+  state = { isOpen: true, activeTab: Tabs.MESSAGES };
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
@@ -38,17 +47,19 @@ export class Container extends React.Component<Properties, State> {
     return { updateLayout };
   }
 
-  state = { isOpen: true };
-
-  slideAnimationEnded = () => {
+  slideAnimationEnded = (): void => {
     if (!this.state.isOpen) {
       this.setState({ isOpen: false });
     }
   };
 
-  clickTab = () => {};
+  clickTab(tab: Tabs): void {
+    this.setState({
+      activeTab: tab,
+    });
+  }
 
-  handleSidekickPanel = () => {
+  handleSidekickPanel = (): void => {
     this.props.updateLayout({ isSidekickOpen: !this.state.isOpen });
     this.setState({ isOpen: !this.state.isOpen });
   };
@@ -76,6 +87,45 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
+  renderTabs() {
+    return (
+      <div className='sidekick__tabs'>
+        <IconButton
+          className='sidekick__tabs-network'
+          icon={Icons.Network}
+          onClick={this.clickTab.bind(this, Tabs.NETWORK)}
+        />
+        <IconButton
+          className='sidekick__tabs-messages'
+          icon={Icons.Messages}
+          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
+        />
+        <IconButton
+          className='sidekick__tabs-notifications'
+          icon={Icons.Notifications}
+          onClick={this.clickTab.bind(this, Tabs.NOTIFICATIONS)}
+        />
+      </div>
+    );
+  }
+
+  renderTabContent() {
+    switch (this.state.activeTab) {
+      case Tabs.NETWORK:
+        return <div>NETWORK</div>;
+      case Tabs.MESSAGES:
+        return (
+          <div>
+            <ActiveUsers />
+          </div>
+        );
+      case Tabs.NOTIFICATIONS:
+        return <div>NOTIFICATIONS</div>;
+      default:
+        break;
+    }
+  }
+
   render() {
     return (
       <IfAuthenticated showChildren>
@@ -84,25 +134,8 @@ export class Container extends React.Component<Properties, State> {
           onAnimationEnd={this.slideAnimationEnded}
         >
           {this.renderSidekickPanel()}
-          <div className='sidekick-panel'>
-            <div className='sidekick__tabs'>
-              <IconButton
-                className='sidekick__tabs-network'
-                icon={Icons.Network}
-                onClick={this.clickTab}
-              />
-              <IconButton
-                className='sidekick__tabs-messages'
-                icon={Icons.Messages}
-                onClick={this.clickTab}
-              />
-              <IconButton
-                className='sidekick__tabs-notifications'
-                icon={Icons.Notifications}
-                onClick={this.clickTab}
-              />
-            </div>
-          </div>
+          <div className='sidekick-panel'>{this.renderTabs()}</div>
+          <div className='sidekick__tab-content'>{this.renderTabContent()}</div>
         </div>
       </IfAuthenticated>
     );

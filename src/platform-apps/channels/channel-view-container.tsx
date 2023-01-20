@@ -55,6 +55,7 @@ export interface Properties extends PublicProperties {
 
 interface PublicProperties {
   channelId: string;
+  className?: string;
 }
 export interface State {
   countNewMessages: number;
@@ -239,7 +240,10 @@ export class Container extends React.Component<Properties, State> {
           <ChatConnect />
         </IfAuthenticated>
         <ChannelView
-          className={classNames({ 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone })}
+          className={classNames(
+            { 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone },
+            this.props.className
+          )}
           name={this.channel.name}
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}

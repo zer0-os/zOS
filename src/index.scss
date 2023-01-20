@@ -81,3 +81,10 @@ hr.glow:before {
 * {
   @include scrollbar();
 }
+
+.button-reset {
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: inline-block;
+}

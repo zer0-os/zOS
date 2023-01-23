@@ -38,18 +38,18 @@ class Component extends React.Component<Properties> {
   renderUser = (): JSX.Element => {
     return (
       <div
-        className='active-users__user'
+        className='direct-message-channels__user'
         onClick={this.onUserClick}
       >
-        <div className='active-users__user-status'></div>
-        <div className='active-users__user-name'>John</div>
+        <div className='direct-message-channels__user-status'></div>
+        <div className='direct-message-channels__user-name'>John</div>
       </div>
     );
   };
 
   render() {
-    return <div className='active-users'>{Array.from({ length: 10 }).map(this.renderUser)}</div>;
+    return <div className='direct-message-channels'>{Array.from({ length: 10 }).map(this.renderUser)}</div>;
   }
 }
 
-export const ActiveUsers = connectContainer<PublicProperties>(Component);
+export const DirectMessageChannels = connectContainer<PublicProperties>(Component);

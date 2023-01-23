@@ -6,12 +6,16 @@ import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
 import { ViewModeToggle } from './components/view-mode-toggle';
 import { AddressBarContainer } from './components/address-bar/container';
+import { DirectMessageChat } from './platform-apps/channels/direct-message-chat';
 
 describe('Main', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
       hasContextPanel: false,
       isContextPanelOpen: false,
+      context: {
+        isAuthenticated: false,
+      },
       ...props,
     };
 
@@ -64,6 +68,12 @@ describe('Main', () => {
     const wrapper = subject({ isContextPanelOpen: true });
 
     expect(wrapper.find('.main').hasClass('context-panel-open')).toBe(true);
+  });
+
+  it('renders direct message chat component', () => {
+    const wrapper = subject({ context: { isAuthenticated: true } });
+
+    expect(wrapper.find(DirectMessageChat).exists()).toBe(true);
   });
 
   describe('mapState', () => {

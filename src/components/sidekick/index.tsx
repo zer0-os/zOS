@@ -6,7 +6,7 @@ import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
 import { AppLayout, update as updateLayout } from '../../store/layout';
-import { ActiveUsers } from '../../platform-apps/channels/active-users';
+import { DirectMessageChannels } from '../../platform-apps/channels/direct-message-channels';
 
 import './styles.scss';
 
@@ -112,15 +112,15 @@ export class Container extends React.Component<Properties, State> {
   renderTabContent() {
     switch (this.state.activeTab) {
       case Tabs.NETWORK:
-        return <div>NETWORK</div>;
+        return <div className='sidekick__tab-content--network'>NETWORK</div>;
       case Tabs.MESSAGES:
         return (
-          <div>
-            <ActiveUsers />
+          <div className='sidekick__tab-content--messages'>
+            <DirectMessageChannels />
           </div>
         );
       case Tabs.NOTIFICATIONS:
-        return <div>NOTIFICATIONS</div>;
+        return <div className='sidekick__tab-content--notifications'>NOTIFICATIONS</div>;
       default:
         break;
     }

@@ -1,10 +1,7 @@
 @use '../../../shared-components/theme-engine/theme' as theme;
 @import '../../../variables';
 
-.active-users {
-}
-
-.active-users__user {
+.direct-message-channels__user {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -31,8 +28,5 @@
     &--active {
       background-color: #c9fd51;
     }
-  }
-
-  &-name {
   }
 }

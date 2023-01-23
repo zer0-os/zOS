@@ -98,7 +98,7 @@ $header-height: 36px;
   &--transition {
     transition: all animation.$animation-duration-half ease-out;
 
-    .direct-message-chat_content {
+    .direct-message-chat__content {
       transition: all animation.$animation-duration-half ease-out;
     }
   }
@@ -106,7 +106,7 @@ $header-height: 36px;
   &--full-screen {
     right: -10px;
 
-    .direct-message-chat_content {
+    .direct-message-chat__content {
       height: calc(100vh);
       width: calc(100vw);
     }

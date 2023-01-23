@@ -35,6 +35,7 @@ export interface Properties {
   users: UserModel[];
   className?: string;
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
+  isDirectMessage: boolean;
 }
 
 export interface State {
@@ -187,10 +188,12 @@ export class ChannelView extends React.Component<Properties, State> {
         )}
         <InvertedScroll className='channel-view__inverted-scroll'>
           <div className='channel-view__main'>
-            <div className='channel-view__name'>
-              <h1>Welcome to #{this.props.name}</h1>
-              <span>This is the start of the channel.</span>
-            </div>
+            {!this.props.isDirectMessage && (
+              <div className='channel-view__name'>
+                <h1>Welcome to #{this.props.name}</h1>
+                <span>This is the start of the channel.</span>
+              </div>
+            )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
             <IfAuthenticated showChildren>

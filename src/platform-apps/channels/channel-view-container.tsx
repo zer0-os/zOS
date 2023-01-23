@@ -56,6 +56,7 @@ export interface Properties extends PublicProperties {
 interface PublicProperties {
   channelId: string;
   className?: string;
+  isDirectMessage?: boolean;
 }
 export interface State {
   countNewMessages: number;
@@ -253,10 +254,11 @@ export class Container extends React.Component<Properties, State> {
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           users={this.channel.users || []}
-          hasJoined={this.channel.hasJoined || false}
+          hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
           countNewMessages={this.state.countNewMessages}
           resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
+          isDirectMessage={this.props.isDirectMessage}
         />
       </>
     );

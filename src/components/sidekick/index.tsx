@@ -6,7 +6,7 @@ import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
 import { AppLayout, update as updateLayout } from '../../store/layout';
-import { DirectMessageChannels } from '../../platform-apps/channels/direct-message-channels';
+import { DirectMessageMembers } from '../../platform-apps/channels/direct-message-members';
 
 import './styles.scss';
 
@@ -116,7 +116,7 @@ export class Container extends React.Component<Properties, State> {
       case Tabs.MESSAGES:
         return (
           <div className='sidekick__tab-content--messages'>
-            <DirectMessageChannels />
+            <DirectMessageMembers />
           </div>
         );
       case Tabs.NOTIFICATIONS:

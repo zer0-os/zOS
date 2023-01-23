@@ -13,6 +13,7 @@ import { reducer as apps } from './apps';
 import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
 import { reducer as chat } from './chat';
+import { reducer as directMessages } from './direct-messages';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -30,6 +31,7 @@ export const rootReducer = combineReducers({
   normalized,
   authentication,
   chat,
+  directMessages,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

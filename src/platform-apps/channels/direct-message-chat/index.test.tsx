@@ -9,6 +9,7 @@ describe('direct-message-chat', () => {
     const allProps: Properties = {
       activeDirectMessageId: '1',
       setActiveDirectMessageId: jest.fn(),
+      directMessage: null,
       ...props,
     };
 

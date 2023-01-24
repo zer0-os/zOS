@@ -68,14 +68,9 @@ $header-height: 36px;
       font-size: 16px;
 
       &__button {
-        // color: $text-highlight;
         cursor: pointer;
 
         animation: fadein 300ms ease-out forwards;
-
-        &:hover .icon {
-          // color: $text-highlight;
-        }
       }
     }
   }

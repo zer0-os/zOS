@@ -3,7 +3,6 @@ import { SagaActionTypes, setDirectMessages } from '.';
 import { fetchDirectMessages } from './api';
 
 export function* fetch() {
-  console.log('khalid hjhjh');
   const directMessages = yield call(fetchDirectMessages);
 
   yield put(setDirectMessages(directMessages));

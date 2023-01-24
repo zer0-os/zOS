@@ -64,7 +64,7 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isOpen: !this.state.isOpen });
   };
 
-  renderSidekickPanel() {
+  renderSidekickPanel(): JSX.Element {
     return (
       <div
         className='app-sidekick-panel__target'
@@ -87,7 +87,7 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  renderTabs() {
+  renderTabs(): JSX.Element {
     return (
       <div className='sidekick__tabs'>
         <IconButton
@@ -109,7 +109,7 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  renderTabContent() {
+  renderTabContent(): JSX.Element {
     switch (this.state.activeTab) {
       case Tabs.NETWORK:
         return <div className='sidekick__tab-content--network'>NETWORK</div>;
@@ -122,7 +122,7 @@ export class Container extends React.Component<Properties, State> {
       case Tabs.NOTIFICATIONS:
         return <div className='sidekick__tab-content--notifications'>NOTIFICATIONS</div>;
       default:
-        break;
+        return null;
     }
   }
 

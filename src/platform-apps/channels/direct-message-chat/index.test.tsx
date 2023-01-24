@@ -7,8 +7,8 @@ import { ChannelViewContainer } from '../channel-view-container';
 describe('direct-message-chat', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      activeChannelId: '1',
-      setActiveChannelId: jest.fn(),
+      activeDirectMessageId: '1',
+      setActiveDirectMessageId: jest.fn(),
       ...props,
     };
 
@@ -24,14 +24,14 @@ describe('direct-message-chat', () => {
   });
 
   it('render channel view component', function () {
-    const activeChannelId = '123';
+    const activeDirectMessageId = '123';
 
     const wrapper = subject({
-      activeChannelId,
+      activeDirectMessageId,
     });
 
     expect(wrapper.find(ChannelViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
-    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(activeChannelId);
+    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
   });
 
   it('minimize chat', function () {
@@ -55,13 +55,13 @@ describe('direct-message-chat', () => {
   });
 
   it('handle close chat', function () {
-    const setActiveChannelId = jest.fn();
-    const wrapper = subject({ setActiveChannelId });
+    const setActiveDirectMessageId = jest.fn();
+    const wrapper = subject({ setActiveDirectMessageId });
 
     const minimizeButton = wrapper.find('.direct-message-chat__close-button');
     minimizeButton.simulate('click');
 
-    expect(setActiveChannelId).toHaveBeenCalledWith('');
+    expect(setActiveDirectMessageId).toHaveBeenCalledWith(null);
   });
 
   it('renders close icon', function () {

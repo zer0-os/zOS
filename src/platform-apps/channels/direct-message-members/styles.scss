@@ -1,7 +1,7 @@
 @use '../../../shared-components/theme-engine/theme' as theme;
 @import '../../../variables';
 
-.direct-message-channels__user {
+.direct-message-members__user {
   display: flex;
   align-items: center;
   cursor: pointer;

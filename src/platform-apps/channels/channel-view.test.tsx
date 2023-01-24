@@ -229,7 +229,7 @@ describe('ChannelView', () => {
       expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
     });
 
-    it('does not render', () => {
+    it('does not render Lightbox', () => {
       const messages = [
         {
           id: 'message-1',
@@ -257,5 +257,34 @@ describe('ChannelView', () => {
 
       expect(wrapper.find(Lightbox).exists()).toBeFalsy();
     });
+  });
+
+  it('does not render channel name in case of a direct message', () => {
+    const messages = [
+      {
+        id: 'message-1',
+        message: 'image message',
+        media: { url: 'image.jpg', type: MediaType.Image },
+        sender: { userId: 1 },
+        createdAt: 1658776625730,
+      },
+      {
+        id: 'message-2',
+        message: 'video message',
+        media: { url: 'video.avi', type: MediaType.Video },
+        sender: { userId: 1 },
+        createdAt: 1658776625731,
+      },
+      {
+        id: 'message-3',
+        message: 'audio message',
+        media: { url: 'video.mp3', type: MediaType.Audio },
+        sender: { userId: 1 },
+        createdAt: 1658776625732,
+      },
+    ];
+    const wrapper = subject({ messages, isDirectMessage: true });
+
+    expect(wrapper.find('.channel-view__name').exists()).toBeFalsy();
   });
 });

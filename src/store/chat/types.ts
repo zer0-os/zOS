@@ -4,7 +4,6 @@ export interface ChatState {
     value: string;
     isLoading: boolean;
   };
-  activeChannelId: string;
 }
 
 export interface ChatAccessTokenResponse {

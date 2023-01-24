@@ -7,17 +7,17 @@ import { fetch as fetchDirectMessages, setActiveDirectMessageId } from '../../..
 
 import './styles.scss';
 
-interface PublicProperties {
+export interface PublicProperties {
   className?: string;
 }
 
-interface Properties extends PublicProperties {
+export interface Properties extends PublicProperties {
   setActiveDirectMessage: (channelId: string) => void;
   directMessages: DirectMessage[];
   fetchDirectMessages: () => void;
 }
 
-class Component extends React.Component<Properties> {
+export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       directMessages: { list },
@@ -48,24 +48,26 @@ class Component extends React.Component<Properties> {
           member.lastName,
         ].join(' ')
       )
-      .join(', ');
+      .join(', ')
+      .trim();
   }
 
   renderMember = (directMessage: DirectMessage): JSX.Element => {
     return (
       <div
-        className='direct-message-channels__user'
+        className='direct-message-members__user'
         onClick={this.handleMemberClick.bind(this, directMessage.id)}
+        key={directMessage.id}
       >
-        <div className='direct-message-channels__user-status'></div>
-        <div className='direct-message-channels__user-name'>{this.renderMemberName(directMessage.otherMembers)}</div>
+        <div className='direct-message-members__user-status'></div>
+        <div className='direct-message-members__user-name'>{this.renderMemberName(directMessage.otherMembers)}</div>
       </div>
     );
   };
 
   render() {
-    return <div className='direct-message-channels'>{this.props.directMessages.map(this.renderMember)}</div>;
+    return <div className='direct-message-members'>{this.props.directMessages.map(this.renderMember)}</div>;
   }
 }
 
-export const DirectMessageMembers = connectContainer<PublicProperties>(Component);
+export const DirectMessageMembers = connectContainer<PublicProperties>(Container);

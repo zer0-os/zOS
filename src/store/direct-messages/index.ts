@@ -9,7 +9,7 @@ const fetch = createAction<string>(SagaActionTypes.Fetch);
 
 const initialState: DirectMessagesState = {
   list: [],
-  activeDirectMessageId: null,
+  activeDirectMessageId: '',
 };
 
 const slice = createSlice({

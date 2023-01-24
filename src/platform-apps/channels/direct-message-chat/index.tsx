@@ -41,7 +41,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   handleClose = (): void => {
-    this.props.setActiveDirectMessageId(null);
+    this.props.setActiveDirectMessageId('');
   };
 
   componentDidUpdate(prevProps: Properties): void {

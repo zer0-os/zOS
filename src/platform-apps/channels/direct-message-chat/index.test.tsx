@@ -62,7 +62,7 @@ describe('direct-message-chat', () => {
     const minimizeButton = wrapper.find('.direct-message-chat__close-button');
     minimizeButton.simulate('click');
 
-    expect(setActiveDirectMessageId).toHaveBeenCalledWith(null);
+    expect(setActiveDirectMessageId).toHaveBeenCalledWith('');
   });
 
   it('renders close icon', function () {

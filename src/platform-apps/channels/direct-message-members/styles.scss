@@ -1,0 +1,32 @@
+@use '../../../shared-components/theme-engine/theme' as theme;
+@import '../../../variables';
+
+.direct-message-members__user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--actionable-inactive-color, #737373);
+  padding: 0 20px;
+  height: 36px;
+  width: 100%;
+
+  &:hover {
+    color: var(--actionable-active-color, #fff);
+    background-color: var(--actionable-hover-background, hsla(0, 0%, 100%, 0.1));
+  }
+
+  &-status {
+    background-color: #474a4d;
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    text-align: center;
+    position: relative;
+    left: 2px;
+    margin-right: 12px;
+
+    &--active {
+      background-color: #c9fd51;
+    }
+  }
+}

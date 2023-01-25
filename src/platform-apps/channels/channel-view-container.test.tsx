@@ -66,6 +66,24 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChannelView).prop('name')).toStrictEqual('first channel');
   });
 
+  it('passes hasJoined to channel view', () => {
+    const wrapper = subject({ channel: { hasJoined: true } });
+
+    expect(wrapper.find(ChannelView).prop('hasJoined')).toStrictEqual(true);
+  });
+
+  it('passes hasJoined or is direct message to channel view', () => {
+    const wrapper = subject({ channel: { hasJoined: false }, isDirectMessage: true });
+
+    expect(wrapper.find(ChannelView).prop('hasJoined')).toStrictEqual(true);
+  });
+
+  it('passes is direct message to channel view', () => {
+    const wrapper = subject({ channel: {}, isDirectMessage: true });
+
+    expect(wrapper.find(ChannelView).prop('isDirectMessage')).toStrictEqual(true);
+  });
+
   it('should mark all messages as read when unReadCount > 0', () => {
     const markAllMessagesAsReadInChannel = jest.fn();
     const messages = [

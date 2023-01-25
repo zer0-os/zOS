@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
+import { DirectMessageMembers } from '../../platform-apps/channels/direct-message-members';
 
 describe('Sidekick', () => {
   const subject = (props: any = {}) => {
@@ -39,5 +40,32 @@ describe('Sidekick', () => {
     ifAuthenticated.find('.app-sidekick-panel__target').simulate('click');
 
     expect(ifAuthenticated.find('.sidekick__slide-out').exists()).toBe(false);
+  });
+
+  it('renders default active tab', () => {
+    const wrapper = subject();
+
+    expect(wrapper.find(DirectMessageMembers).exists()).toBe(true);
+  });
+
+  it('handle network tab content', () => {
+    const wrapper = subject();
+    wrapper.find('.sidekick__tabs-network').simulate('click');
+
+    expect(wrapper.find('.sidekick__tab-content--network').exists()).toBe(true);
+  });
+
+  it('handle messages tab content', () => {
+    const wrapper = subject();
+    wrapper.find('.sidekick__tabs-messages').simulate('click');
+
+    expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
+  });
+
+  it('handle notifications tab content', () => {
+    const wrapper = subject();
+    wrapper.find('.sidekick__tabs-notifications').simulate('click');
+
+    expect(wrapper.find('.sidekick__tab-content--notifications').exists()).toBe(true);
   });
 });

@@ -18,7 +18,7 @@ export interface State {
   deleteDialogIsOpen: boolean;
 }
 
-export class MessageMenu extends React.Component<Properties> {
+export class MessageMenu extends React.Component<Properties, State> {
   state = { isOpen: false, deleteDialogIsOpen: false };
 
   open = () => {

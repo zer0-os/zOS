@@ -13,6 +13,7 @@ export async function getAttachmentUrl(attachment: { key: string }): Promise<str
     .query({
       key: attachment.key,
     })
+    .set('X-APP-PLATFORM', 'zos')
     .withCredentials()
     .catch((err) => console.error(err));
 

@@ -4,5 +4,5 @@ import { DirectMessage } from './types';
 
 export async function fetchDirectMessages(): Promise<DirectMessage[]> {
   const directMessages = await get<Channel[]>('/directMessages/mine');
-  return await directMessages.body;
+  return directMessages.body;
 }

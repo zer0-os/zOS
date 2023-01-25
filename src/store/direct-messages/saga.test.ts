@@ -30,23 +30,4 @@ describe('direct messages saga', () => {
       list: DIRECT_MESSAGES_TEST,
     });
   });
-
-  // it('should store direct messages', async () => {
-  //   const { storeState } = await expectSaga(getCurrentUser)
-  //     .provide([
-  //       [
-  //         matchers.call.fn(fetchCurrentUser),
-  //         currentUserResponse,
-  //       ],
-  //     ])
-  //     .withReducer(reducer)
-  //     .run();
-
-  //   expect(storeState).toMatchObject({
-  //     user: {
-  //       data: currentUserResponse,
-  //       isLoading: false,
-  //     },
-  //   });
-  // });
 });

@@ -71,6 +71,17 @@
     width: 100%;
     padding-top: 56px;
   }
+
+  &__tab-notifications {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: theme.$accent-color;
+    color: theme.$font-color-primary;
+    height: 34px;
+    width: 34px;
+    border-radius: 50%;
+  }
 }
 
 .app-sidekick-panel__target {

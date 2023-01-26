@@ -315,6 +315,26 @@
           border-radius: 12px;
         }
 
+        &-reply {
+          display: flex;
+          align-items: center;
+          margin: 5px 0;
+          &-icon {
+            margin: 5px 5px 0 5px;
+            color: var(--accent-color);
+            font-size: 20px;
+            font-weight: 600;
+            &::before {
+              content: '\21AA';
+            }
+          }
+          &-text {
+            padding: 5px;
+            border-left: 1px solid var(--accent-color);
+            flex-grow: 1;
+          }
+        }
+
         &-edited {
           padding-left: 7px;
           font-size: 12px;

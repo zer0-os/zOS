@@ -14,6 +14,7 @@ import {
 } from './api';
 import { extractLink, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
+import { ParentMessage } from '../../lib/chat/types';
 
 export interface Payload {
   channelId: string;
@@ -45,6 +46,7 @@ export interface SendPayload {
   channelId?: string;
   message?: string;
   mentionedUserIds?: string[];
+  parentMessage?: ParentMessage;
 }
 
 export interface MediaPyload {
@@ -107,14 +109,14 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds } = action.payload;
+  const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
   // cloning the array to be able to push new cache id
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
 
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  let temporaryMessage = messageFactory(message, currentUser);
+  let temporaryMessage = messageFactory(message, currentUser, parentMessage);
   const preview = yield getPreview(message);
 
   if (preview) {
@@ -137,8 +139,7 @@ export function* send(action) {
       messageIdsCache: cachedMessageIds,
     })
   );
-
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds);
+  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
   const isMessageSent = messagesResponse.status === 200;
 
   if (!isMessageSent) {

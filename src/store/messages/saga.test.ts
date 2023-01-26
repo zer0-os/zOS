@@ -50,6 +50,7 @@ describe('messages saga', () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const parentMessage = null;
 
     const initialState = {
       authentication: {
@@ -71,7 +72,7 @@ describe('messages saga', () => {
       storeState: {
         normalized: { channels },
       },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
@@ -79,7 +80,46 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .run();
+    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
+  });
+
+  it('reply message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = 'reply';
+    const mentionedUserIds = [];
+    const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
+
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+      .provide([
+        [
+          matchers.call.fn(sendMessagesByChannelId),
+          { status: 200, body: { id: 'message 1', message } },
+        ],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
     expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
@@ -111,6 +151,7 @@ describe('messages saga', () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const parentMessage = null;
     const messages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
       { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
@@ -145,7 +186,7 @@ describe('messages saga', () => {
       storeState: {
         normalized: { channels },
       },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .withReducer(rootReducer, initialState as any)
       .provide([
         [
@@ -153,7 +194,7 @@ describe('messages saga', () => {
           { status: 400, body: {} },
         ],
       ])
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
 
     expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));

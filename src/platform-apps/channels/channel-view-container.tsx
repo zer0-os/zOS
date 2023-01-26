@@ -34,6 +34,7 @@ import { ChatConnect } from './chat-connect/chat-connect';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 import { Media } from '../../components/message-input/utils';
+import { ParentMessage } from '../../lib/chat/types';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -61,6 +62,7 @@ interface PublicProperties {
 export interface State {
   countNewMessages: number;
   isFirstMessagesFetchDone: boolean;
+  reply: null | ParentMessage;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -91,7 +93,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { countNewMessages: 0, isFirstMessagesFetchDone: false };
+  state = { countNewMessages: 0, isFirstMessagesFetchDone: false, reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -110,6 +112,7 @@ export class Container extends React.Component<Properties, State> {
       this.fetchChannelMembers(channelId);
       this.setState({
         isFirstMessagesFetchDone: false,
+        reply: null,
       });
     }
 
@@ -197,12 +200,26 @@ export class Container extends React.Component<Properties, State> {
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
     const { channelId } = this.props;
     if (channelId && this.isNotEmpty(message)) {
-      this.props.sendMessage({ channelId, message, mentionedUserIds });
+      let payloadSendMessage: PayloadSendMessage = { channelId, message, mentionedUserIds };
+      if (this.state.reply) {
+        payloadSendMessage.parentMessage = this.state.reply;
+      }
+
+      this.props.sendMessage(payloadSendMessage);
+      this.removeReply();
     }
 
     if (channelId && media.length) {
       this.props.uploadFileMessage({ channelId, media });
     }
+  };
+
+  onReply = (reply: ParentMessage) => {
+    this.setState({ reply });
+  };
+
+  removeReply = (): void => {
+    this.setState({ reply: null });
   };
 
   handleDeleteMessage = (messageId: number): void => {
@@ -259,6 +276,9 @@ export class Container extends React.Component<Properties, State> {
           resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
+          reply={this.state.reply}
+          onReply={this.onReply}
+          onRemove={this.removeReply}
         />
       </>
     );

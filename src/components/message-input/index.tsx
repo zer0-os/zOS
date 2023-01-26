@@ -9,6 +9,8 @@ import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePr
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
+import ReplyCard from './reply-card';
+import { ParentMessage } from '../../lib/chat/types';
 
 require('./styles.scss');
 
@@ -18,6 +20,8 @@ export interface Properties {
   onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
   initialValue?: string;
   users: User[];
+  reply?: null | ParentMessage;
+  onRemoveReply?: () => void;
   getUsersForMentions: (search: string, users: User[]) => UserForMention[];
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
@@ -114,6 +118,11 @@ export class MessageInput extends React.Component<Properties, State> {
     return mentions;
   }
 
+  removeReply = (): void => {
+    this.props.onRemoveReply();
+    this.props.onMessageInputRendered(this.textareaRef);
+  };
+
   mediaSelected = (newMedia: Media[]): void => {
     this.setState({
       media: [
@@ -167,6 +176,12 @@ export class MessageInput extends React.Component<Properties, State> {
                   onRemoveImage={this.removeMediaPreview}
                   size='small'
                 />
+                {this.props.reply && (
+                  <ReplyCard
+                    message={this.props.reply.message}
+                    onRemove={this.removeReply}
+                  />
+                )}
                 <MentionsInput
                   inputRef={this.textareaRef}
                   className='mentions-text-area__wrap'

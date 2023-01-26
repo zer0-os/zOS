@@ -110,6 +110,46 @@
   }
 }
 
+.reply-card {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 8px;
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 10px 0 0;
+  }
+  &__icon {
+    margin: 5px 5px 0 5px;
+    color: var(--accent-color);
+    font-size: 20px;
+    font-weight: 600;
+    &::before {
+      content: '\21AA';
+    }
+    &-close {
+      color: theme.$font-color-primary-inverse;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 25px;
+      &::before {
+        content: '\00d7';
+      }
+      &:hover {
+        color: theme.$font-color-primary;
+      }
+    }
+  }
+
+  &__message {
+    padding: 5px;
+    border-left: 1px solid var(--accent-color);
+    color: theme.$font-color-primary;
+    flex-grow: 1;
+  }
+}
+
 .message {
   &__block-body {
     .message-input__input-wrapper {

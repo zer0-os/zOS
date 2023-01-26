@@ -14,17 +14,20 @@ import { MessageInput } from '../../components/message-input';
 import { User } from '../../store/channels';
 import { User as UserModel } from '../../store/channels/index';
 import EditMessageActions from './messages-menu/edit-message-actions';
+import { ParentMessage } from '../../lib/chat/types';
 
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   onDelete: (messageId: number) => void;
   onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][]) => void;
+  onReply: (reply: ParentMessage) => void;
   cloudinaryProvider: CloudinaryProvider;
   users: UserModel[];
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
+  parentMessageText?: string;
 }
 
 export interface State {
@@ -122,6 +125,14 @@ export class Message extends React.Component<Properties, State> {
     this.toggleEdit();
   };
 
+  onReply = (): void => {
+    this.props.onReply({
+      messageId: this.props.messageId,
+      message: this.props.message,
+      userId: this.props.sender.userId,
+    });
+  };
+
   editActions = (value: string, mentionedUserIds: string[]) => {
     return (
       <EditMessageActions
@@ -139,6 +150,7 @@ export class Message extends React.Component<Properties, State> {
           canEdit={this.canDeleteMessage()}
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
+          onReply={this.onReply}
         />
       </div>
     );
@@ -224,6 +236,12 @@ export class Message extends React.Component<Properties, State> {
                   )}
                 >
                   {media && this.renderMedia(media)}
+                  {this.props.parentMessageText && (
+                    <div className='message__block-reply'>
+                      <div className='message__block-reply-icon'></div>
+                      <span className='message__block-reply-text'> {this.props.parentMessageText}</span>
+                    </div>
+                  )}
                   {message && this.renderMessageWithLinks()}
                   {preview && (
                     <LinkPreview

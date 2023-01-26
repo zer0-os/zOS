@@ -19,6 +19,7 @@ describe('message', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       sender,
+      parentMessageText: '',
       ...props,
     };
 
@@ -103,6 +104,35 @@ describe('message', () => {
     });
 
     expect(wrapper.find('.message__block-edited').exists()).toBe(true);
+  });
+
+  it('renders reply message', () => {
+    const parentMessageText = 'the message';
+    const wrapper = subject({
+      message: 'reply message',
+      parentMessageText,
+    });
+
+    expect(wrapper.find('.message__block-reply').exists()).toBe(true);
+    expect(wrapper.find('.message__block-reply-text').text().trim()).toStrictEqual(parentMessageText);
+  });
+
+  it('call reply message', () => {
+    const onReply = jest.fn();
+    const messageId = '989887';
+    const message = 'hello';
+    const sender = { userId: '78676X67767' };
+    const replyMessage = { messageId, message, userId: sender.userId };
+    const wrapper = subject({
+      message,
+      messageId,
+      sender,
+      onReply,
+    });
+
+    wrapper.find(MessageMenu).first().prop('onReply')();
+
+    expect(onReply).toHaveBeenCalledWith(replyMessage);
   });
 
   it('should not renders edited indicator', () => {

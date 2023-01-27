@@ -1,11 +1,10 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
-import Dropzone from 'react-dropzone';
 
 import ReplyCard, { Properties } from './reply-card';
 
-describe('ReplyCardReplyCard', () => {
+describe('ReplyCard', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       message: '',

@@ -254,7 +254,7 @@
           &:before {
             height: 100%;
             width: 3px;
-            background-color: var(--accent-color);
+            background-color: theme.$accent-color;
             content: '';
             display: block;
             position: absolute;
@@ -321,7 +321,7 @@
           margin: 5px 0;
           &-icon {
             margin: 5px 5px 0 5px;
-            color: var(--accent-color);
+            color: theme.$accent-color;
             font-size: 20px;
             font-weight: 600;
             &::before {
@@ -330,7 +330,7 @@
           }
           &-text {
             padding: 5px;
-            border-left: 1px solid var(--accent-color);
+            border-left: 1px solid theme.$accent-color;
             flex-grow: 1;
           }
         }

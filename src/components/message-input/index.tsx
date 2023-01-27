@@ -9,8 +9,8 @@ import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePr
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
-import ReplyCard from './reply-card';
 import { ParentMessage } from '../../lib/chat/types';
+import ReplyCard from '../reply-card/reply-card';
 
 require('./styles.scss');
 

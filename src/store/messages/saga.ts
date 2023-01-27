@@ -47,6 +47,8 @@ export interface SendPayload {
   message?: string;
   mentionedUserIds?: string[];
   parentMessage?: ParentMessage;
+  parentMessageId?: number;
+  parentMessageUserId?: string;
 }
 
 export interface MediaPyload {

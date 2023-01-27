@@ -1,4 +1,3 @@
-import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import React from 'react';
 
 require('./styles.scss');

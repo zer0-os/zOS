@@ -6,7 +6,7 @@ import { MessageInput, Properties } from '.';
 import { Key } from '../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../config';
-import ReplyCard from './reply-card';
+import ReplyCard from '../reply-card/reply-card';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {

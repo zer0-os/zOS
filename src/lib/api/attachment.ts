@@ -7,7 +7,7 @@ interface AttachmentResponse {
 
 export async function getAttachmentUrl(attachment: { key: string }): Promise<string> {
   const filter: any = { key: attachment.key };
-  const attachmentResponse = await get<AttachmentResponse>(`/api/feedItems/getAttachmentDownloadInfo`, filter).catch(
+  const attachmentResponse = await get<AttachmentResponse>('/api/feedItems/getAttachmentDownloadInfo', filter).catch(
     (err) => console.error(err)
   );
 

@@ -23,6 +23,7 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   updateLayout: (layout: Partial<AppLayout>) => void;
+  allUnreadMessages: number;
 }
 
 export interface State {
@@ -36,10 +37,12 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
+      directMessages: { list },
     } = state;
 
     return {
       user,
+      allUnreadMessages: list.reduce((count, directMessage) => count + directMessage.unreadCount, 0),
     };
   }
 
@@ -87,6 +90,27 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
+  renderMessageTab() {
+    if (this.props.allUnreadMessages > 0) {
+      return (
+        <div
+          className='sidekick__tab-notifications sidekick__tab-notifications--unread-messages'
+          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
+        >
+          {this.props.allUnreadMessages}
+        </div>
+      );
+    } else {
+      return (
+        <IconButton
+          className='sidekick__tabs-messages'
+          icon={Icons.Messages}
+          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
+        />
+      );
+    }
+  }
+
   renderTabs(): JSX.Element {
     return (
       <div className='sidekick__tabs'>
@@ -95,11 +119,7 @@ export class Container extends React.Component<Properties, State> {
           icon={Icons.Network}
           onClick={this.clickTab.bind(this, Tabs.NETWORK)}
         />
-        <IconButton
-          className='sidekick__tabs-messages'
-          icon={Icons.Messages}
-          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
-        />
+        {this.renderMessageTab()}
         <IconButton
           className='sidekick__tabs-notifications'
           icon={Icons.Notifications}

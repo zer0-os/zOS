@@ -61,6 +61,9 @@ export class Container extends React.Component<Properties> {
       >
         <div className='direct-message-members__user-status'></div>
         <div className='direct-message-members__user-name'>{this.renderMemberName(directMessage.otherMembers)}</div>
+        {directMessage.unreadCount !== 0 && (
+          <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>
+        )}
       </div>
     );
   };

@@ -50,7 +50,7 @@ describe('direct-message-members', () => {
     expect(setActiveDirectMessage).toHaveBeenCalledWith('292444273_bd035e84edfbaf11251ffef196de2ab47496439c');
   });
 
-  it('should not render unread messages', function () {
+  it('should not render read messages', function () {
     const wrapper = subject({});
 
     expect(wrapper.find('.direct-message-members__user-unread-count').exists()).toBe(false);

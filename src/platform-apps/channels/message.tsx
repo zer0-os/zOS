@@ -148,6 +148,7 @@ export class Message extends React.Component<Properties, State> {
         <MessageMenu
           className='message__menu-item'
           canEdit={this.canDeleteMessage()}
+          canReply={!this.props.parentMessageText}
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
           onReply={this.onReply}

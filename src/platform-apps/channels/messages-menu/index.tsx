@@ -8,6 +8,7 @@ import './styles.scss';
 interface Properties {
   className: string;
   canEdit: boolean;
+  canReply?: boolean;
 
   onDelete?: () => void;
   onEdit?: () => void;
@@ -29,7 +30,7 @@ export class MessageMenu extends React.Component<Properties, State> {
   renderItems = () => {
     const menuItems = [];
 
-    if (this.props.onReply) {
+    if (this.props.onReply && this.props.canReply) {
       menuItems.push(
         <li
           className='menu-button reply-item'

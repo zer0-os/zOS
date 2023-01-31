@@ -10,6 +10,7 @@ describe('Message Menu', () => {
       onEdit: undefined,
       onReply: undefined,
       canEdit: false,
+      canReply: false,
       ...props,
     };
 
@@ -76,9 +77,23 @@ describe('Message Menu', () => {
     expect(onEdit).toHaveBeenCalled();
   });
 
+  it('it should renders reply button', () => {
+    const onReply = jest.fn();
+    const wrapper = subject({ onReply, canReply: true });
+
+    expect(wrapper.find('.reply-item').exists()).toBe(true);
+  });
+
+  it('it should not renders reply button if canReply is false', () => {
+    const onReply = jest.fn();
+    const wrapper = subject({ onReply });
+
+    expect(wrapper.find('.reply-item').exists()).toBe(false);
+  });
+
   it('it should call reply message when reply button is clicked', () => {
     const onReply = jest.fn();
-    const wrapper = subject({ onReply, canEdit: true });
+    const wrapper = subject({ onReply, canReply: true });
 
     wrapper.find('.reply-item').simulate('click');
 

@@ -129,4 +129,47 @@ describe('MessageInput', () => {
     const dropZone = wrapper.find(Dropzone);
     expect(dropZone.prop('maxSize')).toEqual(maxSize);
   });
+
+  it('searches for matching users via userMentionSearch function', async function () {
+    const getUsersForMentions = async (_searchString) => Promise.resolve([{ id: '1', display: 'dale' }]);
+    const wrapper = subject({ getUsersForMentions });
+
+    const searchResults = await userSearch(wrapper, 'da');
+
+    expect(searchResults).toEqual([{ display: 'dale', id: '1' }]);
+  });
+
+  it('sorts by search string index', async function () {
+    const getUsersForMentions = async (_searchString) =>
+      Promise.resolve([
+        { id: 'd-2', display: '2-dale' },
+        { id: 'd-3', display: '3--dale' },
+        { id: 'd-1', display: 'dale' },
+      ]);
+    const wrapper = subject({ getUsersForMentions });
+
+    const searchResults = await userSearch(wrapper, 'da');
+
+    expect(searchResults).toEqual([
+      { display: 'dale', id: 'd-1' },
+      { display: '2-dale', id: 'd-2' },
+      { display: '3--dale', id: 'd-3' },
+    ]);
+  });
+
+  async function userSearch(wrapper, search) {
+    const userMentionHandler = wrapper
+      .find(Dropzone)
+      .shallow()
+      .find(MentionsInput)
+      .shallow()
+      .find('Mention')
+      .findWhere((n) => n.prop('trigger') === '@');
+    let searchResults = [];
+    const callback = (r) => {
+      searchResults = r;
+    };
+    await userMentionHandler.prop('data')(search, callback);
+    return searchResults;
+  }
 });

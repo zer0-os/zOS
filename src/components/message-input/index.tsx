@@ -22,7 +22,7 @@ export interface Properties {
   users: User[];
   reply?: null | ParentMessage;
   onRemoveReply?: () => void;
-  getUsersForMentions: (search: string, users: User[]) => UserForMention[];
+  getUsersForMentions: (search: string, users: User[]) => Promise<UserForMention[]>;
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
   clipboard?: {
@@ -103,11 +103,21 @@ export class MessageInput extends React.Component<Properties, State> {
     this.props.onMessageInputRendered(this.textareaRef);
   };
 
+  searchMentionable = async (search: string, callback) => {
+    const fetchedUsers = await this.props.getUsersForMentions(search, this.props.users);
+    callback(fetchedUsers.sort(this.byIndexOf(search)));
+  };
+
+  byIndexOf(search: string): (a: UserForMention, b: UserForMention) => number {
+    const getIndex = (user) => user.display.toLowerCase().indexOf(search.toLowerCase());
+    return (a, b) => getIndex(a) - getIndex(b);
+  }
+
   renderMentionTypes() {
     const mentions = [
       <Mention
         trigger='@'
-        data={(search: string) => this.props.getUsersForMentions(search, this.props.users)}
+        data={this.searchMentionable}
         key='user'
         appendSpaceOnAdd
         markup={userMentionsConfig.markup}

@@ -24,7 +24,7 @@ function apiUrl(path: string): string {
  */
 const xPlatFormHeader = { 'X-APP-PLATFORM': 'zos' };
 
-export function get<T>(path: string, filter?: RequestFilter) {
+export function get<T>(path: string, filter?: RequestFilter | string) {
   let queryData;
   if (filter) {
     if (typeof filter === 'string') {

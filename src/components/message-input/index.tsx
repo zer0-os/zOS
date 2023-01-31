@@ -19,7 +19,7 @@ export interface Properties {
   placeholder?: string;
   onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
   initialValue?: string;
-  users: User[];
+  users?: User[];
   reply?: null | ParentMessage;
   onRemoveReply?: () => void;
   getUsersForMentions: (search: string, users: User[]) => Promise<UserForMention[]>;
@@ -104,7 +104,7 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   searchMentionable = async (search: string, callback) => {
-    const fetchedUsers = await this.props.getUsersForMentions(search, this.props.users);
+    const fetchedUsers = await this.props.getUsersForMentions(search, this.props.users || []);
     callback(fetchedUsers.sort(this.byIndexOf(search)));
   };
 

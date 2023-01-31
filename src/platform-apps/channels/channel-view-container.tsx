@@ -262,6 +262,7 @@ export class Container extends React.Component<Properties, State> {
             { 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone },
             this.props.className
           )}
+          id={this.channel.id}
           name={this.channel.name}
           messages={this.channel.messages || []}
           onFetchMore={this.fetchMore}

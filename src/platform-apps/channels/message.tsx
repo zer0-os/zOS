@@ -15,6 +15,7 @@ import { User } from '../../store/channels';
 import { User as UserModel } from '../../store/channels/index';
 import EditMessageActions from './messages-menu/edit-message-actions';
 import { ParentMessage } from '../../lib/chat/types';
+import { searchMentionableUsersForChannel } from './util/api';
 
 interface Properties extends MessageModel {
   className: string;
@@ -26,6 +27,7 @@ interface Properties extends MessageModel {
   users: UserModel[];
   isOwner?: boolean;
   messageId?: number;
+  channelId?: string;
   updatedAt: number;
   parentMessageText?: string;
 }
@@ -206,6 +208,10 @@ export class Message extends React.Component<Properties, State> {
     }
   }
 
+  searchMentionableUsers = async (search: string, _users) => {
+    return await searchMentionableUsersForChannel(this.props.channelId, search, this.props.users);
+  };
+
   render() {
     const { message, media, preview, createdAt, sender, isOwner } = this.props;
 
@@ -259,7 +265,7 @@ export class Message extends React.Component<Properties, State> {
                   className='message__block-body'
                   initialValue={this.props.message}
                   onSubmit={this.editMessage}
-                  users={this.props.users}
+                  getUsersForMentions={this.searchMentionableUsers}
                   renderAfterInput={this.editActions}
                 />
               )}

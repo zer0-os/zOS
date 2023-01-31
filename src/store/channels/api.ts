@@ -21,3 +21,14 @@ export async function markAllMessagesAsReadInChannel(channelId: string, userId: 
 
   return response.status;
 }
+
+export type MentionableUser = {
+  id: string;
+  name: string;
+};
+
+export async function searchMentionableUsers(channelId: string, search: string): Promise<MentionableUser[]> {
+  return await get<any>(`/chatChannels/${channelId}/mentionable-users`, search)
+    .catch((_error) => null)
+    .then((response) => response?.body || []);
+}

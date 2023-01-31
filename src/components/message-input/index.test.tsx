@@ -13,7 +13,6 @@ describe('MessageInput', () => {
     const allProps: Properties = {
       className: '',
       placeholder: '',
-      users: [],
       reply: null,
       onSubmit: () => undefined,
       onRemoveReply: () => undefined,

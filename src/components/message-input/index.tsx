@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
 import { User } from '../../store/channels';
-import { UserForMention, getUsersForMentions, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
+import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
@@ -19,10 +19,9 @@ export interface Properties {
   placeholder?: string;
   onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
   initialValue?: string;
-  users?: User[];
   reply?: null | ParentMessage;
   onRemoveReply?: () => void;
-  getUsersForMentions: (search: string, users: User[]) => Promise<UserForMention[]>;
+  getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
   clipboard?: {
@@ -38,8 +37,6 @@ interface State {
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  static defaultProps = { getUsersForMentions };
-
   state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [] };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -104,7 +101,7 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   searchMentionable = async (search: string, callback) => {
-    const fetchedUsers = await this.props.getUsersForMentions(search, this.props.users || []);
+    const fetchedUsers = await this.props.getUsersForMentions(search);
     callback(fetchedUsers.sort(this.byIndexOf(search)));
   };
 

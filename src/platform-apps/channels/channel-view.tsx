@@ -175,7 +175,7 @@ export class ChannelView extends React.Component<Properties, State> {
     );
   }
 
-  searchMentionableUsers = async (search: string, _users) => {
+  searchMentionableUsers = async (search: string) => {
     return await searchMentionableUsersForChannel(this.props.id, search, this.props.users);
   };
 

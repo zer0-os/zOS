@@ -208,7 +208,7 @@ export class Message extends React.Component<Properties, State> {
     }
   }
 
-  searchMentionableUsers = async (search: string, _users) => {
+  searchMentionableUsers = async (search: string) => {
     return await searchMentionableUsersForChannel(this.props.channelId, search, this.props.users);
   };
 

@@ -82,22 +82,25 @@ export class Container extends React.Component<Properties, State> {
       >
         <div className='direct-message-chat__content'>
           <div
-            className='direct-message-chat__header direct-message-chat__header'
+            className='direct-message-chat__title-bar'
             onClick={this.handleHeaderClick}
           >
-            <span className='direct-message-chat__title'>{this.renderTitle()}</span>
             <button
               className='button-reset direct-message-chat__minimize-button'
               onClick={this.handleMinimizeClick}
             >
-              <IconMinus />
+              <IconMinus size={12} />
             </button>
             <button
               className='button-reset direct-message-chat__close-button'
               onClick={this.handleClose}
             >
-              <IconXClose />
+              <IconXClose size={12} />
             </button>
+          </div>
+
+          <div className='direct-message-chat__header'>
+            <span className='direct-message-chat__title'>{this.renderTitle()}</span>
           </div>
 
           <ChannelViewContainer

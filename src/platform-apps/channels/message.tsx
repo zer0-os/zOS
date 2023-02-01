@@ -12,9 +12,9 @@ import { provider } from '../../lib/cloudinary/provider';
 import MessageMenu from './messages-menu';
 import { MessageInput } from '../../components/message-input';
 import { User } from '../../store/channels';
-import { User as UserModel } from '../../store/channels/index';
 import EditMessageActions from './messages-menu/edit-message-actions';
 import { ParentMessage } from '../../lib/chat/types';
+import { UserForMention } from '../../components/message-input/utils';
 
 interface Properties extends MessageModel {
   className: string;
@@ -23,11 +23,11 @@ interface Properties extends MessageModel {
   onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][]) => void;
   onReply: (reply: ParentMessage) => void;
   cloudinaryProvider: CloudinaryProvider;
-  users: UserModel[];
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
   parentMessageText?: string;
+  getUsersForMentions: (search: string) => Promise<UserForMention[]>;
 }
 
 export interface State {
@@ -260,7 +260,7 @@ export class Message extends React.Component<Properties, State> {
                   className='message__block-body'
                   initialValue={this.props.message}
                   onSubmit={this.editMessage}
-                  users={this.props.users}
+                  getUsersForMentions={this.props.getUsersForMentions}
                   renderAfterInput={this.editActions}
                 />
               )}

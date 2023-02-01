@@ -11,6 +11,15 @@ import { MessageInput } from '../../components/message-input';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';
 
+const mockSearchMentionableUsersForChannel = jest.fn();
+jest.mock('./util/api', () => {
+  return {
+    searchMentionableUsersForChannel: (...args) => {
+      mockSearchMentionableUsersForChannel(...args);
+    },
+  };
+});
+
 describe('ChannelView', () => {
   const MESSAGES_TEST = [
     { id: 'message-1', message: 'what', sender: { userId: 1 }, createdAt: 1658776625730 },
@@ -286,5 +295,14 @@ describe('ChannelView', () => {
     const wrapper = subject({ messages, isDirectMessage: true });
 
     expect(wrapper.find('.channel-view__name').exists()).toBeFalsy();
+  });
+
+  it('searches for user mentions', async () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, id: '5', users: ['user'] });
+    const input = wrapper.find(IfAuthenticated).find(MessageInput);
+
+    await input.prop('getUsersForMentions')('bob');
+
+    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', ['user']);
   });
 });

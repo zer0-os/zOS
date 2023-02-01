@@ -59,21 +59,6 @@ export async function getImagePreview(file: any): Promise<any> {
   });
 }
 
-export const getUsersForMentions = (search: string, users: User[]): UserForMention[] => {
-  if (users && users.length) {
-    return users
-      .map((user) => ({
-        display: [
-          user.firstName,
-          user.lastName,
-        ].join(' '),
-        id: user.id,
-      }))
-      .filter((user) => user.display.toLowerCase().includes(search.toLowerCase()));
-  }
-  return [];
-};
-
 export function windowClipboard() {
   return {
     addPasteListener: (handler) => {

@@ -16,12 +16,14 @@ import { Button as ConnectButton } from '../../components/authentication/button'
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 import { Media } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
+import { searchMentionableUsersForChannel } from './util/api';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
 }
 
 export interface Properties {
+  id: string;
   name: string;
   messages: MessageModel[];
   onFetchMore: () => void;
@@ -138,12 +140,12 @@ export class ChannelView extends React.Component<Properties, State> {
               key={message.id}
               messageId={message.id}
               updatedAt={message.updatedAt}
-              users={this.props.users}
               isOwner={isUserOwnerOfTheMessage}
               onDelete={this.props.deleteMessage}
               onEdit={this.props.editMessage}
               onReply={this.props.onReply}
               parentMessageText={message.parentMessageText}
+              getUsersForMentions={this.searchMentionableUsers}
               {...message}
             />
           );
@@ -171,6 +173,10 @@ export class ChannelView extends React.Component<Properties, State> {
       </div>
     );
   }
+
+  searchMentionableUsers = async (search: string) => {
+    return await searchMentionableUsersForChannel(this.props.id, search, this.props.users);
+  };
 
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
@@ -208,7 +214,7 @@ export class ChannelView extends React.Component<Properties, State> {
                   onMessageInputRendered={this.props.onMessageInputRendered}
                   placeholder='Speak your truth...'
                   onSubmit={this.props.sendMessage}
-                  users={this.props.users}
+                  getUsersForMentions={this.searchMentionableUsers}
                   reply={this.props.reply}
                   onRemoveReply={this.props.onRemove}
                 />

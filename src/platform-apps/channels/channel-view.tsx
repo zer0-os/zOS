@@ -140,13 +140,12 @@ export class ChannelView extends React.Component<Properties, State> {
               key={message.id}
               messageId={message.id}
               updatedAt={message.updatedAt}
-              channelId={this.props.id}
-              users={this.props.users}
               isOwner={isUserOwnerOfTheMessage}
               onDelete={this.props.deleteMessage}
               onEdit={this.props.editMessage}
               onReply={this.props.onReply}
               parentMessageText={message.parentMessageText}
+              getUsersForMentions={this.searchMentionableUsers}
               {...message}
             />
           );

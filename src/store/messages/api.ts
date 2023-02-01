@@ -1,6 +1,8 @@
 import { del, get, post, put } from '../../lib/api/rest';
+import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
 import { Media, MessagesResponse } from './index';
+import { SendPayload } from './saga';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
   const filter: any = {};
@@ -16,9 +18,16 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
 export async function sendMessagesByChannelId(
   channelId: string,
   message: string,
-  mentionedUserIds: string[]
+  mentionedUserIds: string[],
+  parentMessage?: ParentMessage
 ): Promise<any> {
-  const response = await post<any>(`/chatChannels/${channelId}/message`).send({ message, mentionedUserIds });
+  const filter: SendPayload = { message, mentionedUserIds };
+  if (parentMessage) {
+    filter.parentMessageId = parentMessage.messageId;
+    filter.parentMessageUserId = parentMessage.userId;
+  }
+
+  const response = await post<any>(`/chatChannels/${channelId}/message`).send(filter);
 
   return response;
 }

@@ -5,14 +5,13 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: var(--actionable-inactive-color, #737373);
+  color: theme.$actionable-inactive-color;
   padding: 0 20px;
   height: 36px;
-  width: 100%;
 
   &:hover {
-    color: var(--actionable-active-color, #fff);
-    background-color: var(--actionable-hover-background, hsla(0, 0%, 100%, 0.1));
+    color: theme.$actionable-active-color;
+    background-color: theme.$actionable-hover-background;
   }
 
   &-status {
@@ -32,5 +31,24 @@
 
   &-tooltip {
     max-width: 200px;
+  }
+
+  &-unread-count {
+    background-color: theme.$accent-color;
+    color: theme.$font-color-primary;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 21px;
+    margin-left: 3px;
+  }
+
+  &-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex: 1 1;
   }
 }

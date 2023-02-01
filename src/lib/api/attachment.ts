@@ -1,5 +1,4 @@
-import { config } from '../../config';
-import * as Request from 'superagent';
+import { get } from './rest';
 
 interface AttachmentResponse {
   signedUrl: string;
@@ -7,14 +6,10 @@ interface AttachmentResponse {
 }
 
 export async function getAttachmentUrl(attachment: { key: string }): Promise<string> {
-  const attachmentResponse = await Request.get<AttachmentResponse>(
-    `${config.ZERO_API_URL}/api/feedItems/getAttachmentDownloadInfo`
-  )
-    .query({
-      key: attachment.key,
-    })
-    .withCredentials()
-    .catch((err) => console.error(err));
+  const filter: any = { key: attachment.key };
+  const attachmentResponse = await get<AttachmentResponse>('/api/feedItems/getAttachmentDownloadInfo', filter).catch(
+    (err) => console.error(err)
+  );
 
   if (attachmentResponse && attachmentResponse.ok) {
     return attachmentResponse.body.signedUrl;

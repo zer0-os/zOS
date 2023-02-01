@@ -11,6 +11,7 @@ interface Properties {
 
   onDelete?: () => void;
   onEdit?: () => void;
+  onReply?: () => void;
 }
 
 export interface State {
@@ -21,13 +22,24 @@ export interface State {
 export class MessageMenu extends React.Component<Properties, State> {
   state = { isOpen: false, deleteDialogIsOpen: false };
 
-  open = () => {
+  open = (): void => {
     this.setState({ isOpen: true });
   };
 
   renderItems = () => {
     const menuItems = [];
 
+    if (this.props.onReply) {
+      menuItems.push(
+        <li
+          className='menu-button reply-item'
+          key='reply'
+          onClick={this.props.onReply}
+        >
+          <span>Reply</span>
+        </li>
+      );
+    }
     if (this.props.onDelete && this.props.canEdit) {
       menuItems.push(
         <li
@@ -144,6 +156,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         >
           {menuItems}
         </PortalMenu>
+        {this.showDeleteModal && this.renderDeleteModal()}
         {this.showDeleteModal && this.renderDeleteModal()}
       </span>
     );

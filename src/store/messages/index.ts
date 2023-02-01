@@ -46,6 +46,7 @@ export interface InfoUploadResponse {
 export interface Message {
   id: number;
   message?: string;
+  parentMessageText?: string;
   createdAt: number;
   updatedAt: number;
   sender: Sender;

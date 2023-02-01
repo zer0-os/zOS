@@ -51,6 +51,33 @@ describe('direct-message-members', () => {
     expect(setActiveDirectMessage).toHaveBeenCalledWith('292444273_bd035e84edfbaf11251ffef196de2ab47496439c');
   });
 
+  it('should not render read messages', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('.direct-message-members__user-unread-count').exists()).toBe(false);
+  });
+
+  it('renders unread messages', function () {
+    const [
+      firstDirectMessage,
+      ...restOfDirectMessages
+    ] = DIRECT_MESSAGES_TEST;
+
+    const unreadCount = 10;
+
+    const wrapper = subject({
+      directMessages: [
+        {
+          ...firstDirectMessage,
+          unreadCount,
+        },
+        ...restOfDirectMessages,
+      ],
+    });
+
+    expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
+  });
+
   describe('tooltip', () => {
     let wrapper;
 

@@ -8,6 +8,6 @@ export interface ChatMember {
 
 export interface ParentMessage {
   messageId: number;
-  message: string;
+  message?: string;
   userId: string;
 }

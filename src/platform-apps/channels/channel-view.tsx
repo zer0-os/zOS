@@ -15,6 +15,7 @@ import { IfAuthenticated } from '../../components/authentication/if-authenticate
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 import { Media } from '../../components/message-input/utils';
+import { ParentMessage } from '../../lib/chat/types';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -29,11 +30,14 @@ export interface Properties {
   sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
   deleteMessage: (messageId: number) => void;
   editMessage: (messageId: number, message: string, mentionedUserIds: string[]) => void;
+  onRemove?: () => void;
+  onReply: (reply: ParentMessage) => void;
   joinChannel: () => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
   users: UserModel[];
   className?: string;
+  reply?: null | ParentMessage;
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
   isDirectMessage: boolean;
 }
@@ -138,6 +142,8 @@ export class ChannelView extends React.Component<Properties, State> {
               isOwner={isUserOwnerOfTheMessage}
               onDelete={this.props.deleteMessage}
               onEdit={this.props.editMessage}
+              onReply={this.props.onReply}
+              parentMessageText={message.parentMessageText}
               {...message}
             />
           );
@@ -203,6 +209,8 @@ export class ChannelView extends React.Component<Properties, State> {
                   placeholder='Speak your truth...'
                   onSubmit={this.props.sendMessage}
                   users={this.props.users}
+                  reply={this.props.reply}
+                  onRemoveReply={this.props.onRemove}
                 />
               )}
               {!isMemberOfChannel && this.renderJoinButton()}

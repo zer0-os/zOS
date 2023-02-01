@@ -8,6 +8,7 @@ describe('Message Menu', () => {
       className: '',
       onDelete: undefined,
       onEdit: undefined,
+      onReply: undefined,
       canEdit: false,
       ...props,
     };
@@ -73,5 +74,14 @@ describe('Message Menu', () => {
     wrapper.find('.edit-item').simulate('click');
 
     expect(onEdit).toHaveBeenCalled();
+  });
+
+  it('it should call reply message when reply button is clicked', () => {
+    const onReply = jest.fn();
+    const wrapper = subject({ onReply, canEdit: true });
+
+    wrapper.find('.reply-item').simulate('click');
+
+    expect(onReply).toHaveBeenCalled();
   });
 });

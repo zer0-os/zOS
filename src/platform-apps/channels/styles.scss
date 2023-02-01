@@ -214,30 +214,13 @@
       display: flex;
       align-items: center;
       position: relative;
-      margin: 20px 0 25px;
-      color: #cccccc;
+      margin: 8px 16px;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 15px;
 
       &-date {
-        border-radius: 0;
-        background-color: none;
-        color: theme.$actionable-active-color;
-        transition: background-color 0.3s ease-out;
-        padding: 3px 20px;
-      }
-      &:before,
-      &:after {
-        flex: 1 0 auto;
-        content: '\a0';
-        height: 1px;
-      }
-      &:before {
-        text-align: right;
-        background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
-      &:after {
-        content: '\a0';
-        height: 1px;
-        background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
+        color: #d9d9d9;
       }
     }
 

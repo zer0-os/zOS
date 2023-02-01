@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from './';
 import { DIRECT_MESSAGES_TEST } from '../../../store/direct-messages/saga.test';
+import Tooltip from '../../../components/tooltip';
 
 describe('direct-message-members', () => {
   const subject = (props: Partial<Properties>) => {
@@ -36,7 +37,7 @@ describe('direct-message-members', () => {
 
     expect(displayChatNames).toStrictEqual([
       'Charles Diya, Eric',
-      'Eric',
+      'daily chat',
     ]);
   });
 
@@ -48,5 +49,54 @@ describe('direct-message-members', () => {
     wrapper.find('.direct-message-members__user').first().simulate('click');
 
     expect(setActiveDirectMessage).toHaveBeenCalledWith('292444273_bd035e84edfbaf11251ffef196de2ab47496439c');
+  });
+
+  describe('tooltip', () => {
+    let wrapper;
+
+    beforeEach(() => {
+      wrapper = subject({});
+    });
+
+    afterEach(() => {
+      wrapper = null;
+    });
+
+    const getFirstTooltip = () => {
+      return wrapper.find(Tooltip).first();
+    };
+
+    it('renders', function () {
+      expect(getFirstTooltip().exists()).toBe(true);
+    });
+
+    it('renders placement to left', function () {
+      const placement = 'left';
+
+      expect(getFirstTooltip().prop('placement')).toEqual(placement);
+    });
+
+    it('renders class name', function () {
+      const className = 'direct-message-members__user-tooltip';
+
+      expect(getFirstTooltip().prop('className')).toEqual(className);
+    });
+
+    it('renders align prop', function () {
+      const align = {
+        offset: [
+          10,
+          0,
+        ],
+      };
+
+      expect(getFirstTooltip().prop('align')).toEqual(align);
+    });
+
+    it('renders content', function () {
+      const content = 'Charles Diya, Eric';
+
+      expect(getFirstTooltip().prop('overlay')).toEqual(content);
+    });
   });
 });

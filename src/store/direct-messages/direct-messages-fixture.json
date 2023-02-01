@@ -48,6 +48,7 @@
     "isVideoEnabled": false
   },
   {
+    "name": "daily chat",
     "id": "292444273_1588d50c49b8f44110050328fbb8a01eb2105044",
     "url": "sendbird_group_channel_292444273_1588d50c49b8f44110050328fbb8a01eb2105044",
     "icon": "https://static.sendbird.com/sample/cover/cover_13.jpg",

@@ -1,0 +1,21 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+@import 'rc-tooltip/assets/bootstrap.css';
+@import '../../variables';
+
+.tooltip {
+  .rc-tooltip-inner {
+    color: #ccc;
+    border-radius: 4px;
+    box-shadow: 2px 4px 5px 0 rgb(0 0 0 / 50%);
+    background: theme.$background-color-primary;
+    padding: 5px;
+    min-height: unset;
+    font-size: $font-size-medium;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  &.rc-tooltip-placement-left {
+    padding: 0;
+  }
+}

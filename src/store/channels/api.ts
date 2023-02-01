@@ -28,7 +28,7 @@ export type MentionableUser = {
 };
 
 export async function searchMentionableUsers(channelId: string, search: string): Promise<MentionableUser[]> {
-  return await get<any>(`/chatChannels/${channelId}/mentionable-users`, search)
+  return await get<MentionableUser[]>(`/chatChannels/${channelId}/mentionable-users`, search)
     .catch((_error) => null)
     .then((response) => response?.body || []);
 }

@@ -77,14 +77,14 @@ describe('Message Menu', () => {
     expect(onEdit).toHaveBeenCalled();
   });
 
-  it('it should renders reply button', () => {
+  it('it should render reply button', () => {
     const onReply = jest.fn();
     const wrapper = subject({ onReply, canReply: true });
 
     expect(wrapper.find('.reply-item').exists()).toBe(true);
   });
 
-  it('it should not renders reply button if canReply is false', () => {
+  it('it should not render reply button if canReply is false', () => {
     const onReply = jest.fn();
     const wrapper = subject({ onReply });
 

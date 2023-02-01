@@ -8,6 +8,9 @@ $title-bar-height: 32px;
 $header-height: 66px;
 $window-width: 400px;
 
+$title-bar-background-color: #1f1b22;
+$title-bar-border-radius: 8px 8px 0px 0px;
+
 .direct-message-chat {
   position: fixed;
   z-index: 200;
@@ -31,6 +34,7 @@ $window-width: 400px;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
     background-color: theme.$background-color-primary;
+    border-radius: $title-bar-border-radius;
 
     &:hover {
       background-color: theme.$background-color-primary-hover;
@@ -53,9 +57,9 @@ $window-width: 400px;
     align-items: center;
     padding-right: 12px;
     gap: 12px;
-    // XXX
-    background-color: theme.$background-color-secondary;
+    background-color: $title-bar-background-color;
     height: $title-bar-height;
+    border-radius: $title-bar-border-radius;
 
     &:hover {
       background-color: theme.$background-color-secondary-hover;
@@ -65,15 +69,29 @@ $window-width: 400px;
   &__header {
     padding: 16px;
     background-color: rgba(4, 3, 5, 0.8);
+    height: $header-height - (16px * 2);
+    border-bottom: 1px solid rgba(215, 215, 250, 0.03);
   }
 
   &__title {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ededef;
+    margin-bottom: 2px;
+  }
+
+  &__members {
     flex: 1 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: calc(100% - 25px);
     display: inline-block;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #9d9d9d;
   }
 
   &__minimize-button,
@@ -83,6 +101,7 @@ $window-width: 400px;
     width: 12px;
     padding: 0px;
     line-height: 0px;
+    color: rgba(195, 176, 208, 0.93);
   }
 
   &--transition {

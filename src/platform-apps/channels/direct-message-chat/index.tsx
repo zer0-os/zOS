@@ -100,7 +100,8 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <div className='direct-message-chat__header'>
-            <span className='direct-message-chat__title'>{this.renderTitle()}</span>
+            <div className='direct-message-chat__title'>Direct Message</div>
+            <div className='direct-message-chat__members'>{this.renderTitle()}</div>
           </div>
 
           <ChannelViewContainer

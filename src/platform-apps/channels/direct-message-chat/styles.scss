@@ -20,6 +20,8 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   right: $width-sidekick + 25px;
 
   &__channel {
+    background-color: #0a0a0a;
+
     .channel-view__main {
       padding-right: 0;
     }

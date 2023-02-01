@@ -29,6 +29,10 @@
     }
   }
 
+  &-tooltip {
+    max-width: 200px;
+  }
+
   &-unread-count {
     background-color: theme.$accent-color;
     color: theme.$font-color-primary;

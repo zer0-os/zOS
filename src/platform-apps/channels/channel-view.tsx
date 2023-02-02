@@ -211,7 +211,6 @@ export class ChannelView extends React.Component<Properties, State> {
               {isMemberOfChannel && (
                 <MessageInput
                   onMessageInputRendered={this.props.onMessageInputRendered}
-                  placeholder='Speak your truth...'
                   onSubmit={this.props.sendMessage}
                   getUsersForMentions={this.searchMentionableUsers}
                   reply={this.props.reply}

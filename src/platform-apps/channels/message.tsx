@@ -218,24 +218,13 @@ export class Message extends React.Component<Properties, State> {
         })}
       >
         <div className='message__block'>
-          <div className='message__left'>
-            <div
-              style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
-              className='message__author-avatar'
-            />
-          </div>
           {(message || media || preview) && (
-            <div className='message__block-body-wrapper'>
+            <>
               <div className='message__author-name'>
                 {sender.firstName} {sender.lastName}
               </div>
               {!this.state.isEditing && (
-                <div
-                  className={classNames(
-                    'message__block-content',
-                    preview ? 'message__block-preview' : 'message__block-body'
-                  )}
-                >
+                <div className={classNames(preview ? 'message__block-preview' : 'message__block-body')}>
                   {media && this.renderMedia(media)}
                   {this.props.parentMessageText && (
                     <div className='message__block-reply'>
@@ -264,10 +253,12 @@ export class Message extends React.Component<Properties, State> {
                   renderAfterInput={this.editActions}
                 />
               )}
-            </div>
+            </>
           )}
-          {this.renderTime(createdAt)}
-          {this.renderMenu()}
+          <div className='message__footer'>
+            {this.renderTime(createdAt)}
+            {this.renderMenu()}
+          </div>
         </div>
       </div>
     );

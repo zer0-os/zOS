@@ -220,17 +220,17 @@
       line-height: 15px;
 
       &-date {
-        color: #d9d9d9;
+        color: theme.$color-greyscale-transparency-11;
       }
     }
 
     .message {
       margin: 8px 16px;
-      background-color: #1f1b22;
+      background-color: theme.$color-primary-3;
       border-radius: 8px 8px 8px 0px;
 
       &--owner {
-        background-color: #052923;
+        background-color: theme.$color-secondary-3;
         border-radius: 8px 8px 0px 8px;
 
         .message__block-body {
@@ -266,7 +266,7 @@
           font-weight: 400;
           font-size: 14px;
           line-height: 17px;
-          color: #ededef;
+          color: theme.$color-greyscale-12;
           margin: 8px 0px;
         }
 
@@ -429,7 +429,7 @@
         font-weight: 500;
         font-size: 12px;
         line-height: 15px;
-        color: #ededef;
+        color: theme.$color-greyscale-12;
       }
 
       .emoji-mart-emoji {

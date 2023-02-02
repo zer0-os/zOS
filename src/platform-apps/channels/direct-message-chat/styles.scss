@@ -8,7 +8,7 @@ $title-bar-height: 32px;
 $header-height: 66px;
 $window-width: 400px;
 
-$title-bar-background-color: #1f1b22;
+$title-bar-background-color: theme.$color-primary-3;
 $title-bar-border-radius: 8px 8px 0px 0px;
 
 .direct-message-chat {
@@ -20,7 +20,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   right: $width-sidekick + 25px;
 
   &__channel {
-    background-color: #0a0a0a;
+    background-color: theme.$color-primary-1;
 
     .channel-view__main {
       padding-right: 0;
@@ -70,16 +70,16 @@ $title-bar-border-radius: 8px 8px 0px 0px;
 
   &__header {
     padding: 16px;
-    background-color: rgba(4, 3, 5, 0.8);
+    background-color: theme.$color-primary-1;
     height: $header-height - (16px * 2);
-    border-bottom: 1px solid rgba(215, 215, 250, 0.03);
+    border-bottom: 1px solid theme.$color-greyscale-transparency-2;
   }
 
   &__title {
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
-    color: #ededef;
+    color: theme.$color-greyscale-12;
     margin-bottom: 2px;
   }
 
@@ -93,7 +93,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     font-weight: 400;
     font-size: 12px;
     line-height: 15px;
-    color: #9d9d9d;
+    color: theme.$color-greyscale-11;
   }
 
   &__minimize-button,
@@ -103,7 +103,15 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     width: 12px;
     padding: 0px;
     line-height: 0px;
-    color: rgba(195, 176, 208, 0.93);
+  }
+
+  &__minimize-button,
+  &__close-button {
+    color: theme.$color-primary-transparency-11;
+  }
+
+  &__video-toggle-button {
+    color: theme.$color-greyscale-12;
   }
 
   &--transition {

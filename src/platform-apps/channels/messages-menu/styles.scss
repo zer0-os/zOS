@@ -3,23 +3,16 @@
 .message__menu {
   &-item {
     visibility: hidden;
-    position: absolute;
     padding-right: 10px;
-    top: 0;
-    right: 0;
 
     &.active {
       visibility: visible;
     }
 
     &__icon {
-      padding: 0 10px;
-      font-size: 14px;
-      font-weight: 900;
       display: inline-block;
       cursor: pointer;
       transform: translate(0);
-      color: theme.$actionable-color;
     }
   }
 

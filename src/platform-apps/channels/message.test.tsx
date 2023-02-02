@@ -211,16 +211,6 @@ describe('message', () => {
     expect(mentions).toHaveLength(1);
   });
 
-  it('renders author avatar', () => {
-    const wrapper = subject({
-      message: 'text',
-    });
-
-    const authorAvatarElement = wrapper.find('.message__author-avatar');
-
-    expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
-  });
-
   it('renders with a tag', () => {
     const wrapper = subject({
       message: 'http://zos.io',

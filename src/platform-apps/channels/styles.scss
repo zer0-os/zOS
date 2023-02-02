@@ -214,53 +214,31 @@
       display: flex;
       align-items: center;
       position: relative;
-      margin: 20px 0 25px;
-      color: #cccccc;
+      margin: 8px 16px;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 15px;
 
       &-date {
-        border-radius: 0;
-        background-color: none;
-        color: theme.$actionable-active-color;
-        transition: background-color 0.3s ease-out;
-        padding: 3px 20px;
-      }
-      &:before,
-      &:after {
-        flex: 1 0 auto;
-        content: '\a0';
-        height: 1px;
-      }
-      &:before {
-        text-align: right;
-        background: linear-gradient(90deg, transparent 20%, #c7c7c7 95%, transparent 0);
-      }
-      &:after {
-        content: '\a0';
-        height: 1px;
-        background: linear-gradient(270deg, transparent 20%, #c7c7c7 95%, transparent 0);
+        color: theme.$color-greyscale-transparency-11;
       }
     }
 
     .message {
+      margin: 8px 16px;
+      background-color: theme.$color-primary-3;
+      border-radius: 8px 8px 8px 0px;
+
       &--owner {
+        background-color: theme.$color-secondary-3;
+        border-radius: 8px 8px 0px 8px;
+
         .message__block-body {
-          background-color: var(--card-background-color);
-          color: var(--card-text-color);
           transition: background-color 0.3s ease-out;
           position: relative;
           border-top-left-radius: 0;
           border-bottom-left-radius: 0;
 
-          &:before {
-            height: 100%;
-            width: 3px;
-            background-color: theme.$accent-color;
-            content: '';
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-          }
           &.chat-message__input-wrapper {
             background: none;
             &:before {
@@ -278,41 +256,18 @@
       }
 
       &__block {
-        display: flex;
-        margin-bottom: 3px;
-        padding-left: 20px;
+        padding: 8px;
         color: theme.$card-text-color;
 
-        &:hover {
-          background-color: hsla(0, 0%, 100%, 0.03);
-
-          .message__time {
-            display: block;
-          }
-        }
-
-        &-body-wrapper {
-          flex: 1 1;
-          width: 100%;
-          overflow: inherit;
-
-          .message--owner & {
-            border-left: 3px solid #fb216e;
-            background-color: #212121;
-          }
-        }
-
         &-body {
-          display: inline-block;
-          background: theme.$card-background-color;
-          padding: 5px 15px;
+          display: block;
           white-space: pre-wrap;
           word-break: break-word;
-          font-size: 13.5px;
-          font-weight: 500;
-          vertical-align: baseline;
-          max-width: 600px;
-          border-radius: 12px;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 17px;
+          color: theme.$color-greyscale-12;
+          margin: 8px 0px;
         }
 
         &-reply {
@@ -438,64 +393,43 @@
         }
       }
 
+      &__footer {
+        display: flex;
+        justify-content: flex-end;
+        margin: 8px 8px 0px 8px;
+      }
+
       &__time {
-        display: none;
+        display: block;
         font-size: 12px;
         color: theme.$font-color-time;
-        padding-top: 6px;
-        padding-right: 28px;
+        text-align: right;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;
+        margin: 0px 8px;
       }
 
       &__menu {
         position: relative;
         overflow: visible;
         width: 10px;
-        margin-top: 7px;
 
         &-item {
+          color: theme.$font-color-time;
+
           .icon {
             padding: 0px 10px;
           }
         }
       }
 
-      &__left {
-        width: 32px;
-        margin-top: 2px;
-        margin-right: 18px;
-      }
-
-      &__author-avatar {
-        display: none;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        width: 32px;
-        height: 1px;
-        overflow: hidden;
-        border-radius: 50%;
-      }
-
       &__author-name {
-        display: none;
-        margin: 10px 0;
-        color: theme.$font-color-primary-inverse;
-        font-size: 14px;
-      }
-
-      &.messages__message--first-in-group {
-        .message__time,
-        .message__author-name,
-        .message__author-avatar {
-          display: block;
-        }
-        .message__author-avatar {
-          height: 32px;
-        }
-
-        .message__author-name {
-          display: block;
-        }
+        display: block;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 15px;
+        color: theme.$color-greyscale-12;
       }
 
       .emoji-mart-emoji {

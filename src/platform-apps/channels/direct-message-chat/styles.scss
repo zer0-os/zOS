@@ -4,7 +4,12 @@
 @import '../../../layout';
 @import '../../../animation';
 
-$header-height: 36px;
+$title-bar-height: 32px;
+$header-height: 66px;
+$window-width: 400px;
+
+$title-bar-background-color: theme.$color-primary-3;
+$title-bar-border-radius: 8px 8px 0px 0px;
 
 .direct-message-chat {
   position: fixed;
@@ -15,21 +20,23 @@ $header-height: 36px;
   right: $width-sidekick + 25px;
 
   &__channel {
+    background-color: theme.$color-primary-1;
+
     .channel-view__main {
       padding-right: 0;
     }
     &.channel-view {
-      height: calc(100% - $header-height);
+      height: calc(100% - $title-bar-height - $header-height);
     }
   }
 
   &__content {
     height: 560px;
-    width: 560px;
+    width: $window-width;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
     background-color: theme.$background-color-primary;
-    border: 2px solid theme.$background-color-primary;
+    border-radius: $title-bar-border-radius;
 
     &:hover {
       background-color: theme.$background-color-primary-hover;
@@ -43,51 +50,68 @@ $header-height: 36px;
       flex-direction: column;
     }
   }
-  &__header {
+  &__title-bar {
     cursor: pointer;
   }
-  &__header {
+  &__title-bar {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    line-height: $font-size-small;
-    padding: 5px 5px 5px 18px;
-    color: theme.$font-color-primary;
-    text-transform: uppercase;
-    background-color: theme.$background-color-secondary;
-    height: $header-height;
+    padding-right: 12px;
+    gap: 12px;
+    background-color: $title-bar-background-color;
+    height: $title-bar-height;
+    border-radius: $title-bar-border-radius;
 
     &:hover {
       background-color: theme.$background-color-secondary-hover;
     }
+  }
 
-    &__menu {
-      height: $font-size-small;
-      float: right;
-      padding-right: 10px;
-      padding-top: 1px;
-      font-size: 16px;
-
-      &__button {
-        cursor: pointer;
-
-        animation: fadein 300ms ease-out forwards;
-      }
-    }
+  &__header {
+    padding: 16px;
+    background-color: theme.$color-primary-1;
+    height: $header-height - (16px * 2);
+    border-bottom: 1px solid theme.$color-greyscale-transparency-2;
   }
 
   &__title {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    margin-bottom: 2px;
+  }
+
+  &__members {
     flex: 1 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: calc(100% - 25px);
     display: inline-block;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: theme.$color-greyscale-11;
   }
 
   &__minimize-button,
   &__close-button,
   &__video-toggle-button {
-    flex: 0 0 auto;
+    height: 12px;
+    width: 12px;
+    padding: 0px;
+    line-height: 0px;
+  }
+
+  &__minimize-button,
+  &__close-button {
+    color: theme.$color-primary-transparency-11;
+  }
+
+  &__video-toggle-button {
+    color: theme.$color-greyscale-12;
   }
 
   &--transition {

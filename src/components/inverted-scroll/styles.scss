@@ -1,20 +1,8 @@
-@use '../../modules/animation' as animation;
-
 .scroll-container {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
+  overflow-y: scroll;
+  overflow-x: hidden;
 
-  &__content-wrapper {
-    height: 100%;
-    width: 100%;
-
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-
-  &__buffer {
-    height: 10px;
+  .scroll-container__children {
+    overflow: hidden;
   }
 }

@@ -27,6 +27,8 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     }
     &.channel-view {
       height: calc(100% - $title-bar-height - $header-height);
+      display: flex;
+      flex-direction: column;
     }
   }
 

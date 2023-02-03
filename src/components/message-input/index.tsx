@@ -168,6 +168,14 @@ export class MessageInput extends React.Component<Properties, State> {
   renderInput() {
     return (
       <div className='message-input chat-message__new-message'>
+        <div className='message-input__icons'>
+          <Menu
+            onSelected={this.mediaSelected}
+            mimeTypes={this.mimeTypes}
+            maxSize={config.cloudinary.max_file_size}
+          />
+        </div>
+
         <div className='message-input__input-wrapper'>
           <Dropzone
             onDrop={this.imagesSelected}
@@ -201,13 +209,6 @@ export class MessageInput extends React.Component<Properties, State> {
                   {this.renderMentionTypes()}
                 </MentionsInput>
 
-                <div className='message-input__icons'>
-                  <Menu
-                    onSelected={this.mediaSelected}
-                    mimeTypes={this.mimeTypes}
-                    maxSize={config.cloudinary.max_file_size}
-                  />
-                </div>
                 {this.props.renderAfterInput &&
                   this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
               </div>

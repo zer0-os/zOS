@@ -59,6 +59,18 @@
   }
 }
 
+$scrollbar-width: 5px;
+
+.channel-app > .channel-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .chat-message__input-wrapper {
+    margin-right: calc(var(--layout-app-content-right-padding) + $scrollbar-width);
+  }
+}
+
 .channel {
   &-list {
     width: 100%;

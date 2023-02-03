@@ -9,7 +9,8 @@ describe('direct-message-members', () => {
     const allProps: Properties = {
       setActiveDirectMessage: jest.fn(),
       directMessages: DIRECT_MESSAGES_TEST,
-      fetchDirectMessages: jest.fn(),
+      startSyncDirectMessage: jest.fn(),
+      stopSyncDirectMessage: jest.fn(),
       ...props,
     };
 
@@ -22,12 +23,21 @@ describe('direct-message-members', () => {
     expect(wrapper.find('.direct-message-members').exists()).toBe(true);
   });
 
-  it('fetch members', function () {
-    const fetchDirectMessages = jest.fn();
+  it('start sync direct messages', function () {
+    const startSyncDirectMessage = jest.fn();
 
-    subject({ fetchDirectMessages });
+    subject({ startSyncDirectMessage });
 
-    expect(fetchDirectMessages).toHaveBeenCalledOnce();
+    expect(startSyncDirectMessage).toHaveBeenCalledOnce();
+  });
+
+  it('stop sync', function () {
+    const stopSyncDirectMessage = jest.fn();
+
+    const wrapper = subject({ stopSyncDirectMessage });
+    wrapper.unmount();
+
+    expect(stopSyncDirectMessage).toHaveBeenCalledOnce();
   });
 
   it('render members name', function () {

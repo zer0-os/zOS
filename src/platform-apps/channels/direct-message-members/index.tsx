@@ -4,11 +4,15 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { DirectMessage } from '../../../store/direct-messages/types';
 import { User } from '../../../store/channels';
-import { fetch as fetchDirectMessages, setActiveDirectMessageId } from '../../../store/direct-messages';
+import {
+  setActiveDirectMessageId,
+  startSyncDirectMessage,
+  stopSyncDirectMessage,
+} from '../../../store/direct-messages';
 import Tooltip from '../../../components/tooltip';
+import { lastSeenText } from './utils';
 
 import './styles.scss';
-import { lastSeenText } from './utils';
 
 export interface PublicProperties {
   className?: string;
@@ -17,7 +21,9 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   setActiveDirectMessage: (channelId: string) => void;
   directMessages: DirectMessage[];
-  fetchDirectMessages: () => void;
+
+  stopSyncDirectMessage: () => void;
+  startSyncDirectMessage: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -32,11 +38,15 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setActiveDirectMessage: setActiveDirectMessageId, fetchDirectMessages };
+    return { setActiveDirectMessage: setActiveDirectMessageId, startSyncDirectMessage, stopSyncDirectMessage };
   }
 
   componentDidMount(): void {
-    this.props.fetchDirectMessages();
+    this.props.startSyncDirectMessage();
+  }
+
+  componentWillUnmount(): void {
+    this.props.stopSyncDirectMessage();
   }
 
   handleMemberClick(directMessageId: string): void {

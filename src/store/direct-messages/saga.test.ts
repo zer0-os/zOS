@@ -1,14 +1,14 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { setDirectMessages } from '.';
-import { fetch } from './saga';
+import { setDirectMessages, reducer } from '.';
+import { fetch, stopSyncDirectMessage } from './saga';
 import { fetchDirectMessages } from './api';
 
 import directMessagesFixture from './direct-messages-fixture.json';
-
-import { reducer } from '.';
+import { rootReducer } from '..';
 import { DirectMessage } from './types';
+import { AsyncListStatus } from '../normalized';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as DirectMessage[];
 
@@ -29,5 +29,13 @@ describe('direct messages saga', () => {
     expect(storeState).toMatchObject({
       list: DIRECT_MESSAGES_TEST,
     });
+  });
+
+  it('sets status to Stopped', async () => {
+    const {
+      storeState: { directMessages },
+    } = await expectSaga(stopSyncDirectMessage).withReducer(rootReducer).run();
+
+    expect(directMessages.syncStatus).toBe(AsyncListStatus.Stopped);
   });
 });

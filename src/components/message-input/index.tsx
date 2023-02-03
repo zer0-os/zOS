@@ -187,7 +187,6 @@ export class MessageInput extends React.Component<Properties, State> {
               <div {...getRootProps({ className: 'mentions-text-area' })}>
                 <ImageCards
                   images={this.images}
-                  border
                   onRemoveImage={this.removeMediaPreview}
                   size='small'
                 />

@@ -1,6 +1,8 @@
 @use '../../../shared-components/theme-engine/theme' as theme;
 @use '../../../modules/animation' as animation;
 
+$delete-width: 20px;
+
 .image-cards__container {
   display: flex;
   justify-content: flex-start;
@@ -8,9 +10,21 @@
 }
 
 .image-card {
-  display: flex;
-  justify-content: space-between;
-  flex-flow: row nowrap;
+  margin-bottom: 16px;
+
+  .image-card__image-wrap {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row nowrap;
+  }
+
+  .image-card__name {
+    margin-top: 4px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: theme.$color-greyscale-11;
+  }
 
   .image-card__image {
     width: 100px;
@@ -23,6 +37,7 @@
     overflow: hidden;
     position: relative;
     animation: fadein animation.$animation-duration-triple ease-out forwards;
+    border-radius: 8px;
   }
 
   .image-card__delete {
@@ -53,16 +68,18 @@
   }
 
   &.image-card__small {
-    width: 75px;
-    height: 50px;
-    margin: 7px 7px 0 0;
+    width: 160px + $delete-width;
     z-index: 10;
 
+    .image-card__image-wrap {
+      height: 80px;
+    }
+
     img {
-      width: 250%;
+      width: 100%;
       position: absolute;
-      top: -30px;
-      left: -30px;
+      top: 0px;
+      left: 0px;
     }
 
     .image-card__delete {

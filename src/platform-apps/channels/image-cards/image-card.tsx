@@ -37,16 +37,19 @@ export default class ImageCard extends React.Component<Properties, undefined> {
 
     return (
       <div className={cardClass}>
-        <div className='image-card__image'>
-          {size !== 'full-width' && (
-            <img
-              src={image.url}
-              title={image.name}
-              alt='preview'
-            />
-          )}
+        <div className={'image-card__image-wrap'}>
+          <div className='image-card__image'>
+            {size !== 'full-width' && (
+              <img
+                src={image.url}
+                title={image.name}
+                alt='preview'
+              />
+            )}
+          </div>
+          {this.deleteIcon()}
         </div>
-        {this.deleteIcon()}
+        <div className='image-card__name'>{image.name}</div>
       </div>
     );
   }

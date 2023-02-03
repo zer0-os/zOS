@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { DirectMessage } from '../../../store/direct-messages/types';
@@ -7,6 +8,7 @@ import { fetch as fetchDirectMessages, setActiveDirectMessageId } from '../../..
 import Tooltip from '../../../components/tooltip';
 
 import './styles.scss';
+import { lastSeenText } from './utils';
 
 export interface PublicProperties {
   className?: string;
@@ -53,7 +55,23 @@ export class Container extends React.Component<Properties> {
       .trim();
   }
 
+  renderStatus(directMessage: DirectMessage): JSX.Element {
+    const isOnlineAllUsersOfChat = directMessage.otherMembers.some((user) => user.isOnline);
+
+    return (
+      <div
+        className={classNames('direct-message-members__user-status', {
+          'direct-message-members__user-status--active': isOnlineAllUsersOfChat,
+        })}
+      ></div>
+    );
+  }
+
   tooltipContent(directMessage: DirectMessage): string {
+    if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
+      return lastSeenText(directMessage.otherMembers[0]);
+    }
+
     return this.renderMemberName(directMessage.otherMembers);
   }
 
@@ -61,7 +79,7 @@ export class Container extends React.Component<Properties> {
     return (
       <Tooltip
         placement='left'
-        overlay={this.renderMemberName(directMessage.otherMembers)}
+        overlay={this.tooltipContent(directMessage)}
         align={{
           offset: [
             10,
@@ -76,7 +94,7 @@ export class Container extends React.Component<Properties> {
           onClick={this.handleMemberClick.bind(this, directMessage.id)}
           key={directMessage.id}
         >
-          <div className='direct-message-members__user-status'></div>
+          {this.renderStatus(directMessage)}
           <div className='direct-message-members__user-name'>
             {directMessage.name || this.renderMemberName(directMessage.otherMembers)}
           </div>

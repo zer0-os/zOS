@@ -228,7 +228,6 @@ export class Message extends React.Component<Properties, State> {
                   {media && this.renderMedia(media)}
                   {this.props.parentMessageText && (
                     <div className='message__block-reply'>
-                      <div className='message__block-reply-icon'></div>
                       <span className='message__block-reply-text'> {this.props.parentMessageText}</span>
                     </div>
                   )}

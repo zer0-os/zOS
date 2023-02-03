@@ -15,32 +15,26 @@
     align-items: center;
     padding: 2px 10px 0 0;
   }
-  &__icon {
-    margin: 5px 5px 0 5px;
-    color: var(--accent-color);
-    font-size: 20px;
-    font-weight: 600;
+  &__icon-close {
+    color: theme.$font-color-primary-inverse;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 25px;
     &::before {
-      content: '\21AA';
+      content: '\00d7';
     }
-    &-close {
-      color: theme.$font-color-primary-inverse;
-      margin: 0 5px;
-      cursor: pointer;
-      font-size: 25px;
-      &::before {
-        content: '\00d7';
-      }
-      &:hover {
-        color: theme.$font-color-primary;
-      }
+    &:hover {
+      color: theme.$font-color-primary;
     }
   }
 
   &__message {
     padding: 5px;
-    border-left: 1px solid var(--accent-color);
+    border-left: 2px solid theme.$color-primary-5;
     color: theme.$font-color-primary;
     flex-grow: 1;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
   }
 }

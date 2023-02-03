@@ -30,9 +30,6 @@
   &__input-wrapper {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
     pointer-events: none;
     border-top: 1px solid theme.$color-greyscale-transparency-6;
     padding: 8px;

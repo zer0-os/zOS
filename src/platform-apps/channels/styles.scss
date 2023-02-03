@@ -261,7 +261,6 @@ $scrollbar-width: 5px;
 
       &--media {
         .message__block-body {
-          margin: 15px 0 15px 15px;
           padding: 0;
         }
       }
@@ -335,25 +334,13 @@ $scrollbar-width: 5px;
         }
 
         &-image {
-          background-color: #212121;
-          transition: background-color 0.3s ease-out;
           position: relative;
           display: inline-block;
           cursor: pointer;
 
-          &:before {
-            height: 100%;
-            width: 3px;
-            background-color: #ff006e;
-            content: '';
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-          }
           img {
-            margin-left: 3px;
-            width: 330px;
+            width: 100%;
+            border-radius: 8px;
           }
         }
 

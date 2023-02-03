@@ -29,6 +29,9 @@
   }
 
   &__message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 5px;
     border-left: 2px solid theme.$color-primary-5;
     color: theme.$font-color-primary;

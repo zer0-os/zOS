@@ -1,6 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { dropzoneToMedia, Media } from './utils';
+import { IconPaperclip } from '@zero-tech/zui/icons';
 
 export interface Properties {
   onSelected: (images: Media[]) => void;
@@ -28,7 +29,10 @@ export default class Menu extends React.Component<Properties> {
           <div className='image-send'>
             <div {...getRootProps({ className: 'image-send__dropzone' })}>
               <input {...getInputProps()} />
-              <span className='btn-plus' />
+              <IconPaperclip
+                size={16}
+                className='image-send__icon'
+              />
             </div>
           </div>
         )}

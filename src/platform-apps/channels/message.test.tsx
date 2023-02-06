@@ -76,7 +76,7 @@ describe('message', () => {
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
     });
 
-    expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
+    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
   });
 
   it('renders message menu of items', () => {
@@ -209,16 +209,6 @@ describe('message', () => {
     const mentions = wrapper.find('.message__user-mention');
 
     expect(mentions).toHaveLength(1);
-  });
-
-  it('renders author avatar', () => {
-    const wrapper = subject({
-      message: 'text',
-    });
-
-    const authorAvatarElement = wrapper.find('.message__author-avatar');
-
-    expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
   });
 
   it('renders with a tag', () => {

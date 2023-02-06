@@ -97,7 +97,7 @@ export class Container extends React.Component<Properties> {
               currentChannelId={this.props.channelId}
             />
           </AppContextPanel>
-          <AppContent>{this.renderChannelView()}</AppContent>
+          <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
         </AppLayout>
       </Provider>
     );

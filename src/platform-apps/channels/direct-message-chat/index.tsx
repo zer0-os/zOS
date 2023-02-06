@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconXClose, IconMinus } from '@zero-tech/zui/icons';
+import { IconXClose, IconMinus, IconUsers1 } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setActiveDirectMessageId } from '../../../store/direct-messages';
 import { RootState } from '../../../store';
@@ -9,6 +9,7 @@ import Tooltip from '../../../components/tooltip';
 
 import './styles.scss';
 import { DirectMessage } from '../../../store/direct-messages/types';
+import { provider as imageProvider } from '../../../lib/cloudinary/provider';
 
 export interface PublicProperties {}
 
@@ -65,7 +66,14 @@ export class Container extends React.Component<Properties, State> {
 
     if (!directMessage) return '';
 
-    const otherMembers = directMessage.otherMembers.map((member) => member.firstName).join(', ');
+    const otherMembers = directMessage.otherMembers
+      .map((member) =>
+        [
+          member.firstName,
+          member.lastName,
+        ].join(' ')
+      )
+      .join(', ');
 
     if (directMessage.name) {
       return (
@@ -89,6 +97,41 @@ export class Container extends React.Component<Properties, State> {
     return otherMembers;
   }
 
+  renderSubTitle() {
+    if (!this.props.directMessage?.otherMembers) {
+      return '';
+    } else {
+      return this.anyOthersOnline() ? 'Online' : 'Offline';
+    }
+  }
+
+  avatarUrl() {
+    if (!this.props.directMessage?.otherMembers) {
+      return '';
+    }
+
+    if (this.isOneOnOne()) {
+      return this.props.directMessage.otherMembers[0].profileImage;
+    }
+    return '';
+  }
+
+  isOneOnOne() {
+    return this.props.directMessage?.otherMembers?.length === 1;
+  }
+
+  avatarStatus() {
+    if (!this.props.directMessage?.otherMembers) {
+      return 'unknown';
+    }
+
+    return this.anyOthersOnline() ? 'online' : 'offline';
+  }
+
+  anyOthersOnline() {
+    return this.props.directMessage.otherMembers.some((m) => m.isOnline);
+  }
+
   render() {
     if (!this.props.activeDirectMessageId) {
       return null;
@@ -104,22 +147,41 @@ export class Container extends React.Component<Properties, State> {
       >
         <div className='direct-message-chat__content'>
           <div
-            className='direct-message-chat__header direct-message-chat__header'
+            className='direct-message-chat__title-bar'
             onClick={this.handleHeaderClick}
           >
-            <span className='direct-message-chat__title'>{this.renderTitle()}</span>
             <button
               className='button-reset direct-message-chat__minimize-button'
               onClick={this.handleMinimizeClick}
             >
-              <IconMinus />
+              <IconMinus size={12} />
             </button>
             <button
               className='button-reset direct-message-chat__close-button'
               onClick={this.handleClose}
             >
-              <IconXClose />
+              <IconXClose size={12} />
             </button>
+          </div>
+
+          <div className='direct-message-chat__header'>
+            <span>
+              <div
+                style={{
+                  backgroundImage: `url(${imageProvider.getSourceUrl(this.avatarUrl())})`,
+                }}
+                className={classNames(
+                  'direct-message-chat__header-avatar',
+                  `direct-message-chat__header-avatar--${this.avatarStatus()}`
+                )}
+              >
+                {!this.isOneOnOne() && <IconUsers1 size={16} />}
+              </div>
+            </span>
+            <span className='direct-message-chat__description'>
+              <div className='direct-message-chat__title'>{this.renderTitle()}</div>
+              <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
+            </span>
           </div>
 
           <ChannelViewContainer

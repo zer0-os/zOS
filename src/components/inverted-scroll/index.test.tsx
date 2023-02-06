@@ -17,7 +17,6 @@ describe('inverted-scroll', () => {
     const wrapper = subject({});
 
     expect(wrapper.hasClass('scroll-container')).toBe(true);
-    expect(wrapper.find('.scroll-container__content-wrapper').exists()).toBe(true);
     expect(wrapper.find('.scroll-container__children').exists()).toBe(true);
   });
 

@@ -20,7 +20,6 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
     return (
       <div className='reply-card'>
         <div className='reply-card__container'>
-          <div className='reply-card__icon'></div>
           <div className='reply-card__message'>{message}</div>
           <span
             className='reply-card__icon-close'

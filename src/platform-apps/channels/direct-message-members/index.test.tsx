@@ -9,7 +9,8 @@ describe('direct-message-members', () => {
     const allProps: Properties = {
       setActiveDirectMessage: jest.fn(),
       directMessages: DIRECT_MESSAGES_TEST,
-      fetchDirectMessages: jest.fn(),
+      startSyncDirectMessage: jest.fn(),
+      stopSyncDirectMessage: jest.fn(),
       ...props,
     };
 
@@ -22,12 +23,21 @@ describe('direct-message-members', () => {
     expect(wrapper.find('.direct-message-members').exists()).toBe(true);
   });
 
-  it('fetch members', function () {
-    const fetchDirectMessages = jest.fn();
+  it('start sync direct messages', function () {
+    const startSyncDirectMessage = jest.fn();
 
-    subject({ fetchDirectMessages });
+    subject({ startSyncDirectMessage });
 
-    expect(fetchDirectMessages).toHaveBeenCalledOnce();
+    expect(startSyncDirectMessage).toHaveBeenCalledOnce();
+  });
+
+  it('stop sync', function () {
+    const stopSyncDirectMessage = jest.fn();
+
+    const wrapper = subject({ stopSyncDirectMessage });
+    wrapper.unmount();
+
+    expect(stopSyncDirectMessage).toHaveBeenCalledOnce();
   });
 
   it('render members name', function () {
@@ -37,7 +47,9 @@ describe('direct-message-members', () => {
 
     expect(displayChatNames).toStrictEqual([
       'Charles Diya, Eric',
+      'James Diya, Laz',
       'daily chat',
+      'Eric',
     ]);
   });
 
@@ -89,24 +101,24 @@ describe('direct-message-members', () => {
       wrapper = null;
     });
 
-    const getFirstTooltip = () => {
-      return wrapper.find(Tooltip).first();
+    const tooltipList = () => {
+      return wrapper.find(Tooltip);
     };
 
     it('renders', function () {
-      expect(getFirstTooltip().exists()).toBe(true);
+      expect(tooltipList().first().exists()).toBe(true);
     });
 
     it('renders placement to left', function () {
-      const placement = 'left';
+      const placementLeft = 'left';
 
-      expect(getFirstTooltip().prop('placement')).toEqual(placement);
+      expect(tooltipList().map((tooltip) => tooltip.prop('placement'))).toEqual(Array(4).fill(placementLeft));
     });
 
     it('renders class name', function () {
       const className = 'direct-message-members__user-tooltip';
 
-      expect(getFirstTooltip().prop('className')).toEqual(className);
+      expect(tooltipList().map((tooltip) => tooltip.prop('className'))).toEqual(Array(4).fill(className));
     });
 
     it('renders align prop', function () {
@@ -117,13 +129,29 @@ describe('direct-message-members', () => {
         ],
       };
 
-      expect(getFirstTooltip().prop('align')).toEqual(align);
+      expect(tooltipList().map((tooltip) => tooltip.prop('align'))).toEqual(Array(4).fill(align));
     });
 
     it('renders content', function () {
-      const content = 'Charles Diya, Eric';
+      expect(tooltipList().map((tooltip) => tooltip.prop('overlay'))).toEqual([
+        'Charles Diya, Eric',
+        'James Diya, Laz',
+        'Online',
+        'Last Seen: Never',
+      ]);
+    });
 
-      expect(getFirstTooltip().prop('overlay')).toEqual(content);
+    it('renders status', function () {
+      expect(
+        tooltipList()
+          .find('.direct-message-members__user-status')
+          .map((tooltip) => tooltip.prop('className'))
+      ).toEqual([
+        'direct-message-members__user-status direct-message-members__user-status--active',
+        'direct-message-members__user-status direct-message-members__user-status--active',
+        'direct-message-members__user-status direct-message-members__user-status--active',
+        'direct-message-members__user-status',
+      ]);
     });
   });
 });

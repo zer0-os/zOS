@@ -3,6 +3,7 @@ import React from 'react';
 
 import { ImageModel } from './types';
 import ImageSizes from './types';
+import { IconTrash4 } from '@zero-tech/zui/icons';
 
 export interface Properties {
   image: ImageModel;
@@ -17,10 +18,12 @@ export default class ImageCard extends React.Component<Properties, undefined> {
 
     if (onRemoveImage) {
       return (
-        <span
-          className='image-card__delete'
+        <button
+          className='image-card__delete button-reset'
           onClick={this.props.onRemoveImage}
-        />
+        >
+          <IconTrash4 size={20} />
+        </button>
       );
     }
   }
@@ -37,16 +40,19 @@ export default class ImageCard extends React.Component<Properties, undefined> {
 
     return (
       <div className={cardClass}>
-        <div className='image-card__image'>
-          {size !== 'full-width' && (
-            <img
-              src={image.url}
-              title={image.name}
-              alt='preview'
-            />
-          )}
+        <div className={'image-card__image-wrap'}>
+          <div className='image-card__image'>
+            {size !== 'full-width' && (
+              <img
+                src={image.url}
+                title={image.name}
+                alt='preview'
+              />
+            )}
+          </div>
+          {this.deleteIcon()}
         </div>
-        {this.deleteIcon()}
+        <div className='image-card__name'>{image.name}</div>
       </div>
     );
   }

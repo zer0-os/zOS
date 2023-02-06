@@ -130,7 +130,7 @@ export class MessageMenu extends React.Component<Properties, State> {
     }
 
     return (
-      <span className={this.props.className}>
+      <div className={this.props.className}>
         <div
           className='message__menu-item__icon'
           onClick={this.open}
@@ -159,7 +159,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         </PortalMenu>
         {this.showDeleteModal && this.renderDeleteModal()}
         {this.showDeleteModal && this.renderDeleteModal()}
-      </span>
+      </div>
     );
   }
 }

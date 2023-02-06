@@ -127,15 +127,14 @@ export class ChannelView extends React.Component<Properties, State> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {allMessages.map((message, index) => {
-          const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
+        {allMessages.map((message) => {
           const isUserOwnerOfTheMessage =
             // eslint-disable-next-line eqeqeq
             this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (
             <Message
-              className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
+              className={'messages__message'}
               onImageClick={this.openLightbox}
               key={message.id}
               messageId={message.id}
@@ -208,25 +207,24 @@ export class ChannelView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            <IfAuthenticated showChildren>
-              {isMemberOfChannel && (
-                <MessageInput
-                  onMessageInputRendered={this.props.onMessageInputRendered}
-                  placeholder='Speak your truth...'
-                  onSubmit={this.props.sendMessage}
-                  getUsersForMentions={this.searchMentionableUsers}
-                  reply={this.props.reply}
-                  onRemoveReply={this.props.onRemove}
-                />
-              )}
-              {!isMemberOfChannel && this.renderJoinButton()}
-            </IfAuthenticated>
-            <IfAuthenticated hideChildren>
-              <ConnectButton className='authentication__connect-wrapper--with-space' />
-            </IfAuthenticated>
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>
+        <IfAuthenticated showChildren>
+          {isMemberOfChannel && (
+            <MessageInput
+              onMessageInputRendered={this.props.onMessageInputRendered}
+              onSubmit={this.props.sendMessage}
+              getUsersForMentions={this.searchMentionableUsers}
+              reply={this.props.reply}
+              onRemoveReply={this.props.onRemove}
+            />
+          )}
+          {!isMemberOfChannel && this.renderJoinButton()}
+        </IfAuthenticated>
+        <IfAuthenticated hideChildren>
+          <ConnectButton className='authentication__connect-wrapper--with-space' />
+        </IfAuthenticated>
       </div>
     );
   }

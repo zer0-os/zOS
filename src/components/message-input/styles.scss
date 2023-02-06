@@ -30,41 +30,27 @@
   &__input-wrapper {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding-top: 50px;
     pointer-events: none;
+    border-top: 1px solid theme.$color-greyscale-transparency-6;
+    padding: 8px;
 
     .message-input__input-wrapper {
-      position: relative;
-      background: linear-gradient(to right, theme.$background-color-primary, transparent);
-      padding-left: 6px;
-      font-size: 12px;
-      animation: fadein 1.2s ease-out forwards;
-      border-radius: $border-radius;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: theme.$input-background-primary-color-inverse;
-        opacity: 0;
-        transition: opacity 0.3s ease-out;
-        border-radius: $border-radius;
-      }
-
-      &:focus-within::before {
-        opacity: 1;
-      }
+      flex-grow: 99;
+      margin-left: 8px;
+      overflow: hidden;
     }
 
     .mentions-text-area {
       padding: 8px 0;
       font-size: 14px;
+      padding: 11px 7px;
+      background-color: theme.$color-primary-1;
+      border: 1px solid theme.$color-greyscale-6;
+      border-radius: 8px;
+
+      &:focus-within {
+        border-color: theme.$color-primary-7;
+      }
 
       &__wrap {
         &__suggestions {
@@ -74,23 +60,22 @@
       }
 
       TEXTAREA {
-        color: theme.$font-color-primary;
+        color: theme.$color-greyscale-12;
         word-break: break-word;
         font-size: 13.5px !important;
-        height: 24px;
         font-weight: 500;
-        border: none;
         outline: none;
+        border: none;
+        line-height: 17px;
       }
     }
   }
 
   &__new-message {
-    flex-grow: 1;
-    max-width: 675px;
     width: 100%;
     align-self: center;
     pointer-events: all;
+    display: flex;
   }
 
   &__creator {
@@ -189,28 +174,9 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  right: 1%;
-  bottom: 0;
   padding-bottom: 2px;
-  .btn-plus {
-    font-size: 17px;
-    color: theme.$actionable-color;
-    transition-duration: var(--animation-time-medium);
-    display: inline-flex;
-    padding: 0 4px;
-    width: 23px;
-    height: 30px;
-    border-radius: 9999px;
-    cursor: pointer;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    &::before {
-      content: '\271B';
-    }
-    &:hover {
-      background-color: theme.$background-color-secondary;
-    }
-  }
+}
+
+.image-send__icon {
+  cursor: pointer;
 }

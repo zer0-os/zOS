@@ -2,9 +2,6 @@
 
 .message__menu {
   &-item {
-    visibility: hidden;
-    padding-right: 10px;
-
     &.active {
       visibility: visible;
     }

@@ -245,6 +245,7 @@ $scrollbar-width: 5px;
       margin: 8px 16px;
       background-color: theme.$color-primary-3;
       border-radius: 8px 8px 8px 0px;
+      overflow: hidden;
 
       &--owner {
         background-color: theme.$color-secondary-3;
@@ -276,8 +277,10 @@ $scrollbar-width: 5px;
       }
 
       &__block {
+        position: relative;
         padding: 8px;
         color: theme.$card-text-color;
+        overflow: hidden;
 
         &-body {
           display: block;
@@ -384,15 +387,24 @@ $scrollbar-width: 5px;
       }
 
       &__menu {
-        position: relative;
-        overflow: visible;
-        width: 10px;
+        position: absolute;
+        height: 100%;
+        top: 0px;
+        right: -48px;
+        transition: right 0.1s ease-in-out;
 
         &-item {
           color: theme.$font-color-time;
+          background: linear-gradient(270.5deg, #1f1b22 44.79%, rgba(20, 19, 22, 0) 99.52%);
+          border-radius: 8px;
+          width: 48px;
+          height: 100%;
 
-          .icon {
-            padding: 0px 10px;
+          &__icon {
+            position: absolute;
+            right: 0px;
+            padding-top: 12px;
+            padding-right: 10px;
           }
         }
       }
@@ -428,5 +440,11 @@ $scrollbar-width: 5px;
   }
   to {
     background-color: theme.$accent-color;
+  }
+}
+
+.messages__container .messages .messages__message:hover {
+  .message__menu {
+    right: 0px;
   }
 }

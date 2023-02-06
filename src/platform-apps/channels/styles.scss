@@ -71,6 +71,10 @@ $scrollbar-width: 5px;
   }
 }
 
+.channel-view__inverted-scroll {
+  flex-grow: 99;
+}
+
 .channel {
   &-list {
     width: 100%;

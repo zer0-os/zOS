@@ -189,4 +189,10 @@ $recent-indicator-size: 8px;
   &--minimized {
     bottom: calc($title-bar-height + $header-height - $window-height);
   }
+
+  &--one-on-one {
+    .message__author-name {
+      display: none;
+    }
+  }
 }

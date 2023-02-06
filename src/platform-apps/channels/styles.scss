@@ -272,6 +272,12 @@ $scrollbar-width: 5px;
         .message__menu-item {
           background: linear-gradient(270.5deg, theme.$color-secondary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
         }
+
+        .message__block {
+          .message__author-name {
+            display: none;
+          }
+        }
       }
 
       &--media {

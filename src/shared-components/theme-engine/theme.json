@@ -227,7 +227,11 @@
     "colorErrorTransparency9": "rgba(219, 0, 7, 0.718)",
     "colorErrorTransparency10": "rgba(209, 0, 7, 0.761)",
     "colorErrorTransparency11": "rgba(195, 0, 7, 0.832)",
-    "colorErrorTransparency12": "rgba(40, 0, 3, 0.926)"
+    "colorErrorTransparency12": "rgba(40, 0, 3, 0.926)",
+
+    "colorBlack": "#101010",
+    "colorWhite": "#FFFFFF",
+    "colorGrey": "#808080"
   },
   "dark": {
     "platformBackground": "#0A0A0A",
@@ -466,6 +470,10 @@
     "colorErrorTransparency9": "rgba(255, 79, 85, 0.884)",
     "colorErrorTransparency10": "rgba(255, 89, 95, 0.942)",
     "colorErrorTransparency11": "rgba(255, 100, 106, 0.98)",
-    "colorErrorTransparency12": "rgba(255, 240, 242, 0.98)"
+    "colorErrorTransparency12": "rgba(255, 240, 242, 0.98)",
+
+    "colorBlack": "#101010",
+    "colorWhite": "#FFFFFF",
+    "colorGrey": "#808080"
   }
 }

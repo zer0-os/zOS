@@ -268,6 +268,10 @@ $scrollbar-width: 5px;
         .message__block-reply-text {
           border-color: theme.$color-secondary-5;
         }
+
+        .message__menu-item {
+          background: linear-gradient(270.5deg, theme.$color-secondary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
+        }
       }
 
       &--media {

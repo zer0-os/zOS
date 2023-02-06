@@ -1,10 +1,16 @@
 import React from 'react';
+import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { DirectMessage } from '../../../store/direct-messages/types';
 import { User } from '../../../store/channels';
-import { fetch as fetchDirectMessages, setActiveDirectMessageId } from '../../../store/direct-messages';
+import {
+  setActiveDirectMessageId,
+  startSyncDirectMessage,
+  stopSyncDirectMessage,
+} from '../../../store/direct-messages';
 import Tooltip from '../../../components/tooltip';
+import { lastSeenText } from './utils';
 
 import './styles.scss';
 
@@ -15,7 +21,9 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   setActiveDirectMessage: (channelId: string) => void;
   directMessages: DirectMessage[];
-  fetchDirectMessages: () => void;
+
+  stopSyncDirectMessage: () => void;
+  startSyncDirectMessage: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -30,11 +38,15 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setActiveDirectMessage: setActiveDirectMessageId, fetchDirectMessages };
+    return { setActiveDirectMessage: setActiveDirectMessageId, startSyncDirectMessage, stopSyncDirectMessage };
   }
 
   componentDidMount(): void {
-    this.props.fetchDirectMessages();
+    this.props.startSyncDirectMessage();
+  }
+
+  componentWillUnmount(): void {
+    this.props.stopSyncDirectMessage();
   }
 
   handleMemberClick(directMessageId: string): void {
@@ -53,7 +65,23 @@ export class Container extends React.Component<Properties> {
       .trim();
   }
 
+  renderStatus(directMessage: DirectMessage): JSX.Element {
+    const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
+
+    return (
+      <div
+        className={classNames('direct-message-members__user-status', {
+          'direct-message-members__user-status--active': isAnyUserOnline,
+        })}
+      ></div>
+    );
+  }
+
   tooltipContent(directMessage: DirectMessage): string {
+    if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
+      return lastSeenText(directMessage.otherMembers[0]);
+    }
+
     return this.renderMemberName(directMessage.otherMembers);
   }
 
@@ -61,7 +89,7 @@ export class Container extends React.Component<Properties> {
     return (
       <Tooltip
         placement='left'
-        overlay={this.renderMemberName(directMessage.otherMembers)}
+        overlay={this.tooltipContent(directMessage)}
         align={{
           offset: [
             10,
@@ -76,7 +104,7 @@ export class Container extends React.Component<Properties> {
           onClick={this.handleMemberClick.bind(this, directMessage.id)}
           key={directMessage.id}
         >
-          <div className='direct-message-members__user-status'></div>
+          {this.renderStatus(directMessage)}
           <div className='direct-message-members__user-name'>
             {directMessage.name || this.renderMemberName(directMessage.otherMembers)}
           </div>

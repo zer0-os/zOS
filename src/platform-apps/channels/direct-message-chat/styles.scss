@@ -6,6 +6,7 @@
 
 $title-bar-height: 32px;
 $header-height: 66px;
+$window-height: 560px;
 $window-width: 400px;
 
 $title-bar-background-color: theme.$color-primary-3;
@@ -35,7 +36,7 @@ $recent-indicator-size: 8px;
   }
 
   &__content {
-    height: 560px;
+    height: $window-height;
     width: $window-width;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
@@ -118,6 +119,11 @@ $recent-indicator-size: 8px;
     }
   }
 
+  &--minimized .direct-message-chat__header {
+    border: solid theme.$color-primary-4;
+    border-width: 0px 1px;
+  }
+
   &__description {
     overflow: hidden;
   }
@@ -181,6 +187,6 @@ $recent-indicator-size: 8px;
   }
 
   &--minimized {
-    bottom: -520px;
+    bottom: calc($title-bar-height + $header-height - $window-height);
   }
 }

@@ -372,7 +372,7 @@ $scrollbar-width: 5px;
       &__footer {
         display: flex;
         justify-content: flex-end;
-        margin: 8px 8px 0px 8px;
+        margin: 0px;
       }
 
       &__time {
@@ -383,7 +383,7 @@ $scrollbar-width: 5px;
         font-weight: 400;
         font-size: 12px;
         line-height: 15px;
-        margin: 0px 8px;
+        margin: 0px;
       }
 
       &__menu {

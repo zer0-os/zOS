@@ -11,6 +11,8 @@ $window-width: 400px;
 $title-bar-background-color: theme.$color-primary-3;
 $title-bar-border-radius: 8px 8px 0px 0px;
 
+$recent-indicator-size: 8px;
+
 .direct-message-chat {
   position: fixed;
   z-index: 200;
@@ -75,6 +77,49 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     background-color: theme.$color-primary-1;
     height: $header-height - (16px * 2);
     border-bottom: 1px solid theme.$color-greyscale-transparency-2;
+    display: flex;
+    gap: 8px;
+
+    &-avatar {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-color: theme.$color-primary-4;
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+
+      &::after {
+        content: '';
+        width: $recent-indicator-size;
+        height: $recent-indicator-size;
+        border: 2px solid theme.$color-primary-1;
+        border-radius: 50%;
+        position: absolute;
+        top: 22px;
+        left: 22px;
+      }
+
+      &--online::after {
+        background-color: theme.$color-success-9;
+      }
+
+      &--offline::after {
+        background-color: theme.$color-greyscale-9;
+      }
+
+      & > * {
+        position: absolute;
+        top: calc(50% - 8px);
+        line-height: 0px;
+        left: calc(50% - 8px);
+      }
+    }
+  }
+
+  &__description {
+    overflow: hidden;
   }
 
   &__title {
@@ -83,14 +128,16 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     line-height: 17px;
     color: theme.$color-greyscale-12;
     margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &__members {
+  &__subtitle {
     flex: 1 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 25px);
     display: inline-block;
     font-weight: 400;
     font-size: 12px;

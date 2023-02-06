@@ -3,6 +3,8 @@ import { IconXClose, IconMinus } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from './';
 import { ChannelViewContainer } from '../channel-view-container';
+import { User } from '../../../store/channels';
+import { DirectMessage } from '../../../store/direct-messages/types';
 
 describe('direct-message-chat', () => {
   const subject = (props: Partial<Properties>) => {
@@ -72,4 +74,177 @@ describe('direct-message-chat', () => {
 
     expect(minimizeButton.find(IconXClose).exists()).toBe(true);
   });
+
+  describe('one on one chat', function () {
+    it('header renders full name in the title', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({
+              firstName: 'Johnny',
+              lastName: 'Sanderson',
+            }),
+          ],
+        } as DirectMessage,
+      });
+
+      const headerTitle = wrapper.find('.direct-message-chat__title');
+
+      expect(headerTitle.text()).toEqual('Johnny Sanderson');
+    });
+
+    it('header renders online status in the subtitle', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [stubUser({ isOnline: true })],
+        } as DirectMessage,
+      });
+
+      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+
+      expect(subtitle.text()).toEqual('Online');
+    });
+
+    it('header renders online status', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [stubUser({ isOnline: true })],
+        } as DirectMessage,
+      });
+
+      const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
+
+      expect(onlineAvatar.exists()).toBeTrue();
+    });
+
+    it('header renders offline status', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [stubUser({ isOnline: false })],
+        } as DirectMessage,
+      });
+
+      const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
+
+      expect(offlineAvatar.exists()).toBeTrue();
+    });
+
+    it('header renders avatar', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+          ],
+        } as DirectMessage,
+      });
+
+      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+
+      expect(headerAvatar.prop('style').backgroundImage).toEqual('url(avatar-url)');
+      expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
+    });
+  });
+
+  describe('one to many chat', function () {
+    it('header renders full names in the title', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({
+              firstName: 'Johnny',
+              lastName: 'Sanderson',
+            }),
+            stubUser({
+              firstName: 'Jack',
+              lastName: 'Black',
+            }),
+          ],
+        } as DirectMessage,
+      });
+
+      const headerTitle = wrapper.find('.direct-message-chat__title');
+
+      expect(headerTitle.text()).toEqual('Johnny Sanderson, Jack Black');
+    });
+
+    it('header renders online status in the subtitle if any member is online', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({ isOnline: false }),
+            stubUser({ isOnline: true }),
+          ],
+        } as DirectMessage,
+      });
+
+      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+
+      expect(subtitle.text()).toEqual('Online');
+    });
+
+    it('header renders online status if any member is online', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({ isOnline: false }),
+            stubUser({ isOnline: true }),
+          ],
+        } as DirectMessage,
+      });
+
+      const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
+
+      expect(onlineAvatar.exists()).toBeTrue();
+    });
+
+    it('header renders offline status', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({ isOnline: false }),
+            stubUser({ isOnline: false }),
+          ],
+        } as DirectMessage,
+      });
+
+      const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
+
+      expect(offlineAvatar.exists()).toBeTrue();
+    });
+
+    it('header renders avatar with users icon', function () {
+      const wrapper = subject({
+        directMessage: {
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url-1',
+            }),
+            stubUser({
+              profileImage: 'avatar-url-2',
+            }),
+          ],
+        } as DirectMessage,
+      });
+
+      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+
+      expect(headerAvatar.prop('style').backgroundImage).toEqual('url()');
+      expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
+    });
+  });
 });
+
+function stubUser(attrs: Partial<User> = {}): User {
+  return {
+    id: 'user-id',
+    firstName: 'first-name',
+    lastName: 'first-name',
+    isOnline: false,
+    profileId: 'profile-id',
+    profileImage: 'image-url',
+    lastSeenAt: 'last-seen',
+    ...attrs,
+  };
+}

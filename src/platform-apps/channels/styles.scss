@@ -399,7 +399,7 @@ $scrollbar-width: 5px;
 
         &-item {
           color: theme.$font-color-time;
-          background: linear-gradient(270.5deg, #1f1b22 44.79%, rgba(20, 19, 22, 0) 99.52%);
+          background: linear-gradient(270.5deg, theme.$color-primary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
           border-radius: 8px;
           width: 48px;
           height: 100%;

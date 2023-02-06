@@ -66,12 +66,12 @@ export class Container extends React.Component<Properties> {
   }
 
   renderStatus(directMessage: DirectMessage): JSX.Element {
-    const isOnlineAllUsersOfChat = directMessage.otherMembers.some((user) => user.isOnline);
+    const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
 
     return (
       <div
         className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isOnlineAllUsersOfChat,
+          'direct-message-members__user-status--active': isAnyUserOnline,
         })}
       ></div>
     );

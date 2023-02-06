@@ -76,7 +76,7 @@ describe('message', () => {
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
     });
 
-    expect(wrapper.find('.message__time').text()).toStrictEqual('17:04');
+    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
   });
 
   it('renders message menu of items', () => {

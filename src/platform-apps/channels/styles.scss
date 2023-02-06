@@ -236,6 +236,8 @@ $scrollbar-width: 5px;
 
       &-date {
         color: theme.$color-greyscale-transparency-11;
+        width: 100%;
+        text-align: center;
       }
     }
 

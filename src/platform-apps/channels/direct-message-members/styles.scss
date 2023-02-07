@@ -1,54 +1,60 @@
 @use '../../../shared-components/theme-engine/theme' as theme;
 @import '../../../variables';
 
-.direct-message-members__user {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: theme.$actionable-inactive-color;
-  padding: 0 20px;
-  height: 36px;
+.direct-message-members {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: 100%;
 
-  &:hover {
-    color: theme.$actionable-active-color;
-    background-color: theme.$actionable-hover-background;
-  }
+  &__user {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: theme.$actionable-inactive-color;
+    padding: 0 20px;
+    height: 36px;
 
-  &-status {
-    background-color: #474a4d;
-    border-radius: 50%;
-    width: 9px;
-    height: 9px;
-    text-align: center;
-    position: relative;
-    left: 2px;
-    margin-right: 12px;
-
-    &--active {
-      background-color: #c9fd51;
+    &:hover {
+      color: theme.$actionable-active-color;
+      background-color: theme.$actionable-hover-background;
     }
-  }
 
-  &-tooltip {
-    max-width: 200px;
-  }
+    &-status {
+      background-color: #474a4d;
+      border-radius: 50%;
+      width: 9px;
+      height: 9px;
+      text-align: center;
+      position: relative;
+      left: 2px;
+      margin-right: 12px;
 
-  &-unread-count {
-    background-color: theme.$accent-color;
-    color: theme.$font-color-primary;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    font-size: 12px;
-    line-height: 21px;
-    margin-left: 3px;
-  }
+      &--active {
+        background-color: #c9fd51;
+      }
+    }
 
-  &-name {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    flex: 1 1;
+    &-tooltip {
+      max-width: 200px;
+    }
+
+    &-unread-count {
+      background-color: theme.$accent-color;
+      color: theme.$font-color-primary;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 21px;
+      margin-left: 3px;
+    }
+
+    &-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex: 1 1;
+    }
   }
 }

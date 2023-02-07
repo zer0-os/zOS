@@ -71,30 +71,28 @@ export class Container extends React.Component<Properties, State> {
         [
           member.firstName,
           member.lastName,
-        ].join(' ')
+        ]
+          .filter((e) => e)
+          .join(' ')
       )
       .join(', ');
 
-    if (directMessage.name) {
-      return (
-        <Tooltip
-          placement='left'
-          overlay={otherMembers}
-          align={{
-            offset: [
-              -10,
-              0,
-            ],
-          }}
-          className='direct-message-chat__user-tooltip'
-          key={directMessage.id}
-        >
-          <div>{directMessage.name}</div>
-        </Tooltip>
-      );
-    }
-
-    return otherMembers;
+    return (
+      <Tooltip
+        placement='left'
+        overlay={otherMembers}
+        align={{
+          offset: [
+            -10,
+            0,
+          ],
+        }}
+        className='direct-message-chat__user-tooltip'
+        key={directMessage.id}
+      >
+        <div>{directMessage.name || otherMembers}</div>
+      </Tooltip>
+    );
   }
 
   renderSubTitle() {

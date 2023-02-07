@@ -82,7 +82,7 @@ describe('direct-message-chat', () => {
         name: 'this is my channel name',
         otherMembers: [
           { firstName: 'first-name', lastName: 'last-name' },
-          { firstName: 'another-first-name', lastName: 'another-last-name' },
+          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
         ],
       };
 
@@ -95,7 +95,9 @@ describe('direct-message-chat', () => {
             [
               o.firstName,
               o.lastName,
-            ].join(' ')
+            ]
+              .filter((e) => e)
+              .join(' ')
           )
           .join(', ')
       );
@@ -105,23 +107,26 @@ describe('direct-message-chat', () => {
       const directMessage = {
         otherMembers: [
           { firstName: 'first-name', lastName: 'last-name' },
-          { firstName: 'another-first-name', lastName: 'another-last-name' },
+          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
         ],
         name: undefined,
       };
 
-      const title = subject({ directMessage } as any).find('[className$="__title"]');
+      const tooltip = subject({ directMessage } as any).find(Tooltip);
 
-      expect(title.text()).toEqual(
-        directMessage.otherMembers
-          .map((o) =>
-            [
-              o.firstName,
-              o.lastName,
-            ].join(' ')
-          )
-          .join(', ')
-      );
+      const otherMembersExpectation = directMessage.otherMembers
+        .map((o) =>
+          [
+            o.firstName,
+            o.lastName,
+          ]
+            .filter((e) => e)
+            .join(' ')
+        )
+        .join(', ');
+
+      expect(tooltip.html()).toContain(otherMembersExpectation);
+      expect(tooltip.prop('overlay')).toEqual(otherMembersExpectation);
     });
 
     it('nothing as title', function () {
@@ -144,9 +149,9 @@ describe('direct-message-chat', () => {
         } as DirectMessage,
       });
 
-      const headerTitle = wrapper.find('.direct-message-chat__title');
+      const tooltip = wrapper.find(Tooltip);
 
-      expect(headerTitle.text()).toEqual('Johnny Sanderson');
+      expect(tooltip.html()).toContain('Johnny Sanderson');
     });
 
     it('header renders online status in the subtitle', function () {
@@ -220,9 +225,9 @@ describe('direct-message-chat', () => {
         } as DirectMessage,
       });
 
-      const headerTitle = wrapper.find('.direct-message-chat__title');
+      const tooltip = wrapper.find(Tooltip);
 
-      expect(headerTitle.text()).toEqual('Johnny Sanderson, Jack Black');
+      expect(tooltip.html()).toContain('Johnny Sanderson, Jack Black');
     });
 
     it('header renders online status in the subtitle if any member is online', function () {

@@ -5,6 +5,7 @@ import { Container as DirectMessageChat, Properties } from './';
 import { ChannelViewContainer } from '../channel-view-container';
 import { User } from '../../../store/channels';
 import { DirectMessage } from '../../../store/direct-messages/types';
+import Tooltip from '../../../components/tooltip';
 
 describe('direct-message-chat', () => {
   const subject = (props: Partial<Properties>) => {
@@ -75,6 +76,66 @@ describe('direct-message-chat', () => {
     expect(minimizeButton.find(IconXClose).exists()).toBe(true);
   });
 
+  describe('title', () => {
+    it('channel name as title and otherMembers in tooltip', function () {
+      const directMessage = {
+        name: 'this is my channel name',
+        otherMembers: [
+          { firstName: 'first-name', lastName: 'last-name' },
+          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
+        ],
+      };
+
+      const tooltip = subject({ directMessage } as any).find(Tooltip);
+
+      expect(tooltip.html()).toContain(directMessage.name);
+      expect(tooltip.prop('overlay')).toEqual(
+        directMessage.otherMembers
+          .map((o) =>
+            [
+              o.firstName,
+              o.lastName,
+            ]
+              .filter((e) => e)
+              .join(' ')
+          )
+          .join(', ')
+      );
+    });
+
+    it('otherMembers as title', function () {
+      const directMessage = {
+        otherMembers: [
+          { firstName: 'first-name', lastName: 'last-name' },
+          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
+        ],
+        name: undefined,
+      };
+
+      const tooltip = subject({ directMessage } as any).find(Tooltip);
+
+      const otherMembersExpectation = directMessage.otherMembers
+        .map((o) =>
+          [
+            o.firstName,
+            o.lastName,
+          ]
+            .filter((e) => e)
+            .join(' ')
+        )
+        .join(', ');
+
+      expect(tooltip.html()).toContain(otherMembersExpectation);
+      expect(tooltip.prop('overlay')).toEqual(otherMembersExpectation);
+    });
+
+    it('nothing as title', function () {
+      const title = subject({ directMessage: undefined }).find('[className$="__title"]');
+
+      expect(title.text()).toEqual('');
+    });
+  });
+
   describe('one on one chat', function () {
     it('header renders full name in the title', function () {
       const wrapper = subject({
@@ -88,9 +149,9 @@ describe('direct-message-chat', () => {
         } as DirectMessage,
       });
 
-      const headerTitle = wrapper.find('.direct-message-chat__title');
+      const tooltip = wrapper.find(Tooltip);
 
-      expect(headerTitle.text()).toEqual('Johnny Sanderson');
+      expect(tooltip.html()).toContain('Johnny Sanderson');
     });
 
     it('header renders online status in the subtitle', function () {
@@ -164,9 +225,9 @@ describe('direct-message-chat', () => {
         } as DirectMessage,
       });
 
-      const headerTitle = wrapper.find('.direct-message-chat__title');
+      const tooltip = wrapper.find(Tooltip);
 
-      expect(headerTitle.text()).toEqual('Johnny Sanderson, Jack Black');
+      expect(tooltip.html()).toContain('Johnny Sanderson, Jack Black');
     });
 
     it('header renders online status in the subtitle if any member is online', function () {

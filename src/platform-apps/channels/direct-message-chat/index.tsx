@@ -5,6 +5,7 @@ import { setActiveDirectMessageId } from '../../../store/direct-messages';
 import { RootState } from '../../../store';
 import { connectContainer } from '../../../store/redux-container';
 import { ChannelViewContainer } from '../channel-view-container';
+import Tooltip from '../../../components/tooltip';
 
 import './styles.scss';
 import { DirectMessage } from '../../../store/direct-messages/types';
@@ -61,18 +62,37 @@ export class Container extends React.Component<Properties, State> {
   };
 
   renderTitle() {
-    if (!this.props.directMessage?.otherMembers) {
-      return '';
-    }
+    const { directMessage } = this.props;
 
-    return this.props.directMessage.otherMembers
+    if (!directMessage) return '';
+
+    const otherMembers = directMessage.otherMembers
       .map((member) =>
         [
           member.firstName,
           member.lastName,
-        ].join(' ')
+        ]
+          .filter((e) => e)
+          .join(' ')
       )
       .join(', ');
+
+    return (
+      <Tooltip
+        placement='left'
+        overlay={otherMembers}
+        align={{
+          offset: [
+            -10,
+            0,
+          ],
+        }}
+        className='direct-message-chat__user-tooltip'
+        key={directMessage.id}
+      >
+        <div>{directMessage.name || otherMembers}</div>
+      </Tooltip>
+    );
   }
 
   renderSubTitle() {

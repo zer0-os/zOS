@@ -38,42 +38,21 @@ describe('direct-message-chat', () => {
     expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
   });
 
-  it('minimize chat', function () {
-    const stopPropagation = jest.fn();
+  it('minimizes chat', function () {
     const wrapper = subject({});
 
-    const minimizeButton = wrapper.find('.direct-message-chat__minimize-button');
-    minimizeButton.simulate('click', {
-      stopPropagation,
-    });
+    icon(wrapper, IconMinus).simulate('click');
+
     expect(getDirectMessageChat(wrapper).hasClass('direct-message-chat--minimized')).toBe(true);
-    expect(stopPropagation).toHaveBeenCalled();
   });
 
-  it('renders minimize icon', function () {
-    const wrapper = subject({});
-
-    const minimizeButton = wrapper.find('.direct-message-chat__minimize-button');
-
-    expect(minimizeButton.find(IconMinus).exists()).toBe(true);
-  });
-
-  it('handle close chat', function () {
+  it('closes chat', function () {
     const setActiveDirectMessageId = jest.fn();
     const wrapper = subject({ setActiveDirectMessageId });
 
-    const minimizeButton = wrapper.find('.direct-message-chat__close-button');
-    minimizeButton.simulate('click');
+    icon(wrapper, IconXClose).simulate('click');
 
     expect(setActiveDirectMessageId).toHaveBeenCalledWith('');
-  });
-
-  it('renders close icon', function () {
-    const wrapper = subject({});
-
-    const minimizeButton = wrapper.find('.direct-message-chat__close-button');
-
-    expect(minimizeButton.find(IconXClose).exists()).toBe(true);
   });
 
   describe('title', () => {
@@ -308,4 +287,8 @@ function stubUser(attrs: Partial<User> = {}): User {
     lastSeenAt: 'last-seen',
     ...attrs,
   };
+}
+
+function icon(wrapper, icon) {
+  return wrapper.find('IconButton').findWhere((n) => n.prop('Icon') === icon);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconXClose, IconMinus, IconUsers1 } from '@zero-tech/zui/icons';
+import { IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setActiveDirectMessageId } from '../../../store/direct-messages';
 import { RootState } from '../../../store';
@@ -10,6 +10,7 @@ import Tooltip from '../../../components/tooltip';
 import './styles.scss';
 import { DirectMessage } from '../../../store/direct-messages/types';
 import { provider as imageProvider } from '../../../lib/cloudinary/provider';
+import { IconButton } from '../../../components/icon-button';
 
 export interface PublicProperties {}
 
@@ -56,8 +57,7 @@ export class Container extends React.Component<Properties, State> {
     this.setState((state) => ({ isMinimized: false, isFullScreen: state.isMinimized ? false : !state.isFullScreen }));
   };
 
-  handleMinimizeClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    event.stopPropagation();
+  handleMinimizeClick = (): void => {
     this.setState((state) => ({ isMinimized: !state.isMinimized, isFullScreen: false }));
   };
 
@@ -149,18 +149,16 @@ export class Container extends React.Component<Properties, State> {
             className='direct-message-chat__title-bar'
             onClick={this.handleHeaderClick}
           >
-            <button
-              className='button-reset direct-message-chat__minimize-button'
+            <IconButton
               onClick={this.handleMinimizeClick}
-            >
-              <IconMinus size={12} />
-            </button>
-            <button
-              className='button-reset direct-message-chat__close-button'
+              Icon={IconMinus}
+              size={12}
+            />
+            <IconButton
               onClick={this.handleClose}
-            >
-              <IconXClose size={12} />
-            </button>
+              Icon={IconXClose}
+              size={12}
+            />
           </div>
 
           <div className='direct-message-chat__header'>

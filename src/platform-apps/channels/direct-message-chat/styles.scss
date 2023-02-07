@@ -63,14 +63,11 @@ $recent-indicator-size: 8px;
     justify-content: flex-end;
     align-items: center;
     padding-right: 12px;
-    gap: 12px;
+    gap: 10px;
     background-color: $title-bar-background-color;
     height: $title-bar-height;
     border-radius: $title-bar-border-radius;
-
-    &:hover {
-      background-color: theme.$background-color-secondary-hover;
-    }
+    color: theme.$color-primary-transparency-11;
   }
 
   &__header {
@@ -149,24 +146,6 @@ $recent-indicator-size: 8px;
     font-size: 12px;
     line-height: 15px;
     color: theme.$color-greyscale-11;
-  }
-
-  &__minimize-button,
-  &__close-button,
-  &__video-toggle-button {
-    height: 12px;
-    width: 12px;
-    padding: 0px;
-    line-height: 0px;
-  }
-
-  &__minimize-button,
-  &__close-button {
-    color: theme.$color-primary-transparency-11;
-  }
-
-  &__video-toggle-button {
-    color: theme.$color-greyscale-12;
   }
 
   &--transition {

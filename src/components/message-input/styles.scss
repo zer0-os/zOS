@@ -37,6 +37,7 @@
     .message-input__input-wrapper {
       flex-grow: 99;
       margin-left: 8px;
+      overflow: hidden;
     }
 
     .mentions-text-area {

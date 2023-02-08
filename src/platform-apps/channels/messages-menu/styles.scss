@@ -1,18 +1,6 @@
 @use '../../../shared-components/theme-engine/theme' as theme;
 
 .message__menu {
-  &-item {
-    &.active {
-      visibility: visible;
-    }
-
-    &__icon {
-      display: inline-block;
-      cursor: pointer;
-      transform: translate(0);
-    }
-  }
-
   &:hover {
     .message__menu {
       visibility: visible;

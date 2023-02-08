@@ -1,6 +1,8 @@
 import { Dialog } from '@zer0-os/zos-component-library';
+import { IconDotsVertical } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import React from 'react';
+import { IconButton } from '../../../components/icon-button';
 import PortalMenu from './portal-menu';
 
 import './styles.scss';
@@ -131,25 +133,11 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        <div
-          className='message__menu-item__icon'
+        <IconButton
           onClick={this.open}
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='1em'
-            height='1em'
-            preserveAspectRatio='xMidYMid meet'
-            viewBox='0 0 512 512'
-          >
-            <g transform='rotate(90 256 256)'>
-              <path
-                fill='currentColor'
-                d='M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72s32.2-72 72-72s72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72s72-32.2 72-72s-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72s72-32.2 72-72s-32.2-72-72-72z'
-              />
-            </g>
-          </svg>
-        </div>
+          Icon={IconDotsVertical}
+          size={20}
+        />
         <PortalMenu
           className='portal-menu'
           onClose={this.close}

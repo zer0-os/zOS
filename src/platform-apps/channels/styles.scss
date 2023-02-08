@@ -409,13 +409,8 @@ $scrollbar-width: 5px;
           border-radius: 8px;
           width: 48px;
           height: 100%;
-
-          &__icon {
-            position: absolute;
-            right: 0px;
-            padding-top: 12px;
-            padding-right: 10px;
-          }
+          text-align: right;
+          margin: 8px;
         }
       }
 

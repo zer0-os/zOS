@@ -1,0 +1,17 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+
+.icon-button {
+  border-radius: 50%;
+  padding: 2px;
+  line-height: 0px;
+
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: inline-block;
+  margin: 0px;
+
+  &:hover {
+    background-color: theme.$color-greyscale-transparency-3;
+  }
+}

@@ -28,9 +28,7 @@ describe('Message Menu', () => {
     const onDelete = jest.fn();
     const wrapper = subject({ onDelete, canEdit: true });
 
-    expect(wrapper.find('.message__menu-item__icon').exists()).toBe(true);
-
-    wrapper.find('.message__menu-item__icon').simulate('click');
+    wrapper.find('IconButton').simulate('click');
 
     expect(wrapper.find('.delete-item').exists()).toBe(true);
   });
@@ -61,9 +59,7 @@ describe('Message Menu', () => {
     const onEdit = jest.fn();
     const wrapper = subject({ onEdit, canEdit: true });
 
-    expect(wrapper.find('.message__menu-item__icon').exists()).toBe(true);
-
-    wrapper.find('.message__menu-item__icon').simulate('click');
+    wrapper.find('IconButton').simulate('click');
 
     expect(wrapper.find('.edit-item').exists()).toBe(true);
   });

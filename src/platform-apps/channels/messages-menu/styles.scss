@@ -6,60 +6,53 @@
       visibility: visible;
     }
   }
+}
 
-  .portal-menu {
-    position: absolute;
-    visibility: hidden;
-    top: 12px;
-    right: 30px;
-    &__underlay {
-      z-index: 100;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      background-color: theme.$underlay-tooltip-background;
-    }
+.portal-menu {
+  position: absolute;
+  z-index: 1000;
 
-    &.active {
-      visibility: visible;
-      .portal-menu__underlay {
-        display: block;
-        animation: partial-fadein 0.3s ease-out normal forwards;
-      }
-    }
+  &__underlay {
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    background-color: theme.$underlay-tooltip-background;
+    display: block;
+    animation: partial-fadein 0.3s ease-out normal forwards;
+  }
 
-    &__content {
-      position: relative;
-      background: theme.$background-color-tertiary;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 200;
-      ul {
-        padding: 10px 0;
-        margin: 0;
-        .menu-button {
-          height: 30px;
-          align-items: center;
-          display: flex;
-          overflow: hidden;
-          padding: 0 20px;
-          cursor: pointer;
-          color: theme.$actionable-inactive-color;
-          &:hover {
-            background-color: theme.$actionable-hover-background-tooltip;
-            color: theme.$actionable-color;
-          }
-          span {
-            font-family: Inter Regular;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 16px;
-            position: relative;
-            top: 1px;
-          }
+  &__content {
+    position: relative;
+    background: theme.$background-color-tertiary;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 200;
+    ul {
+      padding: 10px 0;
+      margin: 0;
+      .menu-button {
+        height: 30px;
+        align-items: center;
+        display: flex;
+        overflow: hidden;
+        padding: 0 20px;
+        cursor: pointer;
+        color: theme.$actionable-inactive-color;
+        &:hover {
+          background-color: theme.$actionable-hover-background-tooltip;
+          color: theme.$actionable-color;
+        }
+        span {
+          font-family: Inter Regular;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 16px;
+          position: relative;
+          top: 1px;
         }
       }
     }

@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchChannels } from './api';
-import { fetch, stopSyncChannels, unreadCountUpdated } from './saga';
+import { fetchChannels, fetchDirectMessages as fetchDirectMessagesApi } from './api';
+import { fetch, stopSyncChannels, unreadCountUpdated, fetchDirectMessages } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
@@ -38,6 +38,18 @@ describe('channels list saga', () => {
         ],
       ])
       .call(fetchChannels, id)
+      .run();
+  });
+
+  it('fetches direct messages', async () => {
+    await expectSaga(fetchDirectMessages)
+      .provide([
+        [
+          matchers.call.fn(fetchDirectMessagesApi),
+          MOCK_CHANNELS,
+        ],
+      ])
+      .call(fetchDirectMessagesApi)
       .run();
   });
 
@@ -100,16 +112,40 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({ id, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels[id]).toStrictEqual({
+      id,
+      name,
+      icon,
+      category,
+      unreadCount,
+      hasJoined,
+      isChannel: false,
+      otherMembers: [],
+    });
   });
 
   it('set unreadCountUpdated on channels', async () => {
-    const id = 'channel-1';
-    const name = 'the channel';
-    const icon = 'channel-icon';
-    const category = 'channel-category';
-    const unreadCount = 1;
-    const hasJoined = true;
+    const channel = {
+      id: 'channel-1',
+      name: 'the channel',
+      icon: 'channel-icon',
+      category: 'channel-category',
+      unreadCount: 1,
+      hasJoined: true,
+      isChannel: false,
+      otherMembers: [],
+    };
+
+    const directMessage = {
+      id: 'direct-message-1',
+      name: 'the direct message',
+      icon: 'channel-icon',
+      category: 'dm',
+      unreadCount: 1,
+      hasJoined: true,
+      isChannel: true,
+      otherMembers: [],
+    };
 
     const {
       storeState: { normalized },
@@ -117,13 +153,24 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ id, name, icon, category, unreadCount, hasJoined }],
+          [channel],
+        ],
+        [
+          matchers.call.fn(fetchDirectMessagesApi),
+          [directMessage],
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({ id, name, icon, category, unreadCount, hasJoined });
+    expect(normalized.channels).toStrictEqual({
+      [channel.id]: {
+        ...channel,
+      },
+      [directMessage.id]: {
+        ...directMessage,
+      },
+    });
   });
 
   it('sets status to Stopped', async () => {

@@ -70,7 +70,7 @@ describe('Sidekick', () => {
   });
 
   it('renders total unread messages', () => {
-    const wrapper = subject({ allUnreadMessages: 10 });
+    const wrapper = subject({ countAllUnreadMessages: 10 });
 
     expect(wrapper.find('.sidekick__tab-notifications--unread-messages').exists()).toBe(true);
   });

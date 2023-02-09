@@ -72,7 +72,7 @@ export function* stopSyncChannels() {
 function* syncUnreadCount(action) {
   while (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
     yield call(unreadCountUpdated, action);
-    console.log('syncUnreadCount');
+
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }

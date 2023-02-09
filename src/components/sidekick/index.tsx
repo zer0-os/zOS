@@ -24,7 +24,7 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   updateLayout: (layout: Partial<AppLayout>) => void;
-  allUnreadMessages: number;
+  countAllUnreadMessages: number;
 }
 
 export interface State {
@@ -37,15 +37,17 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
-
+    const countAllUnreadMessages = directMessages.reduce(
+      (count, directMessage) => count + directMessage.unreadCount,
+      0
+    );
     const {
       authentication: { user },
-      // directMessages: { list },
     } = state;
 
     return {
       user,
-      allUnreadMessages: directMessages.reduce((count, directMessage) => count + directMessage.unreadCount, 0),
+      countAllUnreadMessages,
     };
   }
 
@@ -94,13 +96,13 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderMessageTab() {
-    if (this.props.allUnreadMessages > 0) {
+    if (this.props.countAllUnreadMessages > 0) {
       return (
         <div
           className='sidekick__tab-notifications sidekick__tab-notifications--unread-messages'
           onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
         >
-          {this.props.allUnreadMessages}
+          {this.props.countAllUnreadMessages}
         </div>
       );
     } else {

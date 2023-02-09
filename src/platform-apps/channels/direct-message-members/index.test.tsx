@@ -1,16 +1,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from './';
-import { DIRECT_MESSAGES_TEST } from '../../../store/direct-messages/saga.test';
+import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../../components/tooltip';
+import { Channel } from '../../../store/channels';
+
+export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
 describe('direct-message-members', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       setActiveDirectMessage: jest.fn(),
       directMessages: DIRECT_MESSAGES_TEST,
-      startSyncDirectMessage: jest.fn(),
-      stopSyncDirectMessage: jest.fn(),
+      fetchDirectMessages: jest.fn(),
       ...props,
     };
 
@@ -24,20 +26,11 @@ describe('direct-message-members', () => {
   });
 
   it('start sync direct messages', function () {
-    const startSyncDirectMessage = jest.fn();
+    const fetchDirectMessages = jest.fn();
 
-    subject({ startSyncDirectMessage });
+    subject({ fetchDirectMessages });
 
-    expect(startSyncDirectMessage).toHaveBeenCalledOnce();
-  });
-
-  it('stop sync', function () {
-    const stopSyncDirectMessage = jest.fn();
-
-    const wrapper = subject({ stopSyncDirectMessage });
-    wrapper.unmount();
-
-    expect(stopSyncDirectMessage).toHaveBeenCalledOnce();
+    expect(fetchDirectMessages).toHaveBeenCalledOnce();
   });
 
   it('render members name', function () {

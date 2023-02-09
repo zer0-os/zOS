@@ -3,11 +3,7 @@ import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel, denormalize, User } from '../../../store/channels';
-import {
-  setActiveDirectMessageId,
-  // startSyncDirectMessage,
-  // stopSyncDirectMessage,
-} from '../../../store/chat';
+import { setActiveDirectMessageId } from '../../../store/chat';
 import Tooltip from '../../../components/tooltip';
 import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
@@ -21,9 +17,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   setActiveDirectMessage: (channelId: string) => void;
   directMessages: Channel[];
-
-  // stopSyncDirectMessage: () => void;
-  startSyncDirectMessage: () => void;
+  fetchDirectMessages: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,17 +32,12 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       setActiveDirectMessage: setActiveDirectMessageId,
-      startSyncDirectMessage: fetchDirectMessages,
-      // stopSyncDirectMessage,
+      fetchDirectMessages: fetchDirectMessages,
     };
   }
 
   componentDidMount(): void {
-    this.props.startSyncDirectMessage();
-  }
-
-  componentWillUnmount(): void {
-    // this.props.stopSyncDirectMessage();
+    this.props.fetchDirectMessages();
   }
 
   handleMemberClick(directMessageId: string): void {

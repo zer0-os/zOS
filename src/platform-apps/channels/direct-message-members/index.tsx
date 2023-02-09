@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { DirectMessage } from '../../../store/direct-messages/types';
-import { User } from '../../../store/channels';
 import {
   setActiveDirectMessageId,
   startSyncDirectMessage,
@@ -11,6 +10,7 @@ import {
 } from '../../../store/direct-messages';
 import Tooltip from '../../../components/tooltip';
 import { lastSeenText } from './utils';
+import { otherMembersToString } from '../util';
 
 import './styles.scss';
 
@@ -53,18 +53,6 @@ export class Container extends React.Component<Properties> {
     this.props.setActiveDirectMessage(directMessageId);
   }
 
-  renderMemberName(members: User[]): string {
-    return members
-      .map((member) =>
-        [
-          member.firstName,
-          member.lastName,
-        ].join(' ')
-      )
-      .join(', ')
-      .trim();
-  }
-
   renderStatus(directMessage: DirectMessage): JSX.Element {
     const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
 
@@ -82,7 +70,7 @@ export class Container extends React.Component<Properties> {
       return lastSeenText(directMessage.otherMembers[0]);
     }
 
-    return this.renderMemberName(directMessage.otherMembers);
+    return otherMembersToString(directMessage.otherMembers);
   }
 
   renderMember = (directMessage: DirectMessage): JSX.Element => {
@@ -106,7 +94,7 @@ export class Container extends React.Component<Properties> {
         >
           {this.renderStatus(directMessage)}
           <div className='direct-message-members__user-name'>
-            {directMessage.name || this.renderMemberName(directMessage.otherMembers)}
+            {directMessage.name || otherMembersToString(directMessage.otherMembers)}
           </div>
           {directMessage.unreadCount !== 0 && (
             <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>

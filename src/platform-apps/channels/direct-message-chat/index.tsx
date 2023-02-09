@@ -11,6 +11,7 @@ import './styles.scss';
 import { DirectMessage } from '../../../store/direct-messages/types';
 import { provider as imageProvider } from '../../../lib/cloudinary/provider';
 import { IconButton } from '../../../components/icon-button';
+import { otherMembersToString } from '../util';
 
 export interface PublicProperties {}
 
@@ -66,16 +67,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (!directMessage) return '';
 
-    const otherMembers = directMessage.otherMembers
-      .map((member) =>
-        [
-          member.firstName,
-          member.lastName,
-        ]
-          .filter((e) => e)
-          .join(' ')
-      )
-      .join(', ');
+    const otherMembers = otherMembersToString(directMessage.otherMembers);
 
     return (
       <Tooltip

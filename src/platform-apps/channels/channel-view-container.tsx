@@ -28,7 +28,7 @@ import {
   SendPayload as PayloadSendMessage,
   MediaPyload,
 } from '../../store/messages/saga';
-import { Payload as PayloadFetchUser } from '../../store/channels-list/saga';
+import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
 import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/saga';
 import { ChatConnect } from './chat-connect/chat-connect';
 import { IfAuthenticated } from '../../components/authentication/if-authenticated';

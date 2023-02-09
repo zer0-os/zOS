@@ -1,23 +1,23 @@
 import React from 'react';
 import { IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
-import { setActiveDirectMessageId } from '../../../store/direct-messages';
+import { setActiveDirectMessageId } from '../../../store/chat';
 import { RootState } from '../../../store';
 import { connectContainer } from '../../../store/redux-container';
-import { ChannelViewContainer } from '../channel-view-container';
 import Tooltip from '../../../components/tooltip';
-
-import './styles.scss';
-import { DirectMessage } from '../../../store/direct-messages/types';
 import { provider as imageProvider } from '../../../lib/cloudinary/provider';
 import { IconButton } from '../../../components/icon-button';
+import { Channel, denormalize } from '../../../store/channels';
+
+import './styles.scss';
+import { ChannelViewContainer } from '../channel-view-container';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   activeDirectMessageId: string;
   setActiveDirectMessageId: (activeDirectMessageId: string) => void;
-  directMessage: DirectMessage;
+  directMessage: Channel;
 }
 
 interface State {
@@ -30,12 +30,14 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      directMessages: { activeDirectMessageId, list },
+      chat: { activeDirectMessageId },
     } = state;
+
+    const directMessage = denormalize(activeDirectMessageId, state);
 
     return {
       activeDirectMessageId,
-      directMessage: list.find((directMessage) => directMessage.id === activeDirectMessageId),
+      directMessage,
     };
   }
 

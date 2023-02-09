@@ -9,7 +9,6 @@ import { saga as channels } from './channels/saga';
 import { saga as authentication } from './authentication/saga';
 import { saga as chat } from './chat/saga';
 import { saga as theme } from './theme/saga';
-import { saga as directMessages } from './direct-messages/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -22,7 +21,6 @@ export function* rootSaga() {
     authentication,
     chat,
     theme,
-    directMessages,
   };
 
   yield all(

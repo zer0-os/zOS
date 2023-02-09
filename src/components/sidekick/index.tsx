@@ -9,6 +9,7 @@ import { AppLayout, update as updateLayout } from '../../store/layout';
 import { DirectMessageMembers } from '../../platform-apps/channels/direct-message-members';
 
 import './styles.scss';
+import { denormalize } from '../../store/channels';
 
 enum Tabs {
   NETWORK,
@@ -35,14 +36,16 @@ export class Container extends React.Component<Properties, State> {
   state = { isOpen: true, activeTab: Tabs.MESSAGES };
 
   static mapState(state: RootState): Partial<Properties> {
+    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
+
     const {
       authentication: { user },
-      directMessages: { list },
+      // directMessages: { list },
     } = state;
 
     return {
       user,
-      allUnreadMessages: list.reduce((count, directMessage) => count + directMessage.unreadCount, 0),
+      allUnreadMessages: directMessages.reduce((count, directMessage) => count + directMessage.unreadCount, 0),
     };
   }
 

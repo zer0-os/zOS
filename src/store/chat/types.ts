@@ -4,6 +4,7 @@ export interface ChatState {
     value: string;
     isLoading: boolean;
   };
+  activeDirectMessageId: string;
 }
 
 export interface ChatAccessTokenResponse {

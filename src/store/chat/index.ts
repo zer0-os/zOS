@@ -15,6 +15,7 @@ const initialState: ChatState = {
     value: '',
   },
   isReconnecting: false,
+  activeDirectMessageId: '',
 };
 
 const slice = createSlice({
@@ -27,9 +28,12 @@ const slice = createSlice({
     setChatAccessToken: (state, action: PayloadAction<ChatState['chatAccessToken']>) => {
       state.chatAccessToken = action.payload;
     },
+    setActiveDirectMessageId: (state, action: PayloadAction<ChatState['activeDirectMessageId']>) => {
+      state.activeDirectMessageId = action.payload;
+    },
   },
 });
 
-export const { setChatAccessToken, setReconnecting } = slice.actions;
+export const { setChatAccessToken, setReconnecting, setActiveDirectMessageId } = slice.actions;
 export const { reducer } = slice;
 export { fetchChatAccessToken, receiveIsReconnecting };

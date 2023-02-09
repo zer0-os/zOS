@@ -12,11 +12,11 @@ import { fetch as fetchChannels, receiveUnreadCount, stopSyncChannels, denormali
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
-import { ChannelViewContainer } from './channel-view-container';
 import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
+import { ChannelViewContainer } from './channel-view-container';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -37,7 +37,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const channels = denormalize(state.channelsList.value, state);
+    const channels = denormalize(state.channelsList.value, state).filter((channel) => !Boolean(channel.isChannel));
 
     const {
       authentication: { user },

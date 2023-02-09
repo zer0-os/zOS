@@ -25,6 +25,7 @@ export interface Channel {
   name: string;
   messages: Message[];
   users: User[];
+  otherMembers: User[];
   hasMore: boolean;
   countNewMessages: number;
   lastMessageCreatedAt: number;
@@ -35,6 +36,7 @@ export interface Channel {
   groupChannelType: GroupChannelType;
   icon?: string;
   messageIdsCache?: string[];
+  isChannel: boolean;
 }
 
 export enum SagaActionTypes {

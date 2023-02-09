@@ -3,8 +3,7 @@ import { IconXClose, IconMinus } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from './';
 import { ChannelViewContainer } from '../channel-view-container';
-import { User } from '../../../store/channels';
-import { DirectMessage } from '../../../store/direct-messages/types';
+import { Channel, User } from '../../../store/channels';
 import Tooltip from '../../../components/tooltip';
 
 describe('direct-message-chat', () => {
@@ -125,7 +124,7 @@ describe('direct-message-chat', () => {
               lastName: 'Sanderson',
             }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const tooltip = wrapper.find(Tooltip);
@@ -137,7 +136,7 @@ describe('direct-message-chat', () => {
       const wrapper = subject({
         directMessage: {
           otherMembers: [stubUser({ isOnline: true })],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const subtitle = wrapper.find('.direct-message-chat__subtitle');
@@ -149,7 +148,7 @@ describe('direct-message-chat', () => {
       const wrapper = subject({
         directMessage: {
           otherMembers: [stubUser({ isOnline: true })],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
@@ -161,7 +160,7 @@ describe('direct-message-chat', () => {
       const wrapper = subject({
         directMessage: {
           otherMembers: [stubUser({ isOnline: false })],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
@@ -177,7 +176,7 @@ describe('direct-message-chat', () => {
               profileImage: 'avatar-url',
             }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
@@ -201,7 +200,7 @@ describe('direct-message-chat', () => {
               lastName: 'Black',
             }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const tooltip = wrapper.find(Tooltip);
@@ -216,7 +215,7 @@ describe('direct-message-chat', () => {
             stubUser({ isOnline: false }),
             stubUser({ isOnline: true }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const subtitle = wrapper.find('.direct-message-chat__subtitle');
@@ -231,7 +230,7 @@ describe('direct-message-chat', () => {
             stubUser({ isOnline: false }),
             stubUser({ isOnline: true }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
@@ -246,7 +245,7 @@ describe('direct-message-chat', () => {
             stubUser({ isOnline: false }),
             stubUser({ isOnline: false }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
@@ -265,7 +264,7 @@ describe('direct-message-chat', () => {
               profileImage: 'avatar-url-2',
             }),
           ],
-        } as DirectMessage,
+        } as Channel,
       });
 
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');

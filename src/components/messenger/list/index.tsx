@@ -10,18 +10,33 @@ import { fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
+import { Dialog } from '@zer0-os/zos-component-library';
+import { Member } from '../../../store/authentication/types';
+import { User } from '../../../store/channels';
+import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
+import { createDirectMessage } from '../../../store/channels-list';
+import { PayloadMessenger } from '../../../store/channels-list/types';
+import { AutocompleteMembers } from '../autocomplete-members';
 
 export interface PublicProperties {
   className?: string;
+  onSubmit?: (userIds: string[]) => void;
 }
 
+interface State {
+  showCreateDialog: boolean;
+  userIds: string[];
+}
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
   directMessages: Channel[];
   fetchDirectMessages: () => void;
+  createDirectMessage: (payload: PayloadMessenger) => void;
 }
 
-export class Container extends React.Component<Properties> {
+export class Container extends React.Component<Properties, State> {
+  state = { showCreateDialog: false, userIds: [] };
+
   static mapState(state: RootState): Partial<Properties> {
     const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
 
@@ -34,6 +49,7 @@ export class Container extends React.Component<Properties> {
     return {
       setActiveMessengerChat: setActiveMessengerId,
       fetchDirectMessages: fetchDirectMessages,
+      createDirectMessage,
     };
   }
 
@@ -43,6 +59,22 @@ export class Container extends React.Component<Properties> {
 
   handleMemberClick(directMessageId: string): void {
     this.props.setActiveMessengerChat(directMessageId);
+  }
+
+  toggleChatDialog = (): void => {
+    this.setState({ showCreateDialog: !this.state.showCreateDialog });
+  };
+
+  renderMemberName(members: User[]): string {
+    return members
+      .map((member) =>
+        [
+          member.firstName,
+          member.lastName,
+        ].join(' ')
+      )
+      .join(', ')
+      .trim();
   }
 
   renderStatus(directMessage: Channel): JSX.Element {
@@ -64,6 +96,16 @@ export class Container extends React.Component<Properties> {
 
     return otherMembersToString(directMessage.otherMembers);
   }
+
+  usersChanged = (userIds: string[]): void => {
+    this.setState({ userIds });
+  };
+
+  usersInMyNetworks = async (search: string) => {
+    const users: Member[] = await searchMyNetworksByName(search);
+
+    return users.map((user) => ({ ...user, image: user.profileImage }));
+  };
 
   renderMember = (directMessage: Channel): JSX.Element => {
     return (
@@ -96,8 +138,103 @@ export class Container extends React.Component<Properties> {
     );
   };
 
+  renderNewMessageModal = (): JSX.Element => {
+    return (
+      <Tooltip
+        placement='left'
+        overlay='Create Zero Message'
+        align={{
+          offset: [
+            10,
+            0,
+          ],
+        }}
+        className='direct-message-members__user-tooltip'
+      >
+        <div
+          className='header-button'
+          onClick={this.toggleChatDialog}
+        >
+          <span className='header-button__title'>Messages</span>
+          <span className='header-button__icon' />
+        </div>
+      </Tooltip>
+    );
+  };
+
+  handleAddMessenger = (): void => {
+    const { userIds } = this.state;
+    if (userIds.length) {
+      this.props.createDirectMessage({ userIds });
+    }
+    this.toggleChatDialog();
+  };
+
+  renderButton(): JSX.Element {
+    if (this.state.userIds.length === 0) {
+      return (
+        <Tooltip
+          className='new-message-modal__disabled'
+          placement='left'
+          overlay='Please select at least one user to send a message.'
+          align={{
+            offset: [
+              10,
+              0,
+            ],
+          }}
+        >
+          <button className='start-chat__footer-add start-chat__footer-add__disabled'>Start Chat</button>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <button
+        className='start-chat__footer-add'
+        onClick={this.handleAddMessenger}
+      >
+        Start Chat
+      </button>
+    );
+  }
+
+  renderCreateMessageDialog = (): JSX.Element => {
+    return (
+      <Dialog onClose={this.toggleChatDialog}>
+        <div className={classNames('start-chat', 'border-primary')}>
+          <div className='start-chat__header'>
+            <h3 className='glow-text'>New Message</h3>
+          </div>
+          <hr className='glow' />
+          <div className='start-chat__body'>
+            <AutocompleteMembers
+              autoFocus
+              isMulti
+              includeImage
+              className='new-message-select'
+              onChange={this.usersChanged}
+              search={this.usersInMyNetworks}
+              placeholder='Find people'
+              selectedItems={[]}
+              noResultsText={'No user found'}
+            />
+          </div>
+          <hr className='glow' />
+          <div className='start-chat__footer'>{this.renderButton()}</div>
+        </div>
+      </Dialog>
+    );
+  };
+
   render() {
-    return <div className='direct-message-members'>{this.props.directMessages.map(this.renderMember)}</div>;
+    return (
+      <div className='direct-message-members'>
+        <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
+        <div className='messages-list__items'>{this.props.directMessages.map(this.renderMember)}</div>
+        {this.state.showCreateDialog && this.renderCreateMessageDialog()}
+      </div>
+    );
   }
 }
 

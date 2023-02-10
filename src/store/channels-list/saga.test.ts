@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchChannels, fetchDirectMessages as fetchDirectMessagesApi } from './api';
-import { fetch, stopSyncChannels, unreadCountUpdated, fetchDirectMessages } from './saga';
+import { fetchChannels, fetchDirectMessages as fetchDirectMessagesApi, createDirectMessage as createDirectMessageApi } from './api';
+import { fetch, stopSyncChannels, unreadCountUpdated, fetchDirectMessages, createDirectMessage } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
@@ -50,6 +50,20 @@ describe('channels list saga', () => {
         ],
       ])
       .call(fetchDirectMessagesApi)
+      .run();
+  });
+
+  it('create direct messages', async () => {
+    const userIds = ['7867766_7876Z2'];
+    await expectSaga(createDirectMessage, { payload: { userIds } })
+      .provide([
+        [
+          matchers.call.fn(createDirectMessageApi),
+          MOCK_CHANNELS,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(createDirectMessageApi, userIds)
       .run();
   });
 

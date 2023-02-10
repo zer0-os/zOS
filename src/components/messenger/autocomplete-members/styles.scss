@@ -1,0 +1,106 @@
+@use '../../shared-components/theme-engine/theme' as theme;
+@use '../../modules/animation' as animation;
+
+$image-height: 28px;
+
+.new-message-select {
+  font-size: 14px;
+  padding: 0;
+  .chat-select {
+    &__input-container {
+      color: theme.$font-color-primary;
+    }
+
+    &__control {
+      height: auto;
+      flex: 1 1 auto;
+      display: flex;
+      z-index: 2;
+      cursor: text;
+      background-color: theme.$background-color-primary;
+      border: 1px solid theme.$address-bar-border-color-inner;
+      color: theme.$font-color-primary;
+      box-shadow: none !important;
+      &--is-focused,
+      &:hover {
+        background: theme.$address-bar-background-color-inner-hover;
+        border: 1px solid theme.$address-bar-border-color-inner-hover !important;
+      }
+    }
+
+    &__indicators {
+      cursor: pointer;
+    }
+
+    &__menu {
+      position: absolute;
+      padding: 0;
+      top: 100%;
+      z-index: 30;
+      margin: 0;
+      min-height: 31px;
+      margin: 2px 0;
+      width: 100%;
+      box-shadow: none;
+      border-radius: 5px;
+      background: theme.$address-bar-background-color-inner-hover;
+      border: 1px solid theme.$address-bar-border-color-inner-hover !important;
+    }
+
+    &__option {
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 400;
+      color: theme.$font-color-primary;
+      padding: 8px;
+      padding-left: 20px;
+      display: flex;
+      background: none;
+      justify-content: flex-start;
+      align-items: center;
+      flex-direction: row;
+      &:hover,
+      &--is-focused {
+        background: rgba(60, 161, 255, 0.05);
+      }
+
+      &-image {
+        display: inline-block;
+        width: $image-height;
+        height: $image-height;
+        border-radius: $image-height / 2;
+        margin: 1px 10px 0 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        flex: 0 0 auto;
+      }
+    }
+
+    &__multi-value {
+      color: theme.$font-color-primary;
+      font-weight: 400;
+      padding: 2px 8px;
+      background: rgba(177, 78, 255, 0.25);
+      border-radius: 12px;
+      &__label {
+        font-size: 12px;
+        text-indent: 0;
+        font-weight: 700;
+        white-space: nowrap;
+        color: theme.$font-color-primary;
+      }
+      &__remove {
+        cursor: pointer;
+        &:hover {
+          background: transparent;
+          color: theme.$font-color-primary;
+        }
+      }
+    }
+  }
+}
+
+.start-chat__body {
+  padding: 20px 30px;
+}

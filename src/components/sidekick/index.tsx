@@ -11,6 +11,8 @@ import { MessengerList } from '../messenger/list';
 import './styles.scss';
 import { denormalize } from '../../store/channels';
 
+import './styles.scss';
+
 enum Tabs {
   NETWORK,
   MESSAGES,

@@ -36,6 +36,14 @@ export interface User {
   wallets: Wallet[];
 }
 
+export interface Member {
+  id: string;
+  handle: string;
+  profileImage: string;
+  name: string;
+  type: string;
+}
+
 export interface AuthenticationState {
   user: UserPayload;
 }

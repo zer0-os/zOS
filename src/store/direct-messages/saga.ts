@@ -9,6 +9,7 @@ import { DirectMessage } from './types';
 const FETCH_DIRECT_MESSAGE_INTERVAL = 60000;
 
 const rawAsyncStatus = () => (state: RootState) => state.directMessages.syncStatus;
+const rawDirectMessagesList = () => (state: RootState) => state.directMessages.list;
 
 export function* fetch() {
   const directMessages = yield call(fetchDirectMessages);
@@ -19,8 +20,15 @@ export function* fetch() {
 export function* createDirectMessage(action) {
   const { userIds } = action.payload;
   const directMessage: DirectMessage = yield call(createDirectMessageApi, userIds);
+  const directMessagesList = yield select(rawDirectMessagesList());
 
   if (directMessage && directMessage.id) {
+    yield put(
+      setDirectMessages([
+        ...directMessagesList,
+        directMessage,
+      ])
+    );
     yield put(setActiveDirectMessageId(directMessage.id));
   }
 }

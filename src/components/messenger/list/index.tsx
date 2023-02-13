@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel, denormalize, User } from '../../../store/channels';
-import { setActiveDirectMessageId } from '../../../store/chat';
+import { setActiveMessengerId } from '../../../store/chat';
 import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
@@ -31,7 +31,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      setActiveMessengerChat: setActiveDirectMessageId,
+      setActiveMessengerChat: setActiveMessengerId,
       fetchDirectMessages: fetchDirectMessages,
     };
   }

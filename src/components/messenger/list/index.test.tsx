@@ -7,7 +7,7 @@ import { Channel } from '../../../store/channels';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
-describe('direct-message-members', () => {
+describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),

@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
-import { setActiveDirectMessageId } from '../../../store/chat';
+import { setActiveMessengerId } from '../../../store/chat';
 import { RootState } from '../../../store';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
@@ -11,13 +11,12 @@ import { Channel, denormalize } from '../../../store/channels';
 
 import './styles.scss';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-// import { ChannelViewContainer } from '../../../platform-apps/channels/channel-view-container';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
-  activeDirectMessageId: string;
-  setActiveDirectMessageId: (activeDirectMessageId: string) => void;
+  activeMessengerId: string;
+  setActiveMessengerId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
 }
 
@@ -31,27 +30,27 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      chat: { activeDirectMessageId },
+      chat: { activeMessengerId },
     } = state;
 
-    const directMessage = denormalize(activeDirectMessageId, state);
+    const directMessage = denormalize(activeMessengerId, state);
 
     return {
-      activeDirectMessageId,
+      activeMessengerId,
       directMessage,
     };
   }
 
   static mapActions(): Partial<Properties> {
-    return { setActiveDirectMessageId };
+    return { setActiveMessengerId };
   }
 
   handleClose = (): void => {
-    this.props.setActiveDirectMessageId('');
+    this.props.setActiveMessengerId('');
   };
 
   componentDidUpdate(prevProps: Properties): void {
-    if (prevProps.activeDirectMessageId !== this.props.activeDirectMessageId) {
+    if (prevProps.activeMessengerId !== this.props.activeMessengerId) {
       this.setState({ isFullScreen: false, isMinimized: false });
     }
   }
@@ -134,7 +133,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   render() {
-    if (!this.props.activeDirectMessageId) {
+    if (!this.props.activeMessengerId) {
       return null;
     }
 
@@ -185,7 +184,7 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <ChatViewContainer
-            channelId={this.props.activeDirectMessageId}
+            channelId={this.props.activeMessengerId}
             className='direct-message-chat__channel'
             isDirectMessage
           />

@@ -9,8 +9,8 @@ import { ChatViewContainer } from '../../chat-view-container/chat-view-container
 describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      activeDirectMessageId: '1',
-      setActiveDirectMessageId: jest.fn(),
+      activeMessengerId: '1',
+      setActiveMessengerId: jest.fn(),
       directMessage: null,
       ...props,
     };
@@ -30,7 +30,7 @@ describe('messenger-chat', () => {
     const activeDirectMessageId = '123';
 
     const wrapper = subject({
-      activeDirectMessageId,
+      activeMessengerId: activeDirectMessageId,
     });
 
     expect(wrapper.find(ChatViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
@@ -47,7 +47,7 @@ describe('messenger-chat', () => {
 
   it('closes chat', function () {
     const setActiveDirectMessageId = jest.fn();
-    const wrapper = subject({ setActiveDirectMessageId });
+    const wrapper = subject({ setActiveMessengerId: setActiveDirectMessageId });
 
     icon(wrapper, IconXClose).simulate('click');
 

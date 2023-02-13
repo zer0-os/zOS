@@ -8,9 +8,9 @@ import { shallow } from 'enzyme';
 import { Container } from './container';
 
 import { ChannelList } from './channel-list';
-import { ChannelViewContainer } from './channel-view-container';
 import { AppContextPanel } from '@zer0-os/zos-component-library';
 import { Connectors } from '../../lib/web3';
+import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
 
 describe('ChannelsContainer', () => {
   const getStore = (store?: any) => ({
@@ -89,10 +89,10 @@ describe('ChannelsContainer', () => {
     expect(wrapper.find(ChannelList).prop('currentChannelId')).toStrictEqual(channelId);
   });
 
-  it('does not render ChannelViewContainer if no channel id', () => {
+  it('does not render ChatViewContainer if no channel id', () => {
     const wrapper = subject({ channelId: '' });
 
-    expect(wrapper.find(ChannelViewContainer).exists()).toBe(false);
+    expect(wrapper.find(ChatViewContainer).exists()).toBe(false);
   });
 
   it('redirects to first channel if no channelId', () => {
@@ -119,12 +119,12 @@ describe('ChannelsContainer', () => {
     expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/root/url/the-channel-id');
   });
 
-  it('passes channelId to ChannelViewContainer', () => {
+  it('passes channelId to ChatViewContainer', () => {
     const channelId = 'the-channel-id';
 
     const wrapper = subject({ channelId });
 
-    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(channelId);
+    expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(channelId);
   });
 
   describe('mapState', () => {

@@ -1,18 +1,19 @@
 import React from 'react';
 import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
-import { ChannelView } from './channel-view';
-import { Message } from './message';
+import { ChatView } from './chat-view';
+
 import { MediaType } from '../../store/messages';
-import InvertedScroll from '../../components/inverted-scroll';
-import IndicatorMessage from '../../components/indicator-message';
+import InvertedScroll from '../inverted-scroll';
+import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
-import { MessageInput } from '../../components/message-input';
-import { Button as ConnectButton } from '../../components/authentication/button';
-import { IfAuthenticated } from '../../components/authentication/if-authenticated';
+import { MessageInput } from '../message-input';
+import { Button as ConnectButton } from '../authentication/button';
+import { IfAuthenticated } from '../authentication/if-authenticated';
+import { Message } from '../message';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
-jest.mock('./util/api', () => {
+jest.mock('../../platform-apps/channels/util/api', () => {
   return {
     searchMentionableUsersForChannel: (...args) => {
       mockSearchMentionableUsersForChannel(...args);
@@ -20,7 +21,7 @@ jest.mock('./util/api', () => {
   };
 });
 
-describe('ChannelView', () => {
+describe('ChatView', () => {
   const MESSAGES_TEST = [
     { id: 'message-1', message: 'what', sender: { userId: 1 }, createdAt: 1658776625730 },
     { id: 'message-2', message: 'hello', sender: { userId: 2 }, createdAt: 1659018545428 },
@@ -39,7 +40,7 @@ describe('ChannelView', () => {
       ...props,
     };
 
-    return shallow(<ChannelView {...allProps} />);
+    return shallow(<ChatView {...allProps} />);
   };
 
   it('render channel name', () => {

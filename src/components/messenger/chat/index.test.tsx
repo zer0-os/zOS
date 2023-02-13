@@ -1,12 +1,12 @@
 import React from 'react';
 import { IconXClose, IconMinus } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
-import { Container as DirectMessageChat, Properties } from './';
-import { ChannelViewContainer } from '../channel-view-container';
+import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
-import Tooltip from '../../../components/tooltip';
+import Tooltip from '../../tooltip';
+import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 
-describe('direct-message-chat', () => {
+describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       activeDirectMessageId: '1',
@@ -33,8 +33,8 @@ describe('direct-message-chat', () => {
       activeDirectMessageId,
     });
 
-    expect(wrapper.find(ChannelViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
-    expect(wrapper.find(ChannelViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
+    expect(wrapper.find(ChatViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
+    expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
   });
 
   it('minimizes chat', function () {

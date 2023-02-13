@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { chat, Chat } from '../../../lib/chat';
+import { chat, Chat } from '../../lib/chat';
 import { StatusIndicator } from './status-indicator';
-import { connectContainer } from '../../../store/redux-container';
+import { connectContainer } from '../../store/redux-container';
 import {
   Message,
   receiveNewMessage as receiveNewMessageAction,
   receiveDeleteMessage as receiveDeleteMessageAction,
-} from '../../../store/messages';
-import { fetchChatAccessToken, receiveIsReconnecting } from '../../../store/chat';
-import { RootState } from '../../../store';
-import { UserPayload } from '../../../store/authentication/types';
+} from '../../store/messages';
+import { fetchChatAccessToken, receiveIsReconnecting } from '../../store/chat';
+import { RootState } from '../../store';
+import { UserPayload } from '../../store/authentication/types';
 
 export interface Properties {
   isLoading: boolean;

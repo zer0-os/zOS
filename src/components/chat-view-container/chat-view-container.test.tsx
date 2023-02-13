@@ -2,8 +2,8 @@ import { RootState } from '../../store';
 
 import { shallow } from 'enzyme';
 
-import { Container } from './channel-view-container';
-import { ChannelView } from './channel-view';
+import { Container } from './chat-view-container';
+import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
@@ -40,7 +40,7 @@ describe('ChannelViewContainer', () => {
   it('does not render child if channel is not loaded', () => {
     const wrapper = subject({ channel: null });
 
-    expect(wrapper.find(ChannelView).exists()).toStrictEqual(false);
+    expect(wrapper.find(ChatView).exists()).toStrictEqual(false);
   });
 
   it('passes messages to child', () => {
@@ -51,37 +51,37 @@ describe('ChannelViewContainer', () => {
 
     const wrapper = subject({ channel: { messages } });
 
-    expect(wrapper.find(ChannelView).prop('messages')).toStrictEqual(messages);
+    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual(messages);
   });
 
   it('passes empty array for messages to child when channel has no messages', () => {
     const wrapper = subject({ channel: { id: 'what' } });
 
-    expect(wrapper.find(ChannelView).prop('messages')).toStrictEqual([]);
+    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([]);
   });
 
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 
-    expect(wrapper.find(ChannelView).prop('name')).toStrictEqual('first channel');
+    expect(wrapper.find(ChatView).prop('name')).toStrictEqual('first channel');
   });
 
   it('passes hasJoined to channel view', () => {
     const wrapper = subject({ channel: { hasJoined: true } });
 
-    expect(wrapper.find(ChannelView).prop('hasJoined')).toStrictEqual(true);
+    expect(wrapper.find(ChatView).prop('hasJoined')).toStrictEqual(true);
   });
 
   it('passes hasJoined or is direct message to channel view', () => {
     const wrapper = subject({ channel: { hasJoined: false }, isDirectMessage: true });
 
-    expect(wrapper.find(ChannelView).prop('hasJoined')).toStrictEqual(true);
+    expect(wrapper.find(ChatView).prop('hasJoined')).toStrictEqual(true);
   });
 
   it('passes is direct message to channel view', () => {
     const wrapper = subject({ channel: {}, isDirectMessage: true });
 
-    expect(wrapper.find(ChannelView).prop('isDirectMessage')).toStrictEqual(true);
+    expect(wrapper.find(ChatView).prop('isDirectMessage')).toStrictEqual(true);
   });
 
   it('should mark all messages as read when unReadCount > 0', () => {
@@ -213,7 +213,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel', messages },
     });
 
-    wrapper.find(ChannelView).prop('onFetchMore')();
+    wrapper.find(ChatView).prop('onFetchMore')();
 
     expect(fetchMessages).toHaveBeenLastCalledWith({
       channelId: 'the-channel-id',
@@ -232,7 +232,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')(message, mentionedUserIds, []);
+    wrapper.find(ChatView).first().prop('sendMessage')(message, mentionedUserIds, []);
 
     expect(sendMessage).toHaveBeenCalledOnce();
   });
@@ -253,7 +253,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('sendMessage')('', [], media);
+    wrapper.find(ChatView).first().prop('sendMessage')('', [], media);
 
     expect(uploadFileMessage).toHaveBeenCalledOnce();
   });
@@ -267,7 +267,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('joinChannel')();
+    wrapper.find(ChatView).first().prop('joinChannel')();
 
     expect(joinChannel).toHaveBeenCalledOnce();
   });
@@ -282,7 +282,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('deleteMessage')(messageId);
+    wrapper.find(ChatView).first().prop('deleteMessage')(messageId);
 
     expect(deleteMessage).toHaveBeenCalledOnce();
   });
@@ -299,7 +299,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: true, name: 'first channel' },
     });
 
-    wrapper.find(ChannelView).first().prop('editMessage')(messageId, message, mentionedUserIds);
+    wrapper.find(ChatView).first().prop('editMessage')(messageId, message, mentionedUserIds);
 
     expect(editMessage).toHaveBeenCalledOnce();
   });
@@ -368,7 +368,7 @@ describe('ChannelViewContainer', () => {
       channel: { name: 'first channel', messages: newMessages, countNewMessages: 2 },
     });
 
-    expect(wrapper.find(ChannelView).prop('countNewMessages')).toStrictEqual(2);
+    expect(wrapper.find(ChatView).prop('countNewMessages')).toStrictEqual(2);
   });
 
   it('should not call fetchMore when hasMore is false', () => {
@@ -385,7 +385,7 @@ describe('ChannelViewContainer', () => {
       channel: { hasMore: false, name: 'first channel', messages },
     });
 
-    wrapper.find(ChannelView).prop('onFetchMore')();
+    wrapper.find(ChatView).prop('onFetchMore')();
 
     expect(fetchMessages).not.toHaveBeenLastCalledWith({
       channelId: 'the-channel-id',

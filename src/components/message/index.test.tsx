@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Linkify from 'linkify-react';
-import { Message } from './message';
+import { Message } from '.';
 import { MediaType } from '../../store/messages';
-import { LinkPreview } from '../../components/link-preview';
+import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
-import { MessageInput } from '../../components/message-input';
-import MessageMenu from './messages-menu';
+import { MessageInput } from '../message-input';
+import MessageMenu from '../../platform-apps/channels/messages-menu';
 
 describe('message', () => {
   const sender = {

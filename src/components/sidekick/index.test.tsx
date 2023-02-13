@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import { DirectMessageMembers } from '../../platform-apps/channels/direct-message-members';
+import { MessengerList } from '../messenger/list';
 
 describe('Sidekick', () => {
   const subject = (props: any = {}) => {
@@ -45,7 +45,7 @@ describe('Sidekick', () => {
   it('renders default active tab', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(DirectMessageMembers).exists()).toBe(true);
+    expect(wrapper.find(MessengerList).exists()).toBe(true);
   });
 
   it('handle network tab content', () => {

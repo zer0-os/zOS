@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Container as DirectMessageChat, Properties } from './';
+import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
-import Tooltip from '../../../components/tooltip';
+import Tooltip from '../../tooltip';
 import { Channel } from '../../../store/channels';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
@@ -10,7 +10,7 @@ export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[
 describe('direct-message-members', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      setActiveDirectMessage: jest.fn(),
+      setActiveMessengerChat: jest.fn(),
       directMessages: DIRECT_MESSAGES_TEST,
       fetchDirectMessages: jest.fn(),
       ...props,
@@ -49,7 +49,7 @@ describe('direct-message-members', () => {
   it('handle member click', function () {
     const setActiveDirectMessage = jest.fn();
 
-    const wrapper = subject({ setActiveDirectMessage });
+    const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
 
     wrapper.find('.direct-message-members__user').first().simulate('click');
 

@@ -20,7 +20,7 @@ import {
   joinChannel,
   markAllMessagesAsReadInChannel,
 } from '../../store/channels';
-import { ChannelView } from './channel-view';
+import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
   EditPayload,
@@ -30,11 +30,11 @@ import {
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
 import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/saga';
-import { ChatConnect } from './chat-connect/chat-connect';
-import { IfAuthenticated } from '../../components/authentication/if-authenticated';
-import { withContext as withAuthenticationContext } from '../../components/authentication/context';
-import { Media } from '../../components/message-input/utils';
+import { IfAuthenticated } from '../authentication/if-authenticated';
+import { withContext as withAuthenticationContext } from '../authentication/context';
+import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
+import { ChatConnect } from '../chat-connect/chat-connect';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -257,7 +257,7 @@ export class Container extends React.Component<Properties, State> {
         <IfAuthenticated showChildren>
           <ChatConnect />
         </IfAuthenticated>
-        <ChannelView
+        <ChatView
           className={classNames(
             { 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone },
             this.props.className
@@ -286,6 +286,6 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const ChannelViewContainer = withAuthenticationContext<PublicProperties>(
+export const ChatViewContainer = withAuthenticationContext<PublicProperties>(
   connectContainer<PublicProperties>(Container)
 );

@@ -16,7 +16,7 @@ import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-l
 
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
-import { ChannelViewContainer } from './channel-view-container';
+import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -76,7 +76,7 @@ export class Container extends React.Component<Properties> {
 
   renderChannelView() {
     if (this.props.channelId) {
-      return <ChannelViewContainer channelId={this.props.channelId} />;
+      return <ChatViewContainer channelId={this.props.channelId} />;
     }
 
     const defaultChannelId = getDeepProperty(this.props, 'channels[0].id', null);

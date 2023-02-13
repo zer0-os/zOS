@@ -4,13 +4,14 @@ import classNames from 'classnames';
 import { setActiveDirectMessageId } from '../../../store/chat';
 import { RootState } from '../../../store';
 import { connectContainer } from '../../../store/redux-container';
-import Tooltip from '../../../components/tooltip';
+import Tooltip from '../../tooltip';
 import { provider as imageProvider } from '../../../lib/cloudinary/provider';
-import { IconButton } from '../../../components/icon-button';
+import { IconButton } from '../../icon-button';
 import { Channel, denormalize } from '../../../store/channels';
 
 import './styles.scss';
-import { ChannelViewContainer } from '../channel-view-container';
+import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
+// import { ChannelViewContainer } from '../../../platform-apps/channels/channel-view-container';
 
 export interface PublicProperties {}
 
@@ -183,7 +184,7 @@ export class Container extends React.Component<Properties, State> {
             </span>
           </div>
 
-          <ChannelViewContainer
+          <ChatViewContainer
             channelId={this.props.activeDirectMessageId}
             className='direct-message-chat__channel'
             isDirectMessage
@@ -194,4 +195,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const DirectMessageChat = connectContainer<PublicProperties>(Container);
+export const MessengerChat = connectContainer<PublicProperties>(Container);

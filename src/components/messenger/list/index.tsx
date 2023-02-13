@@ -4,7 +4,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel, denormalize, User } from '../../../store/channels';
 import { setActiveDirectMessageId } from '../../../store/chat';
-import Tooltip from '../../../components/tooltip';
+import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
 
@@ -15,7 +15,7 @@ export interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  setActiveDirectMessage: (channelId: string) => void;
+  setActiveMessengerChat: (channelId: string) => void;
   directMessages: Channel[];
   fetchDirectMessages: () => void;
 }
@@ -31,7 +31,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      setActiveDirectMessage: setActiveDirectMessageId,
+      setActiveMessengerChat: setActiveDirectMessageId,
       fetchDirectMessages: fetchDirectMessages,
     };
   }
@@ -41,7 +41,7 @@ export class Container extends React.Component<Properties> {
   }
 
   handleMemberClick(directMessageId: string): void {
-    this.props.setActiveDirectMessage(directMessageId);
+    this.props.setActiveMessengerChat(directMessageId);
   }
 
   renderMemberName(members: User[]): string {
@@ -112,4 +112,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const DirectMessageMembers = connectContainer<PublicProperties>(Container);
+export const MessengerList = connectContainer<PublicProperties>(Container);

@@ -2,8 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import PortalMenu from './portal-menu';
 
+jest.mock('react-dom', () => ({
+  createPortal: (node, _portalLocation) => {
+    return node;
+  },
+}));
+
 describe('Portal menu', () => {
-  const subject = (props: any = {}) => {
+  const subject = (props: any = {}, boundingRectangle = { x: 100, y: 250 }) => {
     const allProps = {
       className: '',
       isOpen: false,
@@ -11,24 +17,34 @@ describe('Portal menu', () => {
       ...props,
     };
 
-    return shallow(<PortalMenu {...allProps} />);
+    const wrapper = shallow(<PortalMenu {...allProps} />);
+    (wrapper.childAt(0).getElement() as any).ref({
+      getBoundingClientRect: () => boundingRectangle,
+    });
+    wrapper.update();
+    return wrapper;
   };
 
   it('adds className', () => {
     const wrapper = subject({ className: 'portal-menu' });
 
-    expect(wrapper.hasClass('portal-menu')).toBe(true);
+    wrapper.setProps({ isOpen: true });
+
+    expect(wrapper.find('.portal-menu').exists()).toBe(true);
   });
 
-  it('should portal menu be active when isOpen true', () => {
-    const wrapper = subject({ className: 'portal-menu', isOpen: true });
+  it('positions popup', () => {
+    const wrapper = subject({ className: 'portal-menu' }, { x: 50, y: 99 });
 
-    expect(wrapper.find('.portal-menu').hasClass('active')).toBe(true);
+    wrapper.setProps({ isOpen: true });
+
+    expect(wrapper.find('.portal-menu').prop('style')).toEqual({ top: 99, left: 50 });
   });
 
   it('should call onClose when exit portal', () => {
     const onClose = jest.fn();
-    const wrapper = subject({ className: 'portal-menu', isOpen: true, onClose });
+    const wrapper = subject({ className: 'portal-menu', onClose });
+    wrapper.setProps({ isOpen: true });
 
     wrapper.find('.portal-menu').simulate('click');
 

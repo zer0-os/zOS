@@ -5,12 +5,13 @@ import { setActiveMessengerId } from '../../../store/chat';
 import { RootState } from '../../../store';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
-import { provider as imageProvider } from '../../../lib/cloudinary/provider';
 import { IconButton } from '../../icon-button';
 import { Channel, denormalize } from '../../../store/channels';
+import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
+import { provider as imageProvider } from '../../../lib/cloudinary/provider';
+import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
-import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 
 export interface PublicProperties {}
 
@@ -68,16 +69,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (!directMessage) return '';
 
-    const otherMembers = directMessage.otherMembers
-      .map((member) =>
-        [
-          member.firstName,
-          member.lastName,
-        ]
-          .filter((e) => e)
-          .join(' ')
-      )
-      .join(', ');
+    const otherMembers = otherMembersToString(directMessage.otherMembers);
 
     return (
       <Tooltip

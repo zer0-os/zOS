@@ -2,11 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
-import { Channel, denormalize, User } from '../../../store/channels';
+import { Channel, denormalize } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
 import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
+import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
 
@@ -44,18 +45,6 @@ export class Container extends React.Component<Properties> {
     this.props.setActiveMessengerChat(directMessageId);
   }
 
-  renderMemberName(members: User[]): string {
-    return members
-      .map((member) =>
-        [
-          member.firstName,
-          member.lastName,
-        ].join(' ')
-      )
-      .join(', ')
-      .trim();
-  }
-
   renderStatus(directMessage: Channel): JSX.Element {
     const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
 
@@ -73,7 +62,7 @@ export class Container extends React.Component<Properties> {
       return lastSeenText(directMessage.otherMembers[0]);
     }
 
-    return this.renderMemberName(directMessage.otherMembers);
+    return otherMembersToString(directMessage.otherMembers);
   }
 
   renderMember = (directMessage: Channel): JSX.Element => {
@@ -97,7 +86,7 @@ export class Container extends React.Component<Properties> {
         >
           {this.renderStatus(directMessage)}
           <div className='direct-message-members__user-name'>
-            {directMessage.name || this.renderMemberName(directMessage.otherMembers)}
+            {directMessage.name || otherMembersToString(directMessage.otherMembers)}
           </div>
           {directMessage.unreadCount !== 0 && (
             <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>

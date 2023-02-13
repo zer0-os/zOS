@@ -204,6 +204,8 @@ export class MessageInput extends React.Component<Properties, State> {
                   onChange={this.contentChanged}
                   onBlur={this._handleBlur}
                   value={this.state.value}
+                  allowSuggestionsAboveCursor
+                  suggestionsPortalHost={document.body}
                 >
                   {this.renderMentionTypes()}
                 </MentionsInput>

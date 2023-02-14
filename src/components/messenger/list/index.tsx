@@ -62,7 +62,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   toggleChatDialog = (): void => {
-    this.setState({ showCreateDialog: !this.state.showCreateDialog });
+    this.setState({ showCreateDialog: !this.state.showCreateDialog, userIds: [] });
   };
 
   renderMemberName(members: User[]): string {

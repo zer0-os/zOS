@@ -1,7 +1,11 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchChannels, fetchDirectMessages as fetchDirectMessagesApi, createDirectMessage as createDirectMessageApi } from './api';
+import {
+  fetchChannels,
+  fetchDirectMessages as fetchDirectMessagesApi,
+  createDirectMessage as createDirectMessageApi,
+} from './api';
 import { fetch, stopSyncChannels, unreadCountUpdated, fetchDirectMessages, createDirectMessage } from './saga';
 
 import { setStatus } from '.';

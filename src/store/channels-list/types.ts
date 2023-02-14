@@ -1,4 +1,4 @@
-import { Channel, User } from "../channels";
+import { Channel, User } from '../channels';
 
 export interface Payload {
   channelId: string;

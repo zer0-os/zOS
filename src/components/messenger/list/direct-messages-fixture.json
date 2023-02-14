@@ -1,0 +1,179 @@
+[
+  {
+    "id": "292444273_bd035e84edfbaf11251ffef196de2ab47496439c",
+    "url": "sendbird_group_channel_292444273_bd035e84edfbaf11251ffef196de2ab47496439c",
+    "icon": "https://static.sendbird.com/sample/cover/cover_14.jpg",
+    "networkId": "",
+    "isChannel": false,
+    "unreadCount": 0,
+    "hasMoreMessages": true,
+    "hasJoined": true,
+    "isPushEnabled": true,
+    "areBrowserNotificationsEnable": true,
+    "otherMembers": [
+      {
+        "userId": "ce60cf6c-baff-424c-9f5a-058d2ee023c4",
+        "firstName": "Charles",
+        "lastName": "Diya",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669741864/gjn8byvi7k9wkelyrnx5.png",
+        "profileId": "2c085571-7c37-489f-a30a-94cf25c210d3",
+        "isOnline": true
+      },
+      {
+        "userId": "aa6631c7-9189-4dde-9e6b-29abb98d2f92",
+        "firstName": "Eric",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021590/zero-assets/avatars/pfp-17.jpg",
+        "profileId": "062eba4d-2960-49d3-b545-15e287949c00",
+        "isOnline": true
+      }
+    ],
+    "lastMessageAt": "2023-01-23T16:03:43+00:00",
+    "lastMessage": {
+      "id": 8516248251,
+      "message": "another message",
+      "createdAt": 1674489823040,
+      "updatedAt": 0,
+      "sender": {
+        "userId": "933dba6b22eafd1fe624-8955-440a-879f",
+        "firstName": "John",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669820060/nfyq4coervqhogoynh9n.png",
+        "profileId": "933dba6b22ea"
+      },
+      "mentionedUsers": [],
+      "hidePreview": false,
+      "preview": null
+    },
+    "isVideoEnabled": false
+  },
+  {
+    "id": "292444273_bd035e84edfbaf11251ffef196de2ab47496439c",
+    "url": "sendbird_group_channel_292444273_bd035e84edfbaf11251ffef196de2ab47496439c",
+    "icon": "https://static.sendbird.com/sample/cover/cover_14.jpg",
+    "networkId": "",
+    "isChannel": false,
+    "unreadCount": 0,
+    "hasMoreMessages": true,
+    "hasJoined": true,
+    "isPushEnabled": true,
+    "areBrowserNotificationsEnable": true,
+    "otherMembers": [
+      {
+        "userId": "ce60cf6c-baff-424c-9f5a-058d2ee023c4",
+        "firstName": "James",
+        "lastName": "Diya",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669741864/gjn8byvi7k9wkelyrnx5.png",
+        "profileId": "2c085571-7c37-489f-a30a-94cf25c210d3",
+        "isOnline": false
+      },
+      {
+        "userId": "aa6631c7-9189-4dde-9e6b-29abb98d2f92",
+        "firstName": "Laz",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021590/zero-assets/avatars/pfp-17.jpg",
+        "profileId": "062eba4d-2960-49d3-b545-15e287949c00",
+        "isOnline": true
+      }
+    ],
+    "lastMessageAt": "2023-01-23T16:03:43+00:00",
+    "lastMessage": {
+      "id": 8516248251,
+      "message": "another message",
+      "createdAt": 1674489823040,
+      "updatedAt": 0,
+      "sender": {
+        "userId": "933dba6b22eafd1fe624-8955-440a-879f",
+        "firstName": "John",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669820060/nfyq4coervqhogoynh9n.png",
+        "profileId": "933dba6b22ea"
+      },
+      "mentionedUsers": [],
+      "hidePreview": false,
+      "preview": null
+    },
+    "isVideoEnabled": false
+  },
+  {
+    "name": "daily chat",
+    "id": "292444273_1588d50c49b8f44110050328fbb8a01eb2105044",
+    "url": "sendbird_group_channel_292444273_1588d50c49b8f44110050328fbb8a01eb2105044",
+    "icon": "https://static.sendbird.com/sample/cover/cover_13.jpg",
+    "networkId": "",
+    "isChannel": false,
+    "unreadCount": 0,
+    "hasMoreMessages": true,
+    "hasJoined": true,
+    "isPushEnabled": true,
+    "areBrowserNotificationsEnable": true,
+    "otherMembers": [
+      {
+        "userId": "aa6631c7-9189-4dde-9e6b-29abb98d2f92",
+        "firstName": "Eric",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021590/zero-assets/avatars/pfp-17.jpg",
+        "profileId": "062eba4d-2960-49d3-b545-15e287949c00",
+        "isOnline": true
+      }
+    ],
+    "lastMessageAt": "2023-01-23T13:36:02+00:00",
+    "lastMessage": {
+      "id": 8515851790,
+      "message": "test dm",
+      "createdAt": 1674480962047,
+      "updatedAt": 0,
+      "sender": {
+        "userId": "933dba6b22eafd1fe624-8955-440a-879f",
+        "firstName": "John",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669820060/nfyq4coervqhogoynh9n.png",
+        "profileId": "933dba6b22ea"
+      },
+      "mentionedUsers": [],
+      "hidePreview": false,
+      "preview": null
+    },
+    "isVideoEnabled": false
+  },
+  {
+    "id": "292444273_1588d50c49b8f44110050328fbb8a01eb2105049",
+    "url": "sendbird_group_channel_292444273_1588d50c49b8f44110050328fbb8a01eb2105044",
+    "icon": "https://static.sendbird.com/sample/cover/cover_13.jpg",
+    "networkId": "",
+    "isChannel": false,
+    "unreadCount": 0,
+    "hasMoreMessages": true,
+    "hasJoined": true,
+    "isPushEnabled": true,
+    "areBrowserNotificationsEnable": true,
+    "otherMembers": [
+      {
+        "userId": "aa6631c7-9189-4dde-9e6b-29abb98d2f92",
+        "firstName": "Eric",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021590/zero-assets/avatars/pfp-17.jpg",
+        "profileId": "062eba4d-2960-49d3-b545-15e287949c00",
+        "isOnline": false
+      }
+    ],
+    "lastMessageAt": "2023-01-23T13:36:02+00:00",
+    "lastMessage": {
+      "id": 8515851790,
+      "message": "test dm",
+      "createdAt": 1674480962047,
+      "updatedAt": 0,
+      "sender": {
+        "userId": "933dba6b22eafd1fe624-8955-440a-879f",
+        "firstName": "Kha",
+        "lastName": "",
+        "profileImage": "https://res.cloudinary.com/fact0ry-dev/image/upload/v1669820060/nfyq4coervqhogoynh9n.png",
+        "profileId": "933dba6b22ea"
+      },
+      "mentionedUsers": [],
+      "hidePreview": false,
+      "preview": null
+    },
+    "isVideoEnabled": false
+  }
+]

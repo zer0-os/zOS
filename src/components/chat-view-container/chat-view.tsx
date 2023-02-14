@@ -3,20 +3,20 @@ import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
-import { Message } from './message';
-import InvertedScroll from '../../components/inverted-scroll';
-import IndicatorMessage from '../../components/indicator-message';
+import InvertedScroll from '../inverted-scroll';
+import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { User as UserModel } from '../../store/channels/index';
-import { MessageInput } from '../../components/message-input';
-import { IfAuthenticated } from '../../components/authentication/if-authenticated';
-import { Button as ConnectButton } from '../../components/authentication/button';
+import { MessageInput } from '../message-input';
+import { IfAuthenticated } from '../authentication/if-authenticated';
+import { Button as ConnectButton } from '../authentication/button';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
-import { Media } from '../../components/message-input/utils';
+import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
-import { searchMentionableUsersForChannel } from './util/api';
+import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
+import { Message } from '../message';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -50,7 +50,7 @@ export interface State {
   isLightboxOpen: boolean;
 }
 
-export class ChannelView extends React.Component<Properties, State> {
+export class ChatView extends React.Component<Properties, State> {
   bottomRef;
   constructor(props) {
     super(props);

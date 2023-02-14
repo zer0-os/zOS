@@ -4,6 +4,7 @@ export interface ChatState {
     value: string;
     isLoading: boolean;
   };
+  activeMessengerId: string;
 }
 
 export interface ChatAccessTokenResponse {

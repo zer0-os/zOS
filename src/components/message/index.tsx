@@ -4,17 +4,17 @@ import Linkify from 'linkify-react';
 import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType } from '../../store/messages';
-import AttachmentCards from './attachment-cards';
 import { download } from '../../lib/api/attachment';
-import { LinkPreview } from '../../components/link-preview/';
+import { LinkPreview } from '../link-preview';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
-import MessageMenu from './messages-menu';
-import { MessageInput } from '../../components/message-input';
+import { MessageInput } from '../message-input';
 import { User } from '../../store/channels';
-import EditMessageActions from './messages-menu/edit-message-actions';
 import { ParentMessage } from '../../lib/chat/types';
-import { UserForMention } from '../../components/message-input/utils';
+import { UserForMention } from '../message-input/utils';
+import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
+import MessageMenu from '../../platform-apps/channels/messages-menu';
+import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 
 interface Properties extends MessageModel {
   className: string;

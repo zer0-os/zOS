@@ -2,15 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
-import { DirectMessage } from '../../../store/direct-messages/types';
-import {
-  setActiveDirectMessageId,
-  startSyncDirectMessage,
-  stopSyncDirectMessage,
-} from '../../../store/direct-messages';
-import Tooltip from '../../../components/tooltip';
+import { Channel, denormalize } from '../../../store/channels';
+import { setActiveMessengerId } from '../../../store/chat';
+import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
-import { otherMembersToString } from '../util';
+import { fetchDirectMessages } from '../../../store/channels-list';
+import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
 
@@ -19,41 +16,36 @@ export interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  setActiveDirectMessage: (channelId: string) => void;
-  directMessages: DirectMessage[];
-
-  stopSyncDirectMessage: () => void;
-  startSyncDirectMessage: () => void;
+  setActiveMessengerChat: (channelId: string) => void;
+  directMessages: Channel[];
+  fetchDirectMessages: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const {
-      directMessages: { list },
-    } = state;
+    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
 
     return {
-      directMessages: list,
+      directMessages,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setActiveDirectMessage: setActiveDirectMessageId, startSyncDirectMessage, stopSyncDirectMessage };
+    return {
+      setActiveMessengerChat: setActiveMessengerId,
+      fetchDirectMessages: fetchDirectMessages,
+    };
   }
 
   componentDidMount(): void {
-    this.props.startSyncDirectMessage();
-  }
-
-  componentWillUnmount(): void {
-    this.props.stopSyncDirectMessage();
+    this.props.fetchDirectMessages();
   }
 
   handleMemberClick(directMessageId: string): void {
-    this.props.setActiveDirectMessage(directMessageId);
+    this.props.setActiveMessengerChat(directMessageId);
   }
 
-  renderStatus(directMessage: DirectMessage): JSX.Element {
+  renderStatus(directMessage: Channel): JSX.Element {
     const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
 
     return (
@@ -65,7 +57,7 @@ export class Container extends React.Component<Properties> {
     );
   }
 
-  tooltipContent(directMessage: DirectMessage): string {
+  tooltipContent(directMessage: Channel): string {
     if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
       return lastSeenText(directMessage.otherMembers[0]);
     }
@@ -73,7 +65,7 @@ export class Container extends React.Component<Properties> {
     return otherMembersToString(directMessage.otherMembers);
   }
 
-  renderMember = (directMessage: DirectMessage): JSX.Element => {
+  renderMember = (directMessage: Channel): JSX.Element => {
     return (
       <Tooltip
         placement='left'
@@ -109,4 +101,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const DirectMessageMembers = connectContainer<PublicProperties>(Container);
+export const MessengerList = connectContainer<PublicProperties>(Container);

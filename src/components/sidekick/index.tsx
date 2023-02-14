@@ -6,9 +6,10 @@ import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
 import { AppLayout, update as updateLayout } from '../../store/layout';
-import { DirectMessageMembers } from '../../platform-apps/channels/direct-message-members';
+import { MessengerList } from '../messenger/list';
 
 import './styles.scss';
+import { denormalize } from '../../store/channels';
 
 enum Tabs {
   NETWORK,
@@ -23,7 +24,7 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   updateLayout: (layout: Partial<AppLayout>) => void;
-  allUnreadMessages: number;
+  countAllUnreadMessages: number;
 }
 
 export interface State {
@@ -35,14 +36,18 @@ export class Container extends React.Component<Properties, State> {
   state = { isOpen: true, activeTab: Tabs.MESSAGES };
 
   static mapState(state: RootState): Partial<Properties> {
+    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
+    const countAllUnreadMessages = directMessages.reduce(
+      (count, directMessage) => count + directMessage.unreadCount,
+      0
+    );
     const {
       authentication: { user },
-      directMessages: { list },
     } = state;
 
     return {
       user,
-      allUnreadMessages: list.reduce((count, directMessage) => count + directMessage.unreadCount, 0),
+      countAllUnreadMessages,
     };
   }
 
@@ -91,13 +96,13 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderMessageTab() {
-    if (this.props.allUnreadMessages > 0) {
+    if (this.props.countAllUnreadMessages > 0) {
       return (
         <div
           className='sidekick__tab-notifications sidekick__tab-notifications--unread-messages'
           onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
         >
-          {this.props.allUnreadMessages}
+          {this.props.countAllUnreadMessages}
         </div>
       );
     } else {
@@ -136,7 +141,7 @@ export class Container extends React.Component<Properties, State> {
       case Tabs.MESSAGES:
         return (
           <div className='sidekick__tab-content--messages'>
-            <DirectMessageMembers />
+            <MessengerList />
           </div>
         );
       case Tabs.NOTIFICATIONS:

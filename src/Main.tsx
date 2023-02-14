@@ -12,7 +12,7 @@ import './main.scss';
 import classNames from 'classnames';
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
-import { DirectMessageChat } from './platform-apps/channels/direct-message-chat';
+import { MessengerChat } from './components/messenger/chat';
 
 export interface Properties {
   hasContextPanel: boolean;
@@ -69,7 +69,7 @@ export class Container extends React.Component<Properties> {
         <Sidekick className='main__sidekick' />
         <ThemeEngine />
 
-        {this.props.context.isAuthenticated && <DirectMessageChat />}
+        {this.props.context.isAuthenticated && <MessengerChat />}
       </div>
     );
   }

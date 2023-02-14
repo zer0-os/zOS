@@ -6,7 +6,7 @@ import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
 import { ViewModeToggle } from './components/view-mode-toggle';
 import { AddressBarContainer } from './components/address-bar/container';
-import { DirectMessageChat } from './platform-apps/channels/direct-message-chat';
+import { MessengerChat } from './components/messenger/chat';
 
 describe('Main', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -74,7 +74,7 @@ describe('Main', () => {
   it('renders direct message chat component', () => {
     const wrapper = subject({ context: { isAuthenticated: true } });
 
-    expect(wrapper.find(DirectMessageChat).exists()).toBe(true);
+    expect(wrapper.find(MessengerChat).exists()).toBe(true);
   });
 
   describe('mapState', () => {

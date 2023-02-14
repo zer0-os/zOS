@@ -1,5 +1,4 @@
 import { ChannelType } from './types';
-// import { Channel } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, delay } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';

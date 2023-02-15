@@ -11,11 +11,10 @@ import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
 import { Dialog } from '@zer0-os/zos-component-library';
-import { Member } from '../../../store/authentication/types';
-import { User } from '../../../store/channels';
+import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createDirectMessage } from '../../../store/channels-list';
-import { PayloadMessenger } from '../../../store/channels-list/types';
+import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { AutocompleteMembers } from '../autocomplete-members';
 
 export interface PublicProperties {
@@ -31,7 +30,7 @@ export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
   directMessages: Channel[];
   fetchDirectMessages: () => void;
-  createDirectMessage: (payload: PayloadMessenger) => void;
+  createDirectMessage: (payload: CreateMessengerConversation) => void;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -65,18 +64,6 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ showCreateDialog: !this.state.showCreateDialog, userIds: [] });
   };
 
-  renderMemberName(members: User[]): string {
-    return members
-      .map((member) =>
-        [
-          member.firstName,
-          member.lastName,
-        ].join(' ')
-      )
-      .join(', ')
-      .trim();
-  }
-
   renderStatus(directMessage: Channel): JSX.Element {
     const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
 
@@ -102,7 +89,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   usersInMyNetworks = async (search: string) => {
-    const users: Member[] = await searchMyNetworksByName(search);
+    const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };

@@ -52,7 +52,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.currentValueChanged(nextProps)) {
       const currentSelection = this.getCurrentSelection(nextProps);
 

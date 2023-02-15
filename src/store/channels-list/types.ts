@@ -13,6 +13,6 @@ export interface DirectMessage extends Channel {
   otherMembers: User[];
 }
 
-export interface PayloadMessenger {
+export interface CreateMessengerConversation {
   userIds: string[];
 }

@@ -7,8 +7,6 @@ import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
 import { AppLayout, update as updateLayout } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
-
-import './styles.scss';
 import { denormalize } from '../../store/channels';
 
 import './styles.scss';

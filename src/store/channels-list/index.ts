@@ -2,7 +2,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { createNormalizedListSlice } from '../normalized';
 
 import { schema } from '../channels';
-import { PayloadMessenger } from './types';
+import { CreateMessengerConversation } from './types';
 
 export enum SagaActionTypes {
   Fetch = 'channelsList/saga/fetch',
@@ -13,7 +13,7 @@ export enum SagaActionTypes {
 }
 
 const fetch = createAction<string>(SagaActionTypes.Fetch);
-const createDirectMessage = createAction<PayloadMessenger>(SagaActionTypes.CreateDirectMessage);
+const createDirectMessage = createAction<CreateMessengerConversation>(SagaActionTypes.CreateDirectMessage);
 const receiveUnreadCount = createAction<string>(SagaActionTypes.ReceiveUnreadCount);
 const stopSyncChannels = createAction<string>(SagaActionTypes.StopSyncChannels);
 const fetchDirectMessages = createAction<string>(SagaActionTypes.FetchDirectMessages);

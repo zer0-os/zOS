@@ -1,6 +1,6 @@
 import { searchMentionableUsers } from '../../../store/channels/api';
 import { User } from '../../../store/channels';
-import { searchMyNetworksByName as searchMyNetworksByNameApi } from '../../../store/authentication/api';
+import { searchMyNetworksByName as searchMyNetworksByNameApi } from '../../../store/users/api';
 
 export async function searchMentionableUsersForChannel(
   channelId: string,

@@ -1,4 +1,4 @@
-import { AuthorizationResponse, Member, User } from './types';
+import { AuthorizationResponse, User } from './types';
 import { del, get, post } from '../../lib/api/rest';
 
 export async function nonceOrAuthorize(signedWeb3Token: string): Promise<AuthorizationResponse> {
@@ -15,12 +15,6 @@ export async function fetchCurrentUser(): Promise<User> {
   } else {
     return null;
   }
-}
-
-export async function searchMyNetworksByName(filter: string): Promise<Member[]> {
-  return await get('/api/users/searchInNetworksByName', { filter })
-    .catch((_error) => null)
-    .then((response) => response?.body || []);
 }
 
 export async function clearSession(): Promise<AuthorizationResponse> {

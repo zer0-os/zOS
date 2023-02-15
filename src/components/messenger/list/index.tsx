@@ -8,14 +8,15 @@ import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-
-import './styles.scss';
+import { compareDatesDesc } from '../../../lib/date';
 import { Dialog } from '@zer0-os/zos-component-library';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createDirectMessage } from '../../../store/channels-list';
-import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { AutocompleteMembers } from '../autocomplete-members';
+import { CreateMessengerConversation } from '../../../store/channels-list/types';
+
+import './styles.scss';
 
 export interface PublicProperties {
   className?: string;
@@ -37,10 +38,14 @@ export class Container extends React.Component<Properties, State> {
   state = { showCreateDialog: false, userIds: [] };
 
   static mapState(state: RootState): Partial<Properties> {
-    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
+    const messengerList = denormalize(state.channelsList.value, state)
+      .filter((messenger) => Boolean(messenger.isChannel))
+      .sort((messengerA, messengerB) =>
+        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+      );
 
     return {
-      directMessages,
+      directMessages: messengerList,
     };
   }
 

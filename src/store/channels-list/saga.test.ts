@@ -163,6 +163,8 @@ describe('channels list saga', () => {
       hasJoined: true,
       isChannel: true,
       otherMembers: [],
+      lastMessage: {},
+      lastMessageCreatedAt: undefined,
     };
 
     const {

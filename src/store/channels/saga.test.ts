@@ -6,7 +6,7 @@ import {
   joinChannel as joinChannelAPI,
   markAllMessagesAsReadInChannel as markAllMessagesAsReadInChannelAPI,
 } from './api';
-import { joinChannel, loadUsers, markAllMessagesAsReadInChannel } from './saga';
+import { joinChannel, loadUsers, markAllMessagesAsReadInChannel, unreadCountUpdated } from './saga';
 
 import { rootReducer } from '..';
 
@@ -140,5 +140,32 @@ describe('channels list saga', () => {
       ])
       .call(markAllMessagesAsReadInChannelAPI, channelId, userId)
       .run();
+  });
+
+  it('handle unread count update', async () => {
+    const channelId = 'channel-id';
+    const updatedUnreadCount = 4;
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            unreadCount: 3,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(unreadCountUpdated, { payload: { channelId, unreadCount: updatedUnreadCount } })
+      .withReducer(rootReducer, initialState as any)
+
+      .run();
+
+    expect(channels[channelId].unreadCount).toEqual(updatedUnreadCount);
   });
 });

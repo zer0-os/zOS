@@ -9,6 +9,7 @@ interface RealtimeChatEvents {
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
+  receiveUnreadCount: (channelId: string, unreadCount: number) => void;
 }
 
 export class Chat {
@@ -46,7 +47,9 @@ export class Chat {
 
     connectionHandler.onReconnectStarted = () => events.reconnectStart();
     connectionHandler.onReconnectSucceeded = () => events.reconnectStop();
-    connectionHandler.onReconnectFailed = () => this.sb.reconnect(); // sendbird gives up, so for now, just retry every time.
+
+    // sendbird gives up, so for now, just retry every time.
+    connectionHandler.onReconnectFailed = () => this.sb.reconnect();
 
     this.sb.addConnectionHandler('connectionHandler', connectionHandler);
   }
@@ -55,15 +58,23 @@ export class Chat {
     const channelHandler = new this.sb.ChannelHandler();
 
     channelHandler.onMessageReceived = (channel, message) => {
-      const id = channel.url.replace('sendbird_group_channel_', '');
+      const channelId = this.getChannelId(channel);
       if (channel.isGroupChannel()) {
-        events.receiveNewMessage(id, this.mapMessage(message));
+        events.receiveNewMessage(channelId, this.mapMessage(message));
       }
     };
 
     channelHandler.onMessageDeleted = (channel, messageId) => {
-      const id = channel.url.replace('sendbird_group_channel_', '');
-      events.receiveDeleteMessage(id, parseInt(messageId as any)); // It is documented to return a number. But is actually a string
+      const channelId = this.getChannelId(channel);
+
+      // It is documented to return a number. But is actually a string
+      events.receiveDeleteMessage(channelId, parseInt(messageId as any));
+    };
+
+    channelHandler.onChannelChanged = (channel) => {
+      const channelId = this.getChannelId(channel);
+
+      events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
     };
 
     chat.sb.addChannelHandler('chatHandler', channelHandler);
@@ -74,6 +85,10 @@ export class Chat {
   }
 
   mapMessage = (message): Message => mapMessage(message);
+
+  getChannelId(channel): string {
+    return channel?.url?.replace('sendbird_group_channel_', '');
+  }
 }
 
 export const chat = new Chat();

@@ -1,4 +1,5 @@
-import { takeLatest, put, call } from 'redux-saga/effects';
+import getDeepProperty from 'lodash.get';
+import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes, receive } from '.';
 
 import {
@@ -7,14 +8,9 @@ import {
   markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI,
 } from './api';
 
-export interface Payload {
-  channelId: string;
-}
-
-export interface MarkAsReadPayload {
-  channelId: string;
-  userId: string;
-}
+const rawChannelSelector = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
+};
 
 export function* loadUsers(action) {
   const { channelId } = action.payload;
@@ -67,8 +63,26 @@ export function* markAllMessagesAsReadInChannel(action) {
   }
 }
 
+export function* unreadCountUpdated(action) {
+  const { channelId, unreadCount } = action.payload;
+
+  const channel = yield select(rawChannelSelector(channelId));
+
+  if (!channel || channel.unreadCount === unreadCount) {
+    return;
+  }
+
+  yield put(
+    receive({
+      id: channelId,
+      unreadCount: unreadCount,
+    })
+  );
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.LoadUsers, loadUsers);
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
-  yield takeLatest(SagaActionTypes.markAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
+  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
+  yield takeLatest(SagaActionTypes.UnreadCountUpdated, unreadCountUpdated);
 }

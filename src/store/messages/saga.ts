@@ -136,7 +136,8 @@ export function* send(action) {
       ],
       shouldSyncChannels: true,
       countNewMessages: 0,
-      lastMessageCreatedAt: 0,
+      lastMessageCreatedAt: temporaryMessage.createdAt,
+      lastMessage: temporaryMessage,
       messageIdsCache: cachedMessageIds,
     })
   );
@@ -150,6 +151,7 @@ export function* send(action) {
         messages: [...existingMessages],
         shouldSyncChannels: true,
         countNewMessages: 0,
+        lastMessage: messagesResponse.body,
         lastMessageCreatedAt: messagesResponse.body.createdAt,
         messageIdsCache: cachedMessageIds,
       })
@@ -311,6 +313,7 @@ export function* receiveNewMessage(action) {
       id: channelId,
       messages,
       messageIdsCache: cachedMessageIds,
+      lastMessage: message,
     })
   );
 }

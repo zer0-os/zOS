@@ -28,6 +28,7 @@ export interface Channel {
   otherMembers: User[];
   hasMore: boolean;
   countNewMessages: number;
+  lastMessage: Message;
   lastMessageCreatedAt: number;
   category?: string;
   shouldSyncChannels: boolean;

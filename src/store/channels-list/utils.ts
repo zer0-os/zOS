@@ -29,6 +29,8 @@ export const channelMapper = (currentChannel, channelType: ChannelType) => {
 
   if (channelType === ChannelType.DirectMessage) {
     channel.otherMembers = currentChannel.otherMembers || [];
+    channel.lastMessage = currentChannel.lastMessage;
+    channel.lastMessageCreatedAt = currentChannel.lastMessageAt;
     channel.isChannel = true;
   } else {
     channel.otherMembers = [];

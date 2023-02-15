@@ -10,6 +10,7 @@ import { fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
+import { compareDatesDesc } from '../../../lib/date';
 
 export interface PublicProperties {
   className?: string;
@@ -23,10 +24,14 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
+    const messengerList = denormalize(state.channelsList.value, state)
+      .filter((messenger) => Boolean(messenger.isChannel))
+      .sort((messengerA, messengerB) =>
+        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+      );
 
     return {
-      directMessages,
+      directMessages: messengerList,
     };
   }
 

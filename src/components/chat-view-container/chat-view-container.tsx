@@ -49,6 +49,7 @@ export interface Properties extends PublicProperties {
   markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
+  activeMessengerId?: string;
   context: {
     isAuthenticated: boolean;
   };
@@ -70,11 +71,13 @@ export class Container extends React.Component<Properties, State> {
     const channel = denormalize(props.channelId, state) || null;
     const {
       authentication: { user },
+      chat: { activeMessengerId },
     } = state;
 
     return {
       channel,
       user,
+      activeMessengerId,
     };
   }
 
@@ -245,7 +248,12 @@ export class Container extends React.Component<Properties, State> {
 
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
     if (textareaRef && textareaRef.current) {
-      textareaRef.current.focus();
+      if (
+        (this.props.activeMessengerId && this.props.activeMessengerId === textareaRef.current.id) ||
+        !this.props.activeMessengerId
+      ) {
+        textareaRef.current.focus();
+      }
     }
   };
 

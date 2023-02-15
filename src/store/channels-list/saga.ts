@@ -1,12 +1,17 @@
-import { ChannelType } from './types';
+import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, delay } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
-import { fetchChannels, fetchDirectMessages as fetchDirectMessagesApi } from './api';
+import {
+  fetchChannels,
+  fetchDirectMessages as fetchDirectMessagesApi,
+  createDirectMessage as createDirectMessageApi,
+} from './api';
 import { AsyncListStatus } from '../normalized';
 import { select } from 'redux-saga-test-plan/matchers';
 import { channelMapper, filterChannelsList } from './utils';
+import { setActiveMessengerId } from '../chat';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -48,6 +53,26 @@ export function* fetchDirectMessages() {
   );
 }
 
+export function* createDirectMessage(action) {
+  const { userIds } = action.payload;
+  const response: DirectMessage = yield call(createDirectMessageApi, userIds);
+
+  const directMessage = channelMapper(response, ChannelType.DirectMessage);
+  const existingDirectMessages = yield select(rawDirectMessages());
+  const channelsList = yield select(rawChannelsList());
+
+  if (directMessage && directMessage.id) {
+    yield put(
+      receive([
+        ...channelsList,
+        ...existingDirectMessages,
+        directMessage,
+      ])
+    );
+    yield put(setActiveMessengerId(directMessage.id));
+  }
+}
+
 export function* unreadCountUpdated(action) {
   const channels = yield call(fetchChannels, action.payload);
   const directMessages = yield call(fetchDirectMessagesApi);
@@ -81,4 +106,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.ReceiveUnreadCount, syncUnreadCount);
   yield takeLatest(SagaActionTypes.StopSyncChannels, stopSyncChannels);
   yield takeLatest(SagaActionTypes.FetchDirectMessages, fetchDirectMessages);
+  yield takeLatest(SagaActionTypes.CreateDirectMessage, createDirectMessage);
 }

@@ -1,3 +1,4 @@
+@use '../../../modules/animation' as animation;
 @use '../../../shared-components/theme-engine/theme' as theme;
 @import '../../../variables';
 
@@ -55,6 +56,88 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       flex: 1 1;
+    }
+  }
+}
+
+.header-button {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  color: theme.$font-color-primary;
+  background-color: transparent;
+  transition: background-color animation.$animation-duration ease-out;
+
+  cursor: pointer;
+  height: 40px;
+  padding: 0px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+
+  &__icon {
+    font-size: 18px;
+    &::before {
+      content: '\002B';
+    }
+  }
+  &:hover {
+    color: theme.$font-color-primary-hover;
+    background-color: theme.$background-color-primary-hover;
+
+    .header-button__icon {
+      background-color: theme.$background-color-secondary-hover;
+    }
+  }
+}
+
+.start-chat {
+  background: theme.$dialog-background-color;
+  border-radius: theme.$button-box-radius;
+  overflow: initial;
+
+  hr {
+    margin: 0 33px;
+  }
+
+  &__header {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: theme.$actionable-color;
+    }
+  }
+
+  &__body {
+    text-align: center;
+  }
+
+  &__footer {
+    font-size: 14px;
+    padding: 15px 34px;
+    padding-top: 40px;
+    display: flex;
+    line-height: 22px;
+    flex-direction: row-reverse;
+
+    &-add {
+      color: theme.$actionable-color;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-left: 30px;
+      background: none;
+      border: none;
+      outline: none;
+      font-weight: 600;
+      &__disabled {
+        cursor: default;
+      }
     }
   }
 }

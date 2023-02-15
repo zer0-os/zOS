@@ -4,6 +4,7 @@ import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../tooltip';
 import { Channel } from '../../../store/channels';
+import { Dialog } from '@zer0-os/zos-component-library';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -13,6 +14,7 @@ describe('messenger-list', () => {
       setActiveMessengerChat: jest.fn(),
       directMessages: DIRECT_MESSAGES_TEST,
       fetchDirectMessages: jest.fn(),
+      createDirectMessage: jest.fn(),
       ...props,
     };
 
@@ -62,6 +64,19 @@ describe('messenger-list', () => {
     expect(wrapper.find('.direct-message-members__user-unread-count').exists()).toBe(false);
   });
 
+  it('should render create direct messsages button', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('.messages-list__direct-messages').exists()).toBe(true);
+  });
+
+  it('should render direct messsages dialog when DMs button is clicked', function () {
+    const wrapper = subject({});
+    wrapper.find('.messages-list__direct-messages').simulate('click');
+
+    expect(wrapper.find(Dialog).exists()).toBe(false);
+  });
+
   it('renders unread messages', function () {
     const [
       firstDirectMessage,
@@ -105,13 +120,13 @@ describe('messenger-list', () => {
     it('renders placement to left', function () {
       const placementLeft = 'left';
 
-      expect(tooltipList().map((tooltip) => tooltip.prop('placement'))).toEqual(Array(4).fill(placementLeft));
+      expect(tooltipList().map((tooltip) => tooltip.prop('placement'))).toEqual(Array(5).fill(placementLeft));
     });
 
     it('renders class name', function () {
       const className = 'direct-message-members__user-tooltip';
 
-      expect(tooltipList().map((tooltip) => tooltip.prop('className'))).toEqual(Array(4).fill(className));
+      expect(tooltipList().map((tooltip) => tooltip.prop('className'))).toEqual(Array(5).fill(className));
     });
 
     it('renders align prop', function () {
@@ -122,11 +137,12 @@ describe('messenger-list', () => {
         ],
       };
 
-      expect(tooltipList().map((tooltip) => tooltip.prop('align'))).toEqual(Array(4).fill(align));
+      expect(tooltipList().map((tooltip) => tooltip.prop('align'))).toEqual(Array(5).fill(align));
     });
 
     it('renders content', function () {
       expect(tooltipList().map((tooltip) => tooltip.prop('overlay'))).toEqual([
+        'Create Zero Message',
         'Charles Diya, Eric',
         'James Diya, Laz',
         'Online',

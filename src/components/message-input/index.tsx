@@ -17,6 +17,7 @@ require('./styles.scss');
 export interface Properties {
   className?: string;
   placeholder?: string;
+  id?: string;
   onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
   initialValue?: string;
   reply?: null | ParentMessage;
@@ -199,6 +200,7 @@ export class MessageInput extends React.Component<Properties, State> {
                 <MentionsInput
                   inputRef={this.textareaRef}
                   className='mentions-text-area__wrap'
+                  id={this.props.id}
                   placeholder={this.props.placeholder}
                   onKeyDown={this.onSubmit}
                   onChange={this.contentChanged}

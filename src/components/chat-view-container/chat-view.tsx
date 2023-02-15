@@ -214,6 +214,7 @@ export class ChatView extends React.Component<Properties, State> {
           {isMemberOfChannel && (
             <MessageInput
               onMessageInputRendered={this.props.onMessageInputRendered}
+              id={this.props.id}
               onSubmit={this.props.sendMessage}
               getUsersForMentions={this.searchMentionableUsers}
               reply={this.props.reply}

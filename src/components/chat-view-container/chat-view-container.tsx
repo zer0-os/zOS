@@ -29,7 +29,7 @@ import {
   MediaPyload,
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
-import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/saga';
+import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';

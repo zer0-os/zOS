@@ -313,6 +313,7 @@ export function* receiveNewMessage(action) {
       id: channelId,
       messages,
       messageIdsCache: cachedMessageIds,
+      lastMessage: message,
     })
   );
 }

@@ -1,5 +1,6 @@
 import { searchMentionableUsers } from '../../../store/channels/api';
 import { User } from '../../../store/channels';
+import { searchMyNetworksByName as searchMyNetworksByNameApi } from '../../../store/users/api';
 
 export async function searchMentionableUsersForChannel(
   channelId: string,
@@ -12,4 +13,8 @@ export async function searchMentionableUsersForChannel(
   return results
     .filter((user) => validUsers.find((valid) => user.id === valid.id))
     .map((u) => ({ id: u.id, display: u.name }));
+}
+
+export async function searchMyNetworksByName(search: string, apiSearch = searchMyNetworksByNameApi) {
+  return await apiSearch(search);
 }

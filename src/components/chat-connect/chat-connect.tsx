@@ -12,6 +12,8 @@ import { fetchChatAccessToken, receiveIsReconnecting } from '../../store/chat';
 import { RootState } from '../../store';
 import { UserPayload } from '../../store/authentication/types';
 import { unreadCountUpdated } from '../../store/channels';
+import { updateConnector } from '../../store/web3';
+import { Connectors } from '../../lib/web3';
 
 export interface Properties {
   isLoading: boolean;
@@ -23,6 +25,7 @@ export interface Properties {
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   fetchChatAccessToken: () => void;
+  invalidChatAccessToken: () => void;
   user: UserPayload;
   isReconnecting: boolean;
 }
@@ -51,6 +54,7 @@ export class Container extends React.Component<Properties> {
       receiveDeleteMessage: (channelId: string, messageId: number) =>
         receiveDeleteMessageAction({ channelId, messageId }),
       fetchChatAccessToken,
+      invalidChatAccessToken: () => updateConnector(Connectors.None),
     };
   }
 
@@ -77,10 +81,14 @@ export class Container extends React.Component<Properties> {
   }
 
   async startChatHandler() {
-    const userId = this.props.user.data.id;
-    await this.chat.setUserId(userId, this.props.chatAccessToken);
-
-    const { reconnectStart, reconnectStop, receiveNewMessage, receiveDeleteMessage, receiveUnreadCount } = this.props;
+    const {
+      reconnectStart,
+      reconnectStop,
+      receiveNewMessage,
+      receiveDeleteMessage,
+      receiveUnreadCount,
+      invalidChatAccessToken,
+    } = this.props;
 
     this.chat.initChat({
       reconnectStart,
@@ -88,7 +96,11 @@ export class Container extends React.Component<Properties> {
       receiveNewMessage,
       receiveDeleteMessage,
       receiveUnreadCount,
+      invalidChatAccessToken,
     });
+
+    const userId = this.props.user.data.id;
+    await this.chat.setUserId(userId, this.props.chatAccessToken);
   }
 
   render() {

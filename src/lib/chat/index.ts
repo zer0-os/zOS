@@ -10,6 +10,7 @@ interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
+  invalidChatAccessToken: () => void;
 }
 
 export class Chat {
@@ -38,8 +39,19 @@ export class Chat {
   }
 
   initChat(events: RealtimeChatEvents): void {
+    this.initSessionHandler(events);
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
+  }
+
+  initSessionHandler(events: RealtimeChatEvents) {
+    const sessionHandler = new this.sb.SessionHandler();
+
+    // The session refresh has been denied from the app.
+    // The client app should guide the user to a login page to log in again.
+    sessionHandler.onSessionClosed = () => events.invalidChatAccessToken();
+
+    this.sb.setSessionHandler(sessionHandler);
   }
 
   initConnectionHandlers(events: RealtimeChatEvents): void {

@@ -42,6 +42,7 @@ export interface Properties {
   reply?: null | ParentMessage;
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
   isDirectMessage: boolean;
+  showSenderAvatar?: boolean;
 }
 
 export interface State {
@@ -127,14 +128,17 @@ export class ChatView extends React.Component<Properties, State> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {allMessages.map((message) => {
+        {allMessages.map((message, index) => {
+          const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
           const isUserOwnerOfTheMessage =
             // eslint-disable-next-line eqeqeq
             this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
           return (
             <Message
-              className={'messages__message'}
+              className={classNames('messages__message', {
+                'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
+              })}
               onImageClick={this.openLightbox}
               key={message.id}
               messageId={message.id}
@@ -145,6 +149,7 @@ export class ChatView extends React.Component<Properties, State> {
               onReply={this.props.onReply}
               parentMessageText={message.parentMessageText}
               getUsersForMentions={this.searchMentionableUsers}
+              showSenderAvatar={this.props.showSenderAvatar}
               {...message}
             />
           );

@@ -243,14 +243,9 @@ $scrollbar-width: 5px;
 
     .message {
       margin: 8px 16px;
-      background-color: theme.$color-primary-3;
-      border-radius: 8px 8px 8px 0px;
       overflow: hidden;
 
       &--owner {
-        background-color: theme.$color-secondary-3;
-        border-radius: 8px 8px 0px 8px;
-
         .message__block-body {
           transition: background-color 0.3s ease-out;
           position: relative;
@@ -274,6 +269,8 @@ $scrollbar-width: 5px;
         }
 
         .message__block {
+          background-color: theme.$color-secondary-3;
+          border-radius: 8px 8px 0px 8px;
           .message__author-name {
             display: none;
           }
@@ -286,7 +283,17 @@ $scrollbar-width: 5px;
         }
       }
 
+      &--sender-avatar {
+        display: flex;
+
+        .message__block {
+          flex: 1 0 auto;
+        }
+      }
+
       &__block {
+        background-color: theme.$color-primary-3;
+        border-radius: 8px 8px 8px 0px;
         position: relative;
         padding: 8px;
         color: theme.$card-text-color;
@@ -414,11 +421,33 @@ $scrollbar-width: 5px;
         }
       }
 
+      &__left {
+        margin-right: 8px;
+        width: 16px;
+      }
+
+      &__author-avatar {
+        display: none;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        border-radius: 50%;
+      }
+
       &__author-name {
         font-weight: 500;
         font-size: 12px;
         line-height: 15px;
         color: theme.$color-greyscale-12;
+      }
+
+      &.messages__message--first-in-group {
+        .message__author-avatar {
+          display: block;
+        }
       }
 
       .emoji-mart-emoji {

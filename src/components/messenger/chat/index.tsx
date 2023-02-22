@@ -179,6 +179,7 @@ export class Container extends React.Component<Properties, State> {
             channelId={this.props.activeMessengerId}
             className='direct-message-chat__channel'
             isDirectMessage
+            showSenderAvatar={!this.isOneOnOne()}
           />
         </div>
       </div>

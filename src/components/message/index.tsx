@@ -28,6 +28,7 @@ interface Properties extends MessageModel {
   updatedAt: number;
   parentMessageText?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
+  showSenderAvatar?: boolean;
 }
 
 export interface State {
@@ -215,8 +216,17 @@ export class Message extends React.Component<Properties, State> {
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
           'message--media': Boolean(media),
+          'message--sender-avatar': this.props.showSenderAvatar,
         })}
       >
+        {this.props.showSenderAvatar && (
+          <div className='message__left'>
+            <div
+              style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
+              className='message__author-avatar'
+            />
+          </div>
+        )}
         <div className='message__block'>
           {(message || media || preview) && (
             <>

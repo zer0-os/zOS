@@ -59,6 +59,7 @@ interface PublicProperties {
   channelId: string;
   className?: string;
   isDirectMessage?: boolean;
+  showSenderAvatar?: boolean;
 }
 export interface State {
   countNewMessages: number;
@@ -285,6 +286,7 @@ export class Container extends React.Component<Properties, State> {
           resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
+          showSenderAvatar={this.props.showSenderAvatar}
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}

@@ -1,4 +1,5 @@
-@use '../../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @use '../../../modules/animation' as animation;
 
 $image-height: 28px;
@@ -9,7 +10,7 @@ $image-member-height: 16px;
   padding: 0;
   .chat-select {
     &__input-container {
-      color: theme.$font-color-primary;
+      color: themeDeprecated.$font-color-primary;
     }
 
     &__control {
@@ -24,13 +25,13 @@ $image-member-height: 16px;
       z-index: 2;
       cursor: text;
       background-color: transparent;
-      border: 1px solid theme.$font-color-secondary;
+      border: 1px solid themeDeprecated.$font-color-secondary;
       border-radius: 20px;
-      color: theme.$font-color-primary;
+      color: themeDeprecated.$font-color-primary;
       box-shadow: none !important;
       &--is-focused,
       &:hover {
-        border: 1px solid theme.$font-color-secondary-hover !important;
+        border: 1px solid themeDeprecated.$font-color-secondary-hover !important;
       }
     }
 
@@ -53,15 +54,15 @@ $image-member-height: 16px;
       width: 100%;
       box-shadow: none;
       border-radius: 5px;
-      background: theme.$font-color-secondary-hover;
-      border: 1px solid theme.$font-color-secondary !important;
+      background: themeDeprecated.$font-color-secondary-hover;
+      border: 1px solid themeDeprecated.$font-color-secondary !important;
     }
 
     &__option {
       cursor: pointer;
       font-size: 16px;
       font-weight: 400;
-      color: theme.$font-color-primary;
+      color: themeDeprecated.$font-color-primary;
       padding: 8px;
       padding-left: 20px;
       display: flex;
@@ -89,7 +90,7 @@ $image-member-height: 16px;
     }
 
     &__multi-value {
-      color: theme.$font-color-primary;
+      color: themeDeprecated.$font-color-primary;
       font-weight: 400;
       padding: 2px 8px;
       border-radius: 12px;
@@ -98,13 +99,13 @@ $image-member-height: 16px;
         text-indent: 0;
         font-weight: 700;
         white-space: nowrap;
-        color: theme.$font-color-primary;
+        color: themeDeprecated.$font-color-primary;
       }
       &__remove {
         cursor: pointer;
         &:hover {
           background: transparent;
-          color: theme.$font-color-primary;
+          color: themeDeprecated.$font-color-primary;
         }
       }
     }
@@ -168,7 +169,7 @@ $image-member-height: 16px;
         content: '\00D7';
       }
       &:hover {
-        color: theme.$font-color-primary;
+        color: themeDeprecated.$font-color-primary;
       }
     }
   }

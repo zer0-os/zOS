@@ -136,7 +136,9 @@ export class ChatView extends React.Component<Properties, State> {
 
           return (
             <Message
-              className={classNames('messages__message', { 'messages__message--first-in-group': isFirstFromUser })}
+              className={classNames('messages__message', {
+                'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
+              })}
               onImageClick={this.openLightbox}
               key={message.id}
               messageId={message.id}

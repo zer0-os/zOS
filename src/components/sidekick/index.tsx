@@ -5,11 +5,12 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
-import { AppLayout, update as updateLayout } from '../../store/layout';
+import { UpdateSidekickPayload, updateSidekick } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
 import { denormalize } from '../../store/channels';
 
 import './styles.scss';
+import { SIDEKICK_OPEN_STORAGE } from '../../store/layout/constants';
 
 enum Tabs {
   NETWORK,
@@ -23,43 +24,57 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
-  updateLayout: (layout: Partial<AppLayout>) => void;
+  updateSidekick: (action: UpdateSidekickPayload) => void;
   countAllUnreadMessages: number;
+  isOpen: boolean;
 }
 
 export interface State {
-  isOpen: boolean;
   activeTab: Tabs;
+  canStartAnimation: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { isOpen: true, activeTab: Tabs.MESSAGES };
+  state = { canStartAnimation: false, activeTab: Tabs.MESSAGES };
 
   static mapState(state: RootState): Partial<Properties> {
     const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
+
     const countAllUnreadMessages = directMessages.reduce(
       (count, directMessage) => count + directMessage.unreadCount,
       0
     );
+
     const {
       authentication: { user },
+      layout: { value },
     } = state;
 
     return {
       user,
       countAllUnreadMessages,
+      isOpen: value.isSidekickOpen,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { updateLayout };
+    return { updateSidekick };
   }
 
-  slideAnimationEnded = (): void => {
-    if (!this.state.isOpen) {
-      this.setState({ isOpen: false });
+  get isOpen() {
+    return this.props.isOpen;
+  }
+
+  componentDidMount() {
+    const sidekickOpenValue = localStorage.getItem(SIDEKICK_OPEN_STORAGE);
+    const isSidekickOpen = sidekickOpenValue === 'true';
+
+    if (sidekickOpenValue === null) {
+      this.props.updateSidekick({ isOpen: true });
+    } else if (isSidekickOpen !== this.props.isOpen) {
+      this.props.updateSidekick({ isOpen: isSidekickOpen });
     }
-  };
+  }
 
   clickTab(tab: Tabs): void {
     this.setState({
@@ -67,16 +82,16 @@ export class Container extends React.Component<Properties, State> {
     });
   }
 
-  handleSidekickPanel = (): void => {
-    this.props.updateLayout({ isSidekickOpen: !this.state.isOpen });
-    this.setState({ isOpen: !this.state.isOpen });
+  toggleSidekickPanel = (): void => {
+    this.setState({ canStartAnimation: true });
+    this.props.updateSidekick({ isOpen: !this.isOpen });
   };
 
   renderSidekickPanel(): JSX.Element {
     return (
       <div
         className='app-sidekick-panel__target'
-        onClick={this.handleSidekickPanel}
+        onClick={this.toggleSidekickPanel}
       >
         <svg
           className='sidekick-panel-tab__tab'
@@ -155,8 +170,12 @@ export class Container extends React.Component<Properties, State> {
     return (
       <IfAuthenticated showChildren>
         <div
-          className={classNames('sidekick', this.props.className, { 'sidekick__slide-out': !this.state.isOpen })}
-          onAnimationEnd={this.slideAnimationEnded}
+          className={classNames(
+            'sidekick',
+            this.props.className,
+            { 'sidekick--slide-out': this.state.canStartAnimation && !this.isOpen },
+            { 'sidekick--slide-in': this.isOpen }
+          )}
         >
           {this.renderSidekickPanel()}
           <div className='sidekick-panel'>{this.renderTabs()}</div>

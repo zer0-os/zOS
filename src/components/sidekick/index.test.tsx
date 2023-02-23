@@ -6,10 +6,21 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
 
 describe('Sidekick', () => {
+  beforeAll(() => {
+    global.localStorage = {
+      setItem: jest.fn(),
+      getItem: () => null,
+      removeItem: () => {},
+      length: 0,
+      clear: () => {},
+      key: (_) => '',
+    };
+  });
+
   const subject = (props: any = {}) => {
     const allProps = {
       className: '',
-      updateLayout: () => undefined,
+      updateSidekick: jest.fn(),
       ...props,
     };
 
@@ -24,6 +35,29 @@ describe('Sidekick', () => {
     expect(ifAuthenticated.find('.todo').exists()).toBe(true);
   });
 
+  it('open the sidekick in case not data found in storage', () => {
+    const updateSidekick = jest.fn();
+    subject({ updateSidekick });
+
+    expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
+  });
+
+  it('renders sidekick with class animation in', () => {
+    const wrapper = subject({ isOpen: true });
+
+    const sidekick = wrapper.find('.sidekick');
+
+    expect(sidekick.hasClass('sidekick--slide-in')).toBe(true);
+  });
+
+  it('it should not render out class animation', () => {
+    const wrapper = subject({ isOpen: false });
+
+    const sidekick = wrapper.find('.sidekick');
+
+    expect(sidekick.hasClass('sidekick--slide-out')).toBe(false);
+  });
+
   it('renders sidekick panel', () => {
     const wrapper = subject();
 
@@ -33,13 +67,16 @@ describe('Sidekick', () => {
   });
 
   it('renders sidekick when panel tab is clicked', () => {
-    const updateLayout = jest.fn();
-    const wrapper = subject(updateLayout);
+    const updateSidekick = jest.fn();
+    const wrapper = subject({ updateSidekick });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
     ifAuthenticated.find('.app-sidekick-panel__target').simulate('click');
 
-    expect(ifAuthenticated.find('.sidekick__slide-out').exists()).toBe(false);
+    expect(ifAuthenticated.find('.sidekick--slide-out').exists()).toBe(false);
+
+    expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
   });
 
   it('renders default active tab', () => {

@@ -5,17 +5,17 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import { AuthenticationState } from '../../store/authentication/types';
-import { UpdateSidekickPayload, updateSidekick } from '../../store/layout';
+import {
+  UpdateSidekickPayload,
+  updateSidekick,
+  setActiveSidekickTab,
+  SetActiveSidekickTabPayload,
+} from '../../store/layout';
 import { MessengerList } from '../messenger/list';
 import { denormalize } from '../../store/channels';
+import { SidekickTabs as Tabs } from './types';
 
 import './styles.scss';
-
-enum Tabs {
-  NETWORK,
-  MESSAGES,
-  NOTIFICATIONS,
-}
 
 interface PublicProperties {
   className?: string;
@@ -24,17 +24,21 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   updateSidekick: (action: UpdateSidekickPayload) => void;
+  setActiveSidekickTab: (action: SetActiveSidekickTabPayload) => void;
   countAllUnreadMessages: number;
   isOpen: boolean;
+  activeTab: Tabs;
 }
 
 export interface State {
-  activeTab: Tabs;
   canStartAnimation: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { canStartAnimation: false, activeTab: Tabs.MESSAGES };
+  state = { canStartAnimation: false };
+  defaultProps: {
+    activeTab: Tabs.MESSAGES;
+  };
 
   static mapState(state: RootState): Partial<Properties> {
     const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
@@ -53,11 +57,12 @@ export class Container extends React.Component<Properties, State> {
       user,
       countAllUnreadMessages,
       isOpen: value.isSidekickOpen,
+      activeTab: value.activeSidekickTab,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { updateSidekick };
+    return { updateSidekick, setActiveSidekickTab };
   }
 
   get isOpen() {
@@ -65,7 +70,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   clickTab(tab: Tabs): void {
-    this.setState({
+    this.props.setActiveSidekickTab({
       activeTab: tab,
     });
   }
@@ -138,7 +143,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderTabContent(): JSX.Element {
-    switch (this.state.activeTab) {
+    switch (this.props.activeTab) {
       case Tabs.NETWORK:
         return <div className='sidekick__tab-content--network'>NETWORK</div>;
       case Tabs.MESSAGES:

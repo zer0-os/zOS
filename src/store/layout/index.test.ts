@@ -1,4 +1,5 @@
 import { reducer, update, LayoutState } from '.';
+import { SidekickTabs } from '../../components/sidekick/types';
 
 describe('layout reducer', () => {
   const initialExistingState: LayoutState = {
@@ -6,6 +7,7 @@ describe('layout reducer', () => {
       isContextPanelOpen: false,
       isSidekickOpen: false,
       hasContextPanel: false,
+      activeSidekickTab: SidekickTabs.MESSAGES,
     },
   };
 
@@ -15,6 +17,7 @@ describe('layout reducer', () => {
         isContextPanelOpen: false,
         isSidekickOpen: false,
         hasContextPanel: false,
+        activeSidekickTab: SidekickTabs.MESSAGES,
       },
     });
   });

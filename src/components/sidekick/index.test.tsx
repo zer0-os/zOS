@@ -4,12 +4,14 @@ import { shallow } from 'enzyme';
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
+import { SidekickTabs } from './types';
 
 describe('Sidekick', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       className: '',
       updateSidekick: jest.fn(),
+      setActiveSidekickTab: jest.fn(),
       ...props,
     };
 
@@ -59,31 +61,50 @@ describe('Sidekick', () => {
     expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
   });
 
-  it('renders default active tab', () => {
-    const wrapper = subject();
-
-    expect(wrapper.find(MessengerList).exists()).toBe(true);
-  });
-
   it('handle network tab content', () => {
-    const wrapper = subject();
+    const setActiveSidekickTab = jest.fn();
+    const wrapper = subject({ setActiveSidekickTab });
     wrapper.find('.sidekick__tabs-network').simulate('click');
 
-    expect(wrapper.find('.sidekick__tab-content--network').exists()).toBe(true);
+    expect(setActiveSidekickTab).toHaveBeenCalledWith({ activeTab: SidekickTabs.NETWORK });
   });
 
   it('handle messages tab content', () => {
-    const wrapper = subject();
+    const setActiveSidekickTab = jest.fn();
+    const wrapper = subject({ setActiveSidekickTab });
     wrapper.find('.sidekick__tabs-messages').simulate('click');
 
-    expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
+    expect(setActiveSidekickTab).toHaveBeenCalledWith({ activeTab: SidekickTabs.MESSAGES });
   });
 
   it('handle notifications tab content', () => {
-    const wrapper = subject();
+    const setActiveSidekickTab = jest.fn();
+    const wrapper = subject({ setActiveSidekickTab });
+    wrapper.find('.sidekick__tabs-notifications').simulate('click');
+
+    expect(setActiveSidekickTab).toHaveBeenCalledWith({ activeTab: SidekickTabs.NOTIFICATIONS });
+  });
+
+  it('render notifications tab content', () => {
+    const wrapper = subject({ activeTab: SidekickTabs.NOTIFICATIONS });
     wrapper.find('.sidekick__tabs-notifications').simulate('click');
 
     expect(wrapper.find('.sidekick__tab-content--notifications').exists()).toBe(true);
+  });
+
+  it('render messages tab content', () => {
+    const wrapper = subject({ activeTab: SidekickTabs.MESSAGES });
+    wrapper.find('.sidekick__tabs-messages').simulate('click');
+
+    expect(wrapper.find(MessengerList).exists()).toBe(true);
+    expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
+  });
+
+  it('render network tab content', () => {
+    const wrapper = subject({ activeTab: SidekickTabs.NETWORK });
+    wrapper.find('.sidekick__tabs-network').simulate('click');
+
+    expect(wrapper.find('.sidekick__tab-content--network').exists()).toBe(true);
   });
 
   it('renders total unread messages', () => {

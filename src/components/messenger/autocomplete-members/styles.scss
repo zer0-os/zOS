@@ -2,6 +2,7 @@
 @use '../../../modules/animation' as animation;
 
 $image-height: 28px;
+$image-member-height: 16px;
 
 .new-message-select {
   font-size: 14px;
@@ -12,24 +13,33 @@ $image-height: 28px;
     }
 
     &__control {
+      background-image: url(../../../search-member-icon.svg);
+      background-repeat: no-repeat;
+      background-position: 10%;
+      text-align: left;
+      padding: 0 20px 0 33px;
       height: auto;
       flex: 1 1 auto;
       display: flex;
       z-index: 2;
       cursor: text;
-      background-color: theme.$background-color-primary;
-      border: 1px solid theme.$address-bar-border-color-inner;
+      background-color: transparent;
+      border: 1px solid theme.$font-color-secondary;
+      border-radius: 20px;
       color: theme.$font-color-primary;
       box-shadow: none !important;
       &--is-focused,
       &:hover {
-        background: theme.$address-bar-background-color-inner-hover;
-        border: 1px solid theme.$address-bar-border-color-inner-hover !important;
+        border: 1px solid theme.$font-color-secondary-hover !important;
       }
     }
 
     &__indicators {
       cursor: pointer;
+    }
+
+    &__placeholder {
+      color: theme.$color-greyscale-11;
     }
 
     &__menu {
@@ -43,8 +53,8 @@ $image-height: 28px;
       width: 100%;
       box-shadow: none;
       border-radius: 5px;
-      background: theme.$address-bar-background-color-inner-hover;
-      border: 1px solid theme.$address-bar-border-color-inner-hover !important;
+      background: theme.$font-color-secondary-hover;
+      border: 1px solid theme.$font-color-secondary !important;
     }
 
     &__option {
@@ -59,9 +69,10 @@ $image-height: 28px;
       justify-content: flex-start;
       align-items: center;
       flex-direction: row;
+
       &:hover,
       &--is-focused {
-        background: rgba(60, 161, 255, 0.05);
+        background: theme.$color-secondary-transparency-4;
       }
 
       &-image {
@@ -81,7 +92,7 @@ $image-height: 28px;
       color: theme.$font-color-primary;
       font-weight: 400;
       padding: 2px 8px;
-      background: rgba(177, 78, 255, 0.25);
+      //background: rgba(177, 78, 255, 0.25);
       border-radius: 12px;
       &__label {
         font-size: 12px;
@@ -96,6 +107,69 @@ $image-height: 28px;
           background: transparent;
           color: theme.$font-color-primary;
         }
+      }
+    }
+  }
+}
+.current__selections {
+  display: flex;
+  flex-direction: column;
+  color: theme.$color-greyscale-11;
+  margin-top: 20px;
+  text-align: left;
+  font-weight: 400;
+  font-size: 12px;
+  padding: 0 3px;
+
+  &-count {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  &-list {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-content: space-around;
+    flex-wrap: wrap;
+
+    &__member {
+      display: flex;
+      padding: 4px 8px;
+      margin-bottom: 14px;
+      margin-right: 4px;
+      background: theme.$color-greyscale-3;
+      border-radius: 8px;
+      width: fit-content;
+      align-items: center;
+      cursor: default;
+      &:hover {
+        background: theme.$color-greyscale-5;
+      }
+    }
+
+    &__image {
+      display: inline-block;
+      width: $image-member-height;
+      height: $image-member-height;
+      border-radius: $image-member-height / 2;
+      margin: 1px 10px 0 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      flex: 0 0 auto;
+    }
+    &__delete {
+      margin-left: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      color: theme.$color-greyscale-11;
+      cursor: pointer;
+      &::before {
+        content: '\00D7';
+      }
+      &:hover {
+        color: theme.$font-color-primary;
       }
     }
   }

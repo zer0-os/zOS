@@ -72,17 +72,29 @@ describe('autocomplete-members', () => {
 
   it('should call onChange', async () => {
     const onChange = jest.fn();
-    const wrapper = subject({ onChange, isMulti: false });
+    const wrapper = subject({ onChange, isMulti: true });
 
-    wrapper.find(AsyncSelect).prop('onChange')(mockedOptions[1], '' as unknown as ActionMeta<unknown>);
-
-    expect(onChange).toHaveBeenCalledWith(mockedOptions[1].value);
-
-    wrapper.find(AsyncSelect).prop('onChange')('', '' as unknown as ActionMeta<unknown>);
-    expect(onChange).toHaveBeenCalledWith(null);
-
-    wrapper.setProps({ isMulti: true });
     wrapper.find(AsyncSelect).prop('onChange')(mockedOptions, '' as unknown as ActionMeta<unknown>);
+
+    expect(onChange).toHaveBeenCalledWith(mockedOptions.map((option) => option.value));
+  });
+
+  it('should render selections members', () => {
+    const search = jest.fn();
+    const wrapper = subject(search);
+
+    expect(wrapper.find('.current__selections').exists()).toBe(true);
+  });
+
+  it('should call onChange when remove member is clicked', async () => {
+    const onChange = jest.fn();
+    const wrapper = subject({ onChange, isMulti: true });
+    wrapper.find(AsyncSelect).prop('onChange')(mockedOptions, '' as unknown as ActionMeta<unknown>);
+
+    wrapper
+      .find('.current__selections-list__delete')
+      .first()
+      .simulate('click', { target: { getAttribute: () => ({ 'data-value': mockedOptions[0].value }) } });
 
     expect(onChange).toHaveBeenCalledWith(mockedOptions.map((option) => option.value));
   });

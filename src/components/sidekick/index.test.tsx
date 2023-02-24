@@ -6,17 +6,6 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
 
 describe('Sidekick', () => {
-  beforeAll(() => {
-    global.localStorage = {
-      setItem: jest.fn(),
-      getItem: () => null,
-      removeItem: () => {},
-      length: 0,
-      clear: () => {},
-      key: (_) => '',
-    };
-  });
-
   const subject = (props: any = {}) => {
     const allProps = {
       className: '',
@@ -33,13 +22,6 @@ describe('Sidekick', () => {
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
     expect(ifAuthenticated.find('.todo').exists()).toBe(true);
-  });
-
-  it('open the sidekick in case not data found in storage', () => {
-    const updateSidekick = jest.fn();
-    subject({ updateSidekick });
-
-    expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
   });
 
   it('renders sidekick with class animation in', () => {
@@ -68,13 +50,11 @@ describe('Sidekick', () => {
 
   it('renders sidekick when panel tab is clicked', () => {
     const updateSidekick = jest.fn();
-    const wrapper = subject({ updateSidekick });
+    const wrapper = subject({ updateSidekick, isOpen: false });
 
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+    expect(wrapper.find('.sidekick').hasClass('sidekick--slide-out')).toBe(false);
 
-    ifAuthenticated.find('.app-sidekick-panel__target').simulate('click');
-
-    expect(ifAuthenticated.find('.sidekick--slide-out').exists()).toBe(false);
+    wrapper.find('.app-sidekick-panel__target').simulate('click');
 
     expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
   });

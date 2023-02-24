@@ -1,5 +1,7 @@
+import { SIDEKICK_OPEN_STORAGE } from './constants';
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import type { AppLayout, LayoutState, UpdateSidekickPayload } from './types';
+import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 
 export enum SagaActionTypes {
   updateSidekick = 'layout/saga/updateSidekick',
@@ -10,7 +12,7 @@ export const updateSidekick = createAction<UpdateSidekickPayload>(SagaActionType
 const initialState: LayoutState = {
   value: {
     isContextPanelOpen: false,
-    isSidekickOpen: false,
+    isSidekickOpen: resolveFromLocalStorageAsBoolean(SIDEKICK_OPEN_STORAGE),
     hasContextPanel: false,
   },
 };

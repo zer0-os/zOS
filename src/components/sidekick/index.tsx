@@ -10,7 +10,6 @@ import { MessengerList } from '../messenger/list';
 import { denormalize } from '../../store/channels';
 
 import './styles.scss';
-import { SIDEKICK_OPEN_STORAGE } from '../../store/layout/constants';
 
 enum Tabs {
   NETWORK,
@@ -63,17 +62,6 @@ export class Container extends React.Component<Properties, State> {
 
   get isOpen() {
     return this.props.isOpen;
-  }
-
-  componentDidMount() {
-    const sidekickOpenValue = localStorage.getItem(SIDEKICK_OPEN_STORAGE);
-    const isSidekickOpen = sidekickOpenValue === 'true';
-
-    if (sidekickOpenValue === null) {
-      this.props.updateSidekick({ isOpen: true });
-    } else if (isSidekickOpen !== this.props.isOpen) {
-      this.props.updateSidekick({ isOpen: isSidekickOpen });
-    }
   }
 
   clickTab(tab: Tabs): void {

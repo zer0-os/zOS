@@ -36,7 +36,6 @@ There is always work to be done on the core platform, so if you've noticed a bug
 
 1. Increment the version number in the `package.json` file and update the `package-lock.json` (`npm install --package-lock-only`)
 1. Create a PR and merge your version update
-1. Issue the `./bin/create-release` command to create a new tag
 1. View https://github.com/zer0-os/zOS/releases, find your new release and edit it, ensure that `Set as the latest release` is checked, and click the `Update Release` button
 1. View https://github.com/zer0-os/zOS/actions, watch for your release deployment to complete
 1. View https://zos.zer0.io, open the Developer Tools Console, verify that your version number is correct (matches your version increment in package.json from the first step)

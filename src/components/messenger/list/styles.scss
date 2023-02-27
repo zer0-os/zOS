@@ -1,11 +1,22 @@
 @use '../../../modules/animation' as animation;
 @use '../../../shared-components/theme-engine/theme' as theme;
 @import '../../../variables';
+@import '../../../layout';
+
+@keyframes conversation-slide-in {
+  0% {
+    right: 0;
+  }
+  100% {
+    right: $width-sidekick;
+  }
+}
 
 .direct-message-members {
   overflow-x: hidden;
   overflow-y: scroll;
   height: 100%;
+  padding: 0 7px 0 10px;
 
   &__user {
     display: flex;
@@ -58,86 +69,117 @@
       flex: 1 1;
     }
   }
+
+  .messages-list {
+    &__start {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 400;
+      color: theme.$font-color-primary;
+      margin-top: 40px;
+      &-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 12px;
+        path {
+          color: theme.$color-primary-11;
+        }
+      }
+      &-conversation {
+        margin-top: 18px;
+        font-weight: 700;
+        color: theme.$color-secondary-11;
+        cursor: pointer;
+      }
+    }
+    &__items {
+      animation: conversation-slide-in 600ms ease-in forwards;
+    }
+  }
 }
 
 .header-button {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 14px;
   color: theme.$font-color-primary;
   background-color: transparent;
   transition: background-color animation.$animation-duration ease-out;
 
-  cursor: pointer;
+  cursor: default;
   height: 40px;
   padding: 0px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  text-transform: uppercase;
 
   &__icon {
-    font-size: 18px;
-    &::before {
-      content: '\002B';
-    }
-  }
-  &:hover {
-    color: theme.$font-color-primary-hover;
-    background-color: theme.$background-color-primary-hover;
-
-    .header-button__icon {
-      background-color: theme.$background-color-secondary-hover;
+    z-index: 30;
+    &-plus {
+      cursor: pointer;
+      path {
+        stroke: theme.$actionable-active-color;
+      }
     }
   }
 }
 
-.start-chat {
-  background: theme.$dialog-background-color;
-  border-radius: theme.$button-box-radius;
+.start__chat {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
   overflow: initial;
 
-  hr {
-    margin: 0 33px;
+  &-title {
+    width: 100%;
+    display: flex;
+    font-weight: 700;
+    font-size: 16px;
+    color: theme.$actionable-color;
+    margin: 15px 0 20px 6px;
   }
 
-  &__header {
-    width: 100%;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: center;
-
-    h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: theme.$actionable-color;
+  &-return {
+    cursor: pointer;
+    font-size: 20px;
+    font-style: initial;
+    margin-right: 5px;
+    &::before {
+      content: '\2190';
     }
   }
 
-  &__body {
+  &-search {
+    width: 100%;
     text-align: center;
   }
 
-  &__footer {
-    font-size: 14px;
-    padding: 15px 34px;
-    padding-top: 40px;
-    display: flex;
-    line-height: 22px;
-    flex-direction: row-reverse;
-
-    &-add {
-      color: theme.$actionable-color;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-left: 30px;
-      background: none;
-      border: none;
-      outline: none;
-      font-weight: 600;
-      &__disabled {
-        cursor: default;
-      }
+  &-continue {
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 30px;
+    background: theme.$color-secondary-4 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    font-weight: 600;
+    .button__content {
+      color: theme.$color-secondary-11 !important;
+      text-shadow: none !important;
+    }
+    .button__wash {
+      background-color: theme.$color-secondary-transparency-6 !important;
+    }
+    &::before {
+      box-shadow: none !important;
+    }
+    &::after {
+      border-left: 2px solid theme.$color-secondary-11 !important;
+      border-right: 2px solid theme.$color-secondary-11 !important;
     }
   }
 }

@@ -9,7 +9,6 @@ import { lastSeenText } from './utils';
 import { fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { compareDatesDesc } from '../../../lib/date';
-import { Dialog } from '@zer0-os/zos-component-library';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createDirectMessage } from '../../../store/channels-list';
@@ -17,6 +16,9 @@ import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import './styles.scss';
+import { Button } from '@zer0-os/zos-component-library';
+import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
+import { IconButton } from '../../icon-button';
 
 export interface PublicProperties {
   className?: string;
@@ -24,7 +26,7 @@ export interface PublicProperties {
 }
 
 interface State {
-  showCreateDialog: boolean;
+  showCreateConversation: boolean;
   userIds: string[];
 }
 export interface Properties extends PublicProperties {
@@ -35,7 +37,7 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { showCreateDialog: false, userIds: [] };
+  state = { showCreateConversation: false, userIds: [] };
 
   static mapState(state: RootState): Partial<Properties> {
     const messengerList = denormalize(state.channelsList.value, state)
@@ -65,8 +67,8 @@ export class Container extends React.Component<Properties, State> {
     this.props.setActiveMessengerChat(directMessageId);
   }
 
-  toggleChatDialog = (): void => {
-    this.setState({ showCreateDialog: !this.state.showCreateDialog, userIds: [] });
+  toggleConversation = (): void => {
+    this.setState({ showCreateConversation: !this.state.showCreateConversation, userIds: [] });
   };
 
   renderStatus(directMessage: Channel): JSX.Element {
@@ -143,12 +145,19 @@ export class Container extends React.Component<Properties, State> {
         }}
         className='direct-message-members__user-tooltip'
       >
-        <div
-          className='header-button'
-          onClick={this.toggleChatDialog}
-        >
-          <span className='header-button__title'>Messages</span>
-          <span className='header-button__icon' />
+        <div className='header-button'>
+          <span className='header-button__title'>Conversations</span>
+          <span
+            className='header-button__icon'
+            onClick={this.toggleConversation}
+          >
+            <IconButton
+              onClick={this.toggleConversation}
+              Icon={IconMessagePlusSquare}
+              size={18}
+              className='header-button__icon-plus'
+            />
+          </span>
         </div>
       </Tooltip>
     );
@@ -156,75 +165,84 @@ export class Container extends React.Component<Properties, State> {
 
   handleAddMessenger = (): void => {
     const { userIds } = this.state;
+    if (!userIds.length) return;
+
     if (userIds.length) {
       this.props.createDirectMessage({ userIds });
     }
-    this.toggleChatDialog();
+    this.toggleConversation();
   };
 
-  renderButton(): JSX.Element {
-    if (this.state.userIds.length === 0) {
-      return (
-        <Tooltip
-          className='new-message-modal__disabled'
-          placement='left'
-          overlay='Please select at least one user to send a message.'
-          align={{
-            offset: [
-              10,
-              0,
-            ],
-          }}
-        >
-          <button className='start-chat__footer-add start-chat__footer-add__disabled'>Start Chat</button>
-        </Tooltip>
-      );
-    }
-
+  renderCreateConversation = (): JSX.Element => {
     return (
-      <button
-        className='start-chat__footer-add'
-        onClick={this.handleAddMessenger}
-      >
-        Start Chat
-      </button>
-    );
-  }
-
-  renderCreateMessageDialog = (): JSX.Element => {
-    return (
-      <Dialog onClose={this.toggleChatDialog}>
-        <div className={classNames('start-chat', 'border-primary')}>
-          <div className='start-chat__header'>
-            <h3 className='glow-text'>New Message</h3>
-          </div>
-          <hr className='glow' />
-          <div className='start-chat__body'>
-            <AutocompleteMembers
-              autoFocus
-              isMulti
-              includeImage
-              className='new-message-select'
-              onChange={this.usersChanged}
-              search={this.usersInMyNetworks}
-              placeholder='Find people'
-              selectedItems={[]}
-              noResultsText={'No user found'}
-            />
-          </div>
-          <hr className='glow' />
-          <div className='start-chat__footer'>{this.renderButton()}</div>
+      <div className='start__chat'>
+        <span className='start__chat-title'>
+          <i
+            className='start__chat-return'
+            onClick={this.toggleConversation}
+          />
+          New message
+        </span>
+        <div className='start__chat-search'>
+          <AutocompleteMembers
+            autoFocus
+            isMulti
+            includeImage
+            className='new-message-select'
+            onChange={this.usersChanged}
+            search={this.usersInMyNetworks}
+            placeholder='Search for a person'
+            selectedItems={[]}
+            noResultsText={'No user found'}
+          />
+          {this.state.userIds.length > 0 && (
+            <Button
+              className='start__chat-continue'
+              onClick={this.handleAddMessenger}
+            >
+              Continue
+            </Button>
+          )}
         </div>
-      </Dialog>
+      </div>
+    );
+  };
+
+  renderNoMessages = (): JSX.Element => {
+    return (
+      <div className='messages-list__start'>
+        <div className='messages-list__start-title'>
+          <span className='messages-list__start-icon'>
+            <IconMessageQuestionSquare
+              size={34}
+              label='You have no messages yet'
+            />
+          </span>
+          You have no messages yet
+        </div>
+        <span
+          className='messages-list__start-conversation'
+          onClick={this.toggleConversation}
+        >
+          Start a Conversation
+        </span>
+      </div>
     );
   };
 
   render() {
     return (
       <div className='direct-message-members'>
-        <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
-        <div className='messages-list__items'>{this.props.directMessages.map(this.renderMember)}</div>
-        {this.state.showCreateDialog && this.renderCreateMessageDialog()}
+        <div className='messages-list__direct-messages'>
+          {!this.state.showCreateConversation && this.renderNewMessageModal()}
+        </div>
+        {this.props.directMessages && (
+          <div className='messages-list__items'>
+            {!this.state.showCreateConversation && this.props.directMessages.map(this.renderMember)}
+            {this.state.showCreateConversation && this.renderCreateConversation()}
+          </div>
+        )}
+        {!this.props.directMessages && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </div>
     );
   }

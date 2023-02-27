@@ -25,7 +25,7 @@ export interface Properties {
 
 interface State {
   networkId: string;
-  currentSelection: Option | Option[];
+  currentSelection: Option[];
 }
 
 export interface Item {
@@ -74,11 +74,8 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     const currentSelection = props.selectedItems
       .map(this.itemToOption)
       .filter((option) => option.value && option.value.trim() !== '');
-    if (props.isMulti) {
-      return currentSelection;
-    } else {
-      return currentSelection[0];
-    }
+
+    return currentSelection;
   };
 
   itemToOption = (item: Item = null): Option => {
@@ -98,16 +95,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
   handleChange = (currentSelection): void => {
     this.setState({ currentSelection });
-
-    if (this.props.isMulti) {
-      this.props.onChange(currentSelection.map((option) => option.value));
-    } else {
-      if (currentSelection) {
-        this.props.onChange(currentSelection.value);
-      } else {
-        this.props.onChange(null);
-      }
-    }
+    this.props.onChange(currentSelection.map((option) => option.value));
   };
 
   loadOptions = async (input: string) => {
@@ -126,27 +114,77 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     );
   };
 
+  handleRemoveMember = (event) => {
+    if (!this.props.onChange) return;
+
+    const { currentSelection } = this.state;
+    const valueMember = event.target.getAttribute('data-value');
+    const removedValue = currentSelection.find((val) => val.value === valueMember);
+    if (!removedValue) return;
+    this.handleChange(currentSelection.filter((val) => val.value !== valueMember));
+  };
+
+  renderSelections = (): JSX.Element => {
+    return (
+      <div className='current__selections'>
+        {this.state.currentSelection.length > 0 && (
+          <div className='current__selections-members'>
+            <span className='current__selections-count'>
+              {this.state.currentSelection.length} member{this.state.currentSelection.length > 1 ? 's' : ''} selected
+            </span>
+            <div className='current__selections-list'>
+              {this.state.currentSelection.map((val) => (
+                <div
+                  key={val.value}
+                  className='current__selections-list__member'
+                >
+                  {val.image && (
+                    <img
+                      className='current__selections-list__image'
+                      src={val.image}
+                      alt='member'
+                    />
+                  )}
+                  {val.label}
+                  <span
+                    className='current__selections-list__delete'
+                    data-value={val.value}
+                    onClick={this.handleRemoveMember}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   get closeOnSelect() {
     return !this.props.isMulti;
   }
 
   render() {
     return (
-      <AsyncSelect
-        isClearable
-        name={this.props.name}
-        classNamePrefix='chat-select'
-        autoFocus={this.props.autoFocus}
-        isMulti={this.props.isMulti}
-        closeMenuOnSelect={this.closeOnSelect}
-        className={classNames('autocomplete', this.props.className)}
-        value={this.state.currentSelection}
-        placeholder={this.props.placeholder}
-        noOptionsMessage={() => this.props.noResultsText}
-        loadOptions={this.loadOptions}
-        onChange={this.handleChange}
-        components={{ Option: this.customOption }}
-      />
+      <>
+        <AsyncSelect
+          isClearable={false}
+          name={this.props.name}
+          classNamePrefix='chat-select'
+          autoFocus={this.props.autoFocus}
+          isMulti={this.props.isMulti}
+          closeMenuOnSelect={this.closeOnSelect}
+          className={classNames('autocomplete', this.props.className)}
+          value={this.state.currentSelection}
+          placeholder={this.props.placeholder}
+          noOptionsMessage={() => null}
+          loadOptions={this.loadOptions}
+          onChange={this.handleChange}
+          controlShouldRenderValue={false}
+          components={{ Option: this.customOption, DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+        />
+        {this.renderSelections()}
+      </>
     );
   }
 }

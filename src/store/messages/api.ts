@@ -11,7 +11,7 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
     filter.lastCreatedAt = lastCreatedAt;
   }
 
-  const response = await get<any>(`/chatChannels/${channelId}/messages`).send(filter);
+  const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
   return response.body;
 }
 

@@ -168,7 +168,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     return (
       <>
         <AsyncSelect
-          isClearable
+          isClearable={false}
           name={this.props.name}
           classNamePrefix='chat-select'
           autoFocus={this.props.autoFocus}

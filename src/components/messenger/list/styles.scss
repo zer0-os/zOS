@@ -84,6 +84,9 @@
         flex-direction: column;
         align-items: center;
         margin-bottom: 12px;
+        path {
+          color: theme.$color-primary-11;
+        }
       }
       &-conversation {
         margin-top: 18px;
@@ -99,7 +102,7 @@
 }
 
 .header-button {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 14px;
   color: theme.$font-color-primary;
@@ -112,20 +115,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  text-transform: uppercase;
 
   &__icon {
     z-index: 30;
     &-plus {
       cursor: pointer;
-      &:hover {
-        path {
-          stroke: theme.$actionable-active-color;
-        }
-      }
-
       path {
-        stroke: theme.$actionable-inactive-color;
+        stroke: theme.$actionable-active-color;
       }
     }
   }
@@ -158,7 +154,7 @@
     }
   }
 
-  &-body {
+  &-search {
     width: 100%;
     text-align: center;
   }

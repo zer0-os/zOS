@@ -91,8 +91,8 @@ export function* fetch(action) {
     const existingMessages = yield select(rawMessagesSelector(channelId));
     messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
     messages = [
-      ...existingMessages,
       ...messagesResponse.messages,
+      ...existingMessages,
     ];
   } else {
     messagesResponse = yield call(fetchMessagesByChannelId, channelId);

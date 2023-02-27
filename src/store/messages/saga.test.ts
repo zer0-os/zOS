@@ -559,7 +559,7 @@ describe('messages saga', () => {
     ]);
   });
 
-  it('appends message ids to channels state when referenceTimestamp included', async () => {
+  it('prepends message ids to channels state when referenceTimestamp included', async () => {
     const channelId = 'channel-id';
     const messageResponse = {
       hasMore: true,
@@ -596,10 +596,10 @@ describe('messages saga', () => {
       ])
       .run();
 
-    expect(channels[channelId].messages).toIncludeSameMembers([
-      'the-first-message-id',
+    expect(channels[channelId].messages).toEqual([
       'the-second-message-id',
       'the-third-message-id',
+      'the-first-message-id',
     ]);
   });
 

@@ -66,7 +66,9 @@ export class Container extends React.Component<Properties> {
             <WalletManager className='main__wallet-manager' />
           </div>
         </div>
-        <Sidekick className='main__sidekick' />
+
+        {this.props.context.isAuthenticated && <Sidekick className='main__sidekick' />}
+
         <ThemeEngine />
 
         {this.props.context.isAuthenticated && <MessengerChat />}

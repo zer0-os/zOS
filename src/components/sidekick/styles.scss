@@ -8,7 +8,14 @@
   background-color: theme.$background-color-tertiary-hover;
   width: $width-sidekick;
   height: 100%;
-  animation: sidekick-slide-in animation.$animation-duration-double ease-in forwards;
+  margin-right: -$width-sidekick;
+
+  &--slide-in {
+    animation: sidekick-slide-in animation.$animation-duration-double ease-in forwards;
+  }
+  &--slide-out {
+    animation: sidekick-slide-out animation.$animation-duration-double ease-out forwards;
+  }
 
   &__tabs {
     position: absolute;
@@ -39,10 +46,6 @@
         transition-duration: animation.$animation-duration-double;
       }
     }
-  }
-
-  &__slide-out {
-    animation: sidekick-slide-out animation.$animation-duration-double ease-out forwards;
   }
 
   .scroll-container__gradient {
@@ -85,6 +88,7 @@
     height: 34px;
     width: 34px;
     border-radius: 50%;
+    cursor: pointer;
   }
 }
 

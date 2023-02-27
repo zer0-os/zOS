@@ -10,6 +10,7 @@ import {
   updateSidekick,
   setActiveSidekickTab,
   SetActiveSidekickTabPayload,
+  syncSidekickState,
 } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
 import { denormalize } from '../../store/channels';
@@ -25,6 +26,7 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   updateSidekick: (action: UpdateSidekickPayload) => void;
   setActiveSidekickTab: (action: SetActiveSidekickTabPayload) => void;
+  syncSidekickState: () => void;
   countAllUnreadMessages: number;
   isOpen: boolean;
   activeTab: Tabs;
@@ -62,7 +64,11 @@ export class Container extends React.Component<Properties, State> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { updateSidekick, setActiveSidekickTab };
+    return { updateSidekick, setActiveSidekickTab, syncSidekickState };
+  }
+
+  componentDidMount() {
+    this.props.syncSidekickState();
   }
 
   get isOpen() {

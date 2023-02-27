@@ -1,23 +1,22 @@
-import { SIDEKICK_OPEN_STORAGE } from './constants';
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import type { AppLayout, LayoutState, UpdateSidekickPayload, SetActiveSidekickTabPayload } from './types';
-import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
-import { resolveActiveTab } from './utils';
 
 export enum SagaActionTypes {
   updateSidekick = 'layout/saga/updateSidekick',
   setActiveSidekickTab = 'layout/saga/setActiveSidekickTab',
+  syncSidekickState = 'layout/saga/syncSidekickState',
 }
 
 export const updateSidekick = createAction<UpdateSidekickPayload>(SagaActionTypes.updateSidekick);
 export const setActiveSidekickTab = createAction<SetActiveSidekickTabPayload>(SagaActionTypes.setActiveSidekickTab);
+export const syncSidekickState = createAction(SagaActionTypes.syncSidekickState);
 
 const initialState: LayoutState = {
   value: {
     isContextPanelOpen: false,
-    isSidekickOpen: resolveFromLocalStorageAsBoolean(SIDEKICK_OPEN_STORAGE),
     hasContextPanel: false,
-    activeSidekickTab: resolveActiveTab(),
+    isSidekickOpen: false,
+    activeSidekickTab: null,
   },
 };
 

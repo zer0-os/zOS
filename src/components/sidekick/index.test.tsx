@@ -12,11 +12,19 @@ describe('Sidekick', () => {
       className: '',
       updateSidekick: jest.fn(),
       setActiveSidekickTab: jest.fn(),
+      syncSidekickState: jest.fn(),
       ...props,
     };
 
     return shallow(<Container {...allProps} />);
   };
+
+  it('sync state', () => {
+    const syncSidekickState = jest.fn();
+    subject({ syncSidekickState });
+
+    expect(syncSidekickState).toHaveBeenCalled();
+  });
 
   it('adds className', () => {
     const wrapper = subject({ className: 'todo' });

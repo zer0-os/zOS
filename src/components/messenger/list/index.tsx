@@ -163,7 +163,7 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
-  handleAddMessenger = (): void => {
+  handleCreateConversation = (): void => {
     const { userIds } = this.state;
     if (!userIds.length) return;
 
@@ -198,7 +198,9 @@ export class Container extends React.Component<Properties, State> {
           {this.state.userIds.length > 0 && (
             <Button
               className='start__chat-continue'
-              onClick={this.handleAddMessenger}
+              onClick={this.handleCreateConversation}
+              onEnterKeyPress={this.handleCreateConversation}
+              tabIndex={0}
             >
               Create Group
             </Button>

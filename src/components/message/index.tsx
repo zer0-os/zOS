@@ -15,6 +15,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
 import MessageMenu from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
+import { textToEmojis } from './text-to-emojis';
 
 interface Properties extends MessageModel {
   className: string;
@@ -164,7 +165,7 @@ export class Message extends React.Component<Properties, State> {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return part;
+        return textToEmojis(part);
       }
 
       if (match[2] === 'user') {

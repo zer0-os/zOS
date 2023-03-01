@@ -1,3 +1,6 @@
+import { emojiIndex } from 'emoji-mart';
+import ifEmoji from 'if-emoji';
+
 export interface MentionsConfig {
   markup: string;
   regex: RegExp;
@@ -34,8 +37,35 @@ export const tagMentionsConfig: MentionsConfig = {
   },
 };
 
+const EMOJI_CACHE: Record<string, string> = {};
+
+export const emojiMentionsConfig: MentionsConfig = {
+  markup: ':__id__:',
+  regex: /:([a-zA-Z0-9-_+]+):/,
+  regexGlobal: /:([a-zA-Z0-9-_+]+):/gi,
+  displayTransform: (id) => {
+    if (EMOJI_CACHE[id]) {
+      return EMOJI_CACHE[id];
+    }
+
+    const emojis = emojiIndex.search(id);
+    if (emojis.length) {
+      const foundEmoji = emojis[0] as { short_names: string[]; native: string };
+      const emoji = foundEmoji.native;
+      if (foundEmoji.short_names.includes(id) && ifEmoji(emoji)) {
+        EMOJI_CACHE[id] = emoji;
+        return EMOJI_CACHE[id];
+      }
+    }
+
+    EMOJI_CACHE[id] = `:${id}:`;
+    return EMOJI_CACHE[id];
+  },
+};
+
 export const mentionsConfigs: MentionsConfig[] = [
   userMentionsConfig,
   quoteMentionsConfig,
   tagMentionsConfig,
+  emojiMentionsConfig,
 ];

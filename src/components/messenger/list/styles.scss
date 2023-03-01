@@ -141,7 +141,8 @@
     font-weight: 700;
     font-size: 16px;
     color: theme.$actionable-color;
-    margin: 15px 0 20px 6px;
+    margin: 9px 0 20px -2px;
+    align-items: center;
   }
 
   &-return {

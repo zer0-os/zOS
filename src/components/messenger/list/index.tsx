@@ -200,7 +200,7 @@ export class Container extends React.Component<Properties, State> {
               className='start__chat-continue'
               onClick={this.handleAddMessenger}
             >
-              Continue
+              Create Group
             </Button>
           )}
         </div>

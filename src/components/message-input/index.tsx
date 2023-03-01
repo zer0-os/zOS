@@ -10,10 +10,13 @@ import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { IconFaceSmile } from '@zero-tech/zui/icons';
-import { IconButton } from '../icon-button';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { EmojiPicker } from './emoji-picker';
+import { IconButton } from '../icon-button';
+import { IconMicrophone2 } from '@zero-tech/zui/icons';
+import AudioCards from '../../platform-apps/channels/audio-cards';
+import MessageAudioRecorder from '../message-audio-recorder';
 
 import './styles.scss';
 
@@ -33,10 +36,11 @@ interface State {
   mentionedUserIds: string[];
   media: any[];
   isEmojisActive: boolean;
+  isMicActive: boolean;
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [], isEmojisActive: false };
+  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [], isMicActive: false, isEmojisActive: false };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
 
@@ -81,7 +85,11 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   }
 
-  onSubmit = (event): void => {
+  get audios() {
+    return this.state.media.filter((m) => m.mediaType === 'audio');
+  }
+
+  onSend = (event): void => {
     const { mentionedUserIds, value, media } = this.state;
     if (!event.shiftKey && event.key === Key.Enter && value) {
       event.preventDefault();
@@ -89,6 +97,28 @@ export class MessageInput extends React.Component<Properties, State> {
       this.props.onSubmit(value, mentionedUserIds, media);
       this.setState({ value: '', mentionedUserIds: [], media: [] });
     }
+  };
+
+  startMic = (): void => {
+    if (this.state.isMicActive) {
+      return this.cancelRecording();
+    }
+    this.setState({ isMicActive: true });
+  };
+
+  cancelRecording = (): void => {
+    this.setState({ isMicActive: false });
+    this.props.onMessageInputRendered(this.textareaRef);
+  };
+
+  createAudioClip = (recordedBlob: Media) => {
+    if (!this.state.isMicActive) {
+      return;
+    }
+
+    this.mediaSelected([recordedBlob]);
+    this.setState({ isMicActive: false });
+    this.props.onMessageInputRendered(this.textareaRef);
   };
 
   contentChanged = (event): void => {
@@ -227,6 +257,10 @@ export class MessageInput extends React.Component<Properties, State> {
                   onRemoveImage={this.removeMediaPreview}
                   size='small'
                 />
+                <AudioCards
+                  audios={this.audios}
+                  onRemove={this.removeMediaPreview}
+                />
                 {this.props.reply && (
                   <ReplyCard
                     message={this.props.reply.message}
@@ -244,12 +278,18 @@ export class MessageInput extends React.Component<Properties, State> {
                     onSelect={this.onInsertEmoji}
                   />
                 </div>
+                {this.state.isMicActive && (
+                  <MessageAudioRecorder
+                    onClose={this.cancelRecording}
+                    onMediaSelected={this.createAudioClip}
+                  />
+                )}
                 <MentionsInput
                   inputRef={this.textareaRef}
                   className='mentions-text-area__wrap'
                   id={this.props.id}
                   placeholder={this.props.placeholder}
-                  onKeyDown={this.onSubmit}
+                  onKeyDown={this.onSend}
                   onChange={this.contentChanged}
                   onBlur={this._handleBlur}
                   value={this.state.value}
@@ -271,6 +311,14 @@ export class MessageInput extends React.Component<Properties, State> {
               // className='image-send__icon's
             />
           </div>
+        </div>
+        <div className='message-input__icons'>
+          <IconButton
+            onClick={this.startMic}
+            Icon={IconMicrophone2}
+            size={16}
+            className='record-voice__icon'
+          />
         </div>
       </div>
     );

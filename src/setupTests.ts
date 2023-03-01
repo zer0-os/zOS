@@ -14,3 +14,5 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock;
+
+jest.mock('react-mic', () => ({}));

@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: '16'
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+      - run: npm cache clean -f
       - run: npm install
       - name: Build project
         run: npm run build

@@ -2,45 +2,30 @@ import React, { RefObject } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
-import { emojiMentionsConfig, mentionsConfigs, userMentionsConfig } from './mentions-config';
+import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
-import { User } from '../../store/channels';
 import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
-import { ParentMessage } from '../../lib/chat/types';
 import ReplyCard from '../reply-card/reply-card';
 import { IconFaceSmile } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
-import { Picker } from 'emoji-mart';
-import { RootState } from '../../store';
-import { connectContainer } from '../../store/redux-container';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { mapPlainTextIndex } from './react-mentions-utils';
+import { PublicProperties as PublicPropertiesContainer } from './container';
+import { EmojiPicker } from './emoji-picker';
 
-import 'emoji-mart/css/emoji-mart.css';
 import './styles.scss';
 
-export interface PublicProperties {
-  className?: string;
+export interface PublicProperties extends PublicPropertiesContainer {}
+
+export interface Properties extends PublicPropertiesContainer {
+  viewMode: ViewModes;
   placeholder?: string;
-  id?: string;
-  onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
-  initialValue?: string;
-  reply?: null | ParentMessage;
-  onRemoveReply?: () => void;
-  getUsersForMentions: (search: string) => Promise<UserForMention[]>;
-  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
-  renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
-}
-
-export interface Properties extends PublicProperties {
-  viewMode: ViewModes;
 }
 
 interface State {
@@ -50,7 +35,7 @@ interface State {
   isEmojisActive: boolean;
 }
 
-class MessageInputComponent extends React.Component<Properties, State> {
+export class MessageInput extends React.Component<Properties, State> {
   state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [], isEmojisActive: false };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -59,22 +44,6 @@ class MessageInputComponent extends React.Component<Properties, State> {
     super(props);
 
     this.textareaRef = React.createRef<HTMLTextAreaElement>();
-  }
-
-  static mapState(state: RootState): Partial<Properties> {
-    const {
-      theme: {
-        value: { viewMode },
-      },
-    } = state;
-
-    return {
-      viewMode,
-    };
-  }
-
-  static mapActions(_props: Properties): Partial<Properties> {
-    return {};
   }
 
   componentDidMount() {
@@ -104,6 +73,12 @@ class MessageInputComponent extends React.Component<Properties, State> {
 
   get images() {
     return this.state.media.filter((m) => m.mediaType === 'image');
+  }
+
+  focusInput() {
+    if (this.textareaRef && this.textareaRef.current) {
+      this.textareaRef.current.focus();
+    }
   }
 
   onSubmit = (event): void => {
@@ -206,51 +181,25 @@ class MessageInputComponent extends React.Component<Properties, State> {
     }
   };
 
-  openEmojis = () => {
-    if (this.state.isEmojisActive) {
-      return this.closeEmojis();
-    }
-    this.setState({ isEmojisActive: true });
-    document.addEventListener('mousedown', this.clickOutsideEmojiCheck);
+  openEmojis = async () => {
+    this.setState({
+      isEmojisActive: true,
+    });
   };
 
   closeEmojis = () => {
-    this.setState({ isEmojisActive: false });
-    document.removeEventListener('mousedown', this.clickOutsideEmojiCheck);
+    this.setState({
+      isEmojisActive: false,
+    });
   };
 
-  clickOutsideEmojiCheck = (event: MouseEvent) => {
-    const [emojiMart] = document.getElementsByClassName('emoji-mart');
-
-    if (emojiMart && event && event.target) {
-      if (!emojiMart.contains(event.target as Node)) {
-        this.closeEmojis();
-      }
-    }
-  };
-
-  insertEmoji = async (emoji: any) => {
-    const emojiToInsert = emoji.colons + ' ';
-
-    const selectionStart = this.textareaRef && this.textareaRef.current.selectionStart;
-    const position =
-      selectionStart != null ? mapPlainTextIndex(this.state.value, mentionsConfigs, selectionStart, 'START') : null;
-    this.setState((state) => {
-      const value = state.value;
-      const newValue =
-        position == null
-          ? value + emojiToInsert
-          : [
-              value.slice(0, position),
-              emojiToInsert,
-              value.slice(position),
-            ].join('');
-      return {
-        value: newValue,
-      };
+  onInsertEmoji = (value: string) => {
+    this.setState({
+      value,
     });
 
     this.closeEmojis();
+    this.focusInput();
   };
 
   renderInput() {
@@ -284,16 +233,17 @@ class MessageInputComponent extends React.Component<Properties, State> {
                     onRemove={this.removeReply}
                   />
                 )}
-                {this.state.isEmojisActive && (
-                  <div className='message-input__emoji-picker'>
-                    <Picker
-                      theme={this.props.viewMode}
-                      emoji='mechanical_arm'
-                      title='Zer0'
-                      onSelect={this.insertEmoji}
-                    />
-                  </div>
-                )}
+                <div className='message-input__emoji-picker'>
+                  <EmojiPicker
+                    textareaRef={this.textareaRef}
+                    isOpen={this.state.isEmojisActive}
+                    onOpen={this.openEmojis}
+                    onClose={this.closeEmojis}
+                    value={this.state.value}
+                    viewMode={this.props.viewMode}
+                    onSelect={this.onInsertEmoji}
+                  />
+                </div>
                 <MentionsInput
                   inputRef={this.textareaRef}
                   className='mentions-text-area__wrap'
@@ -318,7 +268,7 @@ class MessageInputComponent extends React.Component<Properties, State> {
               onClick={this.openEmojis}
               Icon={IconFaceSmile}
               size={16}
-              className='image-send__icon'
+              // className='image-send__icon's
             />
           </div>
         </div>
@@ -348,5 +298,3 @@ class MessageInputComponent extends React.Component<Properties, State> {
     return <div className={classNames('chat-message__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
   }
 }
-
-export const MessageInput = connectContainer<PublicProperties>(MessageInputComponent);

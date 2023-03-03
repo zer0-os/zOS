@@ -7,7 +7,7 @@ import { MediaType } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
-import { MessageInput } from '../message-input';
+import { MessageInput } from '../message-input/container';
 import { Button as ConnectButton } from '../authentication/button';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';

@@ -8,7 +8,7 @@ import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
-import { MessageInput } from '../message-input';
+import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';

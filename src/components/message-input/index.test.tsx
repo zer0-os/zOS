@@ -12,8 +12,6 @@ import { ViewModes } from '../../shared-components/theme-engine';
 import { EmojiPicker } from './emoji-picker';
 import MessageAudioRecorder from '../message-audio-recorder';
 
-///jest.mock('react-mic', () => ({}));
-
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
@@ -109,10 +107,11 @@ describe('MessageInput', () => {
 
     expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
 
-    (wrapper.instance() as any).startMic();
-    const dropzone2 = wrapper.find(Dropzone).shallow();
+    wrapper.find('.record-voice__icon').simulate('click');
 
-    expect(dropzone2.find(MessageAudioRecorder).exists()).toBe(true);
+    dropzone.setProps({});
+
+    expect(dropzone.find(MessageAudioRecorder).exists()).toBe(true);
   });
 
   it('call onRemoveReply', function () {

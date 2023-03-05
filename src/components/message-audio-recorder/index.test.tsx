@@ -1,11 +1,7 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
-//import { ReactMic } from 'react-mic';
 import MessageAudioRecorder, { Properties } from '.';
-
-const ReactMic = () => {};
-jest.mock('react-mic', () => {});
 
 describe.skip('MessageAudioRecorder', () => {
   const subject = (props: Partial<Properties>) => {

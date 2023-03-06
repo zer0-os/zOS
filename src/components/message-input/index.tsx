@@ -40,7 +40,13 @@ interface State {
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [], isMicActive: false, isEmojisActive: false };
+  state = {
+    value: this.props.initialValue || '',
+    mentionedUserIds: [],
+    media: [],
+    isMicActive: false,
+    isEmojisActive: false,
+  };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
 

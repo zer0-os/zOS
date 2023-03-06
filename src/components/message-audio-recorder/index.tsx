@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactMic } from 'react-mic';
+import AudioReactRecorder, { RecordState } from 'audio-react-recorder-fixed';
 import { IconCheck, IconTrash4 } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
 import { Media } from '../message-input/utils';
@@ -25,18 +25,18 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
 
   componentDidMount = () => {
     this.setState({
-      isMicRecording: true,
+      isMicRecording: RecordState.START,
     });
   };
 
-  stopRecording = (): void => this.setState({ isMicRecording: false });
+  stopRecording = (): void => this.setState({ isMicRecording: RecordState.STOP });
 
   onStopMic = (recordedBlob): void => {
     this.props.onMediaSelected({
-      id: recordedBlob.blobURL,
+      id: recordedBlob.url,
       name: 'Recording',
       nativeFile: recordedBlob.blob,
-      url: recordedBlob.blobURL,
+      url: recordedBlob.url,
       mediaType: 'audio',
     });
   };
@@ -55,13 +55,13 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
           <div className='message-audio-recorder__recording'>
             <div className='message-audio-recorder__blip' />
           </div>
-          <ReactMic
-            record={this.state.isMicRecording}
+          <AudioReactRecorder
+            state={this.state.isMicRecording}
             onStop={this.onStopMic}
-            className='message-audio-recorder__visualizer'
-            strokeColor='#A09FA6'
+            foregroundColor='#A09FA6'
             backgroundColor='#141316'
-            mimeType='audio/webm'
+            canvasWidth='auto'
+            canvasHeight='20'
           />
           <div className='message-audio-recorder__icons'>
             <IconButton

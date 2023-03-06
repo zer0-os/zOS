@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import MessageAudioRecorder, { Properties } from '.';
 
-describe.skip('MessageAudioRecorder', () => {
+describe('MessageAudioRecorder', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       onMediaSelected: jest.fn(),

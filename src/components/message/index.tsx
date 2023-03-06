@@ -8,13 +8,14 @@ import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { provider } from '../../lib/cloudinary/provider';
-import { MessageInput } from '../message-input';
+import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
 import MessageMenu from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
+import { textToPlainEmojis } from './text-to-emojis';
 
 interface Properties extends MessageModel {
   className: string;
@@ -164,7 +165,7 @@ export class Message extends React.Component<Properties, State> {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return part;
+        return textToPlainEmojis(message);
       }
 
       if (match[2] === 'user') {

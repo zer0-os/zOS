@@ -37,7 +37,7 @@
     .message-input__input-wrapper {
       flex-grow: 99;
       margin-left: 8px;
-      overflow: hidden;
+      position: relative;
     }
 
     .mentions-text-area {
@@ -170,11 +170,27 @@
   }
 }
 
-.message-input__icons {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 2px;
+.message-input {
+  &__icons {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 2px;
+
+    &-action {
+      position: absolute;
+      right: 13px;
+      bottom: 9px;
+      z-index: 1;
+    }
+  }
+
+  &__emoji-picker {
+    position: absolute;
+    right: 0px;
+    bottom: 50px;
+    z-index: 1;
+  }
 }
 
 .image-send__icon {

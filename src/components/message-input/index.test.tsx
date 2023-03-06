@@ -7,6 +7,8 @@ import { Key } from '../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
+import { ViewModes } from '../../shared-components/theme-engine';
+import { EmojiPicker } from './emoji-picker';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -23,6 +25,7 @@ describe('MessageInput', () => {
         addPasteListener: (_) => {},
         removePasteListener: (_) => {},
       },
+      viewMode: ViewModes.Dark,
       ...props,
     };
 
@@ -154,6 +157,19 @@ describe('MessageInput', () => {
       { display: '2-dale', id: 'd-2' },
       { display: '3--dale', id: 'd-3' },
     ]);
+  });
+
+  describe('Emojis', () => {
+    const getEmojiPicker = () => {
+      const wrapper = subject({});
+      return wrapper.find(Dropzone).shallow().find(EmojiPicker);
+    };
+
+    it('renders', function () {
+      const emojiPicker = getEmojiPicker();
+
+      expect(emojiPicker.exists()).toBe(true);
+    });
   });
 
   async function userSearch(wrapper, search) {

@@ -5,7 +5,7 @@ import { Message } from '.';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
-import { MessageInput } from '../message-input';
+import { MessageInput } from '../message-input/container';
 import MessageMenu from '../../platform-apps/channels/messages-menu';
 
 describe('message', () => {

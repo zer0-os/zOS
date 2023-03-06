@@ -2,29 +2,26 @@ import React, { RefObject } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
-import { userMentionsConfig } from './mentions-config';
+import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
 import { Key } from '../../lib/keyboard-search';
-import { User } from '../../store/channels';
 import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
-import { ParentMessage } from '../../lib/chat/types';
 import ReplyCard from '../reply-card/reply-card';
+import { IconFaceSmile } from '@zero-tech/zui/icons';
+import { IconButton } from '../icon-button';
+import { ViewModes } from '../../shared-components/theme-engine';
+import { PublicProperties as PublicPropertiesContainer } from './container';
+import { EmojiPicker } from './emoji-picker';
 
-require('./styles.scss');
+import './styles.scss';
 
-export interface Properties {
-  className?: string;
+export interface PublicProperties extends PublicPropertiesContainer {}
+
+export interface Properties extends PublicPropertiesContainer {
+  viewMode: ViewModes;
   placeholder?: string;
-  id?: string;
-  onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
-  initialValue?: string;
-  reply?: null | ParentMessage;
-  onRemoveReply?: () => void;
-  getUsersForMentions: (search: string) => Promise<UserForMention[]>;
-  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
-  renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -35,10 +32,11 @@ interface State {
   value: string;
   mentionedUserIds: string[];
   media: any[];
+  isEmojisActive: boolean;
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [] };
+  state = { value: this.props.initialValue || '', mentionedUserIds: [], media: [], isEmojisActive: false };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
 
@@ -69,8 +67,18 @@ export class MessageInput extends React.Component<Properties, State> {
     this.clipboard.removePasteListener(this.clipboardEvent);
   }
 
+  get mimeTypes() {
+    return { 'image/*': [] };
+  }
+
   get images() {
     return this.state.media.filter((m) => m.mediaType === 'image');
+  }
+
+  focusInput() {
+    if (this.textareaRef && this.textareaRef.current) {
+      this.textareaRef.current.focus();
+    }
   }
 
   onSubmit = (event): void => {
@@ -121,6 +129,17 @@ export class MessageInput extends React.Component<Properties, State> {
         markup={userMentionsConfig.markup}
         displayTransform={userMentionsConfig.displayTransform}
       />,
+      <Mention
+        trigger=':'
+        data={[]}
+        key='emoji'
+        markup={emojiMentionsConfig.markup}
+        regex={emojiMentionsConfig.regex}
+        displayTransform={emojiMentionsConfig.displayTransform}
+        style={{
+          visibility: 'hidden',
+        }}
+      />,
     ];
 
     return mentions;
@@ -162,9 +181,26 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   };
 
-  get mimeTypes() {
-    return { 'image/*': [] };
-  }
+  openEmojis = async () => {
+    this.setState({
+      isEmojisActive: true,
+    });
+  };
+
+  closeEmojis = () => {
+    this.setState({
+      isEmojisActive: false,
+    });
+  };
+
+  onInsertEmoji = (value: string) => {
+    this.setState({
+      value,
+    });
+
+    this.closeEmojis();
+    this.focusInput();
+  };
 
   renderInput() {
     return (
@@ -197,6 +233,17 @@ export class MessageInput extends React.Component<Properties, State> {
                     onRemove={this.removeReply}
                   />
                 )}
+                <div className='message-input__emoji-picker'>
+                  <EmojiPicker
+                    textareaRef={this.textareaRef}
+                    isOpen={this.state.isEmojisActive}
+                    onOpen={this.openEmojis}
+                    onClose={this.closeEmojis}
+                    value={this.state.value}
+                    viewMode={this.props.viewMode}
+                    onSelect={this.onInsertEmoji}
+                  />
+                </div>
                 <MentionsInput
                   inputRef={this.textareaRef}
                   className='mentions-text-area__wrap'
@@ -211,12 +258,19 @@ export class MessageInput extends React.Component<Properties, State> {
                 >
                   {this.renderMentionTypes()}
                 </MentionsInput>
-
                 {this.props.renderAfterInput &&
                   this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
               </div>
             )}
           </Dropzone>
+          <div className='message-input__icons-action'>
+            <IconButton
+              onClick={this.openEmojis}
+              Icon={IconFaceSmile}
+              size={16}
+              // className='image-send__icon's
+            />
+          </div>
         </div>
       </div>
     );

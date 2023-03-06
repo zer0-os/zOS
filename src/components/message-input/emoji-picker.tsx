@@ -40,7 +40,7 @@ export class EmojiPicker extends React.Component<Properties> {
   };
 
   insertEmoji = (emoji: any) => {
-    const emojiToInsert = emoji.colons + ' ';
+    const emojiToInsert = (emoji.native || emoji.colons) + ' ';
 
     const selectionStart = this.props.textareaRef && this.props.textareaRef.current.selectionStart;
     const position =
@@ -59,6 +59,14 @@ export class EmojiPicker extends React.Component<Properties> {
     this.props.onSelect(newValue);
   };
 
+  get pickerViewMode() {
+    if (this.props.viewMode === ViewModes.Dark) {
+      return 'dark';
+    } else {
+      return 'light';
+    }
+  }
+
   render() {
     if (!this.props.isOpen) {
       return null;
@@ -66,7 +74,7 @@ export class EmojiPicker extends React.Component<Properties> {
 
     return (
       <Picker
-        theme={this.props.viewMode}
+        theme={this.pickerViewMode}
         emoji='mechanical_arm'
         title='ZOS'
         onSelect={this.insertEmoji}

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { MentionsInput } from 'react-mentions';
 import { shallow } from 'enzyme';
 
@@ -9,6 +10,7 @@ import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { EmojiPicker } from './emoji-picker';
+import MessageAudioRecorder from '../message-audio-recorder';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -97,6 +99,19 @@ describe('MessageInput', () => {
     const dropzone = wrapper.find(Dropzone).shallow();
 
     expect(dropzone.find(ReplyCard).exists()).toBe(true);
+  });
+
+  it('renders MessageAudioRecorder', function () {
+    const wrapper = subject({});
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
+
+    wrapper.find('.record-voice__icon').simulate('click');
+
+    dropzone.setProps({});
+
+    expect(dropzone.find(MessageAudioRecorder).exists()).toBe(true);
   });
 
   it('call onRemoveReply', function () {

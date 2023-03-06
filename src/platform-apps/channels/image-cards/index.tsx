@@ -3,7 +3,7 @@ import ImageCard from './image-card';
 import { ImageModel } from './types';
 import ImageSizes from './types';
 
-require('./styles.scss');
+import './styles.scss';
 
 export interface Properties {
   images: ImageModel[];

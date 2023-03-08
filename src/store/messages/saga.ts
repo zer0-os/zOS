@@ -49,6 +49,7 @@ export interface SendPayload {
   parentMessage?: ParentMessage;
   parentMessageId?: number;
   parentMessageUserId?: string;
+  file?: FileUploadResult;
 }
 
 export interface MediaPyload {
@@ -242,6 +243,15 @@ export function* uploadFileMessage(action) {
   for (const file of media.filter((i) => i.nativeFile)) {
     const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
     messages.push(messagesResponse);
+  }
+
+  for (const file of media.filter((i) => i.giphy)) {
+    const original = file.giphy.images.original;
+    const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
+    const messagesResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
+
+    if (messagesResponse.status !== 200) return;
+    messages.push(messagesResponse.body);
   }
 
   yield put(

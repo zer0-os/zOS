@@ -1,10 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  Grid, // our UI Component to display the results
-  SearchBar, // the search bar the user will type into
-  SearchContext, // the context that wraps and connects our components
-  SearchContextManager, // the context manager, includes the Context.Provider
-} from '@giphy/react-components';
+import { Grid, SearchBar, SearchContext, SearchContextManager } from '@giphy/react-components';
 import { config } from '../../config';
 
 export interface ComponentProperties {
@@ -58,7 +53,6 @@ export class Giphy extends React.Component<Properties> {
   };
 
   render = () => {
-    if (!config.giphySdkKey) return;
     return (
       <SearchContextManager apiKey={config.giphySdkKey}>
         <GiphyComponents {...this.props} />

@@ -1,3 +1,4 @@
+import { SearchContextManager } from '@giphy/react-components';
 import { shallow } from 'enzyme';
 import React from 'react';
 import { Giphy, GiphyComponents, Properties } from './giphy';
@@ -29,8 +30,9 @@ describe('Giphy', () => {
 
   it('renders GiphyComponents', () => {
     const wrapper = subject({});
+    const searchContextManager = wrapper.find(SearchContextManager).shallow();
 
-    expect(wrapper.find(GiphyComponents).exists()).toBe(true);
+    expect(searchContextManager.find(GiphyComponents).exists()).toBe(true);
   });
 
   it('attach mousedown listener to document', () => {

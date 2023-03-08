@@ -9,7 +9,7 @@ import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
-import { IconFaceSmile } from '@zero-tech/zui/icons';
+import { IconFaceSmile, IconStickerCircle } from '@zero-tech/zui/icons';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { EmojiPicker } from './emoji-picker';
@@ -17,6 +17,7 @@ import { IconButton } from '../icon-button';
 import { IconMicrophone2 } from '@zero-tech/zui/icons';
 import AudioCards from '../../platform-apps/channels/audio-cards';
 import MessageAudioRecorder from '../message-audio-recorder';
+import { Giphy, Properties as GiphyProperties } from './giphy';
 
 import './styles.scss';
 
@@ -36,6 +37,7 @@ interface State {
   mentionedUserIds: string[];
   media: any[];
   isEmojisActive: boolean;
+  isGiphyActive: boolean;
   isMicActive: boolean;
 }
 
@@ -46,6 +48,7 @@ export class MessageInput extends React.Component<Properties, State> {
     media: [],
     isMicActive: false,
     isEmojisActive: false,
+    isGiphyActive: false,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -217,6 +220,32 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   };
 
+  openGiphy = async () => {
+    this.setState({
+      isGiphyActive: true,
+    });
+  };
+
+  closeGiphy = () => {
+    this.setState({
+      isGiphyActive: false,
+    });
+  };
+
+  onInsertGiphy: GiphyProperties['onClickGif'] = (giphy) => {
+    this.mediaSelected([
+      {
+        id: giphy.id.toString(),
+        name: giphy.title,
+        url: giphy.images.preview_gif.url,
+        mediaType: 'image',
+        giphy,
+      },
+    ]);
+    this.props.onMessageInputRendered(this.textareaRef);
+    this.closeGiphy();
+  };
+
   openEmojis = async () => {
     this.setState({
       isEmojisActive: true,
@@ -241,6 +270,14 @@ export class MessageInput extends React.Component<Properties, State> {
   renderInput() {
     return (
       <div className='message-input chat-message__new-message'>
+        <div className='message-input__icons'>
+          <IconButton
+            onClick={this.openGiphy}
+            Icon={IconStickerCircle}
+            size={16}
+            className='giphy__icon'
+          />
+        </div>
         <div className='message-input__icons'>
           <Menu
             onSelected={this.mediaSelected}
@@ -284,6 +321,12 @@ export class MessageInput extends React.Component<Properties, State> {
                     onSelect={this.onInsertEmoji}
                   />
                 </div>
+                {this.state.isGiphyActive && (
+                  <Giphy
+                    onClickGif={this.onInsertGiphy}
+                    onClose={this.closeGiphy}
+                  />
+                )}
                 {this.state.isMicActive && (
                   <MessageAudioRecorder
                     onClose={this.cancelRecording}

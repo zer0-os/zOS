@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@giphy/js-fetch-api": "^4.7.1",
+    "@giphy/react-components": "^6.5.2",
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^7.13.0",
     "@types/jest": "^24.9.1",

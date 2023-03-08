@@ -1,7 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { Giphy, GiphyComponents, Properties } from './giphy';
-import { Grid } from '@giphy/react-components';
 
 describe('Giphy', () => {
   const subject = (props: Partial<Properties>) => {
@@ -22,7 +21,6 @@ describe('Giphy', () => {
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
     };
-    const fetchGifs = jest.fn();
   });
 
   afterEach(() => {
@@ -32,7 +30,7 @@ describe('Giphy', () => {
   it('renders GiphyComponents', () => {
     const wrapper = subject({});
 
-    expect(wrapper.find(GiphyComponents).exists()).toBeTrue();
+    expect(wrapper.find(GiphyComponents).exists()).toBe(true);
   });
 
   it('attach mousedown listener to document', () => {

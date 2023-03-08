@@ -233,12 +233,13 @@ export function* editMessage(action) {
 
 export function* uploadFileMessage(action) {
   const { channelId, media } = action.payload;
+
   const existingMessages = yield select(rawMessagesSelector(channelId));
 
   if (!media.length) return;
 
   let messages = [...existingMessages];
-  for (const file of media) {
+  for (const file of media.filter((i) => i.nativeFile)) {
     const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
     messages.push(messagesResponse);
   }

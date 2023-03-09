@@ -1,5 +1,6 @@
-import { Dialog } from '@zer0-os/zos-component-library';
+// import { Dialog } from '@zer0-os/zos-component-library';
 import { IconDotsVertical } from '@zero-tech/zui/icons';
+import { Modal } from '@zero-tech/zui';
 import classNames from 'classnames';
 import React from 'react';
 import { IconButton } from '../../../components/icon-button';
@@ -94,33 +95,16 @@ export class MessageMenu extends React.Component<Properties, State> {
 
   renderDeleteModal() {
     return (
-      <Dialog
-        className='confirm-dialog__message'
-        onClose={this.toggleDeleteDialog}
+      <ModalConfirmation
+        // className='confirm-dialog__message'
+        onCancel={this.toggleDeleteDialog}
+        onConfirm={this.delete}
+        title='Delete Message'
+        cancelLabel='Cancel'
+        confirmLabel='ok'
       >
-        <div className={classNames('confirm-delete', 'border-primary')}>
-          <div className='confirm-delete__header'>
-            <h3 className='glow-text'>Delete Message</h3>
-          </div>
-          <hr className='glow' />
-          <p className='confirm-delete__body'>Are you sure you want to delete this message?</p>
-          <hr className='glow' />
-          <div className='confirm-delete__footer'>
-            <button
-              onClick={this.delete}
-              className='confirm-delete__footer-button'
-            >
-              Ok
-            </button>
-            <button
-              onClick={this.toggleDeleteDialog}
-              className='confirm-delete__footer-button'
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Dialog>
+        Are you sure you want to delete this message?
+      </ModalConfirmation>
     );
   }
 

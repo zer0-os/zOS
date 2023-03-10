@@ -13,6 +13,7 @@ import classNames from 'classnames';
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
 import { MessengerChat } from './components/messenger/chat';
+import { UserNotices } from './components/user-notices';
 
 export interface Properties {
   hasContextPanel: boolean;
@@ -63,6 +64,8 @@ export class Container extends React.Component<Properties> {
             <AddressBarContainer className='main__address-bar' />
           </div>
           <div className='main__wallet-manager-wrapper'>
+            <UserNotices />
+
             <WalletManager className='main__wallet-manager' />
           </div>
         </div>

@@ -1,0 +1,1 @@
+export { UserNotices } from './container';

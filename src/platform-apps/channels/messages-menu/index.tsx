@@ -11,6 +11,7 @@ interface Properties {
   className: string;
   canEdit: boolean;
   canReply?: boolean;
+  isMediaMessage?: boolean;
 
   onDelete?: () => void;
   onEdit?: () => void;
@@ -32,7 +33,7 @@ export class MessageMenu extends React.Component<Properties, State> {
   renderItems = () => {
     const menuItems = [];
 
-    if (this.props.onReply && this.props.canReply) {
+    if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
       menuItems.push(
         <li
           className='menu-button reply-item'
@@ -54,7 +55,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         </li>
       );
     }
-    if (this.props.onEdit && this.props.canEdit) {
+    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push(
         <li
           className='menu-button edit-item'

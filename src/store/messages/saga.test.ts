@@ -246,6 +246,57 @@ describe('messages saga', () => {
       .run();
   });
 
+  it('send Giphy message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const media = [
+      {
+        id: 'id image 1',
+        name: 'image 1',
+        giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
+        mediaType: 'image',
+      },
+    ];
+
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
+    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
+      .provide([
+        [
+          matchers.call.fn(sendMessagesByChannelId),
+          {
+            status: 200,
+            body: {
+              id: 'id image 1',
+              url: 'url_giphy',
+              name: 'image 1',
+              type: 'gif',
+            },
+          },
+        ],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, {
+        url: media[0].giphy.images.original.url,
+        name: media[0].name,
+        type: media[0].giphy.type,
+      })
+      .run();
+  });
+
   it('delete message', async () => {
     const channelId = '280251425_833da2e2748a78a747786a9de295dd0c339a2d95';
     const messages = [

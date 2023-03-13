@@ -120,6 +120,10 @@ export class Message extends React.Component<Properties, State> {
     return this.props.isOwner;
   };
 
+  isMediaMessage = (): boolean => {
+    return !!this.props.media;
+  };
+
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
   editMessage = (content: string, mentionedUserIds: string[]) => {
@@ -154,6 +158,7 @@ export class Message extends React.Component<Properties, State> {
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
           onReply={this.onReply}
+          isMediaMessage={this.isMediaMessage()}
         />
       </div>
     );

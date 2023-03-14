@@ -17,6 +17,8 @@ import { denormalize } from '../../store/channels';
 import { SidekickTabs as Tabs } from './types';
 
 import './styles.scss';
+import { createPortal } from 'react-dom';
+import { NotificationList } from '../notification';
 
 interface PublicProperties {
   className?: string;
@@ -159,10 +161,14 @@ export class Container extends React.Component<Properties, State> {
           </div>
         );
       case Tabs.NOTIFICATIONS:
-        return <div className='sidekick__tab-content--notifications'>NOTIFICATIONS</div>;
+        return createPortal(this.renderNotifications(), document.body);
       default:
         return null;
     }
+  }
+
+  renderNotifications() {
+    return <NotificationList />;
   }
 
   render() {

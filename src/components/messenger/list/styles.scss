@@ -17,14 +17,13 @@
   overflow-x: hidden;
   overflow-y: scroll;
   height: 100%;
-  padding: 0 7px 0 10px;
+  padding: 0 16px;
 
   &__user {
     display: flex;
     align-items: center;
     cursor: pointer;
     color: themeDeprecated.$actionable-inactive-color;
-    padding: 0 20px;
     height: 36px;
 
     &:hover {
@@ -45,10 +44,6 @@
       &--active {
         background-color: #c9fd51;
       }
-    }
-
-    &-tooltip {
-      max-width: 200px;
     }
 
     &-unread-count {
@@ -98,6 +93,10 @@
     }
     &__items {
       animation: conversation-slide-in 600ms ease-in forwards;
+
+      &-conversations-input {
+        margin-bottom: 18px;
+      }
     }
   }
 }
@@ -112,7 +111,6 @@
 
   cursor: default;
   height: 40px;
-  padding: 0px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;

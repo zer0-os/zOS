@@ -19,6 +19,7 @@ import './styles.scss';
 import { Button } from '@zer0-os/zos-component-library';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
+import { SearchConversations } from '../search-conversations';
 
 export interface PublicProperties {
   className?: string;
@@ -28,6 +29,7 @@ export interface PublicProperties {
 interface State {
   showCreateConversation: boolean;
   userIds: string[];
+  directMessagesList: Channel[];
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
@@ -37,7 +39,7 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { showCreateConversation: false, userIds: [] };
+  state = { showCreateConversation: false, userIds: [], directMessagesList: [] };
 
   static mapState(state: RootState): Partial<Properties> {
     const messengerList = denormalize(state.channelsList.value, state)
@@ -63,12 +65,24 @@ export class Container extends React.Component<Properties, State> {
     this.props.fetchDirectMessages();
   }
 
+  componentDidUpdate(prevProps: Properties): void {
+    const { directMessages } = this.props;
+
+    if (directMessages && prevProps.directMessages && directMessages.length !== prevProps.directMessages.length) {
+      this.setState({ directMessagesList: directMessages });
+    }
+  }
+
   handleMemberClick(directMessageId: string): void {
     this.props.setActiveMessengerChat(directMessageId);
   }
 
   toggleConversation = (): void => {
-    this.setState({ showCreateConversation: !this.state.showCreateConversation, userIds: [] });
+    this.setState({
+      showCreateConversation: !this.state.showCreateConversation,
+      userIds: [],
+      directMessagesList: this.props.directMessages,
+    });
   };
 
   renderStatus(directMessage: Channel): JSX.Element {
@@ -99,6 +113,10 @@ export class Container extends React.Component<Properties, State> {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
     return users.map((user) => ({ ...user, image: user.profileImage }));
+  };
+
+  converstionInMyNetworks = (directMessagesList: Channel[]) => {
+    this.setState({ directMessagesList });
   };
 
   renderMember = (directMessage: Channel): JSX.Element => {
@@ -238,13 +256,25 @@ export class Container extends React.Component<Properties, State> {
         <div className='messages-list__direct-messages'>
           {!this.state.showCreateConversation && this.renderNewMessageModal()}
         </div>
-        {this.props.directMessages && (
+        {this.state.directMessagesList && (
           <div className='messages-list__items'>
-            {!this.state.showCreateConversation && this.props.directMessages.map(this.renderMember)}
+            {!this.state.showCreateConversation && (
+              <div className='messages-list__items-conversations'>
+                <div className='messages-list__items-conversations-input'>
+                  <SearchConversations
+                    className='messages-list__items-conversations-search'
+                    placeholder='Search contacts...'
+                    directMessagesList={this.props.directMessages}
+                    onChange={this.converstionInMyNetworks}
+                  />
+                </div>
+                {this.state.directMessagesList.map(this.renderMember)}
+              </div>
+            )}
             {this.state.showCreateConversation && this.renderCreateConversation()}
           </div>
         )}
-        {!this.props.directMessages && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        {!this.state.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </div>
     );
   }

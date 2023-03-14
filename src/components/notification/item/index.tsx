@@ -3,12 +3,22 @@ import classNames from 'classnames';
 import { Avatar } from '@zero-tech/zui/components/Avatar';
 
 import './style.scss';
+import moment from 'moment';
 
-interface Properties {
+export interface Properties {
+  title?: string;
+  body: string;
+  createdAt: string;
+  originatingName?: string;
+  originatingImageUrl?: string;
   notRead?: boolean;
 }
 
 export class NotificationItem extends React.Component<Properties> {
+  get time() {
+    return moment('2023-03-13T22:33:34.945Z').fromNow();
+  }
+
   render() {
     return (
       <div
@@ -16,20 +26,19 @@ export class NotificationItem extends React.Component<Properties> {
           'notification-item__wrapper--not-read': this.props.notRead,
         })}
       >
-        <div className='notification-item__left'>
+        <div className='notification-item__avatar'>
           <Avatar
-            userFriendlyName='Mic Brooklyn'
+            userFriendlyName={this.props.originatingName}
             type='circle'
-            imageURL='https://picsum.photos/200/300'
+            imageURL={this.props.originatingImageUrl}
             size='medium'
           />
         </div>
-        <div className='notification-item__center'>
-          <h4>Zero</h4>
-          <p>You were mentioned in #product</p>
-          <span>Just now</span>
+        <div className='notification-item__content'>
+          <h4>{this.props.title}</h4>
+          <p>{this.props.body}</p>
+          <span className='notification-item__timestamp'>{this.time}</span>
         </div>
-        <div className='notification-item__right'>{/* badge from zUI */}</div>
       </div>
     );
   }

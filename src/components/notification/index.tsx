@@ -1,1 +1,1 @@
-export { NotificationList } from './list';
+export { NotificationListContainer as NotificationList } from './list/container';

@@ -1,19 +1,13 @@
 import React from 'react';
+
 import { NotificationItem } from '../item';
 
 import './style.scss';
 
-interface Properties {
+export interface Properties {
   list?: any[];
 }
 
-const stubNotificationProps = {
-  title: 'Zero',
-  body: 'You were mentioned in #Product',
-  createdAt: '2023-03-13T22:33:34.945Z',
-  originatingName: 'Zero',
-  originatingImageUrl: 'https://picsum.photos/200/300',
-};
 export class NotificationList extends React.Component<Properties> {
   render() {
     return (
@@ -24,8 +18,13 @@ export class NotificationList extends React.Component<Properties> {
         </div>
 
         <div className='notification-list__items'>
-          {Array.from(Array(10).keys()).map(() => (
-            <NotificationItem {...stubNotificationProps} />
+          {this.props.list.map((n) => (
+            <NotificationItem
+              key={n.id}
+              title='Network Name'
+              body='You were mentioned in'
+              createdAt={n.createdAt}
+            />
           ))}
         </div>
       </div>

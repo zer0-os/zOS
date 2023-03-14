@@ -1,1 +1,1 @@
-export { NotificationListContainer as NotificationList } from './list/container';
+export { NotificationPopup as NotificationList } from './popup';

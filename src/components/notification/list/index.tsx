@@ -21,11 +21,6 @@ export class NotificationList extends React.Component<Properties> {
   render() {
     return (
       <div className='notification-list__wrapper'>
-        <div className='notification-list__head'>
-          <h3>Notifications</h3>
-          <div></div>
-        </div>
-
         <div className='notification-list__items'>
           {this.props.list.map((n) => (
             <NotificationItem

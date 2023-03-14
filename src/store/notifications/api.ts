@@ -1,8 +1,8 @@
 const stubNotification = {
   id: '',
-  title: 'Zero',
-  body: 'You were mentioned in #Product',
+  notificationType: 'chat_channel_mention',
   createdAt: '2023-03-13T22:33:34.945Z',
+  data: { chatId: '248576469_2a47f2218374efce03c060d4390300fcd1e213af' },
   originUser: {
     id: 'b7b11fbb-0734-4987-b5fc-d4aec19a5eb6',
     profileSummary: {

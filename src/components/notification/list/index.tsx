@@ -4,8 +4,14 @@ import { NotificationItem } from '../item';
 
 import './style.scss';
 
+interface Notification {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+}
 export interface Properties {
-  list?: any[];
+  list?: Notification[];
 }
 
 export class NotificationList extends React.Component<Properties> {
@@ -21,8 +27,8 @@ export class NotificationList extends React.Component<Properties> {
           {this.props.list.map((n) => (
             <NotificationItem
               key={n.id}
-              title='Network Name'
-              body='You were mentioned in'
+              title={n.title}
+              body={n.body}
               createdAt={n.createdAt}
             />
           ))}

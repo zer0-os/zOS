@@ -64,4 +64,90 @@ describe('NotificationsListContainer', () => {
       ]);
     });
   });
+
+  describe('mapNotification', () => {
+    const subject = (notification = {}, state: Partial<RootState>) => {
+      return Container.mapNotification(notification, state);
+    };
+
+    describe('unknown type', () => {
+      it('maps body with a known channel', () => {
+        const mappedNotification = subject({ notificationType: 'unknown_type' }, {});
+
+        expect(mappedNotification).toBeNull();
+      });
+    });
+
+    describe('chat_channel_mention', () => {
+      it('maps body with a known channel', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_mention',
+            data: { chatId: 'chat-id' },
+          },
+          {
+            normalized: {
+              channels: {
+                'chat-id': { id: 'chat-id', name: 'TestingChannel' },
+              },
+            },
+          }
+        );
+
+        expect(mappedNotification.body).toEqual('You were mentioned in #TestingChannel');
+      });
+
+      it('maps body with an unknown channel', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_mention',
+            data: { chatId: 'chat-id' },
+          },
+          {
+            normalized: {
+              channels: {},
+            },
+          }
+        );
+
+        expect(mappedNotification.body).toEqual('You were mentioned in a channel');
+      });
+
+      it('maps title to default value', () => {
+        // We don't have network information in the data store yet
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_mention',
+            data: { chatId: 'chat-id' },
+          },
+          {
+            normalized: {
+              channels: {
+                'chat-id': { id: 'chat-id', name: 'TestingChannel', networkId: 'network-id' },
+              },
+            },
+          }
+        );
+
+        expect(mappedNotification.title).toEqual('Network Message');
+      });
+
+      it('maps default properties', () => {
+        const mappedNotification = subject(
+          {
+            id: 'notification-id',
+            notificationType: 'chat_channel_mention',
+            data: { chatId: 'chat-id' },
+            createdAt: '2023-01-20T22:33:34.945Z',
+          },
+          {
+            normalized: { channels: {} },
+          }
+        );
+
+        expect(mappedNotification.id).toEqual('notification-id');
+        expect(mappedNotification.createdAt).toEqual('2023-01-20T22:33:34.945Z');
+      });
+    });
+  });
 });

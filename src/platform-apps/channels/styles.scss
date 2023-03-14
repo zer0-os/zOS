@@ -1,11 +1,12 @@
 @use '../../modules/animation' as animation;
-@use '../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../shared-components/theme-engine/theme' as themeDeprecated;
 @import '../../animation';
 @import './variables';
 
 @mixin actionable-color(
-  $inactive-color: theme.$actionable-inactive-color,
-  $active-color: theme.$actionable-active-color
+  $inactive-color: themeDeprecated.$actionable-inactive-color,
+  $active-color: themeDeprecated.$actionable-active-color
 ) {
   color: $inactive-color;
 
@@ -17,8 +18,8 @@
 }
 
 @mixin actionable-background-color(
-  $hover-color: theme.$actionable-hover-background-gradient,
-  $active-color: theme.$actionable-active-background-gradient
+  $hover-color: themeDeprecated.$actionable-hover-background-gradient,
+  $active-color: themeDeprecated.$actionable-active-background-gradient
 ) {
   background-color: transparent;
 
@@ -33,7 +34,7 @@
 }
 
 @mixin accent {
-  background-color: theme.$accent-color;
+  background-color: themeDeprecated.$accent-color;
   color: #000;
 }
 
@@ -50,7 +51,7 @@
   &:before {
     height: 100%;
     width: 3px;
-    background-color: theme.$accent-color;
+    background-color: themeDeprecated.$accent-color;
     content: '';
     display: block;
     position: absolute;
@@ -176,18 +177,18 @@ $scrollbar-width: 5px;
       @include accent-bar;
 
       .channel-list__private-icon path {
-        stroke: theme.$actionable-active-color;
+        stroke: themeDeprecated.$actionable-active-color;
       }
     }
 
     &:hover {
       .channel-list__private-icon path {
-        stroke: theme.$actionable-active-color;
+        stroke: themeDeprecated.$actionable-active-color;
       }
     }
 
     .channel-list__private-icon path {
-      stroke: theme.$actionable-inactive-color;
+      stroke: themeDeprecated.$actionable-inactive-color;
     }
   }
 
@@ -296,7 +297,7 @@ $scrollbar-width: 5px;
         border-radius: 8px 8px 8px 0px;
         position: relative;
         padding: 8px;
-        color: theme.$card-text-color;
+        color: themeDeprecated.$card-text-color;
         overflow: hidden;
 
         &-body {
@@ -332,7 +333,7 @@ $scrollbar-width: 5px;
           font-size: 12px;
           font-weight: 400;
           line-height: 14px;
-          color: theme.$actionable-inactive-color;
+          color: themeDeprecated.$actionable-inactive-color;
         }
 
         &-preview {
@@ -347,7 +348,7 @@ $scrollbar-width: 5px;
 
           .text-message {
             display: inline-block;
-            background-color: theme.$card-background-color;
+            background-color: themeDeprecated.$card-background-color;
             padding: 5px 15px;
             margin-top: 10px;
             border-radius: $border-radius;
@@ -395,7 +396,7 @@ $scrollbar-width: 5px;
       &__time {
         display: block;
         font-size: 12px;
-        color: theme.$font-color-time;
+        color: themeDeprecated.$font-color-time;
         text-align: right;
         font-weight: 400;
         font-size: 12px;
@@ -411,7 +412,7 @@ $scrollbar-width: 5px;
         transition: right 0.1s ease-in-out;
 
         &-item {
-          color: theme.$font-color-time;
+          color: themeDeprecated.$font-color-time;
           background: linear-gradient(270.5deg, theme.$color-primary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
           border-radius: 8px;
           width: 48px;
@@ -455,7 +456,7 @@ $scrollbar-width: 5px;
       }
 
       &__user-mention {
-        background-color: theme.$accent-color;
+        background-color: themeDeprecated.$accent-color;
         color: black;
         padding: 3px;
         border-radius: 5px;
@@ -472,7 +473,7 @@ $scrollbar-width: 5px;
     background-color: rgba(0, 0, 0, 0);
   }
   to {
-    background-color: theme.$accent-color;
+    background-color: themeDeprecated.$accent-color;
   }
 }
 

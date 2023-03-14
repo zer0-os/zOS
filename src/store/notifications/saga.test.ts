@@ -22,14 +22,14 @@ describe('notifications list saga', () => {
   });
 
   it('fetches notifications', async () => {
-    await expectSaga(fetch, { payload: {} })
+    await expectSaga(fetch, { payload: { userId: 'user-id' } })
       .provide([
         [
           matchers.call.fn(fetchNotifications),
           [],
         ],
       ])
-      .call(fetchNotifications)
+      .call(fetchNotifications, 'user-id')
       .run();
   });
 

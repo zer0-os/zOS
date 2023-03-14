@@ -9,16 +9,23 @@ import { NotificationList } from '.';
 
 export interface Properties {
   notifications: any[];
-  fetchNotifications: () => void;
+  userId: string;
+  fetchNotifications: (payload: { userId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
+    const {
+      authentication: { user },
+    } = state;
     const notifications = denormalize(state.notificationsList.value, state)
       .map((n) => Container.mapNotification(n, state))
       .filter((n) => !!n);
 
-    return { notifications };
+    return {
+      notifications,
+      userId: user?.data?.id,
+    };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -55,7 +62,7 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    this.props.fetchNotifications();
+    this.props.fetchNotifications({ userId: this.props.userId });
   }
 
   render() {

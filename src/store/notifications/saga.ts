@@ -6,23 +6,15 @@ import { SagaActionTypes, receive, setStatus } from '.';
 import { fetchNotifications } from './api';
 
 export interface Payload {
-  notificationType: string;
-  data: object;
-  originUser: {
-    id: string;
-    profileSummary: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      profileImage: string;
-    };
-  };
+  userId: string;
 }
 
-export function* fetch(_action) {
+export function* fetch(action) {
+  const { userId } = action.payload;
+
   yield put(setStatus(AsyncListStatus.Fetching));
 
-  const notifications = yield call(fetchNotifications);
+  const notifications = yield call(fetchNotifications, userId);
 
   yield put(receive(notifications));
 

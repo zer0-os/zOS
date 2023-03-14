@@ -52,8 +52,8 @@ describe('NotificationsListContainer', () => {
         },
         normalized: {
           notifications: {
-            'id-1': { id: 'id-1' },
-            'id-2': { id: 'id-2' },
+            'id-1': { id: 'id-1', notificationType: 'chat_channel_mention' },
+            'id-2': { id: 'id-2', notificationType: 'chat_channel_mention' },
           },
         },
       });
@@ -147,6 +147,28 @@ describe('NotificationsListContainer', () => {
 
         expect(mappedNotification.id).toEqual('notification-id');
         expect(mappedNotification.createdAt).toEqual('2023-01-20T22:33:34.945Z');
+      });
+
+      it('maps sender', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_mention',
+            data: {},
+            originUser: {
+              profileSummary: {
+                firstName: 'first',
+                lastName: 'Last',
+                profileImage: 'image-url',
+              },
+            },
+          },
+          {
+            normalized: { channels: {} },
+          }
+        );
+
+        expect(mappedNotification.originatingName).toEqual('first Last');
+        expect(mappedNotification.originatingImageUrl).toEqual('image-url');
       });
     });
   });

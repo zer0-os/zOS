@@ -9,7 +9,10 @@ interface Notification {
   title: string;
   body: string;
   createdAt: string;
+  originatingName?: string;
+  originatingImageUrl?: string;
 }
+
 export interface Properties {
   list?: Notification[];
 }
@@ -30,6 +33,8 @@ export class NotificationList extends React.Component<Properties> {
               title={n.title}
               body={n.body}
               createdAt={n.createdAt}
+              originatingName={n.originatingName}
+              originatingImageUrl={n.originatingImageUrl}
             />
           ))}
         </div>

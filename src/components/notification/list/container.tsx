@@ -29,15 +29,26 @@ export class Container extends React.Component<Properties> {
 
   static mapNotification(notification, state: RootState) {
     if (notification.notificationType === 'chat_channel_mention') {
-      const channelId = notification.data.chatId;
+      const channelId = notification.data?.chatId;
       const { name: channelName } = denormalizeChannel(channelId, state) || {};
       const channelText = channelName ? `#${channelName}` : 'a channel';
+
+      // This should probably be extracted to a display utility or added
+      // to the domain model
+      const displayName = [
+        notification.originUser?.profileSummary?.firstName,
+        notification.originUser?.profileSummary?.lastName,
+      ]
+        .filter((e) => e)
+        .join(' ');
 
       return {
         id: notification.id,
         createdAt: notification.createdAt,
         title: 'Network Message',
         body: `You were mentioned in ${channelText}`,
+        originatingName: displayName,
+        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
       };
     }
     return null;

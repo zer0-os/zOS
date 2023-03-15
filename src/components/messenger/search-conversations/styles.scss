@@ -1,0 +1,42 @@
+@use '../../../shared-components/theme-engine/theme' as theme;
+@use '../../../modules/animation' as animation;
+
+$image-height: 28px;
+$image-member-height: 16px;
+
+.search_conversation {
+  margin-top: 5px;
+  &-input {
+    font-size: 14px;
+    background-image: url(../../../search-member-icon.svg);
+    background-repeat: no-repeat;
+    background-position: 10%;
+    text-align: left;
+    padding: 0 20px 0 42px;
+    height: auto;
+    flex: 1 1 auto;
+    display: flex;
+    z-index: 2;
+    cursor: text;
+    background-color: transparent;
+    border: 1px solid theme.$font-color-secondary;
+    border-radius: 20px;
+    color: theme.$font-color-primary;
+    box-shadow: none !important;
+    min-height: 38px;
+    width: 100%;
+    outline: none !important;
+
+    &:hover,
+    .focus-visible {
+      border: 1px solid theme.$font-color-secondary-hover !important;
+    }
+
+    &[type='search']::-webkit-search-decoration,
+    &[type='search']::-webkit-search-cancel-button,
+    &[type='search']::-webkit-search-results-button,
+    &[type='search']::-webkit-search-results-decoration {
+      -webkit-appearance: none;
+    }
+  }
+}

@@ -10,6 +10,7 @@ describe('SearchConversations', () => {
       placeholder: '',
       directMessagesList: [],
       onChange: () => undefined,
+      mapSearchConversationsText: () => undefined,
       ...props,
     };
 
@@ -37,7 +38,7 @@ describe('SearchConversations', () => {
     expect(wrapper.find('.search_conversation-input').exists()).toBe(true);
   });
 
-  it('should call onChange ', async () => {
+  it('should call onChange', async () => {
     const onChange = jest.fn();
     const inputSearch = 'anything';
     const wrapper = subject({ onChange });

@@ -115,7 +115,7 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
-  converstionInMyNetworks = (directMessagesList: Channel[]) => {
+  conversationInMyNetworks = (directMessagesList: Channel[]) => {
     this.setState({ directMessagesList });
   };
 
@@ -265,7 +265,8 @@ export class Container extends React.Component<Properties, State> {
                     className='messages-list__items-conversations-search'
                     placeholder='Search contacts...'
                     directMessagesList={this.props.directMessages}
-                    onChange={this.converstionInMyNetworks}
+                    onChange={this.conversationInMyNetworks}
+                    mapSearchConversationsText={otherMembersToString}
                   />
                 </div>
                 {this.state.directMessagesList.map(this.renderMember)}

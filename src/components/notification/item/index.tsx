@@ -6,7 +6,6 @@ import './style.scss';
 import moment from 'moment';
 
 export interface Properties {
-  title?: string;
   body: string;
   createdAt: string;
   originatingName?: string;
@@ -35,7 +34,6 @@ export class NotificationItem extends React.Component<Properties> {
           />
         </div>
         <div className='notification-item__content'>
-          <h4>{this.props.title}</h4>
           <p>{this.props.body}</p>
           <span className='notification-item__timestamp'>{this.time}</span>
         </div>

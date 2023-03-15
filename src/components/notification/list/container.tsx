@@ -52,7 +52,6 @@ export class Container extends React.Component<Properties> {
       return {
         id: notification.id,
         createdAt: notification.createdAt,
-        title: 'Network Message',
         body: `You were mentioned in ${channelText}`,
         originatingName: displayName,
         originatingImageUrl: notification.originUser?.profileSummary?.profileImage,

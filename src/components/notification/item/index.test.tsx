@@ -7,7 +7,6 @@ import moment from 'moment';
 describe('NotificationItem', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
-      title: '',
       body: '',
       createdAt: '',
       ...props,
@@ -16,17 +15,15 @@ describe('NotificationItem', () => {
     return shallow(<NotificationItem {...allProps} />);
   };
 
-  it('renders basic info', () => {
+  it('renders the message', () => {
     const wrapper = subject({
-      title: 'You were Notified',
       body: 'Here is the description',
     });
 
-    expect(wrapper.find('h4').text()).toEqual('You were Notified');
     expect(wrapper.find('p').text()).toEqual('Here is the description');
   });
 
-  it('renders basic info', () => {
+  it('renders created timestamp', () => {
     const wrapper = subject({
       createdAt: '2023-03-10T22:33:34.945Z',
     });

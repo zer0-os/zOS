@@ -9,6 +9,8 @@ import { Container, Properties } from './container';
 describe('NotificationsListContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      notifications: [],
+      userId: '',
       fetchNotifications: () => undefined,
       ...props,
     };
@@ -37,6 +39,8 @@ describe('NotificationsListContainer', () => {
   describe('mapState', () => {
     const subject = (state: Partial<RootState>) => {
       return Container.mapState({
+        authentication: { user: { data: { id: 'user-id' } as any } },
+        notificationsList: { value: [] },
         ...state,
       } as RootState);
     };
@@ -62,6 +66,14 @@ describe('NotificationsListContainer', () => {
         { id: 'id-1' },
         { id: 'id-2' },
       ]);
+    });
+
+    test('userId', () => {
+      const state = subject({
+        authentication: { user: { data: { id: 'user-id' } as any } },
+      });
+
+      expect(state.userId).toEqual('user-id');
     });
   });
 
@@ -111,25 +123,6 @@ describe('NotificationsListContainer', () => {
         );
 
         expect(mappedNotification.body).toEqual('You were mentioned in a channel');
-      });
-
-      it('maps title to default value', () => {
-        // We don't have network information in the data store yet
-        const mappedNotification = subject(
-          {
-            notificationType: 'chat_channel_mention',
-            data: { chatId: 'chat-id' },
-          },
-          {
-            normalized: {
-              channels: {
-                'chat-id': { id: 'chat-id', name: 'TestingChannel', networkId: 'network-id' },
-              },
-            },
-          }
-        );
-
-        expect(mappedNotification.title).toEqual('Network Message');
       });
 
       it('maps default properties', () => {

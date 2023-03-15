@@ -6,7 +6,6 @@ import './style.scss';
 
 interface Notification {
   id: string;
-  title: string;
   body: string;
   createdAt: string;
   originatingName?: string;
@@ -25,7 +24,6 @@ export class NotificationList extends React.Component<Properties> {
           {this.props.list.map((n) => (
             <NotificationItem
               key={n.id}
-              title={n.title}
               body={n.body}
               createdAt={n.createdAt}
               originatingName={n.originatingName}

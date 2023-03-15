@@ -26,4 +26,13 @@ describe('NotificationList', () => {
       { body: 'body-2', createdAt: '2023-01-20T22:33:34.945Z' },
     ]);
   });
+
+  it('renders the empyt state when empty', () => {
+    const wrapper = subject({
+      list: [],
+    });
+
+    expect(wrapper.find('NotificationItem').exists()).toBeFalse();
+    expect(wrapper.find('.notification-empty-list').exists()).toBeTrue();
+  });
 });

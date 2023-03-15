@@ -16,7 +16,7 @@ export interface Properties {
 
 export class NotificationItem extends React.Component<Properties> {
   get time() {
-    return moment('2023-03-13T22:33:34.945Z').fromNow();
+    return moment(this.props.createdAt).fromNow();
   }
 
   render() {

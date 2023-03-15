@@ -28,10 +28,10 @@ describe('NotificationItem', () => {
 
   it('renders basic info', () => {
     const wrapper = subject({
-      createdAt: '2023-03-13T22:33:34.945Z',
+      createdAt: '2023-03-10T22:33:34.945Z',
     });
 
-    const expectedTimeDescription = moment('2023-03-13T22:33:34.945Z').fromNow();
+    const expectedTimeDescription = moment('2023-03-10T22:33:34.945Z').fromNow();
 
     expect(wrapper.find('.notification-item__timestamp').text()).toEqual(expectedTimeDescription);
   });

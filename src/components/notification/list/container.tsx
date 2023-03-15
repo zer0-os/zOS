@@ -42,17 +42,18 @@ export class Container extends React.Component<Properties> {
 
       // This should probably be extracted to a display utility or added
       // to the domain model
-      const displayName = [
+      let displayName = [
         notification.originUser?.profileSummary?.firstName,
         notification.originUser?.profileSummary?.lastName,
       ]
         .filter((e) => e)
         .join(' ');
+      displayName = displayName || 'Someone';
 
       return {
         id: notification.id,
         createdAt: notification.createdAt,
-        body: `You were mentioned in ${channelText}`,
+        body: `${displayName} mentioned you in ${channelText}`,
         originatingName: displayName,
         originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
       };

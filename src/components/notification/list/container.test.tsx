@@ -96,6 +96,13 @@ describe('NotificationsListContainer', () => {
           {
             notificationType: 'chat_channel_mention',
             data: { chatId: 'chat-id' },
+            originUser: {
+              profileSummary: {
+                firstName: 'Johnny',
+                lastName: 'Chatter',
+                profileImage: 'image-url',
+              },
+            },
           },
           {
             normalized: {
@@ -106,10 +113,10 @@ describe('NotificationsListContainer', () => {
           }
         );
 
-        expect(mappedNotification.body).toEqual('You were mentioned in #TestingChannel');
+        expect(mappedNotification.body).toEqual('Johnny Chatter mentioned you in #TestingChannel');
       });
 
-      it('maps body with an unknown channel', () => {
+      it('maps body with unknown info', () => {
         const mappedNotification = subject(
           {
             notificationType: 'chat_channel_mention',
@@ -122,7 +129,7 @@ describe('NotificationsListContainer', () => {
           }
         );
 
-        expect(mappedNotification.body).toEqual('You were mentioned in a channel');
+        expect(mappedNotification.body).toEqual('Someone mentioned you in a channel');
       });
 
       it('maps default properties', () => {

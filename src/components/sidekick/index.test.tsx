@@ -97,7 +97,7 @@ describe('Sidekick', () => {
     const wrapper = subject({ activeTab: SidekickTabs.NOTIFICATIONS });
     wrapper.find('.sidekick__tabs-notifications').simulate('click');
 
-    expect(wrapper.find('.sidekick__tab-content--notifications').exists()).toBe(true);
+    expect(wrapper.find('NotificationPopup').exists()).toBe(true);
   });
 
   it('render messages tab content', () => {

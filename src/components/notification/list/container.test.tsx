@@ -79,7 +79,7 @@ describe('NotificationsListContainer', () => {
 
   describe('mapNotification', () => {
     const subject = (notification = {}, state: Partial<RootState>) => {
-      return Container.mapNotification(notification, state);
+      return Container.mapNotification(notification, state as RootState);
     };
 
     describe('unknown type', () => {

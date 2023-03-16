@@ -233,10 +233,10 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handleEditMessage = (messageId: number, message: string, mentionedUserIds: string[]): void => {
+  handleEditMessage = (messageId: number, message: string, mentionedUserIds: string[], data?: object): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
-      this.props.editMessage({ channelId, messageId, message, mentionedUserIds });
+      this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
     }
   };
 

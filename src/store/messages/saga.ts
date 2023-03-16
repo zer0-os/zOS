@@ -40,6 +40,7 @@ export interface EditPayload {
   messageId?: number;
   message?: string;
   mentionedUserIds?: string[];
+  data?: object;
 }
 
 export interface SendPayload {
@@ -200,13 +201,14 @@ export function* deleteMessage(action) {
 }
 
 export function* editMessage(action) {
-  const { channelId, messageId, message, mentionedUserIds } = action.payload;
+  const { channelId, messageId, message, mentionedUserIds, data } = action.payload;
+
   const selectedMessage = yield select(messageSelector(messageId));
   const existingMessages = yield select(rawMessagesSelector(channelId));
 
   const messages = existingMessages.map((id) => {
     if (messageId === id) {
-      return { ...selectedMessage, updatedAt: Date.now(), message };
+      return { ...selectedMessage, updatedAt: Date.now(), message, hidePreview: data?.hidePreview ?? false };
     } else {
       return id;
     }
@@ -219,7 +221,7 @@ export function* editMessage(action) {
     })
   );
 
-  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds);
+  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds, data);
   const isMessageSent = messagesResponse === 200;
 
   if (!isMessageSent) {
@@ -293,10 +295,15 @@ export function* stopSyncChannels(action) {
 }
 
 export function* receiveNewMessage(action) {
-  const { channelId, message } = action.payload;
+  let { channelId, message } = action.payload;
 
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
+  const preview = yield getPreview(message?.message);
+
+  if (preview) {
+    message = { ...message, preview };
+  }
 
   let messages = [];
   if (cachedMessageIds.length) {

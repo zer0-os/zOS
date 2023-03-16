@@ -31,7 +31,7 @@ export interface Properties {
   hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
   deleteMessage: (messageId: number) => void;
-  editMessage: (messageId: number, message: string, mentionedUserIds: string[]) => void;
+  editMessage: (messageId: number, message: string, mentionedUserIds: string[], data?: object) => void;
   onRemove?: () => void;
   onReply: (reply: ParentMessage) => void;
   joinChannel: () => void;

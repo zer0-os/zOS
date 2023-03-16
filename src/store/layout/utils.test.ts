@@ -17,10 +17,10 @@ describe('layout.utils', () => {
 
     it('returns stored active tab', () => {
       const key = 'key';
-      global.localStorage.getItem = jest.fn().mockReturnValue('notifications');
+      global.localStorage.getItem = jest.fn().mockReturnValue('messages');
 
       const activeTab = resolveActiveTab(key);
-      expect(activeTab).toEqual(SidekickTabs.NOTIFICATIONS);
+      expect(activeTab).toEqual(SidekickTabs.MESSAGES);
     });
 
     it('returns default in case stored tab is not matching any tab', () => {

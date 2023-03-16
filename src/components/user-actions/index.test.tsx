@@ -44,4 +44,18 @@ describe('UserActions', () => {
 
     expect(wrapper.find('Avatar').prop('statusType')).toEqual('offline');
   });
+
+  it('opens and closes the notification list', () => {
+    const wrapper = subject();
+
+    wrapper.find('button').simulate('click');
+
+    expect(wrapper.find('IconBell1').prop('isFilled')).toBeTrue();
+    expect(wrapper.find('NotificationPopup').exists()).toBeTrue();
+
+    wrapper.find('button').simulate('click');
+
+    expect(wrapper.find('IconBell1').prop('isFilled')).toBeFalse();
+    expect(wrapper.find('NotificationPopup').exists()).toBeFalse();
+  });
 });

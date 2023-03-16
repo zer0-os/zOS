@@ -16,12 +16,14 @@ import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-
 import MessageMenu from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { textToPlainEmojis } from './text-to-emojis';
+import { IconXClose } from '@zero-tech/zui/icons';
+import { IconButton } from '../icon-button';
 
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   onDelete: (messageId: number) => void;
-  onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][]) => void;
+  onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][], data?: object) => void;
   onReply: (reply: ParentMessage) => void;
   cloudinaryProvider: CloudinaryProvider;
   isOwner?: boolean;
@@ -126,9 +128,13 @@ export class Message extends React.Component<Properties, State> {
 
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
-  editMessage = (content: string, mentionedUserIds: string[]) => {
-    this.props.onEdit(this.props.messageId, content, mentionedUserIds);
+  editMessage = (content: string, mentionedUserIds: string[], data?: object) => {
+    this.props.onEdit(this.props.messageId, content, mentionedUserIds, data);
     this.toggleEdit();
+  };
+
+  onRemovePreview = (): void => {
+    this.props.onEdit(this.props.messageId, this.props.message, [], { hidePreview: true });
   };
 
   onReply = (): void => {
@@ -215,7 +221,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   render() {
-    const { message, media, preview, createdAt, sender, isOwner } = this.props;
+    const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
 
     return (
       <div
@@ -248,11 +254,20 @@ export class Message extends React.Component<Properties, State> {
                     </div>
                   )}
                   {message && this.renderMessageWithLinks()}
-                  {preview && (
-                    <LinkPreview
-                      url={preview.url}
-                      {...preview}
-                    />
+                  {preview && hidePreview === false && (
+                    <div className='message__block-preview-with-remove'>
+                      <LinkPreview
+                        url={preview.url}
+                        {...preview}
+                      />
+                      {isOwner && (
+                        <IconButton
+                          Icon={IconXClose}
+                          onClick={this.onRemovePreview}
+                          className='remove-preview__icon'
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               )}

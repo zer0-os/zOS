@@ -69,6 +69,7 @@
   "scripts": {
     "start": "craco start",
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",
     "test": "craco test --env=node",
     "eject": "react-scripts eject",

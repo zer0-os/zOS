@@ -30,6 +30,10 @@ The [zOS Feed app](https://github.com/zer0-os/zOS-feed) is the first core app, a
 
 There is always work to be done on the core platform, so if you've noticed a bug or want to get involved at a deeper level, feel free to open a PR, or get in touch with the core team. Be sure to check out the [contributing guidelines](CONTRIBUTING.md) and [style guide](STYLE_GUIDE.md) before opening a PR.
 
+### Architecture
+
+A high level overview of the Component, Connected Component, Redux Saga, Normalizr, Redux architecture: https://miro.com/app/board/uXjVPL_sxFI=/
+
 ### Deployment
 
 #### Production

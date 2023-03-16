@@ -46,10 +46,11 @@ export async function editMessageApi(
   channelId: string,
   messageId: number,
   message: string,
-  mentionedUserIds: string[]
+  mentionedUserIds: string[],
+  data?: object
 ): Promise<number> {
   const response = await put<any>(`/chatChannels/${channelId}/message`).send({
-    message: { id: messageId, message, mentionedUserIds },
+    message: { id: messageId, message, mentionedUserIds, data },
   });
 
   return response.status;

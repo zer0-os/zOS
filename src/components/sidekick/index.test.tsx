@@ -39,33 +39,7 @@ describe('Sidekick', () => {
     const sidekick = wrapper.find('.sidekick');
 
     expect(sidekick.hasClass('sidekick--slide-in')).toBe(true);
-  });
-
-  it('it should not render out class animation', () => {
-    const wrapper = subject({ isOpen: false });
-
-    const sidekick = wrapper.find('.sidekick');
-
     expect(sidekick.hasClass('sidekick--slide-out')).toBe(false);
-  });
-
-  it('renders sidekick panel', () => {
-    const wrapper = subject();
-
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
-
-    expect(ifAuthenticated.find('.app-sidekick-panel__target').exists()).toBe(true);
-  });
-
-  it('renders sidekick when panel tab is clicked', () => {
-    const updateSidekick = jest.fn();
-    const wrapper = subject({ updateSidekick, isOpen: false });
-
-    expect(wrapper.find('.sidekick').hasClass('sidekick--slide-out')).toBe(false);
-
-    wrapper.find('.app-sidekick-panel__target').simulate('click');
-
-    expect(updateSidekick).toHaveBeenCalledWith({ isOpen: true });
   });
 
   it('render messages tab content', () => {

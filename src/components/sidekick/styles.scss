@@ -17,57 +17,11 @@
     animation: sidekick-slide-out animation.$animation-duration-double ease-out forwards;
   }
 
-  &__tabs {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-
-    font-size: 16px;
-    height: 48px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-
-    .icon-button {
-      padding: 7px;
-      &__icon {
-        vertical-align: middle;
-        height: 16px;
-        width: 16px;
-      }
-      & PATH {
-        fill: theme.$font-color-primary;
-      }
-      &:hover {
-        background-color: theme.$background-color-app-panel-hover;
-        border-radius: 9999px;
-        transition-duration: animation.$animation-duration-double;
-      }
-    }
-  }
-
   .scroll-container__gradient {
     background: linear-gradient(to bottom, transparent, theme.$background-color-tertiary-hover 100%);
   }
   .scroll-container__gradient-top {
     background: linear-gradient(to top, transparent, theme.$background-color-tertiary-hover 100%);
-  }
-
-  &__invitation-button {
-    .button-component {
-      position: absolute;
-      bottom: 22px;
-      left: 40px;
-
-      .button-component__label {
-        min-height: 36px;
-        line-height: 36px;
-        vertical-align: middle;
-        text-transform: capitalize;
-      }
-    }
   }
 
   &__tab-content {
@@ -78,59 +32,6 @@
       height: 100%;
     }
   }
-
-  &__tab-notifications {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: theme.$accent-color;
-    color: theme.$font-color-primary;
-    height: 34px;
-    width: 34px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-}
-
-.app-sidekick-panel__target {
-  position: absolute;
-  left: -16px;
-  top: 0;
-  cursor: pointer;
-}
-
-.sidekick-panel-tab__tab {
-  height: 104px;
-  width: 16px;
-  transform: rotate(180deg);
-}
-
-.sidekick-panel-tab__tab PATH {
-  fill: theme.$background-color-tertiary-hover;
-}
-
-.sidekick-panel-tab__opacity-gradient-first-stop {
-  stop-color: theme.$background-color-app-panel;
-}
-
-.sidekick-panel-tab__opacity-gradient-second-stop,
-.sidekick-panel-tab__opacity-gradient-third-stop {
-  stop-color: theme.$actionable-hover-background;
-}
-
-.sidekick-panel-tab__icon {
-  position: absolute;
-  top: 44px;
-  left: 0px;
-  width: 14px;
-}
-
-.sidekick-panel-tab__icon-item {
-  background: theme.$actionable-color;
-  height: 2px;
-  display: block;
-  border-radius: 3px;
-  margin-bottom: 2px;
 }
 
 @keyframes sidekick-slide-in {

@@ -3,12 +3,14 @@ import React from 'react';
 import { Avatar } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { IconBell1 } from '@zero-tech/zui/icons';
+import { IconBell1, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { NotificationPopup } from '../notification/popup';
 
 export interface Properties {
   userImageUrl?: string;
   userIsOnline: boolean;
+  isConversationListOpen: boolean;
+  updateConversationState: (isOpen: boolean) => void;
 }
 
 interface State {
@@ -26,10 +28,20 @@ export class UserActions extends React.Component<Properties, State> {
     this.setState({ isNotificationPopupOpen: !this.state.isNotificationPopupOpen });
   };
 
+  toggleConversationListState = () => {
+    this.props.updateConversationState(!this.props.isConversationListOpen);
+  };
+
   render() {
     return (
       <>
         <div className='user-actions'>
+          <button
+            className='button-reset'
+            onClick={this.toggleConversationListState}
+          >
+            <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
+          </button>
           <button
             className='button-reset'
             onClick={this.toggleNotificationState}

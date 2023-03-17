@@ -12,6 +12,7 @@ import { Button as ConnectButton } from '../../components/authentication/button'
 import './styles.scss';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { UserActions } from '../user-actions';
+import { updateSidekick } from '../../store/layout';
 
 interface PublicProperties {
   className?: string;
@@ -26,6 +27,8 @@ export interface Properties extends PublicProperties {
   isWalletModalOpen: Web3State['isWalletModalOpen'];
   userImageUrl: string;
   userIsOnline: boolean;
+  updateConversationState: (isOpen: boolean) => void;
+  isConversationListOpen: boolean;
 }
 
 export interface State {
@@ -39,6 +42,7 @@ export class Container extends React.Component<Properties, State> {
       authentication: {
         user: { data: userData },
       },
+      layout,
     } = state;
 
     return {
@@ -48,6 +52,7 @@ export class Container extends React.Component<Properties, State> {
       isWalletModalOpen,
       userImageUrl: userData?.profileSummary?.profileImage || '',
       userIsOnline: !!userData?.isOnline,
+      isConversationListOpen: !!layout?.value?.isSidekickOpen,
     };
   }
 
@@ -55,6 +60,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       updateConnector,
       setWalletModalOpen,
+      updateConversationState: (isOpen: boolean) => updateSidekick({ isOpen }),
     };
   }
 
@@ -137,6 +143,8 @@ export class Container extends React.Component<Properties, State> {
             <UserActions
               userImageUrl={this.props.userImageUrl}
               userIsOnline={this.props.userIsOnline}
+              updateConversationState={this.props.updateConversationState}
+              isConversationListOpen={this.props.isConversationListOpen}
             />
           </div>
         </IfAuthenticated>

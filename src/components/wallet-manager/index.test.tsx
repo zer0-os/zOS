@@ -52,12 +52,19 @@ describe('WalletManager', () => {
   it('renders user actions address when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ currentAddress, userIsOnline: true, userImageUrl: 'image-url' });
+    const wrapper = subject({
+      currentAddress,
+      userIsOnline: true,
+      userImageUrl: 'image-url',
+      isConversationListOpen: true,
+    });
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
     expect(ifAuthenticated.find('UserActions').props()).toEqual({
       userImageUrl: 'image-url',
       userIsOnline: true,
+      isConversationListOpen: true,
+      updateConversationState: undefined,
     });
   });
 
@@ -325,6 +332,18 @@ describe('WalletManager', () => {
       );
 
       expect(state.userIsOnline).toEqual(true);
+    });
+
+    test('isConversationListOpen', () => {
+      const state = subject(
+        getState({
+          layout: {
+            value: { isSidekickOpen: true },
+          },
+        })
+      );
+
+      expect(state.isConversationListOpen).toEqual(true);
     });
   });
 });

@@ -254,7 +254,7 @@ export class Message extends React.Component<Properties, State> {
                     </div>
                   )}
                   {message && this.renderMessageWithLinks()}
-                  {preview && hidePreview === false && (
+                  {preview && !hidePreview && (
                     <div className='message__block-preview-with-remove'>
                       <LinkPreview
                         url={preview.url}

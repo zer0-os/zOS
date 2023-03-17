@@ -96,6 +96,10 @@ export class Chat {
     this.sb.reconnect();
   }
 
+  disconnect(): void {
+    this.sb.disconnect();
+  }
+
   mapMessage = (message): Message => mapMessage(message);
 
   getChannelId(channel): string {

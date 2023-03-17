@@ -11,6 +11,7 @@ import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
 import { IfAuthenticated } from '../authentication/if-authenticated';
+import { UserActions } from '../user-actions';
 
 interface PublicProperties {
   className?: string;
@@ -23,6 +24,8 @@ export interface Properties extends PublicProperties {
   updateConnector: (connector: WalletType | Connectors.None) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
+  userImageUrl: string;
+  userIsOnline: boolean;
 }
 
 export interface State {
@@ -33,6 +36,9 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       web3: { status, value, isWalletModalOpen },
+      authentication: {
+        user: { data: userData },
+      },
     } = state;
 
     return {
@@ -40,6 +46,8 @@ export class Container extends React.Component<Properties, State> {
       currentAddress: value.address,
       connectionStatus: status,
       isWalletModalOpen,
+      userImageUrl: userData?.profileSummary?.profileImage || '',
+      userIsOnline: !!userData?.isOnline,
     };
   }
 
@@ -121,10 +129,16 @@ export class Container extends React.Component<Properties, State> {
     return (
       <div className={classNames('wallet-manager', this.props.className)}>
         <IfAuthenticated showChildren>
-          <EthAddress
-            address={this.props.currentAddress}
-            onClick={this.handleDisconnect}
-          />
+          <div style={{ display: 'flex', gap: '25px' }}>
+            <EthAddress
+              address={this.props.currentAddress}
+              onClick={this.handleDisconnect}
+            />
+            <UserActions
+              userImageUrl={this.props.userImageUrl}
+              userIsOnline={this.props.userIsOnline}
+            />
+          </div>
         </IfAuthenticated>
         <IfAuthenticated hideChildren>
           <ConnectButton />

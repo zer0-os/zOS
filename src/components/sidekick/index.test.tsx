@@ -85,21 +85,6 @@ describe('Sidekick', () => {
     expect(setActiveSidekickTab).toHaveBeenCalledWith({ activeTab: SidekickTabs.MESSAGES });
   });
 
-  it('handle notifications tab content', () => {
-    const setActiveSidekickTab = jest.fn();
-    const wrapper = subject({ setActiveSidekickTab });
-    wrapper.find('.sidekick__tabs-notifications').simulate('click');
-
-    expect(setActiveSidekickTab).toHaveBeenCalledWith({ activeTab: SidekickTabs.NOTIFICATIONS });
-  });
-
-  it('render notifications tab content', () => {
-    const wrapper = subject({ activeTab: SidekickTabs.NOTIFICATIONS });
-    wrapper.find('.sidekick__tabs-notifications').simulate('click');
-
-    expect(wrapper.find('NotificationPopup').exists()).toBe(true);
-  });
-
   it('render messages tab content', () => {
     const wrapper = subject({ activeTab: SidekickTabs.MESSAGES });
     wrapper.find('.sidekick__tabs-messages').simulate('click');

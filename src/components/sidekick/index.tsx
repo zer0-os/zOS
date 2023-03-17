@@ -17,7 +17,6 @@ import { denormalize } from '../../store/channels';
 import { SidekickTabs as Tabs } from './types';
 
 import './styles.scss';
-import { NotificationList } from '../notification';
 
 interface PublicProperties {
   className?: string;
@@ -140,11 +139,6 @@ export class Container extends React.Component<Properties, State> {
           onClick={this.clickTab.bind(this, Tabs.NETWORK)}
         />
         {this.renderMessageTab()}
-        <IconButton
-          className='sidekick__tabs-notifications'
-          icon={Icons.Notifications}
-          onClick={this.clickTab.bind(this, Tabs.NOTIFICATIONS)}
-        />
       </div>
     );
   }
@@ -159,8 +153,6 @@ export class Container extends React.Component<Properties, State> {
             <MessengerList />
           </div>
         );
-      case Tabs.NOTIFICATIONS:
-        return <NotificationList />;
       default:
         return null;
     }

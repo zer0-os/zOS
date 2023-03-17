@@ -1,4 +1,24 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
 .user-actions {
-  // The Avatar component doesn't restrict itself to 40px at the moment
-  width: 40px;
+  display: flex;
+  gap: 15px;
+
+  color: theme.$color-primary-transparency-11;
+
+  button {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    line-height: 0px;
+    margin: 0px;
+
+    > * {
+      margin: auto; // Center the icon
+    }
+
+    &:hover {
+      background-color: theme.$color-primary-4;
+    }
+  }
 }

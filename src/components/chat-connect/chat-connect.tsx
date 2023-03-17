@@ -13,6 +13,7 @@ import { RootState } from '../../store';
 import { unreadCountUpdated } from '../../store/channels';
 import { updateConnector } from '../../store/web3';
 import { Connectors } from '../../lib/web3';
+import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 export interface Properties {
   isLoading: boolean;
@@ -26,10 +27,15 @@ export interface Properties {
   invalidChatAccessToken: () => void;
   userId: string;
   isReconnecting: boolean;
+  context: {
+    isAuthenticated: boolean;
+  };
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
+  static mapState(state: RootState, props: Properties): Partial<Properties> {
+    if (!props.context.isAuthenticated) return {};
+
     const {
       chat: {
         chatAccessToken: { value: chatAccessToken },
@@ -44,8 +50,8 @@ export class Container extends React.Component<Properties> {
 
     return {
       chatAccessToken,
-      userId,
       isReconnecting,
+      userId,
     };
   }
 
@@ -74,9 +80,16 @@ export class Container extends React.Component<Properties> {
   };
 
   componentDidUpdate(prevProps: Properties) {
-    const { userId, chatAccessToken } = this.props;
-    if ((userId && userId !== prevProps.userId) || (chatAccessToken && chatAccessToken !== prevProps.chatAccessToken)) {
-      this.startChatHandler(userId, chatAccessToken);
+    const {
+      userId,
+      chatAccessToken,
+      context: { isAuthenticated },
+    } = this.props;
+
+    if (isAuthenticated) {
+      if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
+        this.startChatHandler(userId, chatAccessToken);
+      }
     }
   }
 
@@ -107,4 +120,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChatConnect = connectContainer<{}>(Container);
+export const ChatConnect = withAuthenticationContext<{}>(connectContainer<{}>(Container));

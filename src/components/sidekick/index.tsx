@@ -2,19 +2,9 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import { IconButton, Icons } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
-import { AuthenticationState } from '../../store/authentication/types';
-import {
-  UpdateSidekickPayload,
-  updateSidekick,
-  setActiveSidekickTab,
-  SetActiveSidekickTabPayload,
-  syncSidekickState,
-} from '../../store/layout';
+import { UpdateSidekickPayload, updateSidekick, syncSidekickState } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
-import { denormalize } from '../../store/channels';
-import { SidekickTabs as Tabs } from './types';
 
 import './styles.scss';
 
@@ -23,13 +13,9 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  user: AuthenticationState['user'];
   updateSidekick: (action: UpdateSidekickPayload) => void;
-  setActiveSidekickTab: (action: SetActiveSidekickTabPayload) => void;
   syncSidekickState: () => void;
-  countAllUnreadMessages: number;
   isOpen: boolean;
-  activeTab: Tabs;
 }
 
 export interface State {
@@ -38,33 +24,19 @@ export interface State {
 
 export class Container extends React.Component<Properties, State> {
   state = { canStartAnimation: false };
-  defaultProps: {
-    activeTab: Tabs.MESSAGES;
-  };
 
   static mapState(state: RootState): Partial<Properties> {
-    const directMessages = denormalize(state.channelsList.value, state).filter((channel) => Boolean(channel.isChannel));
-
-    const countAllUnreadMessages = directMessages.reduce(
-      (count, directMessage) => count + directMessage.unreadCount,
-      0
-    );
-
     const {
-      authentication: { user },
       layout: { value },
     } = state;
 
     return {
-      user,
-      countAllUnreadMessages,
       isOpen: value.isSidekickOpen,
-      activeTab: value.activeSidekickTab,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { updateSidekick, setActiveSidekickTab, syncSidekickState };
+    return { updateSidekick, syncSidekickState };
   }
 
   componentDidMount() {
@@ -73,12 +45,6 @@ export class Container extends React.Component<Properties, State> {
 
   get isOpen() {
     return this.props.isOpen;
-  }
-
-  clickTab(tab: Tabs): void {
-    this.props.setActiveSidekickTab({
-      activeTab: tab,
-    });
   }
 
   toggleSidekickPanel = (): void => {
@@ -109,53 +75,12 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  renderMessageTab() {
-    if (this.props.countAllUnreadMessages > 0) {
-      return (
-        <div
-          className='sidekick__tab-notifications sidekick__tab-notifications--unread-messages'
-          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
-        >
-          {this.props.countAllUnreadMessages}
-        </div>
-      );
-    } else {
-      return (
-        <IconButton
-          className='sidekick__tabs-messages'
-          icon={Icons.Messages}
-          onClick={this.clickTab.bind(this, Tabs.MESSAGES)}
-        />
-      );
-    }
-  }
-
-  renderTabs(): JSX.Element {
+  renderTabContent(): JSX.Element {
     return (
-      <div className='sidekick__tabs'>
-        <IconButton
-          className='sidekick__tabs-network'
-          icon={Icons.Network}
-          onClick={this.clickTab.bind(this, Tabs.NETWORK)}
-        />
-        {this.renderMessageTab()}
+      <div className='sidekick__tab-content--messages'>
+        <MessengerList />
       </div>
     );
-  }
-
-  renderTabContent(): JSX.Element {
-    switch (this.props.activeTab) {
-      case Tabs.NETWORK:
-        return <div className='sidekick__tab-content--network'>NETWORK</div>;
-      case Tabs.MESSAGES:
-        return (
-          <div className='sidekick__tab-content--messages'>
-            <MessengerList />
-          </div>
-        );
-      default:
-        return null;
-    }
   }
 
   render() {
@@ -170,7 +95,6 @@ export class Container extends React.Component<Properties, State> {
           )}
         >
           {this.renderSidekickPanel()}
-          <div className='sidekick-panel'>{this.renderTabs()}</div>
           <div className='sidekick__tab-content'>{this.renderTabContent()}</div>
         </div>
       </IfAuthenticated>

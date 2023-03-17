@@ -51,14 +51,7 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <IfAuthenticated showChildren>
-        <div
-          className={classNames(
-            'sidekick',
-            this.props.className,
-            { 'sidekick--slide-out': !this.isOpen },
-            { 'sidekick--slide-in': this.isOpen }
-          )}
-        >
+        <div className={classNames('sidekick', this.props.className, { 'sidekick--open': this.isOpen })}>
           <div className='sidekick__tab-content'>{this.renderTabContent()}</div>
         </div>
       </IfAuthenticated>

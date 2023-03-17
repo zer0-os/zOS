@@ -9,12 +9,10 @@
   width: $width-sidekick;
   height: 100%;
   margin-right: -$width-sidekick;
+  transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
 
-  &--slide-in {
-    animation: sidekick-slide-in animation.$animation-duration-double ease-in forwards;
-  }
-  &--slide-out {
-    animation: sidekick-slide-out animation.$animation-duration-double ease-out forwards;
+  &--open {
+    margin-right: 0;
   }
 
   .scroll-container__gradient {
@@ -31,23 +29,5 @@
     &--messages {
       height: 100%;
     }
-  }
-}
-
-@keyframes sidekick-slide-in {
-  0% {
-    margin-right: -$width-sidekick;
-  }
-  100% {
-    margin-right: 0;
-  }
-}
-
-@keyframes sidekick-slide-out {
-  0% {
-    margin-right: 0;
-  }
-  100% {
-    margin-right: -$width-sidekick;
   }
 }

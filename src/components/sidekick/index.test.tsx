@@ -33,13 +33,20 @@ describe('Sidekick', () => {
     expect(ifAuthenticated.find('.todo').exists()).toBe(true);
   });
 
-  it('renders sidekick with class animation in', () => {
+  it('renders sidekick state when open', () => {
     const wrapper = subject({ isOpen: true });
 
     const sidekick = wrapper.find('.sidekick');
 
-    expect(sidekick.hasClass('sidekick--slide-in')).toBe(true);
-    expect(sidekick.hasClass('sidekick--slide-out')).toBe(false);
+    expect(sidekick.hasClass('sidekick--open')).toBe(true);
+  });
+
+  it('renders sidekick state when closed', () => {
+    const wrapper = subject({ isOpen: false });
+
+    const sidekick = wrapper.find('.sidekick');
+
+    expect(sidekick.hasClass('sidekick--open')).toBe(false);
   });
 
   it('render messages tab content', () => {

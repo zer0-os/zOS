@@ -15,13 +15,21 @@
 
   font-family: 'Inter';
 
-  h3 {
-    color: theme.$color-white;
-    margin: 20px 0px;
+  &_header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
 
-    font-style: normal;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 24px;
+    h3 {
+      color: theme.$color-white;
+      margin: 20px 0px;
+
+      font-style: normal;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 24px;
+    }
   }
 }

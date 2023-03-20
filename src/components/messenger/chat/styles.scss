@@ -1,4 +1,5 @@
-@use '../../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @use '../../../modules/animation' as animation;
 @import '../../../variables';
 @import '../../../layout';
@@ -40,11 +41,11 @@ $recent-indicator-size: 8px;
     width: $window-width;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
-    background-color: theme.$background-color-primary;
+    background-color: themeDeprecated.$background-color-primary;
     border-radius: $title-bar-border-radius;
 
     &:hover {
-      background-color: theme.$background-color-primary-hover;
+      background-color: themeDeprecated.$background-color-primary-hover;
     }
 
     .message-block__left-column {

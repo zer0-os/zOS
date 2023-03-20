@@ -2,7 +2,7 @@ import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
 import { Media, MessagesResponse } from './index';
-import { SendPayload } from './saga';
+import { FileUploadResult, SendPayload } from './saga';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
   const filter: any = {};
@@ -19,12 +19,16 @@ export async function sendMessagesByChannelId(
   channelId: string,
   message: string,
   mentionedUserIds: string[],
-  parentMessage?: ParentMessage
+  parentMessage?: ParentMessage,
+  file?: FileUploadResult
 ): Promise<any> {
   const filter: SendPayload = { message, mentionedUserIds };
   if (parentMessage) {
     filter.parentMessageId = parentMessage.messageId;
     filter.parentMessageUserId = parentMessage.userId;
+  }
+  if (file) {
+    filter.file = file;
   }
 
   const response = await post<any>(`/chatChannels/${channelId}/message`).send(filter);

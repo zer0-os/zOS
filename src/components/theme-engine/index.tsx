@@ -2,7 +2,9 @@ import React from 'react';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 
-import { ThemeEngine as ThemeEngineComponent, ViewModes } from '../../shared-components/theme-engine';
+import { ThemeEngine as ThemeEngineComponentDeprecated, ViewModes } from '../../shared-components/theme-engine';
+import { ThemeEngine as ThemeEngineComponent } from '@zero-tech/zui/components';
+import { Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { setViewMode } from '../../store/theme';
 import { keyStorageLightMode } from '../../store/theme/saga';
 
@@ -41,8 +43,18 @@ export class Container extends React.Component<Properties> {
     return this.props.viewMode === ViewModes.Dark;
   }
 
+  // Translate to new zUI Theme
+  get theme() {
+    return this.isDarkMode ? Themes.Dark : Themes.Light;
+  }
+
   render() {
-    return <ThemeEngineComponent viewMode={this.props.viewMode} />;
+    return (
+      <>
+        <ThemeEngineComponentDeprecated viewMode={this.props.viewMode} />
+        <ThemeEngineComponent theme={this.theme} />
+      </>
+    );
   }
 }
 

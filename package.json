@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {
@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@giphy/js-fetch-api": "^4.7.1",
+    "@giphy/react-components": "^6.5.2",
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^7.13.0",
     "@types/jest": "^24.9.1",
@@ -26,11 +28,11 @@
     "@zer0-os/zos-component-library": "0.18.9",
     "@zer0-os/zos-feed": "^1.29.2",
     "@zer0-os/zos-zns": "2.3.3",
-    "@zero-tech/zapp-buy-domains": "^0.2.1",
-    "@zero-tech/zapp-daos": "^0.4.0",
-    "@zero-tech/zapp-nfts": "^0.7.5",
-    "@zero-tech/zapp-staking": "0.4.8",
-    "@zero-tech/zui": "^0.15.0",
+    "@zero-tech/zapp-buy-domains": "latest",
+    "@zero-tech/zapp-daos": "latest",
+    "@zero-tech/zapp-nfts": "latest",
+    "@zero-tech/zapp-staking": "latest",
+    "@zero-tech/zui": "^0.16.0",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

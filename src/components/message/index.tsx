@@ -120,6 +120,10 @@ export class Message extends React.Component<Properties, State> {
     return this.props.isOwner;
   };
 
+  isMediaMessage = (): boolean => {
+    return !!this.props.media;
+  };
+
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
   editMessage = (content: string, mentionedUserIds: string[]) => {
@@ -154,6 +158,7 @@ export class Message extends React.Component<Properties, State> {
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
           onReply={this.onReply}
+          isMediaMessage={this.isMediaMessage()}
         />
       </div>
     );
@@ -165,7 +170,7 @@ export class Message extends React.Component<Properties, State> {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return textToPlainEmojis(message);
+        return textToPlainEmojis(part);
       }
 
       if (match[2] === 'user') {

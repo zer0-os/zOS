@@ -49,6 +49,7 @@ export interface SendPayload {
   parentMessage?: ParentMessage;
   parentMessageId?: number;
   parentMessageUserId?: string;
+  file?: FileUploadResult;
 }
 
 export interface MediaPyload {
@@ -233,14 +234,26 @@ export function* editMessage(action) {
 
 export function* uploadFileMessage(action) {
   const { channelId, media } = action.payload;
+
   const existingMessages = yield select(rawMessagesSelector(channelId));
 
   if (!media.length) return;
 
   let messages = [...existingMessages];
-  for (const file of media) {
+  for (const file of media.filter((i) => i.nativeFile)) {
     const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
     messages.push(messagesResponse);
+  }
+
+  for (const file of media.filter((i) => i.giphy)) {
+    const original = file.giphy.images.original;
+    const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
+    const messagesResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
+    const message = messagesResponse.body;
+
+    if (messagesResponse.status !== 200) return;
+
+    messages.push(message);
   }
 
   yield put(
@@ -280,30 +293,36 @@ export function* stopSyncChannels(action) {
 }
 
 export function* receiveNewMessage(action) {
-  const { channelId, message } = action.payload;
+  let { channelId, message } = action.payload;
 
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
+  const preview = yield getPreview(message?.message);
+
+  if (preview) {
+    message = { ...message, preview };
+  }
 
   let messages = [];
-
   if (cachedMessageIds.length) {
     messages = [
       ...currentMessages,
     ];
-    const firstCachedMessageId = cachedMessageIds[0];
 
-    messages = messages.map((messageId) => {
-      if (messageId === firstCachedMessageId) {
-        cachedMessageIds.shift();
-        return message;
-      } else {
-        return messageId;
-      }
+    cachedMessageIds.forEach((id, index, object) => {
+      messages = messages.map((messageId) => {
+        if (messageId === id && message.message && !message.image) {
+          object.splice(index, 1);
+          return message;
+        } else {
+          return messageId;
+        }
+      });
     });
   } else {
+    const filtredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
     messages = [
-      ...currentMessages,
+      ...filtredCurrentMessages,
       message,
     ];
   }

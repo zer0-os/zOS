@@ -7,6 +7,7 @@ import {
   deleteMessageApi,
   editMessageApi,
   uploadFileMessage as uploadFileMessageApi,
+  getLinkPreviews,
 } from './api';
 import {
   fetch,
@@ -17,6 +18,7 @@ import {
   receiveDelete,
   editMessage,
   uploadFileMessage,
+  receiveNewMessage,
 } from './saga';
 
 import { rootReducer } from '..';
@@ -83,6 +85,113 @@ describe('messages saga', () => {
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
     expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
+  });
+
+  it('send message with link preview', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = 'www.google.com';
+    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const parentMessage = null;
+
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels, messages },
+      },
+    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+      .provide([
+        [
+          matchers.call.fn(sendMessagesByChannelId),
+          { status: 200, body: { id: 'message 1', message } },
+        ],
+        [
+          matchers.call.fn(getLinkPreviews),
+          {
+            status: 200,
+            body: {
+              id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
+              url: 'http://www.google.com',
+              type: 'link',
+              title: 'Google',
+              description: 'Search the world information, including webpages.',
+            },
+          },
+        ],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .run();
+
+    const messageId = channels[channelId]['messages'][0];
+    expect(messages[messageId].preview).not.toBeNull();
+  });
+
+  it('receive new message with link preview', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const message = {
+      id: 8667728016,
+      message: 'www.google.com',
+      parentMessageText: null,
+      createdAt: 1678861267433,
+      updatedAt: 0,
+    };
+
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels, messages },
+      },
+    } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+      .provide([
+        [
+          matchers.call.fn(getLinkPreviews),
+          {
+            status: 200,
+            body: {
+              id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
+              url: 'http://www.google.com',
+              type: 'link',
+              title: 'Google',
+              description: 'Search the world information, including webpages.',
+            },
+          },
+        ],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    const messageId = channels[channelId]['messages'][0];
+    expect(messages[messageId].preview).not.toBeNull();
   });
 
   it('reply message', async () => {
@@ -243,6 +352,57 @@ describe('messages saga', () => {
       ])
       .withReducer(rootReducer)
       .call(uploadFileMessageApi, channelId, media[0].nativeFile)
+      .run();
+  });
+
+  it('send Giphy message', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const media = [
+      {
+        id: 'id image 1',
+        name: 'image 1',
+        giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
+        mediaType: 'image',
+      },
+    ];
+
+    const initialState = {
+      authentication: {
+        user: {
+          data: {
+            id: 1,
+            profileId: '2',
+            profileSummary: {
+              firstName: 'Johnn',
+              lastName: 'Doe',
+              profileImage: '/image.jpg',
+            },
+          },
+        },
+      },
+    };
+
+    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
+      .provide([
+        [
+          matchers.call.fn(sendMessagesByChannelId),
+          {
+            status: 200,
+            body: {
+              id: 'id image 1',
+              url: 'url_giphy',
+              name: 'image 1',
+              type: 'gif',
+            },
+          },
+        ],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, {
+        url: media[0].giphy.images.original.url,
+        name: media[0].name,
+        type: media[0].giphy.type,
+      })
       .run();
   });
 

@@ -1,4 +1,5 @@
-@use '../../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @use '../../../modules/animation' as animation;
 
 $gap: 8px;
@@ -55,7 +56,7 @@ $delete-width: 32px;
   }
 
   &.image-card__border {
-    border: 1px solid theme.$primary-border-color;
+    border: 1px solid themeDeprecated.$primary-border-color;
   }
 
   &.image-card__regular {

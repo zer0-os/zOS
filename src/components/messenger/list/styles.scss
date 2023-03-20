@@ -1,5 +1,6 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
 @use '../../../modules/animation' as animation;
-@use '../../../shared-components/theme-engine/theme' as theme;
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @import '../../../variables';
 @import '../../../layout';
 
@@ -16,19 +17,18 @@
   overflow-x: hidden;
   overflow-y: scroll;
   height: 100%;
-  padding: 0 7px 0 10px;
+  padding: 0 16px;
 
   &__user {
     display: flex;
     align-items: center;
     cursor: pointer;
-    color: theme.$actionable-inactive-color;
-    padding: 0 20px;
+    color: themeDeprecated.$actionable-inactive-color;
     height: 36px;
 
     &:hover {
-      color: theme.$actionable-active-color;
-      background-color: theme.$actionable-hover-background;
+      color: themeDeprecated.$actionable-active-color;
+      background-color: themeDeprecated.$actionable-hover-background;
     }
 
     &-status {
@@ -46,13 +46,9 @@
       }
     }
 
-    &-tooltip {
-      max-width: 200px;
-    }
-
     &-unread-count {
-      background-color: theme.$accent-color;
-      color: theme.$font-color-primary;
+      background-color: themeDeprecated.$accent-color;
+      color: themeDeprecated.$font-color-primary;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -77,7 +73,7 @@
       align-items: center;
       font-size: 14px;
       font-weight: 400;
-      color: theme.$font-color-primary;
+      color: themeDeprecated.$font-color-primary;
       margin-top: 40px;
       &-icon {
         display: flex;
@@ -97,6 +93,10 @@
     }
     &__items {
       animation: conversation-slide-in 600ms ease-in forwards;
+
+      &-conversations-input {
+        margin-bottom: 18px;
+      }
     }
   }
 }
@@ -105,13 +105,12 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 14px;
-  color: theme.$font-color-primary;
+  color: themeDeprecated.$font-color-primary;
   background-color: transparent;
   transition: background-color animation.$animation-duration ease-out;
 
   cursor: default;
   height: 40px;
-  padding: 0px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -121,7 +120,7 @@
     &-plus {
       cursor: pointer;
       path {
-        stroke: theme.$actionable-active-color;
+        stroke: themeDeprecated.$actionable-active-color;
       }
     }
   }
@@ -140,7 +139,7 @@
     display: flex;
     font-weight: 700;
     font-size: 16px;
-    color: theme.$actionable-color;
+    color: themeDeprecated.$actionable-color;
     margin: 9px 0 20px -2px;
     align-items: center;
   }

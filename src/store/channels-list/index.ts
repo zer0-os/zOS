@@ -28,9 +28,9 @@ export const { reducer, normalize, denormalize } = slice;
 export { fetch, receiveUnreadCount, stopSyncChannels, fetchDirectMessages, createDirectMessage };
 
 export function denormalizeChannels(state) {
-  return denormalize(state.channelsList.value, state).filter((c) => !c.isChannel);
+  return denormalize(state.channelsList.value, state).filter((c) => c.isChannel);
 }
 
 export function denormalizeConversations(state) {
-  return denormalize(state.channelsList.value, state).filter((c) => c.isChannel);
+  return denormalize(state.channelsList.value, state).filter((c) => !c.isChannel);
 }

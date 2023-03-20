@@ -163,20 +163,24 @@ describe('ChannelsContainer', () => {
           value: [
             'the-id',
             'the-second-id',
+            'the-conversation-id',
           ],
         },
         normalized: {
+          // Note: There's currently a bug where we're labelling channels as isChannel: false
+          // and Conversations as true.
           channels: {
-            'the-id': { id: 'the-id', name: 'the channel' },
-            'the-second-id': { id: 'the-second-id', name: 'the second channel' },
-            'the-third-id': { id: 'the-third-id', name: 'the third channel' },
+            'the-id': { id: 'the-id', name: 'the channel', isChannel: false },
+            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: false },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: false },
+            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: true },
           },
         },
       });
 
-      expect(state.channels).toIncludeAllPartialMembers([
-        { id: 'the-id', name: 'the channel' },
-        { id: 'the-second-id', name: 'the second channel' },
+      expect(state.channels.map((c) => c.id)).toEqual([
+        'the-id',
+        'the-second-id',
       ]);
     });
 

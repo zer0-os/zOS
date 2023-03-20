@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Linkify from 'linkify-react';
 import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
-import { Message as MessageModel, MediaType } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
@@ -23,7 +23,12 @@ interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
   onDelete: (messageId: number) => void;
-  onEdit: (messageId: number, message: string, mentionedUserIds: User['id'][], data?: object) => void;
+  onEdit: (
+    messageId: number,
+    message: string,
+    mentionedUserIds: User['id'][],
+    data?: Partial<EditMessageOptions>
+  ) => void;
   onReply: (reply: ParentMessage) => void;
   cloudinaryProvider: CloudinaryProvider;
   isOwner?: boolean;
@@ -128,7 +133,7 @@ export class Message extends React.Component<Properties, State> {
 
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
-  editMessage = (content: string, mentionedUserIds: string[], data?: object) => {
+  editMessage = (content: string, mentionedUserIds: string[], data?: Partial<EditMessageOptions> | any) => {
     this.props.onEdit(this.props.messageId, content, mentionedUserIds, data);
     this.toggleEdit();
   };

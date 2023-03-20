@@ -1,7 +1,7 @@
 import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { Media, MessagesResponse } from './index';
+import { EditMessageOptions, Media, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -47,7 +47,7 @@ export async function editMessageApi(
   messageId: number,
   message: string,
   mentionedUserIds: string[],
-  data?: object
+  data?: Partial<EditMessageOptions>
 ): Promise<number> {
   const response = await put<any>(`/chatChannels/${channelId}/message`).send({
     message: { id: messageId, message, mentionedUserIds, data },

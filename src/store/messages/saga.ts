@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
-import { Message, SagaActionTypes } from '.';
+import { EditMessageOptions, Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
 
 import {
@@ -40,7 +40,7 @@ export interface EditPayload {
   messageId?: number;
   message?: string;
   mentionedUserIds?: string[];
-  data?: object;
+  data?: Partial<EditMessageOptions>;
 }
 
 export interface SendPayload {

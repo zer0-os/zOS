@@ -293,10 +293,15 @@ export function* stopSyncChannels(action) {
 }
 
 export function* receiveNewMessage(action) {
-  const { channelId, message } = action.payload;
+  let { channelId, message } = action.payload;
 
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
+  const preview = yield getPreview(message?.message);
+
+  if (preview) {
+    message = { ...message, preview };
+  }
 
   let messages = [];
   if (cachedMessageIds.length) {

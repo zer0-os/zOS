@@ -49,6 +49,25 @@ describe('WalletManager', () => {
     expect(wrapper.find(Button).exists()).toBe(false);
   });
 
+  it('renders user actions address when set', () => {
+    const currentAddress = '0x0000000000000000000000000000000000000001';
+
+    const wrapper = subject({
+      currentAddress,
+      userIsOnline: true,
+      userImageUrl: 'image-url',
+      isConversationListOpen: true,
+    });
+    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
+
+    expect(ifAuthenticated.find('UserActions').props()).toEqual({
+      userImageUrl: 'image-url',
+      userIsOnline: true,
+      isConversationListOpen: true,
+      updateConversationState: undefined,
+    });
+  });
+
   it('renders wallet address when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
@@ -270,6 +289,61 @@ describe('WalletManager', () => {
       const state = subject(getState({ web3: getWeb3({ isWalletModalOpen: isWalletModalOpenMock }) }));
 
       expect(state.isWalletModalOpen).toEqual(isWalletModalOpenMock);
+    });
+
+    test('userImageUrl', () => {
+      const state = subject(
+        getState({
+          authentication: {
+            user: {
+              data: {
+                id: 'user-id',
+                profileSummary: {
+                  profileImage: 'user-url',
+                },
+              },
+            },
+          },
+        })
+      );
+
+      expect(state.userImageUrl).toEqual('user-url');
+    });
+
+    test('userImageUrl', () => {
+      const state = subject(
+        getState({
+          authentication: {
+            user: { data: { profileSummary: { profileImage: 'user-url' } } },
+          },
+        })
+      );
+
+      expect(state.userImageUrl).toEqual('user-url');
+    });
+
+    test('userIsOnline', () => {
+      const state = subject(
+        getState({
+          authentication: {
+            user: { data: { isOnline: true } },
+          },
+        })
+      );
+
+      expect(state.userIsOnline).toEqual(true);
+    });
+
+    test('isConversationListOpen', () => {
+      const state = subject(
+        getState({
+          layout: {
+            value: { isSidekickOpen: true },
+          },
+        })
+      );
+
+      expect(state.isConversationListOpen).toEqual(true);
     });
   });
 });

@@ -124,4 +124,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChannelsContainer = withAuthenticationContext<{}>(connectContainer<PublicProperties>(Container));
+export const ChannelsContainer = withAuthenticationContext<PublicProperties>(connectContainer<{}>(Container));

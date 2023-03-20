@@ -15,11 +15,12 @@ import { createDirectMessage } from '../../../store/channels-list';
 import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import './styles.scss';
 import { Button } from '@zer0-os/zos-component-library';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { SearchConversations } from '../search-conversations';
+
+import './styles.scss';
 
 export interface PublicProperties {
   className?: string;
@@ -63,6 +64,7 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount(): void {
     this.props.fetchDirectMessages();
+    this.setState({ directMessagesList: this.props.directMessages });
   }
 
   componentDidUpdate(prevProps: Properties): void {

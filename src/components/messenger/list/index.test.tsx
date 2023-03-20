@@ -4,9 +4,12 @@ import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../tooltip';
 import { Channel } from '../../../store/channels';
+import { normalize } from '../../../store/channels-list';
 import { Dialog } from '@zer0-os/zos-component-library';
 import { SearchConversations } from '../search-conversations';
 import { AutocompleteMembers } from '../autocomplete-members';
+import { RootState } from '../../../store';
+import moment from 'moment';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -186,6 +189,47 @@ describe('messenger-list', () => {
         'direct-message-members__user-status direct-message-members__user-status--active',
         'direct-message-members__user-status direct-message-members__user-status--active',
         'direct-message-members__user-status',
+      ]);
+    });
+  });
+
+  describe('mapState', () => {
+    const subject = (channels) => {
+      return DirectMessageChat.mapState(getState(channels));
+    };
+
+    const getState = (channels) => {
+      const channelData = normalize(channels);
+      return {
+        channelsList: { value: channelData.result },
+        normalized: channelData.entities,
+      } as RootState;
+    };
+
+    test('gets sorted conversations', () => {
+      const state = subject([
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: true },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: true },
+      ]);
+
+      expect(state.directMessages.map((c) => c.id)).toEqual([
+        'convo-2',
+        'convo-1',
+      ]);
+    });
+
+    test('gets only conversations', () => {
+      // Note: There's currently a bug where we're labelling channels as isChannel: false
+      // and Conversations as true.
+      const state = subject([
+        { id: 'convo-1', isChannel: true },
+        { id: 'convo-2', isChannel: false },
+        { id: 'convo-3', isChannel: true },
+      ]);
+
+      expect(state.directMessages.map((c) => c.id)).toEqual([
+        'convo-1',
+        'convo-3',
       ]);
     });
   });

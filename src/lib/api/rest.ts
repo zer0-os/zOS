@@ -24,7 +24,7 @@ function apiUrl(path: string): string {
  */
 const xPlatFormHeader = { 'X-APP-PLATFORM': 'zos' };
 
-export function get<T>(path: string, filter?: RequestFilter | string) {
+export function get<T>(path: string, filter?: RequestFilter | string, query?: any) {
   let queryData;
   if (filter) {
     if (typeof filter === 'string') {
@@ -34,6 +34,10 @@ export function get<T>(path: string, filter?: RequestFilter | string) {
         queryData = { filter: JSON.stringify(filter) };
       }
     }
+  }
+
+  if (query) {
+    queryData = { ...queryData, ...query };
   }
 
   return Request.get<T>(apiUrl(path)).set(xPlatFormHeader).withCredentials().query(queryData);

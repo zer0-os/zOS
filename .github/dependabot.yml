@@ -6,4 +6,3 @@ updates:
       interval: 'daily'
     allow:
       - dependency-name: '@zero-tech/zapp-*'
-      - dependency-type: 'indirect'

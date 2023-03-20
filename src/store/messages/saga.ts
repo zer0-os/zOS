@@ -208,7 +208,7 @@ export function* editMessage(action) {
 
   const messages = existingMessages.map((id) => {
     if (messageId === id) {
-      return { ...selectedMessage, updatedAt: Date.now(), message, hidePreview: Boolean(data?.hidePreview)};
+      return { ...selectedMessage, updatedAt: Date.now(), message, hidePreview: Boolean(data?.hidePreview) };
     } else {
       return id;
     }

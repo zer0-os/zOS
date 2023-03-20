@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import classNames from 'classnames';
-import { syncSidekickState } from '../../store/layout';
+import { syncSidekickState, updateSidekick } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
 
 import './styles.scss';
@@ -14,6 +14,7 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   syncSidekickState: () => void;
+  closeConversations: () => void;
   isOpen: boolean;
 }
 
@@ -29,7 +30,10 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { syncSidekickState };
+    return {
+      syncSidekickState,
+      closeConversations: () => updateSidekick({ isOpen: false }),
+    };
   }
 
   componentDidMount() {
@@ -43,7 +47,7 @@ export class Container extends React.Component<Properties> {
   renderTabContent(): JSX.Element {
     return (
       <div className='sidekick__tab-content--messages'>
-        <MessengerList />
+        <MessengerList onClose={this.props.closeConversations} />
       </div>
     );
   }

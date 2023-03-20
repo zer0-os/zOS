@@ -55,4 +55,14 @@ describe('Sidekick', () => {
     expect(wrapper.find(MessengerList).exists()).toBe(true);
     expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
   });
+
+  it('closes conversations when list publishes close event', () => {
+    const closeConversations = jest.fn();
+
+    const wrapper = subject({ closeConversations });
+
+    wrapper.find(MessengerList).simulate('close');
+
+    expect(closeConversations).toHaveBeenCalledOnce();
+  });
 });

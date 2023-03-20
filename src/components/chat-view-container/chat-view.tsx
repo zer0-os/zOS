@@ -2,7 +2,7 @@ import React, { RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
@@ -31,7 +31,12 @@ export interface Properties {
   hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
   deleteMessage: (messageId: number) => void;
-  editMessage: (messageId: number, message: string, mentionedUserIds: string[]) => void;
+  editMessage: (
+    messageId: number,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ) => void;
   onRemove?: () => void;
   onReply: (reply: ParentMessage) => void;
   joinChannel: () => void;

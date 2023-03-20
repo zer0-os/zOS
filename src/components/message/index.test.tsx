@@ -184,7 +184,7 @@ describe('message', () => {
     };
     const message = 'message text accompanying link preview';
 
-    const wrapper = subject({ preview, message });
+    const wrapper = subject({ preview, message, hidePreview: false });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(preview);
     expect(wrapper.text().includes(message)).toBeTruthy();
@@ -198,9 +198,40 @@ describe('message', () => {
       description: 'the description',
     };
 
-    const wrapper = subject({ preview, message: undefined });
+    const wrapper = subject({ preview, message: undefined, hidePreview: false });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+  });
+
+  it('does not render LinkPreview when there is a message but hidePreview is true', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+    const message = 'message text accompanying link preview';
+
+    const wrapper = subject({ preview, message, hidePreview: true });
+
+    expect(wrapper.find(LinkPreview)).toEqual({});
+  });
+
+  it('renders remove link preview icon when there is a message owned by current user', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+    const message = 'message';
+    const id = 'id';
+    const onEdit = jest.fn();
+
+    const wrapper = subject({ messageId: id, preview, message, hidePreview: false, isOwner: true, onEdit });
+
+    expect(wrapper.find('.remove-preview__icon').simulate('click'));
+    expect(onEdit).toHaveBeenCalledWith(id, message, [], { hidePreview: true });
   });
 
   it('renders message with mention', () => {

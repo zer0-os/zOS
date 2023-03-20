@@ -12,6 +12,7 @@ import {
   Message,
   startMessageSync,
   stopSyncChannels,
+  EditMessageOptions,
 } from '../../store/messages';
 import {
   Channel,
@@ -233,10 +234,15 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handleEditMessage = (messageId: number, message: string, mentionedUserIds: string[]): void => {
+  handleEditMessage = (
+    messageId: number,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
-      this.props.editMessage({ channelId, messageId, message, mentionedUserIds });
+      this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
     }
   };
 

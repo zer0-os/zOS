@@ -57,6 +57,11 @@ export interface Message {
   media?: Media;
 }
 
+export interface EditMessageOptions {
+  hidePreview: Boolean;
+  mentionedUsers: string[];
+}
+
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
   Send = 'messages/saga/send',

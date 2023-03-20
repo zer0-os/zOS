@@ -24,7 +24,7 @@ describe('ChatConnect', () => {
     return shallow(<ChatConnect {...allProps} />);
   };
 
-  it('connect with chat when authenticated', () => {
+  it('connect with chat when authenticated with user and chatAccessToken', () => {
     const expectation = {
       userId: 'user-id',
       chatAccessToken: 'chat-access-token',
@@ -38,6 +38,22 @@ describe('ChatConnect', () => {
     });
 
     expect(setUserId).toHaveBeenCalledWith(expectation.userId, expectation.chatAccessToken);
+  });
+
+  it('do not connect with chat when missing chatAccessToken', () => {
+    const expectation = {
+      userId: 'user-id',
+      chatAccessToken: null,
+    };
+
+    const wrapper = subject();
+
+    wrapper.setProps({
+      context: { isAuthenticated: true },
+      ...expectation,
+    });
+
+    expect(setUserId).not.toHaveBeenCalled();
   });
 
   it('disconnect from chat when not authenticated', () => {

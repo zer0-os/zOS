@@ -86,7 +86,7 @@ export class Container extends React.Component<Properties> {
       context: { isAuthenticated },
     } = this.props;
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId && chatAccessToken) {
       if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
         this.startChatHandler(userId, chatAccessToken);
       }

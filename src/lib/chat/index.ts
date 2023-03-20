@@ -14,19 +14,27 @@ interface RealtimeChatEvents {
 }
 
 export class Chat {
-  sb = new SendBird({ appId: config.sendBird.appId });
-  userPromise: Promise<any>;
-  channelListQuery: any;
-  messageQueries = {};
+  sb: any = null;
+
+  accessToken: string;
+
+  init() {
+    if (this.sb !== null) return;
+
+    this.sb = new SendBird({
+      appId: config.sendBird.appId,
+    });
+  }
 
   async setUserId(userId: string, accessToken) {
     if (!accessToken || !userId) {
-      console.error('accessToken or userId not found');
+      return;
     }
 
-    const userPromise = new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
       this.sb.connect(userId, accessToken, (user, error) => {
         if (error) {
+          console.log('Sendbird connection error', error);
           reject(error);
           return;
         }
@@ -34,11 +42,12 @@ export class Chat {
         resolve(user);
       });
     });
-    this.userPromise = userPromise;
-    return userPromise;
+
+    this.accessToken = accessToken;
   }
 
   initChat(events: RealtimeChatEvents): void {
+    this.init();
     this.initSessionHandler(events);
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
@@ -97,7 +106,10 @@ export class Chat {
   }
 
   disconnect(): void {
-    this.sb.disconnect();
+    if (this.sb !== null) {
+      this.sb.disconnect();
+      this.sb = null;
+    }
   }
 
   mapMessage = (message): Message => mapMessage(message);

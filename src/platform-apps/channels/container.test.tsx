@@ -31,6 +31,9 @@ describe('ChannelsContainer', () => {
       user: {
         data: null,
       },
+      context: {
+        isAuthenticated: true,
+      },
       ...props,
     };
 
@@ -55,7 +58,7 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('set receiveUnreadCount channels on mount', () => {
+  it('set receiveUnreadCount channels on mount when authenticated', () => {
     const domainId = '0x000000000000000000000000000000000000000A';
     const fetchChannels = jest.fn();
     const receiveUnreadCount = jest.fn();
@@ -63,6 +66,15 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels, receiveUnreadCount });
 
     expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
+  });
+
+  it('do not set receiveUnreadCount channels on mount when anonymous', () => {
+    const fetchChannels = jest.fn();
+    const receiveUnreadCount = jest.fn();
+
+    subject({ fetchChannels, receiveUnreadCount, context: { isAuthenticated: false } });
+
+    expect(receiveUnreadCount).not.toHaveBeenCalledWith();
   });
 
   it('wraps ChannelList in AppContextPanel', () => {

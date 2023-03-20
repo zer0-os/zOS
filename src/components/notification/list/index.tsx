@@ -11,6 +11,7 @@ interface Notification {
   createdAt: string;
   originatingName?: string;
   originatingImageUrl?: string;
+  isUnread: boolean;
 }
 
 export interface Properties {
@@ -30,6 +31,7 @@ export class NotificationList extends React.Component<Properties> {
                 createdAt={n.createdAt}
                 originatingName={n.originatingName}
                 originatingImageUrl={n.originatingImageUrl}
+                isUnread={n.isUnread}
               />
             ))}
           </div>

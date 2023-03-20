@@ -56,8 +56,10 @@ export class Container extends React.Component<Properties> {
         body: `${displayName} mentioned you in ${channelText}`,
         originatingName: displayName,
         originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
+        isUnread: notification.isUnread,
       };
     }
+
     return null;
   }
 

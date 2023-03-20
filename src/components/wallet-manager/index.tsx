@@ -11,8 +11,8 @@ import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import { UserActions } from '../user-actions';
 import { updateSidekick } from '../../store/layout';
+import { UserActionsContainer } from '../user-actions/container';
 
 interface PublicProperties {
   className?: string;
@@ -140,7 +140,7 @@ export class Container extends React.Component<Properties, State> {
               address={this.props.currentAddress}
               onClick={this.handleDisconnect}
             />
-            <UserActions
+            <UserActionsContainer
               userImageUrl={this.props.userImageUrl}
               userIsOnline={this.props.userIsOnline}
               updateConversationState={this.props.updateConversationState}

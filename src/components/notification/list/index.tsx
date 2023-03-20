@@ -11,7 +11,7 @@ interface Notification {
   createdAt: string;
   originatingName?: string;
   originatingImageUrl?: string;
-  isUnread: boolean;
+  isUnread?: boolean;
 }
 
 export interface Properties {

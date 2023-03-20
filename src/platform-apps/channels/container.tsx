@@ -8,7 +8,12 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels, receiveUnreadCount, stopSyncChannels, denormalize } from '../../store/channels-list';
+import {
+  fetch as fetchChannels,
+  receiveUnreadCount,
+  stopSyncChannels,
+  denormalizeChannels,
+} from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
@@ -37,7 +42,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const channels = denormalize(state.channelsList.value, state).filter((channel) => !Boolean(channel.isChannel));
+    const channels = denormalizeChannels(state);
 
     const {
       authentication: { user },

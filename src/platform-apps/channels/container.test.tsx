@@ -167,13 +167,11 @@ describe('ChannelsContainer', () => {
           ],
         },
         normalized: {
-          // Note: There's currently a bug where we're labelling channels as isChannel: false
-          // and Conversations as true.
           channels: {
-            'the-id': { id: 'the-id', name: 'the channel', isChannel: false },
-            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: false },
-            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: false },
-            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: true },
+            'the-id': { id: 'the-id', name: 'the channel', isChannel: true },
+            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: true },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: true },
+            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: false },
           },
         },
       });

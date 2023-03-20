@@ -2,11 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
-import { Channel, denormalize } from '../../../store/channels';
+import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
 import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
-import { fetchDirectMessages } from '../../../store/channels-list';
+import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -43,11 +43,9 @@ export class Container extends React.Component<Properties, State> {
   state = { showCreateConversation: false, userIds: [], directMessagesList: [] };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalize(state.channelsList.value, state)
-      .filter((messenger) => Boolean(messenger.isChannel))
-      .sort((messengerA, messengerB) =>
-        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
-      );
+    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+      compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+    );
 
     return {
       directMessages: messengerList,

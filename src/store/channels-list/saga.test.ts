@@ -117,6 +117,7 @@ describe('channels list saga', () => {
     const category = 'channel-category';
     const unreadCount = 1;
     const hasJoined = true;
+    const isChannel = true;
 
     const {
       storeState: { normalized },
@@ -124,7 +125,7 @@ describe('channels list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchChannels),
-          [{ id, name, icon, category, unreadCount, hasJoined }],
+          [{ id, name, icon, category, unreadCount, hasJoined, isChannel }],
         ],
       ])
       .withReducer(rootReducer)
@@ -137,8 +138,11 @@ describe('channels list saga', () => {
       category,
       unreadCount,
       hasJoined,
-      isChannel: false,
+      isChannel,
       otherMembers: [],
+      groupChannelType: '',
+      lastMessage: null,
+      lastMessageCreatedAt: null,
     });
   });
 
@@ -186,9 +190,14 @@ describe('channels list saga', () => {
     expect(normalized.channels).toStrictEqual({
       [channel.id]: {
         ...channel,
+        groupChannelType: '',
+        lastMessage: null,
+        lastMessageCreatedAt: null,
       },
       [directMessage.id]: {
         ...directMessage,
+        groupChannelType: '',
+        lastMessageCreatedAt: null,
       },
     });
   });

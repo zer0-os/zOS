@@ -170,7 +170,7 @@ export class Message extends React.Component<Properties, State> {
       const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
 
       if (!match) {
-        return textToPlainEmojis(message);
+        return textToPlainEmojis(part);
       }
 
       if (match[2] === 'user') {

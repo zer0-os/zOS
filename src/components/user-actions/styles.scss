@@ -12,6 +12,7 @@
     width: 40px;
     line-height: 0px;
     margin: 0px;
+    position: relative;
 
     > * {
       margin: auto; // Center the icon
@@ -20,5 +21,30 @@
     &:hover {
       background-color: theme.$color-primary-4;
     }
+  }
+
+  &__badge {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: -1px;
+    top: -1px;
+
+    background: theme.$color-primary-10;
+    border: 1px solid theme.$color-primary-1;
+    border-radius: 50%;
+
+    color: theme.$color-primary-transparency-12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 8px;
+    line-height: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 }

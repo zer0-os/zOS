@@ -9,6 +9,7 @@ describe('UserActions', () => {
       userImageUrl: '',
       userIsOnline: false,
       isConversationListOpen: false,
+      unreadConversationMessageCount: 0,
       updateConversationState: (_) => undefined,
       ...props,
     };
@@ -89,6 +90,24 @@ describe('UserActions', () => {
     const wrapper = subject({ isConversationListOpen: true });
 
     expect(wrapper.find('IconMessageSquare2').prop('isFilled')).toBeTrue();
+  });
+
+  it('does not render the message count if it is zero', () => {
+    const wrapper = subject({ unreadConversationMessageCount: 0 });
+
+    expect(conversationButton(wrapper).find('.user-actions__badge').exists()).toBeFalse();
+  });
+
+  it('renders the message count if it is greater than 0', () => {
+    const wrapper = subject({ unreadConversationMessageCount: 7 });
+
+    expect(conversationButton(wrapper).find('.user-actions__badge').text()).toEqual('7');
+  });
+
+  it('renders the message count if it is greater than 9', () => {
+    const wrapper = subject({ unreadConversationMessageCount: 10 });
+
+    expect(conversationButton(wrapper).find('.user-actions__badge').text()).toEqual('9+');
   });
 });
 

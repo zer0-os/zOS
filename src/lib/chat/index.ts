@@ -60,6 +60,10 @@ export class Chat {
     // The client app should guide the user to a login page to log in again.
     sessionHandler.onSessionClosed = () => events.invalidChatAccessToken();
 
+    sessionHandler.onSessionTokenRequired = (onSuccess: (accessToken: string) => void, _onFail: () => void) => {
+      onSuccess(this.accessToken);
+    };
+
     this.sb.setSessionHandler(sessionHandler);
   }
 

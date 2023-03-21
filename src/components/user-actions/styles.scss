@@ -59,10 +59,6 @@
 }
 
 .user-menu-popup {
-  position: absolute;
-  top: 75px;
-  right: 20px;
-  z-index: 500;
   background-color: theme.$color-primary-2;
   padding: 0px 16px 20px 16px;
 
@@ -74,7 +70,8 @@
 
   h3 {
     color: theme.$color-greyscale-12;
-    margin: 20px 0px;
+    margin: 0px;
+    padding: 20px 0px;
 
     font-style: normal;
     font-weight: 700;
@@ -91,5 +88,9 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.9);
+  }
+
+  &__content {
+    position: absolute;
   }
 }

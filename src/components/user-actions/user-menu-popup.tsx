@@ -6,23 +6,50 @@ import './styles.scss';
 
 export interface PopupProperties {
   address: string;
+  isOpen: boolean;
   onAbort: () => void;
   onDisconnect: () => void;
 }
 
 export class UserMenuPopup extends React.Component<PopupProperties> {
+  ref: HTMLDivElement = null;
+
+  blockClick(e) {
+    e.stopPropagation();
+  }
+
+  setPositionRef = (el) => {
+    this.ref = el;
+  };
+
   render() {
-    return <>{createPortal(this.renderPortal(), document.body)}</>;
+    return (
+      <>
+        <div ref={this.setPositionRef}></div>
+        {createPortal(this.renderPortal(), document.body)}
+      </>
+    );
   }
 
   renderPortal() {
+    if (!this.ref || !this.props.isOpen) {
+      return null;
+    }
+    const { x, y } = this.ref.getBoundingClientRect();
+
     return (
       <>
         <div
           className='user-menu-popup__underlay'
           onClick={this.props.onAbort}
         >
-          <UserMenuPopupContent {...this.props} />
+          <div
+            className='user-menu-popup__content'
+            style={{ top: y, left: x }}
+            onClick={this.blockClick}
+          >
+            <UserMenuPopupContent {...this.props} />
+          </div>
         </div>
       </>
     );
@@ -35,18 +62,11 @@ export interface Properties {
 }
 
 export class UserMenuPopupContent extends React.Component<Properties> {
-  blockClick(e) {
-    e.stopPropagation();
-  }
-
   render() {
     const { address } = this.props;
 
     return (
-      <div
-        className='user-menu-popup'
-        onClick={this.blockClick}
-      >
+      <div className='user-menu-popup'>
         <h3>
           <span
             title={address}

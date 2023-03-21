@@ -50,7 +50,7 @@ export class UserActions extends React.Component<Properties, State> {
       <>
         <div className='user-actions'>
           <button
-            className='button-reset'
+            className='user-actions__icon-button'
             onClick={this.toggleConversationListState}
           >
             <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
@@ -59,7 +59,7 @@ export class UserActions extends React.Component<Properties, State> {
             )}
           </button>
           <button
-            className='button-reset'
+            className='user-actions__icon-button'
             onClick={this.toggleNotificationState}
           >
             <IconBell1 isFilled={this.state.isNotificationPopupOpen} />

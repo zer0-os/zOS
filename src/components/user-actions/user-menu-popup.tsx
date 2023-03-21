@@ -35,11 +35,18 @@ export interface Properties {
 }
 
 export class UserMenuPopupContent extends React.Component<Properties> {
+  blockClick(e) {
+    e.stopPropagation();
+  }
+
   render() {
     const { address } = this.props;
 
     return (
-      <div className='user-menu-popup'>
+      <div
+        className='user-menu-popup'
+        onClick={this.blockClick}
+      >
         <h3>
           <span
             title={address}

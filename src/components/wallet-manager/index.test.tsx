@@ -61,12 +61,25 @@ describe('WalletManager', () => {
     });
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
-    expect(ifAuthenticated.find(UserActionsContainer).props()).toEqual({
-      userImageUrl: 'image-url',
-      userIsOnline: true,
-      isConversationListOpen: true,
-      updateConversationState: undefined,
-    });
+    expect(ifAuthenticated.find(UserActionsContainer).props()).toEqual(
+      expect.objectContaining({
+        userAddress: currentAddress,
+        userImageUrl: 'image-url',
+        userIsOnline: true,
+        isConversationListOpen: true,
+      })
+    );
+  });
+
+  it('calls update connector when disconnect event occurs', () => {
+    const updateConnector = jest.fn();
+    const currentAddress = '0x0000000000000000000000000000000000000001';
+
+    const wrapper = subject({ updateConnector, currentAddress });
+
+    wrapper.find(UserActionsContainer).simulate('disconnect');
+
+    expect(updateConnector).toHaveBeenCalledWith('none');
   });
 
   it('renders wallet address when set', () => {

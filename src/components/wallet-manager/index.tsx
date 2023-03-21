@@ -141,10 +141,12 @@ export class Container extends React.Component<Properties, State> {
               onClick={this.handleDisconnect}
             />
             <UserActionsContainer
+              userAddress={this.props.currentAddress}
               userImageUrl={this.props.userImageUrl}
               userIsOnline={this.props.userIsOnline}
               updateConversationState={this.props.updateConversationState}
               isConversationListOpen={this.props.isConversationListOpen}
+              onDisconnect={this.handleDisconnect}
             />
           </div>
         </IfAuthenticated>

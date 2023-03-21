@@ -5,21 +5,25 @@ import { Avatar } from '@zero-tech/zui/components';
 import './styles.scss';
 import { IconBell1, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { NotificationPopup } from '../notification/popup';
+import { UserMenuPopup } from './user-menu-popup';
 
 export interface Properties {
+  userAddress: string;
   userImageUrl?: string;
   userIsOnline: boolean;
   isConversationListOpen: boolean;
   unreadConversationMessageCount: number;
   updateConversationState: (isOpen: boolean) => void;
+  onDisconnect: () => void;
 }
 
 interface State {
   isNotificationPopupOpen: boolean;
+  isUserPopupOpen: boolean;
 }
 
 export class UserActions extends React.Component<Properties, State> {
-  state = { isNotificationPopupOpen: false };
+  state = { isNotificationPopupOpen: false, isUserPopupOpen: false };
 
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
@@ -35,6 +39,10 @@ export class UserActions extends React.Component<Properties, State> {
 
   toggleConversationListState = () => {
     this.props.updateConversationState(!this.props.isConversationListOpen);
+  };
+
+  toggleUserPopupState = () => {
+    this.setState({ isUserPopupOpen: !this.state.isUserPopupOpen });
   };
 
   render() {
@@ -56,14 +64,22 @@ export class UserActions extends React.Component<Properties, State> {
           >
             <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
           </button>
-          <Avatar
-            type='circle'
-            size='regular'
-            imageURL={this.props.userImageUrl}
-            statusType={this.userStatus}
-          />
+          <button onClick={this.toggleUserPopupState}>
+            <Avatar
+              type='circle'
+              size='regular'
+              imageURL={this.props.userImageUrl}
+              statusType={this.userStatus}
+            />
+          </button>
         </div>
         {this.state.isNotificationPopupOpen && <NotificationPopup />}
+        {this.state.isUserPopupOpen && (
+          <UserMenuPopup
+            address={this.props.userAddress}
+            onDisconnect={this.props.onDisconnect}
+          />
+        )}
       </>
     );
   }

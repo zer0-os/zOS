@@ -42,7 +42,7 @@ describe('Message Menu', () => {
     expect(wrapper.find('ModalConfirmation').exists()).toBe(true);
   });
 
-  it.only('it should call delete message when confirm button is clicked', () => {
+  it('it should call delete message when confirm button is clicked', () => {
     const onDelete = jest.fn();
     const wrapper = subject({ onDelete, canEdit: true });
 

@@ -4,7 +4,7 @@ import { Dialog } from '@zer0-os/zos-component-library';
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { config } from '../../config';
-import { fetchCurrentUser } from '../../store/authentication';
+import { fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { createAndAuthorize, updateImageProfile } from '../../store/authentication/api';
 import { AuthenticationState, AuthorizationResponse } from '../../store/authentication/types';
 import { ImageUpload } from '../image-upload';
@@ -15,9 +15,8 @@ import classNames from 'classnames';
 
 export interface Properties {
   currentAddress: string;
-  fetchCurrentUser: () => void;
+  fetchCurrentUserWithChatAccessToken: () => void;
   user: AuthenticationState['user'];
-
   createAndAuthorize: (nonce: string, user: object, inviteCode: string) => Promise<AuthorizationResponse>;
   updateImageProfile: (profileId: string, iamgeFile: any) => Promise<AuthorizationResponse>;
   inviteCode: string;
@@ -55,7 +54,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      fetchCurrentUser,
+      fetchCurrentUserWithChatAccessToken,
     };
   }
 
@@ -123,7 +122,7 @@ export class Container extends React.Component<Properties, State> {
     const {
       user: { nonce },
       createAndAuthorize,
-      fetchCurrentUser,
+      fetchCurrentUserWithChatAccessToken,
       inviteCode,
     } = this.props;
 
@@ -152,7 +151,7 @@ export class Container extends React.Component<Properties, State> {
       });
 
     if (authorizationResult) {
-      fetchCurrentUser();
+      fetchCurrentUserWithChatAccessToken();
     }
   };
 

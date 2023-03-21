@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom';
 
 import './styles.scss';
 
-export interface Properties {
+export interface PopupProperties {
   address: string;
   onAbort: () => void;
   onDisconnect: () => void;
 }
 
-export class UserMenuPopup extends React.Component<Properties> {
+export class UserMenuPopup extends React.Component<PopupProperties> {
   render() {
     return <>{createPortal(this.renderPortal(), document.body)}</>;
   }
@@ -27,6 +27,11 @@ export class UserMenuPopup extends React.Component<Properties> {
       </>
     );
   }
+}
+
+export interface Properties {
+  address: string;
+  onDisconnect: () => void;
 }
 
 export class UserMenuPopupContent extends React.Component<Properties> {

@@ -14,7 +14,7 @@ describe('UserActionsContainer', () => {
       isConversationListOpen: false,
       unreadConversationMessageCount: 0,
       updateConversationState: (_) => undefined,
-      onDisconnect: (_) => undefined,
+      onDisconnect: () => undefined,
       ...props,
     };
 

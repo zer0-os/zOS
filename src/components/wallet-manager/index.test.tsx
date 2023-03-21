@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store';
 
-import { EthAddress, Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import { Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
@@ -80,24 +80,7 @@ describe('WalletManager', () => {
     wrapper.find(UserActionsContainer).simulate('disconnect');
 
     expect(updateConnector).toHaveBeenCalledWith('none');
-  });
-
-  it('renders wallet address when set', () => {
-    const currentAddress = '0x0000000000000000000000000000000000000001';
-
-    const wrapper = subject({ currentAddress });
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
-
-    expect(ifAuthenticated.find(EthAddress).exists()).toBe(true);
-  });
-
-  it('does not render wallet address when not set', () => {
-    const currentAddress = '';
-
-    const wrapper = subject({ currentAddress });
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: false });
-
-    expect(ifAuthenticated.find(EthAddress).exists()).toBe(false);
+    expect(wrapper.find(ConnectButton).exists()).toBe(true);
   });
 
   it('does not render wallet select modal', () => {
@@ -199,32 +182,6 @@ describe('WalletManager', () => {
     wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
-  });
-
-  it('calls update connector when disconnect btn clicked', () => {
-    const updateConnector = jest.fn();
-    const currentAddress = '0x0000000000000000000000000000000000000001';
-
-    const wrapper = subject({ updateConnector, currentAddress });
-
-    wrapper.find(EthAddress).simulate('click');
-
-    expect(updateConnector).toHaveBeenCalledWith('none');
-  });
-
-  it('render connect button after disconnected', () => {
-    const updateConnector = jest.fn();
-    const currentAddress = '0x0000000000000000000000000000000000000001';
-
-    const wrapper = subject({ updateConnector, currentAddress });
-
-    wrapper.find(EthAddress).simulate('click');
-
-    wrapper.setProps({
-      currentAddress: '',
-    });
-
-    expect(wrapper.find(ConnectButton).exists()).toBe(true);
   });
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {

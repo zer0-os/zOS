@@ -4,7 +4,7 @@
   position: absolute;
   top: 75px;
   right: 20px;
-  z-index: 500;
+  z-index: 50;
   background-color: theme.$color-primary-2;
   width: 360px;
   padding: 0px 16px;
@@ -31,5 +31,41 @@
       font-size: 16px;
       line-height: 24px;
     }
+  }
+}
+
+.settings-popup {
+  position: absolute;
+  width: auto;
+  height: 72px;
+  right: 35px;
+  top: 117px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  z-index: 51;
+  background-color: theme.$color-primary-2;
+  box-shadow: 12px 11px 54px #040304;
+  border-radius: 16px 0px 16px 16px;
+
+  &__text {
+    color: theme.$color-white;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    padding: 10px 24px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: theme.$color-greyscale-5;
+    }
+  }
+}
+.modal_notifications {
+  &-link {
+    color: theme.$color-secondary-11;
+    margin: 0 4px;
   }
 }

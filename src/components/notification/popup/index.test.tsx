@@ -2,8 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { NotificationPopup, Properties } from '.';
-import moment from 'moment';
 import { NotificationListContainer } from '../list/container';
+import { ModalConfirmation } from '@zero-tech/zui/components';
+
+jest.mock('react-dom', () => ({
+  createPortal: (node, _portalLocation) => {
+    return node;
+  },
+}));
 
 describe('NotificationPopup', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -17,13 +23,21 @@ describe('NotificationPopup', () => {
   it('renders  NotificationListContainer', () => {
     const wrapper = subject({});
 
-    expect(wrapper.find(NotificationListContainer).exists()).tobetrue();
+    expect(wrapper.find(NotificationListContainer).exists()).toBeTrue();
   });
 
   it('renders settings icon', () => {
     const wrapper = subject({});
 
-    expect(wrapper.find('.notification-popup_settings-icon').exists()).tobetrue();
+    expect(wrapper.find('.notification-popup_settings-icon').exists()).toBeTrue();
+  });
+
+  it('renders settings popup', () => {
+    const wrapper = subject({});
+
+    wrapper.find('.notification-popup_settings-icon').simulate('click');
+
+    expect(wrapper.find('.settings-popup').exists()).toBeTrue();
   });
 
   it('renders modal notifications', () => {
@@ -31,6 +45,8 @@ describe('NotificationPopup', () => {
 
     wrapper.find('.notification-popup_settings-icon').simulate('click');
 
-    expect(wrapper.find('.modal-notifications').exists()).tobetrue();
+    wrapper.find('.settings-popup__text').simulate('click');
+
+    expect(wrapper.find(ModalConfirmation).exists()).toBeTrue();
   });
 });

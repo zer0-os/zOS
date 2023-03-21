@@ -23,8 +23,6 @@ import { SearchConversations } from '../search-conversations';
 import './styles.scss';
 
 export interface PublicProperties {
-  className?: string;
-  onSubmit?: (userIds: string[]) => void;
   onClose: () => void;
 }
 

@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as ChatConnect } from './chat-connect';
 
-const setUserId = jest.fn();
+const connect = jest.fn();
 const disconnect = jest.fn();
 
 describe('ChatConnect', () => {
   const chat = {
-    setUserId,
+    connect,
     initChat: jest.fn(),
     disconnect,
   };
@@ -37,7 +37,7 @@ describe('ChatConnect', () => {
       ...expectation,
     });
 
-    expect(setUserId).toHaveBeenCalledWith(expectation.userId, expectation.chatAccessToken);
+    expect(connect).toHaveBeenCalledWith(expectation.userId, expectation.chatAccessToken);
   });
 
   it('do not connect with chat when missing chatAccessToken', () => {
@@ -53,7 +53,7 @@ describe('ChatConnect', () => {
       ...expectation,
     });
 
-    expect(setUserId).not.toHaveBeenCalled();
+    expect(connect).not.toHaveBeenCalled();
   });
 
   it('disconnect from chat when not authenticated', () => {

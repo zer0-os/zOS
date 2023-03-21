@@ -78,6 +78,7 @@ export class UserActions extends React.Component<Properties, State> {
           <UserMenuPopup
             address={this.props.userAddress}
             onDisconnect={this.props.onDisconnect}
+            onAbort={this.toggleUserPopupState}
           />
         )}
       </>

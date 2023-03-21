@@ -6,12 +6,26 @@ import './styles.scss';
 
 export interface Properties {
   address: string;
+  onAbort: () => void;
   onDisconnect: () => void;
 }
 
 export class UserMenuPopup extends React.Component<Properties> {
   render() {
-    return <>{createPortal(<UserMenuPopupContent {...this.props} />, document.body)}</>;
+    return <>{createPortal(this.renderPortal(), document.body)}</>;
+  }
+
+  renderPortal() {
+    return (
+      <>
+        <div
+          className='user-menu-popup__underlay'
+          onClick={this.props.onAbort}
+        >
+          <UserMenuPopupContent {...this.props} />
+        </div>
+      </>
+    );
   }
 }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 
 import { NotificationListContainer } from '../list/container';
 
@@ -9,7 +8,7 @@ export interface Properties {}
 
 export class NotificationPopup extends React.Component<Properties> {
   render() {
-    return <>{createPortal(this.renderPopup(), document.body)}</>;
+    return this.renderPopup();
   }
 
   renderPopup() {

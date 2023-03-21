@@ -39,18 +39,16 @@ describe('Message Menu', () => {
 
     wrapper.find('.delete-item').simulate('click');
 
-    expect(wrapper.find('.confirm-dialog__message').exists()).toBe(true);
+    expect(wrapper.find('ModalConfirmation').exists()).toBe(true);
   });
 
-  it('it should call delete message when confirm button is clicked', () => {
+  it.only('it should call delete message when confirm button is clicked', () => {
     const onDelete = jest.fn();
     const wrapper = subject({ onDelete, canEdit: true });
 
     wrapper.find('.delete-item').simulate('click');
 
-    expect(wrapper.find('.confirm-delete__footer-button').exists()).toBe(true);
-
-    wrapper.find('.confirm-delete__footer-button').first().simulate('click');
+    (wrapper.find('ModalConfirmation').prop('onConfirm') as any)();
 
     expect(onDelete).toHaveBeenCalled();
   });

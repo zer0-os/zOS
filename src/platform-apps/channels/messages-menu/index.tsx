@@ -1,7 +1,5 @@
-// import { Dialog } from '@zer0-os/zos-component-library';
 import { IconDotsVertical } from '@zero-tech/zui/icons';
-import { Modal } from '@zero-tech/zui';
-import classNames from 'classnames';
+import { ModalConfirmation } from '@zero-tech/zui/components';
 import React from 'react';
 import { IconButton } from '../../../components/icon-button';
 import PortalMenu from './portal-menu';
@@ -97,12 +95,12 @@ export class MessageMenu extends React.Component<Properties, State> {
   renderDeleteModal() {
     return (
       <ModalConfirmation
-        // className='confirm-dialog__message'
+        open
         onCancel={this.toggleDeleteDialog}
         onConfirm={this.delete}
         title='Delete Message'
         cancelLabel='Cancel'
-        confirmLabel='ok'
+        confirmationLabel='ok'
       >
         Are you sure you want to delete this message?
       </ModalConfirmation>

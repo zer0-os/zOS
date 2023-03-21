@@ -16,7 +16,7 @@ import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { Button } from '@zer0-os/zos-component-library';
-import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
+import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { SearchConversations } from '../search-conversations';
 
@@ -25,6 +25,7 @@ import './styles.scss';
 export interface PublicProperties {
   className?: string;
   onSubmit?: (userIds: string[]) => void;
+  onClose: () => void;
 }
 
 interface State {
@@ -250,33 +251,55 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
+  renderTitleBar() {
+    return (
+      <div className='messenger-list__header'>
+        <button
+          className='messenger-list__icon-button'
+          onClick={this.props.onClose}
+        >
+          <IconXClose
+            label='Close Messenger'
+            size={12}
+            isFilled={false}
+          />
+        </button>
+      </div>
+    );
+  }
+
   render() {
     return (
-      <div className='direct-message-members'>
-        <div className='messages-list__direct-messages'>
-          {!this.state.showCreateConversation && this.renderNewMessageModal()}
-        </div>
-        {this.state.directMessagesList && (
-          <div className='messages-list__items'>
-            {!this.state.showCreateConversation && (
-              <div className='messages-list__items-conversations'>
-                <div className='messages-list__items-conversations-input'>
-                  <SearchConversations
-                    className='messages-list__items-conversations-search'
-                    placeholder='Search contacts...'
-                    directMessagesList={this.props.directMessages}
-                    onChange={this.conversationInMyNetworks}
-                    mapSearchConversationsText={otherMembersToString}
-                  />
-                </div>
-                {this.state.directMessagesList.map(this.renderMember)}
-              </div>
-            )}
-            {this.state.showCreateConversation && this.renderCreateConversation()}
+      <>
+        {this.renderTitleBar()}
+        <div className='direct-message-members'>
+          <div className='messages-list__direct-messages'>
+            {!this.state.showCreateConversation && this.renderNewMessageModal()}
           </div>
-        )}
-        {!this.state.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
-      </div>
+          {this.state.directMessagesList && (
+            <div className='messages-list__items'>
+              {!this.state.showCreateConversation && (
+                <div className='messages-list__items-conversations'>
+                  <div className='messages-list__items-conversations-input'>
+                    <SearchConversations
+                      className='messages-list__items-conversations-search'
+                      placeholder='Search contacts...'
+                      directMessagesList={this.props.directMessages}
+                      onChange={this.conversationInMyNetworks}
+                      mapSearchConversationsText={otherMembersToString}
+                    />
+                  </div>
+                  {this.state.directMessagesList.map(this.renderMember)}
+                </div>
+              )}
+              {this.state.showCreateConversation && this.renderCreateConversation()}
+            </div>
+          )}
+          {!this.state.directMessagesList && (
+            <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>
+          )}
+        </div>
+      </>
     );
   }
 }

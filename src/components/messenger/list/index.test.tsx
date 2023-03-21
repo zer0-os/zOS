@@ -20,6 +20,7 @@ describe('messenger-list', () => {
       directMessages: [],
       fetchDirectMessages: jest.fn(),
       createDirectMessage: jest.fn(),
+      onClose: () => null,
       ...props,
     };
 
@@ -38,6 +39,16 @@ describe('messenger-list', () => {
     subject({ fetchDirectMessages });
 
     expect(fetchDirectMessages).toHaveBeenCalledOnce();
+  });
+
+  it('publishes close event when titlebar X clicked', function () {
+    const onClose = jest.fn();
+
+    const wrapper = subject({ onClose });
+
+    wrapper.find('.messenger-list__header button').simulate('click');
+
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('render members name', function () {

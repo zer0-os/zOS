@@ -2,8 +2,13 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { setUser } from '.';
-import { nonceOrAuthorize, clearSession, getCurrentUser } from './saga';
-import { nonceOrAuthorize as nonceOrAuthorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
+import { nonceOrAuthorize, clearSession, getCurrentUserWithChatAccessToken } from './saga';
+import {
+  nonceOrAuthorize as nonceOrAuthorizeApi,
+  fetchCurrentUser,
+  clearSession as clearSessionApi,
+  fetchChatAccessToken,
+} from './api';
 
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
@@ -19,6 +24,10 @@ const nonceResponse = {
 
 const currentUserResponse = {
   userId: 'id-1',
+};
+
+const chatAccessTokenResponse = {
+  chatAccessToken: 'abc-a123',
 };
 
 describe('authentication saga', () => {
@@ -37,7 +46,7 @@ describe('authentication saga', () => {
         ],
       ])
       .call(nonceOrAuthorizeApi, signedWeb3Token)
-      .call(getCurrentUser)
+      .put(setUser({ data: currentUserResponse, nonce: null, isLoading: false }))
       .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
       .run();
   });
@@ -51,19 +60,25 @@ describe('authentication saga', () => {
         ],
       ])
       .call(nonceOrAuthorizeApi, signedWeb3Token)
-      .put(setUser({ nonce: nonceResponse.nonceToken }))
+      .put(setUser({ nonce: nonceResponse.nonceToken, isLoading: false }))
+      .put(setChatAccessToken({ value: null, isLoading: true }))
       .run();
   });
 
-  it('getCurrentUser', async () => {
-    await expectSaga(getCurrentUser)
+  it('getCurrentUserWithChatAccessToken', async () => {
+    await expectSaga(getCurrentUserWithChatAccessToken)
       .provide([
         [
           matchers.call.fn(fetchCurrentUser),
           currentUserResponse,
         ],
+        [
+          matchers.call.fn(fetchChatAccessToken),
+          chatAccessTokenResponse,
+        ],
       ])
       .call(fetchCurrentUser)
+      .call(fetchChatAccessToken)
       .run();
   });
 
@@ -82,11 +97,15 @@ describe('authentication saga', () => {
   });
 
   it('should store user', async () => {
-    const { storeState } = await expectSaga(getCurrentUser)
+    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
       .provide([
         [
           matchers.call.fn(fetchCurrentUser),
           currentUserResponse,
+        ],
+        [
+          matchers.call.fn(fetchChatAccessToken),
+          chatAccessTokenResponse,
         ],
       ])
       .withReducer(reducer)

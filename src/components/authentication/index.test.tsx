@@ -20,7 +20,7 @@ describe('Authentication', () => {
           },
         }),
       },
-      fetchCurrentUser: jest.fn(),
+      fetchCurrentUserWithChatAccessToken: jest.fn(),
       clearSession: jest.fn(),
       ...props,
     };
@@ -28,13 +28,13 @@ describe('Authentication', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('should fetch current user', () => {
-    const fetchCurrentUser = jest.fn();
+  it('should fetch current user and chatAccessToken', () => {
+    const fetchCurrentUserWithChatAccessToken = jest.fn();
     subject({
-      fetchCurrentUser,
+      fetchCurrentUserWithChatAccessToken,
     });
 
-    expect(fetchCurrentUser).toHaveBeenCalledOnce();
+    expect(fetchCurrentUserWithChatAccessToken).toHaveBeenCalledOnce();
   });
 
   it('should not authorize when fetching is in progress', () => {

@@ -7,7 +7,7 @@ import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { config } from '../../config';
-import { nonceOrAuthorize, fetchCurrentUser, clearSession } from '../../store/authentication';
+import { nonceOrAuthorize, clearSession, fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
 
@@ -18,7 +18,7 @@ export interface Properties {
   updateConnector: (Connectors) => void;
   nonceOrAuthorize: (payload: { signedWeb3Token: string }) => void;
   clearSession: () => void;
-  fetchCurrentUser: () => void;
+  fetchCurrentUserWithChatAccessToken: () => void;
   user: AuthenticationState['user'];
 }
 
@@ -43,14 +43,15 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       nonceOrAuthorize,
-      fetchCurrentUser,
+      fetchCurrentUserWithChatAccessToken,
       clearSession,
       updateConnector,
     };
   }
 
-  componentDidMount() {
-    this.props.fetchCurrentUser();
+  async componentDidMount() {
+    console.log('auth');
+    await this.props.fetchCurrentUserWithChatAccessToken();
   }
 
   componentDidUpdate(prevProps: Properties) {

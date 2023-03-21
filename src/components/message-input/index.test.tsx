@@ -11,6 +11,8 @@ import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { EmojiPicker } from './emoji-picker';
 import MessageAudioRecorder from '../message-audio-recorder';
+import { Giphy } from './giphy';
+import ImageCards from '../../platform-apps/channels/image-cards';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -184,6 +186,44 @@ describe('MessageInput', () => {
       const emojiPicker = getEmojiPicker();
 
       expect(emojiPicker.exists()).toBe(true);
+    });
+  });
+
+  describe('Giphy', () => {
+    it('should render giphy component', function () {
+      const wrapper = subject({});
+      const dropzone = wrapper.find(Dropzone).shallow();
+
+      expect(dropzone.find(Giphy).exists()).toBe(false);
+
+      wrapper.find('.giphy__icon').simulate('click');
+
+      dropzone.setProps({});
+
+      expect(dropzone.find(Giphy).exists()).toBe(true);
+    });
+    it('should render giphy component and insert gif in media when giphy icon is clicked', function () {
+      const sampleGif = { id: '1', title: 'Hilarious gif', images: { preview_gif: { url: 'youfoundme.gif' } } };
+      const wrapper = subject({});
+      const dropzone = wrapper.find(Dropzone).shallow();
+
+      wrapper.find('.giphy__icon').simulate('click');
+
+      dropzone.setProps({});
+
+      dropzone.find(Giphy).simulate('clickGif', sampleGif);
+
+      dropzone.setProps({});
+
+      expect(dropzone.find(ImageCards).prop('images')[0]).toStrictEqual({
+        id: '1',
+        name: 'Hilarious gif',
+        url: 'youfoundme.gif',
+        mediaType: 'image',
+        giphy: sampleGif,
+      } as any);
+
+      expect(dropzone.find(Giphy).exists()).toBe(false);
     });
   });
 

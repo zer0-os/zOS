@@ -6,7 +6,6 @@ describe('layout reducer', () => {
       isContextPanelOpen: false,
       isSidekickOpen: false,
       hasContextPanel: false,
-      activeSidekickTab: null,
     },
   };
 
@@ -16,7 +15,6 @@ describe('layout reducer', () => {
         isContextPanelOpen: false,
         isSidekickOpen: false,
         hasContextPanel: false,
-        activeSidekickTab: null,
       },
     });
   });

@@ -28,4 +28,5 @@ export const config = {
   inviteCode: {
     dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU,
   },
+  giphySdkKey: process.env.REACT_APP_GIPHY_SDK_KEY,
 };

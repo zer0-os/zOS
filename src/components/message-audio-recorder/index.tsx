@@ -1,10 +1,12 @@
 import React from 'react';
-import AudioReactRecorder, { RecordState } from 'audio-react-recorder-fixed';
+import { RecordState } from 'audio-react-recorder-fixed';
 import { IconCheck, IconTrash4 } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
 import { Media } from '../message-input/utils';
 
 import './styles.scss';
+
+const AudioReactRecorder = require('audio-react-recorder-fixed').default;
 
 export interface Properties {
   onMediaSelected: (file: Media) => void;
@@ -12,14 +14,14 @@ export interface Properties {
 }
 
 export interface State {
-  isMicRecording: boolean;
+  isMicRecording: RecordState;
 }
 
 export default class MessageAudioRecorder extends React.Component<Properties, State> {
   constructor(props) {
     super(props);
     this.state = {
-      isMicRecording: false,
+      isMicRecording: null,
     };
   }
 

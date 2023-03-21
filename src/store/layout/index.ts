@@ -1,14 +1,12 @@
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
-import type { AppLayout, LayoutState, UpdateSidekickPayload, SetActiveSidekickTabPayload } from './types';
+import type { AppLayout, LayoutState, UpdateSidekickPayload } from './types';
 
 export enum SagaActionTypes {
   updateSidekick = 'layout/saga/updateSidekick',
-  setActiveSidekickTab = 'layout/saga/setActiveSidekickTab',
   syncSidekickState = 'layout/saga/syncSidekickState',
 }
 
 export const updateSidekick = createAction<UpdateSidekickPayload>(SagaActionTypes.updateSidekick);
-export const setActiveSidekickTab = createAction<SetActiveSidekickTabPayload>(SagaActionTypes.setActiveSidekickTab);
 export const syncSidekickState = createAction(SagaActionTypes.syncSidekickState);
 
 const initialState: LayoutState = {
@@ -16,7 +14,6 @@ const initialState: LayoutState = {
     isContextPanelOpen: false,
     hasContextPanel: false,
     isSidekickOpen: false,
-    activeSidekickTab: null,
   },
 };
 
@@ -35,4 +32,4 @@ const slice = createSlice({
 
 export const { update } = slice.actions;
 export const { reducer } = slice;
-export { AppLayout, LayoutState, UpdateSidekickPayload, SetActiveSidekickTabPayload };
+export { AppLayout, LayoutState, UpdateSidekickPayload };

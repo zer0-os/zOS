@@ -163,20 +163,22 @@ describe('ChannelsContainer', () => {
           value: [
             'the-id',
             'the-second-id',
+            'the-conversation-id',
           ],
         },
         normalized: {
           channels: {
-            'the-id': { id: 'the-id', name: 'the channel' },
-            'the-second-id': { id: 'the-second-id', name: 'the second channel' },
-            'the-third-id': { id: 'the-third-id', name: 'the third channel' },
+            'the-id': { id: 'the-id', name: 'the channel', isChannel: true },
+            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: true },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: true },
+            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: false },
           },
         },
       });
 
-      expect(state.channels).toIncludeAllPartialMembers([
-        { id: 'the-id', name: 'the channel' },
-        { id: 'the-second-id', name: 'the second channel' },
+      expect(state.channels.map((c) => c.id)).toEqual([
+        'the-id',
+        'the-second-id',
       ]);
     });
 

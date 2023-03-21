@@ -4,7 +4,12 @@ import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../tooltip';
 import { Channel } from '../../../store/channels';
+import { normalize } from '../../../store/channels-list';
 import { Dialog } from '@zer0-os/zos-component-library';
+import { SearchConversations } from '../search-conversations';
+import { AutocompleteMembers } from '../autocomplete-members';
+import { RootState } from '../../../store';
+import moment from 'moment';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -12,7 +17,7 @@ describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),
-      directMessages: DIRECT_MESSAGES_TEST,
+      directMessages: [],
       fetchDirectMessages: jest.fn(),
       createDirectMessage: jest.fn(),
       ...props,
@@ -38,6 +43,8 @@ describe('messenger-list', () => {
   it('render members name', function () {
     const wrapper = subject({});
 
+    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+
     const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
 
     expect(displayChatNames).toStrictEqual([
@@ -52,6 +59,8 @@ describe('messenger-list', () => {
     const setActiveDirectMessage = jest.fn();
 
     const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
+
+    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
 
     wrapper.find('.direct-message-members__user').first().simulate('click');
 
@@ -77,6 +86,24 @@ describe('messenger-list', () => {
     expect(wrapper.find(Dialog).exists()).toBe(false);
   });
 
+  it('should render AutocompleteMembers', function () {
+    const wrapper = subject({});
+
+    wrapper.find('.header-button__icon').simulate('click');
+
+    expect(wrapper.find(AutocompleteMembers).exists()).toBe(true);
+
+    wrapper.find('.start__chat-return').simulate('click');
+
+    expect(wrapper.find(AutocompleteMembers).exists()).toBe(false);
+  });
+
+  it('should render search conversations', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find(SearchConversations).exists()).toBe(true);
+  });
+
   it('renders unread messages', function () {
     const [
       firstDirectMessage,
@@ -85,7 +112,9 @@ describe('messenger-list', () => {
 
     const unreadCount = 10;
 
-    const wrapper = subject({
+    const wrapper = subject({});
+
+    wrapper.setProps({
       directMessages: [
         {
           ...firstDirectMessage,
@@ -94,7 +123,6 @@ describe('messenger-list', () => {
         ...restOfDirectMessages,
       ],
     });
-
     expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
   });
 
@@ -103,6 +131,7 @@ describe('messenger-list', () => {
 
     beforeEach(() => {
       wrapper = subject({});
+      wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
     });
 
     afterEach(() => {
@@ -160,6 +189,45 @@ describe('messenger-list', () => {
         'direct-message-members__user-status direct-message-members__user-status--active',
         'direct-message-members__user-status direct-message-members__user-status--active',
         'direct-message-members__user-status',
+      ]);
+    });
+  });
+
+  describe('mapState', () => {
+    const subject = (channels) => {
+      return DirectMessageChat.mapState(getState(channels));
+    };
+
+    const getState = (channels) => {
+      const channelData = normalize(channels);
+      return {
+        channelsList: { value: channelData.result },
+        normalized: channelData.entities,
+      } as RootState;
+    };
+
+    test('gets sorted conversations', () => {
+      const state = subject([
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
+      ]);
+
+      expect(state.directMessages.map((c) => c.id)).toEqual([
+        'convo-2',
+        'convo-1',
+      ]);
+    });
+
+    test('gets only conversations', () => {
+      const state = subject([
+        { id: 'convo-1', isChannel: false },
+        { id: 'convo-2', isChannel: true },
+        { id: 'convo-3', isChannel: false },
+      ]);
+
+      expect(state.directMessages.map((c) => c.id)).toEqual([
+        'convo-1',
+        'convo-3',
       ]);
     });
   });

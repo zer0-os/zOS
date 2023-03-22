@@ -37,6 +37,10 @@ export class UserActions extends React.Component<Properties, State> {
     this.props.updateConversationState(!this.props.isConversationListOpen);
   };
 
+  handleClickOutsideNotificationPopup = () => {
+    this.setState({ isNotificationPopupOpen: false });
+  };
+
   render() {
     return (
       <>
@@ -63,7 +67,9 @@ export class UserActions extends React.Component<Properties, State> {
             statusType={this.userStatus}
           />
         </div>
-        {this.state.isNotificationPopupOpen && <NotificationPopup />}
+        {this.state.isNotificationPopupOpen && (
+          <NotificationPopup onClickOutside={this.handleClickOutsideNotificationPopup} />
+        )}
       </>
     );
   }

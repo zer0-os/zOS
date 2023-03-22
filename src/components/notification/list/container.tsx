@@ -2,7 +2,7 @@ import React from 'react';
 
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
-import { fetch as fetchNotifications, denormalize } from '../../../store/notifications';
+import { fetch as fetchNotifications, denormalizeNotifications } from '../../../store/notifications';
 import { denormalize as denormalizeChannel } from '../../../store/channels';
 
 import { NotificationList } from '.';
@@ -18,7 +18,7 @@ export class Container extends React.Component<Properties> {
     const {
       authentication: { user },
     } = state;
-    const notifications = denormalize(state.notificationsList.value, state)
+    const notifications = denormalizeNotifications(state)
       .map((n) => Container.mapNotification(n, state))
       .filter((n) => !!n);
 

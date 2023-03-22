@@ -11,6 +11,7 @@ describe('UserActions', () => {
       userIsOnline: false,
       isConversationListOpen: false,
       unreadConversationMessageCount: 0,
+      unreadNotificationCount: 0,
       updateConversationState: () => undefined,
       onDisconnect: () => undefined,
       ...props,
@@ -62,6 +63,24 @@ describe('UserActions', () => {
 
     expect(wrapper.find('IconBell1').prop('isFilled')).toBeFalse();
     expect(wrapper.find('NotificationPopup').exists()).toBeFalse();
+  });
+
+  it('does not render the notification count if it is zero', () => {
+    const wrapper = subject({ unreadNotificationCount: 0 });
+
+    expect(notificationButton(wrapper).find('.user-actions__badge').exists()).toBeFalse();
+  });
+
+  it('renders the notification count if it is greater than 0', () => {
+    const wrapper = subject({ unreadNotificationCount: 7 });
+
+    expect(notificationButton(wrapper).find('.user-actions__badge').text()).toEqual('7');
+  });
+
+  it('renders the notification count if it is greater than 9', () => {
+    const wrapper = subject({ unreadNotificationCount: 10 });
+
+    expect(notificationButton(wrapper).find('.user-actions__badge').text()).toEqual('9+');
   });
 
   it('opens the conversation list', () => {

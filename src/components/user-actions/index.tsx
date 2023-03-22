@@ -13,6 +13,7 @@ export interface Properties {
   userIsOnline: boolean;
   isConversationListOpen: boolean;
   unreadConversationMessageCount: number;
+  unreadNotificationCount: number;
   updateConversationState: (isOpen: boolean) => void;
   onDisconnect: () => void;
 }
@@ -31,6 +32,10 @@ export class UserActions extends React.Component<Properties, State> {
 
   get unreadConversationCount() {
     return this.props.unreadConversationMessageCount <= 9 ? this.props.unreadConversationMessageCount : '9+';
+  }
+
+  get unreadNotificationCount() {
+    return this.props.unreadNotificationCount <= 9 ? this.props.unreadNotificationCount : '9+';
   }
 
   toggleNotificationState = () => {
@@ -63,6 +68,9 @@ export class UserActions extends React.Component<Properties, State> {
             onClick={this.toggleNotificationState}
           >
             <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
+            {this.props.unreadNotificationCount > 0 && (
+              <div className='user-actions__badge'>{this.unreadNotificationCount}</div>
+            )}
           </button>
           <button onClick={this.toggleUserPopupState}>
             <Avatar

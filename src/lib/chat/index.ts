@@ -14,19 +14,27 @@ interface RealtimeChatEvents {
 }
 
 export class Chat {
-  sb = new SendBird({ appId: config.sendBird.appId });
-  userPromise: Promise<any>;
-  channelListQuery: any;
-  messageQueries = {};
+  sb: any = null;
+
+  accessToken: string;
+
+  init() {
+    if (this.sb !== null) return;
+
+    this.sb = new SendBird({
+      appId: config.sendBird.appId,
+    });
+  }
 
   async setUserId(userId: string, accessToken) {
     if (!accessToken || !userId) {
-      console.error('accessToken or userId not found');
+      return;
     }
 
-    const userPromise = new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
       this.sb.connect(userId, accessToken, (user, error) => {
         if (error) {
+          console.log('Sendbird connection error', error);
           reject(error);
           return;
         }
@@ -34,11 +42,12 @@ export class Chat {
         resolve(user);
       });
     });
-    this.userPromise = userPromise;
-    return userPromise;
+
+    this.accessToken = accessToken;
   }
 
   initChat(events: RealtimeChatEvents): void {
+    this.init();
     this.initSessionHandler(events);
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
@@ -50,6 +59,10 @@ export class Chat {
     // The session refresh has been denied from the app.
     // The client app should guide the user to a login page to log in again.
     sessionHandler.onSessionClosed = () => events.invalidChatAccessToken();
+
+    sessionHandler.onSessionTokenRequired = (onSuccess: (accessToken: string) => void, _onFail: () => void) => {
+      onSuccess(this.accessToken);
+    };
 
     this.sb.setSessionHandler(sessionHandler);
   }
@@ -94,6 +107,13 @@ export class Chat {
 
   reconnect(): void {
     this.sb.reconnect();
+  }
+
+  disconnect(): void {
+    if (this.sb !== null) {
+      this.sb.disconnect();
+      this.sb = null;
+    }
   }
 
   mapMessage = (message): Message => mapMessage(message);

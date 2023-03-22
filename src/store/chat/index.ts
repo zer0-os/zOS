@@ -2,20 +2,18 @@ import { ChatState } from './types';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  FetchChatAccessToken = 'chat/saga/fetchChatAccessToken',
   ReceiveIsReconnecting = 'chat/saga/receiveIsReconnecting',
 }
 
-const fetchChatAccessToken = createAction(SagaActionTypes.FetchChatAccessToken);
 const receiveIsReconnecting = createAction<boolean>(SagaActionTypes.ReceiveIsReconnecting);
 
 const initialState: ChatState = {
   chatAccessToken: {
     isLoading: false,
-    value: '',
+    value: null,
   },
   isReconnecting: false,
-  activeMessengerId: '',
+  activeMessengerId: null,
 };
 
 const slice = createSlice({
@@ -36,4 +34,4 @@ const slice = createSlice({
 
 export const { setChatAccessToken, setReconnecting, setActiveMessengerId } = slice.actions;
 export const { reducer } = slice;
-export { fetchChatAccessToken, receiveIsReconnecting };
+export { receiveIsReconnecting };

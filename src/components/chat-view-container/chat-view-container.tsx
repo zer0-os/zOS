@@ -31,11 +31,9 @@ import {
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
 import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
-import { IfAuthenticated } from '../authentication/if-authenticated';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
-import { ChatConnect } from '../chat-connect/chat-connect';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -276,9 +274,6 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <>
-        <IfAuthenticated showChildren>
-          <ChatConnect />
-        </IfAuthenticated>
         <ChatView
           className={classNames(
             { 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone },

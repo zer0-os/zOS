@@ -6,9 +6,11 @@ import { nonceOrAuthorize, clearSession, getCurrentUser } from './saga';
 import { nonceOrAuthorize as nonceOrAuthorizeApi, fetchCurrentUser, clearSession as clearSessionApi } from './api';
 
 import { reducer } from '.';
+import { setChatAccessToken } from '../chat';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
+  chatAccessToken: 'chat-access-token',
 };
 
 const nonceResponse = {
@@ -35,6 +37,8 @@ describe('authentication saga', () => {
         ],
       ])
       .call(nonceOrAuthorizeApi, signedWeb3Token)
+      .call(getCurrentUser)
+      .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
       .run();
   });
 
@@ -72,6 +76,8 @@ describe('authentication saga', () => {
         ],
       ])
       .call(clearSessionApi)
+      .put(setUser({ data: null, isLoading: false, nonce: null }))
+      .put(setChatAccessToken({ value: null, isLoading: false }))
       .run();
   });
 

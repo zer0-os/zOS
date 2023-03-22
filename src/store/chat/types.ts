@@ -6,8 +6,3 @@ export interface ChatState {
   };
   activeMessengerId: string;
 }
-
-export interface ChatAccessTokenResponse {
-  chatAccessToken: string;
-  accountCreated: boolean;
-}

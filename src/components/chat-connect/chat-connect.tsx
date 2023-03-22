@@ -8,12 +8,12 @@ import {
   receiveNewMessage as receiveNewMessageAction,
   receiveDeleteMessage as receiveDeleteMessageAction,
 } from '../../store/messages';
-import { fetchChatAccessToken, receiveIsReconnecting } from '../../store/chat';
+import { receiveIsReconnecting } from '../../store/chat';
 import { RootState } from '../../store';
-import { UserPayload } from '../../store/authentication/types';
 import { unreadCountUpdated } from '../../store/channels';
 import { updateConnector } from '../../store/web3';
 import { Connectors } from '../../lib/web3';
+import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 export interface Properties {
   isLoading: boolean;
@@ -24,24 +24,34 @@ export interface Properties {
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
-  fetchChatAccessToken: () => void;
   invalidChatAccessToken: () => void;
-  user: UserPayload;
+  userId: string;
   isReconnecting: boolean;
+  context: {
+    isAuthenticated: boolean;
+  };
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
+  static mapState(state: RootState, props: Properties): Partial<Properties> {
+    if (!props.context.isAuthenticated) return {};
+
     const {
-      chat: { chatAccessToken, isReconnecting },
-      authentication: { user },
+      chat: {
+        chatAccessToken: { value: chatAccessToken },
+        isReconnecting,
+      },
+      authentication: {
+        user: {
+          data: { id: userId },
+        },
+      },
     } = state;
 
     return {
-      isLoading: chatAccessToken.isLoading,
-      chatAccessToken: chatAccessToken.value,
-      user,
+      chatAccessToken,
       isReconnecting,
+      userId,
     };
   }
 
@@ -53,7 +63,6 @@ export class Container extends React.Component<Properties> {
       receiveUnreadCount: (channelId: string, unreadCount: number) => unreadCountUpdated({ channelId, unreadCount }),
       receiveDeleteMessage: (channelId: string, messageId: number) =>
         receiveDeleteMessageAction({ channelId, messageId }),
-      fetchChatAccessToken,
       invalidChatAccessToken: () => updateConnector(Connectors.None),
     };
   }
@@ -70,17 +79,23 @@ export class Container extends React.Component<Properties> {
     this.chat.reconnect();
   };
 
-  componentDidMount() {
-    this.props.fetchChatAccessToken();
-  }
-
   componentDidUpdate(prevProps: Properties) {
-    if (prevProps.isLoading === true && this.props.isLoading === false && this.props.chatAccessToken !== '') {
-      this.startChatHandler();
+    const {
+      userId,
+      chatAccessToken,
+      context: { isAuthenticated },
+    } = this.props;
+
+    if (isAuthenticated && userId && chatAccessToken) {
+      if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
+        this.startChatHandler(userId, chatAccessToken);
+      }
+    } else {
+      this.chat.disconnect();
     }
   }
 
-  async startChatHandler() {
+  async startChatHandler(userId, chatAccessToken) {
     const {
       reconnectStart,
       reconnectStop,
@@ -99,8 +114,7 @@ export class Container extends React.Component<Properties> {
       invalidChatAccessToken,
     });
 
-    const userId = this.props.user.data.id;
-    await this.chat.setUserId(userId, this.props.chatAccessToken);
+    await this.chat.setUserId(userId, chatAccessToken);
   }
 
   render() {
@@ -108,4 +122,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChatConnect = connectContainer<{}>(Container);
+export const ChatConnect = withAuthenticationContext<{}>(connectContainer<{}>(Container));

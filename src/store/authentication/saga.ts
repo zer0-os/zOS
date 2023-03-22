@@ -49,13 +49,15 @@ export function* getCurrentUserWithChatAccessToken() {
     const { chatAccessToken } = yield call(fetchChatAccessToken);
 
     yield setUserAndChatAccessToken({ user, chatAccessToken, isLoading: false });
+  } else {
+    yield setUserAndChatAccessToken({ isLoading: false });
   }
 }
 
 function* setUserAndChatAccessToken(params: {
-  user: object;
+  user?: object;
   nonce?: string;
-  chatAccessToken: string;
+  chatAccessToken?: string;
   isLoading: boolean;
 }) {
   const { user = null, nonce = null, chatAccessToken = null, isLoading = false } = params;

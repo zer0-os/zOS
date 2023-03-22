@@ -44,6 +44,7 @@ export class Container extends React.Component<Properties> {
     return (
       <MessageInputComponent
         className={this.props.className}
+        id={this.props.id}
         initialValue={this.props.initialValue}
         onSubmit={this.props.onSubmit}
         getUsersForMentions={this.props.getUsersForMentions}

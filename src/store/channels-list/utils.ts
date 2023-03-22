@@ -9,15 +9,15 @@ export function filterChannelsList(state, filter: ChannelType) {
     const channel = denormalize(channelId, state);
 
     if (filter === ChannelType.DirectMessage) {
-      return Boolean(channel.isChannel);
+      return !channel.isChannel;
     } else {
-      return !Boolean(channel.isChannel);
+      return channel.isChannel;
     }
   });
 }
 
-export const channelMapper = (currentChannel, channelType: ChannelType) => {
-  const channel: Partial<Channel> = {
+export const channelMapper = (currentChannel): Partial<Channel> => {
+  return {
     id: currentChannel.id,
     name: currentChannel.name,
     icon: currentChannel.icon,
@@ -25,21 +25,9 @@ export const channelMapper = (currentChannel, channelType: ChannelType) => {
     unreadCount: currentChannel.unreadCount,
     hasJoined: currentChannel.hasJoined,
     otherMembers: currentChannel.otherMembers || [],
+    lastMessage: currentChannel.lastMessage || null,
+    lastMessageCreatedAt: currentChannel.lastMessageCreatedAt || null,
+    isChannel: currentChannel.isChannel,
+    groupChannelType: currentChannel.groupChannelType || '',
   };
-
-  if (channelType === ChannelType.DirectMessage) {
-    channel.otherMembers = currentChannel.otherMembers || [];
-    channel.lastMessage = currentChannel.lastMessage;
-    channel.lastMessageCreatedAt = currentChannel.lastMessageAt;
-    channel.isChannel = true;
-  } else {
-    channel.otherMembers = [];
-    channel.isChannel = false;
-  }
-
-  if (currentChannel.groupChannelType) {
-    channel.groupChannelType = currentChannel.groupChannelType;
-  }
-
-  return channel;
 };

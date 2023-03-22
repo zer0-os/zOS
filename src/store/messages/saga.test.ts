@@ -252,7 +252,7 @@ describe('messages saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(editMessageApi, channelId, messageIdToEdit, message, mentionedUserIds)
+      .call(editMessageApi, channelId, messageIdToEdit, message, mentionedUserIds, undefined)
       .run();
   });
 

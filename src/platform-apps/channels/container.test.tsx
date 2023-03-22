@@ -31,6 +31,9 @@ describe('ChannelsContainer', () => {
       user: {
         data: null,
       },
+      context: {
+        isAuthenticated: true,
+      },
       ...props,
     };
 
@@ -55,7 +58,7 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('set receiveUnreadCount channels on mount', () => {
+  it('set receiveUnreadCount channels on mount when authenticated', () => {
     const domainId = '0x000000000000000000000000000000000000000A';
     const fetchChannels = jest.fn();
     const receiveUnreadCount = jest.fn();
@@ -63,6 +66,15 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels, receiveUnreadCount });
 
     expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
+  });
+
+  it('do not set receiveUnreadCount channels on mount when anonymous', () => {
+    const fetchChannels = jest.fn();
+    const receiveUnreadCount = jest.fn();
+
+    subject({ fetchChannels, receiveUnreadCount, context: { isAuthenticated: false } });
+
+    expect(receiveUnreadCount).not.toHaveBeenCalled();
   });
 
   it('wraps ChannelList in AppContextPanel', () => {
@@ -167,13 +179,11 @@ describe('ChannelsContainer', () => {
           ],
         },
         normalized: {
-          // Note: There's currently a bug where we're labelling channels as isChannel: false
-          // and Conversations as true.
           channels: {
-            'the-id': { id: 'the-id', name: 'the channel', isChannel: false },
-            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: false },
-            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: false },
-            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: true },
+            'the-id': { id: 'the-id', name: 'the channel', isChannel: true },
+            'the-second-id': { id: 'the-second-id', name: 'the second channel', isChannel: true },
+            'the-third-id': { id: 'the-third-id', name: 'the third channel', isChannel: true },
+            'the-conversation-id': { id: 'the-conversation-id', name: 'the conversation', isChannel: false },
           },
         },
       });

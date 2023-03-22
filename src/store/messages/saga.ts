@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
-import { Message, SagaActionTypes } from '.';
+import { EditMessageOptions, Message, SagaActionTypes } from '.';
 import { receive } from '../channels';
 
 import {
@@ -40,6 +40,7 @@ export interface EditPayload {
   messageId?: number;
   message?: string;
   mentionedUserIds?: string[];
+  data?: Partial<EditMessageOptions>;
 }
 
 export interface SendPayload {
@@ -200,13 +201,14 @@ export function* deleteMessage(action) {
 }
 
 export function* editMessage(action) {
-  const { channelId, messageId, message, mentionedUserIds } = action.payload;
+  const { channelId, messageId, message, mentionedUserIds, data } = action.payload;
+
   const selectedMessage = yield select(messageSelector(messageId));
   const existingMessages = yield select(rawMessagesSelector(channelId));
 
   const messages = existingMessages.map((id) => {
     if (messageId === id) {
-      return { ...selectedMessage, updatedAt: Date.now(), message };
+      return { ...selectedMessage, updatedAt: Date.now(), message, hidePreview: Boolean(data?.hidePreview) };
     } else {
       return id;
     }
@@ -219,7 +221,7 @@ export function* editMessage(action) {
     })
   );
 
-  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds);
+  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds, data);
   const isMessageSent = messagesResponse === 200;
 
   if (!isMessageSent) {

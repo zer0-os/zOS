@@ -353,6 +353,12 @@ $scrollbar-width: 5px;
             margin-top: 10px;
             border-radius: $border-radius;
           }
+
+          &-with-remove {
+            display: flex;
+            flex-direction: row;
+            align-items: self-start;
+          }
         }
 
         .text-message {

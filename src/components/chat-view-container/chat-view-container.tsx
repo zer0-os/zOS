@@ -12,6 +12,7 @@ import {
   Message,
   startMessageSync,
   stopSyncChannels,
+  EditMessageOptions,
 } from '../../store/messages';
 import {
   Channel,
@@ -66,6 +67,8 @@ export interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
+  private textareaRef: RefObject<HTMLTextAreaElement>;
+
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
     const {
@@ -158,6 +161,10 @@ export class Container extends React.Component<Properties, State> {
     if (this.state.isFirstMessagesFetchDone && channel && channel.unreadCount > 0 && user.data) {
       this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
+
+    if (this.state.isFirstMessagesFetchDone && this.textareaRef) {
+      this.onMessageInputRendered(this.textareaRef);
+    }
   }
 
   componentWillUnmount() {
@@ -231,10 +238,15 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
-  handleEditMessage = (messageId: number, message: string, mentionedUserIds: string[]): void => {
+  handleEditMessage = (
+    messageId: number,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
-      this.props.editMessage({ channelId, messageId, message, mentionedUserIds });
+      this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
     }
   };
 
@@ -247,6 +259,7 @@ export class Container extends React.Component<Properties, State> {
 
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
     if (textareaRef && textareaRef.current) {
+      this.textareaRef = textareaRef;
       if (
         (this.props.activeMessengerId && this.props.activeMessengerId === textareaRef.current.id) ||
         !this.props.activeMessengerId

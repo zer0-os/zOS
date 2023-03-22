@@ -44,4 +44,17 @@ describe('NotificationItem', () => {
     expect(avatar.prop('userFriendlyName')).toEqual('Originating Name');
     expect(avatar.prop('imageURL')).toEqual('image-url');
   });
+
+  it('renders unread notification', () => {
+    const wrapper = subject({
+      originatingName: 'Originating Name',
+      originatingImageUrl: 'image-url',
+      isUnread: true,
+    });
+
+    const notification = wrapper.find('.notification-item__wrapper');
+
+    expect(notification.hasClass('notification-item__wrapper--not-read')).toBeTruthy();
+    expect(wrapper.find('Status').exists()).toBeTruthy();
+  });
 });

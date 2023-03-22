@@ -8,7 +8,12 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels, receiveUnreadCount, stopSyncChannels, denormalize } from '../../store/channels-list';
+import {
+  fetch as fetchChannels,
+  receiveUnreadCount,
+  stopSyncChannels,
+  denormalizeChannels,
+} from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
@@ -17,6 +22,7 @@ import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-l
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
+import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -33,11 +39,14 @@ export interface Properties extends PublicProperties {
   receiveUnreadCount: (domainId: string) => void;
   stopSyncChannels: () => void;
   user: AuthenticationState['user'];
+  context: {
+    isAuthenticated: boolean;
+  };
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const channels = denormalize(state.channelsList.value, state).filter((channel) => !Boolean(channel.isChannel));
+    const channels = denormalizeChannels(state);
 
     const {
       authentication: { user },
@@ -59,14 +68,30 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    this.props.fetchChannels(this.props.domainId);
-    this.props.receiveUnreadCount(this.props.domainId);
+    const {
+      context: { isAuthenticated },
+      domainId,
+    } = this.props;
+
+    this.props.fetchChannels(domainId);
+
+    if (isAuthenticated) {
+      this.props.receiveUnreadCount(domainId);
+    }
   }
 
   componentDidUpdate(prevProps: Properties) {
-    if (prevProps.user.data !== this.props.user.data) {
-      this.props.fetchChannels(this.props.domainId);
-      this.props.receiveUnreadCount(this.props.domainId);
+    const {
+      context: { isAuthenticated },
+      user,
+      domainId,
+    } = this.props;
+
+    if (isAuthenticated) {
+      if (prevProps.user.data !== user.data) {
+        this.props.fetchChannels(domainId);
+        this.props.receiveUnreadCount(domainId);
+      }
     }
   }
 
@@ -104,4 +129,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChannelsContainer = connectContainer<PublicProperties>(Container);
+export const ChannelsContainer = withAuthenticationContext<PublicProperties>(connectContainer<{}>(Container));

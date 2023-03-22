@@ -20,6 +20,7 @@ describe('messenger-list', () => {
       directMessages: [],
       fetchDirectMessages: jest.fn(),
       createDirectMessage: jest.fn(),
+      onClose: () => null,
       ...props,
     };
 
@@ -38,6 +39,16 @@ describe('messenger-list', () => {
     subject({ fetchDirectMessages });
 
     expect(fetchDirectMessages).toHaveBeenCalledOnce();
+  });
+
+  it('publishes close event when titlebar X clicked', function () {
+    const onClose = jest.fn();
+
+    const wrapper = subject({ onClose });
+
+    wrapper.find('.messenger-list__header button').simulate('click');
+
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('render members name', function () {
@@ -208,8 +219,8 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: true },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: true },
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
       ]);
 
       expect(state.directMessages.map((c) => c.id)).toEqual([
@@ -219,12 +230,10 @@ describe('messenger-list', () => {
     });
 
     test('gets only conversations', () => {
-      // Note: There's currently a bug where we're labelling channels as isChannel: false
-      // and Conversations as true.
       const state = subject([
-        { id: 'convo-1', isChannel: true },
-        { id: 'convo-2', isChannel: false },
-        { id: 'convo-3', isChannel: true },
+        { id: 'convo-1', isChannel: false },
+        { id: 'convo-2', isChannel: true },
+        { id: 'convo-3', isChannel: false },
       ]);
 
       expect(state.directMessages.map((c) => c.id)).toEqual([

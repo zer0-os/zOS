@@ -33,7 +33,7 @@
     "@zero-tech/zapp-daos": "latest",
     "@zero-tech/zapp-nfts": "latest",
     "@zero-tech/zapp-staking": "latest",
-    "@zero-tech/zui": "^0.16.0",
+    "@zero-tech/zui": "^0.18.1",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",
@@ -69,6 +69,7 @@
   "scripts": {
     "start": "craco start",
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",
     "test": "craco test --env=node",
     "eject": "react-scripts eject",

@@ -7,6 +7,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
+import { UserActionsContainer } from '../user-actions/container';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
@@ -49,7 +50,7 @@ describe('WalletManager', () => {
     expect(wrapper.find(Button).exists()).toBe(false);
   });
 
-  it('renders user actions address when set', () => {
+  it('renders user actions when set', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
     const wrapper = subject({
@@ -60,7 +61,7 @@ describe('WalletManager', () => {
     });
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
-    expect(ifAuthenticated.find('UserActions').props()).toEqual({
+    expect(ifAuthenticated.find(UserActionsContainer).props()).toEqual({
       userImageUrl: 'image-url',
       userIsOnline: true,
       isConversationListOpen: true,

@@ -23,7 +23,7 @@ export function* fetch(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
   const channels = yield call(fetchChannels, action.payload);
-  const channelsList = channels.map((currentChannel) => channelMapper(currentChannel, ChannelType.Channel));
+  const channelsList = channels.map((currentChannel) => channelMapper(currentChannel));
 
   const directMessages = yield select(rawDirectMessages());
 
@@ -41,9 +41,7 @@ export function* fetchDirectMessages() {
   const directMessages = yield call(fetchDirectMessagesApi);
   const channelsList = yield select(rawChannelsList());
 
-  const directMessagesList = directMessages.map((currentChannel) =>
-    channelMapper(currentChannel, ChannelType.DirectMessage)
-  );
+  const directMessagesList = directMessages.map((currentChannel) => channelMapper(currentChannel));
 
   yield put(
     receive([
@@ -57,7 +55,7 @@ export function* createDirectMessage(action) {
   const { userIds } = action.payload;
   const response: DirectMessage = yield call(createDirectMessageApi, userIds);
 
-  const directMessage = channelMapper(response, ChannelType.DirectMessage);
+  const directMessage = channelMapper(response);
   const existingDirectMessages = yield select(rawDirectMessages());
   const channelsList = yield select(rawChannelsList());
 
@@ -77,9 +75,9 @@ export function* unreadCountUpdated(action) {
   const channels = yield call(fetchChannels, action.payload);
   const directMessages = yield call(fetchDirectMessagesApi);
 
-  const channelsList = channels.map((channel) => channelMapper(channel, ChannelType.Channel));
+  const channelsList = channels.map((channel) => channelMapper(channel));
 
-  const directMessagesList = directMessages.map((channel) => channelMapper(channel, ChannelType.DirectMessage));
+  const directMessagesList = directMessages.map((channel) => channelMapper(channel));
 
   yield put(
     receive([

@@ -10,6 +10,7 @@ export interface Properties {
   userImageUrl?: string;
   userIsOnline: boolean;
   isConversationListOpen: boolean;
+  unreadConversationMessageCount: number;
   updateConversationState: (isOpen: boolean) => void;
 }
 
@@ -22,6 +23,10 @@ export class UserActions extends React.Component<Properties, State> {
 
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
+  }
+
+  get unreadConversationCount() {
+    return this.props.unreadConversationMessageCount <= 9 ? this.props.unreadConversationMessageCount : '9+';
   }
 
   toggleNotificationState = () => {
@@ -41,6 +46,9 @@ export class UserActions extends React.Component<Properties, State> {
             onClick={this.toggleConversationListState}
           >
             <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
+            {this.props.unreadConversationMessageCount > 0 && (
+              <div className='user-actions__badge'>{this.unreadConversationCount}</div>
+            )}
           </button>
           <button
             className='button-reset'

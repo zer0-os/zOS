@@ -2,11 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
-import { Channel, denormalize } from '../../../store/channels';
+import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
 import Tooltip from '../../tooltip';
 import { lastSeenText } from './utils';
-import { fetchDirectMessages } from '../../../store/channels-list';
+import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -16,15 +16,14 @@ import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { Button } from '@zer0-os/zos-component-library';
-import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
+import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { SearchConversations } from '../search-conversations';
 
 import './styles.scss';
 
 export interface PublicProperties {
-  className?: string;
-  onSubmit?: (userIds: string[]) => void;
+  onClose: () => void;
 }
 
 interface State {
@@ -43,11 +42,9 @@ export class Container extends React.Component<Properties, State> {
   state = { showCreateConversation: false, userIds: [], directMessagesList: [] };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalize(state.channelsList.value, state)
-      .filter((messenger) => Boolean(messenger.isChannel))
-      .sort((messengerA, messengerB) =>
-        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
-      );
+    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+      compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+    );
 
     return {
       directMessages: messengerList,
@@ -252,33 +249,55 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
+  renderTitleBar() {
+    return (
+      <div className='messenger-list__header'>
+        <button
+          className='messenger-list__icon-button'
+          onClick={this.props.onClose}
+        >
+          <IconXClose
+            label='Close Messenger'
+            size={12}
+            isFilled={false}
+          />
+        </button>
+      </div>
+    );
+  }
+
   render() {
     return (
-      <div className='direct-message-members'>
-        <div className='messages-list__direct-messages'>
-          {!this.state.showCreateConversation && this.renderNewMessageModal()}
-        </div>
-        {this.state.directMessagesList && (
-          <div className='messages-list__items'>
-            {!this.state.showCreateConversation && (
-              <div className='messages-list__items-conversations'>
-                <div className='messages-list__items-conversations-input'>
-                  <SearchConversations
-                    className='messages-list__items-conversations-search'
-                    placeholder='Search contacts...'
-                    directMessagesList={this.props.directMessages}
-                    onChange={this.conversationInMyNetworks}
-                    mapSearchConversationsText={otherMembersToString}
-                  />
-                </div>
-                {this.state.directMessagesList.map(this.renderMember)}
-              </div>
-            )}
-            {this.state.showCreateConversation && this.renderCreateConversation()}
+      <>
+        {this.renderTitleBar()}
+        <div className='direct-message-members'>
+          <div className='messages-list__direct-messages'>
+            {!this.state.showCreateConversation && this.renderNewMessageModal()}
           </div>
-        )}
-        {!this.state.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
-      </div>
+          {this.state.directMessagesList && (
+            <div className='messages-list__items'>
+              {!this.state.showCreateConversation && (
+                <div className='messages-list__items-conversations'>
+                  <div className='messages-list__items-conversations-input'>
+                    <SearchConversations
+                      className='messages-list__items-conversations-search'
+                      placeholder='Search contacts...'
+                      directMessagesList={this.props.directMessages}
+                      onChange={this.conversationInMyNetworks}
+                      mapSearchConversationsText={otherMembersToString}
+                    />
+                  </div>
+                  {this.state.directMessagesList.map(this.renderMember)}
+                </div>
+              )}
+              {this.state.showCreateConversation && this.renderCreateConversation()}
+            </div>
+          )}
+          {!this.state.directMessagesList && (
+            <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>
+          )}
+        </div>
+      </>
     );
   }
 }

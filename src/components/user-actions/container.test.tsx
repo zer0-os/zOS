@@ -8,11 +8,13 @@ import { normalize } from '../../store/channels-list';
 describe('UserActionsContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      userAddress: '',
       userImageUrl: '',
       userIsOnline: false,
       isConversationListOpen: false,
       unreadConversationMessageCount: 0,
       updateConversationState: (_) => undefined,
+      onDisconnect: () => undefined,
       ...props,
     };
 
@@ -21,19 +23,23 @@ describe('UserActionsContainer', () => {
 
   it('renders UserActions', () => {
     const wrapper = subject({
+      userAddress: 'the-address',
       userImageUrl: 'image-url',
       userIsOnline: true,
       isConversationListOpen: true,
       unreadConversationMessageCount: 7,
       updateConversationState: undefined,
+      onDisconnect: undefined,
     });
 
     expect(wrapper.find('UserActions').props()).toEqual({
+      userAddress: 'the-address',
       userImageUrl: 'image-url',
       userIsOnline: true,
       isConversationListOpen: true,
       unreadConversationMessageCount: 7,
       updateConversationState: undefined,
+      onDisconnect: undefined,
     });
   });
 

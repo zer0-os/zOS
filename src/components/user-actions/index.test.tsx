@@ -6,11 +6,13 @@ import { Properties, UserActions } from '.';
 describe('UserActions', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      userAddress: '',
       userImageUrl: '',
       userIsOnline: false,
       isConversationListOpen: false,
       unreadConversationMessageCount: 0,
-      updateConversationState: (_) => undefined,
+      updateConversationState: () => undefined,
+      onDisconnect: () => undefined,
       ...props,
     };
 
@@ -109,6 +111,29 @@ describe('UserActions', () => {
 
     expect(conversationButton(wrapper).find('.user-actions__badge').text()).toEqual('9+');
   });
+
+  it('opens and closes the user menu', () => {
+    const wrapper = subject({ userAddress: 'the-address' });
+
+    userMenuButton(wrapper).simulate('click');
+
+    const popup = wrapper.find('UserMenuPopup');
+    expect(popup.prop('address')).toEqual('the-address');
+
+    userMenuButton(wrapper).simulate('click');
+
+    expect(wrapper.find('UserMenuPopup').exists()).toBeFalse();
+  });
+
+  it('disconnects user wallet', () => {
+    const onDisconnect = jest.fn();
+
+    const wrapper = subject({ onDisconnect });
+    userMenuButton(wrapper).simulate('click');
+    wrapper.find('UserMenuPopup').simulate('disconnect');
+
+    expect(onDisconnect).toHaveBeenCalledOnce();
+  });
 });
 
 function notificationButton(wrapper) {
@@ -117,4 +142,8 @@ function notificationButton(wrapper) {
 
 function conversationButton(wrapper) {
   return wrapper.find('button').at(0);
+}
+
+function userMenuButton(wrapper) {
+  return wrapper.find('button').at(2);
 }

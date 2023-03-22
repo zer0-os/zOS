@@ -1,7 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
-
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,

@@ -41,7 +41,7 @@ interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
-  defaultProps = {
+  static defaultProps = {
     document,
   };
 

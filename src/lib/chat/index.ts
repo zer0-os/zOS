@@ -1,5 +1,5 @@
 import SendbirdChat, { ConnectionHandler, SessionHandler } from '@sendbird/chat';
-import { SendbirdGroupChat, GroupChannelModule, GroupChannelHandler } from '@sendbird/chat/groupChannel';
+import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import { config } from '../../config';
 
 import { map as mapMessage } from './chat-message';
@@ -59,7 +59,6 @@ export class Chat {
         // Refresh the session token and pass it onto the SDK through resolve(NEW_TOKEN).
         // If you don't want to refresh the session, pass on a null value through resolve(null).
         // If any error occurs while refreshing the token, let the SDK know about it through reject(error).
-        console.log('onSessionTokenRequired');
         resolve(this.accessToken);
       },
     });

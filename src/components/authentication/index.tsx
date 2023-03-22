@@ -50,7 +50,6 @@ export class Container extends React.Component<Properties, State> {
   }
 
   async componentDidMount() {
-    console.log('auth');
     await this.props.fetchCurrentUserWithChatAccessToken();
   }
 

@@ -119,10 +119,11 @@ describe('UserActions', () => {
 
     const popup = wrapper.find('UserMenuPopup');
     expect(popup.prop('address')).toEqual('the-address');
+    expect(popup.prop('isOpen')).toBeTrue();
 
     userMenuButton(wrapper).simulate('click');
 
-    expect(wrapper.find('UserMenuPopup').exists()).toBeFalse();
+    expect(wrapper.find('UserMenuPopup').prop('isOpen')).toBeFalse();
   });
 
   it('disconnects user wallet', () => {

@@ -74,13 +74,12 @@ export class UserActions extends React.Component<Properties, State> {
           </button>
         </div>
         {this.state.isNotificationPopupOpen && <NotificationPopup />}
-        {this.state.isUserPopupOpen && (
-          <UserMenuPopup
-            address={this.props.userAddress}
-            onDisconnect={this.props.onDisconnect}
-            onAbort={this.toggleUserPopupState}
-          />
-        )}
+        <UserMenuPopup
+          address={this.props.userAddress}
+          onDisconnect={this.props.onDisconnect}
+          onAbort={this.toggleUserPopupState}
+          isOpen={this.state.isUserPopupOpen}
+        />
       </>
     );
   }

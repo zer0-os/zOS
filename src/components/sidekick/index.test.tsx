@@ -1,29 +1,21 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Container } from '.';
+import { Container, Properties } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
 
 describe('Sidekick', () => {
-  const subject = (props: any = {}) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
       className: '',
-      updateSidekick: jest.fn(),
-      setActiveSidekickTab: jest.fn(),
-      syncSidekickState: jest.fn(),
+      isOpen: false,
+      closeConversations: () => null,
       ...props,
     };
 
     return shallow(<Container {...allProps} />);
   };
-
-  it('sync state', () => {
-    const syncSidekickState = jest.fn();
-    subject({ syncSidekickState });
-
-    expect(syncSidekickState).toHaveBeenCalled();
-  });
 
   it('adds className', () => {
     const wrapper = subject({ className: 'todo' });

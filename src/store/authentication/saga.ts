@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, all } from 'redux-saga/effects';
+import { takeLatest, put, call, all, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -8,6 +8,8 @@ import {
   fetchChatAccessToken,
 } from './api';
 import { setChatAccessToken } from '../chat';
+import { User } from './types';
+import { clearUserLayout, initializeUserLayout } from '../layout/saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -54,7 +56,7 @@ export function* getCurrentUserWithChatAccessToken() {
 }
 
 function* setUserAndChatAccessToken(params: {
-  user?: object;
+  user?: User;
   nonce?: string;
   chatAccessToken?: string;
   isLoading: boolean;
@@ -76,6 +78,24 @@ function* setUserAndChatAccessToken(params: {
       })
     ),
   ]);
+
+  if (user) {
+    yield spawn(initializeUserState, user);
+  } else {
+    yield spawn(clearUserState);
+  }
+}
+
+export function* initializeUserState(user: User) {
+  if (!user?.id) {
+    return;
+  }
+
+  yield initializeUserLayout(user);
+}
+
+export function* clearUserState() {
+  yield clearUserLayout();
 }
 
 export function* saga() {

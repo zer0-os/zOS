@@ -154,7 +154,7 @@ describe('channels list saga', () => {
       category: 'channel-category',
       unreadCount: 1,
       hasJoined: true,
-      isChannel: false,
+      isChannel: true,
       otherMembers: [],
     };
 
@@ -165,7 +165,7 @@ describe('channels list saga', () => {
       category: 'dm',
       unreadCount: 1,
       hasJoined: true,
-      isChannel: true,
+      isChannel: false,
       otherMembers: [],
       lastMessage: {},
       lastMessageCreatedAt: undefined,

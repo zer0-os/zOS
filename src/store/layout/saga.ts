@@ -34,7 +34,7 @@ export function* updateSidekick(action) {
 }
 
 export function* initializeUserLayout(user: { id: string }) {
-  const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE));
+  const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
 
   yield put(
     update({

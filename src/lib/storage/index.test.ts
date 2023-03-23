@@ -1,31 +1,46 @@
+import { when } from 'jest-when';
+
 import { resolveFromLocalStorageAsBoolean } from './';
 
 describe('storage', () => {
   describe('resolveFromLocalStorage', () => {
-    it('should use the key to get the data', () => {
-      const storageKey = 'key-store';
+    it('returns defaultValue when no data exists', () => {
+      stubLocalStorageValue('key', null);
 
-      resolveFromLocalStorageAsBoolean(storageKey);
-      expect(global.localStorage.getItem).toHaveBeenCalledWith(storageKey);
+      let value = resolveFromLocalStorageAsBoolean('key', true);
+      expect(value).toBeTrue();
+
+      value = resolveFromLocalStorageAsBoolean('key', false);
+      expect(value).toBeFalse();
     });
 
-    it('returns false in case no data is saved', () => {
-      const value = resolveFromLocalStorageAsBoolean('key');
-      expect(value).toEqual(false);
+    it('returns defaultValue if data is bad', () => {
+      stubLocalStorageValue('key', 'garbage');
+
+      let value = resolveFromLocalStorageAsBoolean('key', true);
+      expect(value).toBeTrue();
+
+      value = resolveFromLocalStorageAsBoolean('key', false);
+      expect(value).toBeFalse();
     });
 
-    it('returns false', () => {
-      global.localStorage.getItem = jest.fn().mockReturnValue('data hjere');
+    it('returns true if value is "true"', () => {
+      stubLocalStorageValue('key', 'true');
 
-      const value = resolveFromLocalStorageAsBoolean('key');
-      expect(value).toEqual(false);
+      const value = resolveFromLocalStorageAsBoolean('key', true);
+      expect(value).toBeTrue();
     });
 
-    it('returns true', () => {
-      global.localStorage.getItem = jest.fn().mockReturnValue('true');
+    it('returns false if value is "false"', () => {
+      stubLocalStorageValue('key', 'false');
 
-      const value = resolveFromLocalStorageAsBoolean('key');
-      expect(value).toEqual(true);
+      const value = resolveFromLocalStorageAsBoolean('key', true);
+      expect(value).toBeFalse();
     });
   });
 });
+
+function stubLocalStorageValue(key: string, value: string | null) {
+  global.localStorage.getItem = jest.fn();
+  when(global.localStorage.getItem).calledWith(key).mockReturnValue(value);
+}

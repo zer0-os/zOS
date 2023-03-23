@@ -1,5 +1,11 @@
-export function resolveFromLocalStorageAsBoolean(key) {
+export function resolveFromLocalStorageAsBoolean(key: string, defaultValue: boolean) {
   const value = localStorage.getItem(key);
 
-  return value === null || value === 'true';
+  if (value === 'false') {
+    return false;
+  } else if (value === 'true') {
+    return true;
+  }
+
+  return defaultValue;
 }

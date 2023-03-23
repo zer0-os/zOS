@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as CreateAccount } from './create';
 import { Dialog } from '@zer0-os/zos-component-library';
+import { ImageUpload } from '../image-upload';
 
 describe('CreateAccount', () => {
   const subject = (props: any = {}) => {
@@ -61,12 +62,28 @@ describe('CreateAccount', () => {
   it('should update image profile', async () => {
     const updateImageProfile = jest.fn();
     const profileId = '12-11';
+    const imageProfile = 'file-data';
+
     const wrapper = subject({ updateImageProfile });
+
+    await wrapper.setProps({ user: { nonce: 'nonce-was-set', data: null } });
+    (wrapper.find(ImageUpload).prop('onChange') as any)(imageProfile);
+    await wrapper.setProps({ user: { isLoading: false, data: { profileId } } });
+
+    expect(updateImageProfile).toHaveBeenCalledWith(profileId, imageProfile);
+  });
+
+  it('should not update image profile when no image is uploaded', async () => {
+    const updateImageProfile = jest.fn();
+    const profileId = '12-11';
+
+    const wrapper = subject({ updateImageProfile });
+
     await wrapper.setProps({ user: { nonce: 'nonce-was-set', data: null } });
 
     await wrapper.setProps({ user: { isLoading: false, data: { profileId } } });
 
-    expect(updateImageProfile).toHaveBeenCalledWith(profileId, null);
+    expect(updateImageProfile).not.toHaveBeenCalledWith();
   });
 
   it('does not call fetchCurrentUser when error on createAndAuthorize', async () => {

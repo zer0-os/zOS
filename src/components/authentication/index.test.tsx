@@ -72,7 +72,7 @@ describe('Authentication', () => {
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      currentAddress,
+      currentAddress: '',
       providerService: {
         get: () => ({
           provider: {
@@ -86,7 +86,7 @@ describe('Authentication', () => {
         data: null,
       },
     });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
 
     expect(sendAsync).toHaveBeenCalledWith(
       {
@@ -101,6 +101,43 @@ describe('Authentication', () => {
     );
   });
 
+  it('call sendAsync to authorize the user when account metamask is changed', () => {
+    const sendAsync = jest.fn();
+    const nonceOrAuthorize = jest.fn();
+    const currentAddress = '0x00';
+    const newCurrentAddress = '0x22';
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Connected,
+      currentAddress,
+      providerService: {
+        get: () => ({
+          provider: {
+            sendAsync,
+          },
+        }),
+      },
+      nonceOrAuthorize,
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
+    });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress: newCurrentAddress });
+
+    expect(sendAsync).toHaveBeenCalledWith(
+      {
+        from: newCurrentAddress,
+        method: 'personal_sign',
+        params: [
+          config.web3AuthenticationMessage,
+          newCurrentAddress,
+        ],
+      },
+      expect.any(Function)
+    );
+  });
+
   it('should authorize the user using the signedWeb3Token', () => {
     const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
@@ -108,7 +145,7 @@ describe('Authentication', () => {
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      currentAddress,
+      currentAddress: '',
       providerService: {
         get: () => ({
           provider: {
@@ -124,7 +161,7 @@ describe('Authentication', () => {
       },
       nonceOrAuthorize,
     });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
 
     expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
   });
@@ -136,7 +173,7 @@ describe('Authentication', () => {
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      currentAddress,
+      currentAddress: '',
       providerService: {
         get: () => ({
           provider: {
@@ -153,7 +190,7 @@ describe('Authentication', () => {
       updateConnector,
       nonceOrAuthorize,
     });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
     expect(nonceOrAuthorize).not.toHaveBeenCalled();

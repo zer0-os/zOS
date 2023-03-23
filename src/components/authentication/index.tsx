@@ -55,11 +55,10 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidUpdate(prevProps: Properties) {
     if (
-      prevProps.connectionStatus !== ConnectionStatus.Connected &&
       this.props.connectionStatus === ConnectionStatus.Connected &&
       this.props.currentAddress &&
-      this.props.user.isLoading === false &&
-      this.props.user.data === null
+      this.props.currentAddress !== prevProps.currentAddress &&
+      this.props.user.isLoading === false
     ) {
       this.authorize();
     }

@@ -5,15 +5,19 @@ import { RootState } from '../../store';
 import { denormalizeConversations } from '../../store/channels-list';
 
 import { UserActions } from '.';
+import { denormalizeNotifications } from '../../store/notifications';
 
 interface PublicProperties {
+  userAddress: string;
   userImageUrl?: string;
   userIsOnline: boolean;
   isConversationListOpen: boolean;
   updateConversationState: (isOpen: boolean) => void;
+  onDisconnect: () => void;
 }
 export interface Properties extends PublicProperties {
   unreadConversationMessageCount: number;
+  unreadNotificationCount: number;
 }
 
 export class Container extends React.Component<Properties> {
@@ -25,8 +29,11 @@ export class Container extends React.Component<Properties> {
       0
     );
 
+    const unreadNotificationCount = denormalizeNotifications(state).filter((n) => n.isUnread).length;
+
     return {
       unreadConversationMessageCount,
+      unreadNotificationCount,
     };
   }
 
@@ -38,11 +45,14 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         <UserActions
+          userAddress={this.props.userAddress}
           userImageUrl={this.props.userImageUrl}
           userIsOnline={this.props.userIsOnline}
           isConversationListOpen={this.props.isConversationListOpen}
           unreadConversationMessageCount={this.props.unreadConversationMessageCount}
+          unreadNotificationCount={this.props.unreadNotificationCount}
           updateConversationState={this.props.updateConversationState}
+          onDisconnect={this.props.onDisconnect}
         />
       </>
     );

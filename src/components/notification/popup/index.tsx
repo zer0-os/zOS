@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 
 import { NotificationListContainer } from '../list/container';
 
@@ -15,6 +14,10 @@ export class NotificationPopup extends React.Component<Properties> {
   constructor(props) {
     super(props);
     this.notificationPopupRef = React.createRef();
+  }
+
+  render() {
+    return this.renderPopup();
   }
 
   componentDidMount() {
@@ -43,9 +46,5 @@ export class NotificationPopup extends React.Component<Properties> {
         <NotificationListContainer />
       </div>
     );
-  }
-
-  render() {
-    return <>{createPortal(this.renderPopup(), document.body)}</>;
   }
 }

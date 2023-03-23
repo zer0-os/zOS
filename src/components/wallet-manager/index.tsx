@@ -1,4 +1,4 @@
-import { EthAddress, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
+import { WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import React from 'react';
 import { config } from '../../config';
@@ -135,18 +135,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <div className={classNames('wallet-manager', this.props.className)}>
         <IfAuthenticated showChildren>
-          <div style={{ display: 'flex', gap: '25px' }}>
-            <EthAddress
-              address={this.props.currentAddress}
-              onClick={this.handleDisconnect}
-            />
-            <UserActionsContainer
-              userImageUrl={this.props.userImageUrl}
-              userIsOnline={this.props.userIsOnline}
-              updateConversationState={this.props.updateConversationState}
-              isConversationListOpen={this.props.isConversationListOpen}
-            />
-          </div>
+          <UserActionsContainer
+            userAddress={this.props.currentAddress}
+            userImageUrl={this.props.userImageUrl}
+            userIsOnline={this.props.userIsOnline}
+            updateConversationState={this.props.updateConversationState}
+            isConversationListOpen={this.props.isConversationListOpen}
+            onDisconnect={this.handleDisconnect}
+          />
         </IfAuthenticated>
         <IfAuthenticated hideChildren>
           <ConnectButton />

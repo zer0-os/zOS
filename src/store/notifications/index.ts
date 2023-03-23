@@ -21,6 +21,15 @@ const listSlice = createNormalizedListSlice({
 });
 
 export const { receiveNormalized, setStatus, receive } = listSlice.actions;
-export const { reducer, normalize, denormalize } = listSlice;
+export const { reducer, normalize } = listSlice;
 
 export { fetch };
+
+const relevantNotificationTypes = ['chat_channel_mention'];
+export function denormalizeNotifications(state) {
+  const result = listSlice
+    .denormalize(state.notificationsList.value, state)
+    .filter((n) => relevantNotificationTypes.includes(n.notificationType));
+
+  return result;
+}

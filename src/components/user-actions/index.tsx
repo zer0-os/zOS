@@ -5,21 +5,26 @@ import { Avatar } from '@zero-tech/zui/components';
 import './styles.scss';
 import { IconBell1, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { NotificationPopup } from '../notification/popup';
+import { UserMenuPopup } from './user-menu-popup';
 
 export interface Properties {
+  userAddress: string;
   userImageUrl?: string;
   userIsOnline: boolean;
   isConversationListOpen: boolean;
   unreadConversationMessageCount: number;
+  unreadNotificationCount: number;
   updateConversationState: (isOpen: boolean) => void;
+  onDisconnect: () => void;
 }
 
 interface State {
   isNotificationPopupOpen: boolean;
+  isUserPopupOpen: boolean;
 }
 
 export class UserActions extends React.Component<Properties, State> {
-  state = { isNotificationPopupOpen: false };
+  state = { isNotificationPopupOpen: false, isUserPopupOpen: false };
 
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
@@ -27,6 +32,10 @@ export class UserActions extends React.Component<Properties, State> {
 
   get unreadConversationCount() {
     return this.props.unreadConversationMessageCount <= 9 ? this.props.unreadConversationMessageCount : '9+';
+  }
+
+  get unreadNotificationCount() {
+    return this.props.unreadNotificationCount <= 9 ? this.props.unreadNotificationCount : '9+';
   }
 
   toggleNotificationState = () => {
@@ -41,12 +50,16 @@ export class UserActions extends React.Component<Properties, State> {
     this.setState({ isNotificationPopupOpen: false });
   };
 
+  toggleUserPopupState = () => {
+    this.setState({ isUserPopupOpen: !this.state.isUserPopupOpen });
+  };
+
   render() {
     return (
       <>
         <div className='user-actions'>
           <button
-            className='button-reset'
+            className='user-actions__icon-button'
             onClick={this.toggleConversationListState}
           >
             <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
@@ -55,21 +68,32 @@ export class UserActions extends React.Component<Properties, State> {
             )}
           </button>
           <button
-            className='button-reset'
+            className='user-actions__icon-button'
             onClick={this.toggleNotificationState}
           >
             <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
+            {this.props.unreadNotificationCount > 0 && (
+              <div className='user-actions__badge'>{this.unreadNotificationCount}</div>
+            )}
           </button>
-          <Avatar
-            type='circle'
-            size='regular'
-            imageURL={this.props.userImageUrl}
-            statusType={this.userStatus}
-          />
+          <button onClick={this.toggleUserPopupState}>
+            <Avatar
+              type='circle'
+              size='regular'
+              imageURL={this.props.userImageUrl}
+              statusType={this.userStatus}
+            />
+          </button>
         </div>
         {this.state.isNotificationPopupOpen && (
           <NotificationPopup onClickOutside={this.handleClickOutsideNotificationPopup} />
         )}
+        <UserMenuPopup
+          address={this.props.userAddress}
+          onDisconnect={this.props.onDisconnect}
+          onAbort={this.toggleUserPopupState}
+          isOpen={this.state.isUserPopupOpen}
+        />
       </>
     );
   }

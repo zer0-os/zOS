@@ -87,10 +87,6 @@ function* setUserAndChatAccessToken(params: {
 }
 
 export function* initializeUserState(user: User) {
-  if (!user?.id) {
-    return;
-  }
-
   yield initializeUserLayout(user);
 }
 

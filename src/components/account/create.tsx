@@ -39,6 +39,7 @@ export class Container extends React.Component<Properties, State> {
     displayNameError: '',
     error: '',
   };
+
   static defaultProps = { createAndAuthorize, updateImageProfile, inviteCode: config.inviteCode.dejaVu };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -102,7 +103,12 @@ export class Container extends React.Component<Properties, State> {
     });
   }
 
-  updateProfileImage = async (): Promise<void> => {
+  updateProfileImage = async () => {
+    if (!this.state.profileImage) {
+      this.closeDialog();
+      return;
+    }
+
     const profileId = this.props.user.data.profileId;
 
     try {

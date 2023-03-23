@@ -1,4 +1,5 @@
-import SendBird from 'sendbird';
+import SendbirdChat, { ConnectionHandler, SessionHandler } from '@sendbird/chat';
+import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import { config } from '../../config';
 
 import { map as mapMessage } from './chat-message';
@@ -14,34 +15,27 @@ interface RealtimeChatEvents {
 }
 
 export class Chat {
-  sb: any = null;
+  sendbird: SendbirdGroupChat = null;
 
   accessToken: string;
 
   init() {
-    if (this.sb !== null) return;
+    if (this.sendbird !== null) return;
 
-    this.sb = new SendBird({
+    this.sendbird = SendbirdChat.init({
       appId: config.sendBird.appId,
-    });
+      modules: [new GroupChannelModule()],
+    }) as SendbirdGroupChat;
+
+    this.sendbird.options.sessionTokenRefreshTimeout = 1800; // Max
   }
 
-  async setUserId(userId: string, accessToken) {
+  async connect(userId: string, accessToken) {
     if (!accessToken || !userId) {
       return;
     }
 
-    new Promise((resolve, reject) => {
-      this.sb.connect(userId, accessToken, (user, error) => {
-        if (error) {
-          console.log('Sendbird connection error', error);
-          reject(error);
-          return;
-        }
-
-        resolve(user);
-      });
-    });
+    await this.sendbird.connect(userId, accessToken);
 
     this.accessToken = accessToken;
   }
@@ -54,65 +48,68 @@ export class Chat {
   }
 
   initSessionHandler(events: RealtimeChatEvents) {
-    const sessionHandler = new this.sb.SessionHandler();
+    const sessionHandler = new SessionHandler({
+      onSessionClosed: () => {
+        // The session refresh has been denied from the app.
+        // The client app should guide the user to a login page to log in again.
+        events.invalidChatAccessToken();
+      },
+      onSessionTokenRequired: (resolve, _reject) => {
+        // A new session token is required in the SDK to refresh the session.
+        // Refresh the session token and pass it onto the SDK through resolve(NEW_TOKEN).
+        // If you don't want to refresh the session, pass on a null value through resolve(null).
+        // If any error occurs while refreshing the token, let the SDK know about it through reject(error).
+        resolve(this.accessToken);
+      },
+    });
 
-    // The session refresh has been denied from the app.
-    // The client app should guide the user to a login page to log in again.
-    sessionHandler.onSessionClosed = () => events.invalidChatAccessToken();
-
-    sessionHandler.onSessionTokenRequired = (onSuccess: (accessToken: string) => void, _onFail: () => void) => {
-      onSuccess(this.accessToken);
-    };
-
-    this.sb.setSessionHandler(sessionHandler);
+    this.sendbird.setSessionHandler(sessionHandler);
   }
 
   initConnectionHandlers(events: RealtimeChatEvents): void {
-    const connectionHandler = new this.sb.ConnectionHandler();
+    const connectionHandler = new ConnectionHandler({
+      onReconnectStarted: () => events.reconnectStart(),
+      onReconnectSucceeded: () => events.reconnectStop(),
+      onReconnectFailed: () => this.sendbird.reconnect(),
+    });
 
-    connectionHandler.onReconnectStarted = () => events.reconnectStart();
-    connectionHandler.onReconnectSucceeded = () => events.reconnectStop();
-
-    // sendbird gives up, so for now, just retry every time.
-    connectionHandler.onReconnectFailed = () => this.sb.reconnect();
-
-    this.sb.addConnectionHandler('connectionHandler', connectionHandler);
+    this.sendbird.addConnectionHandler('connectionHandler', connectionHandler);
   }
 
   initChannelHandlers(events: RealtimeChatEvents): void {
-    const channelHandler = new this.sb.ChannelHandler();
+    const channelHandler = new GroupChannelHandler({
+      onMessageReceived: (channel, message) => {
+        const channelId = this.getChannelId(channel);
 
-    channelHandler.onMessageReceived = (channel, message) => {
-      const channelId = this.getChannelId(channel);
-      if (channel.isGroupChannel()) {
-        events.receiveNewMessage(channelId, this.mapMessage(message));
-      }
-    };
+        if (channel.isGroupChannel()) {
+          events.receiveNewMessage(channelId, this.mapMessage(message));
+        }
+      },
+      onMessageDeleted: (channel, messageId) => {
+        const channelId = this.getChannelId(channel);
 
-    channelHandler.onMessageDeleted = (channel, messageId) => {
-      const channelId = this.getChannelId(channel);
+        events.receiveDeleteMessage(channelId, messageId);
+      },
+      onChannelChanged: (channel) => {
+        const channelId = this.getChannelId(channel);
 
-      // It is documented to return a number. But is actually a string
-      events.receiveDeleteMessage(channelId, parseInt(messageId as any));
-    };
+        events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
+      },
+    });
 
-    channelHandler.onChannelChanged = (channel) => {
-      const channelId = this.getChannelId(channel);
-
-      events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
-    };
-
-    chat.sb.addChannelHandler('chatHandler', channelHandler);
+    this.sendbird.groupChannel.addGroupChannelHandler('chatHandler', channelHandler);
   }
 
   reconnect(): void {
-    this.sb.reconnect();
+    this.sendbird.reconnect();
   }
 
   disconnect(): void {
-    if (this.sb !== null) {
-      this.sb.disconnect();
-      this.sb = null;
+    if (this.sendbird !== null) {
+      this.sendbird.disconnect().then(() => {
+        this.sendbird = null;
+        this.accessToken = null;
+      });
     }
   }
 

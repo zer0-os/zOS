@@ -34,3 +34,9 @@ export async function createAndAuthorize(
 export async function updateImageProfile(profileId: string, profileImage: File): Promise<AuthorizationResponse> {
   return await post(`/upload/avatar?profileId=${profileId}`).attach('file', profileImage);
 }
+
+export async function fetchChatAccessToken(): Promise<{ chatAccessToken: string }> {
+  const { body } = await get('/accounts/chatAccessToken');
+
+  return body;
+}

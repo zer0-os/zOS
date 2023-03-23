@@ -5,14 +5,15 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 export enum SagaActionTypes {
   NonceOrAuthorize = 'authentication/saga/nonceOrAuthorize',
   ClearSession = 'authentication/saga/clearSession',
-  FetchCurrentUser = 'authentication/saga/fetchCurrentUser',
+  FetchCurrentUserWithChatAccessToken = 'authentication/saga/fetchCurrentUserWithChatAccessToken',
 }
 const nonceOrAuthorize = createAction<Payload>(SagaActionTypes.NonceOrAuthorize);
 const clearSession = createAction<Payload>(SagaActionTypes.ClearSession);
-const fetchCurrentUser = createAction<Payload>(SagaActionTypes.FetchCurrentUser);
+const fetchCurrentUserWithChatAccessToken = createAction<Payload>(SagaActionTypes.FetchCurrentUserWithChatAccessToken);
 
 const initialState: AuthenticationState = {
   user: null,
+  loading: false,
 };
 
 const slice = createSlice({
@@ -27,4 +28,4 @@ const slice = createSlice({
 
 export const { setUser } = slice.actions;
 export const { reducer } = slice;
-export { nonceOrAuthorize, fetchCurrentUser, clearSession };
+export { nonceOrAuthorize, clearSession, fetchCurrentUserWithChatAccessToken };

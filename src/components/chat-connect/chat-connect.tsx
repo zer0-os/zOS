@@ -114,7 +114,7 @@ export class Container extends React.Component<Properties> {
       invalidChatAccessToken,
     });
 
-    await this.chat.setUserId(userId, chatAccessToken);
+    await this.chat.connect(userId, chatAccessToken);
   }
 
   render() {

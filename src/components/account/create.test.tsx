@@ -8,7 +8,7 @@ describe('CreateAccount', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       currentAddress: '0x0000000000000000000000000000000000000001',
-      fetchCurrentUser: jest.fn(),
+      fetchCurrentUserWithChatAccessToken: jest.fn(),
       updateImageProfile: jest.fn(),
       createAndAuthorize: jest.fn(() => Promise.resolve({ accessToken: 'success' })),
       inviteCode: '29e012b1-9893-412d-997e-0c5c8296af2d',
@@ -39,9 +39,9 @@ describe('CreateAccount', () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
     const inviteCode = 'my-invite-code';
     const createAndAuthorize = jest.fn(() => Promise.resolve({ accessToken: 'success' }));
-    const fetchCurrentUser = jest.fn();
+    const fetchCurrentUserWithChatAccessToken = jest.fn();
 
-    const wrapper = subject({ currentAddress, inviteCode, createAndAuthorize, fetchCurrentUser });
+    const wrapper = subject({ currentAddress, inviteCode, createAndAuthorize, fetchCurrentUserWithChatAccessToken });
 
     const nonce = 'this-is-my-expiring-nonce';
 
@@ -86,16 +86,16 @@ describe('CreateAccount', () => {
     expect(updateImageProfile).not.toHaveBeenCalledWith();
   });
 
-  it('does not call fetchCurrentUser when error on createAndAuthorize', async () => {
+  it('does not call fetchCurrentUserWithChatAccessToken when error on createAndAuthorize', async () => {
     const currentAddress = '0x0000000000000000000000000000000000000001';
     const inviteCode = 'my-invite-code';
 
     const createAndAuthorize = jest.fn(() =>
       Promise.reject({ response: { body: { code: 'USER_HANDLE_ALREADY_EXISTS' } } })
     );
-    const fetchCurrentUser = jest.fn();
+    const fetchCurrentUserWithChatAccessToken = jest.fn();
 
-    const wrapper = subject({ currentAddress, inviteCode, createAndAuthorize, fetchCurrentUser });
+    const wrapper = subject({ currentAddress, inviteCode, createAndAuthorize, fetchCurrentUserWithChatAccessToken });
 
     const nonce = 'this-is-my-expiring-nonce';
 
@@ -106,7 +106,7 @@ describe('CreateAccount', () => {
       preventDefault: () => {},
     });
 
-    expect(fetchCurrentUser).not.toHaveBeenCalled();
+    expect(fetchCurrentUserWithChatAccessToken).not.toHaveBeenCalled();
 
     setTimeout(() => {
       expect(wrapper.find('.input__error-message').exists()).toBe(true);

@@ -46,6 +46,10 @@ export class UserActions extends React.Component<Properties, State> {
     this.props.updateConversationState(!this.props.isConversationListOpen);
   };
 
+  handleClickOutsideNotificationPopup = () => {
+    this.setState({ isNotificationPopupOpen: false });
+  };
+
   toggleUserPopupState = () => {
     this.setState({ isUserPopupOpen: !this.state.isUserPopupOpen });
   };
@@ -81,7 +85,9 @@ export class UserActions extends React.Component<Properties, State> {
             />
           </button>
         </div>
-        {this.state.isNotificationPopupOpen && <NotificationPopup />}
+        {this.state.isNotificationPopupOpen && (
+          <NotificationPopup onClickOutside={this.handleClickOutsideNotificationPopup} />
+        )}
         <UserMenuPopup
           address={this.props.userAddress}
           onDisconnect={this.props.onDisconnect}

@@ -24,6 +24,7 @@ describe('Authentication', () => {
       fetchCurrentUserWithChatAccessToken: jest.fn(),
       clearSession: jest.fn(),
       personalSignToken: jest.fn().mockResolvedValue(signedWeb3Token),
+      updateConnector: jest.fn(),
       ...props,
     };
 
@@ -67,42 +68,26 @@ describe('Authentication', () => {
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  // it('call sendAsync to authorize the user when account metamask is changed', () => {
-  //   const sendAsync = jest.fn();
-  //   const nonceOrAuthorize = jest.fn();
-  //   const currentAddress = '0x00';
-  //   const newCurrentAddress = '0x22';
-  //
-  //   const wrapper = subject({
-  //     connectionStatus: ConnectionStatus.Connected,
-  //     currentAddress,
-  //     providerService: {
-  //       get: () => ({
-  //         provider: {
-  //           sendAsync,
-  //         },
-  //       }),
-  //     },
-  //     nonceOrAuthorize,
-  //     user: {
-  //       isLoading: false,
-  //       data: USER_DATA,
-  //     },
-  //   });
-  //   wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress: newCurrentAddress });
-  //
-  //   expect(sendAsync).toHaveBeenCalledWith(
-  //     {
-  //       from: newCurrentAddress,
-  //       method: 'personal_sign',
-  //       params: [
-  //         config.web3AuthenticationMessage,
-  //         newCurrentAddress,
-  //       ],
-  //     },
-  //     expect.any(Function)
-  //   );
-  // });
+  it('when the account in metamask is changed verify we retrieve a new signed token', async () => {
+    const personalSignToken = jest.fn().mockRejectedValue('0x0093');
+
+    const currentAddress = '0x00';
+    const changedAddress = '0x95';
+
+    const wrapper = subject({
+      connectionStatus: ConnectionStatus.Connected,
+      currentAddress,
+      user: {
+        isLoading: false,
+        data: USER_DATA,
+      },
+      personalSignToken,
+    });
+
+    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress: changedAddress });
+
+    expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
+  });
 
   it('should authorize the user using the signedWeb3Token', async () => {
     const nonceOrAuthorize = jest.fn();

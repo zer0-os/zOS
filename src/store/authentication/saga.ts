@@ -34,7 +34,11 @@ export function* nonceOrAuthorize(action) {
 }
 
 export function* clearSession() {
-  yield call(clearSessionApi);
+  try {
+    yield call(clearSessionApi);
+  } catch {
+    /* No operation, if user is unauthenticated deleting the cookie fails */
+  }
 
   yield setUserAndChatAccessToken({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
 }

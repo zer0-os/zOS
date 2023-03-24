@@ -82,11 +82,12 @@ export class Container extends React.Component<Properties, State> {
   }
 
   async authorize() {
-    const { personalSignToken, currentAddress, nonceOrAuthorize, updateConnector } = this.props;
-    const web3Provider = this.props.providerService.get();
+    const { personalSignToken, currentAddress, nonceOrAuthorize, updateConnector, clearSession, providerService } =
+      this.props;
 
-    await personalSignToken(web3Provider, currentAddress)
+    await personalSignToken(providerService.get(), currentAddress)
       .then((signedWeb3Token) => {
+        clearSession();
         nonceOrAuthorize({ signedWeb3Token });
       })
       .catch((_error) => {

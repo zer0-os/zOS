@@ -90,13 +90,16 @@ describe('Authentication', () => {
     expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
   });
 
-  it('should authorize the user using the signedWeb3Token', async () => {
+  it('should clearSession before authorize', async () => {
     const nonceOrAuthorize = jest.fn();
+    const clearSession = jest.fn();
+
     const currentAddress = '0x00';
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
 
+      clearSession,
       nonceOrAuthorize,
     });
 
@@ -104,7 +107,10 @@ describe('Authentication', () => {
 
     await new Promise(setImmediate);
 
+    expect(clearSession).toHaveBeenCalled();
     expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
+
+    expect(clearSession).toHaveBeenCalledBefore(nonceOrAuthorize);
   });
 
   it('should call updateConnector when sendAsync return error', async () => {

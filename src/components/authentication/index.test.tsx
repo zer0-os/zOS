@@ -21,6 +21,10 @@ describe('Authentication', () => {
           },
         }),
       },
+      user: {
+        isLoading: false,
+        data: null,
+      },
       fetchCurrentUserWithChatAccessToken: jest.fn(),
       clearSession: jest.fn(),
       personalSignToken: jest.fn().mockResolvedValue(signedWeb3Token),
@@ -33,6 +37,7 @@ describe('Authentication', () => {
 
   it('should fetch current user and chatAccessToken', () => {
     const fetchCurrentUserWithChatAccessToken = jest.fn();
+
     subject({
       fetchCurrentUserWithChatAccessToken,
     });
@@ -44,10 +49,6 @@ describe('Authentication', () => {
     const authorize = jest.fn();
 
     subject({
-      user: {
-        isLoading: true,
-        data: null,
-      },
       authorize,
     });
 
@@ -95,10 +96,7 @@ describe('Authentication', () => {
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      user: {
-        isLoading: false,
-        data: null,
-      },
+
       nonceOrAuthorize,
     });
 
@@ -117,10 +115,7 @@ describe('Authentication', () => {
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
       personalSignToken: jest.fn().mockRejectedValue('error'),
-      user: {
-        isLoading: false,
-        data: null,
-      },
+
       updateConnector,
       nonceOrAuthorize,
     });
@@ -144,6 +139,7 @@ describe('Authentication', () => {
       },
       clearSession,
     });
+
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(clearSession).toHaveBeenCalled();

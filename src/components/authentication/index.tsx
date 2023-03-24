@@ -73,12 +73,8 @@ export class Container extends React.Component<Properties, State> {
       !this.props.currentAddress &&
       this.props.user.data !== null
     ) {
-      this.logout();
+      this.props.clearSession();
     }
-  }
-
-  logout(): void {
-    this.props.clearSession();
   }
 
   async authorize() {

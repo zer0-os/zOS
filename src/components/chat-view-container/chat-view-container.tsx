@@ -162,8 +162,9 @@ export class Container extends React.Component<Properties, State> {
       this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
 
-    if (this.state.isFirstMessagesFetchDone && this.textareaRef) {
+    if (this.state.isFirstMessagesFetchDone && this.textareaRef && channel && Boolean(channel.messages)) {
       this.onMessageInputRendered(this.textareaRef);
+      this.textareaRef = null;
     }
   }
 
@@ -259,7 +260,7 @@ export class Container extends React.Component<Properties, State> {
 
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
     if (textareaRef && textareaRef.current) {
-      this.textareaRef = textareaRef;
+      if (!this.textareaRef) this.textareaRef = textareaRef;
       if (
         (this.props.activeMessengerId && this.props.activeMessengerId === textareaRef.current.id) ||
         !this.props.activeMessengerId

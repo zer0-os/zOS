@@ -49,13 +49,18 @@ describe('Authentication', () => {
     const authorize = jest.fn();
 
     subject({
+      user: {
+        isLoading: true,
+        data: null,
+      },
+
       authorize,
     });
 
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('should not authorize when fetch is done and we have', () => {
+  it('should not authorize when fetch is done and we have a user', () => {
     const authorize = jest.fn();
 
     subject({
@@ -82,6 +87,7 @@ describe('Authentication', () => {
         isLoading: false,
         data: USER_DATA,
       },
+
       personalSignToken,
     });
 
@@ -113,7 +119,7 @@ describe('Authentication', () => {
     expect(clearSession).toHaveBeenCalledBefore(nonceOrAuthorize);
   });
 
-  it('should call updateConnector when sendAsync return error', async () => {
+  it('should call updateConnector when personalSignToken returns error', async () => {
     const updateConnector = jest.fn();
     const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
@@ -134,7 +140,7 @@ describe('Authentication', () => {
     expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
-  it('should call clearSession when disconnect btn clicked', () => {
+  it('should call clearSession when disconnect event triggered', () => {
     const clearSession = jest.fn();
 
     const wrapper = subject({
@@ -143,6 +149,7 @@ describe('Authentication', () => {
         isLoading: false,
         data: USER_DATA,
       },
+
       clearSession,
     });
 

@@ -1,12 +1,10 @@
 import React from 'react';
-import Web3Utils from 'web3-utils';
 
 import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
-import { ConnectionStatus, Connectors } from '../../lib/web3';
-import { config } from '../../config';
+import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
 import { nonceOrAuthorize, clearSession, fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
@@ -20,6 +18,7 @@ export interface Properties {
   clearSession: () => void;
   fetchCurrentUserWithChatAccessToken: () => void;
   user: AuthenticationState['user'];
+  personalSignToken: any;
 }
 
 interface State {
@@ -27,6 +26,10 @@ interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
+  static defaultProps = {
+    personalSignToken,
+  };
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
@@ -78,31 +81,17 @@ export class Container extends React.Component<Properties, State> {
     this.props.clearSession();
   }
 
-  authorize(): void {
+  async authorize() {
+    const { personalSignToken, currentAddress, nonceOrAuthorize, updateConnector } = this.props;
     const web3Provider = this.props.providerService.get();
 
-    const method = 'personal_sign';
-    const from = Web3Utils.toHex(this.props.currentAddress.toLowerCase());
-    const params = [
-      config.web3AuthenticationMessage,
-      from,
-    ];
-
-    web3Provider.provider.sendAsync(
-      {
-        method,
-        params,
-        from,
-      },
-      (err, res) => {
-        if (err) {
-          this.props.updateConnector(Connectors.None);
-          return;
-        }
-
-        this.props.nonceOrAuthorize({ signedWeb3Token: res.result });
-      }
-    );
+    await personalSignToken(web3Provider, currentAddress)
+      .then((signedWeb3Token) => {
+        nonceOrAuthorize({ signedWeb3Token });
+      })
+      .catch((_error) => {
+        updateConnector(Connectors.None);
+      });
   }
 
   render() {

@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
@@ -29,7 +25,6 @@ describe('AppSandboxContainer', () => {
       layout: {} as AppLayout,
       updateLayout: () => undefined,
       isAuthenticated: false,
-      document: null,
       ...props,
     };
 

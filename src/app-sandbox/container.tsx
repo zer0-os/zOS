@@ -32,7 +32,6 @@ export interface Properties extends PublicProperties {
   layout: AppLayout;
   updateLayout: (layout: Partial<AppLayout>) => void;
   isAuthenticated: boolean;
-  document?: Document;
 }
 
 interface State {
@@ -41,10 +40,6 @@ interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
-  static defaultProps = {
-    document,
-  };
-
   static mapState(state: RootState): Partial<Properties> {
     const {
       layout,
@@ -82,11 +77,6 @@ export class Container extends React.Component<Properties, State> {
         hasConnected: true,
         web3Provider: this.props.providerService.get(),
       });
-    }
-
-    // reset background color from the body tag
-    if (this.props.document) {
-      document.body.style.backgroundColor = '';
     }
   }
 

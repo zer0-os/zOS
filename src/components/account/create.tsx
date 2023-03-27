@@ -243,6 +243,7 @@ export class Container extends React.Component<Properties, State> {
                 input__error: Boolean(this.state.displayNameError),
               })}
               onChange={this.onDisplayNameChange}
+              autoFocus={true}
             />
             {Boolean(this.state.displayNameError) && this.renderError(this.state.displayNameError)}
           </div>

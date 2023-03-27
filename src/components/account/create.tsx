@@ -251,7 +251,13 @@ export class Container extends React.Component<Properties, State> {
           {Boolean(this.state.error) && this.renderError(this.state.error)}
 
           <div className='profile-prompt__submit'>
-            <Button onClick={this.onSubmit}>Create Account</Button>
+            <Button
+              tabIndex={0}
+              onClick={this.onSubmit}
+              onEnterKeyPress={this.onSubmit}
+            >
+              Create Account
+            </Button>
           </div>
         </form>
       </Dialog>

@@ -2,7 +2,13 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { setUser } from '.';
-import { nonceOrAuthorize, clearSession, getCurrentUserWithChatAccessToken } from './saga';
+import {
+  nonceOrAuthorize,
+  clearSession,
+  getCurrentUserWithChatAccessToken,
+  initializeUserState,
+  clearUserState,
+} from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -65,57 +71,72 @@ describe('authentication saga', () => {
       .run();
   });
 
-  it('getCurrentUserWithChatAccessToken', async () => {
-    await expectSaga(getCurrentUserWithChatAccessToken)
-      .provide([
-        [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
-        ],
-        [
-          matchers.call.fn(fetchChatAccessToken),
-          chatAccessTokenResponse,
-        ],
-      ])
-      .call(fetchCurrentUser)
-      .call(fetchChatAccessToken)
-      .run();
+  describe('clearSession', () => {
+    it('clearSession', async () => {
+      await expectSaga(clearSession)
+        .provide([
+          [
+            matchers.call.fn(clearSessionApi),
+            true,
+          ],
+        ])
+        .call(clearSessionApi)
+        .put(setUser({ data: null, isLoading: false, nonce: null }))
+        .put(setChatAccessToken({ value: null, isLoading: false }))
+        .run();
+    });
+
+    it('clears the user state', async () => {
+      await expectSaga(clearSession)
+        .provide([
+          [
+            matchers.call.fn(clearSessionApi),
+            true,
+          ],
+        ])
+        .spawn(clearUserState)
+        .run();
+    });
   });
 
-  it('clearSession', async () => {
-    await expectSaga(clearSession)
-      .provide([
-        [
-          matchers.call.fn(clearSessionApi),
-          true,
-        ],
-      ])
-      .call(clearSessionApi)
-      .put(setUser({ data: null, isLoading: false, nonce: null }))
-      .put(setChatAccessToken({ value: null, isLoading: false }))
-      .run();
-  });
+  describe('getCurrentUserWithChatAccessToken', () => {
+    it('stores user', async () => {
+      const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
+        .provide([
+          [
+            matchers.call.fn(fetchCurrentUser),
+            currentUserResponse,
+          ],
+          [
+            matchers.call.fn(fetchChatAccessToken),
+            chatAccessTokenResponse,
+          ],
+        ])
+        .withReducer(reducer)
+        .run();
 
-  it('should store user', async () => {
-    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
-      .provide([
-        [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
-        ],
-        [
-          matchers.call.fn(fetchChatAccessToken),
-          chatAccessTokenResponse,
-        ],
-      ])
-      .withReducer(reducer)
-      .run();
+      expect(storeState).toMatchObject({
+        user: {
+          data: currentUserResponse,
+          isLoading: false,
+        },
+      });
+    });
 
-    expect(storeState).toMatchObject({
-      user: {
-        data: currentUserResponse,
-        isLoading: false,
-      },
+    it('initializes the user state', async () => {
+      await expectSaga(getCurrentUserWithChatAccessToken)
+        .provide([
+          [
+            matchers.call.fn(fetchCurrentUser),
+            currentUserResponse,
+          ],
+          [
+            matchers.call.fn(fetchChatAccessToken),
+            chatAccessTokenResponse,
+          ],
+        ])
+        .spawn(initializeUserState, currentUserResponse)
+        .run();
     });
   });
 });

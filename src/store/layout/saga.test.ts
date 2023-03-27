@@ -1,9 +1,12 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { updateSidekick as updateSidekickSaga, syncSidekickState } from './saga';
+import { when } from 'jest-when';
+
+import { updateSidekick as updateSidekickSaga, initializeUserLayout, clearUserLayout } from './saga';
 
 import { reducer } from '.';
 
 describe('layout saga', () => {
+  const sidekickKey = 'user-id-isSidekickOpen';
   const state = {
     authentication: {
       user: {
@@ -13,33 +16,72 @@ describe('layout saga', () => {
       },
     },
   };
-  it('should store sidekick', async () => {
-    const { storeState } = await expectSaga(updateSidekickSaga, { payload: { isOpen: true } })
-      .withReducer(reducer, state as any)
-      .run();
 
-    expect(storeState).toMatchObject({
-      value: {
-        isSidekickOpen: true,
-      },
+  describe('updateSidekick', () => {
+    it('should store sidekick', async () => {
+      const { storeState } = await expectSaga(updateSidekickSaga, { payload: { isOpen: true } })
+        .withReducer(reducer, state as any)
+        .run();
+
+      expect(storeState.value.isSidekickOpen).toBeTrue();
+      expect(global.localStorage.setItem).toHaveBeenCalledWith(sidekickKey, true);
     });
-
-    expect(global.localStorage.setItem).toHaveBeenCalled();
   });
 
-  it('should sync sidekick state', async () => {
-    global.localStorage.getItem = jest.fn().mockReturnValue('true');
+  describe('initializeUserLayout', () => {
+    it('sets the sidekick to open when previous state was open', async () => {
+      stubLocalStorageValue(sidekickKey, 'true');
 
-    const { storeState } = await expectSaga(syncSidekickState)
-      .withReducer(reducer, state as any)
-      .run();
+      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+        .withReducer(reducer, state as any)
+        .run();
 
-    expect(storeState).toMatchObject({
-      value: {
-        isSidekickOpen: true,
-      },
+      expect(storeState.value.isSidekickOpen).toBeTrue();
     });
 
-    expect(global.localStorage.getItem).toHaveBeenNthCalledWith(1, 'user-id-isSidekickOpen');
+    it('sets the sidekick to closed when previous state was closed', async () => {
+      stubLocalStorageValue(sidekickKey, 'false');
+
+      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+        .withReducer(reducer, state as any)
+        .run();
+
+      expect(storeState.value.isSidekickOpen).toBeFalse();
+    });
+
+    it('sets the sidekick to open when previous state is unknown', async () => {
+      stubLocalStorageValue(sidekickKey, null);
+
+      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+        .withReducer(reducer, state as any)
+        .run();
+
+      expect(storeState.value.isSidekickOpen).toBeTrue();
+    });
+
+    it('sets the sidekick to open when previous state is not valid', async () => {
+      stubLocalStorageValue(sidekickKey, 'garbage');
+
+      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+        .withReducer(reducer, state as any)
+        .run();
+
+      expect(storeState.value.isSidekickOpen).toBeTrue();
+    });
+  });
+
+  describe('clearUserLayout', () => {
+    it('sets sidekick to closed', async () => {
+      const { storeState } = await expectSaga(clearUserLayout)
+        .withReducer(reducer, state as any)
+        .run();
+
+      expect(storeState.value.isSidekickOpen).toBeFalse();
+    });
   });
 });
+
+function stubLocalStorageValue(key: string, value: string | null) {
+  global.localStorage.getItem = jest.fn();
+  when(global.localStorage.getItem).calledWith(key).mockReturnValue(value);
+}

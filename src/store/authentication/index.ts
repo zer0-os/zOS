@@ -12,7 +12,7 @@ const clearSession = createAction<Payload>(SagaActionTypes.ClearSession);
 const fetchCurrentUserWithChatAccessToken = createAction<Payload>(SagaActionTypes.FetchCurrentUserWithChatAccessToken);
 
 const initialState: AuthenticationState = {
-  user: null,
+  user: { data: null },
   loading: false,
 };
 

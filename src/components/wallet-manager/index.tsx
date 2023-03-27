@@ -39,11 +39,11 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       web3: { status, value, isWalletModalOpen },
-      authentication: {
-        user: { data: userData },
-      },
+      authentication: { user },
       layout,
     } = state;
+
+    const userData = user?.data;
 
     return {
       currentConnector: value.connector,

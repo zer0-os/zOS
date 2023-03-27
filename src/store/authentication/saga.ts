@@ -10,6 +10,7 @@ import {
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
 import { clearUserLayout, initializeUserLayout } from '../layout/saga';
+import { fetch as fetchNotifications } from '../notifications';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -88,6 +89,12 @@ function* setUserAndChatAccessToken(params: {
 
 export function* initializeUserState(user: User) {
   yield initializeUserLayout(user);
+
+  yield put(
+    fetchNotifications({
+      userId: user.id,
+    })
+  );
 }
 
 export function* clearUserState() {

@@ -18,6 +18,7 @@ import {
 
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
+import { fetch as fetchNotifications } from '../notifications';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -30,6 +31,7 @@ const nonceResponse = {
 
 const currentUserResponse = {
   userId: 'id-1',
+  id: 'id-1',
 };
 
 const chatAccessTokenResponse = {
@@ -136,6 +138,23 @@ describe('authentication saga', () => {
           ],
         ])
         .spawn(initializeUserState, currentUserResponse)
+        .run();
+    });
+
+    it('fetch notification', async () => {
+      await expectSaga(getCurrentUserWithChatAccessToken)
+        .provide([
+          [
+            matchers.call.fn(fetchCurrentUser),
+            currentUserResponse,
+          ],
+          [
+            matchers.call.fn(fetchChatAccessToken),
+            chatAccessTokenResponse,
+          ],
+        ])
+        .spawn(initializeUserState, currentUserResponse)
+        .put(fetchNotifications({ userId: currentUserResponse.id }))
         .run();
     });
   });

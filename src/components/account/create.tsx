@@ -67,6 +67,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (nonce && currentAddress && prevProps.user?.nonce !== nonce) {
       this.setState({
+        displayName: this.shortAddress(),
         showDialog: true,
       });
     }
@@ -132,10 +133,9 @@ export class Container extends React.Component<Properties, State> {
       inviteCode,
     } = this.props;
 
-    const handle = this.shortAddress();
+    const { displayName } = this.state;
 
-    const user = { handle, firstName: this.state.displayName || handle, lastName: '' };
-
+    const user = { handle: displayName, firstName: displayName, lastName: '' };
     const authorizationResult = await createAndAuthorize(nonce, user, inviteCode)
       .then((response) => response)
       .catch((error) => {

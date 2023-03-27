@@ -132,4 +132,15 @@ describe('CreateAccount', () => {
 
     expect(createAndAuthorize).not.toHaveBeenCalled();
   });
+
+  it('should use address as display name', async () => {
+    const currentAddress = '0x0000000000000000000000000000000000000123';
+    const wrapper = subject({ currentAddress });
+
+    await wrapper.setProps({ user: { nonce: 'nonce-was-set' } });
+
+    const displayName = wrapper.find('[className$="__input-text"]');
+
+    expect(displayName.props().value).toEqual('0x0000...0123');
+  });
 });

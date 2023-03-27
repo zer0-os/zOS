@@ -36,25 +36,26 @@ export class Container extends React.Component<Properties> {
 
   static mapNotification(notification, state: RootState) {
     if (notification.notificationType === 'chat_channel_mention') {
-      const channelId = notification.data?.chatId;
-      const { name: channelName } = denormalizeChannel(channelId, state) || {};
-      const channelText = channelName ? `#${channelName}` : 'a channel';
-
-      // This should probably be extracted to a display utility or added
-      // to the domain model
-      let displayName = [
-        notification.originUser?.profileSummary?.firstName,
-        notification.originUser?.profileSummary?.lastName,
-      ]
-        .filter((e) => e)
-        .join(' ');
-      displayName = displayName || 'Someone';
+      const channelText = channelTextFor(notification.data?.chatId, state);
+      let senderName = displayName(notification.originUser?.profileSummary);
 
       return {
         id: notification.id,
         createdAt: notification.createdAt,
-        body: `${displayName} mentioned you in ${channelText}`,
-        originatingName: displayName,
+        body: `${senderName} mentioned you in ${channelText}`,
+        originatingName: senderName,
+        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
+        isUnread: notification.isUnread,
+      };
+    } else if (notification.notificationType === 'chat_channel_message_replied') {
+      const channelText = channelTextFor(notification.data?.chatId, state);
+      let senderName = displayName(notification.originUser?.profileSummary);
+
+      return {
+        id: notification.id,
+        createdAt: notification.createdAt,
+        body: `${senderName} replied to you in ${channelText}`,
+        originatingName: senderName,
         originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
         isUnread: notification.isUnread,
       };
@@ -73,3 +74,20 @@ export class Container extends React.Component<Properties> {
 }
 
 export const NotificationListContainer = connectContainer<{}>(Container);
+
+function displayName(profileSummary) {
+  let displayName = [
+    profileSummary?.firstName,
+    profileSummary?.lastName,
+  ]
+    .filter((e) => e)
+    .join(' ');
+  displayName = displayName || 'Someone';
+  return displayName;
+}
+
+function channelTextFor(channelId: string, state) {
+  const { name: channelName } = denormalizeChannel(channelId, state) || {};
+  const channelText = channelName ? `#${channelName}` : 'a channel';
+  return channelText;
+}

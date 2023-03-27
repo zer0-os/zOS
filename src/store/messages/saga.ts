@@ -339,7 +339,9 @@ export function* receiveNewMessage(action) {
   );
 }
 
-function* getPreview(message) {
+export function* getPreview(message) {
+  if (!message) return;
+
   const link: linkifyType[] = extractLink(message);
   if (!link.length) return;
 

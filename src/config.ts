@@ -21,7 +21,6 @@ export const config = {
     dsn: process.env.REACT_APP_SENTRY_DSN,
     environment: process.env.NODE_ENV,
     release: process.env.REACT_APP_VERSION,
-    debug: true,
   },
   sendBird: {
     appId: process.env.REACT_APP_SENDBIRD_APP_ID,

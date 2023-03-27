@@ -19,6 +19,7 @@ import {
   editMessage,
   uploadFileMessage,
   receiveNewMessage,
+  getPreview,
 } from './saga';
 
 import { rootReducer } from '..';
@@ -791,6 +792,14 @@ describe('messages saga', () => {
       'the-first-message-id': { id: 'the-first-message-id', message: 'the first message' },
       'the-second-message-id': { id: 'the-second-message-id', message: 'the second message' },
       'the-third-message-id': { id: 'the-third-message-id', message: 'the third message' },
+    });
+  });
+
+  describe('getPreview', () => {
+    it('guards from empty messages (like when you upload a file)', () => {
+      const generator = getPreview(null);
+
+      expect(generator.next().value).toEqual(undefined);
     });
   });
 });

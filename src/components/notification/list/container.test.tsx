@@ -78,7 +78,7 @@ describe('NotificationsListContainer', () => {
   });
 
   describe('mapNotification', () => {
-    const subject = (notification = {}, state: Partial<RootState>) => {
+    const subject = (notification = {}, state: Partial<RootState> = {}) => {
       return Container.mapNotification(notification, state as RootState);
     };
 
@@ -249,6 +249,63 @@ describe('NotificationsListContainer', () => {
           {
             normalized: { channels: {} },
           }
+        );
+
+        expect(mappedNotification.originatingName).toEqual('first Last');
+        expect(mappedNotification.originatingImageUrl).toEqual('image-url');
+      });
+    });
+
+    describe('chat_dm_mention', () => {
+      function conversationMention(attrs) {
+        return {
+          id: 'notification-id',
+          notificationType: 'chat_dm_mention',
+          data: {},
+          ...attrs,
+        };
+      }
+      it('maps default properties', () => {
+        const mappedNotification = subject(
+          conversationMention({
+            id: 'notification-id',
+            createdAt: '2023-01-20T22:33:34.945Z',
+            isUnread: true,
+          })
+        );
+
+        expect(mappedNotification.id).toEqual('notification-id');
+        expect(mappedNotification.createdAt).toEqual('2023-01-20T22:33:34.945Z');
+        expect(mappedNotification.isUnread).toBeTrue();
+      });
+
+      it('maps body', () => {
+        const mappedNotification = subject(
+          conversationMention({
+            originUser: {
+              profileSummary: {
+                firstName: 'Johnny',
+                lastName: 'Chatter',
+                profileImage: 'image-url',
+              },
+            },
+          })
+        );
+
+        expect(mappedNotification.body).toEqual('Johnny Chatter mentioned you in a conversation');
+      });
+
+      it('maps sender', () => {
+        const mappedNotification = subject(
+          conversationMention({
+            originUser: {
+              profileSummary: {
+                firstName: 'first',
+                lastName: 'Last',
+                profileImage: 'image-url',
+              },
+            },
+          })
         );
 
         expect(mappedNotification.originatingName).toEqual('first Last');

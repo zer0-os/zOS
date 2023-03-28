@@ -28,6 +28,7 @@ export { fetch };
 const relevantNotificationTypes = [
   'chat_channel_mention',
   'chat_channel_message_replied',
+  'chat_dm_mention',
 ];
 export function denormalizeNotifications(state) {
   const result = listSlice

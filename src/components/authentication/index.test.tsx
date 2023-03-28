@@ -4,12 +4,13 @@ import { RootState } from '../../store';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
-import { config } from '../../config';
 
 describe('Authentication', () => {
   const USER_DATA = {
     userId: '12',
   };
+
+  let signedWeb3Token = '0x0098';
 
   const subject = (props: any = {}) => {
     const allProps = {
@@ -20,8 +21,14 @@ describe('Authentication', () => {
           },
         }),
       },
+      user: {
+        isLoading: false,
+        data: null,
+      },
       fetchCurrentUserWithChatAccessToken: jest.fn(),
       clearSession: jest.fn(),
+      personalSignToken: jest.fn().mockResolvedValue(signedWeb3Token),
+      updateConnector: jest.fn(),
       ...props,
     };
 
@@ -30,6 +37,7 @@ describe('Authentication', () => {
 
   it('should fetch current user and chatAccessToken', () => {
     const fetchCurrentUserWithChatAccessToken = jest.fn();
+
     subject({
       fetchCurrentUserWithChatAccessToken,
     });
@@ -45,13 +53,14 @@ describe('Authentication', () => {
         isLoading: true,
         data: null,
       },
+
       authorize,
     });
 
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('should not authorize when fetch is done and we have', () => {
+  it('should not authorize when fetch is done and we have a user', () => {
     const authorize = jest.fn();
 
     subject({
@@ -65,101 +74,73 @@ describe('Authentication', () => {
     expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('call sendAsync to authorize the user', () => {
-    const sendAsync = jest.fn();
-    const nonceOrAuthorize = jest.fn();
+  it('when the account in metamask is changed verify we retrieve a new signed token', async () => {
+    const personalSignToken = jest.fn().mockRejectedValue('0x0093');
+
     const currentAddress = '0x00';
+    const changedAddress = '0x95';
 
     const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
+      connectionStatus: ConnectionStatus.Connected,
       currentAddress,
-      providerService: {
-        get: () => ({
-          provider: {
-            sendAsync,
-          },
-        }),
-      },
-      nonceOrAuthorize,
       user: {
         isLoading: false,
-        data: null,
+        data: USER_DATA,
       },
-    });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
-    expect(sendAsync).toHaveBeenCalledWith(
-      {
-        from: currentAddress,
-        method: 'personal_sign',
-        params: [
-          config.web3AuthenticationMessage,
-          currentAddress,
-        ],
-      },
-      expect.any(Function)
-    );
+      personalSignToken,
+    });
+
+    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress: changedAddress });
+
+    expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
   });
 
-  it('should authorize the user using the signedWeb3Token', () => {
+  it('should clearSession before authorize', async () => {
     const nonceOrAuthorize = jest.fn();
+    const clearSession = jest.fn();
+
     const currentAddress = '0x00';
-    const signedWeb3Token = '0x0098';
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      currentAddress,
-      providerService: {
-        get: () => ({
-          provider: {
-            sendAsync: (error, callback) => {
-              callback(null, { result: signedWeb3Token });
-            },
-          },
-        }),
-      },
-      user: {
-        isLoading: false,
-        data: null,
-      },
+
+      clearSession,
       nonceOrAuthorize,
     });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
+    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
+
+    await new Promise(setImmediate);
+
+    expect(clearSession).toHaveBeenCalled();
     expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
+
+    expect(clearSession).toHaveBeenCalledBefore(nonceOrAuthorize);
   });
 
-  it('should call updateConnector when sendAsync return error', () => {
+  it('should call updateConnector when personalSignToken returns error', async () => {
     const updateConnector = jest.fn();
     const nonceOrAuthorize = jest.fn();
     const currentAddress = '0x00';
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
-      currentAddress,
-      providerService: {
-        get: () => ({
-          provider: {
-            sendAsync: (error, callback) => {
-              callback({ error: 'error connection' }, null);
-            },
-          },
-        }),
-      },
-      user: {
-        isLoading: false,
-        data: null,
-      },
+      personalSignToken: jest.fn().mockRejectedValue('error'),
+
       updateConnector,
       nonceOrAuthorize,
     });
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
+
+    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
+
+    await new Promise(setImmediate);
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
     expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
-  it('should call clearSession when disconnect btn clicked', () => {
+  it('should call clearSession when disconnect event triggered', () => {
     const clearSession = jest.fn();
 
     const wrapper = subject({
@@ -168,8 +149,10 @@ describe('Authentication', () => {
         isLoading: false,
         data: USER_DATA,
       },
+
       clearSession,
     });
+
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(clearSession).toHaveBeenCalled();

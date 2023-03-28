@@ -43,7 +43,9 @@ export class NotificationPopup extends React.Component<Properties> {
         <div className='notification-popup_title-bar'>
           <h3>Notifications</h3>
         </div>
-        <NotificationListContainer />
+        <div className='notification-popup__content'>
+          <NotificationListContainer />
+        </div>
       </div>
     );
   }

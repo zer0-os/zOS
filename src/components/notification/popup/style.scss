@@ -8,6 +8,9 @@
   background-color: theme.$color-primary-2;
   width: 360px;
   padding: 0px 16px;
+  max-height: calc(100vh - 75px - 20px);
+  display: flex;
+  flex-direction: column;
 
   // Elevation 3
   box-shadow: 12px 11px 54px #040304;
@@ -23,5 +26,9 @@
     font-weight: 700;
     font-size: 16px;
     line-height: 24px;
+  }
+
+  &__content {
+    overflow-y: auto;
   }
 }

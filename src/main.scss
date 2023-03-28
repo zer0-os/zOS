@@ -78,6 +78,7 @@
   }
 
   &__address-bar-wrapper {
+    height: 48px;
     display: flex;
     justify-content: center;
     flex: 1 0;
@@ -90,6 +91,7 @@
   }
 
   &__wallet-manager-wrapper {
+    height: 48px;
     flex: 0 0 auto;
     width: $width-sidekick + 60;
     display: flex;
@@ -98,7 +100,7 @@
   }
 
   &__wallet-manager {
-    margin-bottom: 8px;
+    padding: 3px; // Align top with inner address bar border
     pointer-events: auto;
 
     .eth-address {

@@ -67,6 +67,7 @@ export class Container extends React.Component<Properties, State> {
 
     if (nonce && currentAddress && prevProps.user?.nonce !== nonce) {
       this.setState({
+        displayName: this.shortAddress(),
         showDialog: true,
       });
     }
@@ -132,10 +133,9 @@ export class Container extends React.Component<Properties, State> {
       inviteCode,
     } = this.props;
 
-    const handle = this.shortAddress();
+    const { displayName } = this.state;
 
-    const user = { handle, firstName: this.state.displayName || handle, lastName: '' };
-
+    const user = { handle: displayName, firstName: displayName, lastName: '' };
     const authorizationResult = await createAndAuthorize(nonce, user, inviteCode)
       .then((response) => response)
       .catch((error) => {
@@ -243,6 +243,7 @@ export class Container extends React.Component<Properties, State> {
                 input__error: Boolean(this.state.displayNameError),
               })}
               onChange={this.onDisplayNameChange}
+              autoFocus={true}
             />
             {Boolean(this.state.displayNameError) && this.renderError(this.state.displayNameError)}
           </div>
@@ -250,7 +251,13 @@ export class Container extends React.Component<Properties, State> {
           {Boolean(this.state.error) && this.renderError(this.state.error)}
 
           <div className='profile-prompt__submit'>
-            <Button onClick={this.onSubmit}>Create Account</Button>
+            <Button
+              tabIndex={0}
+              onClick={this.onSubmit}
+              onEnterKeyPress={this.onSubmit}
+            >
+              Create Account
+            </Button>
           </div>
         </form>
       </Dialog>

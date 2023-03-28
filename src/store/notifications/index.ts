@@ -25,7 +25,10 @@ export const { reducer, normalize } = listSlice;
 
 export { fetch };
 
-const relevantNotificationTypes = ['chat_channel_mention'];
+const relevantNotificationTypes = [
+  'chat_channel_mention',
+  'chat_channel_message_replied',
+];
 export function denormalizeNotifications(state) {
   const result = listSlice
     .denormalize(state.notificationsList.value, state)

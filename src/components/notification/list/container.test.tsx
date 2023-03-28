@@ -171,5 +171,89 @@ describe('NotificationsListContainer', () => {
         expect(mappedNotification.originatingImageUrl).toEqual('image-url');
       });
     });
+
+    describe('chat_channel_message_replied', () => {
+      it('maps default properties', () => {
+        const mappedNotification = subject(
+          {
+            id: 'notification-id',
+            notificationType: 'chat_channel_message_replied',
+            data: { chatId: 'chat-id' },
+            createdAt: '2023-01-20T22:33:34.945Z',
+            isUnread: true,
+          },
+          {
+            normalized: { channels: {} },
+          }
+        );
+
+        expect(mappedNotification.id).toEqual('notification-id');
+        expect(mappedNotification.createdAt).toEqual('2023-01-20T22:33:34.945Z');
+        expect(mappedNotification.isUnread).toBeTrue();
+      });
+
+      it('maps body with unknown info', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_message_replied',
+            data: { chatId: 'chat-id' },
+          },
+          {
+            normalized: {
+              channels: {},
+            },
+          }
+        );
+
+        expect(mappedNotification.body).toEqual('Someone replied to you in a channel');
+      });
+
+      it('maps body with a known channel and sender', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_message_replied',
+            data: { chatId: 'chat-id' },
+            originUser: {
+              profileSummary: {
+                firstName: 'Johnny',
+                lastName: 'Chatter',
+                profileImage: 'image-url',
+              },
+            },
+          },
+          {
+            normalized: {
+              channels: {
+                'chat-id': { id: 'chat-id', name: 'TestingChannel' },
+              },
+            },
+          }
+        );
+
+        expect(mappedNotification.body).toEqual('Johnny Chatter replied to you in #TestingChannel');
+      });
+
+      it('maps sender', () => {
+        const mappedNotification = subject(
+          {
+            notificationType: 'chat_channel_message_replied',
+            data: {},
+            originUser: {
+              profileSummary: {
+                firstName: 'first',
+                lastName: 'Last',
+                profileImage: 'image-url',
+              },
+            },
+          },
+          {
+            normalized: { channels: {} },
+          }
+        );
+
+        expect(mappedNotification.originatingName).toEqual('first Last');
+        expect(mappedNotification.originatingImageUrl).toEqual('image-url');
+      });
+    });
   });
 });

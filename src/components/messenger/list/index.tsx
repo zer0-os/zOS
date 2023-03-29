@@ -60,6 +60,8 @@ export class Container extends React.Component<Properties, State> {
   componentDidUpdate(prevProps: Properties): void {
     const { directMessages } = this.props;
 
+    // This might be broken. What happens if you're searching conversations and a real-time update comes in?
+    // Would that break your search results?
     if (directMessages && prevProps.directMessages && directMessages.length !== prevProps.directMessages.length) {
       this.setState({ directMessagesList: directMessages });
     }

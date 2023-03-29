@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { AutocompleteMembers } from '../autocomplete-members';
 
-interface Properties {
+export interface Properties {
   toggleConversation: () => void;
   usersInMyNetworks: (input: string) => any;
   createOneOnOneConversation: (id: string) => void;

@@ -26,25 +26,25 @@ describe('Main', () => {
   it('renders wallet manager container', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(WalletManager).exists()).toBe(true);
+    expect(wrapper).toHaveElement(WalletManager);
   });
 
   it('renders view mode toggle', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(ViewModeToggle).exists()).toBe(true);
+    expect(wrapper).toHaveElement(ViewModeToggle);
   });
 
   it('renders theme engine', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(ThemeEngine).exists()).toBe(true);
+    expect(wrapper).toHaveElement(ThemeEngine);
   });
 
   it('renders address bar container', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(AddressBarContainer).exists()).toBe(true);
+    expect(wrapper).toHaveElement(AddressBarContainer);
   });
 
   it('does not set layout classes when values are false', () => {
@@ -74,7 +74,7 @@ describe('Main', () => {
   it('renders direct message chat component', () => {
     const wrapper = subject({ context: { isAuthenticated: true } });
 
-    expect(wrapper.find(MessengerChat).exists()).toBe(true);
+    expect(wrapper).toHaveElement(MessengerChat);
   });
 
   describe('mapState', () => {

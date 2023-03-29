@@ -1,13 +1,10 @@
 import React from 'react';
-import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
 import Tooltip from '../../tooltip';
-import { lastSeenText } from './utils';
 import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
-import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -16,10 +13,10 @@ import { CreateMessengerConversation } from '../../../store/channels-list/types'
 
 import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
-import { SearchConversations } from '../search-conversations';
 
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -70,9 +67,9 @@ export class Container extends React.Component<Properties, State> {
     }
   }
 
-  handleMemberClick(directMessageId: string): void {
+  handleMemberClick = (directMessageId: string) => {
     this.props.setActiveMessengerChat(directMessageId);
-  }
+  };
 
   toggleConversation = (): void => {
     this.setState({
@@ -80,26 +77,6 @@ export class Container extends React.Component<Properties, State> {
       directMessagesList: this.props.directMessages,
     });
   };
-
-  renderStatus(directMessage: Channel): JSX.Element {
-    const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
-
-    return (
-      <div
-        className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isAnyUserOnline,
-        })}
-      ></div>
-    );
-  }
-
-  tooltipContent(directMessage: Channel): string {
-    if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
-      return lastSeenText(directMessage.otherMembers[0]);
-    }
-
-    return otherMembersToString(directMessage.otherMembers);
-  }
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
@@ -109,37 +86,6 @@ export class Container extends React.Component<Properties, State> {
 
   conversationInMyNetworks = (directMessagesList: Channel[]) => {
     this.setState({ directMessagesList });
-  };
-
-  renderMember = (directMessage: Channel): JSX.Element => {
-    return (
-      <Tooltip
-        placement='left'
-        overlay={this.tooltipContent(directMessage)}
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
-        className='direct-message-members__user-tooltip'
-        key={directMessage.id}
-      >
-        <div
-          className='direct-message-members__user'
-          onClick={this.handleMemberClick.bind(this, directMessage.id)}
-          key={directMessage.id}
-        >
-          {this.renderStatus(directMessage)}
-          <div className='direct-message-members__user-name'>
-            {directMessage.name || otherMembersToString(directMessage.otherMembers)}
-          </div>
-          {directMessage.unreadCount !== 0 && (
-            <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>
-          )}
-        </div>
-      </Tooltip>
-    );
   };
 
   renderNewMessageModal = (): JSX.Element => {
@@ -228,18 +174,12 @@ export class Container extends React.Component<Properties, State> {
           {this.state.directMessagesList && (
             <div className='messages-list__items'>
               {!this.state.showCreateConversation && (
-                <div className='messages-list__items-conversations'>
-                  <div className='messages-list__items-conversations-input'>
-                    <SearchConversations
-                      className='messages-list__items-conversations-search'
-                      placeholder='Search contacts...'
-                      directMessagesList={this.props.directMessages}
-                      onChange={this.conversationInMyNetworks}
-                      mapSearchConversationsText={otherMembersToString}
-                    />
-                  </div>
-                  {this.state.directMessagesList.map(this.renderMember)}
-                </div>
+                <ConversationListPanel
+                  directMessages={this.props.directMessages}
+                  directMessagesList={this.state.directMessagesList}
+                  conversationInMyNetworks={this.conversationInMyNetworks}
+                  handleMemberClick={this.handleMemberClick}
+                />
               )}
               {this.state.showCreateConversation && (
                 <CreateConversationPanel

@@ -15,9 +15,28 @@ describe('CreateConversationPanel', () => {
     return shallow(<CreateConversationPanel {...allProps} />);
   };
 
-  it('XXX', function () {
-    const wrapper = subject({});
+  it('forwards search function to Autocomplete', function () {
+    const usersInMyNetworks = jest.fn();
+    const wrapper = subject({ usersInMyNetworks });
 
-    expect(wrapper).toHaveElement('.start__chat');
+    expect(wrapper.find('AutocompleteMembers').prop('search')).toBe(usersInMyNetworks);
+  });
+
+  it('fires onCreate when a user is selected', function () {
+    const createOneOnOneConversation = jest.fn();
+    const wrapper = subject({ createOneOnOneConversation });
+
+    wrapper.find('AutocompleteMembers').simulate('select', 'selected-user-id');
+
+    expect(createOneOnOneConversation).toHaveBeenCalledWith('selected-user-id');
+  });
+
+  it('fires onBack when back icon clicked', function () {
+    const toggleConversation = jest.fn();
+    const wrapper = subject({ toggleConversation });
+
+    wrapper.find('.start__chat-return').simulate('click');
+
+    expect(toggleConversation).toHaveBeenCalledOnce();
   });
 });

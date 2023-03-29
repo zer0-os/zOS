@@ -170,10 +170,46 @@ describe('messenger-list', () => {
     expect(wrapper).toHaveElement('.messages-list__items-conversations');
   });
 
-  it('should render search conversations', function () {
-    const wrapper = subject({});
+  it('provides the list of conversations to the Search', function () {
+    const conversations = [
+      {
+        id: 'convo-id-1',
+        otherMembers: [],
+      },
+    ];
 
-    expect(wrapper.find(SearchConversations).exists()).toBe(true);
+    const wrapper = subject({ directMessages: conversations as any });
+
+    expect(wrapper.find(SearchConversations).prop('directMessagesList')).toEqual(conversations);
+  });
+
+  it('renders search results', function () {
+    const conversations = [
+      { id: 'convo-id-1', name: 'convo-1', otherMembers: [] },
+      { id: 'convo-id-2', name: 'convo-2', otherMembers: [] },
+      { id: 'convo-id-3', name: 'convo-3', otherMembers: [] },
+    ];
+
+    const wrapper = subject({ directMessages: conversations as any });
+
+    let displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    expect(displayChatNames).toStrictEqual([
+      'convo-1',
+      'convo-2',
+      'convo-3',
+    ]);
+
+    wrapper.find(SearchConversations).prop('onChange')([
+      conversations[0],
+      conversations[2],
+    ] as any);
+    wrapper.update();
+
+    displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    expect(displayChatNames).toStrictEqual([
+      'convo-1',
+      'convo-3',
+    ]);
   });
 
   it('renders unread messages', function () {

@@ -243,9 +243,9 @@ export class Container extends React.Component<Properties, State> {
               )}
               {this.state.showCreateConversation && (
                 <CreateConversationPanel
-                  toggleConversation={this.toggleConversation}
-                  usersInMyNetworks={this.usersInMyNetworks}
-                  createOneOnOneConversation={this.createOneOnOneConversation}
+                  onBack={this.toggleConversation}
+                  search={this.usersInMyNetworks}
+                  onCreate={this.createOneOnOneConversation}
                 />
               )}
             </div>

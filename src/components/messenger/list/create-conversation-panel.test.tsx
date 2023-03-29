@@ -8,9 +8,9 @@ jest.mock('../autocomplete-members');
 describe('CreateConversationPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      toggleConversation: () => {},
-      usersInMyNetworks: () => {},
-      createOneOnOneConversation: () => {},
+      onBack: () => {},
+      search: () => {},
+      onCreate: () => {},
       ...props,
     };
 
@@ -18,27 +18,27 @@ describe('CreateConversationPanel', () => {
   };
 
   it('forwards search function to Autocomplete', function () {
-    const usersInMyNetworks = jest.fn();
-    const wrapper = subject({ usersInMyNetworks });
+    const search = jest.fn();
+    const wrapper = subject({ search: search });
 
-    expect(wrapper.find('AutocompleteMembers').prop('search')).toBe(usersInMyNetworks);
+    expect(wrapper.find('AutocompleteMembers').prop('search')).toBe(search);
   });
 
   it('fires onCreate when a user is selected', function () {
-    const createOneOnOneConversation = jest.fn();
-    const wrapper = subject({ createOneOnOneConversation });
+    const onCreate = jest.fn();
+    const wrapper = subject({ onCreate: onCreate });
 
     wrapper.find('AutocompleteMembers').simulate('select', 'selected-user-id');
 
-    expect(createOneOnOneConversation).toHaveBeenCalledWith('selected-user-id');
+    expect(onCreate).toHaveBeenCalledWith('selected-user-id');
   });
 
   it('fires onBack when back icon clicked', function () {
-    const toggleConversation = jest.fn();
-    const wrapper = subject({ toggleConversation });
+    const onBack = jest.fn();
+    const wrapper = subject({ onBack: onBack });
 
     wrapper.find('.start__chat-return').simulate('click');
 
-    expect(toggleConversation).toHaveBeenCalledOnce();
+    expect(onBack).toHaveBeenCalledOnce();
   });
 });

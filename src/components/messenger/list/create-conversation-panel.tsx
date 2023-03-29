@@ -3,9 +3,9 @@ import * as React from 'react';
 import { AutocompleteMembers } from '../autocomplete-members';
 
 export interface Properties {
-  toggleConversation: () => void;
-  usersInMyNetworks: (input: string) => any;
-  createOneOnOneConversation: (id: string) => void;
+  onBack: () => void;
+  search: (input: string) => any;
+  onCreate: (id: string) => void;
 }
 
 export default class CreateConversationPanel extends React.Component<Properties> {
@@ -15,14 +15,14 @@ export default class CreateConversationPanel extends React.Component<Properties>
         <span className='start__chat-title'>
           <i
             className='start__chat-return'
-            onClick={this.props.toggleConversation}
+            onClick={this.props.onBack}
           />
           New message
         </span>
         <div className='start__chat-search'>
           <AutocompleteMembers
-            search={this.props.usersInMyNetworks}
-            onSelect={this.props.createOneOnOneConversation}
+            search={this.props.search}
+            onSelect={this.props.onCreate}
           ></AutocompleteMembers>
         </div>
       </div>

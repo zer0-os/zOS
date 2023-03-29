@@ -99,6 +99,7 @@
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.10",
+    "@types/jest-when": "^3.5.2",
     "@types/react-portal": "^4.0.4",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
     "concurrently": "^7.1.0",

@@ -11,10 +11,10 @@ import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
 import { Dialog } from '@zer0-os/zos-component-library';
 import { SearchConversations } from '../search-conversations';
-import { AutocompleteMembers } from '../autocomplete-members';
 import { RootState } from '../../../store';
 import moment from 'moment';
 import { when } from 'jest-when';
+import CreateConversationPanel from './create-conversation-panel';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -125,7 +125,7 @@ describe('messenger-list', () => {
     const wrapper = subject({});
     wrapper.find('.header-button__icon').simulate('click');
 
-    const searchResults = await wrapper.find(AutocompleteMembers).prop('search')('jac');
+    const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
 
     expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
   });
@@ -136,7 +136,7 @@ describe('messenger-list', () => {
     wrapper.find('.header-button__icon').simulate('click');
 
     // Can't do simulate on custom components when rendering fully?
-    wrapper.find(AutocompleteMembers).prop('onSelect')('selected-user-id');
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
 
     expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
   });
@@ -147,26 +147,27 @@ describe('messenger-list', () => {
     wrapper.find('.header-button__icon').simulate('click');
 
     // Can't do simulate on custom components when rendering fully?
-    wrapper.find(AutocompleteMembers).prop('onSelect')('selected-user-id');
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
     wrapper.update();
 
-    expect(wrapper.find('.start__chat').exists()).toBeFalse();
-    expect(wrapper.find('.header-button').exists()).toBeTrue();
-    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeTrue();
+    expect(wrapper).not.toHaveElement('CreateConversationPanel');
+    expect(wrapper).toHaveElement('.header-button');
+    expect(wrapper).toHaveElement('.messages-list__items-conversations');
   });
 
   it('returns to conversation list if back button pressed', async function () {
     const wrapper = subject({});
     wrapper.find('.header-button__icon').simulate('click');
-    expect(wrapper.find('.start__chat').exists()).toBeTrue();
-    expect(wrapper.find('.header-button').exists()).toBeFalse();
-    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeFalse();
+    expect(wrapper).toHaveElement('CreateConversationPanel');
+    expect(wrapper).not.toHaveElement('.header-button');
+    expect(wrapper).not.toHaveElement('.messages-list__items-conversations');
 
-    wrapper.find('.start__chat-return').simulate('click');
+    wrapper.find(CreateConversationPanel).prop('onBack')();
+    wrapper.update();
 
-    expect(wrapper.find('.start__chat').exists()).toBeFalse();
-    expect(wrapper.find('.header-button').exists()).toBeTrue();
-    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeTrue();
+    expect(wrapper).not.toHaveElement('CreateConversationPanel');
+    expect(wrapper).toHaveElement('.header-button');
+    expect(wrapper).toHaveElement('.messages-list__items-conversations');
   });
 
   it('should render search conversations', function () {

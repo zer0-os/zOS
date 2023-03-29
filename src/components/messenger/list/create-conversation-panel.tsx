@@ -3,8 +3,9 @@ import * as React from 'react';
 import { AutocompleteMembers } from '../autocomplete-members';
 
 export interface Properties {
-  onBack: () => void;
   search: (input: string) => any;
+
+  onBack: () => void;
   onCreate: (id: string) => void;
 }
 

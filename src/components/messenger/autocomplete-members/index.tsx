@@ -12,7 +12,7 @@ export interface Properties {
 }
 
 interface State {
-  results: any[];
+  results: Option[];
   searchString: string;
 }
 

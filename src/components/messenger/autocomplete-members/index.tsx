@@ -67,6 +67,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           wrapperClassName={'autocomplete-members__search-wrapper'}
           inputClassName={'autocomplete-members__search-input'}
         />
+        {this.props.children}
         <div className='autocomplete-members__content'>
           {this.state.results && this.state.results.length > 0 && (
             <div className='autocomplete-members__search-results'>

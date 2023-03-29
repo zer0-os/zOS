@@ -1,5 +1,9 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../tooltip';
@@ -24,7 +28,7 @@ describe('messenger-list', () => {
       ...props,
     };
 
-    return shallow(<DirectMessageChat {...allProps} />);
+    return mount(<DirectMessageChat {...allProps} />);
   };
 
   it('render direct message members', function () {
@@ -56,6 +60,7 @@ describe('messenger-list', () => {
 
     wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
 
+    wrapper.update();
     const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
 
     expect(displayChatNames).toStrictEqual([
@@ -72,6 +77,7 @@ describe('messenger-list', () => {
     const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
 
     wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+    wrapper.update();
 
     wrapper.find('.direct-message-members__user').first().simulate('click');
 
@@ -134,6 +140,7 @@ describe('messenger-list', () => {
         ...restOfDirectMessages,
       ],
     });
+    wrapper.update();
     expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
   });
 
@@ -143,6 +150,7 @@ describe('messenger-list', () => {
     beforeEach(() => {
       wrapper = subject({});
       wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+      wrapper.update();
     });
 
     afterEach(() => {

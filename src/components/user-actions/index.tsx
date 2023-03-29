@@ -24,6 +24,13 @@ interface State {
 }
 
 export class UserActions extends React.Component<Properties, State> {
+  private notificationIconRef;
+
+  constructor(props) {
+    super(props);
+    this.notificationIconRef = React.createRef();
+  }
+
   state = { isNotificationPopupOpen: false, isUserPopupOpen: false };
 
   get userStatus(): 'active' | 'offline' {
@@ -69,6 +76,7 @@ export class UserActions extends React.Component<Properties, State> {
           </button>
           <button
             className='user-actions__icon-button'
+            ref={this.notificationIconRef}
             onClick={this.toggleNotificationState}
           >
             <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
@@ -86,7 +94,10 @@ export class UserActions extends React.Component<Properties, State> {
           </button>
         </div>
         {this.state.isNotificationPopupOpen && (
-          <NotificationPopup onClickOutside={this.handleClickOutsideNotificationPopup} />
+          <NotificationPopup
+            onClickOutside={this.handleClickOutsideNotificationPopup}
+            notificationIconRef={this.notificationIconRef}
+          />
         )}
         <UserMenuPopup
           address={this.props.userAddress}

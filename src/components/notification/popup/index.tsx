@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 
 import { NotificationListContainer } from '../list/container';
 
 import './style.scss';
 
 export interface Properties {
+  notificationIconRef?: RefObject<any>;
   onClickOutside: () => void;
 }
 
@@ -29,7 +30,11 @@ export class NotificationPopup extends React.Component<Properties> {
   }
 
   clickOutsideNotificationPopup = (event: MouseEvent) => {
-    if (!this.notificationPopupRef?.current?.contains(event.target) && this.props.onClickOutside) {
+    if (
+      !this.notificationPopupRef?.current?.contains(event.target) &&
+      !this.props.notificationIconRef.current?.contains(event.target) &&
+      this.props.onClickOutside
+    ) {
       this.props.onClickOutside();
     }
   };

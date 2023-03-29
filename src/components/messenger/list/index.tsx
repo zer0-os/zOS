@@ -12,7 +12,6 @@ import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createDirectMessage } from '../../../store/channels-list';
-import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
@@ -20,6 +19,7 @@ import { IconButton } from '../../icon-button';
 import { SearchConversations } from '../search-conversations';
 
 import './styles.scss';
+import CreateConversationPanel from './create-conversation-panel';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -178,26 +178,6 @@ export class Container extends React.Component<Properties, State> {
     this.toggleConversation();
   };
 
-  renderCreateConversation = (): JSX.Element => {
-    return (
-      <div className='start__chat'>
-        <span className='start__chat-title'>
-          <i
-            className='start__chat-return'
-            onClick={this.toggleConversation}
-          />
-          New message
-        </span>
-        <div className='start__chat-search'>
-          <AutocompleteMembers
-            search={this.usersInMyNetworks}
-            onSelect={this.createOneOnOneConversation}
-          ></AutocompleteMembers>
-        </div>
-      </div>
-    );
-  };
-
   renderNoMessages = (): JSX.Element => {
     return (
       <div className='messages-list__start'>
@@ -261,7 +241,13 @@ export class Container extends React.Component<Properties, State> {
                   {this.state.directMessagesList.map(this.renderMember)}
                 </div>
               )}
-              {this.state.showCreateConversation && this.renderCreateConversation()}
+              {this.state.showCreateConversation && (
+                <CreateConversationPanel
+                  toggleConversation={this.toggleConversation}
+                  usersInMyNetworks={this.usersInMyNetworks}
+                  createOneOnOneConversation={this.createOneOnOneConversation}
+                />
+              )}
             </div>
           )}
           {!this.state.directMessagesList && (

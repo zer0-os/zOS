@@ -14,8 +14,18 @@ import { SearchConversations } from '../search-conversations';
 import { AutocompleteMembers } from '../autocomplete-members';
 import { RootState } from '../../../store';
 import moment from 'moment';
+import { when } from 'jest-when';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
+
+const mockSearchMyNetworksByName = jest.fn();
+jest.mock('../../../platform-apps/channels/util/api', () => {
+  return {
+    searchMyNetworksByName: async (...args) => {
+      return await mockSearchMyNetworksByName(...args);
+    },
+  };
+});
 
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
@@ -103,16 +113,60 @@ describe('messenger-list', () => {
     expect(wrapper.find(Dialog).exists()).toBe(false);
   });
 
-  it('should render AutocompleteMembers', function () {
+  it('searches for citizens when creating a new conversation', async function () {
+    when(mockSearchMyNetworksByName)
+      .calledWith('jac')
+      .mockResolvedValue([
+        {
+          id: 'user-id',
+          profileImage: 'image-url',
+        },
+      ]);
     const wrapper = subject({});
-
     wrapper.find('.header-button__icon').simulate('click');
 
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(true);
+    const searchResults = await wrapper.find(AutocompleteMembers).prop('search')('jac');
+
+    expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
+  });
+
+  it('creates a one on one conversation when user selected', async function () {
+    const createDirectMessage = jest.fn();
+    const wrapper = subject({ createDirectMessage });
+    wrapper.find('.header-button__icon').simulate('click');
+
+    // Can't do simulate on custom components when rendering fully?
+    wrapper.find(AutocompleteMembers).prop('onSelect')('selected-user-id');
+
+    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
+  });
+
+  it('returns to conversation list when one on one conversation created', async function () {
+    const createDirectMessage = jest.fn();
+    const wrapper = subject({ createDirectMessage });
+    wrapper.find('.header-button__icon').simulate('click');
+
+    // Can't do simulate on custom components when rendering fully?
+    wrapper.find(AutocompleteMembers).prop('onSelect')('selected-user-id');
+    wrapper.update();
+
+    expect(wrapper.find('.start__chat').exists()).toBeFalse();
+    expect(wrapper.find('.header-button').exists()).toBeTrue();
+    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeTrue();
+  });
+
+  it('returns to conversation list if back button pressed', async function () {
+    const wrapper = subject({});
+    wrapper.find('.header-button__icon').simulate('click');
+    expect(wrapper.find('.start__chat').exists()).toBeTrue();
+    expect(wrapper.find('.header-button').exists()).toBeFalse();
+    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeFalse();
 
     wrapper.find('.start__chat-return').simulate('click');
 
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(false);
+    expect(wrapper.find('.start__chat').exists()).toBeFalse();
+    expect(wrapper.find('.header-button').exists()).toBeTrue();
+    expect(wrapper.find('.messages-list__items-conversations').exists()).toBeTrue();
   });
 
   it('should render search conversations', function () {

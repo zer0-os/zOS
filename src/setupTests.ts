@@ -14,3 +14,13 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock;
+
+expect.extend({
+  toHaveElement(actual, finder) {
+    const pass = actual.find(finder).exists();
+    return {
+      pass,
+      message: pass ? () => `expected node [${finder}] not to exist` : () => `expected node [${finder}] to exist`,
+    };
+  },
+});

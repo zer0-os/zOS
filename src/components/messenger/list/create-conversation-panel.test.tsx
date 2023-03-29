@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 
 import CreateConversationPanel, { Properties } from './create-conversation-panel';
 
+jest.mock('../autocomplete-members');
+
 describe('CreateConversationPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {

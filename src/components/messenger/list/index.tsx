@@ -15,7 +15,6 @@ import { createDirectMessage } from '../../../store/channels-list';
 import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import { Button } from '@zer0-os/zos-component-library';
 import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { SearchConversations } from '../search-conversations';
@@ -28,7 +27,6 @@ export interface PublicProperties {
 
 interface State {
   showCreateConversation: boolean;
-  userIds: string[];
   directMessagesList: Channel[];
 }
 export interface Properties extends PublicProperties {
@@ -39,7 +37,7 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { showCreateConversation: false, userIds: [], directMessagesList: [] };
+  state = { showCreateConversation: false, directMessagesList: [] };
 
   static mapState(state: RootState): Partial<Properties> {
     const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
@@ -79,7 +77,6 @@ export class Container extends React.Component<Properties, State> {
   toggleConversation = (): void => {
     this.setState({
       showCreateConversation: !this.state.showCreateConversation,
-      userIds: [],
       directMessagesList: this.props.directMessages,
     });
   };
@@ -103,10 +100,6 @@ export class Container extends React.Component<Properties, State> {
 
     return otherMembersToString(directMessage.otherMembers);
   }
-
-  usersChanged = (userIds: string[]): void => {
-    this.setState({ userIds });
-  };
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
@@ -180,13 +173,8 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
-  handleCreateConversation = (): void => {
-    const { userIds } = this.state;
-    if (!userIds.length) return;
-
-    if (userIds.length) {
-      this.props.createDirectMessage({ userIds });
-    }
+  createOneOnOneConversation = (id: string): void => {
+    this.props.createDirectMessage({ userIds: [id] });
     this.toggleConversation();
   };
 
@@ -202,26 +190,9 @@ export class Container extends React.Component<Properties, State> {
         </span>
         <div className='start__chat-search'>
           <AutocompleteMembers
-            autoFocus
-            isMulti
-            includeImage
-            className='new-message-select'
-            onChange={this.usersChanged}
             search={this.usersInMyNetworks}
-            placeholder='Search for a person'
-            selectedItems={[]}
-            noResultsText={'No user found'}
-          />
-          {this.state.userIds.length > 0 && (
-            <Button
-              className='start__chat-continue'
-              onClick={this.handleCreateConversation}
-              onEnterKeyPress={this.handleCreateConversation}
-              tabIndex={0}
-            >
-              Create Group
-            </Button>
-          )}
+            onSelect={this.createOneOnOneConversation}
+          ></AutocompleteMembers>
         </div>
       </div>
     );

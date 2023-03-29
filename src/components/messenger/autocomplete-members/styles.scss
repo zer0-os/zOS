@@ -1,180 +1,37 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
-@use '../../../modules/animation' as animation;
 
-$image-height: 28px;
-$image-member-height: 16px;
+.autocomplete-members {
+  &__search-input {
+    width: 100%;
+  }
 
-.new-message-select {
-  font-size: 14px;
-  padding: 0;
-  .chat-select {
-    &__input-container {
-      color: themeDeprecated.$font-color-primary;
-    }
+  &__content {
+    padding-top: 16px;
+  }
 
-    &__control {
-      background-image: url(../../../search-member-icon.svg);
-      background-repeat: no-repeat;
-      background-position: 10%;
-      text-align: left;
-      padding: 0 20px 0 33px;
-      height: auto;
-      flex: 1 1 auto;
+  &__search-results {
+    & > div {
       display: flex;
-      z-index: 2;
-      cursor: text;
-      background-color: transparent;
-      border: 1px solid themeDeprecated.$font-color-secondary;
-      border-radius: 20px;
-      color: themeDeprecated.$font-color-primary;
-      box-shadow: none !important;
-      &--is-focused,
-      &:hover {
-        border: 1px solid themeDeprecated.$font-color-secondary-hover !important;
-      }
-    }
-
-    &__indicators {
-      cursor: pointer;
-    }
-
-    &__placeholder {
-      color: theme.$color-greyscale-11;
-    }
-
-    &__menu {
-      position: absolute;
-      padding: 0;
-      top: 100%;
-      z-index: 30;
-      margin: 0;
-      min-height: 31px;
-      margin: 2px 0;
-      width: 100%;
-      box-shadow: none;
-      border-radius: 5px;
-      background: themeDeprecated.$font-color-secondary-hover;
-      border: 1px solid themeDeprecated.$font-color-secondary !important;
-    }
-
-    &__option {
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 400;
-      color: themeDeprecated.$font-color-primary;
-      padding: 8px;
-      padding-left: 20px;
-      display: flex;
-      background: none;
-      justify-content: flex-start;
-      align-items: center;
       flex-direction: row;
-
-      &:hover,
-      &--is-focused {
-        background: theme.$color-secondary-transparency-4;
-      }
-
-      &-image {
-        display: inline-block;
-        width: $image-height;
-        height: $image-height;
-        border-radius: calc($image-height / 2);
-        margin: 1px 10px 0 0;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center center;
-        flex: 0 0 auto;
-      }
-    }
-
-    &__multi-value {
-      color: themeDeprecated.$font-color-primary;
-      font-weight: 400;
-      padding: 2px 8px;
-      border-radius: 12px;
-      &__label {
-        font-size: 12px;
-        text-indent: 0;
-        font-weight: 700;
-        white-space: nowrap;
-        color: themeDeprecated.$font-color-primary;
-      }
-      &__remove {
-        cursor: pointer;
-        &:hover {
-          background: transparent;
-          color: themeDeprecated.$font-color-primary;
-        }
-      }
-    }
-  }
-}
-.current__selections {
-  display: flex;
-  flex-direction: column;
-  color: theme.$color-greyscale-11;
-  margin-top: 20px;
-  text-align: left;
-  font-weight: 400;
-  font-size: 12px;
-  padding: 0 3px;
-
-  &-count {
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  &-list {
-    display: inline-flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-content: space-around;
-    flex-wrap: wrap;
-
-    &__member {
-      display: flex;
-      padding: 4px 8px;
-      margin-bottom: 14px;
-      margin-right: 4px;
-      background: theme.$color-greyscale-3;
-      border-radius: 8px;
-      width: fit-content;
       align-items: center;
-      cursor: default;
-      &:hover {
-        background: theme.$color-greyscale-5;
-      }
-    }
+      text-align: left;
+      padding: 8px;
+      gap: 16px;
 
-    &__image {
-      display: inline-block;
-      width: $image-member-height;
-      height: $image-member-height;
-      border-radius: calc($image-member-height / 2);
-      margin: 1px 10px 0 0;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center center;
-      flex: 0 0 auto;
-    }
-    &__delete {
-      margin-left: 6px;
-      font-size: 15px;
-      font-weight: 500;
-      color: theme.$color-greyscale-11;
+      width: calc(100% - 8px);
+      height: 56px;
+
+      border-radius: 8px;
+      overflow: hidden;
       cursor: pointer;
-      &::before {
-        content: '\00D7';
-      }
+
       &:hover {
-        color: themeDeprecated.$font-color-primary;
+        background-color: red;
       }
     }
   }
 }
 
-.start-chat__body {
-  padding: 20px 30px;
+.start__chat-search .autocomplete-members__search-wrapper {
+  border-radius: 9999px;
 }

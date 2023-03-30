@@ -7,6 +7,7 @@ export interface Properties {
 
   onBack: () => void;
   onCreate: (id: string) => void;
+  onStartGroupChat: () => void;
 }
 
 export default class CreateConversationPanel extends React.Component<Properties> {

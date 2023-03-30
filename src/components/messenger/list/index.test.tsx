@@ -15,6 +15,7 @@ import { RootState } from '../../../store';
 import moment from 'moment';
 import { when } from 'jest-when';
 import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -233,6 +234,19 @@ describe('messenger-list', () => {
     });
     wrapper.update();
     expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
+  });
+
+  it('moves to the group conversation creation phase', function () {
+    const wrapper = subject({});
+
+    wrapper.find('.header-button__icon').simulate('click');
+
+    wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+    wrapper.update();
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).toHaveElement('StartGroupPanel');
   });
 
   describe('tooltip', () => {

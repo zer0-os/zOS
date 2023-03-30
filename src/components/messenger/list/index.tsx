@@ -15,6 +15,7 @@ import { IconXClose } from '@zero-tech/zui/icons';
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
+import StartGroupPanel from './start-group-panel';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -23,6 +24,7 @@ export interface PublicProperties {
 enum Stage {
   List = 'list',
   CreateOneOnOne = 'one_on_one',
+  StartGroupChat = 'start_group',
 }
 
 interface State {
@@ -101,6 +103,12 @@ export class Container extends React.Component<Properties, State> {
     });
   };
 
+  startGroupChat = (): void => {
+    this.setState({
+      stage: Stage.StartGroupChat,
+    });
+  };
+
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
@@ -152,8 +160,10 @@ export class Container extends React.Component<Properties, State> {
               onBack={this.goBack}
               search={this.usersInMyNetworks}
               onCreate={this.createOneOnOneConversation}
+              onStartGroupChat={this.startGroupChat}
             />
           )}
+          {this.state.stage === Stage.StartGroupChat && <StartGroupPanel />}
         </div>
       </>
     );

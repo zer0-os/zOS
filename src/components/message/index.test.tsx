@@ -7,6 +7,7 @@ import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
 import MessageMenu from '../../platform-apps/channels/messages-menu';
+import { ContentHighlighter } from '../content-highlighter';
 
 describe('message', () => {
   const sender = {
@@ -29,7 +30,7 @@ describe('message', () => {
   it('renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 
-    const text = wrapper.find('.message__block-body').text().trim();
+    const text = wrapper.find(ContentHighlighter).prop('message');
 
     expect(text).toStrictEqual('the message');
   });
@@ -114,7 +115,7 @@ describe('message', () => {
     });
 
     expect(wrapper.find('.message__block-reply').exists()).toBe(true);
-    expect(wrapper.find('.message__block-reply-text').text().trim()).toStrictEqual(parentMessageText);
+    expect(wrapper.find(ContentHighlighter).first().prop('message').trim()).toStrictEqual(parentMessageText);
   });
 
   it('call reply message', () => {
@@ -187,7 +188,7 @@ describe('message', () => {
     const wrapper = subject({ preview, message, hidePreview: false });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(preview);
-    expect(wrapper.text().includes(message)).toBeTruthy();
+    expect(wrapper.find(ContentHighlighter).first().prop('message').includes(message)).toBeTruthy();
   });
 
   it('renders LinkPreview when there is no message text', () => {
@@ -237,9 +238,9 @@ describe('message', () => {
   it('renders message with mention', () => {
     const wrapper = subject({ message: '@[HamzaKH ](user:aec3c346-a34c-4440-a9e6-d476c2671dd1)' });
 
-    const mentions = wrapper.find('.message__user-mention');
-
-    expect(mentions).toHaveLength(1);
+    expect(wrapper.find(ContentHighlighter).first().prop('message')).toStrictEqual(
+      '@[HamzaKH ](user:aec3c346-a34c-4440-a9e6-d476c2671dd1)'
+    );
   });
 
   it('renders author avatar', () => {

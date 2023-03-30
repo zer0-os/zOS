@@ -1,0 +1,13 @@
+@use '../../shared-components/theme-engine/theme' as themeDeprecated;
+
+.content-highlighter {
+  &__user-mention {
+    background-color: themeDeprecated.$accent-color;
+    color: black;
+    padding: 3px;
+    border-radius: 5px;
+    margin-bottom: 0.8px;
+    margin-top: 0.8px;
+    display: inline-block;
+  }
+}

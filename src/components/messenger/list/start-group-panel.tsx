@@ -4,6 +4,7 @@ import { Avatar } from '@zero-tech/zui/components';
 
 import { AutocompleteMembers, Option } from '../autocomplete-members';
 import { IconXClose } from '@zero-tech/zui/icons';
+import { PanelHeader } from './panel-header';
 
 export interface Properties {
   searchUsers: (input: string) => any;
@@ -50,15 +51,10 @@ export class StartGroupPanel extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        <div className='start-group-panel'>
-          <span>
-            <i
-              className='start-group-panel__back'
-              onClick={this.props.onBack}
-            />
-            Select members
-          </span>
-        </div>
+        <PanelHeader
+          title='Select members'
+          onBack={this.props.onBack}
+        />
         <AutocompleteMembers
           search={this.props.searchUsers}
           onSelect={this.selectOption}

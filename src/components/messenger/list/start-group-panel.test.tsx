@@ -5,6 +5,7 @@ import { StartGroupPanel, Properties } from './start-group-panel';
 
 jest.mock('../autocomplete-members');
 jest.mock('@zero-tech/zui/components');
+jest.mock('@zero-tech/zui/icons');
 
 describe('StartGroupPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -29,7 +30,7 @@ describe('StartGroupPanel', () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 
-    wrapper.find('.start-group-panel__back').simulate('click');
+    wrapper.find('PanelHeader').simulate('back');
 
     expect(onBack).toHaveBeenCalledOnce();
   });

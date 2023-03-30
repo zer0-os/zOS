@@ -59,27 +59,32 @@ export class StartGroupPanel extends React.Component<Properties, State> {
           search={this.props.searchUsers}
           onSelect={this.selectOption}
         >
-          <div className=''>
-            <span className='start-group-panel__selected-count'>
-              {this.state.selectedOptions.length} member{this.state.selectedOptions.length === 1 ? '' : 's'} selected
-            </span>
-            {this.state.selectedOptions.map((val) => (
-              <div key={val.value}>
+          <div className='start-group-panel__selected-count'>
+            <span className='start-group-panel__selected-number'>{this.state.selectedOptions.length}</span> member
+            {this.state.selectedOptions.length === 1 ? '' : 's'} selected
+          </div>
+          {this.state.selectedOptions.map((val) => (
+            <div
+              className='start-group-panel__selected-option'
+              key={val.value}
+            >
+              <div className='start-group-panel__selected-tag'>
                 <Avatar
-                  size={'small'}
+                  size={'extra small'}
                   type={'circle'}
                   imageURL={val.image}
                 />
                 <span className='start-group-panel__user-label'>{val.label}</span>
                 <button
                   onClick={this.unselectOption}
+                  data-value={val.value}
                   className='start-group-panel__user-remove'
                 >
-                  <IconXClose data-value={val.value} />
+                  <IconXClose size={16} />
                 </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </AutocompleteMembers>
         <button
           className='start-group-panel__continue'

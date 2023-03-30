@@ -31,6 +31,6 @@
   }
 }
 
-.start__chat-search .autocomplete-members__search-wrapper {
+.force-extra-specificity.autocomplete-members__search-wrapper {
   border-radius: 9999px;
 }

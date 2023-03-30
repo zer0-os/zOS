@@ -68,7 +68,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           onChange={this.searchChanged}
           value={this.state.searchString}
           startEnhancer={<IconSearchMd size={18} />}
-          wrapperClassName={'autocomplete-members__search-wrapper'}
+          wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}
           inputClassName={'autocomplete-members__search-input'}
         />
         {this.props.children}

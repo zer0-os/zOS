@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { AutocompleteMembers } from '../autocomplete-members';
+import { PanelHeader } from './panel-header';
 
 export interface Properties {
   search: (input: string) => any;
@@ -17,28 +18,27 @@ export default class CreateConversationPanel extends React.Component<Properties>
 
   render() {
     return (
-      <div className='start__chat'>
-        <span className='start__chat-title'>
-          <i
-            className='start__chat-return'
-            onClick={this.props.onBack}
-          />
-          New message
-        </span>
-        <div className='start__chat-search'>
-          <AutocompleteMembers
-            search={this.props.search}
-            onSelect={this.userSelected}
-          >
-            <div
-              className='create-conversation__group-button'
-              onClick={this.props.onStartGroupChat}
+      <>
+        <PanelHeader
+          title='New message'
+          onBack={this.props.onBack}
+        />
+        <div className='start__chat'>
+          <div className='start__chat-search'>
+            <AutocompleteMembers
+              search={this.props.search}
+              onSelect={this.userSelected}
             >
-              Start a group chat
-            </div>
-          </AutocompleteMembers>
+              <div
+                className='create-conversation__group-button'
+                onClick={this.props.onStartGroupChat}
+              >
+                Start a group chat
+              </div>
+            </AutocompleteMembers>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 }

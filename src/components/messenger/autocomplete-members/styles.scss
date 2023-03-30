@@ -1,6 +1,11 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .autocomplete-members {
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+
   &__search-input {
     width: 100%;
   }
@@ -8,6 +13,10 @@
   &__content {
     margin-top: 16px;
     border-top: 1px solid theme.$color-primary-4;
+    flex-grow: 1;
+    overflow-y: auto;
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
   }
 
   &__search-results {

@@ -14,9 +14,10 @@
 }
 
 .direct-message-members {
-  overflow-y: scroll;
-  height: 100%;
+  flex-grow: 99;
   padding: 0 16px;
+  display: flex;
+  flex-direction: column;
 
   &__user {
     display: flex;
@@ -126,6 +127,7 @@
 }
 
 .start__chat {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -154,6 +156,9 @@
   }
 
   &-search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     text-align: center;
   }
@@ -285,5 +290,22 @@
     display: inline-block;
     padding: 0px;
     margin: 0px;
+  }
+
+  &__content {
+    flex-grow: 99;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__continue {
+    margin: 16px 0px;
   }
 }

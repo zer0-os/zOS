@@ -60,7 +60,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
   render() {
     return (
-      <>
+      <div className='autocomplete-members'>
         <Input
           autoFocus
           type='search'
@@ -91,11 +91,8 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
               ))}
             </div>
           )}
-          {this.state.results && this.state.results.length === 0 && (
-            <div className='autocomplete-members__empty-results'>No citizens found</div>
-          )}
         </div>
-      </>
+      </div>
     );
   }
 }

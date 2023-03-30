@@ -8,7 +8,7 @@ import { IconSearchMd } from '@zero-tech/zui/components/Icons/icons/IconSearchMd
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
-  onSelect: (id: string) => void;
+  onSelect: (selected: Option) => void;
 }
 
 interface State {
@@ -51,7 +51,11 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
   };
 
   itemClicked = (event: any) => {
-    this.props.onSelect(event.currentTarget.dataset.id);
+    const clickedId = event.currentTarget.dataset.id;
+    const selectedUser = this.state.results.find((r) => r.value === clickedId);
+    if (selectedUser) {
+      this.props.onSelect(selectedUser);
+    }
   };
 
   render() {

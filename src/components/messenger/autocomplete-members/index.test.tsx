@@ -68,7 +68,7 @@ describe('autocomplete-members', () => {
       .find('.autocomplete-members__search-results > div')
       .simulate('click', { currentTarget: { dataset: { id: 'result-1' } } });
 
-    expect(onSelect).toHaveBeenCalledWith('result-1');
+    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
   });
 });
 

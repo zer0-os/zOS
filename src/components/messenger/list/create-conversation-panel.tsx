@@ -11,6 +11,10 @@ export interface Properties {
 }
 
 export default class CreateConversationPanel extends React.Component<Properties> {
+  userSelected = (option) => {
+    this.props.onCreate(option.value);
+  };
+
   render() {
     return (
       <div className='start__chat'>
@@ -24,8 +28,15 @@ export default class CreateConversationPanel extends React.Component<Properties>
         <div className='start__chat-search'>
           <AutocompleteMembers
             search={this.props.search}
-            onSelect={this.props.onCreate}
-          ></AutocompleteMembers>
+            onSelect={this.userSelected}
+          >
+            <div
+              className='create-conversation__group-button'
+              onClick={this.props.onStartGroupChat}
+            >
+              Start a group chat
+            </div>
+          </AutocompleteMembers>
         </div>
       </div>
     );

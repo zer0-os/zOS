@@ -28,7 +28,7 @@ describe('CreateConversationPanel', () => {
     const onCreate = jest.fn();
     const wrapper = subject({ onCreate: onCreate });
 
-    wrapper.find('AutocompleteMembers').simulate('select', 'selected-user-id');
+    wrapper.find('AutocompleteMembers').simulate('select', { value: 'selected-user-id' });
 
     expect(onCreate).toHaveBeenCalledWith('selected-user-id');
   });

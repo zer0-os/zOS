@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { AutocompleteMembers } from '../autocomplete-members';
 import { PanelHeader } from './panel-header';
+import { IconUsersPlus } from '@zero-tech/zui/icons';
 
 export interface Properties {
   search: (input: string) => any;
@@ -33,6 +34,9 @@ export default class CreateConversationPanel extends React.Component<Properties>
                 className='create-conversation__group-button'
                 onClick={this.props.onStartGroupChat}
               >
+                <div className='create-conversation__group-icon'>
+                  <IconUsersPlus size={25} />
+                </div>
                 Start a group chat
               </div>
             </AutocompleteMembers>

@@ -41,7 +41,7 @@ describe('StartGroupPanel', () => {
 
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1' });
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-2' });
-    wrapper.find('.start-group-panel__continue').simulate('click');
+    wrapper.find('Button').simulate('press');
 
     expect(onContinue).toHaveBeenCalledWith([
       'id-1',
@@ -52,13 +52,15 @@ describe('StartGroupPanel', () => {
   it('enables continue button based on number of users', function () {
     const wrapper = subject({});
 
-    expect(wrapper.find('.start-group-panel__continue').prop('disabled')).toBeTrue();
+    expect(wrapper.find('Button').prop('isDisabled')).toBeTrue();
 
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1' });
-    expect(wrapper.find('.start-group-panel__continue').prop('disabled')).toBeFalse();
+    expect(wrapper.find('Button').prop('isDisabled')).toBeFalse();
 
-    // XXX: remove the selection
-    // expect(wrapper.find('.start-group-panel__continue').prop('disabled')).toBeTrue();
+    wrapper
+      .find('.start-group-panel__user-remove')
+      .simulate('click', { currentTarget: { dataset: { value: 'id-1' } } });
+    expect(wrapper.find('Button').prop('isDisabled')).toBeTrue();
   });
 
   it('shows selected member count', function () {
@@ -110,6 +112,4 @@ describe('StartGroupPanel', () => {
 
     expect(wrapper.find('.start-group-panel__user-label').map((n) => n.text())).toEqual(['User 1']);
   });
-
-  xit('unselects users when autocomplete remove clicked', function () {});
 });

@@ -154,7 +154,7 @@ describe('messenger-list', () => {
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
     expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).toHaveElement('.messages-list__items');
   });
 
   it('returns to conversation list if back button pressed', async function () {
@@ -162,14 +162,14 @@ describe('messenger-list', () => {
     wrapper.find('.header-button__icon').simulate('click');
     expect(wrapper).toHaveElement('CreateConversationPanel');
     expect(wrapper).not.toHaveElement('.header-button');
-    expect(wrapper).not.toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).not.toHaveElement('.messages-list__items');
 
     wrapper.find(CreateConversationPanel).prop('onBack')();
     wrapper.update();
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
     expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).toHaveElement('.messages-list__items');
   });
 
   it('provides the list of conversations to the Search', function () {
@@ -300,7 +300,7 @@ describe('messenger-list', () => {
       expect(wrapper).not.toHaveElement(StartGroupPanel);
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
       expect(wrapper).toHaveElement('.header-button');
-      expect(wrapper).toHaveElement('.messages-list__items-conversations');
+      expect(wrapper).toHaveElement('.messages-list__items');
     });
   });
 

@@ -38,7 +38,7 @@ describe('CreateConversationPanel', () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack: onBack });
 
-    wrapper.find('.start__chat-return').simulate('click');
+    wrapper.find('PanelHeader').simulate('back');
 
     expect(onBack).toHaveBeenCalledOnce();
   });

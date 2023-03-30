@@ -92,11 +92,23 @@
       }
     }
     &__items {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
       animation: conversation-slide-in 600ms ease-in forwards;
 
       &-conversations-input {
         margin-bottom: 18px;
       }
+    }
+
+    &__item-list {
+      flex-grow: 1;
+      // Forcing a height here allows the flex-grow to fill the size without growing too big
+      height: 1px;
+
+      overflow: auto;
     }
   }
 }

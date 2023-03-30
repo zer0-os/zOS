@@ -60,13 +60,18 @@ export function* createDirectMessage(action) {
   const channelsList = yield select(rawChannelsList());
 
   if (directMessage && directMessage.id) {
-    yield put(
-      receive([
-        ...channelsList,
-        ...existingDirectMessages,
-        directMessage,
-      ])
-    );
+    const hasExistingChat = Array.isArray(existingDirectMessages) && existingDirectMessages.includes(directMessage.id);
+
+    if (!hasExistingChat) {
+      // add new chat to the list
+      yield put(
+        receive([
+          ...channelsList,
+          ...existingDirectMessages,
+          directMessage,
+        ])
+      );
+    }
     yield put(setActiveMessengerId(directMessage.id));
   }
 }

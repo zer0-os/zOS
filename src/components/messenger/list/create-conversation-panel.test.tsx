@@ -11,6 +11,7 @@ describe('CreateConversationPanel', () => {
       onBack: () => {},
       search: () => {},
       onCreate: () => {},
+      onStartGroupChat: () => {},
       ...props,
     };
 
@@ -40,5 +41,14 @@ describe('CreateConversationPanel', () => {
     wrapper.find('.start__chat-return').simulate('click');
 
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('fires onStartGroupChat when the action is clicked', function () {
+    const onStartGroupChat = jest.fn();
+    const wrapper = subject({ onStartGroupChat });
+
+    wrapper.find('.create-conversation__group-button').simulate('click');
+
+    expect(onStartGroupChat).toHaveBeenCalledOnce();
   });
 });

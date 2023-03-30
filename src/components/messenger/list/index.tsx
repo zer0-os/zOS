@@ -15,7 +15,7 @@ import { IconXClose } from '@zero-tech/zui/icons';
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
-import StartGroupPanel from './start-group-panel';
+import { StartGroupPanel } from './start-group-panel';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -93,6 +93,8 @@ export class Container extends React.Component<Properties, State> {
   goBack = (): void => {
     if (this.state.stage === Stage.CreateOneOnOne) {
       this.setState({ stage: Stage.List });
+    } else if (this.state.stage === Stage.StartGroupChat) {
+      this.setState({ stage: Stage.CreateOneOnOne });
     }
   };
 
@@ -121,6 +123,12 @@ export class Container extends React.Component<Properties, State> {
 
   createOneOnOneConversation = (id: string): void => {
     this.props.createDirectMessage({ userIds: [id] });
+    this.reset();
+  };
+
+  groupMembersSelected = (userIds: string[]): void => {
+    // For now, we just create the message. Adding group details to come in the future.
+    this.props.createDirectMessage({ userIds });
     this.reset();
   };
 
@@ -163,7 +171,13 @@ export class Container extends React.Component<Properties, State> {
               onStartGroupChat={this.startGroupChat}
             />
           )}
-          {this.state.stage === Stage.StartGroupChat && <StartGroupPanel />}
+          {this.state.stage === Stage.StartGroupChat && (
+            <StartGroupPanel
+              onBack={this.goBack}
+              onContinue={this.groupMembersSelected}
+              searchUsers={this.usersInMyNetworks}
+            />
+          )}
         </div>
       </>
     );

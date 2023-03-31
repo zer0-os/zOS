@@ -45,16 +45,6 @@ describe('autocomplete-members', () => {
     expect(wrapper.find('.autocomplete-members__search-results').exists()).toBeFalse();
   });
 
-  it('renders empty result message', async () => {
-    const search = jest.fn();
-    when(search).mockResolvedValue([]);
-    const wrapper = subject({ search });
-
-    await searchFor(wrapper, 'name');
-
-    expect(wrapper.find('.autocomplete-members__empty-results').exists()).toBeTrue();
-  });
-
   it('fires onSelect when result is clicked', async () => {
     const search = jest.fn();
     when(search).mockResolvedValue([
@@ -68,7 +58,7 @@ describe('autocomplete-members', () => {
       .find('.autocomplete-members__search-results > div')
       .simulate('click', { currentTarget: { dataset: { id: 'result-1' } } });
 
-    expect(onSelect).toHaveBeenCalledWith('result-1');
+    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
   });
 });
 

@@ -1,5 +1,9 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
 import Tooltip from '../../tooltip';
@@ -7,11 +11,23 @@ import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
 import { Dialog } from '@zer0-os/zos-component-library';
 import { SearchConversations } from '../search-conversations';
-import { AutocompleteMembers } from '../autocomplete-members';
 import { RootState } from '../../../store';
 import moment from 'moment';
+import { when } from 'jest-when';
+import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
+import { StartGroupPanel } from './start-group-panel';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
+
+const mockSearchMyNetworksByName = jest.fn();
+jest.mock('../../../platform-apps/channels/util/api', () => {
+  return {
+    searchMyNetworksByName: async (...args) => {
+      return await mockSearchMyNetworksByName(...args);
+    },
+  };
+});
 
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
@@ -24,7 +40,7 @@ describe('messenger-list', () => {
       ...props,
     };
 
-    return shallow(<DirectMessageChat {...allProps} />);
+    return mount(<DirectMessageChat {...allProps} />);
   };
 
   it('render direct message members', function () {
@@ -56,6 +72,7 @@ describe('messenger-list', () => {
 
     wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
 
+    wrapper.update();
     const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
 
     expect(displayChatNames).toStrictEqual([
@@ -72,6 +89,7 @@ describe('messenger-list', () => {
     const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
 
     wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+    wrapper.update();
 
     wrapper.find('.direct-message-members__user').first().simulate('click');
 
@@ -97,22 +115,103 @@ describe('messenger-list', () => {
     expect(wrapper.find(Dialog).exists()).toBe(false);
   });
 
-  it('should render AutocompleteMembers', function () {
+  it('searches for citizens when creating a new conversation', async function () {
+    when(mockSearchMyNetworksByName)
+      .calledWith('jac')
+      .mockResolvedValue([
+        {
+          id: 'user-id',
+          profileImage: 'image-url',
+        },
+      ]);
     const wrapper = subject({});
-
     wrapper.find('.header-button__icon').simulate('click');
 
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(true);
+    const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
 
-    wrapper.find('.start__chat-return').simulate('click');
-
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(false);
+    expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
   });
 
-  it('should render search conversations', function () {
-    const wrapper = subject({});
+  it('creates a one on one conversation when user selected', async function () {
+    const createDirectMessage = jest.fn();
+    const wrapper = subject({ createDirectMessage });
+    wrapper.find('.header-button__icon').simulate('click');
 
-    expect(wrapper.find(SearchConversations).exists()).toBe(true);
+    // Can't do simulate on custom components when rendering fully?
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
+
+    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
+  });
+
+  it('returns to conversation list when one on one conversation created', async function () {
+    const createDirectMessage = jest.fn();
+    const wrapper = subject({ createDirectMessage });
+    wrapper.find('.header-button__icon').simulate('click');
+
+    // Can't do simulate on custom components when rendering fully?
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
+    wrapper.update();
+
+    expect(wrapper).not.toHaveElement('CreateConversationPanel');
+    expect(wrapper).toHaveElement('.header-button');
+    expect(wrapper).toHaveElement('.messages-list__items');
+  });
+
+  it('returns to conversation list if back button pressed', async function () {
+    const wrapper = subject({});
+    wrapper.find('.header-button__icon').simulate('click');
+    expect(wrapper).toHaveElement('CreateConversationPanel');
+    expect(wrapper).not.toHaveElement('.header-button');
+    expect(wrapper).not.toHaveElement('.messages-list__items');
+
+    wrapper.find(CreateConversationPanel).prop('onBack')();
+    wrapper.update();
+
+    expect(wrapper).not.toHaveElement('CreateConversationPanel');
+    expect(wrapper).toHaveElement('.header-button');
+    expect(wrapper).toHaveElement('.messages-list__items');
+  });
+
+  it('provides the list of conversations to the Search', function () {
+    const conversations = [
+      {
+        id: 'convo-id-1',
+        otherMembers: [],
+      },
+    ];
+
+    const wrapper = subject({ directMessages: conversations as any });
+
+    expect(wrapper.find(SearchConversations).prop('directMessagesList')).toEqual(conversations);
+  });
+
+  it('renders search results', function () {
+    const conversations = [
+      { id: 'convo-id-1', name: 'convo-1', otherMembers: [] },
+      { id: 'convo-id-2', name: 'convo-2', otherMembers: [] },
+      { id: 'convo-id-3', name: 'convo-3', otherMembers: [] },
+    ];
+
+    const wrapper = subject({ directMessages: conversations as any });
+
+    let displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    expect(displayChatNames).toStrictEqual([
+      'convo-1',
+      'convo-2',
+      'convo-3',
+    ]);
+
+    wrapper.find(SearchConversations).prop('onChange')([
+      conversations[0],
+      conversations[2],
+    ] as any);
+    wrapper.update();
+
+    displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    expect(displayChatNames).toStrictEqual([
+      'convo-1',
+      'convo-3',
+    ]);
   });
 
   it('renders unread messages', function () {
@@ -134,7 +233,75 @@ describe('messenger-list', () => {
         ...restOfDirectMessages,
       ],
     });
+    wrapper.update();
     expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
+  });
+
+  describe('tooltip', () => {
+    it('moves to the group conversation creation phase', function () {
+      const wrapper = subject({});
+
+      wrapper.find('.header-button__icon').simulate('click');
+
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(ConversationListPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).toHaveElement('StartGroupPanel');
+    });
+
+    it('returns to one on one conversation panel if back button pressed on start group panel', async function () {
+      const wrapper = subject({});
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      wrapper.find(StartGroupPanel).prop('onBack')();
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).toHaveElement(CreateConversationPanel);
+      expect(wrapper).not.toHaveElement(ConversationListPanel);
+    });
+
+    it('creates a group conversation when users selected', async function () {
+      const createDirectMessage = jest.fn();
+      const wrapper = subject({ createDirectMessage });
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
+      wrapper.find(StartGroupPanel).prop('onContinue')([
+        'selected-id-1',
+        'selected-id-2',
+      ]);
+
+      expect(createDirectMessage).toHaveBeenCalledWith({
+        userIds: [
+          'selected-id-1',
+          'selected-id-2',
+        ],
+      });
+    });
+
+    it('returns to conversation list when one on one conversation created', async function () {
+      const createDirectMessage = jest.fn();
+      const wrapper = subject({ createDirectMessage });
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
+      wrapper.find(StartGroupPanel).prop('onContinue')(['id-1']);
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).toHaveElement('.header-button');
+      expect(wrapper).toHaveElement('.messages-list__items');
+    });
   });
 
   describe('tooltip', () => {
@@ -143,6 +310,7 @@ describe('messenger-list', () => {
     beforeEach(() => {
       wrapper = subject({});
       wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+      wrapper.update();
     });
 
     afterEach(() => {

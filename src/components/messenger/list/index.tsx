@@ -1,33 +1,36 @@
 import React from 'react';
-import classNames from 'classnames';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
-import Tooltip from '../../tooltip';
-import { lastSeenText } from './utils';
 import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
-import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createDirectMessage } from '../../../store/channels-list';
-import { AutocompleteMembers } from '../autocomplete-members';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import { IconMessagePlusSquare, IconMessageQuestionSquare, IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '../../icon-button';
-import { SearchConversations } from '../search-conversations';
+import { IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
+import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
+import { StartGroupPanel } from './start-group-panel';
 
 export interface PublicProperties {
   onClose: () => void;
 }
 
+enum Stage {
+  List = 'list',
+  CreateOneOnOne = 'one_on_one',
+  StartGroupChat = 'start_group',
+}
+
 interface State {
   showCreateConversation: boolean;
   directMessagesList: Channel[];
+  stage: Stage;
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
@@ -37,7 +40,11 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { showCreateConversation: false, directMessagesList: [] };
+  state = {
+    showCreateConversation: false,
+    directMessagesList: [],
+    stage: Stage.List,
+  };
 
   static mapState(state: RootState): Partial<Properties> {
     const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
@@ -65,41 +72,44 @@ export class Container extends React.Component<Properties, State> {
   componentDidUpdate(prevProps: Properties): void {
     const { directMessages } = this.props;
 
+    // This might be broken. What happens if you're searching conversations and a real-time update comes in?
+    // Would that break your search results?
     if (directMessages && prevProps.directMessages && directMessages.length !== prevProps.directMessages.length) {
       this.setState({ directMessagesList: directMessages });
     }
   }
 
-  handleMemberClick(directMessageId: string): void {
+  handleMemberClick = (directMessageId: string) => {
     this.props.setActiveMessengerChat(directMessageId);
-  }
+  };
 
-  toggleConversation = (): void => {
+  reset = (): void => {
     this.setState({
-      showCreateConversation: !this.state.showCreateConversation,
+      stage: Stage.List,
       directMessagesList: this.props.directMessages,
     });
   };
 
-  renderStatus(directMessage: Channel): JSX.Element {
-    const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
-
-    return (
-      <div
-        className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isAnyUserOnline,
-        })}
-      ></div>
-    );
-  }
-
-  tooltipContent(directMessage: Channel): string {
-    if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
-      return lastSeenText(directMessage.otherMembers[0]);
+  goBack = (): void => {
+    if (this.state.stage === Stage.CreateOneOnOne) {
+      this.setState({ stage: Stage.List });
+    } else if (this.state.stage === Stage.StartGroupChat) {
+      this.setState({ stage: Stage.CreateOneOnOne });
     }
+  };
 
-    return otherMembersToString(directMessage.otherMembers);
-  }
+  startConversation = (): void => {
+    this.setState({
+      stage: Stage.CreateOneOnOne,
+      directMessagesList: this.props.directMessages,
+    });
+  };
+
+  startGroupChat = (): void => {
+    this.setState({
+      stage: Stage.StartGroupChat,
+    });
+  };
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
@@ -111,113 +121,15 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ directMessagesList });
   };
 
-  renderMember = (directMessage: Channel): JSX.Element => {
-    return (
-      <Tooltip
-        placement='left'
-        overlay={this.tooltipContent(directMessage)}
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
-        className='direct-message-members__user-tooltip'
-        key={directMessage.id}
-      >
-        <div
-          className='direct-message-members__user'
-          onClick={this.handleMemberClick.bind(this, directMessage.id)}
-          key={directMessage.id}
-        >
-          {this.renderStatus(directMessage)}
-          <div className='direct-message-members__user-name'>
-            {directMessage.name || otherMembersToString(directMessage.otherMembers)}
-          </div>
-          {directMessage.unreadCount !== 0 && (
-            <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>
-          )}
-        </div>
-      </Tooltip>
-    );
-  };
-
-  renderNewMessageModal = (): JSX.Element => {
-    return (
-      <Tooltip
-        placement='left'
-        overlay='Create Zero Message'
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
-        className='direct-message-members__user-tooltip'
-      >
-        <div className='header-button'>
-          <span className='header-button__title'>Conversations</span>
-          <span
-            className='header-button__icon'
-            onClick={this.toggleConversation}
-          >
-            <IconButton
-              onClick={this.toggleConversation}
-              Icon={IconMessagePlusSquare}
-              size={18}
-              className='header-button__icon-plus'
-            />
-          </span>
-        </div>
-      </Tooltip>
-    );
-  };
-
   createOneOnOneConversation = (id: string): void => {
     this.props.createDirectMessage({ userIds: [id] });
-    this.toggleConversation();
+    this.reset();
   };
 
-  renderCreateConversation = (): JSX.Element => {
-    return (
-      <div className='start__chat'>
-        <span className='start__chat-title'>
-          <i
-            className='start__chat-return'
-            onClick={this.toggleConversation}
-          />
-          New message
-        </span>
-        <div className='start__chat-search'>
-          <AutocompleteMembers
-            search={this.usersInMyNetworks}
-            onSelect={this.createOneOnOneConversation}
-          ></AutocompleteMembers>
-        </div>
-      </div>
-    );
-  };
-
-  renderNoMessages = (): JSX.Element => {
-    return (
-      <div className='messages-list__start'>
-        <div className='messages-list__start-title'>
-          <span className='messages-list__start-icon'>
-            <IconMessageQuestionSquare
-              size={34}
-              label='You have no messages yet'
-            />
-          </span>
-          You have no messages yet
-        </div>
-        <span
-          className='messages-list__start-conversation'
-          onClick={this.toggleConversation}
-        >
-          Start a Conversation
-        </span>
-      </div>
-    );
+  groupMembersSelected = (userIds: string[]): void => {
+    // For now, we just create the message. Adding group details to come in the future.
+    this.props.createDirectMessage({ userIds });
+    this.reset();
   };
 
   renderTitleBar() {
@@ -242,30 +154,29 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.renderTitleBar()}
         <div className='direct-message-members'>
-          <div className='messages-list__direct-messages'>
-            {!this.state.showCreateConversation && this.renderNewMessageModal()}
-          </div>
-          {this.state.directMessagesList && (
-            <div className='messages-list__items'>
-              {!this.state.showCreateConversation && (
-                <div className='messages-list__items-conversations'>
-                  <div className='messages-list__items-conversations-input'>
-                    <SearchConversations
-                      className='messages-list__items-conversations-search'
-                      placeholder='Search contacts...'
-                      directMessagesList={this.props.directMessages}
-                      onChange={this.conversationInMyNetworks}
-                      mapSearchConversationsText={otherMembersToString}
-                    />
-                  </div>
-                  {this.state.directMessagesList.map(this.renderMember)}
-                </div>
-              )}
-              {this.state.showCreateConversation && this.renderCreateConversation()}
-            </div>
+          {this.state.stage === Stage.List && (
+            <ConversationListPanel
+              directMessages={this.props.directMessages}
+              directMessagesList={this.state.directMessagesList}
+              conversationInMyNetworks={this.conversationInMyNetworks}
+              handleMemberClick={this.handleMemberClick}
+              toggleConversation={this.startConversation}
+            />
           )}
-          {!this.state.directMessagesList && (
-            <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>
+          {this.state.stage === Stage.CreateOneOnOne && (
+            <CreateConversationPanel
+              onBack={this.goBack}
+              search={this.usersInMyNetworks}
+              onCreate={this.createOneOnOneConversation}
+              onStartGroupChat={this.startGroupChat}
+            />
+          )}
+          {this.state.stage === Stage.StartGroupChat && (
+            <StartGroupPanel
+              onBack={this.goBack}
+              onContinue={this.groupMembersSelected}
+              searchUsers={this.usersInMyNetworks}
+            />
           )}
         </div>
       </>

@@ -14,10 +14,10 @@
 }
 
 .direct-message-members {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  height: 100%;
+  flex-grow: 99;
   padding: 0 16px;
+  display: flex;
+  flex-direction: column;
 
   &__user {
     display: flex;
@@ -92,11 +92,23 @@
       }
     }
     &__items {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
       animation: conversation-slide-in 600ms ease-in forwards;
 
       &-conversations-input {
         margin-bottom: 18px;
       }
+    }
+
+    &__item-list {
+      flex-grow: 1;
+      // Forcing a height here allows the flex-grow to fill the size without growing too big
+      height: 1px;
+
+      overflow: auto;
     }
   }
 }
@@ -127,6 +139,7 @@
 }
 
 .start__chat {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -155,6 +168,9 @@
   }
 
   &-search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     text-align: center;
   }
@@ -217,5 +233,116 @@
     & > * {
       margin: auto;
     }
+  }
+}
+
+.messenger-panel {
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    color: theme.$color-greyscale-12;
+
+    padding: 20px 10px;
+  }
+
+  &__back {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+}
+
+.create-conversation {
+  &__group-button {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  &__group-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(223deg, #421349 14.62%, #0d0416 36.73%, #0b060e 59.58%, #2b0659 85.38%);
+    border-radius: 9999px;
+
+    & > * {
+      margin: auto;
+    }
+  }
+}
+
+.start-group-panel {
+  &__selected-count {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    padding-top: 18px;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__selected-number {
+    color: theme.$color-greyscale-12;
+  }
+
+  &__selected-option {
+    display: inline-block;
+  }
+
+  &__selected-tag {
+    color: theme.$color-greyscale-11;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    gap: 4px;
+    background-color: theme.$color-greyscale-3;
+    border-radius: 8px;
+    border: 1px solid theme.$color-greyscale-5;
+    margin-top: 10px;
+    margin-right: 10px;
+
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  &__user-remove {
+    cursor: pointer;
+    background: none;
+    border: none;
+    display: inline-block;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  &__content {
+    flex-grow: 99;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__continue {
+    margin: 16px 0px;
   }
 }

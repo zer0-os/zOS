@@ -1,31 +1,19 @@
 import React from 'react';
-import classNames from 'classnames';
-import isEqual from 'lodash.isequal';
-import AsyncSelect from 'react-select/async';
-import { components } from 'react-select';
-import { Option as CustomOptionComponent } from './option';
+
+import { Avatar } from '@zero-tech/zui/components/Avatar';
+import { Input } from '@zero-tech/zui/components/Input';
 
 import './styles.scss';
+import { IconSearchMd } from '@zero-tech/zui/components/Icons/icons/IconSearchMd';
 
 export interface Properties {
-  className?: string;
-  selectedItems: Item[];
-  search: (query: string, networkId?: string) => Promise<Item[]>;
-  networkId?: string;
-  placeholder?: string;
-  noResultsText?: string;
-  isMulti?: boolean;
-  autoFocus?: boolean;
-  name?: string;
-  includeImage?: boolean;
-  filterOptions?: (options: any[], filterValue: string) => any[];
-
-  onChange: (ids: string[]) => void;
+  search: (query: string) => Promise<Item[]>;
+  onSelect: (selected: Option) => void;
 }
 
 interface State {
-  networkId: string;
-  currentSelection: Option[];
+  results: Option[];
+  searchString: string;
 }
 
 export interface Item {
@@ -41,150 +29,70 @@ export interface Option {
 }
 
 export class AutocompleteMembers extends React.Component<Properties, State> {
-  constructor(props) {
-    super(props);
+  state = { results: null, searchString: '' };
 
-    const currentSelection = this.getCurrentSelection(props);
-
-    this.state = {
-      networkId: this.props.networkId || '',
-      currentSelection,
+  itemToOption = (item: Item): Option => {
+    return {
+      value: item.id,
+      label: item.name,
+      image: item.image,
     };
-  }
+  };
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.currentValueChanged(nextProps)) {
-      const currentSelection = this.getCurrentSelection(nextProps);
-
-      this.setState({
-        networkId: this.props.networkId || '',
-        currentSelection,
-      });
+  searchChanged = async (searchString: string) => {
+    this.setState({ searchString });
+    if (!searchString) {
+      return this.setState({ results: null });
     }
-  }
 
-  currentValueChanged = (nextProps) => {
-    return !isEqual(
-      this.props.selectedItems.map((i) => i.id),
-      nextProps.selectedItems.map((i) => i.id)
-    );
+    const items = await this.props.search(searchString);
+
+    this.setState({ results: items.map(this.itemToOption) });
   };
 
-  getCurrentSelection = (props: Properties) => {
-    const currentSelection = props.selectedItems
-      .map(this.itemToOption)
-      .filter((option) => option.value && option.value.trim() !== '');
-
-    return currentSelection;
-  };
-
-  itemToOption = (item: Item = null): Option => {
-    if (item) {
-      const option: Option = {
-        value: item.id,
-        label: item.name,
-      };
-
-      if (this.props.includeImage) {
-        option.image = item.image;
-      }
-
-      return option;
+  itemClicked = (event: any) => {
+    const clickedId = event.currentTarget.dataset.id;
+    const selectedUser = this.state.results.find((r) => r.value === clickedId);
+    if (selectedUser) {
+      this.props.onSelect(selectedUser);
     }
   };
-
-  handleChange = (currentSelection): void => {
-    this.setState({ currentSelection });
-    this.props.onChange(currentSelection.map((option) => option.value));
-  };
-
-  loadOptions = async (input: string) => {
-    if (!input) return [];
-
-    const items = await this.props.search(input, this.state.networkId);
-
-    return items.map(this.itemToOption);
-  };
-
-  customOption = (props): JSX.Element => {
-    return (
-      <components.Option {...props}>
-        <CustomOptionComponent {...props}>{props.children}</CustomOptionComponent>
-      </components.Option>
-    );
-  };
-
-  handleRemoveMember = (event) => {
-    if (!this.props.onChange) return;
-
-    const { currentSelection } = this.state;
-    const valueMember = event.target.getAttribute('data-value');
-    const removedValue = currentSelection.find((val) => val.value === valueMember);
-    if (!removedValue) return;
-    this.handleChange(currentSelection.filter((val) => val.value !== valueMember));
-  };
-
-  renderSelections = (): JSX.Element => {
-    return (
-      <div className='current__selections'>
-        {this.state.currentSelection.length > 0 && (
-          <div className='current__selections-members'>
-            <span className='current__selections-count'>
-              {this.state.currentSelection.length} member{this.state.currentSelection.length > 1 ? 's' : ''} selected
-            </span>
-            <div className='current__selections-list'>
-              {this.state.currentSelection.map((val) => (
-                <div
-                  key={val.value}
-                  className='current__selections-list__member'
-                >
-                  {val.image && (
-                    <img
-                      className='current__selections-list__image'
-                      src={val.image}
-                      alt='member'
-                    />
-                  )}
-                  {val.label}
-                  <span
-                    className='current__selections-list__delete'
-                    data-value={val.value}
-                    onClick={this.handleRemoveMember}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  get closeOnSelect() {
-    return !this.props.isMulti;
-  }
 
   render() {
     return (
-      <>
-        <AsyncSelect
-          isClearable={false}
-          name={this.props.name}
-          classNamePrefix='chat-select'
-          autoFocus={this.props.autoFocus}
-          isMulti={this.props.isMulti}
-          closeMenuOnSelect={this.closeOnSelect}
-          className={classNames('autocomplete', this.props.className)}
-          value={this.state.currentSelection}
-          placeholder={this.props.placeholder}
-          noOptionsMessage={() => null}
-          loadOptions={this.loadOptions}
-          onChange={this.handleChange}
-          controlShouldRenderValue={false}
-          components={{ Option: this.customOption, DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+      <div className='autocomplete-members'>
+        <Input
+          autoFocus
+          type='search'
+          placeholder='Search for a person'
+          onChange={this.searchChanged}
+          value={this.state.searchString}
+          startEnhancer={<IconSearchMd size={18} />}
+          wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}
+          inputClassName={'autocomplete-members__search-input'}
         />
-        {this.renderSelections()}
-      </>
+        {this.props.children}
+        <div className='autocomplete-members__content'>
+          {this.state.results && this.state.results.length > 0 && (
+            <div className='autocomplete-members__search-results'>
+              {this.state.results.map((r) => (
+                <div
+                  key={r.value}
+                  data-id={r.value}
+                  onClick={this.itemClicked}
+                >
+                  <Avatar
+                    size='regular'
+                    type='circle'
+                    imageURL={r.image}
+                  />
+                  <div>{r.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 }

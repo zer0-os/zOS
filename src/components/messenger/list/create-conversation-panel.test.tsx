@@ -11,6 +11,7 @@ describe('CreateConversationPanel', () => {
       onBack: () => {},
       search: () => {},
       onCreate: () => {},
+      onStartGroupChat: () => {},
       ...props,
     };
 
@@ -28,7 +29,7 @@ describe('CreateConversationPanel', () => {
     const onCreate = jest.fn();
     const wrapper = subject({ onCreate: onCreate });
 
-    wrapper.find('AutocompleteMembers').simulate('select', 'selected-user-id');
+    wrapper.find('AutocompleteMembers').simulate('select', { value: 'selected-user-id' });
 
     expect(onCreate).toHaveBeenCalledWith('selected-user-id');
   });
@@ -37,8 +38,17 @@ describe('CreateConversationPanel', () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack: onBack });
 
-    wrapper.find('.start__chat-return').simulate('click');
+    wrapper.find('PanelHeader').simulate('back');
 
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('fires onStartGroupChat when the action is clicked', function () {
+    const onStartGroupChat = jest.fn();
+    const wrapper = subject({ onStartGroupChat });
+
+    wrapper.find('.create-conversation__group-button').simulate('click');
+
+    expect(onStartGroupChat).toHaveBeenCalledOnce();
   });
 });

@@ -15,6 +15,8 @@ import { RootState } from '../../../store';
 import moment from 'moment';
 import { when } from 'jest-when';
 import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
+import { StartGroupPanel } from './start-group-panel';
 
 export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
@@ -152,7 +154,7 @@ describe('messenger-list', () => {
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
     expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).toHaveElement('.messages-list__items');
   });
 
   it('returns to conversation list if back button pressed', async function () {
@@ -160,14 +162,14 @@ describe('messenger-list', () => {
     wrapper.find('.header-button__icon').simulate('click');
     expect(wrapper).toHaveElement('CreateConversationPanel');
     expect(wrapper).not.toHaveElement('.header-button');
-    expect(wrapper).not.toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).not.toHaveElement('.messages-list__items');
 
     wrapper.find(CreateConversationPanel).prop('onBack')();
     wrapper.update();
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
     expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items-conversations');
+    expect(wrapper).toHaveElement('.messages-list__items');
   });
 
   it('provides the list of conversations to the Search', function () {
@@ -233,6 +235,73 @@ describe('messenger-list', () => {
     });
     wrapper.update();
     expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
+  });
+
+  describe('tooltip', () => {
+    it('moves to the group conversation creation phase', function () {
+      const wrapper = subject({});
+
+      wrapper.find('.header-button__icon').simulate('click');
+
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(ConversationListPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).toHaveElement('StartGroupPanel');
+    });
+
+    it('returns to one on one conversation panel if back button pressed on start group panel', async function () {
+      const wrapper = subject({});
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      wrapper.find(StartGroupPanel).prop('onBack')();
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).toHaveElement(CreateConversationPanel);
+      expect(wrapper).not.toHaveElement(ConversationListPanel);
+    });
+
+    it('creates a group conversation when users selected', async function () {
+      const createDirectMessage = jest.fn();
+      const wrapper = subject({ createDirectMessage });
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
+      wrapper.find(StartGroupPanel).prop('onContinue')([
+        'selected-id-1',
+        'selected-id-2',
+      ]);
+
+      expect(createDirectMessage).toHaveBeenCalledWith({
+        userIds: [
+          'selected-id-1',
+          'selected-id-2',
+        ],
+      });
+    });
+
+    it('returns to conversation list when one on one conversation created', async function () {
+      const createDirectMessage = jest.fn();
+      const wrapper = subject({ createDirectMessage });
+      wrapper.find('.header-button__icon').simulate('click');
+      wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
+      wrapper.update();
+
+      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
+      wrapper.find(StartGroupPanel).prop('onContinue')(['id-1']);
+      wrapper.update();
+
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).toHaveElement('.header-button');
+      expect(wrapper).toHaveElement('.messages-list__items');
+    });
   });
 
   describe('tooltip', () => {

@@ -15,14 +15,22 @@ import { IconXClose } from '@zero-tech/zui/icons';
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
+import { StartGroupPanel } from './start-group-panel';
 
 export interface PublicProperties {
   onClose: () => void;
 }
 
+enum Stage {
+  List = 'list',
+  CreateOneOnOne = 'one_on_one',
+  StartGroupChat = 'start_group',
+}
+
 interface State {
   showCreateConversation: boolean;
   directMessagesList: Channel[];
+  stage: Stage;
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
@@ -32,7 +40,11 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { showCreateConversation: false, directMessagesList: [] };
+  state = {
+    showCreateConversation: false,
+    directMessagesList: [],
+    stage: Stage.List,
+  };
 
   static mapState(state: RootState): Partial<Properties> {
     const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
@@ -71,10 +83,31 @@ export class Container extends React.Component<Properties, State> {
     this.props.setActiveMessengerChat(directMessageId);
   };
 
-  toggleConversation = (): void => {
+  reset = (): void => {
     this.setState({
-      showCreateConversation: !this.state.showCreateConversation,
+      stage: Stage.List,
       directMessagesList: this.props.directMessages,
+    });
+  };
+
+  goBack = (): void => {
+    if (this.state.stage === Stage.CreateOneOnOne) {
+      this.setState({ stage: Stage.List });
+    } else if (this.state.stage === Stage.StartGroupChat) {
+      this.setState({ stage: Stage.CreateOneOnOne });
+    }
+  };
+
+  startConversation = (): void => {
+    this.setState({
+      stage: Stage.CreateOneOnOne,
+      directMessagesList: this.props.directMessages,
+    });
+  };
+
+  startGroupChat = (): void => {
+    this.setState({
+      stage: Stage.StartGroupChat,
     });
   };
 
@@ -90,7 +123,13 @@ export class Container extends React.Component<Properties, State> {
 
   createOneOnOneConversation = (id: string): void => {
     this.props.createDirectMessage({ userIds: [id] });
-    this.toggleConversation();
+    this.reset();
+  };
+
+  groupMembersSelected = (userIds: string[]): void => {
+    // For now, we just create the message. Adding group details to come in the future.
+    this.props.createDirectMessage({ userIds });
+    this.reset();
   };
 
   renderTitleBar() {
@@ -115,20 +154,28 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.renderTitleBar()}
         <div className='direct-message-members'>
-          {!this.state.showCreateConversation && (
+          {this.state.stage === Stage.List && (
             <ConversationListPanel
               directMessages={this.props.directMessages}
               directMessagesList={this.state.directMessagesList}
               conversationInMyNetworks={this.conversationInMyNetworks}
               handleMemberClick={this.handleMemberClick}
-              toggleConversation={this.toggleConversation}
+              toggleConversation={this.startConversation}
             />
           )}
-          {this.state.showCreateConversation && (
+          {this.state.stage === Stage.CreateOneOnOne && (
             <CreateConversationPanel
-              onBack={this.toggleConversation}
+              onBack={this.goBack}
               search={this.usersInMyNetworks}
               onCreate={this.createOneOnOneConversation}
+              onStartGroupChat={this.startGroupChat}
+            />
+          )}
+          {this.state.stage === Stage.StartGroupChat && (
+            <StartGroupPanel
+              onBack={this.goBack}
+              onContinue={this.groupMembersSelected}
+              searchUsers={this.usersInMyNetworks}
             />
           )}
         </div>

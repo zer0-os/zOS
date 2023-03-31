@@ -132,18 +132,16 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
         <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
         {this.props.directMessagesList && (
           <div className='messages-list__items'>
-            <div className='messages-list__items-conversations'>
-              <div className='messages-list__items-conversations-input'>
-                <SearchConversations
-                  className='messages-list__items-conversations-search'
-                  placeholder='Search contacts...'
-                  directMessagesList={this.props.directMessages}
-                  onChange={this.props.conversationInMyNetworks}
-                  mapSearchConversationsText={otherMembersToString}
-                />
-              </div>
-              {this.props.directMessagesList.map(this.renderMember)}
+            <div className='messages-list__items-conversations-input'>
+              <SearchConversations
+                className='messages-list__items-conversations-search'
+                placeholder='Search contacts...'
+                directMessagesList={this.props.directMessages}
+                onChange={this.props.conversationInMyNetworks}
+                mapSearchConversationsText={otherMembersToString}
+              />
             </div>
+            <div className='messages-list__item-list'>{this.props.directMessagesList.map(this.renderMember)}</div>
           </div>
         )}
         {/* Note: this does not work. directMessagesList is never null */}

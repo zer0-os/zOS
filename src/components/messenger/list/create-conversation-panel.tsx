@@ -20,20 +20,12 @@ export default class CreateConversationPanel extends React.Component<Properties>
   render() {
     return (
       <>
-        <PanelHeader
-          title='New message'
-          onBack={this.props.onBack}
-        />
+        <PanelHeader title='New message' onBack={this.props.onBack} />
+
         <div className='start__chat'>
           <div className='start__chat-search'>
-            <AutocompleteMembers
-              search={this.props.search}
-              onSelect={this.userSelected}
-            >
-              <div
-                className='create-conversation__group-button'
-                onClick={this.props.onStartGroupChat}
-              >
+            <AutocompleteMembers search={this.props.search} onSelect={this.userSelected}>
+              <div className='create-conversation__group-button' onClick={this.props.onStartGroupChat}>
                 <div className='create-conversation__group-icon'>
                   <IconUsersPlus size={25} />
                 </div>

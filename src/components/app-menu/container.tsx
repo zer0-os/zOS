@@ -39,13 +39,7 @@ export class Container extends React.Component<Properties, {}> {
   render() {
     const { selectedApp } = this.props;
 
-    return (
-      <AppMenu
-        selectedApp={selectedApp}
-        route={this.defaultRoute}
-        apps={this.allApps}
-      />
-    );
+    return <AppMenu selectedApp={selectedApp} route={this.defaultRoute} apps={this.allApps} />;
   }
 }
 

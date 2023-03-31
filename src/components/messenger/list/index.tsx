@@ -135,15 +135,8 @@ export class Container extends React.Component<Properties, State> {
   renderTitleBar() {
     return (
       <div className='messenger-list__header'>
-        <button
-          className='messenger-list__icon-button'
-          onClick={this.props.onClose}
-        >
-          <IconXClose
-            label='Close Messenger'
-            size={12}
-            isFilled={false}
-          />
+        <button className='messenger-list__icon-button' onClick={this.props.onClose}>
+          <IconXClose label='Close Messenger' size={12} isFilled={false} />
         </button>
       </div>
     );

@@ -31,11 +31,7 @@ export default class AudioCards extends React.Component<Properties, undefined> {
     return (
       <div className='audio__cards'>
         {audios.map((a) => (
-          <AudioCard
-            key={a.id}
-            audio={a}
-            onRemove={this.itemRemoved(a)}
-          />
+          <AudioCard key={a.id} audio={a} onRemove={this.itemRemoved(a)} />
         ))}
       </div>
     );

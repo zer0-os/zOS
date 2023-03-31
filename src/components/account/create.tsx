@@ -194,11 +194,7 @@ export class Container extends React.Component<Properties, State> {
           </g>
           <defs>
             <clipPath id='clip0_5179_13261'>
-              <rect
-                width='16'
-                height='16'
-                fill='white'
-              />
+              <rect width='16' height='16' fill='white' />
             </clipPath>
           </defs>
         </svg>
@@ -214,10 +210,7 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <Dialog>
-        <form
-          className='profile-prompt'
-          onSubmit={this.onSubmit}
-        >
+        <form className='profile-prompt' onSubmit={this.onSubmit}>
           <div className='profile-prompt__head'>Create your account</div>
           <div className='profile-prompt__address'>
             <div className='profile-prompt__connection-status'>Connected:</div>
@@ -251,11 +244,7 @@ export class Container extends React.Component<Properties, State> {
           {Boolean(this.state.error) && this.renderError(this.state.error)}
 
           <div className='profile-prompt__submit'>
-            <Button
-              tabIndex={0}
-              onClick={this.onSubmit}
-              onEnterKeyPress={this.onSubmit}
-            >
+            <Button tabIndex={0} onClick={this.onSubmit} onEnterKeyPress={this.onSubmit}>
               Create Account
             </Button>
           </div>

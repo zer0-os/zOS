@@ -51,31 +51,18 @@ export class StartGroupPanel extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        <PanelHeader
-          title='Select members'
-          onBack={this.props.onBack}
-        />
+        <PanelHeader title='Select members' onBack={this.props.onBack} />
         <div className='start-group-panel__search'>
-          <AutocompleteMembers
-            search={this.props.searchUsers}
-            onSelect={this.selectOption}
-          >
+          <AutocompleteMembers search={this.props.searchUsers} onSelect={this.selectOption}>
             <div className='start-group-panel__selected-count'>
               <span className='start-group-panel__selected-number'>{this.state.selectedOptions.length}</span> member
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected
             </div>
             <div className='start-group-panel__selected-options'>
               {this.state.selectedOptions.map((val) => (
-                <div
-                  className='start-group-panel__selected-option'
-                  key={val.value}
-                >
+                <div className='start-group-panel__selected-option' key={val.value}>
                   <div className='start-group-panel__selected-tag'>
-                    <Avatar
-                      size={'extra small'}
-                      type={'circle'}
-                      imageURL={val.image}
-                    />
+                    <Avatar size={'extra small'} type={'circle'} imageURL={val.image} />
                     <span className='start-group-panel__user-label'>{val.label}</span>
                     <button
                       onClick={this.unselectOption}
@@ -90,11 +77,7 @@ export class StartGroupPanel extends React.Component<Properties, State> {
             </div>
           </AutocompleteMembers>
         </div>
-        <Button
-          className='start-group-panel__continue'
-          onPress={this.continue}
-          isDisabled={this.isContinueDisabled}
-        >
+        <Button className='start-group-panel__continue' onPress={this.continue} isDisabled={this.isContinueDisabled}>
           Continue
         </Button>
       </>

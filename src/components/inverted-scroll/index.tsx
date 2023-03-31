@@ -88,10 +88,7 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
 
   render() {
     return (
-      <div
-        className={classNames('scroll-container', this.props.className)}
-        ref={this.setScrollWrapper}
-      >
+      <div className={classNames('scroll-container', this.props.className)} ref={this.setScrollWrapper}>
         <div className='scroll-container__children'>{this.props.children}</div>
       </div>
     );

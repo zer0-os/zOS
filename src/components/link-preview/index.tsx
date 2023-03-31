@@ -111,11 +111,7 @@ export class LinkPreview extends React.Component<Properties, State> {
   renderVideoBanner() {
     return (
       <div className='link-preview__banner'>
-        <VideoPlayer
-          className='link-preview__banner-video'
-          url={this.props.url}
-          autoplay={false}
-        />
+        <VideoPlayer className='link-preview__banner-video' url={this.props.url} autoplay={false} />
       </div>
     );
   }
@@ -167,28 +163,16 @@ export class LinkPreview extends React.Component<Properties, State> {
     const { className, description, url, providerName } = this.props;
 
     return (
-      <div
-        ref={this.ref}
-        className={classNames('link-preview', className)}
-        onClick={this.handleOnClick}
-      >
+      <div ref={this.ref} className={classNames('link-preview', className)} onClick={this.handleOnClick}>
         {this.renderBanner()}
         <div className='link-preview__body'>
-          <ButtonLink
-            url={this.titleUrl}
-            openInNewTab
-            className='link-preview__title'
-          >
+          <ButtonLink url={this.titleUrl} openInNewTab className='link-preview__title'>
             {this.title}
           </ButtonLink>
           <div className='link-preview__description'>{description}</div>
         </div>
         <div className='link-preview__footer'>
-          <ButtonLink
-            className='link-preview__content-link'
-            url={url}
-            openInNewTab
-          >
+          <ButtonLink className='link-preview__content-link' url={url} openInNewTab>
             View this on <span className='link-preview__content-provider'>{providerName}</span>
           </ButtonLink>
         </div>

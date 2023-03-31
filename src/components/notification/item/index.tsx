@@ -40,10 +40,7 @@ export class NotificationItem extends React.Component<Properties> {
         </div>
         {this.props.isUnread && (
           <div className='notification-item__right'>
-            <Status
-              type='unread'
-              className='notification-item__status'
-            />
+            <Status type='unread' className='notification-item__status' />
           </div>
         )}
       </div>

@@ -117,10 +117,7 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <AppLayout className='channels'>
           <AppContextPanel>
-            <ChannelList
-              channels={this.props.channels}
-              currentChannelId={this.props.channelId}
-            />
+            <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
           </AppContextPanel>
           <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
         </AppLayout>

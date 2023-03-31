@@ -19,18 +19,11 @@ export default class PortalMenu extends React.Component<Properties> {
 
     const { x, y } = this.ref.getBoundingClientRect();
     return (
-      <div
-        className={classNames(this.props.className)}
-        onClick={this.close}
-        style={{ top: y, left: x }}
-      >
+      <div className={classNames(this.props.className)} onClick={this.close} style={{ top: y, left: x }}>
         <div className='portal-menu__content'>
           <ul>{this.props.children}</ul>
         </div>
-        <div
-          className='portal-menu__underlay'
-          onClick={this.close}
-        />
+        <div className='portal-menu__underlay' onClick={this.close} />
       </div>
     );
   }

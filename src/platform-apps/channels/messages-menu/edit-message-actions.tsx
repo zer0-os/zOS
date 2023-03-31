@@ -10,10 +10,7 @@ export default class EditMessageActions extends React.Component<Properties> {
   render() {
     return (
       <div className='edit-message__actions'>
-        <button
-          className='icon-button address-bar__navigation-button'
-          onClick={this.props.onEdit}
-        >
+        <button className='icon-button address-bar__navigation-button' onClick={this.props.onEdit}>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='24px'
@@ -32,10 +29,7 @@ export default class EditMessageActions extends React.Component<Properties> {
             <title id='okIconTitle'>Ok</title> <polyline points='4 13 9 18 20 7' />{' '}
           </svg>
         </button>
-        <button
-          className='icon-button address-bar__navigation-button'
-          onClick={this.props.onCancel}
-        >
+        <button className='icon-button address-bar__navigation-button' onClick={this.props.onCancel}>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='24px'

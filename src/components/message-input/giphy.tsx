@@ -10,10 +10,7 @@ export const GiphyComponents = ({ onClickGif }: Properties) => {
   const { fetchGifs, searchKey } = useContext(SearchContext);
   return (
     <div className='giphy__container'>
-      <SearchBar
-        className='giphy__container-search'
-        autoFocus
-      />
+      <SearchBar className='giphy__container-search' autoFocus />
       <div className='giphy__container-grid'>
         <Grid
           key={searchKey}

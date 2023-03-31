@@ -24,19 +24,9 @@ export class AppMenu extends React.Component<Properties> {
       const { type, name, imageSource } = app;
 
       return (
-        <li
-          key={type}
-          className={className}
-        >
-          <ZnsLink
-            route={this.props.route}
-            app={type}
-          >
-            <img
-              className='app-menu__app-image'
-              src={imageSource}
-              alt={name}
-            />
+        <li key={type} className={className}>
+          <ZnsLink route={this.props.route} app={type}>
+            <img className='app-menu__app-image' src={imageSource} alt={name} />
             <span className='app-menu__app-name'>{name}</span>
           </ZnsLink>
         </li>

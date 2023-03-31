@@ -28,10 +28,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <div
-        onClick={this.openModal}
-        className={classNames(this.props.className, 'authentication__connect-wrapper')}
-      >
+      <div onClick={this.openModal} className={classNames(this.props.className, 'authentication__connect-wrapper')}>
         <ComponentButton>Connect</ComponentButton>
       </div>
     );

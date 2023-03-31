@@ -76,16 +76,8 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           {this.state.results && this.state.results.length > 0 && (
             <div className='autocomplete-members__search-results'>
               {this.state.results.map((r) => (
-                <div
-                  key={r.value}
-                  data-id={r.value}
-                  onClick={this.itemClicked}
-                >
-                  <Avatar
-                    size='regular'
-                    type='circle'
-                    imageURL={r.image}
-                  />
+                <div key={r.value} data-id={r.value} onClick={this.itemClicked}>
+                  <Avatar size='regular' type='circle' imageURL={r.image} />
                   <div>{r.label}</div>
                 </div>
               ))}

@@ -124,11 +124,5 @@ const ConnectedContainer = injectProviderService<any>(connectContainer<{}>(Conta
 export function AddressBarContainer(props: PublicProperties) {
   const history = useHistory();
 
-  return (
-    <ConnectedContainer
-      {...props}
-      history={history}
-      znsClient={client}
-    />
-  );
+  return <ConnectedContainer {...props} history={history} znsClient={client} />;
 }

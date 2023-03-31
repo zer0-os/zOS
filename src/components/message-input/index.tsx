@@ -271,19 +271,10 @@ export class MessageInput extends React.Component<Properties, State> {
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__icons'>
-          <IconButton
-            onClick={this.openGiphy}
-            Icon={IconStickerCircle}
-            size={16}
-            className='giphy__icon'
-          />
+          <IconButton onClick={this.openGiphy} Icon={IconStickerCircle} size={16} className='giphy__icon' />
         </div>
         <div className='message-input__icons'>
-          <Menu
-            onSelected={this.mediaSelected}
-            mimeTypes={this.mimeTypes}
-            maxSize={config.cloudinary.max_file_size}
-          />
+          <Menu onSelected={this.mediaSelected} mimeTypes={this.mimeTypes} maxSize={config.cloudinary.max_file_size} />
         </div>
 
         <div className='message-input__input-wrapper'>
@@ -295,21 +286,9 @@ export class MessageInput extends React.Component<Properties, State> {
           >
             {({ getRootProps }) => (
               <div {...getRootProps({ className: 'mentions-text-area' })}>
-                <ImageCards
-                  images={this.images}
-                  onRemoveImage={this.removeMediaPreview}
-                  size='small'
-                />
-                <AudioCards
-                  audios={this.audios}
-                  onRemove={this.removeMediaPreview}
-                />
-                {this.props.reply && (
-                  <ReplyCard
-                    message={this.props.reply.message}
-                    onRemove={this.removeReply}
-                  />
-                )}
+                <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
+                <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
+                {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
                 <div className='message-input__emoji-picker'>
                   <EmojiPicker
                     textareaRef={this.textareaRef}
@@ -321,17 +300,9 @@ export class MessageInput extends React.Component<Properties, State> {
                     onSelect={this.onInsertEmoji}
                   />
                 </div>
-                {this.state.isGiphyActive && (
-                  <Giphy
-                    onClickGif={this.onInsertGiphy}
-                    onClose={this.closeGiphy}
-                  />
-                )}
+                {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
                 {this.state.isMicActive && (
-                  <MessageAudioRecorder
-                    onClose={this.cancelRecording}
-                    onMediaSelected={this.createAudioClip}
-                  />
+                  <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
                 )}
                 <MentionsInput
                   inputRef={this.textareaRef}
@@ -362,12 +333,7 @@ export class MessageInput extends React.Component<Properties, State> {
           </div>
         </div>
         <div className='message-input__icons'>
-          <IconButton
-            onClick={this.startMic}
-            Icon={IconMicrophone2}
-            size={16}
-            className='record-voice__icon'
-          />
+          <IconButton onClick={this.startMic} Icon={IconMicrophone2} size={16} className='record-voice__icon' />
         </div>
       </div>
     );

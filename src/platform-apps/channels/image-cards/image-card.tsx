@@ -18,10 +18,7 @@ export default class ImageCard extends React.Component<Properties, undefined> {
 
     if (onRemoveImage) {
       return (
-        <button
-          className='image-card__delete button-reset'
-          onClick={this.props.onRemoveImage}
-        >
+        <button className='image-card__delete button-reset' onClick={this.props.onRemoveImage}>
           <IconTrash4 size={20} />
         </button>
       );
@@ -42,13 +39,7 @@ export default class ImageCard extends React.Component<Properties, undefined> {
       <div className={cardClass}>
         <div className={'image-card__image-wrap'}>
           <div className='image-card__image'>
-            {size !== 'full-width' && (
-              <img
-                src={image.url}
-                title={image.name}
-                alt='preview'
-              />
-            )}
+            {size !== 'full-width' && <img src={image.url} title={image.name} alt='preview' />}
           </div>
           {this.deleteIcon()}
         </div>

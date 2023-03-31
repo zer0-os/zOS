@@ -22,15 +22,8 @@ export class IconButton extends React.Component<Properties> {
 
   render() {
     return (
-      <button
-        className={classNames('icon-button', this.props.className)}
-        onClick={this.handleClick}
-      >
-        <this.props.Icon
-          label={this.props.label}
-          size={this.props.size}
-          isFilled={this.props.isFilled}
-        />
+      <button className={classNames('icon-button', this.props.className)} onClick={this.handleClick}>
+        <this.props.Icon label={this.props.label} size={this.props.size} isFilled={this.props.isFilled} />
       </button>
     );
   }

@@ -41,10 +41,7 @@ export class NotificationPopup extends React.Component<Properties> {
 
   renderPopup() {
     return (
-      <div
-        className='notification-popup'
-        ref={this.notificationPopupRef}
-      >
+      <div className='notification-popup' ref={this.notificationPopupRef}>
         <div className='notification-popup_title-bar'>
           <h3>Notifications</h3>
         </div>

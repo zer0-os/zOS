@@ -72,13 +72,6 @@ export class EmojiPicker extends React.Component<Properties> {
       return null;
     }
 
-    return (
-      <Picker
-        theme={this.pickerViewMode}
-        emoji='mechanical_arm'
-        title='ZOS'
-        onSelect={this.insertEmoji}
-      />
-    );
+    return <Picker theme={this.pickerViewMode} emoji='mechanical_arm' title='ZOS' onSelect={this.insertEmoji} />;
   }
 }

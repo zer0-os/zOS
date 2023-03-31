@@ -11,10 +11,7 @@ export class PanelHeader extends React.Component<Properties> {
   render() {
     return (
       <div className='messenger-panel__header'>
-        <span
-          className='messenger-panel__back'
-          onClick={this.props.onBack}
-        >
+        <span className='messenger-panel__back' onClick={this.props.onBack}>
           <IconArrowNarrowLeft size={24} />
         </span>
         {this.props.title}

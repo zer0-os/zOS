@@ -54,14 +54,8 @@ export class Message extends React.Component<Properties, State> {
 
   renderAttachment(attachment) {
     return (
-      <div
-        className='message__attachment'
-        onClick={this.openAttachment.bind(this, attachment)}
-      >
-        <AttachmentCards
-          attachments={[attachment]}
-          onAttachmentClicked={this.openAttachment.bind(this, attachment)}
-        />
+      <div className='message__attachment' onClick={this.openAttachment.bind(this, attachment)}>
+        <AttachmentCards attachments={[attachment]} onAttachmentClicked={this.openAttachment.bind(this, attachment)} />
       </div>
     );
   }
@@ -82,14 +76,8 @@ export class Message extends React.Component<Properties, State> {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
       return (
-        <div
-          className='message__block-image'
-          onClick={this.onImageClick(media)}
-        >
-          <img
-            src={url}
-            alt={name}
-          />
+        <div className='message__block-image' onClick={this.onImageClick(media)}>
+          <img src={url} alt={name} />
         </div>
       );
     } else if (MediaType.Video === type) {
@@ -106,10 +94,7 @@ export class Message extends React.Component<Properties, State> {
       return (
         <div className='message__block-audio'>
           <audio controls>
-            <source
-              src={url}
-              type='audio/mpeg'
-            />
+            <source src={url} type='audio/mpeg' />
           </audio>
         </div>
       );
@@ -152,10 +137,7 @@ export class Message extends React.Component<Properties, State> {
 
   editActions = (value: string, mentionedUserIds: string[]) => {
     return (
-      <EditMessageActions
-        onEdit={this.editMessage.bind(this, value, mentionedUserIds)}
-        onCancel={this.toggleEdit}
-      />
+      <EditMessageActions onEdit={this.editMessage.bind(this, value, mentionedUserIds)} onCancel={this.toggleEdit} />
     );
   };
 
@@ -189,19 +171,11 @@ export class Message extends React.Component<Properties, State> {
             },
           }}
         >
-          <ContentHighlighter
-            message={message}
-            mentionedUserIds={this.props.mentionedUserIds}
-          />
+          <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />
         </Linkify>
       );
     } else {
-      return (
-        <ContentHighlighter
-          message={message}
-          mentionedUserIds={this.props.mentionedUserIds}
-        />
-      );
+      return <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />;
     }
   }
 
@@ -246,16 +220,9 @@ export class Message extends React.Component<Properties, State> {
                   {message && this.renderMessageWithLinks()}
                   {preview && !hidePreview && (
                     <div className='message__block-preview-with-remove'>
-                      <LinkPreview
-                        url={preview.url}
-                        {...preview}
-                      />
+                      <LinkPreview url={preview.url} {...preview} />
                       {isOwner && (
-                        <IconButton
-                          Icon={IconXClose}
-                          onClick={this.onRemovePreview}
-                          className='remove-preview__icon'
-                        />
+                        <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
                       )}
                     </div>
                   )}

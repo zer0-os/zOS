@@ -23,19 +23,9 @@ export class IndicatorMessage extends React.Component<Properties> {
           >
             <span className='indicator__new-message-bar-text'>{this.props.countNewMessages} new messages</span>
           </button>
-          <button
-            type='button'
-            className='indicator__new-message-alt'
-            onClick={this.props.closeIndicator}
-          >
+          <button type='button' className='indicator__new-message-alt' onClick={this.props.closeIndicator}>
             Mark As Read
-            <svg
-              aria-hidden='true'
-              role='img'
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-            >
+            <svg aria-hidden='true' role='img' width='24' height='24' viewBox='0 0 24 24'>
               <path
                 fill='currentColor'
                 fill-rule='evenodd'

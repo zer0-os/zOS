@@ -21,21 +21,12 @@ export default class Menu extends React.Component<Properties> {
 
   render() {
     return (
-      <Dropzone
-        onDrop={this.imagesSelected}
-        accept={this.props.mimeTypes}
-        maxSize={this.props.maxSize}
-      >
+      <Dropzone onDrop={this.imagesSelected} accept={this.props.mimeTypes} maxSize={this.props.maxSize}>
         {({ getRootProps, getInputProps, open }) => (
           <div className='image-send'>
             <div {...getRootProps({ className: 'image-send__dropzone' })}>
               <input {...getInputProps()} />
-              <IconButton
-                onClick={open}
-                Icon={IconPaperclip}
-                size={16}
-                className='image-send__icon'
-              />
+              <IconButton onClick={open} Icon={IconPaperclip} size={16} className='image-send__icon' />
             </div>
           </div>
         )}

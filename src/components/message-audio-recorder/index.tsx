@@ -66,11 +66,7 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
             canvasHeight='20'
           />
           <div className='message-audio-recorder__icons'>
-            <IconButton
-              Icon={IconCheck}
-              onClick={this.stopRecording}
-              className='message-audio-recorder__icons-check'
-            />
+            <IconButton Icon={IconCheck} onClick={this.stopRecording} className='message-audio-recorder__icons-check' />
           </div>
         </div>
       </div>

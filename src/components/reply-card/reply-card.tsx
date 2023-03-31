@@ -24,10 +24,7 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
           <div className='reply-card__message'>
             <ContentHighlighter message={message} />
           </div>
-          <span
-            className='reply-card__icon-close'
-            onClick={this.itemRemoved}
-          />
+          <span className='reply-card__icon-close' onClick={this.itemRemoved} />
         </div>
       </div>
     );

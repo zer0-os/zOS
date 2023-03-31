@@ -139,20 +139,9 @@ export class Container extends React.Component<Properties, State> {
         })}
       >
         <div className='direct-message-chat__content'>
-          <div
-            className='direct-message-chat__title-bar'
-            onClick={this.handleHeaderClick}
-          >
-            <IconButton
-              onClick={this.handleMinimizeClick}
-              Icon={IconMinus}
-              size={12}
-            />
-            <IconButton
-              onClick={this.handleClose}
-              Icon={IconXClose}
-              size={12}
-            />
+          <div className='direct-message-chat__title-bar' onClick={this.handleHeaderClick}>
+            <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />
+            <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
           </div>
 
           <div className='direct-message-chat__header'>

@@ -34,33 +34,21 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
       menuItems.push(
-        <li
-          className='menu-button reply-item'
-          key='reply'
-          onClick={this.props.onReply}
-        >
+        <li className='menu-button reply-item' key='reply' onClick={this.props.onReply}>
           <span>Reply</span>
         </li>
       );
     }
     if (this.props.onDelete && this.props.canEdit) {
       menuItems.push(
-        <li
-          className='menu-button delete-item'
-          key='delete'
-          onClick={this.toggleDeleteDialog}
-        >
+        <li className='menu-button delete-item' key='delete' onClick={this.toggleDeleteDialog}>
           <span>Delete</span>
         </li>
       );
     }
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push(
-        <li
-          className='menu-button edit-item'
-          key='edit'
-          onClick={this.props.onEdit}
-        >
+        <li className='menu-button edit-item' key='edit' onClick={this.props.onEdit}>
           <span>Edit</span>
         </li>
       );
@@ -116,16 +104,8 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        <IconButton
-          onClick={this.open}
-          Icon={IconDotsVertical}
-          size={20}
-        />
-        <PortalMenu
-          className='portal-menu'
-          onClose={this.close}
-          isOpen={this.state.isOpen}
-        >
+        <IconButton onClick={this.open} Icon={IconDotsVertical} size={20} />
+        <PortalMenu className='portal-menu' onClose={this.close} isOpen={this.state.isOpen}>
           {menuItems}
         </PortalMenu>
         {this.showDeleteModal && this.renderDeleteModal()}

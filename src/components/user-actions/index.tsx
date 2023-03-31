@@ -65,10 +65,7 @@ export class UserActions extends React.Component<Properties, State> {
     return (
       <>
         <div className='user-actions'>
-          <button
-            className='user-actions__icon-button'
-            onClick={this.toggleConversationListState}
-          >
+          <button className='user-actions__icon-button' onClick={this.toggleConversationListState}>
             <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
             {this.props.unreadConversationMessageCount > 0 && (
               <div className='user-actions__badge'>{this.unreadConversationCount}</div>
@@ -85,12 +82,7 @@ export class UserActions extends React.Component<Properties, State> {
             )}
           </button>
           <button onClick={this.toggleUserPopupState}>
-            <Avatar
-              type='circle'
-              size='regular'
-              imageURL={this.props.userImageUrl}
-              statusType={this.userStatus}
-            />
+            <Avatar type='circle' size='regular' imageURL={this.props.userImageUrl} statusType={this.userStatus} />
           </button>
         </div>
         {this.state.isNotificationPopupOpen && (

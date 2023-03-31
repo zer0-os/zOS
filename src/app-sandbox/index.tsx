@@ -91,12 +91,7 @@ export class AppSandbox extends React.Component<Properties> {
     }
 
     if (selectedApp === Apps.Channels) {
-      return (
-        <Channels
-          {...this.appProperties}
-          store={store}
-        />
-      );
+      return <Channels {...this.appProperties} store={store} />;
     }
 
     if (selectedApp === Apps.DAOS) {

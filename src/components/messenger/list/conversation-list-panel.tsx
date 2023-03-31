@@ -88,10 +88,7 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
       >
         <div className='header-button'>
           <span className='header-button__title'>Conversations</span>
-          <span
-            className='header-button__icon'
-            onClick={this.props.toggleConversation}
-          >
+          <span className='header-button__icon' onClick={this.props.toggleConversation}>
             <IconButton
               onClick={this.props.toggleConversation}
               Icon={IconMessagePlusSquare}
@@ -109,17 +106,11 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
       <div className='messages-list__start'>
         <div className='messages-list__start-title'>
           <span className='messages-list__start-icon'>
-            <IconMessageQuestionSquare
-              size={34}
-              label='You have no messages yet'
-            />
+            <IconMessageQuestionSquare size={34} label='You have no messages yet' />
           </span>
           You have no messages yet
         </div>
-        <span
-          className='messages-list__start-conversation'
-          onClick={this.props.toggleConversation}
-        >
+        <span className='messages-list__start-conversation' onClick={this.props.toggleConversation}>
           Start a Conversation
         </span>
       </div>

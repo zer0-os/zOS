@@ -126,10 +126,7 @@ export class ChatView extends React.Component<Properties, State> {
     const allMessages = messagesByDay[day];
 
     return (
-      <div
-        className='messages'
-        key={day}
-      >
+      <div className='messages' key={day}>
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
@@ -174,10 +171,7 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderJoinButton() {
     return (
-      <div
-        onClick={this.props.joinChannel}
-        className={classNames(this.props.className, 'channel-view__join-wrapper')}
-      >
+      <div onClick={this.props.joinChannel} className={classNames(this.props.className, 'channel-view__join-wrapper')}>
         <ComponentButton>Join Channel</ComponentButton>
       </div>
     );
@@ -194,10 +188,7 @@ export class ChatView extends React.Component<Properties, State> {
     return (
       <div className={classNames('channel-view', this.props.className)}>
         {this.isShowIndicator() && (
-          <IndicatorMessage
-            countNewMessages={this.props.countNewMessages}
-            closeIndicator={this.closeIndicator}
-          />
+          <IndicatorMessage countNewMessages={this.props.countNewMessages} closeIndicator={this.closeIndicator} />
         )}
         {isLightboxOpen && (
           <Lightbox

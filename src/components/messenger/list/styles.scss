@@ -138,68 +138,6 @@
   }
 }
 
-.start__chat {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow: initial;
-
-  &-title {
-    width: 100%;
-    display: flex;
-    font-weight: 700;
-    font-size: 16px;
-    color: themeDeprecated.$actionable-color;
-    margin: 9px 0 20px -2px;
-    align-items: center;
-  }
-
-  &-return {
-    cursor: pointer;
-    font-size: 20px;
-    font-style: initial;
-    margin-right: 5px;
-    &::before {
-      content: '\2190';
-    }
-  }
-
-  &-search {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    text-align: center;
-  }
-
-  &-continue {
-    font-weight: 700;
-    font-size: 16px;
-    margin-top: 30px;
-    background: theme.$color-secondary-4 !important;
-    box-shadow: none !important;
-    cursor: pointer;
-    font-weight: 600;
-    .button__content {
-      color: theme.$color-secondary-11 !important;
-      text-shadow: none !important;
-    }
-    .button__wash {
-      background-color: theme.$color-secondary-transparency-6 !important;
-    }
-    &::before {
-      box-shadow: none !important;
-    }
-    &::after {
-      border-left: 2px solid theme.$color-secondary-11 !important;
-      border-right: 2px solid theme.$color-secondary-11 !important;
-    }
-  }
-}
-
 .messenger-list {
   &__header {
     height: 32px;
@@ -259,6 +197,22 @@
 }
 
 .create-conversation {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: initial;
+
+  &__search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+  }
+
   &__group-button {
     display: flex;
     align-items: center;

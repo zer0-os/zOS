@@ -15,6 +15,7 @@ export interface Properties {
 
 export interface State {
   isMicRecording: RecordState;
+  isMicAllowed: boolean;
 }
 
 export default class MessageAudioRecorder extends React.Component<Properties, State> {
@@ -22,13 +23,26 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
     super(props);
     this.state = {
       isMicRecording: null,
+      isMicAllowed: false,
     };
   }
 
   componentDidMount = () => {
-    this.setState({
-      isMicRecording: RecordState.START,
-    });
+    this.checkPermissions();
+  };
+
+  checkPermissions = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(() => {
+        this.setState({ isMicAllowed: true });
+        this.setState({
+          isMicRecording: RecordState.START,
+        });
+      })
+      .catch(() => {
+        this.setState({ isMicAllowed: false });
+      });
   };
 
   stopRecording = (): void => this.setState({ isMicRecording: RecordState.STOP });
@@ -44,6 +58,8 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
   };
 
   render() {
+    if (!this.state.isMicAllowed) return null;
+
     return (
       <div className='message-audio-recorder'>
         <div className='message-audio-recorder__bar'>

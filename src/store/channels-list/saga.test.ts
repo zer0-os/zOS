@@ -1,3 +1,4 @@
+import { MOCK_CREATE_DIRECT_MESSAGE_RESPONSE } from './fixtures';
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
@@ -69,6 +70,26 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .call(createDirectMessageApi, userIds)
       .run();
+  });
+
+  it('handle existing chat direct messages creation', async () => {
+    const userIds = ['7867766_7876Z2'];
+    const {
+      storeState: { channelsList, chat },
+    } = await expectSaga(createDirectMessage, { payload: { userIds } })
+      .withReducer(rootReducer)
+      .provide([
+        [
+          matchers.call.fn(createDirectMessageApi),
+          MOCK_CREATE_DIRECT_MESSAGE_RESPONSE,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(createDirectMessageApi, userIds)
+      .run();
+
+    expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
+    expect(chat.activeMessengerId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
   });
 
   it('sets status to Idle', async () => {

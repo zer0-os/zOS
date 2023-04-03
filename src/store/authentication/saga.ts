@@ -36,7 +36,7 @@ export function* nonceOrAuthorize(action) {
   }
 }
 
-export function* clearSession() {
+export function* terminate() {
   try {
     yield call(clearSessionApi);
   } catch {
@@ -107,6 +107,6 @@ export function* clearUserState() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
-  yield takeLatest(SagaActionTypes.ClearSession, clearSession);
+  yield takeLatest(SagaActionTypes.Terminate, terminate);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }

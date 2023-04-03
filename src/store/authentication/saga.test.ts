@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { setUser } from '.';
 import {
   nonceOrAuthorize,
-  clearSession,
+  terminate,
   getCurrentUserWithChatAccessToken,
   initializeUserState,
   clearUserState,
@@ -73,9 +73,9 @@ describe('authentication saga', () => {
       .run();
   });
 
-  describe('clearSession', () => {
-    it('clearSession', async () => {
-      await expectSaga(clearSession)
+  describe('terminate', () => {
+    it('terminate', async () => {
+      await expectSaga(terminate)
         .provide([
           [
             matchers.call.fn(clearSessionApi),
@@ -89,7 +89,7 @@ describe('authentication saga', () => {
     });
 
     it('clears the user state', async () => {
-      await expectSaga(clearSession)
+      await expectSaga(terminate)
         .provide([
           [
             matchers.call.fn(clearSessionApi),

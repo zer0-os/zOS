@@ -8,7 +8,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import { fetch as fetchChannels, denormalizeChannels } from '../../store/channels-list';
+import { fetchChannels, denormalizeChannels } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';

@@ -34,8 +34,8 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),
       directMessages: [],
-      fetchDirectMessages: jest.fn(),
-      createDirectMessage: jest.fn(),
+      fetchConversations: jest.fn(),
+      createConversation: jest.fn(),
       onClose: () => null,
       ...props,
     };
@@ -50,11 +50,11 @@ describe('messenger-list', () => {
   });
 
   it('start sync direct messages', function () {
-    const fetchDirectMessages = jest.fn();
+    const fetchConversations = jest.fn();
 
-    subject({ fetchDirectMessages });
+    subject({ fetchConversations });
 
-    expect(fetchDirectMessages).toHaveBeenCalledOnce();
+    expect(fetchConversations).toHaveBeenCalledOnce();
   });
 
   it('publishes close event when titlebar X clicked', function () {
@@ -133,19 +133,19 @@ describe('messenger-list', () => {
   });
 
   it('creates a one on one conversation when user selected', async function () {
-    const createDirectMessage = jest.fn();
-    const wrapper = subject({ createDirectMessage });
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation });
     wrapper.find('.header-button__icon').simulate('click');
 
     // Can't do simulate on custom components when rendering fully?
     wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
 
-    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
+    expect(createConversation).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
   });
 
   it('returns to conversation list when one on one conversation created', async function () {
-    const createDirectMessage = jest.fn();
-    const wrapper = subject({ createDirectMessage });
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation });
     wrapper.find('.header-button__icon').simulate('click');
 
     // Can't do simulate on custom components when rendering fully?
@@ -266,8 +266,8 @@ describe('messenger-list', () => {
     });
 
     it('creates a group conversation when users selected', async function () {
-      const createDirectMessage = jest.fn();
-      const wrapper = subject({ createDirectMessage });
+      const createConversation = jest.fn();
+      const wrapper = subject({ createConversation });
       wrapper.find('.header-button__icon').simulate('click');
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
       wrapper.update();
@@ -278,7 +278,7 @@ describe('messenger-list', () => {
         'selected-id-2',
       ]);
 
-      expect(createDirectMessage).toHaveBeenCalledWith({
+      expect(createConversation).toHaveBeenCalledWith({
         userIds: [
           'selected-id-1',
           'selected-id-2',
@@ -287,8 +287,8 @@ describe('messenger-list', () => {
     });
 
     it('returns to conversation list when one on one conversation created', async function () {
-      const createDirectMessage = jest.fn();
-      const wrapper = subject({ createDirectMessage });
+      const createConversation = jest.fn();
+      const wrapper = subject({ createConversation });
       wrapper.find('.header-button__icon').simulate('click');
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
       wrapper.update();

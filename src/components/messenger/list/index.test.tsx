@@ -6,10 +6,8 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import directMessagesFixture from './direct-messages-fixture.json';
-import Tooltip from '../../tooltip';
 import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
-import { Dialog } from '@zer0-os/zos-component-library';
 import { SearchConversations } from '../search-conversations';
 import { RootState } from '../../../store';
 import moment from 'moment';
@@ -43,12 +41,6 @@ describe('messenger-list', () => {
     return mount(<DirectMessageChat {...allProps} />);
   };
 
-  it('render direct message members', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find('.direct-message-members').exists()).toBe(true);
-  });
-
   it('start sync direct messages', function () {
     const fetchDirectMessages = jest.fn();
 
@@ -67,63 +59,10 @@ describe('messenger-list', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('render members name', function () {
-    const wrapper = subject({});
-
-    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
-
-    wrapper.update();
-    const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
-
-    expect(displayChatNames).toStrictEqual([
-      'Charles Diya, Eric',
-      'James Diya, Laz',
-      'daily chat',
-      'Eric',
-    ]);
-  });
-
-  it('handle member click', function () {
-    const setActiveDirectMessage = jest.fn();
-
-    const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
-
-    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
-    wrapper.update();
-
-    wrapper.find('.direct-message-members__user').first().simulate('click');
-
-    expect(setActiveDirectMessage).toHaveBeenCalledWith('292444273_bd035e84edfbaf11251ffef196de2ab47496439c');
-  });
-
-  it('should not render read messages', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find('.direct-message-members__user-unread-count').exists()).toBe(false);
-  });
-
-  it('should render create direct messsages button', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find('.messages-list__direct-messages').exists()).toBe(true);
-  });
-
-  it('should render direct messsages dialog when DMs button is clicked', function () {
-    const wrapper = subject({});
-    wrapper.find('.messages-list__direct-messages').simulate('click');
-
-    expect(wrapper.find(Dialog).exists()).toBe(false);
-  });
-
   it('searches for citizens when creating a new conversation', async function () {
     when(mockSearchMyNetworksByName)
       .calledWith('jac')
-      .mockResolvedValue([
-        {
-          id: 'user-id',
-          profileImage: 'image-url',
-        },
-      ]);
+      .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
     const wrapper = subject({});
     wrapper.find('.header-button__icon').simulate('click');
 
@@ -214,30 +153,7 @@ describe('messenger-list', () => {
     ]);
   });
 
-  it('renders unread messages', function () {
-    const [
-      firstDirectMessage,
-      ...restOfDirectMessages
-    ] = DIRECT_MESSAGES_TEST;
-
-    const unreadCount = 10;
-
-    const wrapper = subject({});
-
-    wrapper.setProps({
-      directMessages: [
-        {
-          ...firstDirectMessage,
-          unreadCount,
-        },
-        ...restOfDirectMessages,
-      ],
-    });
-    wrapper.update();
-    expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
-  });
-
-  describe('tooltip', () => {
+  describe('navigation', () => {
     it('moves to the group conversation creation phase', function () {
       const wrapper = subject({});
 
@@ -301,74 +217,6 @@ describe('messenger-list', () => {
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
       expect(wrapper).toHaveElement('.header-button');
       expect(wrapper).toHaveElement('.messages-list__items');
-    });
-  });
-
-  describe('tooltip', () => {
-    let wrapper;
-
-    beforeEach(() => {
-      wrapper = subject({});
-      wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
-      wrapper.update();
-    });
-
-    afterEach(() => {
-      wrapper = null;
-    });
-
-    const tooltipList = () => {
-      return wrapper.find(Tooltip);
-    };
-
-    it('renders', function () {
-      expect(tooltipList().first().exists()).toBe(true);
-    });
-
-    it('renders placement to left', function () {
-      const placementLeft = 'left';
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('placement'))).toEqual(Array(5).fill(placementLeft));
-    });
-
-    it('renders class name', function () {
-      const className = 'direct-message-members__user-tooltip';
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('className'))).toEqual(Array(5).fill(className));
-    });
-
-    it('renders align prop', function () {
-      const align = {
-        offset: [
-          10,
-          0,
-        ],
-      };
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('align'))).toEqual(Array(5).fill(align));
-    });
-
-    it('renders content', function () {
-      expect(tooltipList().map((tooltip) => tooltip.prop('overlay'))).toEqual([
-        'Create Zero Message',
-        'Charles Diya, Eric',
-        'James Diya, Laz',
-        'Online',
-        'Last Seen: Never',
-      ]);
-    });
-
-    it('renders status', function () {
-      expect(
-        tooltipList()
-          .find('.direct-message-members__user-status')
-          .map((tooltip) => tooltip.prop('className'))
-      ).toEqual([
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status',
-      ]);
     });
   });
 

@@ -8,12 +8,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import {
-  fetch as fetchChannels,
-  startChannelsAutoRefresh,
-  stopChannelsAutoRefresh,
-  denormalizeChannels,
-} from '../../store/channels-list';
+import { fetch as fetchChannels, denormalizeChannels } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
@@ -22,7 +17,6 @@ import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-l
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
-import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -36,12 +30,7 @@ export interface Properties extends PublicProperties {
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
-  startChannelsAutoRefresh: (domainId: string) => void;
-  stopChannelsAutoRefresh: () => void;
   user: AuthenticationState['user'];
-  context: {
-    isAuthenticated: boolean;
-  };
 }
 
 export class Container extends React.Component<Properties> {
@@ -62,41 +51,21 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
-      startChannelsAutoRefresh,
-      stopChannelsAutoRefresh,
     };
   }
 
   componentDidMount() {
-    const {
-      context: { isAuthenticated },
-      domainId,
-    } = this.props;
+    const { domainId } = this.props;
 
     this.props.fetchChannels(domainId);
-
-    if (isAuthenticated) {
-      this.props.startChannelsAutoRefresh(domainId);
-    }
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const {
-      context: { isAuthenticated },
-      user,
-      domainId,
-    } = this.props;
+    const { user, domainId } = this.props;
 
-    if (isAuthenticated) {
-      if (prevProps.user.data !== user.data) {
-        this.props.fetchChannels(domainId);
-        this.props.startChannelsAutoRefresh(domainId);
-      }
+    if (prevProps.user.data !== user.data) {
+      this.props.fetchChannels(domainId);
     }
-  }
-
-  componentWillUnmount() {
-    this.props.stopChannelsAutoRefresh();
   }
 
   renderChannelView() {
@@ -126,4 +95,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChannelsContainer = withAuthenticationContext<PublicProperties>(connectContainer<{}>(Container));
+export const ChannelsContainer = connectContainer<PublicProperties>(Container);

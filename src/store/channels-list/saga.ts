@@ -1,6 +1,6 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, delay } from 'redux-saga/effects';
+import { takeLatest, put, call, delay, take, race } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
@@ -76,38 +76,31 @@ export function* createDirectMessage(action) {
   }
 }
 
-export function* unreadCountUpdated(action) {
-  const channels = yield call(fetchChannels, action.payload);
-  const directMessages = yield call(fetchDirectMessagesApi);
+function* fetchChannelsAndConversations() {
+  const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));
 
-  const channelsList = channels.map((channel) => channelMapper(channel));
-
-  const directMessagesList = directMessages.map((channel) => channelMapper(channel));
-
-  yield put(
-    receive([
-      ...channelsList,
-      ...directMessagesList,
-    ])
-  );
-}
-
-export function* stopChannelsAutoRefresh() {
-  yield put(setStatus(AsyncListStatus.Stopped));
-}
-
-function* startChannelsAutoRefresh(action) {
-  while (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
-    yield call(unreadCountUpdated, action);
+  if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
+    yield call(fetch, { payload: domainId });
+    yield call(fetchDirectMessages);
 
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
 
+function* startChannelsAndConversationsRefresh() {
+  while (true) {
+    const { terminate, _result } = yield race({
+      terminate: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
+      result: call(fetchChannelsAndConversations),
+    });
+
+    if (terminate) break;
+  }
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
-  yield takeLatest(SagaActionTypes.StartChannelsAutoRefresh, startChannelsAutoRefresh);
-  yield takeLatest(SagaActionTypes.StopChannelsAutoRefresh, stopChannelsAutoRefresh);
+  yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchDirectMessages, fetchDirectMessages);
   yield takeLatest(SagaActionTypes.CreateDirectMessage, createDirectMessage);
 }

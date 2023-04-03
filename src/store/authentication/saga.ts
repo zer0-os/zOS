@@ -1,6 +1,7 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
+import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -82,6 +83,11 @@ function* setUserAndChatAccessToken(params: {
         isLoading,
       })
     ),
+    put({
+      type: user
+        ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
+        : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
+    }),
   ]);
 
   if (user) {

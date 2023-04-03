@@ -7,6 +7,7 @@ export enum SagaActionTypes {
   Terminate = 'authentication/saga/terminate',
   FetchCurrentUserWithChatAccessToken = 'authentication/saga/fetchCurrentUserWithChatAccessToken',
 }
+
 const nonceOrAuthorize = createAction<Payload>(SagaActionTypes.NonceOrAuthorize);
 const terminate = createAction<Payload>(SagaActionTypes.Terminate);
 const fetchCurrentUserWithChatAccessToken = createAction<Payload>(SagaActionTypes.FetchCurrentUserWithChatAccessToken);

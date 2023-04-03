@@ -29,7 +29,7 @@ enum Stage {
 
 interface State {
   showCreateConversation: boolean;
-  directMessagesList: Channel[];
+  visibleDirectMessageIds: Channel['id'][];
   stage: Stage;
 }
 export interface Properties extends PublicProperties {
@@ -42,7 +42,7 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties, State> {
   state = {
     showCreateConversation: false,
-    directMessagesList: [],
+    visibleDirectMessageIds: [],
     stage: Stage.List,
   };
 
@@ -66,7 +66,7 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount(): void {
     this.props.fetchDirectMessages();
-    this.setState({ directMessagesList: this.props.directMessages });
+    this.setVisibleDirectMessageIds(this.props.directMessages);
   }
 
   componentDidUpdate(prevProps: Properties): void {
@@ -75,7 +75,13 @@ export class Container extends React.Component<Properties, State> {
     // This might be broken. What happens if you're searching conversations and a real-time update comes in?
     // Would that break your search results?
     if (directMessages && prevProps.directMessages && directMessages.length !== prevProps.directMessages.length) {
-      this.setState({ directMessagesList: directMessages });
+      this.setVisibleDirectMessageIds(directMessages);
+    }
+  }
+
+  setVisibleDirectMessageIds(directMessages: Channel[]) {
+    if (Array.isArray(directMessages)) {
+      this.setState({ visibleDirectMessageIds: directMessages.map((directMessage) => directMessage.id) });
     }
   }
 
@@ -84,9 +90,9 @@ export class Container extends React.Component<Properties, State> {
   };
 
   reset = (): void => {
+    this.setVisibleDirectMessageIds(this.props.directMessages);
     this.setState({
       stage: Stage.List,
-      directMessagesList: this.props.directMessages,
     });
   };
 
@@ -99,9 +105,10 @@ export class Container extends React.Component<Properties, State> {
   };
 
   startConversation = (): void => {
+    this.setVisibleDirectMessageIds(this.props.directMessages);
+
     this.setState({
       stage: Stage.CreateOneOnOne,
-      directMessagesList: this.props.directMessages,
     });
   };
 
@@ -117,8 +124,9 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
-  conversationInMyNetworks = (directMessagesList: Channel[]) => {
-    this.setState({ directMessagesList });
+  conversationInMyNetworks = (directMessages: Channel[]) => {
+    this.setVisibleDirectMessageIds(directMessages);
+    // this.setState({ visibleDirectMessageIds: visibleDirectMessages });
   };
 
   createOneOnOneConversation = (id: string): void => {
@@ -150,7 +158,7 @@ export class Container extends React.Component<Properties, State> {
           {this.state.stage === Stage.List && (
             <ConversationListPanel
               directMessages={this.props.directMessages}
-              directMessagesList={this.state.directMessagesList}
+              visibleDirectMessageIds={this.state.visibleDirectMessageIds}
               conversationInMyNetworks={this.conversationInMyNetworks}
               handleMemberClick={this.handleMemberClick}
               toggleConversation={this.startConversation}

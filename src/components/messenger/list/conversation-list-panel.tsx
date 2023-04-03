@@ -11,7 +11,7 @@ import { IconButton } from '../../icon-button';
 
 interface ConversationListPanelProperties {
   directMessages: Channel[];
-  directMessagesList: Channel[];
+  visibleDirectMessageIds: Channel['id'][];
   conversationInMyNetworks: (directMessagesList: Channel[]) => void;
   handleMemberClick: (directMessageId: string) => void;
   toggleConversation: () => void;
@@ -117,11 +117,24 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
     );
   };
 
+  renderConversations() {
+    if (this.props.directMessages.length < 0) {
+      return null;
+    } else {
+      return this.props.directMessages.map((directMessage) => {
+        if (this.props.visibleDirectMessageIds.includes(directMessage.id)) {
+          return this.renderMember(directMessage);
+        }
+        return null;
+      });
+    }
+  }
+
   render() {
     return (
       <>
         <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
-        {this.props.directMessagesList && (
+        {this.props.visibleDirectMessageIds && (
           <div className='messages-list__items'>
             <div className='messages-list__items-conversations-input'>
               <SearchConversations
@@ -132,11 +145,14 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
                 mapSearchConversationsText={otherMembersToString}
               />
             </div>
-            <div className='messages-list__item-list'>{this.props.directMessagesList.map(this.renderMember)}</div>
+            {/* <div className='messages-list__item-list'>{this.props.visibleDirectMessageIds.map(this.renderMember)}</div> */}
+            <div className='messages-list__item-list'>{this.renderConversations()}</div>
           </div>
         )}
         {/* Note: this does not work. directMessagesList is never null */}
-        {!this.props.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        {!this.props.visibleDirectMessageIds && (
+          <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>
+        )}
       </>
     );
   }

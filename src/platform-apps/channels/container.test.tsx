@@ -24,7 +24,7 @@ describe('ChannelsContainer', () => {
     const allProps = {
       store: getStore(),
       fetchChannels: () => undefined,
-      receiveUnreadCount: () => undefined,
+      startChannelsAutoRefresh: () => undefined,
       stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
@@ -58,23 +58,23 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('set receiveUnreadCount channels on mount when authenticated', () => {
+  it('set startChannelsAutoRefresh channels on mount when authenticated', () => {
     const domainId = '0x000000000000000000000000000000000000000A';
     const fetchChannels = jest.fn();
-    const receiveUnreadCount = jest.fn();
+    const startChannelsAutoRefresh = jest.fn();
 
-    subject({ domainId, fetchChannels, receiveUnreadCount });
+    subject({ domainId, fetchChannels, startChannelsAutoRefresh });
 
-    expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
+    expect(startChannelsAutoRefresh).toHaveBeenCalledWith(domainId);
   });
 
-  it('do not set receiveUnreadCount channels on mount when anonymous', () => {
+  it('do not set startChannelsAutoRefresh channels on mount when anonymous', () => {
     const fetchChannels = jest.fn();
-    const receiveUnreadCount = jest.fn();
+    const startChannelsAutoRefresh = jest.fn();
 
-    subject({ fetchChannels, receiveUnreadCount, context: { isAuthenticated: false } });
+    subject({ fetchChannels, startChannelsAutoRefresh, context: { isAuthenticated: false } });
 
-    expect(receiveUnreadCount).not.toHaveBeenCalled();
+    expect(startChannelsAutoRefresh).not.toHaveBeenCalled();
   });
 
   it('wraps ChannelList in AppContextPanel', () => {

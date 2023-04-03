@@ -92,11 +92,11 @@ export function* unreadCountUpdated(action) {
   );
 }
 
-export function* stopSyncChannels() {
+export function* stopChannelsAutoRefresh() {
   yield put(setStatus(AsyncListStatus.Stopped));
 }
 
-function* syncUnreadCount(action) {
+function* startChannelsAutoRefresh(action) {
   while (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
     yield call(unreadCountUpdated, action);
 
@@ -106,8 +106,8 @@ function* syncUnreadCount(action) {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
-  yield takeLatest(SagaActionTypes.ReceiveUnreadCount, syncUnreadCount);
-  yield takeLatest(SagaActionTypes.StopSyncChannels, stopSyncChannels);
+  yield takeLatest(SagaActionTypes.StartChannelsAutoRefresh, startChannelsAutoRefresh);
+  yield takeLatest(SagaActionTypes.StopChannelsAutoRefresh, stopChannelsAutoRefresh);
   yield takeLatest(SagaActionTypes.FetchDirectMessages, fetchDirectMessages);
   yield takeLatest(SagaActionTypes.CreateDirectMessage, createDirectMessage);
 }

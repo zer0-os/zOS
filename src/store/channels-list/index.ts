@@ -7,15 +7,15 @@ import { CreateMessengerConversation } from './types';
 export enum SagaActionTypes {
   Fetch = 'channelsList/saga/fetch',
   CreateDirectMessage = 'directMessages/saga/createDirectMessage',
-  ReceiveUnreadCount = 'channelsList/saga/receiveUnreadCount',
-  StopSyncChannels = 'channelsList/saga/stopSyncChannels',
+  StartChannelsAutoRefresh = 'channelsList/saga/startChannelsAutoRefresh',
+  StopChannelsAutoRefresh = 'channelsList/saga/stopChannelsAutoRefresh',
   FetchDirectMessages = 'channelsList/saga/fetchDirectMessages',
 }
 
 const fetch = createAction<string>(SagaActionTypes.Fetch);
 const createDirectMessage = createAction<CreateMessengerConversation>(SagaActionTypes.CreateDirectMessage);
-const receiveUnreadCount = createAction<string>(SagaActionTypes.ReceiveUnreadCount);
-const stopSyncChannels = createAction<string>(SagaActionTypes.StopSyncChannels);
+const startChannelsAutoRefresh = createAction<string>(SagaActionTypes.StartChannelsAutoRefresh);
+const stopChannelsAutoRefresh = createAction<string>(SagaActionTypes.StopChannelsAutoRefresh);
 const fetchDirectMessages = createAction<string>(SagaActionTypes.FetchDirectMessages);
 
 const slice = createNormalizedListSlice({
@@ -25,7 +25,7 @@ const slice = createNormalizedListSlice({
 
 export const { receiveNormalized, setStatus, receive } = slice.actions;
 export const { reducer, normalize, denormalize } = slice;
-export { fetch, receiveUnreadCount, stopSyncChannels, fetchDirectMessages, createDirectMessage };
+export { fetch, startChannelsAutoRefresh, stopChannelsAutoRefresh, fetchDirectMessages, createDirectMessage };
 
 export function denormalizeChannels(state) {
   return denormalize(state.channelsList.value, state).filter((c) => c.isChannel);

@@ -7,7 +7,7 @@ import {
   fetchDirectMessages as fetchDirectMessagesApi,
   createDirectMessage as createDirectMessageApi,
 } from './api';
-import { fetch, stopSyncChannels, unreadCountUpdated, fetchDirectMessages, createDirectMessage } from './saga';
+import { fetch, stopChannelsAutoRefresh, unreadCountUpdated, fetchDirectMessages, createDirectMessage } from './saga';
 
 import { setStatus } from '.';
 import { rootReducer } from '..';
@@ -226,7 +226,7 @@ describe('channels list saga', () => {
   it('sets status to Stopped', async () => {
     const {
       storeState: { channelsList },
-    } = await expectSaga(stopSyncChannels).withReducer(rootReducer).run();
+    } = await expectSaga(stopChannelsAutoRefresh).withReducer(rootReducer).run();
 
     expect(channelsList.status).toBe(AsyncListStatus.Stopped);
   });

@@ -10,8 +10,8 @@ import { connectContainer } from '../../store/redux-container';
 
 import {
   fetch as fetchChannels,
-  receiveUnreadCount,
-  stopSyncChannels,
+  startChannelsAutoRefresh,
+  stopChannelsAutoRefresh,
   denormalizeChannels,
 } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
@@ -36,8 +36,8 @@ export interface Properties extends PublicProperties {
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
-  receiveUnreadCount: (domainId: string) => void;
-  stopSyncChannels: () => void;
+  startChannelsAutoRefresh: (domainId: string) => void;
+  stopChannelsAutoRefresh: () => void;
   user: AuthenticationState['user'];
   context: {
     isAuthenticated: boolean;
@@ -62,8 +62,8 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
-      receiveUnreadCount,
-      stopSyncChannels,
+      startChannelsAutoRefresh,
+      stopChannelsAutoRefresh,
     };
   }
 
@@ -76,7 +76,7 @@ export class Container extends React.Component<Properties> {
     this.props.fetchChannels(domainId);
 
     if (isAuthenticated) {
-      this.props.receiveUnreadCount(domainId);
+      this.props.startChannelsAutoRefresh(domainId);
     }
   }
 
@@ -90,13 +90,13 @@ export class Container extends React.Component<Properties> {
     if (isAuthenticated) {
       if (prevProps.user.data !== user.data) {
         this.props.fetchChannels(domainId);
-        this.props.receiveUnreadCount(domainId);
+        this.props.startChannelsAutoRefresh(domainId);
       }
     }
   }
 
   componentWillUnmount() {
-    this.props.stopSyncChannels();
+    this.props.stopChannelsAutoRefresh();
   }
 
   renderChannelView() {

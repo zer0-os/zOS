@@ -24,3 +24,12 @@ expect.extend({
     };
   },
 });
+
+// Hack to allow us to dynamically regenerate the mock files for zUI
+// Running a single test with this env var set will recreate the files.
+if (process.env.BUILD_MOCKS === 'true') {
+  require('./build-mocks');
+} else {
+  require('./icon-mocks');
+  require('./component-mocks');
+}

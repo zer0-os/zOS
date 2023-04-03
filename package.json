@@ -81,7 +81,8 @@
     "code-format:staged:fix": "pretty-quick --staged",
     "code-format:validate": "prettier --check 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "code-format:fix": "prettier --write 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx"
   },
   "browserslist": {
     "production": [

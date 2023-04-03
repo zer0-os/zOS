@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Avatar } from '@zero-tech/zui/components/Avatar';
+import { Avatar } from '@zero-tech/zui/components';
 
 import './style.scss';
 import moment from 'moment';

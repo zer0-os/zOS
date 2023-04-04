@@ -1,5 +1,6 @@
 import { MOCK_CREATE_DIRECT_MESSAGE_RESPONSE } from './fixtures';
-import { expectSaga } from 'redux-saga-test-plan';
+import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
@@ -8,9 +9,16 @@ import {
   createConversation as createConversationApi,
 } from './api';
 
-import { fetchChannels, fetchConversations, createConversation } from './saga';
+import {
+  fetchChannels,
+  fetchConversations,
+  createConversation,
+  fetchChannelsAndConversations,
+  delay,
+  startChannelsAndConversationsRefresh,
+} from './saga';
 
-import { setStatus } from '.';
+import { SagaActionTypes, setStatus } from '.';
 import { rootReducer } from '..';
 import { AsyncListStatus } from '../normalized';
 
@@ -168,67 +176,86 @@ describe('channels list saga', () => {
     });
   });
 
-  // xit('set unreadCountUpdated on channels', async () => {
-  //   const channel = {
-  //     id: 'channel-1',
-  //     name: 'the channel',
-  //     icon: 'channel-icon',
-  //     category: 'channel-category',
-  //     unreadCount: 1,
-  //     hasJoined: true,
-  //     isChannel: true,
-  //     otherMembers: [],
-  //   };
-  //
-  //   const directMessage = {
-  //     id: 'direct-message-1',
-  //     name: 'the direct message',
-  //     icon: 'channel-icon',
-  //     category: 'dm',
-  //     unreadCount: 1,
-  //     hasJoined: true,
-  //     isChannel: false,
-  //     otherMembers: [],
-  //     lastMessage: {},
-  //     lastMessageCreatedAt: undefined,
-  //   };
-  //
-  //   const {
-  //     storeState: { normalized },
-  //   } = await expectSaga(unreadCountUpdated, { payload: '0x000000000000000000000000000000000000000A' })
-  //     .provide([
-  //       [
-  //         matchers.call.fn(fetchChannelsApi),
-  //         [channel],
-  //       ],
-  //       [
-  //         matchers.call.fn(fetchConversationsApi),
-  //         [directMessage],
-  //       ],
-  //     ])
-  //     .withReducer(rootReducer)
-  //     .run();
-  //
-  //   expect(normalized.channels).toStrictEqual({
-  //     [channel.id]: {
-  //       ...channel,
-  //       groupChannelType: '',
-  //       lastMessage: null,
-  //       lastMessageCreatedAt: null,
-  //     },
-  //     [directMessage.id]: {
-  //       ...directMessage,
-  //       groupChannelType: '',
-  //       lastMessageCreatedAt: null,
-  //     },
-  //   });
-  // });
+  it('verify fetchChannelsAndConversations', async () => {
+    const rootDomainId = '12345';
 
-  // xit('sets status to Stopped', async () => {
-  //   const {
-  //     storeState: { channelsList },
-  //   } = await expectSaga(stopChannelsAutoRefresh).withReducer(rootReducer).run();
-  //
-  //   expect(channelsList.status).toBe(AsyncListStatus.Stopped);
-  // });
+    const channel = {
+      id: 'channel-id-1',
+      name: 'the channel',
+      icon: 'channel-icon',
+      category: 'channel-category',
+      unreadCount: 1,
+      hasJoined: true,
+      isChannel: true,
+      otherMembers: [],
+      lastMessage: {},
+      lastMessageCreatedAt: null,
+      groupChannelType: '',
+    };
+
+    const conversation = {
+      id: 'conversation-id-1',
+      name: 'the conversation',
+      icon: 'conversation-icon',
+      category: null,
+      unreadCount: 2,
+      hasJoined: true,
+      isChannel: false,
+      otherMembers: [],
+      lastMessage: {},
+      lastMessageCreatedAt: null,
+      groupChannelType: '',
+    };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(fetchChannelsAndConversations)
+      .provide([
+        [
+          matchers.call(fetchChannelsApi, rootDomainId),
+          [channel],
+        ],
+        [
+          matchers.call.fn(fetchConversationsApi),
+          [conversation],
+        ],
+        [
+          matchers.call.fn(delay),
+          null,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .withState({ zns: { value: { rootDomainId } } })
+      .run();
+
+    expect(normalized.channels).toStrictEqual({
+      [channel.id]: {
+        ...channel,
+      },
+      [conversation.id]: {
+        ...conversation,
+      },
+    });
+  });
+
+  it('verify startChannelsAndConversationsRefresh', () => {
+    testSaga(startChannelsAndConversationsRefresh)
+      .next({ abort: undefined, success: true })
+      .inspect((raceValue) => {
+        expect(raceValue).toStrictEqual(
+          race({
+            abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
+            success: call(fetchChannelsAndConversations),
+          })
+        );
+      })
+
+      .next({ abort: true, success: undefined })
+      .inspect((returnValue) => {
+        expect(returnValue).toBeFalse();
+      })
+
+      .next()
+      .isDone();
+  });
 });

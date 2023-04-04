@@ -19,6 +19,7 @@ import {
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
+import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -56,6 +57,7 @@ describe('authentication saga', () => {
       .call(nonceOrAuthorizeApi, signedWeb3Token)
       .put(setUser({ data: currentUserResponse, nonce: null, isLoading: false }))
       .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
+      .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
       .run();
   });
 
@@ -74,7 +76,7 @@ describe('authentication saga', () => {
   });
 
   describe('terminate', () => {
-    it('terminate', async () => {
+    it('verifies terminate orchestration', async () => {
       await expectSaga(terminate)
         .provide([
           [
@@ -85,6 +87,7 @@ describe('authentication saga', () => {
         .call(clearSessionApi)
         .put(setUser({ data: null, isLoading: false, nonce: null }))
         .put(setChatAccessToken({ value: null, isLoading: false }))
+        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
         .run();
     });
 

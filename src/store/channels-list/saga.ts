@@ -1,6 +1,6 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, delay, take, race } from 'redux-saga/effects';
+import { takeLatest, put, call, take, race } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
@@ -18,6 +18,7 @@ const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
 const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
+export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
@@ -77,25 +78,25 @@ export function* createConversation(action) {
   }
 }
 
-function* fetchChannelsAndConversations() {
-  const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));
-
+export function* fetchChannelsAndConversations() {
   if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
+    const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));
     yield call(fetchChannels, { payload: domainId });
+
     yield call(fetchConversations);
 
-    yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
+    yield call(delay, FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
 
-function* startChannelsAndConversationsRefresh() {
+export function* startChannelsAndConversationsRefresh() {
   while (true) {
-    const { terminate, _result } = yield race({
-      terminate: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
-      result: call(fetchChannelsAndConversations),
+    const { abort, _success } = yield race({
+      abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
+      success: call(fetchChannelsAndConversations),
     });
 
-    if (terminate) break;
+    if (abort) return false;
   }
 }
 

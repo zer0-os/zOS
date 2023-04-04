@@ -9,7 +9,7 @@ import { Channel } from '../../../store/channels';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 
-interface ConversationListPanelProperties {
+export interface ConversationListPanelProperties {
   directMessages: Channel[];
   visibleDirectMessageIds: Channel['id'][];
   conversationInMyNetworks: (directMessagesList: Channel[]) => void;
@@ -145,7 +145,6 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
                 mapSearchConversationsText={otherMembersToString}
               />
             </div>
-            {/* <div className='messages-list__item-list'>{this.props.visibleDirectMessageIds.map(this.renderMember)}</div> */}
             <div className='messages-list__item-list'>{this.renderConversations()}</div>
           </div>
         )}

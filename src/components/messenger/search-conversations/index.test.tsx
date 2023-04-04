@@ -8,9 +8,7 @@ describe('SearchConversations', () => {
     const allProps: Properties = {
       className: '',
       placeholder: '',
-      directMessagesList: [],
-      onInputChange: () => null,
-      mapSearchConversationsText: () => null,
+      onChange: () => null,
       ...props,
     };
 
@@ -38,13 +36,13 @@ describe('SearchConversations', () => {
     expect(wrapper.find('.search_conversation-input').exists()).toBe(true);
   });
 
-  it('publishes onInputChange', async () => {
-    const onInputChange = jest.fn();
+  it('publishes onChange', async () => {
+    const onChange = jest.fn();
     const inputSearch = 'anything';
-    const wrapper = subject({ onInputChange });
+    const wrapper = subject({ onChange });
 
     wrapper.find('.search_conversation-input').simulate('change', { target: { value: inputSearch } });
 
-    expect(onInputChange).toHaveBeenCalledWith(inputSearch);
+    expect(onChange).toHaveBeenCalledWith(inputSearch);
   });
 });

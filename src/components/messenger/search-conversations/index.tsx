@@ -1,23 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Channel } from '../../../store/channels';
-import { User } from '../../../store/channels';
 
 import './styles.scss';
 export interface Properties {
   className?: string;
   placeholder?: string;
-  directMessagesList?: Channel[];
 
-  onInputChange: (value: string) => void;
-  mapSearchConversationsText: (directMessages: User[]) => string;
+  onChange: (value: string) => void;
 }
 
-interface State {}
-
-export class SearchConversations extends React.Component<Properties, State> {
+export class SearchConversations extends React.Component<Properties> {
   publishSearch = (search) => {
-    this.props.onInputChange(search?.target?.value ?? '');
+    this.props.onChange(search?.target?.value ?? '');
   };
 
   render() {

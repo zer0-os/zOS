@@ -49,7 +49,7 @@ describe('ConversationListPanel', () => {
       'convo-3',
     ]);
 
-    wrapper.find('SearchConversations').simulate('inputChange', 'jac');
+    wrapper.find('SearchConversations').simulate('change', 'jac');
 
     displayChatNames = renderedConversations(wrapper).map((c) => c.name);
     expect(displayChatNames).toStrictEqual([

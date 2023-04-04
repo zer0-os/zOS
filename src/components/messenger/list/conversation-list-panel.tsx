@@ -93,9 +93,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             <SearchConversations
               className='messages-list__items-conversations-search'
               placeholder='Search contacts...'
-              directMessagesList={this.props.directMessages}
-              onInputChange={this.searchChanged}
-              mapSearchConversationsText={otherMembersToString}
+              onChange={this.searchChanged}
             />
           </div>
           <div className='messages-list__item-list'>

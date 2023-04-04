@@ -10,16 +10,35 @@ import { ConversationItem } from './conversation-item';
 
 export interface Properties {
   directMessages: Channel[];
-  directMessagesList: Channel[];
-  conversationInMyNetworks: (directMessagesList: Channel[]) => void;
   handleMemberClick: (directMessageId: string) => void;
   toggleConversation: () => void;
 }
 
-export class ConversationListPanel extends React.Component<Properties> {
+interface State {
+  filter: string;
+}
+
+export class ConversationListPanel extends React.Component<Properties, State> {
+  state = { filter: '' };
+
   handleMemberClick = (directMessageId: string) => {
     this.props.handleMemberClick(directMessageId);
   };
+
+  searchChanged = (search: string) => {
+    this.setState({ filter: search });
+  };
+
+  get filteredConversations() {
+    if (this.state.filter === '') {
+      return this.props.directMessages;
+    }
+
+    const searchRegEx = new RegExp(this.state.filter, 'i');
+    return this.props.directMessages.filter((conversation) =>
+      searchRegEx.test(otherMembersToString(conversation.otherMembers))
+    );
+  }
 
   renderNewMessageModal = (): JSX.Element => {
     return (
@@ -69,26 +88,22 @@ export class ConversationListPanel extends React.Component<Properties> {
     return (
       <>
         <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
-        {this.props.directMessagesList && (
-          <div className='messages-list__items'>
-            <div className='messages-list__items-conversations-input'>
-              <SearchConversations
-                className='messages-list__items-conversations-search'
-                placeholder='Search contacts...'
-                directMessagesList={this.props.directMessages}
-                onChange={this.props.conversationInMyNetworks}
-                mapSearchConversationsText={otherMembersToString}
-              />
-            </div>
-            <div className='messages-list__item-list'>
-              {this.props.directMessagesList.map((dm) => (
-                <ConversationItem key={dm.id} conversation={dm} onClick={this.handleMemberClick} />
-              ))}
-            </div>
+        <div className='messages-list__items'>
+          <div className='messages-list__items-conversations-input'>
+            <SearchConversations
+              className='messages-list__items-conversations-search'
+              placeholder='Search contacts...'
+              onChange={this.searchChanged}
+            />
           </div>
-        )}
-        {/* Note: this does not work. directMessagesList is never null */}
-        {!this.props.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+          <div className='messages-list__item-list'>
+            {this.filteredConversations.map((dm) => (
+              <ConversationItem key={dm.id} conversation={dm} onClick={this.handleMemberClick} />
+            ))}
+          </div>
+        </div>
+        {/* Note: this does not work. directMessages is never null */}
+        {!this.props.directMessages && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </>
     );
   }

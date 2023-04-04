@@ -36,4 +36,12 @@ describe('SelectedUserTag', () => {
 
     expect(onRemove).toHaveBeenCalledWith('id-1');
   });
+
+  it('does not render remove button if no handler provided', function () {
+    const userOption = { value: 'id-1', label: 'User 1', image: 'url-1' };
+
+    const wrapper = subject({ userOption, onRemove: null });
+
+    expect(wrapper).not.toHaveElement('button');
+  });
 });

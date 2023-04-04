@@ -16,6 +16,8 @@ import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
+import { GroupDetailsPanel } from './group-details-panel';
+import { Option } from '../autocomplete-members';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -25,23 +27,31 @@ enum Stage {
   List = 'list',
   CreateOneOnOne = 'one_on_one',
   StartGroupChat = 'start_group',
+  GroupDetails = 'group_details',
 }
 
 interface State {
   showCreateConversation: boolean;
   stage: Stage;
+  groupUsers: Option[];
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
   conversations: Channel[];
   fetchConversations: () => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  getConversationsWithUsers: () => Channel[];
+}
+
+export function getConversationsWithUsers() {
+  return [];
 }
 
 export class Container extends React.Component<Properties, State> {
   state = {
     showCreateConversation: false,
     stage: Stage.List,
+    groupUsers: [],
   };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -59,6 +69,7 @@ export class Container extends React.Component<Properties, State> {
       setActiveMessengerChat: setActiveMessengerId,
       fetchConversations,
       createConversation,
+      getConversationsWithUsers,
     };
   }
 
@@ -79,6 +90,8 @@ export class Container extends React.Component<Properties, State> {
       this.setState({ stage: Stage.List });
     } else if (this.state.stage === Stage.StartGroupChat) {
       this.setState({ stage: Stage.CreateOneOnOne });
+    } else if (this.state.stage === Stage.GroupDetails) {
+      this.setState({ stage: Stage.StartGroupChat });
     }
   };
 
@@ -98,15 +111,34 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
-  createOneOnOneConversation = (id: string): void => {
+  createOneOnOneConversation = (id: string) => {
     this.props.createConversation({ userIds: [id] });
     this.reset();
   };
 
-  groupMembersSelected = (userIds: string[]): void => {
-    // For now, we just create the message. Adding group details to come in the future.
-    this.props.createConversation({ userIds });
-    this.reset();
+  // XXX: The StartGroup stage needs to return the options. I actually think we want to refactor
+  // the Option type to some root place rather than source it from the autocomplete. Does it even
+  // need to be its own type or can it be a user?
+  groupMembersSelected = async (userIds: string[]) => {
+    // XXX: include current user here or deeper?
+    // XXX: loading state for the continue button
+    const existingConversations = await this.props.getConversationsWithUsers(userIds);
+
+    if (existingConversations?.length > 0) {
+      this.props.setActiveMessengerChat(existingConversations[0].id);
+      this.reset();
+    } else {
+      this.setState({
+        stage: Stage.GroupDetails,
+        groupUsers: userIds.map((uId) => ({ vale: uId, label: 'aha' } as any)),
+      });
+    }
+  };
+
+  createGroup = async (details) => {
+    // this.props.createDirectMessage({ userIds });
+    const conversation = { userIds: details.users.map((u) => u.value) };
+    this.props.createConversation(conversation);
   };
 
   renderTitleBar() {
@@ -145,6 +177,9 @@ export class Container extends React.Component<Properties, State> {
               onContinue={this.groupMembersSelected}
               searchUsers={this.usersInMyNetworks}
             />
+          )}
+          {this.state.stage === Stage.GroupDetails && (
+            <GroupDetailsPanel users={this.state.groupUsers} onCreate={this.createGroup} onBack={this.goBack} />
           )}
         </div>
       </>

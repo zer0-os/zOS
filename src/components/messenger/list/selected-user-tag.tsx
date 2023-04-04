@@ -8,7 +8,7 @@ import { IconXClose } from '@zero-tech/zui/icons';
 export interface Properties {
   userOption: Option;
 
-  onRemove: (id: string) => void;
+  onRemove?: (id: string) => void;
 }
 
 export class SelectedUserTag extends React.Component<Properties> {
@@ -24,9 +24,11 @@ export class SelectedUserTag extends React.Component<Properties> {
         <div className='start-group-panel__selected-tag'>
           <Avatar size={'extra small'} type={'circle'} imageURL={option.image} />
           <span className='start-group-panel__user-label'>{option.label}</span>
-          <button onClick={this.publishRemove} data-value={option.value} className='start-group-panel__user-remove'>
-            <IconXClose size={16} />
-          </button>
+          {this.props.onRemove && (
+            <button onClick={this.publishRemove} data-value={option.value} className='start-group-panel__user-remove'>
+              <IconXClose size={16} />
+            </button>
+          )}
         </div>
       </div>
     );

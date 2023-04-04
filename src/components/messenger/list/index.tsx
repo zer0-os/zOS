@@ -128,7 +128,7 @@ export class Container extends React.Component<Properties, State> {
             <ConversationListPanel
               conversations={this.props.conversations}
               onConversationClick={this.openConversation}
-              toggleConversation={this.startConversation}
+              startConversation={this.startConversation}
             />
           )}
           {this.state.stage === Stage.CreateOneOnOne && (

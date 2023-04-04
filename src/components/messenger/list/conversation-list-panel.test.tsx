@@ -9,7 +9,7 @@ describe('ConversationListPanel', () => {
     const allProps: Properties = {
       conversations: [],
       onConversationClick: () => null,
-      toggleConversation: () => null,
+      startConversation: () => null,
       ...props,
     };
 

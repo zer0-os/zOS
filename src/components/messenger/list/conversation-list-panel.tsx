@@ -12,7 +12,7 @@ export interface Properties {
   conversations: Channel[];
 
   onConversationClick: (conversationId: string) => void;
-  toggleConversation: () => void;
+  startConversation: () => void;
 }
 
 interface State {
@@ -52,9 +52,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       >
         <div className='header-button'>
           <span className='header-button__title'>Conversations</span>
-          <span className='header-button__icon' onClick={this.props.toggleConversation}>
+          <span className='header-button__icon' onClick={this.props.startConversation}>
             <IconButton
-              onClick={this.props.toggleConversation}
+              onClick={this.props.startConversation}
               Icon={IconMessagePlusSquare}
               size={18}
               className='header-button__icon-plus'
@@ -74,7 +74,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </span>
           You have no messages yet
         </div>
-        <span className='messages-list__start-conversation' onClick={this.props.toggleConversation}>
+        <span className='messages-list__start-conversation' onClick={this.props.startConversation}>
           Start a Conversation
         </span>
       </div>

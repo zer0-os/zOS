@@ -102,12 +102,12 @@ function extractMessageData(jsonData, isMediaMessage) {
 }
 
 export function map(sendbirdMessage) {
-  const { message, parentMessageText, createdAt, messageId, sender, messageType, data, updatedAt } = sendbirdMessage;
+  const { message, parentMessage, createdAt, messageId, sender, messageType, data, updatedAt } = sendbirdMessage;
 
   return {
     id: messageId,
     message,
-    parentMessageText,
+    parentMessageText: parentMessage?.message,
     createdAt,
     updatedAt,
     sender: getSender(sender),

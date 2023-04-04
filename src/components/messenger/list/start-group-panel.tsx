@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { Avatar, Button } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components';
 
 import { AutocompleteMembers, Option } from '../autocomplete-members';
-import { IconXClose } from '@zero-tech/zui/icons';
 import { PanelHeader } from './panel-header';
+import { SelectedUserTag } from './selected-user-tag';
 
 export interface Properties {
   searchUsers: (input: string) => any;
@@ -37,10 +37,9 @@ export class StartGroupPanel extends React.Component<Properties, State> {
     });
   };
 
-  unselectOption = (event) => {
-    const clickedValue = event.currentTarget.dataset.value;
+  unselectOption = (value: string) => {
     this.setState({
-      selectedOptions: this.state.selectedOptions.filter((o) => o.value !== clickedValue),
+      selectedOptions: this.state.selectedOptions.filter((o) => o.value !== value),
     });
   };
 
@@ -59,20 +58,8 @@ export class StartGroupPanel extends React.Component<Properties, State> {
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected
             </div>
             <div className='start-group-panel__selected-options'>
-              {this.state.selectedOptions.map((val) => (
-                <div className='start-group-panel__selected-option' key={val.value}>
-                  <div className='start-group-panel__selected-tag'>
-                    <Avatar size={'extra small'} type={'circle'} imageURL={val.image} />
-                    <span className='start-group-panel__user-label'>{val.label}</span>
-                    <button
-                      onClick={this.unselectOption}
-                      data-value={val.value}
-                      className='start-group-panel__user-remove'
-                    >
-                      <IconXClose size={16} />
-                    </button>
-                  </div>
-                </div>
+              {this.state.selectedOptions.map((option) => (
+                <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
               ))}
             </div>
           </AutocompleteMembers>

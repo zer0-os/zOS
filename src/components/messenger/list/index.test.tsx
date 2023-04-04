@@ -5,8 +5,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
-import directMessagesFixture from './direct-messages-fixture.json';
-import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
 import { RootState } from '../../../store';
 import moment from 'moment';
@@ -14,8 +12,6 @@ import { when } from 'jest-when';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
-
-export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {

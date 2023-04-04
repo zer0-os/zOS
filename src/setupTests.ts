@@ -20,10 +20,16 @@ expect.extend({
     const pass = actual.find(finder).exists();
     return {
       pass,
-      message: pass ? () => `expected node [${finder}] not to exist` : () => `expected node [${finder}] to exist`,
+      message: pass
+        ? () => `expected node [${printable(finder)}] not to exist`
+        : () => `expected node [${printable(finder)}] to exist`,
     };
   },
 });
+
+function printable(finder) {
+  return finder.name ?? finder;
+}
 
 // Hack to allow us to dynamically regenerate the mock files for zUI
 // Running a single test with this env var set will recreate the files.

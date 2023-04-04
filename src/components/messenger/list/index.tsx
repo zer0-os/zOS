@@ -126,7 +126,6 @@ export class Container extends React.Component<Properties, State> {
 
   conversationInMyNetworks = (directMessages: Channel[]) => {
     this.setVisibleDirectMessageIds(directMessages);
-    // this.setState({ visibleDirectMessageIds: visibleDirectMessages });
   };
 
   createOneOnOneConversation = (id: string): void => {

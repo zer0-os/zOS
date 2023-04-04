@@ -9,7 +9,7 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 
 export interface Properties {
-  directMessages: Channel[];
+  conversations: Channel[];
 
   onConversationClick: (conversationId: string) => void;
   toggleConversation: () => void;
@@ -28,11 +28,11 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   get filteredConversations() {
     if (this.state.filter === '') {
-      return this.props.directMessages;
+      return this.props.conversations;
     }
 
     const searchRegEx = new RegExp(this.state.filter, 'i');
-    return this.props.directMessages.filter((conversation) =>
+    return this.props.conversations.filter((conversation) =>
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
   }
@@ -94,13 +94,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
           <div className='messages-list__item-list'>
-            {this.filteredConversations.map((dm) => (
-              <ConversationItem key={dm.id} conversation={dm} onClick={this.props.onConversationClick} />
+            {this.filteredConversations.map((c) => (
+              <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
             ))}
           </div>
         </div>
         {/* Note: this does not work. directMessages is never null */}
-        {!this.props.directMessages && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </>
     );
   }

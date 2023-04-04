@@ -33,7 +33,7 @@ interface State {
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
-  directMessages: Channel[];
+  conversations: Channel[];
   fetchDirectMessages: () => void;
   createDirectMessage: (payload: CreateMessengerConversation) => void;
 }
@@ -45,12 +45,12 @@ export class Container extends React.Component<Properties, State> {
   };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+    const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
-      directMessages: messengerList,
+      conversations,
     };
   }
 
@@ -126,7 +126,7 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.state.stage === Stage.List && (
             <ConversationListPanel
-              directMessages={this.props.directMessages}
+              conversations={this.props.conversations}
               onConversationClick={this.openConversation}
               toggleConversation={this.startConversation}
             />

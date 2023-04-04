@@ -30,7 +30,7 @@ describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),
-      directMessages: [],
+      conversations: [],
       fetchDirectMessages: jest.fn(),
       createDirectMessage: jest.fn(),
       onClose: () => null,
@@ -40,7 +40,7 @@ describe('messenger-list', () => {
     return mount(<DirectMessageChat {...allProps} />);
   };
 
-  it('start sync direct messages', function () {
+  it('start sync conversations', function () {
     const fetchDirectMessages = jest.fn();
 
     subject({ fetchDirectMessages });
@@ -196,7 +196,7 @@ describe('messenger-list', () => {
         { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-2',
         'convo-1',
       ]);
@@ -209,7 +209,7 @@ describe('messenger-list', () => {
         { id: 'convo-3', isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-1',
         'convo-3',
       ]);

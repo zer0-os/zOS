@@ -66,8 +66,8 @@ export class Container extends React.Component<Properties, State> {
     this.props.fetchDirectMessages();
   }
 
-  handleMemberClick = (directMessageId: string) => {
-    this.props.setActiveMessengerChat(directMessageId);
+  openConversation = (id: string) => {
+    this.props.setActiveMessengerChat(id);
   };
 
   reset = (): void => {
@@ -127,7 +127,7 @@ export class Container extends React.Component<Properties, State> {
           {this.state.stage === Stage.List && (
             <ConversationListPanel
               directMessages={this.props.directMessages}
-              handleMemberClick={this.handleMemberClick}
+              onConversationClick={this.openConversation}
               toggleConversation={this.startConversation}
             />
           )}

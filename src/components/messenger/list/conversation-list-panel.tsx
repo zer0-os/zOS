@@ -10,7 +10,8 @@ import { ConversationItem } from './conversation-item';
 
 export interface Properties {
   directMessages: Channel[];
-  handleMemberClick: (directMessageId: string) => void;
+
+  onConversationClick: (conversationId: string) => void;
   toggleConversation: () => void;
 }
 
@@ -20,10 +21,6 @@ interface State {
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   state = { filter: '' };
-
-  handleMemberClick = (directMessageId: string) => {
-    this.props.handleMemberClick(directMessageId);
-  };
 
   searchChanged = (search: string) => {
     this.setState({ filter: search });
@@ -98,7 +95,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </div>
           <div className='messages-list__item-list'>
             {this.filteredConversations.map((dm) => (
-              <ConversationItem key={dm.id} conversation={dm} onClick={this.handleMemberClick} />
+              <ConversationItem key={dm.id} conversation={dm} onClick={this.props.onConversationClick} />
             ))}
           </div>
         </div>

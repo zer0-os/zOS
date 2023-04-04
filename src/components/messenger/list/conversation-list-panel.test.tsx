@@ -8,7 +8,7 @@ describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       directMessages: [],
-      handleMemberClick: () => null,
+      onConversationClick: () => null,
       toggleConversation: () => null,
       ...props,
     };
@@ -19,7 +19,7 @@ describe('ConversationListPanel', () => {
   it('handle member click', function () {
     const handleMemberClick = jest.fn();
     const wrapper = subject({
-      handleMemberClick: handleMemberClick,
+      onConversationClick: handleMemberClick,
       directMessages: [
         {
           id: 'test-conversation-id',

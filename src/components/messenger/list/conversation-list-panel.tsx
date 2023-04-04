@@ -9,9 +9,10 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 
 export interface Properties {
-  directMessages: Channel[];
-  handleMemberClick: (directMessageId: string) => void;
-  toggleConversation: () => void;
+  conversations: Channel[];
+
+  onConversationClick: (conversationId: string) => void;
+  startConversation: () => void;
 }
 
 interface State {
@@ -21,21 +22,17 @@ interface State {
 export class ConversationListPanel extends React.Component<Properties, State> {
   state = { filter: '' };
 
-  handleMemberClick = (directMessageId: string) => {
-    this.props.handleMemberClick(directMessageId);
-  };
-
   searchChanged = (search: string) => {
     this.setState({ filter: search });
   };
 
   get filteredConversations() {
     if (this.state.filter === '') {
-      return this.props.directMessages;
+      return this.props.conversations;
     }
 
     const searchRegEx = new RegExp(this.state.filter, 'i');
-    return this.props.directMessages.filter((conversation) =>
+    return this.props.conversations.filter((conversation) =>
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
   }
@@ -55,9 +52,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       >
         <div className='header-button'>
           <span className='header-button__title'>Conversations</span>
-          <span className='header-button__icon' onClick={this.props.toggleConversation}>
+          <span className='header-button__icon' onClick={this.props.startConversation}>
             <IconButton
-              onClick={this.props.toggleConversation}
+              onClick={this.props.startConversation}
               Icon={IconMessagePlusSquare}
               size={18}
               className='header-button__icon-plus'
@@ -77,7 +74,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </span>
           You have no messages yet
         </div>
-        <span className='messages-list__start-conversation' onClick={this.props.toggleConversation}>
+        <span className='messages-list__start-conversation' onClick={this.props.startConversation}>
           Start a Conversation
         </span>
       </div>
@@ -97,13 +94,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
           <div className='messages-list__item-list'>
-            {this.filteredConversations.map((dm) => (
-              <ConversationItem key={dm.id} conversation={dm} onClick={this.handleMemberClick} />
+            {this.filteredConversations.map((c) => (
+              <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
             ))}
           </div>
         </div>
         {/* Note: this does not work. directMessages is never null */}
-        {!this.props.directMessages && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </>
     );
   }

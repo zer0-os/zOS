@@ -33,7 +33,7 @@ interface State {
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
-  directMessages: Channel[];
+  conversations: Channel[];
   fetchDirectMessages: () => void;
   createDirectMessage: (payload: CreateMessengerConversation) => void;
 }
@@ -45,12 +45,12 @@ export class Container extends React.Component<Properties, State> {
   };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+    const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
-      directMessages: messengerList,
+      conversations,
     };
   }
 
@@ -66,8 +66,8 @@ export class Container extends React.Component<Properties, State> {
     this.props.fetchDirectMessages();
   }
 
-  handleMemberClick = (directMessageId: string) => {
-    this.props.setActiveMessengerChat(directMessageId);
+  openConversation = (id: string) => {
+    this.props.setActiveMessengerChat(id);
   };
 
   reset = (): void => {
@@ -126,9 +126,9 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.state.stage === Stage.List && (
             <ConversationListPanel
-              directMessages={this.props.directMessages}
-              handleMemberClick={this.handleMemberClick}
-              toggleConversation={this.startConversation}
+              conversations={this.props.conversations}
+              onConversationClick={this.openConversation}
+              startConversation={this.startConversation}
             />
           )}
           {this.state.stage === Stage.CreateOneOnOne && (

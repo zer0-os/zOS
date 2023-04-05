@@ -167,6 +167,34 @@ describe('messenger-list', () => {
     expect(createConversation).toHaveBeenCalledWith({ userIds: ['id-1'] });
   });
 
+  it('maintains the selected users on StartGroup phase if back button pressed on group details panel', async function () {
+    const wrapper = subject({});
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+
+    wrapper.find(GroupDetailsPanel).simulate('back');
+
+    expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
+  });
+
+  it('clears the selected users if moving back from StartGroup', async function () {
+    const wrapper = subject({});
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+
+    // Select some users
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+    // Navigate back to the Create panel
+    wrapper.find(GroupDetailsPanel).simulate('back');
+    wrapper.find(StartGroupPanel).simulate('back');
+
+    // Open the start group again
+    openStartGroup(wrapper);
+
+    expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([]);
+  });
+
   describe('navigation', () => {
     it('moves to the group conversation creation phase', function () {
       const wrapper = subject({});

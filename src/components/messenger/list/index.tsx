@@ -85,17 +85,15 @@ export class Container extends React.Component<Properties, State> {
   };
 
   reset = (): void => {
-    this.setState({ stage: Stage.List });
+    this.setState({ stage: Stage.List, groupUsers: [] });
   };
 
   goBack = (): void => {
     if (this.state.stage === Stage.CreateOneOnOne) {
       this.setState({ stage: Stage.List });
     } else if (this.state.stage === Stage.StartGroupChat) {
-      this.setState({ stage: Stage.CreateOneOnOne });
+      this.setState({ stage: Stage.CreateOneOnOne, groupUsers: [] });
     } else if (this.state.stage === Stage.GroupDetails) {
-      // XXX: What about resetting the current selected users?
-      // We should probably render the existing selection list
       this.setState({ stage: Stage.StartGroupChat });
     }
   };
@@ -178,6 +176,7 @@ export class Container extends React.Component<Properties, State> {
           )}
           {this.state.stage === Stage.StartGroupChat && (
             <StartGroupPanel
+              initialSelections={this.state.groupUsers}
               onBack={this.goBack}
               onContinue={this.groupMembersSelected}
               searchUsers={this.usersInMyNetworks}

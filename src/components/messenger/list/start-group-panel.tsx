@@ -7,6 +7,7 @@ import { PanelHeader } from './panel-header';
 import { SelectedUserTag } from './selected-user-tag';
 
 export interface Properties {
+  initialSelections: Option[];
   searchUsers: (input: string) => any;
 
   onBack: () => void;
@@ -19,6 +20,11 @@ interface State {
 
 export class StartGroupPanel extends React.Component<Properties, State> {
   state = { selectedOptions: [] };
+
+  constructor(props) {
+    super(props);
+    this.state = { selectedOptions: [...props.initialSelections] };
+  }
 
   continue = () => {
     this.props.onContinue(this.state.selectedOptions);

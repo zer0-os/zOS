@@ -9,6 +9,7 @@ jest.mock('@zero-tech/zui/components');
 describe('StartGroupPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      initialSelections: [],
       searchUsers: () => {},
       onBack: () => {},
       onContinue: () => {},
@@ -70,6 +71,20 @@ describe('StartGroupPanel', () => {
 
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-2' });
     expect(wrapper.find('.start-group-panel__selected-count').text()).toEqual('2 members selected');
+  });
+
+  it('renders initialSelected members', function () {
+    const wrapper = subject({
+      initialSelections: [
+        { value: 'id-1', label: 'User 1', image: 'url-1' },
+        { value: 'id-2', label: 'User 2', image: 'url-2' },
+      ],
+    });
+
+    expect(wrapper.find('SelectedUserTag').map(userLabel)).toEqual([
+      'User 1',
+      'User 2',
+    ]);
   });
 
   it('renders selected members', function () {

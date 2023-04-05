@@ -129,6 +129,17 @@ describe('messenger-list', () => {
     expect(setActiveMessengerChat).toHaveBeenCalledWith('convo-1');
   });
 
+  it('sets StartGroupPanel to Continuing while data is loading', async function () {
+    const fetchPromise = new Promise((_r) => null); // Never resolve
+    when(mockFetchConversationsWithUsers).mockReturnValue(fetchPromise);
+    const wrapper = subject({});
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+
+    wrapper.find(StartGroupPanel).prop('onContinue')([{} as any]);
+    expect(wrapper.find(StartGroupPanel).prop('isContinuing')).toBeTrue();
+  });
+
   it('adds the existing conversations to the store if there are any', async function () {
     const channelsReceived = jest.fn();
     when(mockFetchConversationsWithUsers).mockResolvedValue([{ id: 'convo-1' }]);

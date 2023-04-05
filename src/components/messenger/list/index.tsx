@@ -35,6 +35,7 @@ interface State {
   showCreateConversation: boolean;
   stage: Stage;
   groupUsers: Option[];
+  isFetchingExistingConversations: boolean;
 }
 export interface Properties extends PublicProperties {
   userId: string;
@@ -51,6 +52,7 @@ export class Container extends React.Component<Properties, State> {
     showCreateConversation: false,
     stage: Stage.List,
     groupUsers: [],
+    isFetchingExistingConversations: false,
   };
 
   static mapState(state: RootState): Partial<Properties> {
@@ -92,7 +94,7 @@ export class Container extends React.Component<Properties, State> {
     if (this.state.stage === Stage.CreateOneOnOne) {
       this.setState({ stage: Stage.List });
     } else if (this.state.stage === Stage.StartGroupChat) {
-      this.setState({ stage: Stage.CreateOneOnOne, groupUsers: [] });
+      this.setState({ stage: Stage.CreateOneOnOne, groupUsers: [], isFetchingExistingConversations: false });
     } else if (this.state.stage === Stage.GroupDetails) {
       this.setState({ stage: Stage.StartGroupChat });
     }
@@ -120,11 +122,13 @@ export class Container extends React.Component<Properties, State> {
   };
 
   groupMembersSelected = async (selectedOptions: Option[]) => {
-    // XXX: loading state for the continue button
+    this.setState({ isFetchingExistingConversations: true });
     const existingConversations = await fetchConversationsWithUsers([
       this.props.userId,
       ...selectedOptions.map((o) => o.value),
     ]);
+    // Transitions happen fast enough that we can clear it early
+    this.setState({ isFetchingExistingConversations: false });
 
     if (existingConversations?.length > 0) {
       this.props.channelsReceived({ channels: existingConversations });
@@ -177,6 +181,7 @@ export class Container extends React.Component<Properties, State> {
           {this.state.stage === Stage.StartGroupChat && (
             <StartGroupPanel
               initialSelections={this.state.groupUsers}
+              isContinuing={this.state.isFetchingExistingConversations}
               onBack={this.goBack}
               onContinue={this.groupMembersSelected}
               searchUsers={this.usersInMyNetworks}

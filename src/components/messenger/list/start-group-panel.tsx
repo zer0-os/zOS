@@ -8,6 +8,8 @@ import { SelectedUserTag } from './selected-user-tag';
 
 export interface Properties {
   initialSelections: Option[];
+  isContinuing: boolean;
+
   searchUsers: (input: string) => any;
 
   onBack: () => void;
@@ -70,7 +72,12 @@ export class StartGroupPanel extends React.Component<Properties, State> {
             </div>
           </AutocompleteMembers>
         </div>
-        <Button className='start-group-panel__continue' onPress={this.continue} isDisabled={this.isContinueDisabled}>
+        <Button
+          className='start-group-panel__continue'
+          onPress={this.continue}
+          isDisabled={this.isContinueDisabled}
+          isLoading={this.props.isContinuing}
+        >
           Continue
         </Button>
       </>

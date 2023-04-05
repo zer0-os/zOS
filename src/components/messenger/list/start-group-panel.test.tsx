@@ -9,6 +9,7 @@ jest.mock('@zero-tech/zui/components');
 describe('StartGroupPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      isContinuing: false,
       initialSelections: [],
       searchUsers: () => {},
       onBack: () => {},
@@ -47,6 +48,12 @@ describe('StartGroupPanel', () => {
       { value: 'id-1' },
       { value: 'id-2' },
     ]);
+  });
+
+  it('sets button to loading state if loading', function () {
+    const wrapper = subject({ isContinuing: true });
+
+    expect(wrapper.find('Button').prop('isLoading')).toBeTrue();
   });
 
   it('enables continue button based on number of users', function () {

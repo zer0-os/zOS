@@ -29,8 +29,9 @@ jest.mock('../../../store/channels-list/api', () => {
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
-      setActiveMessengerChat: jest.fn(),
+      userId: '',
       conversations: [],
+      setActiveMessengerChat: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       channelsReceived: jest.fn(),
@@ -161,15 +162,15 @@ describe('messenger-list', () => {
   });
 
   it('creates a group conversation when details submitted', async function () {
-    const createDirectMessage = jest.fn();
-    const wrapper = subject({ createDirectMessage });
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation });
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
 
     wrapper.find(GroupDetailsPanel).simulate('create', { users: [{ value: 'id-1' }] });
 
-    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['id-1'] });
+    expect(createConversation).toHaveBeenCalledWith({ userIds: ['id-1'] });
   });
 
   describe('navigation', () => {
@@ -225,9 +226,9 @@ describe('messenger-list', () => {
     });
 
     it('returns to conversation list when group conversation created from GroupDetails stage', async function () {
-      const createDirectMessage = jest.fn();
+      const createConversation = jest.fn();
       when(mockFetchConversationsWithUsers).mockResolvedValue([]);
-      const wrapper = subject({ createDirectMessage });
+      const wrapper = subject({ createConversation });
       openCreateConversation(wrapper);
       openStartGroup(wrapper);
       await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);

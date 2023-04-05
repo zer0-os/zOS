@@ -12,18 +12,12 @@ import { GroupDetailsPanel } from './group-details-panel';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
-  return {
-    searchMyNetworksByName: async (...args) => {
-      return await mockSearchMyNetworksByName(...args);
-    },
-  };
+  return { searchMyNetworksByName: async (...args) => await mockSearchMyNetworksByName(...args) };
 });
 
 const mockFetchConversationsWithUsers = jest.fn();
 jest.mock('../../../store/channels-list/api', () => {
-  return {
-    fetchConversationsWithUsers: async (...args) => mockFetchConversationsWithUsers(...args),
-  };
+  return { fetchConversationsWithUsers: async (...args) => mockFetchConversationsWithUsers(...args) };
 });
 
 describe('messenger-list', () => {

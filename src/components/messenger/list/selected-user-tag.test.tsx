@@ -22,7 +22,7 @@ describe('SelectedUserTag', () => {
 
     const wrapper = subject({ userOption });
 
-    expect(wrapper.find('.start-group-panel__user-label').text()).toEqual('User 1');
+    expect(wrapper.find('.selected-user-tag__user-label').text()).toEqual('User 1');
     expect(wrapper.find('Avatar').prop('imageURL')).toEqual('url-1');
   });
 

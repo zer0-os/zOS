@@ -99,8 +99,18 @@ export class Container extends React.Component<Properties> {
     this.props.stopSyncChannels();
   }
 
+  // only render the channel(s) which belong to "this" domain/network
+  isChannelValid(channelId) {
+    const channelIds = (this.props.channels ?? []).map((c) => c.id);
+    if (channelIds.includes(channelId)) {
+      return true;
+    }
+
+    return false;
+  }
+
   renderChannelView() {
-    if (this.props.channelId) {
+    if (this.props.channelId && this.isChannelValid(this.props.channelId)) {
       return <ChatViewContainer channelId={this.props.channelId} />;
     }
 

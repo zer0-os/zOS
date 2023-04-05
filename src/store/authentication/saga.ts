@@ -1,6 +1,7 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
+import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -36,7 +37,7 @@ export function* nonceOrAuthorize(action) {
   }
 }
 
-export function* clearSession() {
+export function* terminate() {
   try {
     yield call(clearSessionApi);
   } catch {
@@ -82,6 +83,11 @@ function* setUserAndChatAccessToken(params: {
         isLoading,
       })
     ),
+    put({
+      type: user
+        ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
+        : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
+    }),
   ]);
 
   if (user) {
@@ -107,6 +113,6 @@ export function* clearUserState() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
-  yield takeLatest(SagaActionTypes.ClearSession, clearSession);
+  yield takeLatest(SagaActionTypes.Terminate, terminate);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }

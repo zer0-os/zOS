@@ -1,12 +1,12 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, delay } from 'redux-saga/effects';
+import { takeLatest, put, call, take, race } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
-  fetchChannels,
-  fetchDirectMessages as fetchDirectMessagesApi,
-  createDirectMessage as createDirectMessageApi,
+  fetchChannels as fetchChannelsApi,
+  fetchConversations as fetchConversationsMessagesApi,
+  createConversation as createConversationMessageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
 import { select } from 'redux-saga-test-plan/matchers';
@@ -17,97 +17,92 @@ const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
-const rawDirectMessages = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
+const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
+export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export function* fetch(action) {
+export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
-  const channels = yield call(fetchChannels, action.payload);
+  const channels = yield call(fetchChannelsApi, action.payload);
   const channelsList = channels.map((currentChannel) => channelMapper(currentChannel));
 
-  const directMessages = yield select(rawDirectMessages());
+  const conversationsList = yield select(rawConversationsList());
 
   yield put(
     receive([
       ...channelsList,
-      ...directMessages,
+      ...conversationsList,
     ])
   );
 
   yield put(setStatus(AsyncListStatus.Idle));
 }
 
-export function* fetchDirectMessages() {
-  const directMessages = yield call(fetchDirectMessagesApi);
+export function* fetchConversations() {
+  const conversations = yield call(fetchConversationsMessagesApi);
   const channelsList = yield select(rawChannelsList());
 
-  const directMessagesList = directMessages.map((currentChannel) => channelMapper(currentChannel));
+  const conversationsList = conversations.map((currentChannel) => channelMapper(currentChannel));
 
   yield put(
     receive([
       ...channelsList,
-      ...directMessagesList,
+      ...conversationsList,
     ])
   );
 }
 
-export function* createDirectMessage(action) {
+export function* createConversation(action) {
   const { userIds } = action.payload;
-  const response: DirectMessage = yield call(createDirectMessageApi, userIds);
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds);
 
-  const directMessage = channelMapper(response);
-  const existingDirectMessages = yield select(rawDirectMessages());
+  const conversation = channelMapper(response);
+  const existingConversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
 
-  if (directMessage && directMessage.id) {
-    const hasExistingChat = Array.isArray(existingDirectMessages) && existingDirectMessages.includes(directMessage.id);
+  if (conversation && conversation.id) {
+    const hasExistingConversation =
+      Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
 
-    if (!hasExistingChat) {
+    if (!hasExistingConversation) {
       // add new chat to the list
       yield put(
         receive([
           ...channelsList,
-          ...existingDirectMessages,
-          directMessage,
+          ...existingConversationsList,
+          conversation,
         ])
       );
     }
-    yield put(setActiveMessengerId(directMessage.id));
+    yield put(setActiveMessengerId(conversation.id));
   }
 }
 
-export function* unreadCountUpdated(action) {
-  const channels = yield call(fetchChannels, action.payload);
-  const directMessages = yield call(fetchDirectMessagesApi);
+export function* fetchChannelsAndConversations() {
+  if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
+    const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));
+    yield call(fetchChannels, { payload: domainId });
 
-  const channelsList = channels.map((channel) => channelMapper(channel));
+    yield call(fetchConversations);
 
-  const directMessagesList = directMessages.map((channel) => channelMapper(channel));
-
-  yield put(
-    receive([
-      ...channelsList,
-      ...directMessagesList,
-    ])
-  );
+    yield call(delay, FETCH_CHAT_CHANNEL_INTERVAL);
+  }
 }
 
-export function* stopSyncChannels() {
-  yield put(setStatus(AsyncListStatus.Stopped));
-}
+export function* startChannelsAndConversationsRefresh() {
+  while (true) {
+    const { abort, _success } = yield race({
+      abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
+      success: call(fetchChannelsAndConversations),
+    });
 
-function* syncUnreadCount(action) {
-  while (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
-    yield call(unreadCountUpdated, action);
-
-    yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
+    if (abort) return false;
   }
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Fetch, fetch);
-  yield takeLatest(SagaActionTypes.ReceiveUnreadCount, syncUnreadCount);
-  yield takeLatest(SagaActionTypes.StopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.FetchDirectMessages, fetchDirectMessages);
-  yield takeLatest(SagaActionTypes.CreateDirectMessage, createDirectMessage);
+  yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
+  yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
+  yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
+  yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
 }

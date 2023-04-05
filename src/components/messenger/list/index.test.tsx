@@ -1,12 +1,6 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
-import directMessagesFixture from './direct-messages-fixture.json';
-import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
 import { RootState } from '../../../store';
 import moment from 'moment';
@@ -14,8 +8,6 @@ import { when } from 'jest-when';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
-
-export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -30,22 +22,28 @@ describe('messenger-list', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),
-      directMessages: [],
-      fetchDirectMessages: jest.fn(),
-      createDirectMessage: jest.fn(),
+      conversations: [],
+      fetchConversations: jest.fn(),
+      createConversation: jest.fn(),
       onClose: () => null,
       ...props,
     };
 
-    return mount(<DirectMessageChat {...allProps} />);
+    return shallow(<DirectMessageChat {...allProps} />);
   };
 
+  it('render direct message members', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('.direct-message-members').exists()).toBe(true);
+  });
+
   it('start sync direct messages', function () {
-    const fetchDirectMessages = jest.fn();
+    const fetchConversations = jest.fn();
 
-    subject({ fetchDirectMessages });
+    subject({ fetchConversations });
 
-    expect(fetchDirectMessages).toHaveBeenCalledOnce();
+    expect(fetchConversations).toHaveBeenCalledOnce();
   });
 
   it('publishes close event when titlebar X clicked', function () {
@@ -63,7 +61,7 @@ describe('messenger-list', () => {
       .calledWith('jac')
       .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
     const wrapper = subject({});
-    wrapper.find('.header-button__icon').simulate('click');
+    openCreateConversation(wrapper);
 
     const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
 
@@ -71,53 +69,45 @@ describe('messenger-list', () => {
   });
 
   it('creates a one on one conversation when user selected', async function () {
-    const createDirectMessage = jest.fn();
-    const wrapper = subject({ createDirectMessage });
-    wrapper.find('.header-button__icon').simulate('click');
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation });
+    openCreateConversation(wrapper);
 
     // Can't do simulate on custom components when rendering fully?
     wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
 
-    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
+    expect(createConversation).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
   });
 
   it('returns to conversation list when one on one conversation created', async function () {
-    const createDirectMessage = jest.fn();
-    const wrapper = subject({ createDirectMessage });
-    wrapper.find('.header-button__icon').simulate('click');
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation });
+    openCreateConversation(wrapper);
 
-    // Can't do simulate on custom components when rendering fully?
-    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
-    wrapper.update();
+    wrapper.find(CreateConversationPanel).simulate('create', 'selected-user-id');
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
-    expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items');
+    expect(wrapper).toHaveElement('ConversationListPanel');
   });
 
   it('returns to conversation list if back button pressed', async function () {
     const wrapper = subject({});
-    wrapper.find('.header-button__icon').simulate('click');
+    openCreateConversation(wrapper);
     expect(wrapper).toHaveElement('CreateConversationPanel');
-    expect(wrapper).not.toHaveElement('.header-button');
-    expect(wrapper).not.toHaveElement('.messages-list__items');
+    expect(wrapper).not.toHaveElement('ConversationListPanel');
 
     wrapper.find(CreateConversationPanel).prop('onBack')();
-    wrapper.update();
 
     expect(wrapper).not.toHaveElement('CreateConversationPanel');
-    expect(wrapper).toHaveElement('.header-button');
-    expect(wrapper).toHaveElement('.messages-list__items');
+    expect(wrapper).toHaveElement('ConversationListPanel');
   });
 
   describe('navigation', () => {
     it('moves to the group conversation creation phase', function () {
       const wrapper = subject({});
-
-      wrapper.find('.header-button__icon').simulate('click');
+      openCreateConversation(wrapper);
 
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
-      wrapper.update();
 
       expect(wrapper).not.toHaveElement(ConversationListPanel);
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
@@ -126,12 +116,10 @@ describe('messenger-list', () => {
 
     it('returns to one on one conversation panel if back button pressed on start group panel', async function () {
       const wrapper = subject({});
-      wrapper.find('.header-button__icon').simulate('click');
+      openCreateConversation(wrapper);
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
-      wrapper.update();
 
       wrapper.find(StartGroupPanel).prop('onBack')();
-      wrapper.update();
 
       expect(wrapper).not.toHaveElement(StartGroupPanel);
       expect(wrapper).toHaveElement(CreateConversationPanel);
@@ -139,19 +127,17 @@ describe('messenger-list', () => {
     });
 
     it('creates a group conversation when users selected', async function () {
-      const createDirectMessage = jest.fn();
-      const wrapper = subject({ createDirectMessage });
-      wrapper.find('.header-button__icon').simulate('click');
+      const createConversation = jest.fn();
+      const wrapper = subject({ createConversation });
+      openCreateConversation(wrapper);
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
-      wrapper.update();
 
-      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
-      wrapper.find(StartGroupPanel).prop('onContinue')([
+      wrapper.find(StartGroupPanel).simulate('continue', [
         'selected-id-1',
         'selected-id-2',
       ]);
 
-      expect(createDirectMessage).toHaveBeenCalledWith({
+      expect(createConversation).toHaveBeenCalledWith({
         userIds: [
           'selected-id-1',
           'selected-id-2',
@@ -160,20 +146,16 @@ describe('messenger-list', () => {
     });
 
     it('returns to conversation list when one on one conversation created', async function () {
-      const createDirectMessage = jest.fn();
-      const wrapper = subject({ createDirectMessage });
-      wrapper.find('.header-button__icon').simulate('click');
+      const createConversation = jest.fn();
+      const wrapper = subject({ createConversation });
+      openCreateConversation(wrapper);
       wrapper.find(CreateConversationPanel).prop('onStartGroupChat')();
-      wrapper.update();
 
-      // Can't do simulate on custom components when rendering fully. Convert to simulate after.
-      wrapper.find(StartGroupPanel).prop('onContinue')(['id-1']);
-      wrapper.update();
+      wrapper.find(StartGroupPanel).simulate('continue', ['id-1']);
 
       expect(wrapper).not.toHaveElement(StartGroupPanel);
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).toHaveElement('.header-button');
-      expect(wrapper).toHaveElement('.messages-list__items');
+      expect(wrapper).toHaveElement('ConversationListPanel');
     });
   });
 
@@ -196,7 +178,7 @@ describe('messenger-list', () => {
         { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-2',
         'convo-1',
       ]);
@@ -209,10 +191,14 @@ describe('messenger-list', () => {
         { id: 'convo-3', isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-1',
         'convo-3',
       ]);
     });
   });
 });
+
+function openCreateConversation(wrapper) {
+  wrapper.find(ConversationListPanel).prop('startConversation')();
+}

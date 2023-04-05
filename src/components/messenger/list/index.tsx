@@ -3,11 +3,11 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
-import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
+import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { createDirectMessage } from '../../../store/channels-list';
+import { createConversation } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -33,9 +33,9 @@ interface State {
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
-  directMessages: Channel[];
-  fetchDirectMessages: () => void;
-  createDirectMessage: (payload: CreateMessengerConversation) => void;
+  conversations: Channel[];
+  fetchConversations: () => void;
+  createConversation: (payload: CreateMessengerConversation) => void;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -45,29 +45,29 @@ export class Container extends React.Component<Properties, State> {
   };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+    const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
-      directMessages: messengerList,
+      conversations,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       setActiveMessengerChat: setActiveMessengerId,
-      fetchDirectMessages: fetchDirectMessages,
-      createDirectMessage,
+      fetchConversations,
+      createConversation,
     };
   }
 
   componentDidMount(): void {
-    this.props.fetchDirectMessages();
+    this.props.fetchConversations();
   }
 
-  handleMemberClick = (directMessageId: string) => {
-    this.props.setActiveMessengerChat(directMessageId);
+  openConversation = (id: string) => {
+    this.props.setActiveMessengerChat(id);
   };
 
   reset = (): void => {
@@ -99,13 +99,13 @@ export class Container extends React.Component<Properties, State> {
   };
 
   createOneOnOneConversation = (id: string): void => {
-    this.props.createDirectMessage({ userIds: [id] });
+    this.props.createConversation({ userIds: [id] });
     this.reset();
   };
 
   groupMembersSelected = (userIds: string[]): void => {
     // For now, we just create the message. Adding group details to come in the future.
-    this.props.createDirectMessage({ userIds });
+    this.props.createConversation({ userIds });
     this.reset();
   };
 
@@ -126,9 +126,9 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.state.stage === Stage.List && (
             <ConversationListPanel
-              directMessages={this.props.directMessages}
-              handleMemberClick={this.handleMemberClick}
-              toggleConversation={this.startConversation}
+              conversations={this.props.conversations}
+              onConversationClick={this.openConversation}
+              startConversation={this.startConversation}
             />
           )}
           {this.state.stage === Stage.CreateOneOnOne && (

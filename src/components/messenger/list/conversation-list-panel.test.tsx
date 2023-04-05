@@ -7,9 +7,9 @@ import { Channel } from '../../../store/channels';
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      directMessages: [],
-      handleMemberClick: () => null,
-      toggleConversation: () => null,
+      conversations: [],
+      onConversationClick: () => null,
+      startConversation: () => null,
       ...props,
     };
 
@@ -19,8 +19,8 @@ describe('ConversationListPanel', () => {
   it('handle member click', function () {
     const handleMemberClick = jest.fn();
     const wrapper = subject({
-      handleMemberClick: handleMemberClick,
-      directMessages: [
+      onConversationClick: handleMemberClick,
+      conversations: [
         {
           id: 'test-conversation-id',
           otherMembers: [],
@@ -40,7 +40,7 @@ describe('ConversationListPanel', () => {
       { id: 'convo-id-3', name: 'convo-3', otherMembers: [{ firstName: 'jacklyn' }] },
     ];
 
-    const wrapper = subject({ directMessages: conversations as any });
+    const wrapper = subject({ conversations: conversations as any });
 
     let displayChatNames = renderedConversations(wrapper).map((c) => c.name);
     expect(displayChatNames).toStrictEqual([

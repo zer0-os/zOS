@@ -29,10 +29,14 @@ export class GroupDetailsPanel extends React.Component<Properties> {
           <span className={c('selected-number')}>{this.props.users.length}</span> member
           {this.props.users.length === 1 ? '' : 's'} selected
         </div>
-        {this.props.users.map((u) => (
-          <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
-        ))}
-        <Button onPress={this.createGroup}>Create Group</Button>
+        <div>
+          {this.props.users.map((u) => (
+            <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
+          ))}
+        </div>
+        <Button onPress={this.createGroup} className={c('create')}>
+          Create Group
+        </Button>
       </>
     );
   }

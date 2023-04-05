@@ -65,7 +65,7 @@ export class StartGroupPanel extends React.Component<Properties, State> {
               <span className='start-group-panel__selected-number'>{this.state.selectedOptions.length}</span> member
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected
             </div>
-            <div className='start-group-panel__selected-options'>
+            <div>
               {this.state.selectedOptions.map((option) => (
                 <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
               ))}

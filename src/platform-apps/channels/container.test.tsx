@@ -133,10 +133,18 @@ describe('ChannelsContainer', () => {
 
   it('passes channelId to ChatViewContainer', () => {
     const channelId = 'the-channel-id';
-
-    const wrapper = subject({ channelId });
+    const channels = [{ id: channelId }];
+    const wrapper = subject({ channelId, channels });
 
     expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(channelId);
+  });
+
+  it('does not render ChatViewContainer if channelId not present in domain (channel list)', () => {
+    const channelId = 'channel-1';
+    const channels = [{ id: 'channel-2' }];
+    const wrapper = subject({ channelId, channels });
+
+    expect(wrapper.find(ChatViewContainer).exists()).toBe(false);
   });
 
   describe('mapState', () => {

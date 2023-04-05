@@ -5,7 +5,7 @@ import { connectContainer } from '../../store/redux-container';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
-import { nonceOrAuthorize, clearSession, fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
+import { nonceOrAuthorize, terminate, fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
 
@@ -15,7 +15,7 @@ export interface Properties {
   currentAddress: string;
   updateConnector: (Connectors) => void;
   nonceOrAuthorize: (payload: { signedWeb3Token: string }) => void;
-  clearSession: () => void;
+  terminateAuthorization: () => void;
   fetchCurrentUserWithChatAccessToken: () => void;
   user: AuthenticationState['user'];
   personalSignToken: any;
@@ -47,7 +47,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       nonceOrAuthorize,
       fetchCurrentUserWithChatAccessToken,
-      clearSession,
+      terminateAuthorization: terminate,
       updateConnector,
     };
   }
@@ -73,17 +73,23 @@ export class Container extends React.Component<Properties, State> {
       !this.props.currentAddress &&
       this.props.user.data !== null
     ) {
-      this.props.clearSession();
+      this.props.terminateAuthorization();
     }
   }
 
   async authorize() {
-    const { personalSignToken, currentAddress, nonceOrAuthorize, updateConnector, clearSession, providerService } =
-      this.props;
+    const {
+      personalSignToken,
+      currentAddress,
+      nonceOrAuthorize,
+      updateConnector,
+      terminateAuthorization,
+      providerService,
+    } = this.props;
 
     await personalSignToken(providerService.get(), currentAddress)
       .then((signedWeb3Token) => {
-        clearSession();
+        terminateAuthorization();
         nonceOrAuthorize({ signedWeb3Token });
       })
       .catch((_error) => {

@@ -3,11 +3,11 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
-import { denormalizeConversations, fetchDirectMessages } from '../../../store/channels-list';
+import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { createDirectMessage } from '../../../store/channels-list';
+import { createConversation } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -34,8 +34,8 @@ interface State {
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
   conversations: Channel[];
-  fetchDirectMessages: () => void;
-  createDirectMessage: (payload: CreateMessengerConversation) => void;
+  fetchConversations: () => void;
+  createConversation: (payload: CreateMessengerConversation) => void;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -57,13 +57,13 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       setActiveMessengerChat: setActiveMessengerId,
-      fetchDirectMessages: fetchDirectMessages,
-      createDirectMessage,
+      fetchConversations,
+      createConversation,
     };
   }
 
   componentDidMount(): void {
-    this.props.fetchDirectMessages();
+    this.props.fetchConversations();
   }
 
   openConversation = (id: string) => {
@@ -99,13 +99,13 @@ export class Container extends React.Component<Properties, State> {
   };
 
   createOneOnOneConversation = (id: string): void => {
-    this.props.createDirectMessage({ userIds: [id] });
+    this.props.createConversation({ userIds: [id] });
     this.reset();
   };
 
   groupMembersSelected = (userIds: string[]): void => {
     // For now, we just create the message. Adding group details to come in the future.
-    this.props.createDirectMessage({ userIds });
+    this.props.createConversation({ userIds });
     this.reset();
   };
 

@@ -43,8 +43,8 @@ describe('StartGroupPanel', () => {
     wrapper.find('Button').simulate('press');
 
     expect(onContinue).toHaveBeenCalledWith([
-      'id-1',
-      'id-2',
+      { value: 'id-1' },
+      { value: 'id-2' },
     ]);
   });
 

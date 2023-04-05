@@ -127,8 +127,8 @@ describe('messenger-list', () => {
     openStartGroup(wrapper);
 
     await wrapper.find(StartGroupPanel).prop('onContinue')([
-      'selected-id-1',
-      'selected-id-2',
+      { value: 'selected-id-1' } as any,
+      { value: 'selected-id-2' } as any,
     ]);
 
     expect(setActiveMessengerChat).toHaveBeenCalledWith('convo-1');
@@ -141,7 +141,7 @@ describe('messenger-list', () => {
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
 
-    await wrapper.find(StartGroupPanel).prop('onContinue')(['selected-id-1']);
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
 
     expect(channelsReceived).toHaveBeenCalledWith({ channels: [{ id: 'convo-1' }] });
   });
@@ -152,12 +152,24 @@ describe('messenger-list', () => {
 
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
-    await wrapper.find(StartGroupPanel).prop('onContinue')(['id-1']);
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
 
     expect(wrapper).not.toHaveElement(ConversationListPanel);
     expect(wrapper).not.toHaveElement(CreateConversationPanel);
     expect(wrapper).not.toHaveElement(StartGroupPanel);
     expect(wrapper).toHaveElement('GroupDetailsPanel');
+  });
+
+  it('creates a group conversation when details submitted', async function () {
+    const createDirectMessage = jest.fn();
+    const wrapper = subject({ createDirectMessage });
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
+
+    wrapper.find(GroupDetailsPanel).simulate('create', { users: [{ value: 'id-1' }] });
+
+    expect(createDirectMessage).toHaveBeenCalledWith({ userIds: ['id-1'] });
   });
 
   describe('navigation', () => {
@@ -191,7 +203,7 @@ describe('messenger-list', () => {
       openCreateConversation(wrapper);
       openStartGroup(wrapper);
 
-      await wrapper.find(StartGroupPanel).prop('onContinue')(['selected-id-1']);
+      await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
 
       expect(wrapper).toHaveElement(ConversationListPanel);
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
@@ -210,6 +222,21 @@ describe('messenger-list', () => {
       expect(wrapper).not.toHaveElement(CreateConversationPanel);
       expect(wrapper).toHaveElement('StartGroupPanel');
       expect(wrapper).not.toHaveElement('GroupDetailsPanel');
+    });
+
+    it('returns to conversation list when group conversation created from GroupDetails stage', async function () {
+      const createDirectMessage = jest.fn();
+      when(mockFetchConversationsWithUsers).mockResolvedValue([]);
+      const wrapper = subject({ createDirectMessage });
+      openCreateConversation(wrapper);
+      openStartGroup(wrapper);
+      await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
+      wrapper.find(GroupDetailsPanel).simulate('create', { users: [{ value: 'id-1' }] });
+
+      expect(wrapper).toHaveElement(ConversationListPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).not.toHaveElement(GroupDetailsPanel);
     });
   });
 

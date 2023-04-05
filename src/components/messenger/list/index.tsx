@@ -121,14 +121,11 @@ export class Container extends React.Component<Properties, State> {
     this.reset();
   };
 
-  // XXX: The StartGroup stage needs to return the options. I actually think we want to refactor
-  // the Option type to some root place rather than source it from the autocomplete. Does it even
-  // need to be its own type or can it be a user?
-  groupMembersSelected = async (userIds: string[]) => {
+  groupMembersSelected = async (selectedOptions: Option[]) => {
     // XXX: loading state for the continue button
     const existingConversations = await fetchConversationsWithUsers([
       this.props.userId,
-      ...userIds,
+      ...selectedOptions.map((o) => o.value),
     ]);
 
     if (existingConversations?.length > 0) {
@@ -138,15 +135,15 @@ export class Container extends React.Component<Properties, State> {
     } else {
       this.setState({
         stage: Stage.GroupDetails,
-        groupUsers: userIds.map((uId) => ({ vale: uId, label: 'aha' } as any)),
+        groupUsers: selectedOptions,
       });
     }
   };
 
   createGroup = async (details) => {
-    // XXX: test this.
     const conversation = { userIds: details.users.map((u) => u.value) };
     this.props.createConversation(conversation);
+    this.reset();
   };
 
   renderTitleBar() {

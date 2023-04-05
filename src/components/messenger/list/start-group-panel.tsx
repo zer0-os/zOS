@@ -10,7 +10,7 @@ export interface Properties {
   searchUsers: (input: string) => any;
 
   onBack: () => void;
-  onContinue: (ids: string[]) => void;
+  onContinue: (options: Option[]) => void;
 }
 
 interface State {
@@ -21,7 +21,7 @@ export class StartGroupPanel extends React.Component<Properties, State> {
   state = { selectedOptions: [] };
 
   continue = () => {
-    this.props.onContinue(this.state.selectedOptions.map((o) => o.value));
+    this.props.onContinue(this.state.selectedOptions);
   };
 
   selectOption = (selectedOption) => {

@@ -1,77 +1,41 @@
 import * as React from 'react';
-import classNames from 'classnames';
 
 import Tooltip from '../../tooltip';
-import { lastSeenText } from './utils';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { SearchConversations } from '../search-conversations';
 import { Channel } from '../../../store/channels';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
+import { ConversationItem } from './conversation-item';
 
-interface ConversationListPanelProperties {
-  directMessages: Channel[];
-  directMessagesList: Channel[];
-  conversationInMyNetworks: (directMessagesList: Channel[]) => void;
-  handleMemberClick: (directMessageId: string) => void;
-  toggleConversation: () => void;
+export interface Properties {
+  conversations: Channel[];
+
+  onConversationClick: (conversationId: string) => void;
+  startConversation: () => void;
 }
 
-export class ConversationListPanel extends React.Component<ConversationListPanelProperties> {
-  handleMemberClick(directMessageId: string) {
-    this.props.handleMemberClick(directMessageId);
-  }
+interface State {
+  filter: string;
+}
 
-  renderStatus(directMessage: Channel) {
-    const isAnyUserOnline = directMessage.otherMembers.some((user) => user.isOnline);
+export class ConversationListPanel extends React.Component<Properties, State> {
+  state = { filter: '' };
 
-    return (
-      <div
-        className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isAnyUserOnline,
-        })}
-      ></div>
-    );
-  }
+  searchChanged = (search: string) => {
+    this.setState({ filter: search });
+  };
 
-  tooltipContent(directMessage: Channel) {
-    if (directMessage.otherMembers && directMessage.otherMembers.length === 1) {
-      return lastSeenText(directMessage.otherMembers[0]);
+  get filteredConversations() {
+    if (this.state.filter === '') {
+      return this.props.conversations;
     }
 
-    return otherMembersToString(directMessage.otherMembers);
-  }
-
-  renderMember = (directMessage: Channel) => {
-    return (
-      <Tooltip
-        placement='left'
-        overlay={this.tooltipContent(directMessage)}
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
-        className='direct-message-members__user-tooltip'
-        key={directMessage.id}
-      >
-        <div
-          className='direct-message-members__user'
-          onClick={this.handleMemberClick.bind(this, directMessage.id)}
-          key={directMessage.id}
-        >
-          {this.renderStatus(directMessage)}
-          <div className='direct-message-members__user-name'>
-            {directMessage.name || otherMembersToString(directMessage.otherMembers)}
-          </div>
-          {directMessage.unreadCount !== 0 && (
-            <div className='direct-message-members__user-unread-count'>{directMessage.unreadCount}</div>
-          )}
-        </div>
-      </Tooltip>
+    const searchRegEx = new RegExp(this.state.filter, 'i');
+    return this.props.conversations.filter((conversation) =>
+      searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
-  };
+  }
 
   renderNewMessageModal = (): JSX.Element => {
     return (
@@ -88,9 +52,9 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
       >
         <div className='header-button'>
           <span className='header-button__title'>Conversations</span>
-          <span className='header-button__icon' onClick={this.props.toggleConversation}>
+          <span className='header-button__icon' onClick={this.props.startConversation}>
             <IconButton
-              onClick={this.props.toggleConversation}
+              onClick={this.props.startConversation}
               Icon={IconMessagePlusSquare}
               size={18}
               className='header-button__icon-plus'
@@ -110,7 +74,7 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
           </span>
           You have no messages yet
         </div>
-        <span className='messages-list__start-conversation' onClick={this.props.toggleConversation}>
+        <span className='messages-list__start-conversation' onClick={this.props.startConversation}>
           Start a Conversation
         </span>
       </div>
@@ -121,22 +85,22 @@ export class ConversationListPanel extends React.Component<ConversationListPanel
     return (
       <>
         <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
-        {this.props.directMessagesList && (
-          <div className='messages-list__items'>
-            <div className='messages-list__items-conversations-input'>
-              <SearchConversations
-                className='messages-list__items-conversations-search'
-                placeholder='Search contacts...'
-                directMessagesList={this.props.directMessages}
-                onChange={this.props.conversationInMyNetworks}
-                mapSearchConversationsText={otherMembersToString}
-              />
-            </div>
-            <div className='messages-list__item-list'>{this.props.directMessagesList.map(this.renderMember)}</div>
+        <div className='messages-list__items'>
+          <div className='messages-list__items-conversations-input'>
+            <SearchConversations
+              className='messages-list__items-conversations-search'
+              placeholder='Search contacts...'
+              onChange={this.searchChanged}
+            />
           </div>
-        )}
-        {/* Note: this does not work. directMessagesList is never null */}
-        {!this.props.directMessagesList && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+          <div className='messages-list__item-list'>
+            {this.filteredConversations.map((c) => (
+              <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
+            ))}
+          </div>
+        </div>
+        {/* Note: this does not work. directMessages is never null */}
+        {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
       </>
     );
   }

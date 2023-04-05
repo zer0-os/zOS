@@ -29,12 +29,11 @@ enum Stage {
 
 interface State {
   showCreateConversation: boolean;
-  directMessagesList: Channel[];
   stage: Stage;
 }
 export interface Properties extends PublicProperties {
   setActiveMessengerChat: (channelId: string) => void;
-  directMessages: Channel[];
+  conversations: Channel[];
   fetchConversations: () => void;
   createConversation: (payload: CreateMessengerConversation) => void;
 }
@@ -42,17 +41,16 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties, State> {
   state = {
     showCreateConversation: false,
-    directMessagesList: [],
     stage: Stage.List,
   };
 
   static mapState(state: RootState): Partial<Properties> {
-    const messengerList = denormalizeConversations(state).sort((messengerA, messengerB) =>
+    const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
-      directMessages: messengerList,
+      conversations,
     };
   }
 
@@ -66,28 +64,14 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount(): void {
     this.props.fetchConversations();
-    this.setState({ directMessagesList: this.props.directMessages });
   }
 
-  componentDidUpdate(prevProps: Properties): void {
-    const { directMessages } = this.props;
-
-    // This might be broken. What happens if you're searching conversations and a real-time update comes in?
-    // Would that break your search results?
-    if (directMessages && prevProps.directMessages && directMessages.length !== prevProps.directMessages.length) {
-      this.setState({ directMessagesList: directMessages });
-    }
-  }
-
-  handleMemberClick = (directMessageId: string) => {
-    this.props.setActiveMessengerChat(directMessageId);
+  openConversation = (id: string) => {
+    this.props.setActiveMessengerChat(id);
   };
 
   reset = (): void => {
-    this.setState({
-      stage: Stage.List,
-      directMessagesList: this.props.directMessages,
-    });
+    this.setState({ stage: Stage.List });
   };
 
   goBack = (): void => {
@@ -99,10 +83,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   startConversation = (): void => {
-    this.setState({
-      stage: Stage.CreateOneOnOne,
-      directMessagesList: this.props.directMessages,
-    });
+    this.setState({ stage: Stage.CreateOneOnOne });
   };
 
   startGroupChat = (): void => {
@@ -115,10 +96,6 @@ export class Container extends React.Component<Properties, State> {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
     return users.map((user) => ({ ...user, image: user.profileImage }));
-  };
-
-  conversationInMyNetworks = (directMessagesList: Channel[]) => {
-    this.setState({ directMessagesList });
   };
 
   createOneOnOneConversation = (id: string): void => {
@@ -149,11 +126,9 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.state.stage === Stage.List && (
             <ConversationListPanel
-              directMessages={this.props.directMessages}
-              directMessagesList={this.state.directMessagesList}
-              conversationInMyNetworks={this.conversationInMyNetworks}
-              handleMemberClick={this.handleMemberClick}
-              toggleConversation={this.startConversation}
+              conversations={this.props.conversations}
+              onConversationClick={this.openConversation}
+              startConversation={this.startConversation}
             />
           )}
           {this.state.stage === Stage.CreateOneOnOne && (

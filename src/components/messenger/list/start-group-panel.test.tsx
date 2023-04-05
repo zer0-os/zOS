@@ -5,7 +5,6 @@ import { StartGroupPanel, Properties } from './start-group-panel';
 
 jest.mock('../autocomplete-members');
 jest.mock('@zero-tech/zui/components');
-jest.mock('@zero-tech/zui/icons');
 
 describe('StartGroupPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -57,9 +56,7 @@ describe('StartGroupPanel', () => {
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1' });
     expect(wrapper.find('Button').prop('isDisabled')).toBeFalse();
 
-    wrapper
-      .find('.start-group-panel__user-remove')
-      .simulate('click', { currentTarget: { dataset: { value: 'id-1' } } });
+    wrapper.find('SelectedUserTag').first().simulate('remove', 'id-1');
     expect(wrapper.find('Button').prop('isDisabled')).toBeTrue();
   });
 
@@ -81,13 +78,9 @@ describe('StartGroupPanel', () => {
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1', label: 'User 1', image: 'url-1' });
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-2', label: 'User 2', image: 'url-2' });
 
-    expect(wrapper.find('.start-group-panel__user-label').map((n) => n.text())).toEqual([
+    expect(wrapper.find('SelectedUserTag').map(userLabel)).toEqual([
       'User 1',
       'User 2',
-    ]);
-    expect(wrapper.find('Avatar').map((n) => n.prop('imageURL'))).toEqual([
-      'url-1',
-      'url-2',
     ]);
   });
 
@@ -96,12 +89,9 @@ describe('StartGroupPanel', () => {
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1', label: 'User 1', image: 'url-1' });
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-2', label: 'User 2', image: 'url-2' });
 
-    wrapper
-      .find('.start-group-panel__user-remove')
-      .first()
-      .simulate('click', { currentTarget: { dataset: { value: 'id-1' } } });
+    wrapper.find('SelectedUserTag').first().simulate('remove', 'id-1');
 
-    expect(wrapper.find('.start-group-panel__user-label').map((n) => n.text())).toEqual(['User 2']);
+    expect(wrapper.find('SelectedUserTag').map(userLabel)).toEqual(['User 2']);
   });
 
   it('renders unique list of selected users', function () {
@@ -110,6 +100,10 @@ describe('StartGroupPanel', () => {
     // Select the same option
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-1', label: 'User 1', image: 'url-1' });
 
-    expect(wrapper.find('.start-group-panel__user-label').map((n) => n.text())).toEqual(['User 1']);
+    expect(wrapper.find('SelectedUserTag').map(userLabel)).toEqual(['User 1']);
   });
 });
+
+function userLabel(tag) {
+  return tag.prop('userOption').label;
+}

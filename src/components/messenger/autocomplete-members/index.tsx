@@ -1,10 +1,9 @@
 import React from 'react';
 
-import { Avatar } from '@zero-tech/zui/components/Avatar';
-import { Input } from '@zero-tech/zui/components/Input';
+import { Avatar, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { IconSearchMd } from '@zero-tech/zui/components/Icons/icons/IconSearchMd';
+import { IconSearchMd } from '@zero-tech/zui/icons';
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;

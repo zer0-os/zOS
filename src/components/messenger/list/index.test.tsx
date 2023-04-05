@@ -112,9 +112,9 @@ describe('messenger-list', () => {
 
   it('creates a group conversation when users selected and conversation already exists', async function () {
     const setActiveMessengerChat = jest.fn();
-    // XXX: add current user id
     when(mockFetchConversationsWithUsers)
       .calledWith([
+        'current-user-id',
         'selected-id-1',
         'selected-id-2',
       ])
@@ -122,7 +122,7 @@ describe('messenger-list', () => {
         { id: 'convo-1' },
         { id: 'convo-2' },
       ]);
-    const wrapper = subject({ setActiveMessengerChat });
+    const wrapper = subject({ userId: 'current-user-id', setActiveMessengerChat });
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
 
@@ -221,6 +221,7 @@ describe('messenger-list', () => {
     const getState = (channels) => {
       const channelData = normalize(channels);
       return {
+        authentication: {},
         channelsList: { value: channelData.result },
         normalized: channelData.entities,
       } as RootState;

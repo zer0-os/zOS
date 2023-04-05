@@ -37,8 +37,10 @@ interface State {
   groupUsers: Option[];
 }
 export interface Properties extends PublicProperties {
-  setActiveMessengerChat: (channelId: string) => void;
+  userId: string;
   conversations: Channel[];
+
+  setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
   createConversation: (payload: CreateMessengerConversation) => void;
   channelsReceived: (payload: ChannelsReceivedPayload) => void;
@@ -52,12 +54,16 @@ export class Container extends React.Component<Properties, State> {
   };
 
   static mapState(state: RootState): Partial<Properties> {
+    const {
+      authentication: { user },
+    } = state;
     const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
       conversations,
+      userId: user?.data?.id,
     };
   }
 
@@ -119,9 +125,11 @@ export class Container extends React.Component<Properties, State> {
   // the Option type to some root place rather than source it from the autocomplete. Does it even
   // need to be its own type or can it be a user?
   groupMembersSelected = async (userIds: string[]) => {
-    // XXX: include current user here or deeper?
     // XXX: loading state for the continue button
-    const existingConversations = await fetchConversationsWithUsers(userIds);
+    const existingConversations = await fetchConversationsWithUsers([
+      this.props.userId,
+      ...userIds,
+    ]);
 
     if (existingConversations?.length > 0) {
       this.props.channelsReceived({ channels: existingConversations });
@@ -136,7 +144,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   createGroup = async (details) => {
-    // this.props.createDirectMessage({ userIds });
+    // XXX: test this.
     const conversation = { userIds: details.users.map((u) => u.value) };
     this.props.createConversation(conversation);
   };

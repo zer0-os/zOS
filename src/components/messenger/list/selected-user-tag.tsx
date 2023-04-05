@@ -22,9 +22,8 @@ export class SelectedUserTag extends React.Component<Properties> {
   render() {
     const { userOption: option } = this.props;
 
-    // XXX: move the key up the stack
     return (
-      <div className={c('selected-option')} key={option.value}>
+      <div className={c('selected-option')}>
         <div className={c('selected-tag')}>
           <Avatar size={'extra small'} type={'circle'} imageURL={option.image} />
           <span className={c('user-label')}>{option.label}</span>

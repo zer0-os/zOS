@@ -1,6 +1,11 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
+<<<<<<< HEAD
 import { takeLatest, put, call, take, race } from 'redux-saga/effects';
+=======
+import uniqBy from 'lodash.uniqby';
+import { takeLatest, put, call, delay } from 'redux-saga/effects';
+>>>>>>> d7e0235 (Add the existing channels to the redux store)
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
@@ -100,9 +105,39 @@ export function* startChannelsAndConversationsRefresh() {
   }
 }
 
+export function* channelsReceived(action) {
+  const { channels } = action.payload;
+
+  const newChannels = channels.map(channelMapper);
+
+  // Silly to get theme separately but we'll be splitting these anyway
+  const existingDirectMessages = yield select(rawDirectMessages());
+  const existingChannels = yield select(rawChannelsList());
+
+  const newChannelList = uniqBy(
+    [
+      ...existingChannels,
+      ...existingDirectMessages,
+      ...newChannels,
+    ],
+    (c) => c.id ?? c
+  );
+
+  yield put(receive(newChannelList));
+}
+
 export function* saga() {
+<<<<<<< HEAD
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
   yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
+=======
+  yield takeLatest(SagaActionTypes.Fetch, fetch);
+  yield takeLatest(SagaActionTypes.ReceiveUnreadCount, syncUnreadCount);
+  yield takeLatest(SagaActionTypes.StopSyncChannels, stopSyncChannels);
+  yield takeLatest(SagaActionTypes.FetchDirectMessages, fetchDirectMessages);
+  yield takeLatest(SagaActionTypes.CreateDirectMessage, createDirectMessage);
+  yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
+>>>>>>> d7e0235 (Add the existing channels to the redux store)
 }

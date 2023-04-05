@@ -16,3 +16,7 @@ export interface DirectMessage extends Channel {
 export interface CreateMessengerConversation {
   userIds: string[];
 }
+
+export interface ChannelsReceivedPayload {
+  channels: Channel[];
+}

@@ -19,14 +19,21 @@ jest.mock('../../../platform-apps/channels/util/api', () => {
   };
 });
 
+const mockFetchConversationsWithUsers = jest.fn();
+jest.mock('../../../store/channels-list/api', () => {
+  return {
+    fetchConversationsWithUsers: async (...args) => mockFetchConversationsWithUsers(...args),
+  };
+});
+
 describe('messenger-list', () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       setActiveMessengerChat: jest.fn(),
       conversations: [],
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
-      getConversationsWithUsers: jest.fn(),
+      channelsReceived: jest.fn(),
       onClose: () => null,
       ...props,
     };
@@ -105,8 +112,8 @@ describe('messenger-list', () => {
 
   it('creates a group conversation when users selected and conversation already exists', async function () {
     const setActiveMessengerChat = jest.fn();
-    const getConversationsWithUsers = jest.fn();
-    when(getConversationsWithUsers)
+    // XXX: add current user id
+    when(mockFetchConversationsWithUsers)
       .calledWith([
         'selected-id-1',
         'selected-id-2',
@@ -115,7 +122,7 @@ describe('messenger-list', () => {
         { id: 'convo-1' },
         { id: 'convo-2' },
       ]);
-    const wrapper = subject({ setActiveMessengerChat, getConversationsWithUsers });
+    const wrapper = subject({ setActiveMessengerChat });
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
 
@@ -127,14 +134,25 @@ describe('messenger-list', () => {
     expect(setActiveMessengerChat).toHaveBeenCalledWith('convo-1');
   });
 
+  it('adds the existing conversations to the store if there are any', async function () {
+    const channelsReceived = jest.fn();
+    when(mockFetchConversationsWithUsers).mockResolvedValue([{ id: 'convo-1' }]);
+    const wrapper = subject({ channelsReceived });
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+
+    await wrapper.find(StartGroupPanel).prop('onContinue')(['selected-id-1']);
+
+    expect(channelsReceived).toHaveBeenCalledWith({ channels: [{ id: 'convo-1' }] });
+  });
+
   it('moves to the group details phase if no conversation exists for users', async function () {
-    const getConversationsWithUsers = jest.fn().mockResolvedValue([]);
-    const wrapper = subject({ getConversationsWithUsers });
+    when(mockFetchConversationsWithUsers).mockResolvedValue([]);
+    const wrapper = subject();
 
     openCreateConversation(wrapper);
     openStartGroup(wrapper);
     await wrapper.find(StartGroupPanel).prop('onContinue')(['id-1']);
-    wrapper.update();
 
     expect(wrapper).not.toHaveElement(ConversationListPanel);
     expect(wrapper).not.toHaveElement(CreateConversationPanel);
@@ -168,8 +186,8 @@ describe('messenger-list', () => {
 
     it('returns to conversation list when group conversation created from StartGroup stage', async function () {
       const createConversation = jest.fn();
-      const getConversationsWithUsers = jest.fn().mockResolvedValue([{ id: 'convo' }]);
-      const wrapper = subject({ createConversation, getConversationsWithUsers });
+      when(mockFetchConversationsWithUsers).mockResolvedValue([{ id: 'convo' }]);
+      const wrapper = subject({ createConversation });
       openCreateConversation(wrapper);
       openStartGroup(wrapper);
 

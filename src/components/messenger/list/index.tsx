@@ -3,12 +3,12 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
-import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
+import { channelsReceived, denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { createConversation } from '../../../store/channels-list';
-import { CreateMessengerConversation } from '../../../store/channels-list/types';
+import { ChannelsReceivedPayload, CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
 
@@ -18,6 +18,7 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
+import { fetchConversationsWithUsers } from '../../../store/channels-list/api';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -40,11 +41,7 @@ export interface Properties extends PublicProperties {
   conversations: Channel[];
   fetchConversations: () => void;
   createConversation: (payload: CreateMessengerConversation) => void;
-  getConversationsWithUsers: () => Channel[];
-}
-
-export function getConversationsWithUsers() {
-  return [];
+  channelsReceived: (payload: ChannelsReceivedPayload) => void;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -69,7 +66,7 @@ export class Container extends React.Component<Properties, State> {
       setActiveMessengerChat: setActiveMessengerId,
       fetchConversations,
       createConversation,
-      getConversationsWithUsers,
+      channelsReceived,
     };
   }
 
@@ -91,6 +88,8 @@ export class Container extends React.Component<Properties, State> {
     } else if (this.state.stage === Stage.StartGroupChat) {
       this.setState({ stage: Stage.CreateOneOnOne });
     } else if (this.state.stage === Stage.GroupDetails) {
+      // XXX: What about resetting the current selected users?
+      // We should probably render the existing selection list
       this.setState({ stage: Stage.StartGroupChat });
     }
   };
@@ -122,9 +121,10 @@ export class Container extends React.Component<Properties, State> {
   groupMembersSelected = async (userIds: string[]) => {
     // XXX: include current user here or deeper?
     // XXX: loading state for the continue button
-    const existingConversations = await this.props.getConversationsWithUsers(userIds);
+    const existingConversations = await fetchConversationsWithUsers(userIds);
 
     if (existingConversations?.length > 0) {
+      this.props.channelsReceived({ channels: existingConversations });
       this.props.setActiveMessengerChat(existingConversations[0].id);
       this.reset();
     } else {

@@ -17,10 +17,7 @@ export async function createConversation(userIds: string[]): Promise<DirectMessa
   return directMessages.body;
 }
 
-export async function fetchConversationsWithUsers(_userIds: string[]): Promise<any[]> {
-  // Simulate request timing
-  await new Promise((r) => setTimeout(r, 30));
-  return [];
-  // const response = await get<Channel[]>('/conversations', { userIds });
-  // return response.body;
+export async function fetchConversationsWithUsers(userIds: string[]): Promise<any[]> {
+  const response = await get<Channel[]>('/conversations', { userIds });
+  return response.body;
 }

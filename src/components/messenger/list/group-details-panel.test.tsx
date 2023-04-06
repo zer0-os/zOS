@@ -67,18 +67,28 @@ describe('GroupDetailsPanel', () => {
 
     wrapper.find('Button').simulate('press');
 
-    expect(onCreate).toHaveBeenCalledWith({ users: users, name: '' });
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ users: users }));
   });
 
   it('includes group name onCreate', function () {
     const onCreate = jest.fn();
-    const users = [stubUser({ value: 'u-1' })];
-    const wrapper = subject({ onCreate, users });
+    const wrapper = subject({ onCreate });
 
     wrapper.find('Input').simulate('change', 'group name');
     wrapper.find('Button').simulate('press');
 
-    expect(onCreate).toHaveBeenCalledWith({ name: 'group name', users: users });
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ name: 'group name' }));
+  });
+
+  it('includes cover photo onCreate', function () {
+    const image = { some: 'image' };
+    const onCreate = jest.fn();
+    const wrapper = subject({ onCreate });
+
+    wrapper.find('ImageUpload').simulate('change', image);
+    wrapper.find('Button').simulate('press');
+
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ image }));
   });
 });
 

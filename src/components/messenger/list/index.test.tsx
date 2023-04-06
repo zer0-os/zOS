@@ -173,9 +173,15 @@ describe('messenger-list', () => {
     openStartGroup(wrapper);
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
 
-    wrapper.find(GroupDetailsPanel).simulate('create', { name: 'group name', users: [{ value: 'id-1' }] });
+    wrapper
+      .find(GroupDetailsPanel)
+      .simulate('create', { name: 'group name', users: [{ value: 'id-1' }], image: { some: 'image' } });
 
-    expect(createConversation).toHaveBeenCalledWith({ name: 'group name', userIds: ['id-1'] });
+    expect(createConversation).toHaveBeenCalledWith({
+      name: 'group name',
+      userIds: ['id-1'],
+      image: { some: 'image' },
+    });
   });
 
   it('maintains the selected users on StartGroup phase if back button pressed on group details panel', async function () {

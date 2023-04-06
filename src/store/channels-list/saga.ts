@@ -78,6 +78,10 @@ export function* createConversation(action) {
   }
 }
 
+export function* clearChannelsAndConversations() {
+  yield put(receive([]));
+}
+
 export function* fetchChannelsAndConversations() {
   if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
     const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));

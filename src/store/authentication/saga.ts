@@ -12,6 +12,7 @@ import { setChatAccessToken } from '../chat';
 import { User } from './types';
 import { clearUserLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
+import { clearChannelsAndConversations } from '../channels-list/saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -61,7 +62,12 @@ export function* getCurrentUserWithChatAccessToken() {
   }
 }
 
-function* processUserAccount(params: { user?: User; nonce?: string; chatAccessToken?: string; isLoading: boolean }) {
+export function* processUserAccount(params: {
+  user?: User;
+  nonce?: string;
+  chatAccessToken?: string;
+  isLoading: boolean;
+}) {
   const { user = null, nonce = null, chatAccessToken = null, isLoading = false } = params;
 
   yield all([
@@ -103,7 +109,10 @@ export function* initializeUserState(user: User) {
 }
 
 export function* clearUserState() {
-  yield clearUserLayout();
+  yield all([
+    clearUserLayout(),
+    clearChannelsAndConversations(),
+  ]);
 }
 
 export function* saga() {

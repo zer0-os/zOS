@@ -15,11 +15,11 @@ import {
   clearSession as clearSessionApi,
   fetchChatAccessToken,
 } from './api';
-
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
-import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
+import { receive, SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
+import { update } from '../layout';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -141,6 +141,13 @@ describe('authentication saga', () => {
           ],
         ])
         .spawn(initializeUserState, currentUserResponse)
+        .run();
+    });
+
+    it('clears the user state', async () => {
+      await expectSaga(clearUserState)
+        .put(update({ isSidekickOpen: false }))
+        .put(receive([]))
         .run();
     });
 

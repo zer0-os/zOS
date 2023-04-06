@@ -1,11 +1,15 @@
 import * as React from 'react';
-import classNames from 'classnames';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { lastSeenText } from './utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
+import { Avatar } from '@zero-tech/zui/components';
+import { IconUsersPlus } from '@zero-tech/zui/icons';
+
+import { bem } from '../../../lib/bem';
+const c = bem('direct-message-members');
 
 export interface Properties {
   conversation: Channel;
@@ -25,15 +29,43 @@ export class ConversationItem extends React.Component<Properties> {
     return otherMembersToString(conversation.otherMembers);
   }
 
-  renderStatus(conversation: Channel) {
-    const isAnyUserOnline = conversation.otherMembers.some((user) => user.isOnline);
+  get conversationStatus() {
+    const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);
+    return isAnyUserOnline ? 'active' : 'offline';
+  }
+
+  isCustomIcon(url?: string) {
+    if (!url) return false;
+
+    // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
+    return !url.startsWith('https://static.sendbird.com/sample');
+  }
+
+  renderAvatar() {
+    if (this.props.conversation.otherMembers.length === 1) {
+      return (
+        <Avatar
+          size={'small'}
+          type={'circle'}
+          imageURL={this.props.conversation.otherMembers[0].profileImage}
+          statusType={this.conversationStatus}
+        />
+      );
+    } else if (this.isCustomIcon(this.props.conversation.icon)) {
+      return (
+        <Avatar
+          size={'small'}
+          type={'circle'}
+          imageURL={this.props.conversation.icon}
+          statusType={this.conversationStatus}
+        />
+      );
+    }
 
     return (
-      <div
-        className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isAnyUserOnline,
-        })}
-      ></div>
+      <div className={c('group-icon')}>
+        <IconUsersPlus size={25} />
+      </div>
     );
   }
 
@@ -52,7 +84,7 @@ export class ConversationItem extends React.Component<Properties> {
         className='direct-message-members__user-tooltip'
       >
         <div className='direct-message-members__user' onClick={this.handleMemberClick}>
-          {this.renderStatus(conversation)}
+          {this.renderAvatar()}
           <div className='direct-message-members__user-name'>
             {conversation.name || otherMembersToString(conversation.otherMembers)}
           </div>

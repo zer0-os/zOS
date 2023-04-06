@@ -15,6 +15,37 @@ describe('ConversationItem', () => {
     return shallow(<ConversationItem {...allProps} />);
   };
 
+  it('renders other members avatar for one on one', function () {
+    const wrapper = subject({
+      conversation: convoWith({ firstName: 'Johnny', profileImage: 'image-url' }),
+    });
+
+    expect(wrapper.find('Avatar').prop('imageURL')).toEqual('image-url');
+  });
+
+  it('renders group icon for group conversation with an image', function () {
+    const wrapper = subject({
+      conversation: {
+        icon: 'custom-image-url',
+        ...convoWith({ firstName: 'one' }, { firstName: 'two' }),
+      },
+    });
+
+    expect(wrapper.find('Avatar').prop('imageURL')).toEqual('custom-image-url');
+  });
+
+  it('renders default group icon if group conversation has no image', function () {
+    // XXX: Avatar with status
+    const wrapper = subject({
+      conversation: {
+        icon: 'https://static.sendbird.com/sample/cover/cover_11.jpg',
+        ...convoWith({ firstName: 'one' }, { firstName: 'two' }),
+      },
+    });
+
+    expect(wrapper).toHaveElement('.direct-message-members__group-icon');
+  });
+
   it('renders conversation title for one on one', function () {
     const wrapper = subject({
       conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }),
@@ -85,18 +116,24 @@ describe('ConversationItem', () => {
   describe('status', () => {
     it('renders inactive if no other members are online', function () {
       const wrapper = subject({
-        conversation: convoWith({ isOnline: false }, { isOnline: false }),
+        conversation: {
+          icon: 'icon-url',
+          ...convoWith({ isOnline: false }, { isOnline: false }),
+        },
       });
 
-      expect(wrapper).not.toHaveElement('.direct-message-members__user-status--active');
+      expect(wrapper.find('Avatar').prop('statusType')).toEqual('offline');
     });
 
     it('renders active if any other members are online', function () {
       const wrapper = subject({
-        conversation: convoWith({ isOnline: false }, { isOnline: true }),
+        conversation: {
+          icon: 'icon-url',
+          ...convoWith({ isOnline: false }, { isOnline: true }),
+        },
       });
 
-      expect(wrapper).toHaveElement('.direct-message-members__user-status--active');
+      expect(wrapper.find('Avatar').prop('statusType')).toEqual('active');
     });
   });
 

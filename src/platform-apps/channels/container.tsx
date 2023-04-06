@@ -70,12 +70,7 @@ export class Container extends React.Component<Properties> {
 
   // only render the channel(s) which belong to "this" domain/network
   isChannelValid(channelId) {
-    const channelIds = (this.props.channels ?? []).map((c) => c.id);
-    if (channelIds.includes(channelId)) {
-      return true;
-    }
-
-    return false;
+    return (this.props.channels ?? []).some((c) => c.id === channelId);
   }
 
   renderChannelView() {

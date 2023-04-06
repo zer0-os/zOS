@@ -59,9 +59,13 @@ export function* createConversation(action) {
 
   let coverUrl = '';
   if (image) {
-    // XXX: Catch the error....what do we do? Toaster?
-    const uploadResult = yield call(uploadImageApi, image);
-    coverUrl = uploadResult.url;
+    try {
+      const uploadResult = yield call(uploadImageApi, image);
+      coverUrl = uploadResult.url;
+    } catch (error) {
+      console.error(error);
+      return;
+    }
   }
 
   const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);

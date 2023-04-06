@@ -84,12 +84,15 @@ export function* processUserAccount(params: {
         isLoading,
       })
     ),
-    put({
-      type: user
-        ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
-        : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
-    }),
   ]);
+
+  if (isLoading) return;
+
+  yield put({
+    type: user
+      ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
+      : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
+  });
 
   if (user) {
     yield spawn(initializeUserState, user);

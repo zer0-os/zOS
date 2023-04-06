@@ -8,6 +8,7 @@ import {
   getCurrentUserWithChatAccessToken,
   initializeUserState,
   clearUserState,
+  processUserAccount,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -148,6 +149,28 @@ describe('authentication saga', () => {
       await expectSaga(clearUserState)
         .put(update({ isSidekickOpen: false }))
         .put(receive([]))
+        .run();
+    });
+
+    it('process user account when loading', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: true })
+        .not.spawn(clearUserState)
+        .not.put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .run();
+    });
+
+    it('process user account without a user when loaded', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: false })
+        .spawn(clearUserState)
+        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .run();
+    });
+
+    it('process user account with user when loaded', async () => {
+      const user = { id: 'anything' } as any;
+      await expectSaga(processUserAccount, { user, isLoading: false })
+        .spawn(initializeUserState, user)
+        .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
         .run();
     });
 

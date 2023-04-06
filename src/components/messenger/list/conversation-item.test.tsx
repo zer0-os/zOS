@@ -43,7 +43,7 @@ describe('ConversationItem', () => {
       },
     });
 
-    expect(wrapper).toHaveElement('.direct-message-members__group-icon');
+    expect(wrapper).toHaveElement('.conversation-item__group-icon');
   });
 
   it('renders conversation title for one on one', function () {
@@ -51,7 +51,7 @@ describe('ConversationItem', () => {
       conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }),
     });
 
-    const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    const displayChatNames = wrapper.find('.conversation-item__user-name').map((node) => node.text());
     expect(displayChatNames).toStrictEqual(['Johnny Cash']);
   });
 
@@ -84,7 +84,7 @@ describe('ConversationItem', () => {
       },
     });
 
-    wrapper.find('.direct-message-members__user').first().simulate('click');
+    wrapper.find('.conversation-item__user').first().simulate('click');
 
     expect(handleMemberClick).toHaveBeenCalledWith('test-conversation-id');
   });
@@ -98,7 +98,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper).not.toHaveElement('.direct-message-members__user-unread-count');
+    expect(wrapper).not.toHaveElement('.conversation-item__user-unread-count');
   });
 
   it('shows unread message count', function () {
@@ -110,7 +110,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual('7');
+    expect(wrapper.find('.conversation-item__user-unread-count').text()).toEqual('7');
   });
 
   describe('status', () => {
@@ -165,7 +165,7 @@ describe('ConversationItem', () => {
 });
 
 function title(wrapper) {
-  return wrapper.find('.direct-message-members__user-name').text();
+  return wrapper.find('.conversation-item__user-name').text();
 }
 
 function convoWith(...otherMembers): any {

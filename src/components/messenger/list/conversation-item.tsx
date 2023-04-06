@@ -5,11 +5,11 @@ import { lastSeenText } from './utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsersPlus } from '@zero-tech/zui/icons';
 
 import { bem } from '../../../lib/bem';
-const c = bem('direct-message-members');
+const c = bem('conversation-item');
 
 export interface Properties {
   conversation: Channel;
@@ -45,7 +45,7 @@ export class ConversationItem extends React.Component<Properties> {
     if (this.props.conversation.otherMembers.length === 1) {
       return (
         <Avatar
-          size={'small'}
+          size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.otherMembers[0].profileImage}
           statusType={this.conversationStatus}
@@ -54,7 +54,7 @@ export class ConversationItem extends React.Component<Properties> {
     } else if (this.isCustomIcon(this.props.conversation.icon)) {
       return (
         <Avatar
-          size={'small'}
+          size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.icon}
           statusType={this.conversationStatus}
@@ -65,6 +65,7 @@ export class ConversationItem extends React.Component<Properties> {
     return (
       <div className={c('group-icon')}>
         <IconUsersPlus size={25} />
+        <Status className={c('group-status')} type={this.conversationStatus} />
       </div>
     );
   }
@@ -81,16 +82,16 @@ export class ConversationItem extends React.Component<Properties> {
             0,
           ],
         }}
-        className='direct-message-members__user-tooltip'
       >
-        <div className='direct-message-members__user' onClick={this.handleMemberClick}>
+        <div className={c('')} onClick={this.handleMemberClick}>
           {this.renderAvatar()}
-          <div className='direct-message-members__user-name'>
-            {conversation.name || otherMembersToString(conversation.otherMembers)}
+          <div className={c('summary')}>
+            <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
+            <div className={c('second-row')}>
+              <div className={c('message')}>...</div>
+              {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
+            </div>
           </div>
-          {conversation.unreadCount !== 0 && (
-            <div className='direct-message-members__user-unread-count'>{conversation.unreadCount}</div>
-          )}
         </div>
       </Tooltip>
     );

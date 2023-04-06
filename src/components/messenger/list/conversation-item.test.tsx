@@ -51,7 +51,7 @@ describe('ConversationItem', () => {
       conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }),
     });
 
-    const displayChatNames = wrapper.find('.conversation-item__user-name').map((node) => node.text());
+    const displayChatNames = wrapper.find('.conversation-item__name').map((node) => node.text());
     expect(displayChatNames).toStrictEqual(['Johnny Cash']);
   });
 
@@ -84,7 +84,7 @@ describe('ConversationItem', () => {
       },
     });
 
-    wrapper.find('.conversation-item__user').first().simulate('click');
+    wrapper.find('.conversation-item').first().simulate('click');
 
     expect(handleMemberClick).toHaveBeenCalledWith('test-conversation-id');
   });
@@ -98,7 +98,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper).not.toHaveElement('.conversation-item__user-unread-count');
+    expect(wrapper).not.toHaveElement('.conversation-item__unread-count');
   });
 
   it('shows unread message count', function () {
@@ -110,8 +110,10 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper.find('.conversation-item__user-unread-count').text()).toEqual('7');
+    expect(wrapper.find('.conversation-item__unread-count').text()).toEqual('7');
   });
+
+  it('renders inactive if no other members are online', function () {});
 
   describe('status', () => {
     it('renders inactive if no other members are online', function () {
@@ -165,7 +167,7 @@ describe('ConversationItem', () => {
 });
 
 function title(wrapper) {
-  return wrapper.find('.conversation-item__user-name').text();
+  return wrapper.find('.conversation-item__name').text();
 }
 
 function convoWith(...otherMembers): any {

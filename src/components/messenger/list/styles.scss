@@ -301,12 +301,37 @@
     overflow: hidden;
   }
 
+  &__header {
+    overflow: hidden;
+    display: flex;
+    align-content: stretch;
+    align-items: flex-end;
+    width: 100%;
+    margin-bottom: 6px;
+  }
+
   &__name {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    flex-grow: 1;
     font-size: 14px;
     line-height: 150%;
+  }
+
+  &__timestamp {
+    color: theme.$color-greyscale-11;
+    font-size: 10px;
+    line-height: 150%;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  &__message {
+    color: theme.$color-greyscale-11;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
   }
 
   &__unread-count {
@@ -317,11 +342,11 @@
     height: 20px;
     text-align: center;
     font-size: 12px;
-    line-height: 21px;
+    line-height: 20px;
     margin-left: 3px;
   }
 
-  &__second-row {
+  &__content {
     display: flex;
     align-content: stretch;
     width: 100%;

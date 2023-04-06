@@ -86,9 +86,13 @@ export class ConversationItem extends React.Component<Properties> {
         <div className={c('')} onClick={this.handleMemberClick}>
           {this.renderAvatar()}
           <div className={c('summary')}>
-            <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
-            <div className={c('second-row')}>
-              <div className={c('message')}>...</div>
+            <div className={c('header')}>
+              <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
+              {/* XXX */}
+              <div className={c('timestamp')}></div>
+            </div>
+            <div className={c('content')}>
+              <div className={c('message')}></div>
               {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>
           </div>

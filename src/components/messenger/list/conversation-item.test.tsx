@@ -35,7 +35,6 @@ describe('ConversationItem', () => {
   });
 
   it('renders default group icon if group conversation has no image', function () {
-    // XXX: Avatar with status
     const wrapper = subject({
       conversation: {
         icon: 'https://static.sendbird.com/sample/cover/cover_11.jpg',
@@ -113,7 +112,31 @@ describe('ConversationItem', () => {
     expect(wrapper.find('.conversation-item__unread-count').text()).toEqual('7');
   });
 
-  it('renders inactive if no other members are online', function () {});
+  it('renders last message timestamp', function () {
+    const wrapper = subject({
+      conversation: {
+        lastMessage: {
+          createdAt: 1680033123552,
+        },
+        otherMembers: [],
+      } as any,
+    });
+
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual('Mar 28');
+  });
+
+  it('renders last message summary', function () {
+    const wrapper = subject({
+      conversation: {
+        lastMessage: {
+          message: 'I said something here',
+        },
+        otherMembers: [],
+      } as any,
+    });
+
+    expect(wrapper.find('.conversation-item__message').text()).toEqual('I said something here');
+  });
 
   describe('status', () => {
     it('renders inactive if no other members are online', function () {

@@ -9,6 +9,7 @@ import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsersPlus } from '@zero-tech/zui/icons';
 
 import { bem } from '../../../lib/bem';
+import moment from 'moment';
 const c = bem('conversation-item');
 
 export interface Properties {
@@ -70,6 +71,20 @@ export class ConversationItem extends React.Component<Properties> {
     );
   }
 
+  get displayDate() {
+    if (this.props.conversation?.lastMessage?.createdAt) {
+      return moment(this.props.conversation.lastMessage.createdAt).format('MMM D');
+    }
+    return '';
+  }
+
+  get message() {
+    if (this.props.conversation?.lastMessage?.message) {
+      return this.props.conversation?.lastMessage?.message;
+    }
+    return '';
+  }
+
   render() {
     const { conversation } = this.props;
     return (
@@ -88,11 +103,10 @@ export class ConversationItem extends React.Component<Properties> {
           <div className={c('summary')}>
             <div className={c('header')}>
               <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
-              {/* XXX */}
-              <div className={c('timestamp')}></div>
+              <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>
-              <div className={c('message')}></div>
+              <div className={c('message')}>{this.message}</div>
               {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>
           </div>

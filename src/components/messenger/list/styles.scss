@@ -283,6 +283,7 @@
   cursor: pointer;
   height: 56px;
   width: 100%;
+  margin: 24px 0px;
 
   font-style: normal;
   font-weight: 400;
@@ -332,9 +333,14 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 15px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   &__unread-count {
+    flex-grow: 0;
+    flex-shrink: 0;
     background-color: theme.$color-primary-8;
     color: theme.$color-primary-transparency-12;
     border-radius: 50%;

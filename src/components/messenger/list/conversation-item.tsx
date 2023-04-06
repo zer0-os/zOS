@@ -6,7 +6,7 @@ import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
-import { IconUsersPlus } from '@zero-tech/zui/icons';
+import { IconUsers1 } from '@zero-tech/zui/icons';
 
 import { bem } from '../../../lib/bem';
 import moment from 'moment';
@@ -65,7 +65,7 @@ export class ConversationItem extends React.Component<Properties> {
 
     return (
       <div className={c('group-icon')}>
-        <IconUsersPlus size={25} />
+        <IconUsers1 size={25} />
         <Status className={c('group-status')} type={this.conversationStatus} />
       </div>
     );

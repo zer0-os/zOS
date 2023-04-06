@@ -16,3 +16,11 @@ export async function createConversation(userIds: string[]): Promise<DirectMessa
   const directMessages = await post<Channel[]>('/directMessages').send({ userIds });
   return directMessages.body;
 }
+
+export async function fetchConversationsWithUsers(_userIds: string[]): Promise<any[]> {
+  // Simulate request timing
+  await new Promise((r) => setTimeout(r, 30));
+  return [];
+  // const response = await get<Channel[]>('/conversations', { userIds });
+  // return response.body;
+}

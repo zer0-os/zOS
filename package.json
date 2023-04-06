@@ -46,6 +46,7 @@
     "linkifyjs": "^4.0.2",
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
+    "lodash.uniqby": "^4.7.0",
     "moment": "^2.29.4",
     "normalizr": "^3.6.2",
     "rc-tooltip": "^5.3.1",

@@ -9,6 +9,8 @@ jest.mock('@zero-tech/zui/components');
 describe('StartGroupPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      isContinuing: false,
+      initialSelections: [],
       searchUsers: () => {},
       onBack: () => {},
       onContinue: () => {},
@@ -43,9 +45,15 @@ describe('StartGroupPanel', () => {
     wrapper.find('Button').simulate('press');
 
     expect(onContinue).toHaveBeenCalledWith([
-      'id-1',
-      'id-2',
+      { value: 'id-1' },
+      { value: 'id-2' },
     ]);
+  });
+
+  it('sets button to loading state if loading', function () {
+    const wrapper = subject({ isContinuing: true });
+
+    expect(wrapper.find('Button').prop('isLoading')).toBeTrue();
   });
 
   it('enables continue button based on number of users', function () {
@@ -70,6 +78,20 @@ describe('StartGroupPanel', () => {
 
     wrapper.find('AutocompleteMembers').simulate('select', { value: 'id-2' });
     expect(wrapper.find('.start-group-panel__selected-count').text()).toEqual('2 members selected');
+  });
+
+  it('renders initialSelected members', function () {
+    const wrapper = subject({
+      initialSelections: [
+        { value: 'id-1', label: 'User 1', image: 'url-1' },
+        { value: 'id-2', label: 'User 2', image: 'url-2' },
+      ],
+    });
+
+    expect(wrapper.find('SelectedUserTag').map(userLabel)).toEqual([
+      'User 1',
+      'User 2',
+    ]);
   });
 
   it('renders selected members', function () {

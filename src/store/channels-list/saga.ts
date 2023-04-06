@@ -1,5 +1,6 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
+import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
@@ -100,9 +101,31 @@ export function* startChannelsAndConversationsRefresh() {
   }
 }
 
+export function* channelsReceived(action) {
+  const { channels } = action.payload;
+
+  const newChannels = channels.map(channelMapper);
+
+  // Silly to get them separately but we'll be splitting these anyway
+  const existingDirectMessages = yield select(rawConversationsList());
+  const existingChannels = yield select(rawChannelsList());
+
+  const newChannelList = uniqBy(
+    [
+      ...existingChannels,
+      ...existingDirectMessages,
+      ...newChannels,
+    ],
+    (c) => c.id ?? c
+  );
+
+  yield put(receive(newChannelList));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
   yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
+  yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
 }

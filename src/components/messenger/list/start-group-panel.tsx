@@ -7,10 +7,13 @@ import { PanelHeader } from './panel-header';
 import { SelectedUserTag } from './selected-user-tag';
 
 export interface Properties {
+  initialSelections: Option[];
+  isContinuing: boolean;
+
   searchUsers: (input: string) => any;
 
   onBack: () => void;
-  onContinue: (ids: string[]) => void;
+  onContinue: (options: Option[]) => void;
 }
 
 interface State {
@@ -20,8 +23,13 @@ interface State {
 export class StartGroupPanel extends React.Component<Properties, State> {
   state = { selectedOptions: [] };
 
+  constructor(props) {
+    super(props);
+    this.state = { selectedOptions: [...props.initialSelections] };
+  }
+
   continue = () => {
-    this.props.onContinue(this.state.selectedOptions.map((o) => o.value));
+    this.props.onContinue(this.state.selectedOptions);
   };
 
   selectOption = (selectedOption) => {
@@ -57,14 +65,19 @@ export class StartGroupPanel extends React.Component<Properties, State> {
               <span className='start-group-panel__selected-number'>{this.state.selectedOptions.length}</span> member
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected
             </div>
-            <div className='start-group-panel__selected-options'>
+            <div>
               {this.state.selectedOptions.map((option) => (
                 <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
               ))}
             </div>
           </AutocompleteMembers>
         </div>
-        <Button className='start-group-panel__continue' onPress={this.continue} isDisabled={this.isContinueDisabled}>
+        <Button
+          className='start-group-panel__continue'
+          onPress={this.continue}
+          isDisabled={this.isContinueDisabled}
+          isLoading={this.props.isContinuing}
+        >
           Continue
         </Button>
       </>

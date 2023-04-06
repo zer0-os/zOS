@@ -68,8 +68,9 @@ describe('channels list saga', () => {
   });
 
   it('create direct messages', async () => {
+    const name = 'group';
     const userIds = ['7867766_7876Z2'];
-    await expectSaga(createConversation, { payload: { userIds } })
+    await expectSaga(createConversation, { payload: { userIds, name } })
       .provide([
         [
           matchers.call.fn(createConversationApi),
@@ -77,15 +78,16 @@ describe('channels list saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(createConversationApi, userIds)
+      .call(createConversationApi, userIds, name)
       .run();
   });
 
   it('handle existing chat direct messages creation', async () => {
+    const name = 'group';
     const userIds = ['7867766_7876Z2'];
     const {
       storeState: { channelsList, chat },
-    } = await expectSaga(createConversation, { payload: { userIds } })
+    } = await expectSaga(createConversation, { payload: { userIds, name } })
       .withReducer(rootReducer)
       .provide([
         [
@@ -94,7 +96,7 @@ describe('channels list saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(createConversationApi, userIds)
+      .call(createConversationApi, userIds, name)
       .run();
 
     expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);

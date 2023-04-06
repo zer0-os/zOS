@@ -54,8 +54,8 @@ export function* fetchConversations() {
 }
 
 export function* createConversation(action) {
-  const { userIds } = action.payload;
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds);
+  const { name, userIds } = action.payload;
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name);
 
   const conversation = channelMapper(response);
   const existingConversationsList = yield select(rawConversationsList());

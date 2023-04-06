@@ -67,7 +67,18 @@ describe('GroupDetailsPanel', () => {
 
     wrapper.find('Button').simulate('press');
 
-    expect(onCreate).toHaveBeenCalledWith({ users: users });
+    expect(onCreate).toHaveBeenCalledWith({ users: users, name: '' });
+  });
+
+  it('includes group name onCreate', function () {
+    const onCreate = jest.fn();
+    const users = [stubUser({ value: 'u-1' })];
+    const wrapper = subject({ onCreate, users });
+
+    wrapper.find('Input').simulate('change', 'group name');
+    wrapper.find('Button').simulate('press');
+
+    expect(onCreate).toHaveBeenCalledWith({ name: 'group name', users: users });
   });
 });
 

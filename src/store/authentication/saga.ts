@@ -22,7 +22,7 @@ export const currentUserSelector = () => (state) => {
 };
 
 export function* nonceOrAuthorize(action) {
-  yield setUserAndChatAccessToken({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
 
   const { signedWeb3Token } = action.payload;
 
@@ -33,7 +33,7 @@ export function* nonceOrAuthorize(action) {
   } else {
     const user = yield call(fetchCurrentUser);
 
-    yield setUserAndChatAccessToken({ user, chatAccessToken, isLoading: false });
+    yield processUserAccount({ user, chatAccessToken, isLoading: false });
   }
 }
 
@@ -44,29 +44,24 @@ export function* terminate() {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
 
-  yield setUserAndChatAccessToken({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
 }
 
 export function* getCurrentUserWithChatAccessToken() {
-  yield setUserAndChatAccessToken({ user: null, chatAccessToken: null, isLoading: true });
+  yield processUserAccount({ user: null, chatAccessToken: null, isLoading: true });
 
   const user = yield call(fetchCurrentUser);
 
   if (user) {
     const { chatAccessToken } = yield call(fetchChatAccessToken);
 
-    yield setUserAndChatAccessToken({ user, chatAccessToken, isLoading: false });
+    yield processUserAccount({ user, chatAccessToken, isLoading: false });
   } else {
-    yield setUserAndChatAccessToken({ isLoading: false });
+    yield processUserAccount({ isLoading: false });
   }
 }
 
-function* setUserAndChatAccessToken(params: {
-  user?: User;
-  nonce?: string;
-  chatAccessToken?: string;
-  isLoading: boolean;
-}) {
+function* processUserAccount(params: { user?: User; nonce?: string; chatAccessToken?: string; isLoading: boolean }) {
   const { user = null, nonce = null, chatAccessToken = null, isLoading = false } = params;
 
   yield all([

@@ -245,6 +245,11 @@
     align-content: stretch;
     line-height: 24px;
     margin-bottom: 12px;
+    margin-top: 12px;
+
+    &:first-child {
+      margin-top: 0px;
+    }
   }
 
   &__label {

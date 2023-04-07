@@ -7,7 +7,7 @@ import { channelsReceived, denormalizeConversations, fetchConversations } from '
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { createConversation } from '../../../store/channels-list';
+import { createConversation } from '../../../store/create-conversation';
 import { ChannelsReceivedPayload, CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -40,6 +40,8 @@ interface State {
 export interface Properties extends PublicProperties {
   userId: string;
   conversations: Channel[];
+  isCreateConversationActive: boolean;
+  isGroupCreating: boolean;
 
   setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
@@ -58,6 +60,7 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
+      createConversation,
     } = state;
     const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
@@ -66,6 +69,8 @@ export class Container extends React.Component<Properties, State> {
     return {
       conversations,
       userId: user?.data?.id,
+      isGroupCreating: createConversation.groupDetails.isCreating,
+      isCreateConversationActive: createConversation.isActive,
     };
   }
 
@@ -80,6 +85,15 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidMount(): void {
     this.props.fetchConversations();
+  }
+
+  componentDidUpdate(prevProps: Properties): void {
+    // Temporary to allow switching between saga modes during the transition
+    // from local state management to saga state management
+    // If we went from the saga being in control to not then reset to the original state
+    if (prevProps.isCreateConversationActive && !this.props.isCreateConversationActive) {
+      this.reset();
+    }
   }
 
   openConversation = (id: string) => {
@@ -107,6 +121,7 @@ export class Container extends React.Component<Properties, State> {
   startGroupChat = (): void => {
     this.setState({
       stage: Stage.StartGroupChat,
+      groupUsers: [],
     });
   };
 
@@ -149,7 +164,6 @@ export class Container extends React.Component<Properties, State> {
       image: details.image,
     };
     this.props.createConversation(conversation);
-    this.reset();
   };
 
   renderTitleBar() {
@@ -192,7 +206,12 @@ export class Container extends React.Component<Properties, State> {
             />
           )}
           {this.state.stage === Stage.GroupDetails && (
-            <GroupDetailsPanel users={this.state.groupUsers} onCreate={this.createGroup} onBack={this.goBack} />
+            <GroupDetailsPanel
+              users={this.state.groupUsers}
+              onCreate={this.createGroup}
+              onBack={this.goBack}
+              isCreating={this.props.isGroupCreating}
+            />
           )}
         </div>
       </>

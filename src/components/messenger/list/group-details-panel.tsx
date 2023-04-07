@@ -12,6 +12,7 @@ const c = bem('group-details-panel');
 
 export interface Properties {
   users: Option[];
+  isCreating: boolean;
 
   onBack: () => void;
   onCreate: (data: { name: string; users: Option[]; image: File }) => void;
@@ -62,7 +63,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
           ))}
         </div>
-        <Button onPress={this.createGroup} className={c('create')}>
+        <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
           Create Group
         </Button>
       </>

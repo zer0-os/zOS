@@ -25,6 +25,8 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       userId: '',
       conversations: [],
+      isCreateConversationActive: false,
+      isGroupCreating: false,
       setActiveMessengerChat: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -212,6 +214,20 @@ describe('messenger-list', () => {
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([]);
   });
 
+  it('sets the group details props', async function () {
+    const wrapper = subject({ isGroupCreating: true });
+    openCreateConversation(wrapper);
+    openStartGroup(wrapper);
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+
+    expect(wrapper.find(GroupDetailsPanel).props()).toEqual(
+      expect.objectContaining({
+        users: [{ value: 'user-id' }],
+        isCreating: true,
+      })
+    );
+  });
+
   describe('navigation', () => {
     it('moves to the group conversation creation phase', function () {
       const wrapper = subject({});
@@ -263,34 +279,23 @@ describe('messenger-list', () => {
       expect(wrapper).toHaveElement('StartGroupPanel');
       expect(wrapper).not.toHaveElement('GroupDetailsPanel');
     });
-
-    it('returns to conversation list when group conversation created from GroupDetails stage', async function () {
-      const createConversation = jest.fn();
-      when(mockFetchConversationsWithUsers).mockResolvedValue([]);
-      const wrapper = subject({ createConversation });
-      openCreateConversation(wrapper);
-      openStartGroup(wrapper);
-      await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
-      wrapper.find(GroupDetailsPanel).simulate('create', { users: [{ value: 'id-1' }] });
-
-      expect(wrapper).toHaveElement(ConversationListPanel);
-      expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).not.toHaveElement(StartGroupPanel);
-      expect(wrapper).not.toHaveElement(GroupDetailsPanel);
-    });
   });
 
   describe('mapState', () => {
-    const subject = (channels) => {
-      return DirectMessageChat.mapState(getState(channels));
+    const subject = (channels, createConversationState = {}) => {
+      return DirectMessageChat.mapState(getState(channels, createConversationState));
     };
 
-    const getState = (channels) => {
+    const getState = (channels, createConversationState = {}) => {
       const channelData = normalize(channels);
       return {
         authentication: {},
         channelsList: { value: channelData.result },
         normalized: channelData.entities,
+        createConversation: {
+          groupDetails: {},
+          ...createConversationState,
+        },
       } as RootState;
     };
 
@@ -317,6 +322,24 @@ describe('messenger-list', () => {
         'convo-1',
         'convo-3',
       ]);
+    });
+
+    test('create conversation active status', () => {
+      const state = subject([], {
+        isActive: true,
+      });
+
+      expect(state.isCreateConversationActive).toEqual(true);
+    });
+
+    test('gets group details from state', () => {
+      const state = subject([], {
+        groupDetails: {
+          isCreating: true,
+        },
+      });
+
+      expect(state.isGroupCreating).toEqual(true);
     });
   });
 });

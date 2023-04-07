@@ -239,6 +239,30 @@
   &__create {
     margin: 16px 0px;
   }
+
+  &__field-info {
+    display: flex;
+    align-content: stretch;
+    line-height: 24px;
+    margin-bottom: 12px;
+  }
+
+  &__label {
+    flex-grow: 1;
+
+    color: theme.$color-greyscale-12;
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  &__optional {
+    flex-grow: 0;
+    flex-shrink: 0;
+
+    color: theme.$color-greyscale-11;
+    font-family: 'SF Pro Text';
+    font-size: 12px;
+  }
 }
 
 .selected-user-tag {

@@ -12,8 +12,8 @@ export async function fetchConversations(): Promise<Channel[]> {
   return directMessages.body;
 }
 
-export async function createConversation(userIds: string[]): Promise<DirectMessage[]> {
-  const directMessages = await post<Channel[]>('/directMessages').send({ userIds });
+export async function createConversation(userIds: string[], name: string = ''): Promise<DirectMessage[]> {
+  const directMessages = await post<Channel[]>('/directMessages').send({ name, userIds });
   return directMessages.body;
 }
 

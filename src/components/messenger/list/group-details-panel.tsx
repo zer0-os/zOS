@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button } from '@zero-tech/zui/components';
+import { Button, Input } from '@zero-tech/zui/components';
 
 import { Option } from '../autocomplete-members';
 import { PanelHeader } from './panel-header';
@@ -13,18 +13,35 @@ export interface Properties {
   users: Option[];
 
   onBack: () => void;
-  onCreate: (data: { users: Option[] }) => void;
+  onCreate: (data: { name: string; users: Option[] }) => void;
 }
 
-export class GroupDetailsPanel extends React.Component<Properties> {
+interface State {
+  name: string;
+}
+
+export class GroupDetailsPanel extends React.Component<Properties, State> {
+  state = { name: '' };
+
   createGroup = () => {
-    this.props.onCreate({ users: this.props.users });
+    this.props.onCreate({ name: this.state.name, users: this.props.users });
+  };
+
+  nameChanged = (value) => {
+    this.setState({ name: value });
   };
 
   render() {
     return (
       <>
         <PanelHeader title='Group details' onBack={this.props.onBack} />
+        <div>
+          <div className={c('field-info')}>
+            <span className={c('label')}>Group name</span>
+            <span className={c('optional')}>Optional</span>
+          </div>
+          <Input value={this.state.name} onChange={this.nameChanged} />
+        </div>
         <div className={c('selected-count')}>
           <span className={c('selected-number')}>{this.props.users.length}</span> member
           {this.props.users.length === 1 ? '' : 's'} selected

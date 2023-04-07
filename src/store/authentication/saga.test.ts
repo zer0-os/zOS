@@ -21,6 +21,10 @@ import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
 import { receive, SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import { update } from '../layout';
+import { rootReducer } from '../index';
+import { clearNotifications } from '../notifications/saga';
+import { clearChannelsAndConversations } from '../channels-list/saga';
+import { clearUserLayout } from '../layout/saga';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -89,6 +93,7 @@ describe('authentication saga', () => {
         .put(setUser({ data: null, isLoading: false, nonce: null }))
         .put(setChatAccessToken({ value: null, isLoading: false }))
         .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
         .run();
     });
 
@@ -101,6 +106,7 @@ describe('authentication saga', () => {
           ],
         ])
         .spawn(clearUserState)
+        .withReducer(rootReducer)
         .run();
     });
   });
@@ -145,35 +151,6 @@ describe('authentication saga', () => {
         .run();
     });
 
-    it('clears the user state', async () => {
-      await expectSaga(clearUserState)
-        .put(update({ isSidekickOpen: false }))
-        .put(receive([]))
-        .run();
-    });
-
-    it('process user account when loading', async () => {
-      await expectSaga(processUserAccount, { user: null, isLoading: true })
-        .not.spawn(clearUserState)
-        .not.put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
-        .run();
-    });
-
-    it('process user account without a user when loaded', async () => {
-      await expectSaga(processUserAccount, { user: null, isLoading: false })
-        .spawn(clearUserState)
-        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
-        .run();
-    });
-
-    it('process user account with user when loaded', async () => {
-      const user = { id: 'anything' } as any;
-      await expectSaga(processUserAccount, { user, isLoading: false })
-        .spawn(initializeUserState, user)
-        .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
-        .run();
-    });
-
     it('fetch notification', async () => {
       await expectSaga(getCurrentUserWithChatAccessToken)
         .provide([
@@ -189,6 +166,118 @@ describe('authentication saga', () => {
         .spawn(initializeUserState, currentUserResponse)
         .put(fetchNotifications({ userId: currentUserResponse.id }))
         .run();
+    });
+  });
+
+  describe('processUserAccount', () => {
+    it('process user account when loading', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: true })
+        .not.spawn(clearUserState)
+        .not.put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .run();
+    });
+
+    it('process user account without a user when loaded', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: false })
+        .spawn(clearUserState)
+        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
+        .run();
+    });
+
+    it('process user account with user when loaded', async () => {
+      const user = { id: 'anything' } as any;
+      await expectSaga(processUserAccount, { user, isLoading: false })
+        .spawn(initializeUserState, user)
+        .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
+        .run();
+    });
+  });
+
+  describe('clearUserState', () => {
+    it('resets layout', async () => {
+      await expectSaga(clearUserState)
+        .put(update({ isSidekickOpen: false }))
+        .put(receive([]))
+        .withReducer(rootReducer)
+        .run();
+    });
+
+    it('resets channels and conversations state', async () => {
+      const channelId = 'channel-id';
+
+      const initialState = {
+        normalized: {
+          channels: {
+            [channelId]: {
+              id: channelId,
+            },
+          },
+        },
+        channelsList: { value: [channelId] },
+        notificationsList: { value: [] },
+      };
+
+      const {
+        storeState: {
+          normalized: { channels },
+          channelsList,
+        },
+      } = await expectSaga(clearUserState)
+        .provide([
+          [
+            matchers.call.fn(clearUserLayout),
+            [],
+          ],
+          [
+            matchers.call.fn(clearNotifications),
+            [],
+          ],
+        ])
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(channelsList.value).toEqual([]);
+      expect(channels).toEqual({});
+    });
+
+    it('resets notifications state', async () => {
+      const notificationId = 'notification-id';
+
+      const initialState = {
+        normalized: {
+          notifications: {
+            [notificationId]: {
+              id: notificationId,
+            },
+          },
+        },
+        notificationsList: { value: [notificationId] },
+        channelsList: { value: [] },
+      };
+
+      const {
+        storeState: {
+          normalized: { notifications },
+          notificationsList,
+        },
+      } = await expectSaga(clearUserState)
+        .provide([
+          [
+            matchers.call.fn(clearUserLayout),
+            [],
+          ],
+          [
+            matchers.call.fn(clearChannelsAndConversations),
+            [],
+          ],
+        ])
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(notificationsList.value).toEqual([]);
+      expect(notifications).toEqual({});
     });
   });
 });

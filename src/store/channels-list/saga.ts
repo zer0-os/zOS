@@ -1,6 +1,6 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, take, race, all } from 'redux-saga/effects';
+import { takeLatest, put, call, take, race, all, select } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive, denormalizeChannelsAndConversations } from '.';
 
 import {
@@ -9,7 +9,6 @@ import {
   createConversation as createConversationMessageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { select } from 'redux-saga-test-plan/matchers';
 import { channelMapper, filterChannelsList } from './utils';
 import { setActiveMessengerId } from '../chat';
 import { clearChannel } from '../channels/saga';

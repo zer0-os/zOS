@@ -5,10 +5,17 @@ import { AsyncListStatus } from '../normalized';
 import { rootReducer } from '..';
 
 import { fetch } from './saga';
-import { setStatus } from '.';
+import { setStatus, relevantNotificationTypes } from '.';
 import { fetchNotifications } from './api';
+import { sample } from 'lodash';
 
 describe('notifications list saga', () => {
+  const notificationFetchResponse = [
+    { id: 'id-1', notificationType: sample(relevantNotificationTypes) },
+    { id: 'id-2', notificationType: sample(relevantNotificationTypes) },
+    { id: 'id-3', notificationType: sample(relevantNotificationTypes) },
+  ];
+
   it('sets status to fetching', async () => {
     await expectSaga(fetch, { payload: {} })
       .put(setStatus(AsyncListStatus.Fetching))
@@ -50,11 +57,6 @@ describe('notifications list saga', () => {
   });
 
   it('adds notification ids to notificationsList state', async () => {
-    const ids = [
-      'id-1',
-      'id-2',
-      'id-3',
-    ];
     const {
       storeState: { notificationsList },
     } = await expectSaga(fetch, { payload: {} })
@@ -62,16 +64,16 @@ describe('notifications list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchNotifications),
-          [
-            { id: 'id-1', notificationType: 'type-1' },
-            { id: 'id-2', notificationType: 'type-2' },
-            { id: 'id-3', notificationType: 'type-3' },
-          ],
+          notificationFetchResponse,
         ],
       ])
       .run();
 
-    expect(notificationsList.value).toStrictEqual(ids);
+    expect(notificationsList.value).toStrictEqual(
+      notificationFetchResponse.map((n) => {
+        return n.id;
+      })
+    );
   });
 
   it('adds notifications to normalized state', async () => {
@@ -81,20 +83,17 @@ describe('notifications list saga', () => {
       .provide([
         [
           matchers.call.fn(fetchNotifications),
-          [
-            { id: 'id-1', notificationType: 'type-1' },
-            { id: 'id-2', notificationType: 'type-2' },
-            { id: 'id-3', notificationType: 'type-3' },
-          ],
+          notificationFetchResponse,
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.notifications).toStrictEqual({
-      'id-1': { id: 'id-1', notificationType: 'type-1' },
-      'id-2': { id: 'id-2', notificationType: 'type-2' },
-      'id-3': { id: 'id-3', notificationType: 'type-3' },
-    });
+    const expectation = notificationFetchResponse.reduce(
+      (o, { id, notificationType }) => ({ ...o, [id]: { id, notificationType } }),
+      {}
+    );
+
+    expect(normalized.notifications).toStrictEqual(expectation);
   });
 });

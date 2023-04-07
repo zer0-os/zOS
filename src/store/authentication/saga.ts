@@ -13,6 +13,7 @@ import { User } from './types';
 import { clearUserLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
+import { clearNotifications } from '../notifications/saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -115,6 +116,7 @@ export function* clearUserState() {
   yield all([
     clearUserLayout(),
     clearChannelsAndConversations(),
+    clearNotifications(),
   ]);
 }
 

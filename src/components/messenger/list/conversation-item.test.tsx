@@ -15,12 +15,42 @@ describe('ConversationItem', () => {
     return shallow(<ConversationItem {...allProps} />);
   };
 
+  it('renders other members avatar for one on one', function () {
+    const wrapper = subject({
+      conversation: convoWith({ firstName: 'Johnny', profileImage: 'image-url' }),
+    });
+
+    expect(wrapper.find('Avatar').prop('imageURL')).toEqual('image-url');
+  });
+
+  it('renders group icon for group conversation with an image', function () {
+    const wrapper = subject({
+      conversation: {
+        icon: 'custom-image-url',
+        ...convoWith({ firstName: 'one' }, { firstName: 'two' }),
+      },
+    });
+
+    expect(wrapper.find('Avatar').prop('imageURL')).toEqual('custom-image-url');
+  });
+
+  it('renders default group icon if group conversation has no image', function () {
+    const wrapper = subject({
+      conversation: {
+        icon: 'https://static.sendbird.com/sample/cover/cover_11.jpg',
+        ...convoWith({ firstName: 'one' }, { firstName: 'two' }),
+      },
+    });
+
+    expect(wrapper).toHaveElement('.conversation-item__group-icon');
+  });
+
   it('renders conversation title for one on one', function () {
     const wrapper = subject({
       conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }),
     });
 
-    const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
+    const displayChatNames = wrapper.find('.conversation-item__name').map((node) => node.text());
     expect(displayChatNames).toStrictEqual(['Johnny Cash']);
   });
 
@@ -53,7 +83,7 @@ describe('ConversationItem', () => {
       },
     });
 
-    wrapper.find('.direct-message-members__user').first().simulate('click');
+    wrapper.find('.conversation-item').first().simulate('click');
 
     expect(handleMemberClick).toHaveBeenCalledWith('test-conversation-id');
   });
@@ -67,7 +97,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper).not.toHaveElement('.direct-message-members__user-unread-count');
+    expect(wrapper).not.toHaveElement('.conversation-item__unread-count');
   });
 
   it('shows unread message count', function () {
@@ -79,24 +109,56 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual('7');
+    expect(wrapper.find('.conversation-item__unread-count').text()).toEqual('7');
+  });
+
+  it('renders last message timestamp', function () {
+    const wrapper = subject({
+      conversation: {
+        lastMessage: {
+          createdAt: 1680033123552,
+        },
+        otherMembers: [],
+      } as any,
+    });
+
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual('Mar 28');
+  });
+
+  it('renders last message summary', function () {
+    const wrapper = subject({
+      conversation: {
+        lastMessage: {
+          message: 'I said something here',
+        },
+        otherMembers: [],
+      } as any,
+    });
+
+    expect(wrapper.find('.conversation-item__message').text()).toEqual('I said something here');
   });
 
   describe('status', () => {
     it('renders inactive if no other members are online', function () {
       const wrapper = subject({
-        conversation: convoWith({ isOnline: false }, { isOnline: false }),
+        conversation: {
+          icon: 'icon-url',
+          ...convoWith({ isOnline: false }, { isOnline: false }),
+        },
       });
 
-      expect(wrapper).not.toHaveElement('.direct-message-members__user-status--active');
+      expect(wrapper.find('Avatar').prop('statusType')).toEqual('offline');
     });
 
     it('renders active if any other members are online', function () {
       const wrapper = subject({
-        conversation: convoWith({ isOnline: false }, { isOnline: true }),
+        conversation: {
+          icon: 'icon-url',
+          ...convoWith({ isOnline: false }, { isOnline: true }),
+        },
       });
 
-      expect(wrapper).toHaveElement('.direct-message-members__user-status--active');
+      expect(wrapper.find('Avatar').prop('statusType')).toEqual('active');
     });
   });
 
@@ -128,7 +190,7 @@ describe('ConversationItem', () => {
 });
 
 function title(wrapper) {
-  return wrapper.find('.direct-message-members__user-name').text();
+  return wrapper.find('.conversation-item__name').text();
 }
 
 function convoWith(...otherMembers): any {

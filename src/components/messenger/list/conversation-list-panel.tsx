@@ -48,7 +48,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             0,
           ],
         }}
-        className='direct-message-members__user-tooltip'
       >
         <div className='header-button'>
           <span className='header-button__title'>Conversations</span>

@@ -1,11 +1,16 @@
 import * as React from 'react';
-import classNames from 'classnames';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { lastSeenText } from './utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
+import { Avatar, Status } from '@zero-tech/zui/components';
+import { IconUsers1 } from '@zero-tech/zui/icons';
+
+import { bem } from '../../../lib/bem';
+import moment from 'moment';
+const c = bem('conversation-item');
 
 export interface Properties {
   conversation: Channel;
@@ -25,16 +30,59 @@ export class ConversationItem extends React.Component<Properties> {
     return otherMembersToString(conversation.otherMembers);
   }
 
-  renderStatus(conversation: Channel) {
-    const isAnyUserOnline = conversation.otherMembers.some((user) => user.isOnline);
+  get conversationStatus() {
+    const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);
+    return isAnyUserOnline ? 'active' : 'offline';
+  }
+
+  isCustomIcon(url?: string) {
+    if (!url) return false;
+
+    // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
+    return !url.startsWith('https://static.sendbird.com/sample');
+  }
+
+  renderAvatar() {
+    if (this.props.conversation.otherMembers.length === 1) {
+      return (
+        <Avatar
+          size={'regular'}
+          type={'circle'}
+          imageURL={this.props.conversation.otherMembers[0].profileImage}
+          statusType={this.conversationStatus}
+        />
+      );
+    } else if (this.isCustomIcon(this.props.conversation.icon)) {
+      return (
+        <Avatar
+          size={'regular'}
+          type={'circle'}
+          imageURL={this.props.conversation.icon}
+          statusType={this.conversationStatus}
+        />
+      );
+    }
 
     return (
-      <div
-        className={classNames('direct-message-members__user-status', {
-          'direct-message-members__user-status--active': isAnyUserOnline,
-        })}
-      ></div>
+      <div className={c('group-icon')}>
+        <IconUsers1 size={25} />
+        <Status className={c('group-status')} type={this.conversationStatus} />
+      </div>
     );
+  }
+
+  get displayDate() {
+    if (this.props.conversation?.lastMessage?.createdAt) {
+      return moment(this.props.conversation.lastMessage.createdAt).format('MMM D');
+    }
+    return '';
+  }
+
+  get message() {
+    if (this.props.conversation?.lastMessage?.message) {
+      return this.props.conversation?.lastMessage?.message;
+    }
+    return '';
   }
 
   render() {
@@ -49,16 +97,19 @@ export class ConversationItem extends React.Component<Properties> {
             0,
           ],
         }}
-        className='direct-message-members__user-tooltip'
       >
-        <div className='direct-message-members__user' onClick={this.handleMemberClick}>
-          {this.renderStatus(conversation)}
-          <div className='direct-message-members__user-name'>
-            {conversation.name || otherMembersToString(conversation.otherMembers)}
+        <div className={c('')} onClick={this.handleMemberClick}>
+          {this.renderAvatar()}
+          <div className={c('summary')}>
+            <div className={c('header')}>
+              <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
+              <div className={c('timestamp')}>{this.displayDate}</div>
+            </div>
+            <div className={c('content')}>
+              <div className={c('message')}>{this.message}</div>
+              {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
+            </div>
           </div>
-          {conversation.unreadCount !== 0 && (
-            <div className='direct-message-members__user-unread-count'>{conversation.unreadCount}</div>
-          )}
         </div>
       </Tooltip>
     );

@@ -1,5 +1,6 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
+import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive, denormalizeChannelsAndConversations } from '.';
 
@@ -7,6 +8,7 @@ import {
   fetchChannels as fetchChannelsApi,
   fetchConversations as fetchConversationsMessagesApi,
   createConversation as createConversationMessageApi,
+  uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
 import { channelMapper, filterChannelsList } from './utils';
@@ -53,8 +55,20 @@ export function* fetchConversations() {
 }
 
 export function* createConversation(action) {
-  const { userIds } = action.payload;
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds);
+  const { name, userIds, image } = action.payload;
+
+  let coverUrl = '';
+  if (image) {
+    try {
+      const uploadResult = yield call(uploadImageApi, image);
+      coverUrl = uploadResult.url;
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
 
   const conversation = channelMapper(response);
   const existingConversationsList = yield select(rawConversationsList());
@@ -113,9 +127,31 @@ export function* startChannelsAndConversationsRefresh() {
   }
 }
 
+export function* channelsReceived(action) {
+  const { channels } = action.payload;
+
+  const newChannels = channels.map(channelMapper);
+
+  // Silly to get them separately but we'll be splitting these anyway
+  const existingDirectMessages = yield select(rawConversationsList());
+  const existingChannels = yield select(rawChannelsList());
+
+  const newChannelList = uniqBy(
+    [
+      ...existingChannels,
+      ...existingDirectMessages,
+      ...newChannels,
+    ],
+    (c) => c.id ?? c
+  );
+
+  yield put(receive(newChannelList));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
   yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
+  yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
 }

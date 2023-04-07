@@ -7,6 +7,7 @@ import {
   fetchChannels as fetchChannelsApi,
   fetchConversations as fetchConversationsApi,
   createConversation as createConversationApi,
+  uploadImage as uploadImageApi,
 } from './api';
 
 import {
@@ -67,9 +68,10 @@ describe('channels list saga', () => {
       .run();
   });
 
-  it('create direct messages', async () => {
+  it('creates conversation', async () => {
+    const name = 'group';
     const userIds = ['7867766_7876Z2'];
-    await expectSaga(createConversation, { payload: { userIds } })
+    await expectSaga(createConversation, { payload: { userIds, name } })
       .provide([
         [
           matchers.call.fn(createConversationApi),
@@ -77,15 +79,16 @@ describe('channels list saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(createConversationApi, userIds)
+      .call(createConversationApi, userIds, name, '')
       .run();
   });
 
-  it('handle existing chat direct messages creation', async () => {
+  it('handle existing conversation creation', async () => {
+    const name = 'group';
     const userIds = ['7867766_7876Z2'];
     const {
       storeState: { channelsList, chat },
-    } = await expectSaga(createConversation, { payload: { userIds } })
+    } = await expectSaga(createConversation, { payload: { userIds, name } })
       .withReducer(rootReducer)
       .provide([
         [
@@ -94,11 +97,32 @@ describe('channels list saga', () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(createConversationApi, userIds)
+      .call(createConversationApi, userIds, name, '')
       .run();
 
     expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
     expect(chat.activeMessengerId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
+  });
+
+  it('uploads image when creating conversation', async () => {
+    const name = 'group';
+    const userIds = ['user'];
+    const image = { some: 'file' };
+    await expectSaga(createConversation, { payload: { userIds, name, image } })
+      .provide([
+        [
+          matchers.call.fn(uploadImageApi),
+          { url: 'image-url' },
+        ],
+        [
+          matchers.call.fn(createConversationApi),
+          MOCK_CHANNELS,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(uploadImageApi, image)
+      .call(createConversationApi, userIds, name, 'image-url')
+      .run();
   });
 
   it('sets status to Idle', async () => {

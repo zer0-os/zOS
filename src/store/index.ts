@@ -14,6 +14,7 @@ import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
 import { reducer as chat } from './chat';
 import { reducer as notificationsList } from './notifications';
+import { reducer as createConversation } from './create-conversation';
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (e) => {
@@ -32,6 +33,7 @@ export const rootReducer = combineReducers({
   authentication,
   chat,
   notificationsList,
+  createConversation,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -143,7 +143,11 @@ export class Container extends React.Component<Properties, State> {
   };
 
   createGroup = async (details) => {
-    const conversation = { name: details.name, userIds: details.users.map((u) => u.value) };
+    const conversation = {
+      name: details.name,
+      userIds: details.users.map((u) => u.value),
+      image: details.image,
+    };
     this.props.createConversation(conversation);
     this.reset();
   };

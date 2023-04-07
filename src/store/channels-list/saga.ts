@@ -8,6 +8,7 @@ import {
   fetchChannels as fetchChannelsApi,
   fetchConversations as fetchConversationsMessagesApi,
   createConversation as createConversationMessageApi,
+  uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
 import { select } from 'redux-saga-test-plan/matchers';
@@ -54,8 +55,20 @@ export function* fetchConversations() {
 }
 
 export function* createConversation(action) {
-  const { name, userIds } = action.payload;
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name);
+  const { name, userIds, image } = action.payload;
+
+  let coverUrl = '';
+  if (image) {
+    try {
+      const uploadResult = yield call(uploadImageApi, image);
+      coverUrl = uploadResult.url;
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
 
   const conversation = channelMapper(response);
   const existingConversationsList = yield select(rawConversationsList());

@@ -16,6 +16,7 @@ export interface DirectMessage extends Channel {
 export interface CreateMessengerConversation {
   name?: string;
   userIds: string[];
+  image?: File;
 }
 
 export interface ChannelsReceivedPayload {

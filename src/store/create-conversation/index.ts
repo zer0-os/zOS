@@ -6,7 +6,6 @@ export enum SagaActionTypes {
   Start = 'create-conversation/start',
   Forward = 'create-conversation/forward',
   Back = 'create-conversation/back',
-  Reset = 'create-conversation/reset',
   MembersSelected = 'create-conversation/members-selected',
   CreateConversation = 'create-conversation/create',
 }
@@ -15,7 +14,6 @@ export const startCreateConversation = createAction(SagaActionTypes.Start);
 // Temporarily just let the component guide the saga through the stages.
 export const forward = createAction(SagaActionTypes.Forward);
 export const back = createAction(SagaActionTypes.Back);
-export const reset = createAction(SagaActionTypes.Reset);
 export const membersSelected = createAction<MembersSelectedPayload>(SagaActionTypes.MembersSelected);
 export const createConversation = createAction<CreateMessengerConversation>(SagaActionTypes.CreateConversation);
 
@@ -28,7 +26,6 @@ export enum Stage {
 
 type CreateConversationState = {
   stage: Stage;
-  isActive: boolean;
   groupUsers: [];
   startGroupChat: {
     isLoading: boolean;
@@ -40,7 +37,6 @@ type CreateConversationState = {
 
 const initialState: CreateConversationState = {
   stage: Stage.None,
-  isActive: false,
   groupUsers: [],
   startGroupChat: {
     isLoading: false,
@@ -57,9 +53,6 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<Stage>) => {
       state.stage = action.payload;
     },
-    setActive: (state, action: PayloadAction<boolean>) => {
-      state.isActive = action.payload;
-    },
     setFetchingConversations: (state, action: PayloadAction<boolean>) => {
       state.startGroupChat.isLoading = action.payload;
     },
@@ -72,5 +65,5 @@ const slice = createSlice({
   },
 });
 
-export const { setActive, setGroupCreating, setStage, setGroupUsers, setFetchingConversations } = slice.actions;
+export const { setGroupCreating, setStage, setGroupUsers, setFetchingConversations } = slice.actions;
 export const { reducer } = slice;

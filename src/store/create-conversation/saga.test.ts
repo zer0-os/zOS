@@ -2,7 +2,7 @@ import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { back, createConversation, forward, groupMembersSelected, reset, startConversation } from './saga';
-import { setGroupCreating, setActive, reducer, Stage, setFetchingConversations } from '.';
+import { setGroupCreating, reducer, Stage, setFetchingConversations } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { rootReducer } from '..';
@@ -16,7 +16,6 @@ describe('create conversation saga', () => {
     it('Sets the starting state', async () => {
       const initialState = defaultState({
         stage: Stage.StartGroupChat, // Arbitrary non-starting state
-        isActive: true,
         groupUsers: [{ things: 'loaded' }],
         groupDetails: { isCreating: true },
       });
@@ -27,7 +26,6 @@ describe('create conversation saga', () => {
 
       expect(state).toEqual({
         stage: Stage.CreateOneOnOne,
-        isActive: false,
         groupUsers: [],
         startGroupChat: { isLoading: false },
         groupDetails: { isCreating: false },
@@ -202,7 +200,6 @@ describe('create conversation saga', () => {
     it('resets to default state', async () => {
       const initialState = defaultState({
         stage: Stage.None,
-        isActive: true,
         groupUsers: [{ things: 'loaded' }],
         startGroupChat: { isLoading: true },
         groupDetails: { isCreating: true },
@@ -212,7 +209,6 @@ describe('create conversation saga', () => {
 
       expect(state).toEqual({
         stage: Stage.None,
-        isActive: false,
         groupUsers: [],
         startGroupChat: { isLoading: false },
         groupDetails: { isCreating: false },
@@ -221,18 +217,6 @@ describe('create conversation saga', () => {
   });
 
   describe('createConversation', () => {
-    it('manages the conversation active state', async () => {
-      // Note: temporary during migration
-      return testSaga(createConversation, { payload: {} })
-        .next()
-        .put(setActive(true))
-        .next()
-        .next()
-        .next()
-        .next()
-        .put(setActive(false));
-    });
-
     it('manages the creating status while performing the actual create', async () => {
       const testPayload = {
         userId: 'test',
@@ -241,7 +225,6 @@ describe('create conversation saga', () => {
       };
 
       return testSaga(createConversation, { payload: testPayload })
-        .next()
         .next()
         .put(setGroupCreating(true))
         .next()
@@ -277,7 +260,6 @@ function fullState(attrs = {}) {
 function defaultState(attrs = {}) {
   return {
     stage: Stage.None,
-    isActive: false,
     groupUsers: [] as any,
     startGroupChat: { isLoading: false },
     groupDetails: { isCreating: false },

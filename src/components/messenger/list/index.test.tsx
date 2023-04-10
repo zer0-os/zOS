@@ -9,6 +9,7 @@ import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
+import { Stage } from '../../../store/create-conversation';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -23,6 +24,7 @@ jest.mock('../../../store/channels-list/api', () => {
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
+      stage: Stage.None,
       userId: '',
       conversations: [],
       isCreateConversationActive: false,
@@ -31,6 +33,10 @@ describe('messenger-list', () => {
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       channelsReceived: jest.fn(),
+      startCreateConversation: () => null,
+      forward: () => null,
+      back: () => null,
+      reset: () => null,
       onClose: () => null,
       ...props,
     };
@@ -62,12 +68,93 @@ describe('messenger-list', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it('starts create conversation saga', async function () {
+    const startCreateConversation = jest.fn();
+    const wrapper = subject({ startCreateConversation });
+
+    wrapper.find(ConversationListPanel).prop('startConversation')();
+
+    expect(startCreateConversation).toHaveBeenCalledOnce();
+  });
+
+  it('renders CreateConversationPanel', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
+  });
+
+  it('renders StartGroupPanel', function () {
+    const wrapper = subject({ stage: Stage.StartGroupChat });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
+  });
+
+  it('renders GroupDetailsPanel', function () {
+    const wrapper = subject({ stage: Stage.GroupDetails });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).toHaveElement(GroupDetailsPanel);
+  });
+
+  it('moves forward when group chat started', async function () {
+    const forward = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, forward });
+
+    wrapper.find(CreateConversationPanel).simulate('startGroupChat');
+
+    expect(forward).toHaveBeenCalledOnce();
+  });
+
+  it('moves forward when members selected and no conversation exists', async function () {
+    const forward = jest.fn();
+    when(mockFetchConversationsWithUsers).mockResolvedValue([]);
+    const wrapper = subject({ stage: Stage.StartGroupChat, forward });
+
+    await wrapper.find(StartGroupPanel).prop('onContinue')([]);
+
+    expect(forward).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from CreateConversationPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
+
+    await wrapper.find(CreateConversationPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from StartGroupPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.StartGroupChat, back });
+
+    await wrapper.find(StartGroupPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from GroupDetailsPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.GroupDetails, back });
+
+    await wrapper.find(GroupDetailsPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
   it('searches for citizens when creating a new conversation', async function () {
     when(mockSearchMyNetworksByName)
       .calledWith('jac')
       .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
-    const wrapper = subject({});
-    openCreateConversation(wrapper);
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
     const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
 
@@ -76,8 +163,7 @@ describe('messenger-list', () => {
 
   it('creates a one on one conversation when user selected', async function () {
     const createConversation = jest.fn();
-    const wrapper = subject({ createConversation });
-    openCreateConversation(wrapper);
+    const wrapper = subject({ createConversation, stage: Stage.CreateOneOnOne });
 
     wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
 
@@ -85,26 +171,22 @@ describe('messenger-list', () => {
   });
 
   it('returns to conversation list when one on one conversation created', async function () {
+    const reset = jest.fn();
     const createConversation = jest.fn();
-    const wrapper = subject({ createConversation });
-    openCreateConversation(wrapper);
+    const wrapper = subject({ createConversation, reset, stage: Stage.CreateOneOnOne });
 
     wrapper.find(CreateConversationPanel).simulate('create', 'selected-user-id');
 
-    expect(wrapper).not.toHaveElement('CreateConversationPanel');
-    expect(wrapper).toHaveElement('ConversationListPanel');
+    expect(reset).toHaveBeenCalledOnce();
   });
 
   it('returns to conversation list if back button pressed', async function () {
-    const wrapper = subject({});
-    openCreateConversation(wrapper);
-    expect(wrapper).toHaveElement('CreateConversationPanel');
-    expect(wrapper).not.toHaveElement('ConversationListPanel');
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
 
     wrapper.find(CreateConversationPanel).prop('onBack')();
 
-    expect(wrapper).not.toHaveElement('CreateConversationPanel');
-    expect(wrapper).toHaveElement('ConversationListPanel');
+    expect(back).toHaveBeenCalledOnce();
   });
 
   it('creates a group conversation when users selected and conversation already exists', async function () {
@@ -119,9 +201,7 @@ describe('messenger-list', () => {
         { id: 'convo-1' },
         { id: 'convo-2' },
       ]);
-    const wrapper = subject({ userId: 'current-user-id', setActiveMessengerChat });
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ userId: 'current-user-id', setActiveMessengerChat, stage: Stage.StartGroupChat });
 
     await wrapper.find(StartGroupPanel).prop('onContinue')([
       { value: 'selected-id-1' } as any,
@@ -134,9 +214,7 @@ describe('messenger-list', () => {
   it('sets StartGroupPanel to Continuing while data is loading', async function () {
     const fetchPromise = new Promise((_r) => null); // Never resolve
     when(mockFetchConversationsWithUsers).mockReturnValue(fetchPromise);
-    const wrapper = subject({});
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ stage: Stage.StartGroupChat });
 
     wrapper.find(StartGroupPanel).prop('onContinue')([{} as any]);
     expect(wrapper.find(StartGroupPanel).prop('isContinuing')).toBeTrue();
@@ -145,9 +223,7 @@ describe('messenger-list', () => {
   it('adds the existing conversations to the store if there are any', async function () {
     const channelsReceived = jest.fn();
     when(mockFetchConversationsWithUsers).mockResolvedValue([{ id: 'convo-1' }]);
-    const wrapper = subject({ channelsReceived });
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ channelsReceived, stage: Stage.StartGroupChat });
 
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
 
@@ -156,24 +232,19 @@ describe('messenger-list', () => {
 
   it('moves to the group details phase if no conversation exists for users', async function () {
     when(mockFetchConversationsWithUsers).mockResolvedValue([]);
-    const wrapper = subject();
+    const forward = jest.fn();
+    const wrapper = subject({ stage: Stage.StartGroupChat, forward });
 
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
 
-    expect(wrapper).not.toHaveElement(ConversationListPanel);
-    expect(wrapper).not.toHaveElement(CreateConversationPanel);
-    expect(wrapper).not.toHaveElement(StartGroupPanel);
-    expect(wrapper).toHaveElement('GroupDetailsPanel');
+    expect(forward).toHaveBeenCalledOnce();
   });
 
   it('creates a group conversation when details submitted', async function () {
     const createConversation = jest.fn();
-    const wrapper = subject({ createConversation });
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ createConversation, stage: Stage.StartGroupChat });
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails });
 
     wrapper
       .find(GroupDetailsPanel)
@@ -187,38 +258,41 @@ describe('messenger-list', () => {
   });
 
   it('maintains the selected users on StartGroup phase if back button pressed on group details panel', async function () {
-    const wrapper = subject({});
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ stage: Stage.StartGroupChat });
+
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails });
 
     wrapper.find(GroupDetailsPanel).simulate('back');
+    wrapper.setProps({ stage: Stage.StartGroupChat });
 
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
   });
 
   it('clears the selected users if moving back from StartGroup', async function () {
-    const wrapper = subject({});
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ stage: Stage.StartGroupChat });
 
     // Select some users
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails, isGroupCreating: true });
+
     // Navigate back to the Create panel
     wrapper.find(GroupDetailsPanel).simulate('back');
+    wrapper.setProps({ stage: Stage.StartGroupChat });
     wrapper.find(StartGroupPanel).simulate('back');
+    wrapper.setProps({ stage: Stage.CreateOneOnOne });
 
     // Open the start group again
-    openStartGroup(wrapper);
+    wrapper.setProps({ stage: Stage.StartGroupChat });
 
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([]);
   });
 
   it('sets the group details props', async function () {
-    const wrapper = subject({ isGroupCreating: true });
-    openCreateConversation(wrapper);
-    openStartGroup(wrapper);
+    const wrapper = subject({ stage: Stage.StartGroupChat });
+
     await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'user-id' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails, isGroupCreating: true });
 
     expect(wrapper.find(GroupDetailsPanel).props()).toEqual(
       expect.objectContaining({
@@ -226,59 +300,6 @@ describe('messenger-list', () => {
         isCreating: true,
       })
     );
-  });
-
-  describe('navigation', () => {
-    it('moves to the group conversation creation phase', function () {
-      const wrapper = subject({});
-      openCreateConversation(wrapper);
-
-      openStartGroup(wrapper);
-
-      expect(wrapper).not.toHaveElement(ConversationListPanel);
-      expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).toHaveElement('StartGroupPanel');
-    });
-
-    it('returns to one on one conversation panel if back button pressed on start group panel', async function () {
-      const wrapper = subject({});
-      openCreateConversation(wrapper);
-      openStartGroup(wrapper);
-
-      wrapper.find(StartGroupPanel).prop('onBack')();
-
-      expect(wrapper).not.toHaveElement(StartGroupPanel);
-      expect(wrapper).toHaveElement(CreateConversationPanel);
-      expect(wrapper).not.toHaveElement(ConversationListPanel);
-    });
-
-    it('returns to conversation list when group conversation created from StartGroup stage', async function () {
-      const createConversation = jest.fn();
-      when(mockFetchConversationsWithUsers).mockResolvedValue([{ id: 'convo' }]);
-      const wrapper = subject({ createConversation });
-      openCreateConversation(wrapper);
-      openStartGroup(wrapper);
-
-      await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'selected-id-1' } as any]);
-
-      expect(wrapper).toHaveElement(ConversationListPanel);
-      expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).not.toHaveElement(StartGroupPanel);
-    });
-
-    it('returns to the StartGroup phase if back button pressed on group details panel', async function () {
-      const wrapper = subject({});
-      openCreateConversation(wrapper);
-      openStartGroup(wrapper);
-      await openGroupDetails(wrapper);
-
-      wrapper.find(GroupDetailsPanel).simulate('back');
-
-      expect(wrapper).not.toHaveElement(ConversationListPanel);
-      expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).toHaveElement('StartGroupPanel');
-      expect(wrapper).not.toHaveElement('GroupDetailsPanel');
-    });
   });
 
   describe('mapState', () => {
@@ -343,16 +364,3 @@ describe('messenger-list', () => {
     });
   });
 });
-
-async function openGroupDetails(wrapper) {
-  // Call the property directly because it's async
-  await wrapper.find(StartGroupPanel).prop('onContinue')([{ id: 'fake-id' }]);
-}
-
-function openStartGroup(wrapper) {
-  wrapper.find(CreateConversationPanel).simulate('startGroupChat');
-}
-
-function openCreateConversation(wrapper) {
-  wrapper.find(ConversationListPanel).prop('startConversation')();
-}

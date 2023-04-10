@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes } from '.';
+import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
+import { EditMessageOptions, Message, SagaActionTypes, schema, remove } from '.';
 import { receive } from '../channels';
 
 import {
@@ -65,6 +65,10 @@ export interface DeleteMessageActionParameter {
 
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
+};
+
+const rawAllMessagesSelector = (state) => {
+  return getDeepProperty(state, `normalized.${schema.key}`, {});
 };
 
 const messageSelector = (messageId) => (state) => {
@@ -322,9 +326,9 @@ export function* receiveNewMessage(action) {
       });
     });
   } else {
-    const filtredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
+    const filteredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
     messages = [
-      ...filtredCurrentMessages,
+      ...filteredCurrentMessages,
       message,
     ];
   }
@@ -361,6 +365,18 @@ function* syncChannelsTask(action) {
     yield call(fetchNewMessages, action);
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
+}
+
+export function* clearMessages() {
+  const normalized = yield select((state) => {
+    return rawAllMessagesSelector(state);
+  });
+
+  yield all([
+    ...Object.keys(normalized).map((id) => {
+      return put(remove({ schema: schema.key, id }));
+    }),
+  ]);
 }
 
 export function* saga() {

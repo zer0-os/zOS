@@ -49,6 +49,7 @@ export function* createConversation(action) {
   yield call(performCreateConversation, { payload: action.payload });
   yield put(setGroupCreating(false));
   yield put(setActive(false));
+  yield call(reset, {});
 }
 
 export function* saga() {

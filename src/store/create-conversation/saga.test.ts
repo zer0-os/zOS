@@ -1,4 +1,5 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { back, createConversation, forward, reset, startConversation } from './saga';
 import { setGroupCreating, setActive, reducer, Stage } from '.';
@@ -129,6 +130,26 @@ describe('create conversation saga', () => {
         .call(performCreateConversation, { payload: testPayload })
         .next()
         .put(setGroupCreating(false));
+    });
+
+    it('resets the conversation saga when complete', async () => {
+      const initialState = {
+        stage: Stage.GroupDetails,
+        isActive: true,
+        groupDetails: { isCreating: true },
+      };
+
+      const { storeState: state } = await expectSaga(createConversation, { payload: {} })
+        .provide([
+          [
+            matchers.call.fn(performCreateConversation),
+            null,
+          ],
+        ])
+        .withReducer(reducer, initialState)
+        .run();
+
+      expect(state).toEqual({ stage: Stage.None, isActive: false, groupDetails: { isCreating: false } });
     });
   });
 });

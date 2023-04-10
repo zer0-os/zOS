@@ -3,7 +3,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
-import { channelsReceived, denormalizeConversations, fetchConversations } from '../../../store/channels-list';
+import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -12,10 +12,11 @@ import {
   back,
   createConversation,
   forward,
+  membersSelected,
   reset,
   startCreateConversation,
 } from '../../../store/create-conversation';
-import { ChannelsReceivedPayload, CreateMessengerConversation } from '../../../store/channels-list/types';
+import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
 
@@ -25,22 +26,18 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
-import { fetchConversationsWithUsers } from '../../../store/channels-list/api';
+import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 
 export interface PublicProperties {
   onClose: () => void;
 }
 
-interface State {
-  showCreateConversation: boolean;
-  groupUsers: Option[];
-  isFetchingExistingConversations: boolean;
-}
 export interface Properties extends PublicProperties {
   stage: SagaStage;
-  userId: string;
+  groupUsers: Option[];
   conversations: Channel[];
   isCreateConversationActive: boolean;
+  isFetchingExistingConversations: boolean;
   isGroupCreating: boolean;
 
   startCreateConversation: () => void;
@@ -51,32 +48,24 @@ export interface Properties extends PublicProperties {
   reset: () => void;
   setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
+  membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
-  channelsReceived: (payload: ChannelsReceivedPayload) => void;
 }
 
-export class Container extends React.Component<Properties, State> {
-  state = {
-    showCreateConversation: false,
-    groupUsers: [],
-    isFetchingExistingConversations: false,
-  };
-
+export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const {
-      authentication: { user },
-      createConversation,
-    } = state;
+    const { createConversation } = state;
     const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
       compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
     );
 
     return {
       conversations,
-      userId: user?.data?.id,
+      stage: createConversation.stage,
+      groupUsers: createConversation.groupUsers,
       isGroupCreating: createConversation.groupDetails.isCreating,
       isCreateConversationActive: createConversation.isActive,
-      stage: createConversation.stage,
+      isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
     };
   }
 
@@ -85,11 +74,11 @@ export class Container extends React.Component<Properties, State> {
       setActiveMessengerChat: setActiveMessengerId,
       fetchConversations,
       createConversation,
-      channelsReceived,
       startCreateConversation,
       back,
       forward,
       reset,
+      membersSelected,
     };
   }
 
@@ -112,13 +101,9 @@ export class Container extends React.Component<Properties, State> {
 
   reset = (): void => {
     this.props.reset();
-    this.setState({ groupUsers: [] });
   };
 
   goBack = (): void => {
-    if (this.props.stage === SagaStage.StartGroupChat) {
-      this.setState({ groupUsers: [], isFetchingExistingConversations: false });
-    }
     this.props.back();
   };
 
@@ -128,7 +113,6 @@ export class Container extends React.Component<Properties, State> {
 
   startGroupChat = (): void => {
     this.props.forward();
-    this.setState({ groupUsers: [] });
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -143,22 +127,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   groupMembersSelected = async (selectedOptions: Option[]) => {
-    this.setState({ isFetchingExistingConversations: true });
-    const existingConversations = await fetchConversationsWithUsers([
-      this.props.userId,
-      ...selectedOptions.map((o) => o.value),
-    ]);
-    // Transitions happen fast enough that we can clear it early
-    this.setState({ isFetchingExistingConversations: false });
-
-    if (existingConversations?.length > 0) {
-      this.props.channelsReceived({ channels: existingConversations });
-      this.props.setActiveMessengerChat(existingConversations[0].id);
-      this.reset();
-    } else {
-      this.props.forward();
-      this.setState({ groupUsers: selectedOptions });
-    }
+    this.props.membersSelected({ users: selectedOptions });
   };
 
   createGroup = async (details) => {
@@ -202,8 +171,8 @@ export class Container extends React.Component<Properties, State> {
           )}
           {this.props.stage === SagaStage.StartGroupChat && (
             <StartGroupPanel
-              initialSelections={this.state.groupUsers}
-              isContinuing={this.state.isFetchingExistingConversations}
+              initialSelections={this.props.groupUsers}
+              isContinuing={this.props.isFetchingExistingConversations}
               onBack={this.goBack}
               onContinue={this.groupMembersSelected}
               searchUsers={this.usersInMyNetworks}
@@ -211,7 +180,7 @@ export class Container extends React.Component<Properties, State> {
           )}
           {this.props.stage === SagaStage.GroupDetails && (
             <GroupDetailsPanel
-              users={this.state.groupUsers}
+              users={this.props.groupUsers}
               onCreate={this.createGroup}
               onBack={this.goBack}
               isCreating={this.props.isGroupCreating}

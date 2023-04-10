@@ -31,17 +31,8 @@ export interface PublicProperties {
   onClose: () => void;
 }
 
-enum Stage {
-  List = 'list',
-  CreateOneOnOne = 'one_on_one',
-  StartGroupChat = 'start_group',
-  GroupDetails = 'group_details',
-}
-
 interface State {
   showCreateConversation: boolean;
-  // XXX: remove
-  stage: Stage;
   groupUsers: Option[];
   isFetchingExistingConversations: boolean;
 }
@@ -67,7 +58,6 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties, State> {
   state = {
     showCreateConversation: false,
-    stage: Stage.List,
     groupUsers: [],
     isFetchingExistingConversations: false,
   };
@@ -122,32 +112,23 @@ export class Container extends React.Component<Properties, State> {
 
   reset = (): void => {
     this.props.reset();
-    this.setState({ stage: Stage.List, groupUsers: [] });
+    this.setState({ groupUsers: [] });
   };
 
   goBack = (): void => {
-    if (this.state.stage === Stage.CreateOneOnOne) {
-      this.setState({ stage: Stage.List });
-    } else if (this.state.stage === Stage.StartGroupChat) {
-      this.setState({ stage: Stage.CreateOneOnOne, groupUsers: [], isFetchingExistingConversations: false });
-    } else if (this.state.stage === Stage.GroupDetails) {
-      this.setState({ stage: Stage.StartGroupChat });
+    if (this.props.stage === SagaStage.StartGroupChat) {
+      this.setState({ groupUsers: [], isFetchingExistingConversations: false });
     }
     this.props.back();
   };
 
   startConversation = (): void => {
     this.props.startCreateConversation();
-    // XXX: remove
-    this.setState({ stage: Stage.CreateOneOnOne });
   };
 
   startGroupChat = (): void => {
     this.props.forward();
-    this.setState({
-      stage: Stage.StartGroupChat,
-      groupUsers: [],
-    });
+    this.setState({ groupUsers: [] });
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -176,10 +157,7 @@ export class Container extends React.Component<Properties, State> {
       this.reset();
     } else {
       this.props.forward();
-      this.setState({
-        stage: Stage.GroupDetails,
-        groupUsers: selectedOptions,
-      });
+      this.setState({ groupUsers: selectedOptions });
     }
   };
 
@@ -207,23 +185,22 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.renderTitleBar()}
         <div className='direct-message-members'>
-          {this.props.stage === SagaStage.None && this.state.stage === Stage.List && (
+          {this.props.stage === SagaStage.None && (
             <ConversationListPanel
               conversations={this.props.conversations}
               onConversationClick={this.openConversation}
               startConversation={this.startConversation}
             />
           )}
-          {(this.state.stage === Stage.CreateOneOnOne || this.props.stage === SagaStage.CreateOneOnOne) && (
+          {this.props.stage === SagaStage.CreateOneOnOne && (
             <CreateConversationPanel
               onBack={this.goBack}
               search={this.usersInMyNetworks}
-              // XXX: Go back when creating...maybe just do the reset for now
               onCreate={this.createOneOnOneConversation}
               onStartGroupChat={this.startGroupChat}
             />
           )}
-          {(this.props.stage === SagaStage.StartGroupChat || this.state.stage === Stage.StartGroupChat) && (
+          {this.props.stage === SagaStage.StartGroupChat && (
             <StartGroupPanel
               initialSelections={this.state.groupUsers}
               isContinuing={this.state.isFetchingExistingConversations}
@@ -232,7 +209,7 @@ export class Container extends React.Component<Properties, State> {
               searchUsers={this.usersInMyNetworks}
             />
           )}
-          {(this.props.stage === SagaStage.GroupDetails || this.state.stage === Stage.GroupDetails) && (
+          {this.props.stage === SagaStage.GroupDetails && (
             <GroupDetailsPanel
               users={this.state.groupUsers}
               onCreate={this.createGroup}

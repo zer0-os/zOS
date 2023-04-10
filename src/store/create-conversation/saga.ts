@@ -53,8 +53,6 @@ export function* createConversation(action) {
 }
 
 export function* saga() {
-  // XXX: Tweak these. We don't need to listen here and should
-  // listen at the correct moments in the user saga
   yield takeLatest(SagaActionTypes.Start, startConversation);
   yield takeLatest(SagaActionTypes.Back, back);
   yield takeLatest(SagaActionTypes.Forward, forward);

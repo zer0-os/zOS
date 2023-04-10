@@ -9,6 +9,7 @@ import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
+import { Stage } from '../../../store/create-conversation';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -23,6 +24,7 @@ jest.mock('../../../store/channels-list/api', () => {
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
+      stage: Stage.None,
       userId: '',
       conversations: [],
       isCreateConversationActive: false,
@@ -31,6 +33,10 @@ describe('messenger-list', () => {
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       channelsReceived: jest.fn(),
+      startCreateConversation: () => null,
+      forward: () => null,
+      back: () => null,
+      reset: () => null,
       onClose: () => null,
       ...props,
     };
@@ -60,6 +66,88 @@ describe('messenger-list', () => {
     wrapper.find('.messenger-list__header button').simulate('click');
 
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('starts create conversation saga', async function () {
+    const startCreateConversation = jest.fn();
+    const wrapper = subject({ startCreateConversation });
+
+    wrapper.find(ConversationListPanel).prop('startConversation')();
+
+    expect(startCreateConversation).toHaveBeenCalledOnce();
+  });
+
+  it('renders CreateConversationPanel', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
+  });
+
+  it('renders StartGroupPanel', function () {
+    const wrapper = subject({ stage: Stage.StartGroupChat });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
+  });
+
+  it('renders GroupDetailsPanel', function () {
+    const wrapper = subject({ stage: Stage.GroupDetails });
+
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).toHaveElement(GroupDetailsPanel);
+  });
+
+  it('moves forward when group chat started', async function () {
+    const forward = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, forward });
+
+    wrapper.find(CreateConversationPanel).simulate('startGroupChat');
+
+    expect(forward).toHaveBeenCalledOnce();
+  });
+
+  it('moves forward when members selected and no conversation exists', async function () {
+    const forward = jest.fn();
+    when(mockFetchConversationsWithUsers).mockResolvedValue([]);
+    const wrapper = subject({ stage: Stage.StartGroupChat, forward });
+
+    await wrapper.find(StartGroupPanel).prop('onContinue')([]);
+
+    expect(forward).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from CreateConversationPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
+
+    await wrapper.find(CreateConversationPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from StartGroupPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.StartGroupChat, back });
+
+    await wrapper.find(StartGroupPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
+  it('moves back from GroupDetailsPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.GroupDetails, back });
+
+    await wrapper.find(GroupDetailsPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
   });
 
   it('searches for citizens when creating a new conversation', async function () {

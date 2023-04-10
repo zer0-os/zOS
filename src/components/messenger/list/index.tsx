@@ -7,7 +7,14 @@ import { channelsReceived, denormalizeConversations, fetchConversations } from '
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { createConversation } from '../../../store/create-conversation';
+import {
+  Stage as SagaStage,
+  back,
+  createConversation,
+  forward,
+  reset,
+  startCreateConversation,
+} from '../../../store/create-conversation';
 import { ChannelsReceivedPayload, CreateMessengerConversation } from '../../../store/channels-list/types';
 
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -33,16 +40,24 @@ enum Stage {
 
 interface State {
   showCreateConversation: boolean;
+  // XXX: remove
   stage: Stage;
   groupUsers: Option[];
   isFetchingExistingConversations: boolean;
 }
 export interface Properties extends PublicProperties {
+  stage: SagaStage;
   userId: string;
   conversations: Channel[];
   isCreateConversationActive: boolean;
   isGroupCreating: boolean;
 
+  startCreateConversation: () => void;
+  // Temporarily just advance through the stages until each one
+  // does the appropriate step
+  forward: () => void;
+  back: () => void;
+  reset: () => void;
   setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
   createConversation: (payload: CreateMessengerConversation) => void;
@@ -71,6 +86,7 @@ export class Container extends React.Component<Properties, State> {
       userId: user?.data?.id,
       isGroupCreating: createConversation.groupDetails.isCreating,
       isCreateConversationActive: createConversation.isActive,
+      stage: createConversation.stage,
     };
   }
 
@@ -80,6 +96,10 @@ export class Container extends React.Component<Properties, State> {
       fetchConversations,
       createConversation,
       channelsReceived,
+      startCreateConversation,
+      back,
+      forward,
+      reset,
     };
   }
 
@@ -101,6 +121,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   reset = (): void => {
+    this.props.reset();
     this.setState({ stage: Stage.List, groupUsers: [] });
   };
 
@@ -112,13 +133,17 @@ export class Container extends React.Component<Properties, State> {
     } else if (this.state.stage === Stage.GroupDetails) {
       this.setState({ stage: Stage.StartGroupChat });
     }
+    this.props.back();
   };
 
   startConversation = (): void => {
+    this.props.startCreateConversation();
+    // XXX: remove
     this.setState({ stage: Stage.CreateOneOnOne });
   };
 
   startGroupChat = (): void => {
+    this.props.forward();
     this.setState({
       stage: Stage.StartGroupChat,
       groupUsers: [],
@@ -150,6 +175,7 @@ export class Container extends React.Component<Properties, State> {
       this.props.setActiveMessengerChat(existingConversations[0].id);
       this.reset();
     } else {
+      this.props.forward();
       this.setState({
         stage: Stage.GroupDetails,
         groupUsers: selectedOptions,
@@ -181,22 +207,23 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.renderTitleBar()}
         <div className='direct-message-members'>
-          {this.state.stage === Stage.List && (
+          {this.props.stage === SagaStage.None && this.state.stage === Stage.List && (
             <ConversationListPanel
               conversations={this.props.conversations}
               onConversationClick={this.openConversation}
               startConversation={this.startConversation}
             />
           )}
-          {this.state.stage === Stage.CreateOneOnOne && (
+          {(this.state.stage === Stage.CreateOneOnOne || this.props.stage === SagaStage.CreateOneOnOne) && (
             <CreateConversationPanel
               onBack={this.goBack}
               search={this.usersInMyNetworks}
+              // XXX: Go back when creating...maybe just do the reset for now
               onCreate={this.createOneOnOneConversation}
               onStartGroupChat={this.startGroupChat}
             />
           )}
-          {this.state.stage === Stage.StartGroupChat && (
+          {(this.props.stage === SagaStage.StartGroupChat || this.state.stage === Stage.StartGroupChat) && (
             <StartGroupPanel
               initialSelections={this.state.groupUsers}
               isContinuing={this.state.isFetchingExistingConversations}
@@ -205,7 +232,7 @@ export class Container extends React.Component<Properties, State> {
               searchUsers={this.usersInMyNetworks}
             />
           )}
-          {this.state.stage === Stage.GroupDetails && (
+          {(this.props.stage === SagaStage.GroupDetails || this.state.stage === Stage.GroupDetails) && (
             <GroupDetailsPanel
               users={this.state.groupUsers}
               onCreate={this.createGroup}

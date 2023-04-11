@@ -1,7 +1,7 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { back, createConversation, forward, groupMembersSelected, reset, startConversation } from './saga';
+import { createConversation, groupMembersSelected, reset, startConversation } from './saga';
 import { setGroupCreating, reducer, Stage, setFetchingConversations } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
@@ -39,7 +39,7 @@ describe('create conversation saga', () => {
 
       const {
         storeState: { createConversation: state },
-      } = await expectSaga(back, { payload: {} })
+      } = await expectSaga(goBack, { payload: {} })
         .withReducer(rootReducer, initialState as any)
         .run();
 
@@ -51,7 +51,7 @@ describe('create conversation saga', () => {
 
       const {
         storeState: { createConversation: state },
-      } = await expectSaga(back, { payload: {} })
+      } = await expectSaga(goBack, { payload: {} })
         .withReducer(rootReducer, initialState as any)
         .run();
 
@@ -63,7 +63,7 @@ describe('create conversation saga', () => {
 
       const {
         storeState: { createConversation: state },
-      } = await expectSaga(back, { payload: {} })
+      } = await expectSaga(goBack, { payload: {} })
         .withReducer(rootReducer, initialState as any)
         .run();
 
@@ -77,7 +77,7 @@ describe('create conversation saga', () => {
 
       const {
         storeState: { createConversation: state },
-      } = await expectSaga(forward, { payload: {} })
+      } = await expectSaga(goForward, { payload: {} })
         .withReducer(rootReducer, initialState as any)
         .run();
 
@@ -89,7 +89,7 @@ describe('create conversation saga', () => {
 
       const {
         storeState: { createConversation: state },
-      } = await expectSaga(forward, { payload: {} })
+      } = await expectSaga(goForward, { payload: {} })
         .withReducer(rootReducer, initialState as any)
         .run();
 

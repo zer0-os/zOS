@@ -1,15 +1,9 @@
-import { takeLatest, put, call, select } from 'redux-saga/effects';
+import { put, call, select, race, take } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setActiveMessengerId } from '../chat';
 import { currentUserSelector } from '../authentication/saga';
-
-export function* startConversation(_action) {
-  yield put(setGroupCreating(false));
-  yield put(setGroupUsers([]));
-  yield put(setStage(Stage.CreateOneOnOne));
-}
 
 export function* reset(_action) {
   yield put(setGroupUsers([]));
@@ -20,37 +14,25 @@ export function* reset(_action) {
 
 export const getStage = (state) => state.createConversation.stage;
 
-export function* back(_action) {
-  const currentStage = yield select(getStage);
+export function previousStage(currentStage: Stage) {
   switch (currentStage) {
     case Stage.CreateOneOnOne:
-      yield put(setStage(Stage.None));
-      break;
+      return Stage.None;
     case Stage.StartGroupChat:
-      yield put(setStage(Stage.CreateOneOnOne));
-      break;
+      return Stage.CreateOneOnOne;
     case Stage.GroupDetails:
-      yield put(setStage(Stage.StartGroupChat));
-      break;
+      return Stage.StartGroupChat;
   }
-}
-
-export function* forward(_action) {
-  const currentStage = yield select(getStage);
-  switch (currentStage) {
-    case Stage.CreateOneOnOne:
-      yield put(setStage(Stage.StartGroupChat));
-      break;
-    case Stage.StartGroupChat:
-      yield put(setStage(Stage.GroupDetails));
-      break;
-  }
+  return Stage.None;
 }
 
 export function* groupMembersSelected(action) {
-  yield put(setFetchingConversations(true));
-  yield call(performGroupMembersSelected, action);
-  yield put(setFetchingConversations(false));
+  try {
+    yield put(setFetchingConversations(true));
+    return yield call(performGroupMembersSelected, action);
+  } finally {
+    yield put(setFetchingConversations(false));
+  }
 }
 
 export function* performGroupMembersSelected(action) {
@@ -65,26 +47,81 @@ export function* performGroupMembersSelected(action) {
 
   if (existingConversations.length === 0) {
     yield put(setGroupUsers(users));
-    yield put(setStage(Stage.GroupDetails));
+    return Stage.GroupDetails;
   } else {
     const selectedConversation = existingConversations[0];
     yield call(channelsReceived, { payload: { channels: [selectedConversation] } });
     yield put(setActiveMessengerId(selectedConversation.id));
-    yield call(reset, {});
+    return Stage.None;
   }
 }
 
 export function* createConversation(action) {
-  yield put(setGroupCreating(true));
-  yield call(performCreateConversation, { payload: action.payload });
-  yield put(setGroupCreating(false));
-  yield call(reset, {});
+  try {
+    yield put(setGroupCreating(true));
+    yield call(performCreateConversation, { payload: action.payload });
+  } finally {
+    yield put(setGroupCreating(false));
+  }
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Start, startConversation);
-  yield takeLatest(SagaActionTypes.Back, back);
-  yield takeLatest(SagaActionTypes.Forward, forward);
-  yield takeLatest(SagaActionTypes.MembersSelected, groupMembersSelected);
-  yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
+  yield take(SagaActionTypes.Start);
+  yield startConversation();
+}
+
+// XXX: handle cancellations for slow things... like...pressing back while a request is running?..
+// XXX: Also handle logout / full cancellations...any others besides logout?
+export function* startConversation() {
+  try {
+    yield call(reset, {});
+    yield put(setStage(Stage.CreateOneOnOne));
+
+    let currentStage = Stage.CreateOneOnOne;
+    while (currentStage !== Stage.None) {
+      const { back, handlerResult } = yield race({
+        back: take(SagaActionTypes.Back),
+        handlerResult: call(STAGE_HANDLERS[currentStage]),
+      });
+
+      let nextStage = handlerResult;
+      if (back) {
+        nextStage = previousStage(currentStage);
+      }
+
+      yield put(setStage(nextStage));
+      currentStage = nextStage;
+    }
+  } finally {
+    yield call(reset, {});
+  }
+}
+
+const STAGE_HANDLERS = {
+  [Stage.CreateOneOnOne]: handleOneOnOne,
+  [Stage.StartGroupChat]: handleStartGroup,
+  [Stage.GroupDetails]: handleGroupDetails,
+};
+
+function* handleOneOnOne() {
+  const action = yield take([
+    SagaActionTypes.Forward,
+    SagaActionTypes.CreateConversation,
+  ]);
+  if (action.type === SagaActionTypes.Forward) {
+    return Stage.StartGroupChat;
+  }
+  yield call(createConversation, action);
+  return Stage.None;
+}
+
+function* handleStartGroup() {
+  const action = yield take(SagaActionTypes.MembersSelected);
+  return yield call(groupMembersSelected, action);
+}
+
+function* handleGroupDetails() {
+  const action = yield take(SagaActionTypes.CreateConversation);
+  yield call(createConversation, action);
+  return Stage.None;
 }

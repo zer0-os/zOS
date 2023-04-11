@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { AsyncListStatus } from '../normalized';
 import { rootReducer } from '..';
 
-import { fetch } from './saga';
+import { clearNotifications, fetch } from './saga';
 import { setStatus, relevantNotificationTypes } from '.';
 import { fetchNotifications } from './api';
 import { sample } from 'lodash';
@@ -95,5 +95,26 @@ describe('notifications list saga', () => {
     );
 
     expect(normalized.notifications).toStrictEqual(expectation);
+  });
+
+  it('removes the notification list and notifications', async () => {
+    const notificationsList = { value: ['id-one'] };
+    const notifications = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
+    const channels = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(clearNotifications)
+      .withReducer(rootReducer)
+      .withState({
+        notificationsList,
+        normalized: { notifications, channels },
+      })
+      .run(0);
+
+    expect(normalized).toEqual({
+      notifications: {},
+      channels,
+    });
   });
 });

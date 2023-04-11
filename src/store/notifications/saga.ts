@@ -1,8 +1,8 @@
-import { takeLatest, put, call, select, all } from 'redux-saga/effects';
+import { takeLatest, put, call, all } from 'redux-saga/effects';
 
-import { AsyncListStatus, remove } from '../normalized';
+import { AsyncListStatus } from '../normalized';
 
-import { SagaActionTypes, schema, receive, setStatus, denormalizeNotifications, relevantNotificationTypes } from '.';
+import { SagaActionTypes, schema, receive, setStatus, relevantNotificationTypes, removeAll } from '.';
 import { fetchNotifications } from './api';
 
 export interface Payload {
@@ -22,14 +22,8 @@ export function* fetch(action) {
 }
 
 export function* clearNotifications() {
-  const normalized = yield select((state) => {
-    return denormalizeNotifications(state);
-  });
-
   yield all([
-    ...normalized.map((notification) => {
-      return put(remove({ schema: schema.key, id: notification.id }));
-    }),
+    put(removeAll({ schema: schema.key })),
     put(receive([])),
   ]);
 }

@@ -286,8 +286,8 @@ describe('channels list saga', () => {
 
   it('removes the channels list and channels', async () => {
     const channelsList = { value: ['id-one'] };
-    const channels = { ['id-one']: { id: 'id-one', name: 'name for one' } };
-    const notifications = { ['id-two']: { id: 'id-two', name: 'do no delete this one' } };
+    const channels = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
+    const notifications = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
 
     const {
       storeState: { normalized },

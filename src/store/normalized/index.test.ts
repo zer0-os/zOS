@@ -1,4 +1,4 @@
-import { reducer, receive, remove, createNormalizedReceiveAction } from '.';
+import { reducer, receive, remove, removeAll, createNormalizedReceiveAction } from '.';
 
 describe('normalized reducer', () => {
   const initialExistingState = {};
@@ -189,7 +189,7 @@ describe('normalized reducer', () => {
     });
   });
 
-  describe('receive', () => {
+  describe('remove', () => {
     it('removes an entity', () => {
       const id = 'tha-id';
       const id2 = 'da-id';
@@ -206,6 +206,31 @@ describe('normalized reducer', () => {
         myObjects: {
           [id2]: { id2, name: 'Dude' },
         },
+      });
+    });
+  });
+
+  describe('removeAll', () => {
+    it('removes all', () => {
+      const objectToKeep = {
+        ['surfin-bird']: { id: 'surfin-bird', name: 'Bird is the word' },
+        ['rockaway-beach']: { id: 'rockaway-beach', name: 'We can hitch a ride' },
+      };
+
+      const objectToRemove = {
+        ['yellow-submarine']: { id: 'yellow-submarine', name: 'And we lived beneath the waves' },
+      };
+
+      const initialState = {
+        objectToKeep,
+        objectToRemove,
+      };
+
+      const actual = reducer(initialState, removeAll({ schema: 'objectToRemove' }));
+
+      expect(actual).toEqual({
+        objectToKeep,
+        objectToRemove: {},
       });
     });
   });

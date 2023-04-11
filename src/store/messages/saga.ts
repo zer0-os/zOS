@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, remove } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
 import { receive } from '../channels';
 
 import {
@@ -65,10 +65,6 @@ export interface DeleteMessageActionParameter {
 
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
-};
-
-const rawAllMessagesSelector = (state) => {
-  return getDeepProperty(state, `normalized.${schema.key}`, {});
 };
 
 const messageSelector = (messageId) => (state) => {
@@ -368,15 +364,7 @@ function* syncChannelsTask(action) {
 }
 
 export function* clearMessages() {
-  const normalized = yield select((state) => {
-    return rawAllMessagesSelector(state);
-  });
-
-  yield all([
-    ...Object.keys(normalized).map((id) => {
-      return put(remove({ schema: schema.key, id }));
-    }),
-  ]);
+  yield put(removeAll({ schema: schema.key }));
 }
 
 export function* saga() {

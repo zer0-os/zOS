@@ -20,6 +20,7 @@ import {
   uploadFileMessage,
   receiveNewMessage,
   getPreview,
+  clearMessages,
 } from './saga';
 
 import { rootReducer } from '..';
@@ -800,6 +801,25 @@ describe('messages saga', () => {
       const generator = getPreview(null);
 
       expect(generator.next().value).toEqual(undefined);
+    });
+  });
+
+  it('removes the messages', async () => {
+    const messages = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
+    const channels = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(clearMessages)
+      .withReducer(rootReducer)
+      .withState({
+        normalized: { messages, channels },
+      })
+      .run(0);
+
+    expect(normalized).toEqual({
+      messages: {},
+      channels,
     });
   });
 });

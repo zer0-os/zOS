@@ -1,6 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
-import { SagaActionTypes, receive } from '.';
+import { SagaActionTypes, receive, schema, removeAll } from '.';
 
 import {
   fetchUsersByChannelId,
@@ -78,6 +78,10 @@ export function* unreadCountUpdated(action) {
       unreadCount: unreadCount,
     })
   );
+}
+
+export function* clearChannels() {
+  yield put(removeAll({ schema: schema.key }));
 }
 
 export function* saga() {

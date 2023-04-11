@@ -1,7 +1,7 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { takeLatest, put, call, take, race } from 'redux-saga/effects';
+import { takeLatest, put, call, take, race, all, select } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
@@ -11,9 +11,9 @@ import {
   uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { select } from 'redux-saga-test-plan/matchers';
 import { channelMapper, filterChannelsList } from './utils';
 import { setActiveMessengerId } from '../chat';
+import { clearChannels } from '../channels/saga';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -90,6 +90,13 @@ export function* createConversation(action) {
     }
     yield put(setActiveMessengerId(conversation.id));
   }
+}
+
+export function* clearChannelsAndConversations() {
+  yield all([
+    call(clearChannels),
+    put(receive([])),
+  ]);
 }
 
 export function* fetchChannelsAndConversations() {

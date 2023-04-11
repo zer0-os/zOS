@@ -1,4 +1,4 @@
-import { createNormalizedSlice } from '../normalized';
+import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
 import { schema as usersSchema } from '../users';
@@ -62,4 +62,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { loadUsers, joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated };
+export { loadUsers, joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated, removeAll };

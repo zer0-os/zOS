@@ -28,9 +28,13 @@ export const { reducer, normalize, denormalize } = slice;
 export { fetchChannels, fetchConversations, createConversation, channelsReceived };
 
 export function denormalizeChannels(state) {
-  return denormalize(state.channelsList.value, state).filter((c) => c.isChannel);
+  return denormalizeChannelsAndConversations(state).filter((c) => c.isChannel);
 }
 
 export function denormalizeConversations(state) {
-  return denormalize(state.channelsList.value, state).filter((c) => !c.isChannel);
+  return denormalizeChannelsAndConversations(state).filter((c) => !c.isChannel);
+}
+
+export function denormalizeChannelsAndConversations(state) {
+  return denormalize(state.channelsList.value, state);
 }

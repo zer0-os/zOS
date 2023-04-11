@@ -17,6 +17,7 @@ import {
   fetchChannelsAndConversations,
   delay,
   startChannelsAndConversationsRefresh,
+  clearChannelsAndConversations,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -281,5 +282,28 @@ describe('channels list saga', () => {
 
       .next()
       .isDone();
+  });
+
+  it('removes the channels list and channels', async () => {
+    const channelsList = { value: ['id-one'] };
+    const channels = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
+    const notifications = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
+
+    const {
+      storeState: { normalized, channelsList: channelsListResult },
+    } = await expectSaga(clearChannelsAndConversations)
+      .withReducer(rootReducer)
+      .withState({
+        channelsList,
+        normalized: { channels, notifications },
+      })
+      .run(0);
+
+    expect(normalized).toEqual({
+      channels: {},
+      notifications,
+    });
+
+    expect(channelsListResult).toEqual({ value: [] });
   });
 });

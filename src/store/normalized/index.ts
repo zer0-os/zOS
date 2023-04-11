@@ -59,6 +59,11 @@ const slice = createSlice({
 
       return { ...state, [schema]: newNormalizedState };
     },
+    removeAll: (state, action: PayloadAction<{ schema: string }>) => {
+      const { schema } = action.payload;
+
+      return { ...state, [schema]: {} };
+    },
     receive: receiveNormalized,
   },
   extraReducers: (builder) => {
@@ -83,5 +88,5 @@ export const createNormalizedReceiveAction = (name: string, normalizeFunction) =
   }));
 };
 
-export const { receive, remove } = slice.actions;
+export const { receive, remove, removeAll } = slice.actions;
 export const { reducer } = slice;

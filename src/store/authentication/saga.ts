@@ -12,6 +12,10 @@ import { setChatAccessToken } from '../chat';
 import { User } from './types';
 import { clearUserLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
+import { clearChannelsAndConversations } from '../channels-list/saga';
+import { clearNotifications } from '../notifications/saga';
+import { clearUsers } from '../users/saga';
+import { clearMessages } from '../messages/saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -22,7 +26,7 @@ export const currentUserSelector = () => (state) => {
 };
 
 export function* nonceOrAuthorize(action) {
-  yield setUserAndChatAccessToken({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
 
   const { signedWeb3Token } = action.payload;
 
@@ -33,7 +37,7 @@ export function* nonceOrAuthorize(action) {
   } else {
     const user = yield call(fetchCurrentUser);
 
-    yield setUserAndChatAccessToken({ user, chatAccessToken, isLoading: false });
+    yield processUserAccount({ user, chatAccessToken, isLoading: false });
   }
 }
 
@@ -44,24 +48,24 @@ export function* terminate() {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
 
-  yield setUserAndChatAccessToken({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
 }
 
 export function* getCurrentUserWithChatAccessToken() {
-  yield setUserAndChatAccessToken({ user: null, chatAccessToken: null, isLoading: true });
+  yield processUserAccount({ user: null, chatAccessToken: null, isLoading: true });
 
   const user = yield call(fetchCurrentUser);
 
   if (user) {
     const { chatAccessToken } = yield call(fetchChatAccessToken);
 
-    yield setUserAndChatAccessToken({ user, chatAccessToken, isLoading: false });
+    yield processUserAccount({ user, chatAccessToken, isLoading: false });
   } else {
-    yield setUserAndChatAccessToken({ isLoading: false });
+    yield processUserAccount({ isLoading: false });
   }
 }
 
-function* setUserAndChatAccessToken(params: {
+export function* processUserAccount(params: {
   user?: User;
   nonce?: string;
   chatAccessToken?: string;
@@ -83,12 +87,15 @@ function* setUserAndChatAccessToken(params: {
         isLoading,
       })
     ),
-    put({
-      type: user
-        ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
-        : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
-    }),
   ]);
+
+  if (isLoading) return;
+
+  yield put({
+    type: user
+      ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
+      : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
+  });
 
   if (user) {
     yield spawn(initializeUserState, user);
@@ -108,7 +115,13 @@ export function* initializeUserState(user: User) {
 }
 
 export function* clearUserState() {
-  yield clearUserLayout();
+  yield all([
+    call(clearChannelsAndConversations),
+    call(clearMessages),
+    call(clearUsers),
+    call(clearNotifications),
+    call(clearUserLayout),
+  ]);
 }
 
 export function* saga() {

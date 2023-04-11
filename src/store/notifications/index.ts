@@ -32,5 +32,9 @@ export const relevantNotificationTypes = [
 ];
 
 export function denormalizeNotifications(state) {
-  return listSlice.denormalize(state.notificationsList.value, state);
+  const result = listSlice
+    .denormalize(state.notificationsList.value, state)
+    .filter((n) => relevantNotificationTypes.includes(n.notificationType));
+
+  return result;
 }

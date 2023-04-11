@@ -1,27 +1,17 @@
 import { takeLatest, put, call, select } from 'redux-saga/effects';
-import {
-  SagaActionTypes,
-  Stage,
-  setActive,
-  setFetchingConversations,
-  setGroupCreating,
-  setGroupUsers,
-  setStage,
-} from '.';
+import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setActiveMessengerId } from '../chat';
 import { currentUserSelector } from '../authentication/saga';
 
 export function* startConversation(_action) {
-  yield put(setActive(false));
   yield put(setGroupCreating(false));
   yield put(setGroupUsers([]));
   yield put(setStage(Stage.CreateOneOnOne));
 }
 
 export function* reset(_action) {
-  yield put(setActive(false));
   yield put(setGroupUsers([]));
   yield put(setFetchingConversations(false));
   yield put(setGroupCreating(false));
@@ -85,11 +75,9 @@ export function* performGroupMembersSelected(action) {
 }
 
 export function* createConversation(action) {
-  yield put(setActive(true));
   yield put(setGroupCreating(true));
   yield call(performCreateConversation, { payload: action.payload });
   yield put(setGroupCreating(false));
-  yield put(setActive(false));
   yield call(reset, {});
 }
 
@@ -97,7 +85,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Start, startConversation);
   yield takeLatest(SagaActionTypes.Back, back);
   yield takeLatest(SagaActionTypes.Forward, forward);
-  yield takeLatest(SagaActionTypes.Reset, reset);
   yield takeLatest(SagaActionTypes.MembersSelected, groupMembersSelected);
   yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
 }

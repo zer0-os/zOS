@@ -13,7 +13,6 @@ import {
   createConversation,
   forward,
   membersSelected,
-  reset,
   startCreateConversation,
 } from '../../../store/create-conversation';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
@@ -36,7 +35,6 @@ export interface Properties extends PublicProperties {
   stage: SagaStage;
   groupUsers: Option[];
   conversations: Channel[];
-  isCreateConversationActive: boolean;
   isFetchingExistingConversations: boolean;
   isGroupCreating: boolean;
 
@@ -45,7 +43,6 @@ export interface Properties extends PublicProperties {
   // does the appropriate step
   forward: () => void;
   back: () => void;
-  reset: () => void;
   setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
@@ -64,7 +61,6 @@ export class Container extends React.Component<Properties> {
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
       isGroupCreating: createConversation.groupDetails.isCreating,
-      isCreateConversationActive: createConversation.isActive,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
     };
   }
@@ -77,7 +73,6 @@ export class Container extends React.Component<Properties> {
       startCreateConversation,
       back,
       forward,
-      reset,
       membersSelected,
     };
   }
@@ -86,21 +81,8 @@ export class Container extends React.Component<Properties> {
     this.props.fetchConversations();
   }
 
-  componentDidUpdate(prevProps: Properties): void {
-    // Temporary to allow switching between saga modes during the transition
-    // from local state management to saga state management
-    // If we went from the saga being in control to not then reset to the original state
-    if (prevProps.isCreateConversationActive && !this.props.isCreateConversationActive) {
-      this.reset();
-    }
-  }
-
   openConversation = (id: string) => {
     this.props.setActiveMessengerChat(id);
-  };
-
-  reset = (): void => {
-    this.props.reset();
   };
 
   goBack = (): void => {
@@ -123,7 +105,6 @@ export class Container extends React.Component<Properties> {
 
   createOneOnOneConversation = (id: string) => {
     this.props.createConversation({ userIds: [id] });
-    this.reset();
   };
 
   groupMembersSelected = async (selectedOptions: Option[]) => {

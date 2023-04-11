@@ -22,7 +22,6 @@ describe('messenger-list', () => {
       stage: Stage.None,
       groupUsers: [],
       conversations: [],
-      isCreateConversationActive: false,
       isFetchingExistingConversations: false,
       isGroupCreating: false,
       setActiveMessengerChat: jest.fn(),
@@ -32,7 +31,6 @@ describe('messenger-list', () => {
       membersSelected: () => null,
       forward: () => null,
       back: () => null,
-      reset: () => null,
       onClose: () => null,
       ...props,
     };
@@ -156,16 +154,6 @@ describe('messenger-list', () => {
     expect(createConversation).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
   });
 
-  it('returns to conversation list when one on one conversation created', async function () {
-    const reset = jest.fn();
-    const createConversation = jest.fn();
-    const wrapper = subject({ createConversation, reset, stage: Stage.CreateOneOnOne });
-
-    wrapper.find(CreateConversationPanel).simulate('create', 'selected-user-id');
-
-    expect(reset).toHaveBeenCalledOnce();
-  });
-
   it('returns to conversation list if back button pressed', async function () {
     const back = jest.fn();
     const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
@@ -260,14 +248,6 @@ describe('messenger-list', () => {
         'convo-1',
         'convo-3',
       ]);
-    });
-
-    test('create conversation active status', () => {
-      const state = subject([], {
-        isActive: true,
-      });
-
-      expect(state.isCreateConversationActive).toEqual(true);
     });
 
     test('gets group details from state', () => {

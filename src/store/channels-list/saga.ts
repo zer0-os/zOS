@@ -2,7 +2,7 @@ import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, receive, denormalizeChannelsAndConversations } from '.';
+import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
   fetchChannels as fetchChannelsApi,
@@ -13,7 +13,7 @@ import {
 import { AsyncListStatus } from '../normalized';
 import { channelMapper, filterChannelsList } from './utils';
 import { setActiveMessengerId } from '../chat';
-import { clearChannel } from '../channels/saga';
+import { clearChannels } from '../channels/saga';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -93,14 +93,8 @@ export function* createConversation(action) {
 }
 
 export function* clearChannelsAndConversations() {
-  const normalized = yield select((state) => {
-    return denormalizeChannelsAndConversations(state);
-  });
-
   yield all([
-    ...normalized.map((channel) => {
-      return call(clearChannel, channel.id);
-    }),
+    call(clearChannels),
     put(receive([])),
   ]);
 }

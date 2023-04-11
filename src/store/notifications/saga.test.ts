@@ -98,12 +98,12 @@ describe('notifications list saga', () => {
   });
 
   it('removes the notification list and notifications', async () => {
-    const notificationsList = { value: ['id-one'] };
-    const notifications = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
-    const channels = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
+    const notificationsList = { value: 'id-one' };
+    const notifications = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
+    const channels = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
 
     const {
-      storeState: { normalized },
+      storeState: { normalized, notificationsList: notificationsListResult },
     } = await expectSaga(clearNotifications)
       .withReducer(rootReducer)
       .withState({
@@ -116,5 +116,7 @@ describe('notifications list saga', () => {
       notifications: {},
       channels,
     });
+
+    expect(notificationsListResult).toEqual({ value: [] });
   });
 });

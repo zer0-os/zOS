@@ -805,8 +805,8 @@ describe('messages saga', () => {
   });
 
   it('removes the messages', async () => {
-    const messages = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
-    const channels = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
+    const messages = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
+    const channels = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
 
     const {
       storeState: { normalized },

@@ -213,12 +213,12 @@ describe('normalized reducer', () => {
   describe('removeAll', () => {
     it('removes all', () => {
       const objectToKeep = {
-        ['surfin-bird']: { id: 'surfin-bird', name: 'Bird is the word' },
-        ['rockaway-beach']: { id: 'rockaway-beach', name: 'We can hitch a ride' },
+        'surfin-bird': { id: 'surfin-bird', name: 'Bird is the word' },
+        'rockaway-beach': { id: 'rockaway-beach', name: 'We can hitch a ride' },
       };
 
       const objectToRemove = {
-        ['yellow-submarine']: { id: 'yellow-submarine', name: 'And we lived beneath the waves' },
+        'yellow-submarine': { id: 'yellow-submarine', name: 'And we lived beneath the waves' },
       };
 
       const initialState = {

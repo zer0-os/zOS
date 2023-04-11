@@ -5,8 +5,8 @@ import { rootReducer } from '..';
 
 describe('users saga', () => {
   it('removes the users', async () => {
-    const users = { ['id-one']: { id: 'id-one', name: 'this should be removed' } };
-    const notifications = { ['id-two']: { id: 'id-two', name: 'do not remove this one' } };
+    const users = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
+    const notifications = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
 
     const {
       storeState: { normalized },

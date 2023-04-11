@@ -116,11 +116,11 @@ export function* initializeUserState(user: User) {
 
 export function* clearUserState() {
   yield all([
-    clearChannelsAndConversations(),
-    clearMessages(),
-    clearUsers(),
-    clearNotifications(),
-    clearUserLayout(),
+    call(clearChannelsAndConversations),
+    call(clearMessages),
+    call(clearUsers),
+    call(clearNotifications),
+    call(clearUserLayout),
   ]);
 }
 

@@ -25,6 +25,8 @@ import { rootReducer } from '../index';
 import { clearNotifications } from '../notifications/saga';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUserLayout } from '../layout/saga';
+import { clearMessages } from '../messages/saga';
+import { clearUsers } from '../users/saga';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -204,80 +206,15 @@ describe('authentication saga', () => {
         .run();
     });
 
-    it('resets channels and conversations state', async () => {
-      const channelId = 'channel-id';
-
-      const initialState = {
-        normalized: {
-          channels: {
-            [channelId]: {
-              id: channelId,
-            },
-          },
-        },
-        channelsList: { value: [channelId] },
-        notificationsList: { value: [] },
-      };
-
-      const {
-        storeState: {
-          normalized: { channels },
-          channelsList,
-        },
-      } = await expectSaga(clearUserState)
-        .provide([
-          [
-            matchers.call.fn(clearUserLayout),
-            [],
-          ],
-          [
-            matchers.call.fn(clearNotifications),
-            [],
-          ],
-        ])
-        .withReducer(rootReducer, initialState as any)
+    it('verifies state reset calls', async () => {
+      await expectSaga(clearUserState)
+        .call(clearChannelsAndConversations)
+        .call(clearMessages)
+        .call(clearUsers)
+        .call(clearNotifications)
+        .call(clearUserLayout)
+        .withReducer(rootReducer)
         .run();
-
-      expect(channelsList.value).toEqual([]);
-      expect(channels).toEqual({});
-    });
-
-    it('resets notifications state', async () => {
-      const notificationId = 'notification-id';
-
-      const initialState = {
-        normalized: {
-          notifications: {
-            [notificationId]: {
-              id: notificationId,
-            },
-          },
-        },
-        notificationsList: { value: [notificationId] },
-        channelsList: { value: [] },
-      };
-
-      const {
-        storeState: {
-          normalized: { notifications },
-          notificationsList,
-        },
-      } = await expectSaga(clearUserState)
-        .provide([
-          [
-            matchers.call.fn(clearUserLayout),
-            [],
-          ],
-          [
-            matchers.call.fn(clearChannelsAndConversations),
-            [],
-          ],
-        ])
-        .withReducer(rootReducer, initialState as any)
-        .run();
-
-      expect(notificationsList.value).toEqual([]);
-      expect(notifications).toEqual({});
     });
   });
 });

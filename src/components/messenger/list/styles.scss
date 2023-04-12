@@ -13,9 +13,10 @@
   }
 }
 
+$side-padding: 16px;
+
 .direct-message-members {
   flex-grow: 99;
-  padding: 0 16px;
   display: flex;
   flex-direction: column;
 
@@ -53,6 +54,7 @@
 
       &-conversations-input {
         margin-bottom: 18px;
+        padding: 0px $side-padding;
       }
     }
 
@@ -62,6 +64,7 @@
       height: 1px;
 
       overflow: auto;
+      padding: 0px $side-padding;
     }
   }
 }
@@ -70,6 +73,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 14px;
+  padding: 0px $side-padding;
   color: themeDeprecated.$font-color-primary;
   background-color: transparent;
   transition: background-color animation.$animation-duration ease-out;
@@ -218,11 +222,16 @@
   }
 
   &__continue {
-    margin: 16px 0px;
+    margin: 16px $side-padding;
   }
 }
 
 .group-details-panel {
+  & > * {
+    padding-right: $side-padding;
+    padding-left: $side-padding;
+  }
+
   &__selected-count {
     font-style: normal;
     font-weight: 400;
@@ -237,6 +246,7 @@
   }
 
   &__create {
+    width: 100%;
     margin: 16px 0px;
   }
 

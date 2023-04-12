@@ -11,10 +11,7 @@ export class StatusIndicator extends React.Component<Properties> {
     return (
       <div className='status-indicator'>
         <span className='status-indicator__message'>Connection lost, calling the stars...</span>
-        <button
-          className='status-indicator__reconnect-button'
-          onClick={this.props.onForceReconnect}
-        >
+        <button className='status-indicator__reconnect-button' onClick={this.props.onForceReconnect}>
           Try Now
         </button>
       </div>

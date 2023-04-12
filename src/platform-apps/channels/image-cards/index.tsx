@@ -32,13 +32,7 @@ export default class ImageCards extends React.Component<Properties, undefined> {
 
     const imageCards = images.map((image) => {
       return (
-        <ImageCard
-          border={border}
-          key={image.id}
-          image={image}
-          size={size}
-          onRemoveImage={this.imageRemoved(image)}
-        />
+        <ImageCard border={border} key={image.id} image={image} size={size} onRemoveImage={this.imageRemoved(image)} />
       );
     });
 

@@ -8,12 +8,7 @@ import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';
 
-import {
-  fetch as fetchChannels,
-  receiveUnreadCount,
-  stopSyncChannels,
-  denormalizeChannels,
-} from '../../store/channels-list';
+import { fetchChannels, denormalizeChannels } from '../../store/channels-list';
 import { Channel } from '../../store/channels';
 
 import { ChannelList } from './channel-list';
@@ -22,7 +17,6 @@ import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-l
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
-import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -36,12 +30,7 @@ export interface Properties extends PublicProperties {
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
-  receiveUnreadCount: (domainId: string) => void;
-  stopSyncChannels: () => void;
   user: AuthenticationState['user'];
-  context: {
-    isAuthenticated: boolean;
-  };
 }
 
 export class Container extends React.Component<Properties> {
@@ -62,45 +51,30 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
-      receiveUnreadCount,
-      stopSyncChannels,
     };
   }
 
   componentDidMount() {
-    const {
-      context: { isAuthenticated },
-      domainId,
-    } = this.props;
+    const { domainId } = this.props;
 
     this.props.fetchChannels(domainId);
-
-    if (isAuthenticated) {
-      this.props.receiveUnreadCount(domainId);
-    }
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const {
-      context: { isAuthenticated },
-      user,
-      domainId,
-    } = this.props;
+    const { user, domainId } = this.props;
 
-    if (isAuthenticated) {
-      if (prevProps.user.data !== user.data) {
-        this.props.fetchChannels(domainId);
-        this.props.receiveUnreadCount(domainId);
-      }
+    if (prevProps.user.data !== user.data) {
+      this.props.fetchChannels(domainId);
     }
   }
 
-  componentWillUnmount() {
-    this.props.stopSyncChannels();
+  // only render the channel(s) which belong to "this" domain/network
+  isChannelValid(channelId) {
+    return this.props.channels.some((c) => c.id === channelId);
   }
 
   renderChannelView() {
-    if (this.props.channelId) {
+    if (this.props.channelId && this.isChannelValid(this.props.channelId)) {
       return <ChatViewContainer channelId={this.props.channelId} />;
     }
 
@@ -117,10 +91,7 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <AppLayout className='channels'>
           <AppContextPanel>
-            <ChannelList
-              channels={this.props.channels}
-              currentChannelId={this.props.channelId}
-            />
+            <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
           </AppContextPanel>
           <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
         </AppLayout>
@@ -129,4 +100,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ChannelsContainer = withAuthenticationContext<PublicProperties>(connectContainer<{}>(Container));
+export const ChannelsContainer = connectContainer<PublicProperties>(Container);

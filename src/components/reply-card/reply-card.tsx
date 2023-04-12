@@ -1,4 +1,5 @@
 import React from 'react';
+import { ContentHighlighter } from '../content-highlighter';
 
 require('./styles.scss');
 
@@ -20,11 +21,10 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
     return (
       <div className='reply-card'>
         <div className='reply-card__container'>
-          <div className='reply-card__message'>{message}</div>
-          <span
-            className='reply-card__icon-close'
-            onClick={this.itemRemoved}
-          />
+          <div className='reply-card__message'>
+            <ContentHighlighter message={message} />
+          </div>
+          <span className='reply-card__icon-close' onClick={this.itemRemoved} />
         </div>
       </div>
     );

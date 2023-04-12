@@ -39,11 +39,5 @@ export class Component extends React.Component<Properties> {
 }
 
 export function ThemeEngine(props: Partial<Properties>) {
-  return (
-    <Component
-      viewMode={props.viewMode}
-      theme={theme}
-      element={document.documentElement}
-    />
-  );
+  return <Component viewMode={props.viewMode} theme={theme} element={document.documentElement} />;
 }

@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 
-import { createNormalizedListSlice, createNormalizedSlice } from '../normalized';
+import { createNormalizedListSlice, createNormalizedSlice, removeAll } from '../normalized';
 
 import { Payload } from './saga';
 
@@ -23,13 +23,14 @@ const listSlice = createNormalizedListSlice({
 export const { receiveNormalized, setStatus, receive } = listSlice.actions;
 export const { reducer, normalize } = listSlice;
 
-export { fetch };
+export { fetch, schema, removeAll };
 
-const relevantNotificationTypes = [
+export const relevantNotificationTypes = [
   'chat_channel_mention',
   'chat_channel_message_replied',
   'chat_dm_mention',
 ];
+
 export function denormalizeNotifications(state) {
   const result = listSlice
     .denormalize(state.notificationsList.value, state)

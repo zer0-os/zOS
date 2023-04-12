@@ -36,10 +36,7 @@ export class ChannelList extends React.Component<Properties> {
           }
 
           return (
-            <div
-              key={channel.id}
-              className='channel-list__channel-info'
-            >
+            <div key={channel.id} className='channel-list__channel-info'>
               <ZnsLink
                 className={classNames('channel-list__channel', {
                   active: channel.id === this.props.currentChannelId,
@@ -88,10 +85,7 @@ export class ChannelList extends React.Component<Properties> {
       <div className='channel-list__category'>
         {Object.keys(channelsByCategory).map((category) => {
           return (
-            <div
-              key={category}
-              className='channel-list__category-channel'
-            >
+            <div key={category} className='channel-list__category-channel'>
               <Collapsible
                 className='channel-list__category-channel-name'
                 openedClassName='channel-list__category-channel-name'

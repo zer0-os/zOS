@@ -9,16 +9,7 @@ export const Context = React.createContext<AuthenticationContext>({
 });
 
 export function withContext<T>(Component: any) {
-  return (props: T) => (
-    <Context.Consumer>
-      {(context) => (
-        <Component
-          {...props}
-          context={context}
-        />
-      )}
-    </Context.Consumer>
-  );
+  return (props: T) => <Context.Consumer>{(context) => <Component {...props} context={context} />}</Context.Consumer>;
 }
 
 export const Provider = Context.Provider;

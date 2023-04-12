@@ -26,7 +26,7 @@ describe('Authentication', () => {
         data: null,
       },
       fetchCurrentUserWithChatAccessToken: jest.fn(),
-      clearSession: jest.fn(),
+      terminateAuthorization: jest.fn(),
       personalSignToken: jest.fn().mockResolvedValue(signedWeb3Token),
       updateConnector: jest.fn(),
       ...props,
@@ -96,16 +96,16 @@ describe('Authentication', () => {
     expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
   });
 
-  it('should clearSession before authorize', async () => {
+  it('should terminateAuthorization before authorize', async () => {
     const nonceOrAuthorize = jest.fn();
-    const clearSession = jest.fn();
+    const terminateAuthorization = jest.fn();
 
     const currentAddress = '0x00';
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
 
-      clearSession,
+      terminateAuthorization,
       nonceOrAuthorize,
     });
 
@@ -113,10 +113,10 @@ describe('Authentication', () => {
 
     await new Promise(setImmediate);
 
-    expect(clearSession).toHaveBeenCalled();
+    expect(terminateAuthorization).toHaveBeenCalled();
     expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
 
-    expect(clearSession).toHaveBeenCalledBefore(nonceOrAuthorize);
+    expect(terminateAuthorization).toHaveBeenCalledBefore(nonceOrAuthorize);
   });
 
   it('should call updateConnector when personalSignToken returns error', async () => {
@@ -140,8 +140,8 @@ describe('Authentication', () => {
     expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
-  it('should call clearSession when disconnect event triggered', () => {
-    const clearSession = jest.fn();
+  it('should call terminateAuthorization when disconnect event triggered', () => {
+    const terminateAuthorization = jest.fn();
 
     const wrapper = subject({
       connectionStatus: ConnectionStatus.Disconnected,
@@ -150,12 +150,12 @@ describe('Authentication', () => {
         data: USER_DATA,
       },
 
-      clearSession,
+      terminateAuthorization,
     });
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
-    expect(clearSession).toHaveBeenCalled();
+    expect(terminateAuthorization).toHaveBeenCalled();
   });
 
   describe('mapState', () => {

@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
 import { receive } from '../channels';
 
 import {
@@ -322,9 +322,9 @@ export function* receiveNewMessage(action) {
       });
     });
   } else {
-    const filtredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
+    const filteredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
     messages = [
-      ...filtredCurrentMessages,
+      ...filteredCurrentMessages,
       message,
     ];
   }
@@ -361,6 +361,10 @@ function* syncChannelsTask(action) {
     yield call(fetchNewMessages, action);
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
+}
+
+export function* clearMessages() {
+  yield put(removeAll({ schema: schema.key }));
 }
 
 export function* saga() {

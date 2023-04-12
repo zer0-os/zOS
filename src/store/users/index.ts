@@ -1,4 +1,4 @@
-import { createNormalizedSlice } from '../normalized';
+import { createNormalizedSlice, removeAll } from '../normalized';
 
 const slice = createNormalizedSlice({
   name: 'users',
@@ -6,3 +6,5 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
+
+export { removeAll };

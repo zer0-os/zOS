@@ -39,15 +39,8 @@ export class UserMenuPopup extends React.Component<PopupProperties> {
 
     return (
       <>
-        <div
-          className='user-menu-popup__underlay'
-          onClick={this.props.onAbort}
-        >
-          <div
-            className='user-menu-popup__content'
-            style={{ top: y, left: x }}
-            onClick={this.blockClick}
-          >
+        <div className='user-menu-popup__underlay' onClick={this.props.onAbort}>
+          <div className='user-menu-popup__content' style={{ top: y, left: x }} onClick={this.blockClick}>
             <UserMenuPopupContent {...this.props} />
           </div>
         </div>
@@ -68,19 +61,13 @@ export class UserMenuPopupContent extends React.Component<Properties> {
     return (
       <div className='user-menu-popup'>
         <h3>
-          <span
-            title={address}
-            className='user-menu-popup__address'
-          >
+          <span title={address} className='user-menu-popup__address'>
             <span>{address.slice(0, 6)}</span>
             <span>...</span>
             <span className='eth-address__address-last-four'>{address.slice(-4)}</span>
           </span>
         </h3>
-        <Button
-          variant='primary'
-          onPress={this.props.onDisconnect}
-        >
+        <Button variant='primary' onPress={this.props.onDisconnect}>
           Disconnect
         </Button>
       </div>

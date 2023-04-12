@@ -1,25 +1,36 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
-import directMessagesFixture from './direct-messages-fixture.json';
-import Tooltip from '../../tooltip';
-import { Channel } from '../../../store/channels';
 import { normalize } from '../../../store/channels-list';
-import { Dialog } from '@zer0-os/zos-component-library';
-import { SearchConversations } from '../search-conversations';
-import { AutocompleteMembers } from '../autocomplete-members';
 import { RootState } from '../../../store';
 import moment from 'moment';
+import { when } from 'jest-when';
+import CreateConversationPanel from './create-conversation-panel';
+import { ConversationListPanel } from './conversation-list-panel';
+import { StartGroupPanel } from './start-group-panel';
+import { GroupDetailsPanel } from './group-details-panel';
+import { Stage } from '../../../store/create-conversation';
 
-export const DIRECT_MESSAGES_TEST = directMessagesFixture as unknown as Channel[];
+const mockSearchMyNetworksByName = jest.fn();
+jest.mock('../../../platform-apps/channels/util/api', () => {
+  return { searchMyNetworksByName: async (...args) => await mockSearchMyNetworksByName(...args) };
+});
 
 describe('messenger-list', () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
-      setActiveMessengerChat: jest.fn(),
-      directMessages: [],
-      fetchDirectMessages: jest.fn(),
-      createDirectMessage: jest.fn(),
+      stage: Stage.None,
+      groupUsers: [],
+      conversations: [],
+      isFetchingExistingConversations: false,
+      isGroupCreating: false,
+      openConversation: jest.fn(),
+      fetchConversations: jest.fn(),
+      createConversation: jest.fn(),
+      startCreateConversation: () => null,
+      membersSelected: () => null,
+      startGroup: () => null,
+      back: () => null,
       onClose: () => null,
       ...props,
     };
@@ -34,11 +45,11 @@ describe('messenger-list', () => {
   });
 
   it('start sync direct messages', function () {
-    const fetchDirectMessages = jest.fn();
+    const fetchConversations = jest.fn();
 
-    subject({ fetchDirectMessages });
+    subject({ fetchConversations });
 
-    expect(fetchDirectMessages).toHaveBeenCalledOnce();
+    expect(fetchConversations).toHaveBeenCalledOnce();
   });
 
   it('publishes close event when titlebar X clicked', function () {
@@ -51,169 +62,166 @@ describe('messenger-list', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('render members name', function () {
-    const wrapper = subject({});
+  it('starts create conversation saga', async function () {
+    const startCreateConversation = jest.fn();
+    const wrapper = subject({ startCreateConversation });
 
-    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+    wrapper.find(ConversationListPanel).prop('startConversation')();
 
-    const displayChatNames = wrapper.find('.direct-message-members__user-name').map((node) => node.text());
-
-    expect(displayChatNames).toStrictEqual([
-      'Charles Diya, Eric',
-      'James Diya, Laz',
-      'daily chat',
-      'Eric',
-    ]);
+    expect(startCreateConversation).toHaveBeenCalledOnce();
   });
 
-  it('handle member click', function () {
-    const setActiveDirectMessage = jest.fn();
+  it('renders CreateConversationPanel', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
-    const wrapper = subject({ setActiveMessengerChat: setActiveDirectMessage });
-
-    wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
-
-    wrapper.find('.direct-message-members__user').first().simulate('click');
-
-    expect(setActiveDirectMessage).toHaveBeenCalledWith('292444273_bd035e84edfbaf11251ffef196de2ab47496439c');
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
   });
 
-  it('should not render read messages', function () {
-    const wrapper = subject({});
+  it('renders StartGroupPanel', function () {
+    const wrapper = subject({ stage: Stage.StartGroupChat });
 
-    expect(wrapper.find('.direct-message-members__user-unread-count').exists()).toBe(false);
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).toHaveElement(StartGroupPanel);
+    expect(wrapper).not.toHaveElement(GroupDetailsPanel);
   });
 
-  it('should render create direct messsages button', function () {
-    const wrapper = subject({});
+  it('renders GroupDetailsPanel', function () {
+    const wrapper = subject({ stage: Stage.GroupDetails });
 
-    expect(wrapper.find('.messages-list__direct-messages').exists()).toBe(true);
+    expect(wrapper).not.toHaveElement(ConversationListPanel);
+    expect(wrapper).not.toHaveElement(CreateConversationPanel);
+    expect(wrapper).not.toHaveElement(StartGroupPanel);
+    expect(wrapper).toHaveElement(GroupDetailsPanel);
   });
 
-  it('should render direct messsages dialog when DMs button is clicked', function () {
-    const wrapper = subject({});
-    wrapper.find('.messages-list__direct-messages').simulate('click');
+  it('moves starts group when group chat started', async function () {
+    const startGroup = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, startGroup });
 
-    expect(wrapper.find(Dialog).exists()).toBe(false);
+    wrapper.find(CreateConversationPanel).simulate('startGroupChat');
+
+    expect(startGroup).toHaveBeenCalledOnce();
   });
 
-  it('should render AutocompleteMembers', function () {
-    const wrapper = subject({});
+  it('moves back from CreateConversationPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
 
-    wrapper.find('.header-button__icon').simulate('click');
+    await wrapper.find(CreateConversationPanel).simulate('back');
 
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(true);
-
-    wrapper.find('.start__chat-return').simulate('click');
-
-    expect(wrapper.find(AutocompleteMembers).exists()).toBe(false);
+    expect(back).toHaveBeenCalledOnce();
   });
 
-  it('should render search conversations', function () {
-    const wrapper = subject({});
+  it('moves back from StartGroupPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.StartGroupChat, back });
 
-    expect(wrapper.find(SearchConversations).exists()).toBe(true);
+    await wrapper.find(StartGroupPanel).simulate('back');
+
+    expect(back).toHaveBeenCalledOnce();
   });
 
-  it('renders unread messages', function () {
-    const [
-      firstDirectMessage,
-      ...restOfDirectMessages
-    ] = DIRECT_MESSAGES_TEST;
+  it('moves back from GroupDetailsPanel', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.GroupDetails, back });
 
-    const unreadCount = 10;
+    await wrapper.find(GroupDetailsPanel).simulate('back');
 
-    const wrapper = subject({});
-
-    wrapper.setProps({
-      directMessages: [
-        {
-          ...firstDirectMessage,
-          unreadCount,
-        },
-        ...restOfDirectMessages,
-      ],
-    });
-    expect(wrapper.find('.direct-message-members__user-unread-count').text()).toEqual(unreadCount.toString());
+    expect(back).toHaveBeenCalledOnce();
   });
 
-  describe('tooltip', () => {
-    let wrapper;
+  it('searches for citizens when creating a new conversation', async function () {
+    when(mockSearchMyNetworksByName)
+      .calledWith('jac')
+      .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
-    beforeEach(() => {
-      wrapper = subject({});
-      wrapper.setProps({ directMessages: DIRECT_MESSAGES_TEST });
+    const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
+
+    expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
+  });
+
+  it('creates a one on one conversation when user selected', async function () {
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation, stage: Stage.CreateOneOnOne });
+
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
+
+    expect(createConversation).toHaveBeenCalledWith({ userIds: ['selected-user-id'] });
+  });
+
+  it('returns to conversation list if back button pressed', async function () {
+    const back = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, back });
+
+    wrapper.find(CreateConversationPanel).prop('onBack')();
+
+    expect(back).toHaveBeenCalledOnce();
+  });
+
+  it('sets StartGroupPanel to Continuing while data is loading', async function () {
+    const wrapper = subject({ stage: Stage.StartGroupChat, isFetchingExistingConversations: true });
+
+    expect(wrapper.find(StartGroupPanel).prop('isContinuing')).toBeTrue();
+  });
+
+  it('creates a group conversation when details submitted', async function () {
+    const createConversation = jest.fn();
+    const wrapper = subject({ createConversation, stage: Stage.StartGroupChat });
+    await wrapper.find(StartGroupPanel).prop('onContinue')([{ value: 'id-1' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails });
+
+    wrapper
+      .find(GroupDetailsPanel)
+      .simulate('create', { name: 'group name', users: [{ value: 'id-1' }], image: { some: 'image' } });
+
+    expect(createConversation).toHaveBeenCalledWith({
+      name: 'group name',
+      userIds: ['id-1'],
+      image: { some: 'image' },
+    });
+  });
+
+  it('sets the start group props', async function () {
+    const wrapper = subject({ stage: Stage.StartGroupChat, groupUsers: [{ value: 'user-id' } as any] });
+
+    expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
+  });
+
+  it('sets the group details props', async function () {
+    const wrapper = subject({
+      stage: Stage.GroupDetails,
+      groupUsers: [{ value: 'user-id' } as any],
+      isGroupCreating: true,
     });
 
-    afterEach(() => {
-      wrapper = null;
-    });
-
-    const tooltipList = () => {
-      return wrapper.find(Tooltip);
-    };
-
-    it('renders', function () {
-      expect(tooltipList().first().exists()).toBe(true);
-    });
-
-    it('renders placement to left', function () {
-      const placementLeft = 'left';
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('placement'))).toEqual(Array(5).fill(placementLeft));
-    });
-
-    it('renders class name', function () {
-      const className = 'direct-message-members__user-tooltip';
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('className'))).toEqual(Array(5).fill(className));
-    });
-
-    it('renders align prop', function () {
-      const align = {
-        offset: [
-          10,
-          0,
-        ],
-      };
-
-      expect(tooltipList().map((tooltip) => tooltip.prop('align'))).toEqual(Array(5).fill(align));
-    });
-
-    it('renders content', function () {
-      expect(tooltipList().map((tooltip) => tooltip.prop('overlay'))).toEqual([
-        'Create Zero Message',
-        'Charles Diya, Eric',
-        'James Diya, Laz',
-        'Online',
-        'Last Seen: Never',
-      ]);
-    });
-
-    it('renders status', function () {
-      expect(
-        tooltipList()
-          .find('.direct-message-members__user-status')
-          .map((tooltip) => tooltip.prop('className'))
-      ).toEqual([
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status direct-message-members__user-status--active',
-        'direct-message-members__user-status',
-      ]);
-    });
+    expect(wrapper.find(GroupDetailsPanel).props()).toEqual(
+      expect.objectContaining({
+        users: [{ value: 'user-id' }],
+        isCreating: true,
+      })
+    );
   });
 
   describe('mapState', () => {
-    const subject = (channels) => {
-      return DirectMessageChat.mapState(getState(channels));
+    const subject = (channels, createConversationState = {}) => {
+      return DirectMessageChat.mapState(getState(channels, createConversationState));
     };
 
-    const getState = (channels) => {
+    const getState = (channels, createConversationState = {}) => {
       const channelData = normalize(channels);
       return {
         channelsList: { value: channelData.result },
         normalized: channelData.entities,
+        createConversation: {
+          startGroupChat: {},
+          groupDetails: {},
+          ...createConversationState,
+        },
       } as RootState;
     };
 
@@ -223,7 +231,7 @@ describe('messenger-list', () => {
         { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-2',
         'convo-1',
       ]);
@@ -236,10 +244,42 @@ describe('messenger-list', () => {
         { id: 'convo-3', isChannel: false },
       ]);
 
-      expect(state.directMessages.map((c) => c.id)).toEqual([
+      expect(state.conversations.map((c) => c.id)).toEqual([
         'convo-1',
         'convo-3',
       ]);
+    });
+
+    test('gets group details from state', () => {
+      const state = subject([], {
+        groupDetails: {
+          isCreating: true,
+        },
+      });
+
+      expect(state.isGroupCreating).toEqual(true);
+    });
+
+    test('stage', () => {
+      const state = subject([], { stage: Stage.GroupDetails });
+
+      expect(state.stage).toEqual(Stage.GroupDetails);
+    });
+
+    test('stage', () => {
+      const state = subject([], { groupUsers: [{ value: 'a-thing' }] });
+
+      expect(state.groupUsers).toEqual([{ value: 'a-thing' }]);
+    });
+
+    test('start group chat', () => {
+      const state = subject([], {
+        startGroupChat: {
+          isLoading: true,
+        },
+      });
+
+      expect(state.isFetchingExistingConversations).toEqual(true);
     });
   });
 });

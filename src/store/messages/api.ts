@@ -22,16 +22,18 @@ export async function sendMessagesByChannelId(
   parentMessage?: ParentMessage,
   file?: FileUploadResult
 ): Promise<any> {
-  const filter: SendPayload = { message, mentionedUserIds };
+  const data: SendPayload = { message, mentionedUserIds };
+
   if (parentMessage) {
-    filter.parentMessageId = parentMessage.messageId;
-    filter.parentMessageUserId = parentMessage.userId;
-  }
-  if (file) {
-    filter.file = file;
+    data.parentMessageId = parentMessage.messageId;
+    data.parentMessageUserId = parentMessage.userId;
   }
 
-  const response = await post<any>(`/chatChannels/${channelId}/message`).send(filter);
+  if (file) {
+    data.file = file;
+  }
+
+  const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
 
   return response;
 }

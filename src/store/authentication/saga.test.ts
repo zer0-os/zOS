@@ -4,10 +4,11 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { setUser } from '.';
 import {
   nonceOrAuthorize,
-  clearSession,
+  terminate,
   getCurrentUserWithChatAccessToken,
   initializeUserState,
   clearUserState,
+  processUserAccount,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -15,10 +16,17 @@ import {
   clearSession as clearSessionApi,
   fetchChatAccessToken,
 } from './api';
-
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
+import { receive, SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
+import { update } from '../layout';
+import { rootReducer } from '../index';
+import { clearNotifications } from '../notifications/saga';
+import { clearChannelsAndConversations } from '../channels-list/saga';
+import { clearUserLayout } from '../layout/saga';
+import { clearMessages } from '../messages/saga';
+import { clearUsers } from '../users/saga';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -56,6 +64,7 @@ describe('authentication saga', () => {
       .call(nonceOrAuthorizeApi, signedWeb3Token)
       .put(setUser({ data: currentUserResponse, nonce: null, isLoading: false }))
       .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
+      .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
       .run();
   });
 
@@ -73,9 +82,9 @@ describe('authentication saga', () => {
       .run();
   });
 
-  describe('clearSession', () => {
-    it('clearSession', async () => {
-      await expectSaga(clearSession)
+  describe('terminate', () => {
+    it('verifies terminate orchestration', async () => {
+      await expectSaga(terminate)
         .provide([
           [
             matchers.call.fn(clearSessionApi),
@@ -85,11 +94,13 @@ describe('authentication saga', () => {
         .call(clearSessionApi)
         .put(setUser({ data: null, isLoading: false, nonce: null }))
         .put(setChatAccessToken({ value: null, isLoading: false }))
+        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
         .run();
     });
 
     it('clears the user state', async () => {
-      await expectSaga(clearSession)
+      await expectSaga(terminate)
         .provide([
           [
             matchers.call.fn(clearSessionApi),
@@ -97,6 +108,7 @@ describe('authentication saga', () => {
           ],
         ])
         .spawn(clearUserState)
+        .withReducer(rootReducer)
         .run();
     });
   });
@@ -155,6 +167,53 @@ describe('authentication saga', () => {
         ])
         .spawn(initializeUserState, currentUserResponse)
         .put(fetchNotifications({ userId: currentUserResponse.id }))
+        .run();
+    });
+  });
+
+  describe('processUserAccount', () => {
+    it('process user account when loading', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: true })
+        .not.spawn(clearUserState)
+        .not.put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .run();
+    });
+
+    it('process user account without a user when loaded', async () => {
+      await expectSaga(processUserAccount, { user: null, isLoading: false })
+        .spawn(clearUserState)
+        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
+        .run();
+    });
+
+    it('process user account with user when loaded', async () => {
+      const user = { id: 'anything' } as any;
+      await expectSaga(processUserAccount, { user, isLoading: false })
+        .spawn(initializeUserState, user)
+        .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
+        .withReducer(rootReducer)
+        .run();
+    });
+  });
+
+  describe('clearUserState', () => {
+    it('resets layout', async () => {
+      await expectSaga(clearUserState)
+        .put(update({ isSidekickOpen: false }))
+        .put(receive([]))
+        .withReducer(rootReducer)
+        .run();
+    });
+
+    it('verifies state reset calls', async () => {
+      await expectSaga(clearUserState)
+        .call(clearChannelsAndConversations)
+        .call(clearMessages)
+        .call(clearUsers)
+        .call(clearNotifications)
+        .call(clearUserLayout)
+        .withReducer(rootReducer)
         .run();
     });
   });

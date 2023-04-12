@@ -15,9 +15,9 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
 import MessageMenu from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { textToPlainEmojis } from './text-to-emojis';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
+import { ContentHighlighter } from '../content-highlighter';
 
 interface Properties extends MessageModel {
   className: string;
@@ -54,14 +54,8 @@ export class Message extends React.Component<Properties, State> {
 
   renderAttachment(attachment) {
     return (
-      <div
-        className='message__attachment'
-        onClick={this.openAttachment.bind(this, attachment)}
-      >
-        <AttachmentCards
-          attachments={[attachment]}
-          onAttachmentClicked={this.openAttachment.bind(this, attachment)}
-        />
+      <div className='message__attachment' onClick={this.openAttachment.bind(this, attachment)}>
+        <AttachmentCards attachments={[attachment]} onAttachmentClicked={this.openAttachment.bind(this, attachment)} />
       </div>
     );
   }
@@ -82,14 +76,8 @@ export class Message extends React.Component<Properties, State> {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
       return (
-        <div
-          className='message__block-image'
-          onClick={this.onImageClick(media)}
-        >
-          <img
-            src={url}
-            alt={name}
-          />
+        <div className='message__block-image' onClick={this.onImageClick(media)}>
+          <img src={url} alt={name} />
         </div>
       );
     } else if (MediaType.Video === type) {
@@ -106,10 +94,7 @@ export class Message extends React.Component<Properties, State> {
       return (
         <div className='message__block-audio'>
           <audio controls>
-            <source
-              src={url}
-              type='audio/mpeg'
-            />
+            <source src={url} type='audio/mpeg' />
           </audio>
         </div>
       );
@@ -152,10 +137,7 @@ export class Message extends React.Component<Properties, State> {
 
   editActions = (value: string, mentionedUserIds: string[]) => {
     return (
-      <EditMessageActions
-        onEdit={this.editMessage.bind(this, value, mentionedUserIds)}
-        onCancel={this.toggleEdit}
-      />
+      <EditMessageActions onEdit={this.editMessage.bind(this, value, mentionedUserIds)} onCancel={this.toggleEdit} />
     );
   };
 
@@ -175,34 +157,6 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  renderMessage(message) {
-    const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
-    return parts.map((part, index) => {
-      const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
-
-      if (!match) {
-        return textToPlainEmojis(part);
-      }
-
-      if (match[2] === 'user') {
-        const profileId = this.getProfileId(match[3]);
-        const mention = `@${match[1]}`;
-        const props: { className: string; key: string; id?: string } = {
-          className: 'message__user-mention',
-          key: match[3] + index,
-        };
-
-        if (profileId) {
-          props.id = profileId;
-        }
-
-        return <span {...props}>{mention}</span>;
-      }
-
-      return part;
-    });
-  }
-
   renderMessageWithLinks(): React.ReactElement {
     const { message } = this.props;
     const hasLinks = linkifyjs.find(message);
@@ -217,11 +171,11 @@ export class Message extends React.Component<Properties, State> {
             },
           }}
         >
-          {this.renderMessage(message)}
+          <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />
         </Linkify>
       );
     } else {
-      return this.renderMessage(message);
+      return <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />;
     }
   }
 
@@ -255,22 +209,20 @@ export class Message extends React.Component<Properties, State> {
                   {media && this.renderMedia(media)}
                   {this.props.parentMessageText && (
                     <div className='message__block-reply'>
-                      <span className='message__block-reply-text'> {this.props.parentMessageText}</span>
+                      <span className='message__block-reply-text'>
+                        <ContentHighlighter
+                          message={this.props.parentMessageText}
+                          mentionedUserIds={this.props.mentionedUserIds}
+                        />
+                      </span>
                     </div>
                   )}
                   {message && this.renderMessageWithLinks()}
                   {preview && !hidePreview && (
                     <div className='message__block-preview-with-remove'>
-                      <LinkPreview
-                        url={preview.url}
-                        {...preview}
-                      />
+                      <LinkPreview url={preview.url} {...preview} />
                       {isOwner && (
-                        <IconButton
-                          Icon={IconXClose}
-                          onClick={this.onRemovePreview}
-                          className='remove-preview__icon'
-                        />
+                        <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
                       )}
                     </div>
                   )}

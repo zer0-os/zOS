@@ -1,11 +1,13 @@
-import { takeLatest, take, put, call, select } from 'redux-saga/effects';
+import { all, takeLatest, take, put, call, select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 
 import { AsyncListStatus } from '../normalized';
 
-import { SagaActionTypes, receive, receiveNormalized, setStatus, denormalizeNotifications } from '.';
+import { SagaActionTypes, receive, setStatus, removeAll, relevantNotificationTypes, schema } from '.';
 import { fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
+import getDeepProperty from 'lodash.get';
+
 export interface Payload {
   userId: string;
 }
@@ -19,7 +21,7 @@ export function* fetch(action) {
 
   console.log('notifications', notifications);
 
-  yield put(receive(notifications));
+  yield put(receive(notifications.filter((n) => relevantNotificationTypes.includes(n.notificationType))));
 
   yield put(setStatus(AsyncListStatus.Idle));
 }
@@ -46,28 +48,30 @@ export function* createEventChannel(userId) {
   });
 }
 
-export function* watchForEvent(userId) {
+export function* watchForEvent(user) {
+  const { id: userId } = user;
+
   const notificationChannel = yield call(createEventChannel, userId);
 
   while (true) {
     const notification = yield take(notificationChannel);
-    console.log('watchOnEvent', notification);
 
-    const existingNotifications = yield select(denormalizeNotifications);
-    console.log('existingNotifications', ...existingNotifications);
-    console.log('notification', notification);
+    const existingNotifications = yield select((state) => getDeepProperty(state, 'notificationsList.value', []));
 
     yield put(
-      receive(
-        // ...existingNotifications,
-        notification
-      )
+      receive([
+        notification,
+        ...existingNotifications,
+      ])
     );
-
-    // yield put(
-    //   receiveNormalized(notification)
-    // )
   }
+}
+
+export function* clearNotifications() {
+  yield all([
+    put(removeAll({ schema: schema.key })),
+    put(receive([])),
+  ]);
 }
 
 export function* saga() {

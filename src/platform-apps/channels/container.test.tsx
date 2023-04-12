@@ -24,7 +24,6 @@ describe('ChannelsContainer', () => {
     const allProps = {
       store: getStore(),
       fetchChannels: () => undefined,
-      receiveUnreadCount: () => undefined,
       stopSyncChannels: () => undefined,
       channelId: '',
       match: { url: '' },
@@ -56,25 +55,6 @@ describe('ChannelsContainer', () => {
     subject({ domainId, fetchChannels });
 
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
-  });
-
-  it('set receiveUnreadCount channels on mount when authenticated', () => {
-    const domainId = '0x000000000000000000000000000000000000000A';
-    const fetchChannels = jest.fn();
-    const receiveUnreadCount = jest.fn();
-
-    subject({ domainId, fetchChannels, receiveUnreadCount });
-
-    expect(receiveUnreadCount).toHaveBeenCalledWith(domainId);
-  });
-
-  it('do not set receiveUnreadCount channels on mount when anonymous', () => {
-    const fetchChannels = jest.fn();
-    const receiveUnreadCount = jest.fn();
-
-    subject({ fetchChannels, receiveUnreadCount, context: { isAuthenticated: false } });
-
-    expect(receiveUnreadCount).not.toHaveBeenCalled();
   });
 
   it('wraps ChannelList in AppContextPanel', () => {
@@ -133,10 +113,18 @@ describe('ChannelsContainer', () => {
 
   it('passes channelId to ChatViewContainer', () => {
     const channelId = 'the-channel-id';
-
-    const wrapper = subject({ channelId });
+    const channels = [{ id: channelId }];
+    const wrapper = subject({ channelId, channels });
 
     expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(channelId);
+  });
+
+  it('does not render ChatViewContainer if channelId not present in domain (channel list)', () => {
+    const channelId = 'channel-1';
+    const channels = [{ id: 'channel-2' }];
+    const wrapper = subject({ channelId, channels });
+
+    expect(wrapper.find(ChatViewContainer).exists()).toBe(false);
   });
 
   describe('mapState', () => {

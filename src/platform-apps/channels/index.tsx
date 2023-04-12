@@ -16,12 +16,7 @@ interface Properties {
 
 export class Component extends React.Component<Properties> {
   renderChild = ({ match }) => {
-    return (
-      <ChannelsContainer
-        channelId={match.params.channelId || ''}
-        {...this.props}
-      />
-    );
+    return <ChannelsContainer channelId={match.params.channelId || ''} {...this.props} />;
   };
 
   get rootUrl() {
@@ -29,12 +24,7 @@ export class Component extends React.Component<Properties> {
   }
 
   render() {
-    return (
-      <Route
-        path={`${this.rootUrl}/:channelId?`}
-        render={this.renderChild}
-      />
-    );
+    return <Route path={`${this.rootUrl}/:channelId?`} render={this.renderChild} />;
   }
 }
 

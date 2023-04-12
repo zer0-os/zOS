@@ -28,13 +28,7 @@ export function inject<T>(ChildComponent: any) {
     static contextType = getWeb3ReactContext();
 
     render() {
-      return (
-        <ChildComponent
-          {...this.props}
-          connectors={{ get: getConnector }}
-          web3={this.context}
-        />
-      );
+      return <ChildComponent {...this.props} connectors={{ get: getConnector }} web3={this.context} />;
     }
   };
 }

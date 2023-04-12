@@ -8,7 +8,7 @@ import {
 } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
-import { createNormalizedSlice } from '../normalized';
+import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { LinkPreview } from '../../lib/link-preview';
 
@@ -100,4 +100,5 @@ export {
   editMessage,
   receiveDeleteMessage,
   uploadFileMessage,
+  removeAll,
 };

@@ -16,6 +16,7 @@ import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
+import { multicastChannel } from 'redux-saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -102,6 +103,10 @@ export function* processUserAccount(params: {
   } else {
     yield spawn(clearUserState);
   }
+
+  // Publish a message across the authChannel
+  const channel = yield call(authChannel);
+  yield put(channel, { userId: user?.id });
 }
 
 export function* initializeUserState(user: User) {
@@ -128,4 +133,12 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
   yield takeLatest(SagaActionTypes.Terminate, terminate);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
+}
+
+let theChannel;
+export function* authChannel() {
+  if (!theChannel) {
+    theChannel = yield call(multicastChannel);
+  }
+  return theChannel;
 }

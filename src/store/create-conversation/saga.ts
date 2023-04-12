@@ -1,9 +1,10 @@
-import { put, call, select, race, take } from 'redux-saga/effects';
+import { put, call, select, race, take, fork } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setActiveMessengerId } from '../chat';
-import { currentUserSelector } from '../authentication/saga';
+import { authChannel, currentUserSelector } from '../authentication/saga';
+import { store } from '../';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -54,6 +55,8 @@ export function* createConversation(action) {
 }
 
 export function* saga() {
+  yield fork(authWatcher);
+
   while (true) {
     yield take(SagaActionTypes.Start);
     yield startConversation();
@@ -122,4 +125,14 @@ function* handleGroupDetails() {
   const action = yield take(SagaActionTypes.CreateConversation);
   yield call(createConversation, action);
   return Stage.None;
+}
+
+function* authWatcher() {
+  const channel = yield call(authChannel);
+  while (true) {
+    const payload = yield take(channel, '*');
+    if (!payload.userId) {
+      store.dispatch({ type: SagaActionTypes.Cancel });
+    }
+  }
 }

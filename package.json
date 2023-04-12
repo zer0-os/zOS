@@ -48,6 +48,7 @@
     "lodash.kebabcase": "^4.1.1",
     "moment": "^2.29.4",
     "normalizr": "^3.6.2",
+    "pusher-js": "^8.0.2",
     "rc-tooltip": "^5.3.1",
     "react": "^17.0.2",
     "react-collapsible": "^2.10.0",
@@ -67,7 +68,7 @@
     "web3-utils": "^1.7.5"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "DISABLE_ESLINT_PLUGIN=true craco start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",

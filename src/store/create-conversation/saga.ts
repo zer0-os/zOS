@@ -106,6 +106,7 @@ function* handleOneOnOne() {
     SagaActionTypes.CreateConversation,
   ]);
   if (action.type === SagaActionTypes.StartGroup) {
+    yield put(setGroupUsers([]));
     return Stage.StartGroupChat;
   }
   yield call(createConversation, action);

@@ -100,10 +100,10 @@ const PREVIOUS_STAGES = {
 
 function* handleOneOnOne() {
   const action = yield take([
-    SagaActionTypes.Forward,
+    SagaActionTypes.StartGroup,
     SagaActionTypes.CreateConversation,
   ]);
-  if (action.type === SagaActionTypes.Forward) {
+  if (action.type === SagaActionTypes.StartGroup) {
     return Stage.StartGroupChat;
   }
   yield call(createConversation, action);

@@ -11,7 +11,7 @@ import {
   Stage as SagaStage,
   back,
   createConversation,
-  forward,
+  startGroup,
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
@@ -39,9 +39,7 @@ export interface Properties extends PublicProperties {
   isGroupCreating: boolean;
 
   startCreateConversation: () => void;
-  // Temporarily just advance through the stages until each one
-  // does the appropriate step
-  forward: () => void;
+  startGroup: () => void;
   back: () => void;
   setActiveMessengerChat: (channelId: string) => void;
   fetchConversations: () => void;
@@ -72,7 +70,7 @@ export class Container extends React.Component<Properties> {
       createConversation,
       startCreateConversation,
       back,
-      forward,
+      startGroup,
       membersSelected,
     };
   }
@@ -94,7 +92,7 @@ export class Container extends React.Component<Properties> {
   };
 
   startGroupChat = (): void => {
-    this.props.forward();
+    this.props.startGroup();
   };
 
   usersInMyNetworks = async (search: string) => {

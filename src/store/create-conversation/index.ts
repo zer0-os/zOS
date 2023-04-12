@@ -4,16 +4,15 @@ import { MembersSelectedPayload } from './types';
 
 export enum SagaActionTypes {
   Start = 'create-conversation/start',
-  Forward = 'create-conversation/forward',
   Back = 'create-conversation/back',
   Cancel = 'create-conversation/cancel',
+  StartGroup = 'create-conversation/start-group',
   MembersSelected = 'create-conversation/members-selected',
   CreateConversation = 'create-conversation/create',
 }
 
 export const startCreateConversation = createAction(SagaActionTypes.Start);
-// Temporarily just let the component guide the saga through the stages.
-export const forward = createAction(SagaActionTypes.Forward);
+export const startGroup = createAction(SagaActionTypes.StartGroup);
 export const back = createAction(SagaActionTypes.Back);
 export const membersSelected = createAction<MembersSelectedPayload>(SagaActionTypes.MembersSelected);
 export const createConversation = createAction<CreateMessengerConversation>(SagaActionTypes.CreateConversation);

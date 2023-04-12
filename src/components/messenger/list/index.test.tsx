@@ -24,12 +24,12 @@ describe('messenger-list', () => {
       conversations: [],
       isFetchingExistingConversations: false,
       isGroupCreating: false,
-      setActiveMessengerChat: jest.fn(),
+      openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       startCreateConversation: () => null,
       membersSelected: () => null,
-      forward: () => null,
+      startGroup: () => null,
       back: () => null,
       onClose: () => null,
       ...props,
@@ -98,13 +98,13 @@ describe('messenger-list', () => {
     expect(wrapper).toHaveElement(GroupDetailsPanel);
   });
 
-  it('moves forward when group chat started', async function () {
-    const forward = jest.fn();
-    const wrapper = subject({ stage: Stage.CreateOneOnOne, forward });
+  it('moves starts group when group chat started', async function () {
+    const startGroup = jest.fn();
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, startGroup });
 
     wrapper.find(CreateConversationPanel).simulate('startGroupChat');
 
-    expect(forward).toHaveBeenCalledOnce();
+    expect(startGroup).toHaveBeenCalledOnce();
   });
 
   it('moves back from CreateConversationPanel', async function () {

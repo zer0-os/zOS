@@ -63,9 +63,11 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
           ))}
         </div>
-        <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
-          Create Group
-        </Button>
+        <div>
+          <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
+            Create Group
+          </Button>
+        </div>
       </div>
     );
   }

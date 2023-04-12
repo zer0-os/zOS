@@ -54,8 +54,10 @@ export function* createConversation(action) {
 }
 
 export function* saga() {
-  yield take(SagaActionTypes.Start);
-  yield startConversation();
+  while (true) {
+    yield take(SagaActionTypes.Start);
+    yield startConversation();
+  }
 }
 
 export function* startConversation() {

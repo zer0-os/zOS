@@ -5,7 +5,7 @@ import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setActiveMessengerId } from '../chat';
 import { currentUserSelector } from '../authentication/saga';
 
-export function* reset(_action) {
+export function* reset() {
   yield put(setGroupUsers([]));
   yield put(setFetchingConversations(false));
   yield put(setGroupCreating(false));
@@ -13,18 +13,6 @@ export function* reset(_action) {
 }
 
 export const getStage = (state) => state.createConversation.stage;
-
-export function previousStage(currentStage: Stage) {
-  switch (currentStage) {
-    case Stage.CreateOneOnOne:
-      return Stage.None;
-    case Stage.StartGroupChat:
-      return Stage.CreateOneOnOne;
-    case Stage.GroupDetails:
-      return Stage.StartGroupChat;
-  }
-  return Stage.None;
-}
 
 export function* groupMembersSelected(action) {
   try {
@@ -70,30 +58,31 @@ export function* saga() {
   yield startConversation();
 }
 
-// XXX: handle cancellations for slow things... like...pressing back while a request is running?..
-// XXX: Also handle logout / full cancellations...any others besides logout?
 export function* startConversation() {
   try {
-    yield call(reset, {});
+    yield call(reset);
     yield put(setStage(Stage.CreateOneOnOne));
 
     let currentStage = Stage.CreateOneOnOne;
     while (currentStage !== Stage.None) {
-      const { back, handlerResult } = yield race({
+      const { back, cancel, handlerResult } = yield race({
         back: take(SagaActionTypes.Back),
+        cancel: take(SagaActionTypes.Cancel),
         handlerResult: call(STAGE_HANDLERS[currentStage]),
       });
 
       let nextStage = handlerResult;
-      if (back) {
-        nextStage = previousStage(currentStage);
+      if (cancel) {
+        nextStage = Stage.None;
+      } else if (back) {
+        nextStage = PREVIOUS_STAGES[currentStage];
       }
 
       yield put(setStage(nextStage));
       currentStage = nextStage;
     }
   } finally {
-    yield call(reset, {});
+    yield call(reset);
   }
 }
 
@@ -101,6 +90,12 @@ const STAGE_HANDLERS = {
   [Stage.CreateOneOnOne]: handleOneOnOne,
   [Stage.StartGroupChat]: handleStartGroup,
   [Stage.GroupDetails]: handleGroupDetails,
+};
+
+const PREVIOUS_STAGES = {
+  [Stage.CreateOneOnOne]: Stage.None,
+  [Stage.StartGroupChat]: Stage.CreateOneOnOne,
+  [Stage.GroupDetails]: Stage.StartGroupChat,
 };
 
 function* handleOneOnOne() {

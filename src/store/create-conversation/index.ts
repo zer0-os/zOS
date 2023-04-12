@@ -6,6 +6,7 @@ export enum SagaActionTypes {
   Start = 'create-conversation/start',
   Forward = 'create-conversation/forward',
   Back = 'create-conversation/back',
+  Cancel = 'create-conversation/cancel',
   MembersSelected = 'create-conversation/members-selected',
   CreateConversation = 'create-conversation/create',
 }

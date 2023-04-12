@@ -40,7 +40,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
 
   render() {
     return (
-      <>
+      <div className={c('')}>
         <PanelHeader title='Group details' onBack={this.props.onBack} />
         <div>
           <div className={c('field-info')}>
@@ -52,7 +52,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <span className={c('label')}>Group image</span>
             <span className={c('optional')}>Optional</span>
           </div>
-          <ImageUpload onChange={this.onImageChange} />
+          <ImageUpload onChange={this.onImageChange} className={c('image-upload')} />
         </div>
         <div className={c('selected-count')}>
           <span className={c('selected-number')}>{this.props.users.length}</span> member
@@ -66,7 +66,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
           Create Group
         </Button>
-      </>
+      </div>
     );
   }
 }

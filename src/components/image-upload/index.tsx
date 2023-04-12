@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import './styles.scss';
+import classNames from 'classnames';
 
 export interface Properties {
+  className?: string;
   onChange: (file: File) => void;
 }
 
@@ -46,7 +48,7 @@ export class ImageUpload extends Component<Properties, State> {
         maxFiles={1}
       >
         {({ getRootProps, getInputProps }) => (
-          <section className='image-upload'>
+          <section className={classNames('image-upload', this.props.className)}>
             {this.state.files.length === 0 ? (
               <div {...getRootProps({ className: 'image-upload__dropzone' })}>
                 <input {...getInputProps()} />

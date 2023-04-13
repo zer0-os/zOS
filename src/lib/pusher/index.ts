@@ -1,11 +1,6 @@
 import Pusher, { UserAuthenticationOptions } from 'pusher-js';
 import { config } from '../../config';
 
-export const pusherEvents = [
-  'new-notification',
-  'update-notifications',
-];
-
 export default class PusherClient {
   pusher: Pusher;
 
@@ -56,5 +51,12 @@ export default class PusherClient {
   disconnect() {
     this.pusher.disconnect();
     this.pusher = null;
+  }
+
+  get events() {
+    return [
+      'new-notification',
+      'update-notifications',
+    ];
   }
 }

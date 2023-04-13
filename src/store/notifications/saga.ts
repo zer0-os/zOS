@@ -11,7 +11,7 @@ import {
   rawNotificationsList,
 } from '.';
 import { fetchNotifications } from './api';
-import PusherClient, { pusherEvents } from '../../lib/pusher';
+import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
 import { store } from '../';
 
@@ -31,11 +31,9 @@ export function* fetch(action) {
   yield put(setStatus(AsyncListStatus.Idle));
 }
 
-export function createEventChannel(userId) {
-  const pusherClient = new PusherClient();
-
+export function createEventChannel(userId, pusherClient = new PusherClient()) {
   return eventChannel((emit) => {
-    const events = pusherEvents.map((event) => {
+    const events = pusherClient.events.map((event) => {
       return {
         key: event,
         callback: (notification) => {
@@ -93,7 +91,7 @@ export function* clearNotifications() {
   ]);
 }
 
-function* authWatcher() {
+export function* authWatcher() {
   const channel = yield call(authChannel);
 
   while (true) {

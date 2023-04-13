@@ -1,12 +1,19 @@
-import { all, takeLatest, take, put, call, select } from 'redux-saga/effects';
+import { all, takeLatest, take, put, call, select, fork, spawn, race } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-
 import { AsyncListStatus } from '../normalized';
-
-import { SagaActionTypes, receive, setStatus, removeAll, relevantNotificationTypes, schema } from '.';
+import {
+  SagaActionTypes,
+  receive,
+  setStatus,
+  removeAll,
+  relevantNotificationTypes,
+  schema,
+  rawNotificationsList,
+} from '.';
 import { fetchNotifications } from './api';
-import PusherClient from '../../lib/pusher';
-import getDeepProperty from 'lodash.get';
+import PusherClient, { pusherEvents } from '../../lib/pusher';
+import { authChannel } from '../authentication/saga';
+import { store } from '../';
 
 export interface Payload {
   userId: string;
@@ -19,52 +26,64 @@ export function* fetch(action) {
 
   const notifications = yield call(fetchNotifications, userId);
 
-  console.log('notifications', notifications);
-
   yield put(receive(notifications.filter((n) => relevantNotificationTypes.includes(n.notificationType))));
 
   yield put(setStatus(AsyncListStatus.Idle));
 }
 
-export function* createEventChannel(userId) {
+export function createEventChannel(userId) {
   const pusherClient = new PusherClient();
 
   return eventChannel((emit) => {
-    const events = {
-      'new-notification': (data) => {
-        emit({ ...data, isUnread: true });
-      },
-      'update-notifications': (data) => {
-        emit({ ...data, isUnread: true });
-      },
-    };
+    const events = pusherEvents.map((event) => {
+      return {
+        key: event,
+        callback: (notification) => {
+          // ToDo: return user data in notification
+          emit({ ...notification, isUnread: true });
+        },
+      };
+    });
 
     pusherClient.init(userId, events);
 
     const unsubscribe = () => {
-      // socket.off('ping', pingHandler)
+      pusherClient.disconnect();
     };
+
     return unsubscribe;
   });
 }
 
-export function* watchForEvent(user) {
-  const { id: userId } = user;
-
+export function* watchForChannelEvent(userId) {
   const notificationChannel = yield call(createEventChannel, userId);
 
   while (true) {
-    const notification = yield take(notificationChannel);
+    const { abort, notification } = yield race({
+      abort: take(SagaActionTypes.CancelEventWatch),
+      notification: take(notificationChannel),
+    });
 
-    const existingNotifications = yield select((state) => getDeepProperty(state, 'notificationsList.value', []));
+    if (abort) {
+      notificationChannel.close();
+      return false;
+    }
 
-    yield put(
-      receive([
-        notification,
-        ...existingNotifications,
-      ])
-    );
+    if (relevantNotificationTypes.includes(notification.notificationType)) {
+      yield call(addNotification, notification);
+    }
   }
+}
+
+export function* addNotification(notification) {
+  const existingNotifications = yield select(rawNotificationsList);
+
+  yield put(
+    receive([
+      notification,
+      ...existingNotifications,
+    ])
+  );
 }
 
 export function* clearNotifications() {
@@ -74,6 +93,21 @@ export function* clearNotifications() {
   ]);
 }
 
+function* authWatcher() {
+  const channel = yield call(authChannel);
+
+  while (true) {
+    const { userId = undefined } = yield take(channel, '*');
+
+    if (userId) {
+      yield spawn(watchForChannelEvent, userId);
+    } else {
+      yield store.dispatch({ type: SagaActionTypes.CancelEventWatch });
+    }
+  }
+}
+
 export function* saga() {
+  yield fork(authWatcher);
   yield takeLatest(SagaActionTypes.Fetch, fetch);
 }

@@ -1,53 +1,43 @@
-import Pusher from 'pusher-js';
-// import * as PusherTypes from 'pusher-js';
-
+import Pusher, { UserAuthenticationOptions } from 'pusher-js';
 import { config } from '../../config';
 
+export const pusherEvents = [
+  'new-notification',
+  'update-notifications',
+];
+
 export default class PusherClient {
-  pusher: any;
+  pusher: Pusher;
 
   constructor() {
+    this.pusher = null;
+
     const {
       pusher: { key, cluster },
     } = config;
 
-    const url = [
-      config.ZERO_API_URL,
-      '/authentication/pusher',
-    ].join('');
-    console.log('ctor', url);
-    this.pusher = null;
-
     Pusher.Runtime.createXHR = function () {
       const xhr = new XMLHttpRequest();
-      xhr.withCredentials = true;
+      xhr.withCredentials = true; // Permits our cookie to be passed along
       return xhr;
     };
 
+    const sharedAuthenticationOptions = {
+      endpoint: [
+        config.ZERO_API_URL,
+        '/authentication/pusher',
+      ].join(''),
+      headers: { 'X-APP-PLATFORM': 'zos' },
+      transport: 'ajax',
+    } as UserAuthenticationOptions;
+
     this.pusher = new Pusher(key, {
-      cluster: cluster,
-      userAuthentication: {
-        endpoint: [
-          config.ZERO_API_URL,
-          '/authentication/pusher',
-        ].join(''),
-        transport: 'ajax',
-        headers: {
-          'X-APP-PLATFORM': 'zos',
-        },
-      },
-      channelAuthorization: {
-        endpoint: [
-          config.ZERO_API_URL,
-          '/authentication/pusher',
-        ].join(''),
-        transport: 'ajax',
-        headers: {
-          'X-APP-PLATFORM': 'zos',
-        },
-      },
+      cluster,
+      userAuthentication: sharedAuthenticationOptions,
+      channelAuthorization: sharedAuthenticationOptions,
     });
 
+    // ToDo: Remove debug logging
     Pusher.logToConsole = true;
   }
 
@@ -56,13 +46,15 @@ export default class PusherClient {
 
     const channel = this.pusher.subscribe(`notifications-${userId}`);
 
-    for (const [
-      key,
-      callback,
-    ] of Object.entries(events)) {
-      channel.bind(key, (data) => {
-        (callback as any)(data);
+    events.forEach((event) => {
+      channel.bind(event.key, (data) => {
+        event.callback(data);
       });
-    }
+    });
+  }
+
+  disconnect() {
+    this.pusher.disconnect();
+    this.pusher = null;
   }
 }

@@ -3,9 +3,11 @@ import { createAction } from '@reduxjs/toolkit';
 import { createNormalizedListSlice, createNormalizedSlice, removeAll } from '../normalized';
 
 import { Payload } from './saga';
+import getDeepProperty from 'lodash.get';
 
 export enum SagaActionTypes {
   Fetch = 'notifications/saga/fetch',
+  CancelEventWatch = 'notifications/saga/cancelEventWatch',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
@@ -38,3 +40,5 @@ export function denormalizeNotifications(state) {
 
   return result;
 }
+
+export const rawNotificationsList = (state) => getDeepProperty(state, 'notificationsList.value', []);

@@ -2,7 +2,7 @@ import React from 'react';
 
 import './styles.scss';
 
-import { StubComponent } from '../components/stub-component';
+import { StubComponentContainer } from '../components/stub-component/container';
 
 export class AppSandbox extends React.Component {
   render() {
@@ -10,7 +10,7 @@ export class AppSandbox extends React.Component {
 
     return (
       <div className={className}>
-        <StubComponent />
+        <StubComponentContainer />
       </div>
     );
   }

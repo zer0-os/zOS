@@ -1,22 +1,19 @@
 import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { ZnsRouteConnect } from './zns-route-connect';
 import { store } from './store';
 import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
-import { Router, Redirect, Route } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import { createBrowserHistory, createHashHistory } from 'history';
-import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
-import { config } from './config';
 import { isElectron, showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
 import { AppSandboxContainer } from './app-sandbox/container';
 
-import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
+import { Main } from './Main';
 
 initializeErrorBoundary();
 
@@ -24,10 +21,8 @@ showReleaseVersionInConsole();
 
 const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
-const redirectToDefaults = ({ match: { params } }) => {
-  const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
-
-  return <Redirect to={`/${route}/${config.defaultApp}`} />;
+const main = () => {
+  return <Main />;
 };
 
 ReactDOM.render(
@@ -36,10 +31,7 @@ ReactDOM.render(
       <Provider store={store}>
         <EscapeManagerProvider>
           <Router history={history}>
-            <Web3ReactContextProvider>
-              <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
-              <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
-            </Web3ReactContextProvider>
+            <Route path='/:znsRoute?/' exact render={main} />
           </Router>
         </EscapeManagerProvider>
       </Provider>
@@ -55,11 +47,9 @@ ReactDOM.render(
 // to components rather than using a provider.)
 ReactDOM.render(
   <ErrorBoundary boundary={'apps'}>
-    <Router history={history}>
-      <Route path='/:znsRoute/:app'>
-        <AppSandboxContainer store={store} />
-      </Route>
-    </Router>
+    <Provider store={store}>
+      <AppSandboxContainer />
+    </Provider>
   </ErrorBoundary>,
   document.getElementById('app-sandbox')
 );

@@ -1,0 +1,5 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.stub-component {
+  color: theme.$color-primary-12;
+}

@@ -95,18 +95,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return (
-      <>
-        <Authentication />
-        <CreateAccount />
-        <Web3Connect>
-          <AuthenticationContextProvider value={this.authenticationContext}>
-            <ChatConnect />
-            <Main />
-          </AuthenticationContextProvider>
-        </Web3Connect>
-      </>
-    );
+    return <Main />;
   }
 }
 

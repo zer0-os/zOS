@@ -5,8 +5,6 @@ export default class PusherClient {
   pusher: Pusher;
 
   constructor() {
-    this.pusher = null;
-
     const {
       pusher: { key, cluster },
     } = config;
@@ -31,9 +29,6 @@ export default class PusherClient {
       userAuthentication: sharedAuthenticationOptions,
       channelAuthorization: sharedAuthenticationOptions,
     });
-
-    // ToDo: Remove debug logging
-    Pusher.logToConsole = true;
   }
 
   init(userId, events) {

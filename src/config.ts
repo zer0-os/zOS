@@ -29,4 +29,8 @@ export const config = {
     dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU,
   },
   giphySdkKey: process.env.REACT_APP_GIPHY_SDK_KEY,
+  pusher: {
+    key: process.env.REACT_APP_PUSHER_KEY,
+    cluster: process.env.REACT_APP_PUSHER_CLUSTER,
+  },
 };

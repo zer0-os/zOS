@@ -9,6 +9,7 @@ import {
   relevantNotificationTypes,
   schema,
   rawNotificationsList,
+  relevantNotificationEvents,
 } from '.';
 import { fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
@@ -33,7 +34,7 @@ export function* fetch(action) {
 
 export function createEventChannel(userId, pusherClient = new PusherClient()) {
   return eventChannel((emit) => {
-    const events = pusherClient.events.map((event) => {
+    const events = relevantNotificationEvents.map((event) => {
       return {
         key: event,
         callback: (notification) => {

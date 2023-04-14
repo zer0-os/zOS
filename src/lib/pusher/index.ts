@@ -47,11 +47,4 @@ export default class PusherClient {
     this.pusher.disconnect();
     this.pusher = null;
   }
-
-  get events() {
-    return [
-      'new-notification',
-      'update-notifications',
-    ];
-  }
 }

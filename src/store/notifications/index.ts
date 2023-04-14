@@ -33,6 +33,11 @@ export const relevantNotificationTypes = [
   'chat_dm_mention',
 ];
 
+export const relevantNotificationEvents = [
+  'new-notification',
+  'update-notifications',
+];
+
 export function denormalizeNotifications(state) {
   const result = listSlice
     .denormalize(state.notificationsList.value, state)

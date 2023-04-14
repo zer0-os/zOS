@@ -13,7 +13,7 @@ import {
   fetch,
   watchForChannelEvent,
 } from './saga';
-import { setStatus, relevantNotificationTypes, SagaActionTypes } from '.';
+import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
 import { fetchNotifications } from './api';
 import { sample } from 'lodash';
 import { authChannel } from '../authentication/saga';
@@ -223,10 +223,7 @@ describe('notifications list saga', () => {
       .next({ userId: undefined })
       .inspect((action) => {
         expect(action).toEqual({ type: SagaActionTypes.CancelEventWatch });
-      })
-
-      .next();
-    // .isDone()
+      });
   });
 
   describe('createEventChannel', () => {
@@ -235,10 +232,6 @@ describe('notifications list saga', () => {
     const pusherClient = {
       init: jest.fn(),
       disconnect: jest.fn(),
-      events: [
-        'one',
-        'elephant',
-      ],
     } as any;
 
     it('disconnect', () => {
@@ -252,7 +245,7 @@ describe('notifications list saga', () => {
     it('initializes', () => {
       createEventChannel(userId, pusherClient);
 
-      const eventsExpectation = pusherClient.events.map((event) => {
+      const eventsExpectation = relevantNotificationEvents.map((event) => {
         return { key: event, callback: expect.anything() };
       });
 

@@ -3,7 +3,7 @@ import { RootState } from '../../store';
 import { connectContainer } from '../../store/redux-container';
 
 import { ThemeEngine as ThemeEngineComponentDeprecated, ViewModes } from '../../shared-components/theme-engine';
-import { ThemeEngine as ThemeEngineComponent } from '@zero-tech/zui/components';
+import { ThemeEngine as ThemeEngineComponent } from '@zero-tech/zui/components/ThemeEngine';
 import { Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { setViewMode } from '../../store/theme';
 import { keyStorageLightMode } from '../../store/theme/saga';

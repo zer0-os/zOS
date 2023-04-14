@@ -6,8 +6,8 @@ import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Route } from 'react-router-dom';
-import { createBrowserHistory, createHashHistory } from 'history';
-import { isElectron, showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
+import { createBrowserHistory } from 'history';
+import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
 import { AppSandboxContainer } from './app-sandbox/container';
@@ -19,7 +19,7 @@ initializeErrorBoundary();
 
 showReleaseVersionInConsole();
 
-const history = isElectron() ? createHashHistory() : createBrowserHistory();
+const history = createBrowserHistory();
 
 const main = () => {
   return <Main />;

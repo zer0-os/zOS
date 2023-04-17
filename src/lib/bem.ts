@@ -5,8 +5,9 @@ export function bem(block: string) {
       result += `__${element}`;
     }
     if (modifier) {
-      result += `--${modifier}`;
+      result += ` ${result}--${modifier}`;
     }
+
     return result;
   };
 }

@@ -1,0 +1,109 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.invite-dialog {
+  width: 608px;
+
+  &__title-bar {
+    display: flex;
+    height: 53px;
+    border-bottom: 1px solid theme.$color-primary-4;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 40px;
+
+    color: theme.$color-greyscale-12;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__image {
+    //XXX: temporary
+
+    width: 100%;
+    background-color: theme.$color-primary-4;
+    height: 312px;
+  }
+
+  &__heading {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+
+    color: theme.$color-greyscale-12;
+  }
+
+  &__byline {
+    margin-top: 8px;
+    margin-bottom: 12px;
+    color: theme.$color-greyscale-11;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+  }
+
+  &__code-block {
+    border: 1px solid theme.$color-greyscale-6;
+    background: theme.$color-greyscale-2;
+    border-radius: 8px;
+
+    color: theme.$color-greyscale-11;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+
+    display: flex;
+
+    & > *:first-child {
+      flex-grow: 1;
+      padding: 9px;
+    }
+
+    & > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__inline-button--right {
+    padding: 8px;
+    margin: 0px;
+    border-width: 0px;
+    border-left: 1px solid theme.$color-secondary-6;
+    border-radius: 8px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    background-color: theme.$color-secondary-1;
+    color: theme.$color-secondary-11;
+
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+
+    &:hover {
+      background-color: theme.$color-secondary-4;
+    }
+
+    &:active {
+      background-color: theme.$color-secondary-5;
+      box-shadow: 0px 0px 16px rgba(1, 250, 195, 0.75);
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}

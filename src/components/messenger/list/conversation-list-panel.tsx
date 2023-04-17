@@ -7,6 +7,7 @@ import { Channel } from '../../../store/channels';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
+import { InviteDialog } from '../../invite-dialog';
 
 export interface Properties {
   conversations: Channel[];
@@ -100,6 +101,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        <InviteDialog inviteCode='11111' />
       </>
     );
   }

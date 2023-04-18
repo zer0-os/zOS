@@ -110,5 +110,16 @@
     &:focus-visible {
       outline: none;
     }
+
+    &:disabled {
+      background-color: transparent;
+      cursor: not-allowed;
+      color: theme.$color-greyscale-11;
+      border-color: theme.$color-greyscale-6;
+
+      &:active {
+        box-shadow: none;
+      }
+    }
   }
 }

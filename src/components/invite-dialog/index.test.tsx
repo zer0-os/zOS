@@ -29,6 +29,7 @@ describe('InviteDialog', () => {
 
     wrapper.find('.invite-dialog__inline-button').simulate('click');
 
+    expect(wrapper.find('.invite-dialog__inline-button').prop('disabled')).toBeFalse();
     expect(clipboard.write).toHaveBeenCalledWith(expect.stringContaining('23817'));
   });
 
@@ -50,6 +51,12 @@ describe('InviteDialog', () => {
 
     expect(wrapper).toHaveElement('.invite-dialog__code-block Skeleton');
     expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
+  });
+
+  it('disables copy button if code does not exist', function () {
+    const wrapper = subject({ inviteCode: '' });
+
+    expect(wrapper.find('.invite-dialog__inline-button').prop('disabled')).toBeTrue();
   });
 
   it('publishes close event.', function () {

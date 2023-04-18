@@ -80,7 +80,11 @@ export class InviteDialog extends React.Component<Properties, State> {
           <div className={c('code-block')}>
             {!this.props.inviteCode && <Skeleton width={'100%'} height={'96px'} />}
             {this.props.inviteCode && <pre>{this.inviteText}</pre>}
-            <button className={c('inline-button', 'right')} onClick={this.writeInviteToClipboard}>
+            <button
+              className={c('inline-button', 'right')}
+              onClick={this.writeInviteToClipboard}
+              disabled={!this.props.inviteCode}
+            >
               {this.state.copyText}
             </button>
           </div>

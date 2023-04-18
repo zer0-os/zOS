@@ -8,6 +8,8 @@ describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       inviteCode: '',
+      inviteUrl: '',
+      assetsPath: '',
       clipboard: { write: () => null },
       ...props,
     };
@@ -41,5 +43,12 @@ describe('InviteDialog', () => {
     expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('Copied');
     jest.runAllTimers();
     expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('Copy');
+  });
+
+  it('renders the loading state if code does not exist', function () {
+    const wrapper = subject({ inviteCode: '' });
+
+    expect(wrapper).toHaveElement('.invite-dialog__code-block Skeleton');
+    expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
   });
 });

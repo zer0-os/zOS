@@ -34,4 +34,5 @@ export const config = {
     cluster: process.env.REACT_APP_PUSHER_CLUSTER,
   },
   inviteUrl: process.env.REACT_APP_MESSENGER_INVITE_PATH,
+  assetsPath: process.env.REACT_APP_ASSETS_PATH,
 };

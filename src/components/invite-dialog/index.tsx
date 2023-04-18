@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, Image, Modal } from '@zero-tech/zui/components';
+import { Image, Skeleton } from '@zero-tech/zui/components';
 import { clipboard } from '../../lib/clipboard';
 
 import './styles.scss';
@@ -14,6 +14,8 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
+  inviteUrl: string;
+  assetsPath: string;
   clipboard?: Clipboard;
 }
 
@@ -31,16 +33,12 @@ export class InviteDialog extends React.Component<Properties, State> {
     clearTimeout(this.buttonTimeout);
   }
 
-  render() {
-    return <Modal trigger={<Button>Invite</Button>}>{this.renderContent()}</Modal>;
-  }
-
   get inviteText() {
     return (
       'Here is an invite code for Zero messenger:\n' +
       `${this.props.inviteCode}\n\n` +
       'Get exclusive access:\n' +
-      'https://zero.tech/get-access'
+      `${this.props.inviteUrl}`
     );
   }
 
@@ -54,7 +52,7 @@ export class InviteDialog extends React.Component<Properties, State> {
     }
   };
 
-  renderContent() {
+  render() {
     return (
       <div className={c('')}>
         <div className={c('title-bar')}>
@@ -62,7 +60,7 @@ export class InviteDialog extends React.Component<Properties, State> {
         </div>
         <div className={c('content')}>
           <Image
-            src='https://res.cloudinary.com/fact0ry/image/upload/v1681745540/zero-assets/zos/ReachingHands.png'
+            src={`${this.props.assetsPath}/ReachingHands.png`}
             alt='Hands reaching out to connect'
             className={c('image')}
           />
@@ -74,13 +72,8 @@ export class InviteDialog extends React.Component<Properties, State> {
             <br />
           </div>
           <div className={c('code-block')}>
-            <div>
-              <div>Here's an invite code for Zero messenger:</div>
-              <div className={c('code')}>{this.props.inviteCode}</div>
-              <br />
-              <div>Get exclusive access:</div>
-              <div>https://zero.tech/get-access</div>
-            </div>
+            {!this.props.inviteCode && <Skeleton width={'100%'} height={'96px'} />}
+            {this.props.inviteCode && <pre>{this.inviteText}</pre>}
             <button className={c('inline-button', 'right')} onClick={this.writeInviteToClipboard}>
               {this.state.copyText}
             </button>

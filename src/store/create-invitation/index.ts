@@ -1,7 +1,8 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  GetCode = 'create-conversation/get-code',
+  GetCode = 'create-invitation/get-code',
+  Cancel = 'create-invitation/cancel',
 }
 
 export const fetchInvite = createAction(SagaActionTypes.GetCode);
@@ -24,8 +25,12 @@ const slice = createSlice({
       state.code = action.payload.code;
       state.url = action.payload.url;
     },
+    reset: (state, _action: PayloadAction) => {
+      state.code = initialState.code;
+      state.url = initialState.url;
+    },
   },
 });
 
-export const { setInvite } = slice.actions;
+export const { setInvite, reset } = slice.actions;
 export const { reducer } = slice;

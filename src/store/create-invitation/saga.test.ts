@@ -3,6 +3,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { fetchInvite } from './saga';
 import { rootReducer } from '../reducer';
 import { getInvite } from './api';
+import { SagaActionTypes } from '.';
 
 jest.mock('../../config', () => ({ config: { inviteUrl: 'https://www.example.com/invite' } }));
 
@@ -19,12 +20,21 @@ describe('fetchInvite', () => {
           ],
         ])
         .withReducer(rootReducer, { createInvitation: { code: '', url: '' } } as any)
+        .dispatch({ type: SagaActionTypes.GetCode })
         .run();
 
-      expect(createInvitation).toEqual({
-        code: '98762',
-        url: 'https://www.example.com/invite',
-      });
+      expect(createInvitation).toEqual({ code: '98762', url: 'https://www.example.com/invite' });
+    });
+
+    it('resets the state if a cancel event is received', async () => {
+      const {
+        storeState: { createInvitation },
+      } = await expectSaga(fetchInvite)
+        .withReducer(rootReducer, { createInvitation: { code: 'something', url: 'url' } } as any)
+        .dispatch({ type: SagaActionTypes.Cancel })
+        .run();
+
+      expect(createInvitation).toEqual({ code: '', url: '' });
     });
   });
 });

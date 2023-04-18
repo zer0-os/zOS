@@ -120,7 +120,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
         <FeatureFlag featureFlag={'allowInvites'}>
-          <Button onPress={this.openInviteDialog}>Invite</Button>
+          <Button variant={'text'} onPress={this.openInviteDialog}>
+            Invite Friends
+          </Button>
         </FeatureFlag>
         {this.state.inviteDialogOpen && this.renderInviteDialog()}
       </>

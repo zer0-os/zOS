@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { Container, Properties } from './container';
 import { normalize as normalizeChannelList } from '../../store/channels-list';

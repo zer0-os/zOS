@@ -1,5 +1,5 @@
 import React from 'react';
-import { RootState } from '../store';
+import { RootState } from '../store/reducer';
 import { Store } from 'redux';
 
 import { Apps } from '../lib/apps';

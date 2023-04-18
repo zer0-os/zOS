@@ -23,7 +23,7 @@ import {
   clearMessages,
 } from './saga';
 
-import { rootReducer } from '..';
+import { rootReducer } from '../reducer';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {

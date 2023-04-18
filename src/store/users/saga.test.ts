@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { clearUsers } from './saga';
 
-import { rootReducer } from '..';
+import { rootReducer } from '../reducer';
 
 describe('users saga', () => {
   it('removes the users', async () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { connectContainer } from '../../store/redux-container';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { denormalizeConversations } from '../../store/channels-list';
 
 import { UserActions } from '.';

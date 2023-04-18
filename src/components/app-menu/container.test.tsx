@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { Container } from './container';
 import { AppMenu } from './index';

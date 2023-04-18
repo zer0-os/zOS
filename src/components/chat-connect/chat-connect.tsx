@@ -9,7 +9,7 @@ import {
   receiveDeleteMessage as receiveDeleteMessageAction,
 } from '../../store/messages';
 import { receiveIsReconnecting } from '../../store/chat';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { unreadCountUpdated } from '../../store/channels';
 import { updateConnector } from '../../store/web3';
 import { Connectors } from '../../lib/web3';

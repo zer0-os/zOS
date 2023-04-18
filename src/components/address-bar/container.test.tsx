@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { AddressBar } from '.';
 import { Container } from './container';

@@ -31,6 +31,10 @@
 
   &__close {
     height: 28px;
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 
   &__image {

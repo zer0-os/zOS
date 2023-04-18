@@ -11,7 +11,7 @@ import {
   rawNotificationsList,
   relevantNotificationEvents,
 } from '.';
-import { fetchNotifications } from './api';
+import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
 import { store } from '../';
@@ -38,7 +38,6 @@ export function createEventChannel(userId, pusherClient = new PusherClient()) {
       return {
         key: event,
         callback: (notification) => {
-          // ToDo: return user data in notification
           emit({ ...notification, isUnread: true });
         },
       };
@@ -69,9 +68,17 @@ export function* watchForChannelEvent(userId) {
     }
 
     if (relevantNotificationTypes.includes(notification.notificationType)) {
-      yield call(addNotification, notification);
+      yield call(processNotification, notificationChannel);
     }
   }
+}
+
+export function* processNotification(notification) {
+  const enhancedNotification = yield call(fetchNotification, notification.id);
+
+  yield all([
+    call(addNotification, enhancedNotification),
+  ]);
 }
 
 export function* addNotification(notification) {

@@ -5,18 +5,25 @@ import { config } from '../../config';
 import { authChannel } from '../authentication/saga';
 
 export function* fetchInvite() {
-  const { cancel } = yield race({
-    cancel: take(SagaActionTypes.Cancel),
-    get: take(SagaActionTypes.GetCode),
-  });
+  while (true) {
+    const { cancel } = yield race({
+      cancel: take(SagaActionTypes.Cancel),
+      get: take(SagaActionTypes.GetCode),
+    });
 
-  if (cancel) {
-    return yield put(reset);
+    if (cancel) {
+      return yield put(reset);
+    }
+
+    try {
+      const invitation = yield call(getInvite);
+      // For now, we don't include the code in the url
+      yield put(setInvite({ code: invitation.slug, url: config.inviteUrl }));
+      return;
+    } catch (e) {
+      // Listen again
+    }
   }
-
-  const code = yield call(getInvite);
-  // For now, we don't include the code in the url
-  yield put(setInvite({ code, url: config.inviteUrl }));
 }
 
 export function* saga() {

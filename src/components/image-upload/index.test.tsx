@@ -5,9 +5,7 @@ import Dropzone from 'react-dropzone';
 
 import { ImageUpload, Properties } from '.';
 
-let featureFlags: any = {};
-
-describe('feature-flag', () => {
+describe('ImageUpload', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       onChange: jest.fn(),
@@ -24,8 +22,6 @@ describe('feature-flag', () => {
   });
 
   it('dropzone accept all type of images', function () {
-    featureFlags.tacos = true;
-
     const wrapper = subject({});
     const dropZone = wrapper.find(Dropzone);
     expect(dropZone.prop('accept')).toEqual({
@@ -34,8 +30,6 @@ describe('feature-flag', () => {
   });
 
   it('dropzone max files 1', function () {
-    featureFlags.tacos = true;
-
     const wrapper = subject({});
     const dropZone = wrapper.find(Dropzone);
     expect(dropZone.prop('maxFiles')).toEqual(1);

@@ -6,6 +6,7 @@ import { fetch as fetchNotifications, denormalizeNotifications } from '../../../
 import { denormalize as denormalizeChannel } from '../../../store/channels';
 
 import { NotificationList } from '.';
+import { mapNotification } from '../utils';
 
 export interface Properties {
   notifications: any[];
@@ -19,7 +20,10 @@ export class Container extends React.Component<Properties> {
       authentication: { user },
     } = state;
     const notifications = denormalizeNotifications(state)
-      .map((n) => Container.mapNotification(n, state))
+      .map((n) => {
+        const { name: channelName } = denormalizeChannel(n.data?.chatId, state) || {};
+        return mapNotification(n, channelName);
+      })
       .filter((n) => !!n);
 
     return {
@@ -34,46 +38,6 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  static mapNotification(notification, state: RootState) {
-    if (notification.notificationType === 'chat_channel_mention') {
-      const channelText = channelTextFor(notification.data?.chatId, state);
-      let senderName = displayName(notification.originUser?.profileSummary);
-
-      return {
-        id: notification.id,
-        createdAt: notification.createdAt,
-        body: `${senderName} mentioned you in ${channelText}`,
-        originatingName: senderName,
-        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-        isUnread: notification.isUnread,
-      };
-    } else if (notification.notificationType === 'chat_channel_message_replied') {
-      const channelText = channelTextFor(notification.data?.chatId, state);
-      let senderName = displayName(notification.originUser?.profileSummary);
-
-      return {
-        id: notification.id,
-        createdAt: notification.createdAt,
-        body: `${senderName} replied to you in ${channelText}`,
-        originatingName: senderName,
-        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-        isUnread: notification.isUnread,
-      };
-    } else if (notification.notificationType === 'chat_dm_mention') {
-      let senderName = displayName(notification.originUser?.profileSummary);
-      return {
-        id: notification.id,
-        createdAt: notification.createdAt,
-        body: `${senderName} mentioned you in a conversation`,
-        originatingName: senderName,
-        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-        isUnread: notification.isUnread,
-      };
-    }
-
-    return null;
-  }
-
   componentDidMount() {
     this.props.fetchNotifications({ userId: this.props.userId });
   }
@@ -84,20 +48,3 @@ export class Container extends React.Component<Properties> {
 }
 
 export const NotificationListContainer = connectContainer<{}>(Container);
-
-function displayName(profileSummary) {
-  let displayName = [
-    profileSummary?.firstName,
-    profileSummary?.lastName,
-  ]
-    .filter((e) => e)
-    .join(' ');
-  displayName = displayName || 'Someone';
-  return displayName;
-}
-
-function channelTextFor(channelId: string, state) {
-  const { name: channelName } = denormalizeChannel(channelId, state) || {};
-  const channelText = channelName ? `#${channelName}` : 'a channel';
-  return channelText;
-}

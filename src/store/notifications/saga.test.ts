@@ -221,9 +221,7 @@ describe('notifications list saga', () => {
       })
 
       .next({ userId: undefined })
-      .inspect((action) => {
-        expect(action).toEqual({ type: SagaActionTypes.CancelEventWatch });
-      });
+      .put({ type: SagaActionTypes.CancelEventWatch });
   });
 
   describe('createEventChannel', () => {

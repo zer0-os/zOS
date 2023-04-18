@@ -9,6 +9,7 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
+import { FeatureFlag } from '../../feature-flag';
 
 export interface Properties {
   conversations: Channel[];
@@ -118,7 +119,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
-        <Button onPress={this.openInviteDialog}>Invite</Button>
+        <FeatureFlag featureFlag={'allowInvites'}>
+          <Button onPress={this.openInviteDialog}>Invite</Button>
+        </FeatureFlag>
         {this.state.inviteDialogOpen && this.renderInviteDialog()}
       </>
     );

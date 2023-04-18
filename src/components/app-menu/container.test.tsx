@@ -6,8 +6,6 @@ import { Container } from './container';
 import { AppMenu } from './index';
 import { allApps, Apps, PlatformApp } from '../../lib/apps';
 
-jest.mock('../../lib/feature-flags');
-
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {

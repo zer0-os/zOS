@@ -5,7 +5,9 @@ import { connectContainer } from '../../store/redux-container';
 import { fetchInvite } from '../../store/create-invitation';
 import { config } from '../../config';
 
-export interface PublicProperties {}
+export interface PublicProperties {
+  onClose?: () => void;
+}
 
 export interface Properties extends PublicProperties {
   inviteCode: string;
@@ -40,6 +42,7 @@ export class Container extends React.Component<Properties> {
         inviteCode={this.props.inviteCode}
         inviteUrl={this.props.inviteUrl}
         assetsPath={this.props.assetPath}
+        onClose={this.props.onClose}
       />
     );
   }

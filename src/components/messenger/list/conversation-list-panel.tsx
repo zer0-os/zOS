@@ -93,7 +93,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   renderInviteDialog = (): JSX.Element => {
     return (
       <Modal open={true} onOpenChange={this.closeInviteDialog}>
-        <InviteDialogContainer />
+        <InviteDialogContainer onClose={this.closeInviteDialog} />
       </Modal>
     );
   };

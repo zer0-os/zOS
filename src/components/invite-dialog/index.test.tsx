@@ -51,4 +51,13 @@ describe('InviteDialog', () => {
     expect(wrapper).toHaveElement('.invite-dialog__code-block Skeleton');
     expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
   });
+
+  it('publishes close event.', function () {
+    const onClose = jest.fn();
+    const wrapper = subject({ onClose });
+
+    wrapper.find('IconButton').simulate('click');
+
+    expect(onClose).toHaveBeenCalled();
+  });
 });

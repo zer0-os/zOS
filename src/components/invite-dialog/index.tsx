@@ -1,7 +1,10 @@
 import * as React from 'react';
 
 import { Image, Skeleton } from '@zero-tech/zui/components';
+import { IconXClose } from '@zero-tech/zui/icons';
+
 import { clipboard } from '../../lib/clipboard';
+import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
@@ -17,6 +20,8 @@ export interface Properties {
   inviteUrl: string;
   assetsPath: string;
   clipboard?: Clipboard;
+
+  onClose?: () => void;
 }
 
 interface State {
@@ -57,6 +62,7 @@ export class InviteDialog extends React.Component<Properties, State> {
       <div className={c('')}>
         <div className={c('title-bar')}>
           <h3 className={c('title')}>Invite to Messenger</h3>
+          <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
         <div className={c('content')}>
           <Image

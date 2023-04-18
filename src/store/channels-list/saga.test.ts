@@ -21,7 +21,7 @@ import {
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
-import { rootReducer } from '..';
+import { rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 
 const MOCK_CHANNELS = [

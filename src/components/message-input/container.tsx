@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { User } from '../../store/channels';
 import { UserForMention, Media } from './utils';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { MessageInput as MessageInputComponent } from './index';

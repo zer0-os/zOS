@@ -2,7 +2,7 @@ import React from 'react';
 import { IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setActiveMessengerId } from '../../../store/chat';
-import { RootState } from '../../../store';
+import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
 import { IconButton } from '../../icon-button';

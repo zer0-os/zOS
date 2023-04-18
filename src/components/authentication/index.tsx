@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';

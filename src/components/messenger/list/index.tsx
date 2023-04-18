@@ -1,6 +1,6 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
-import { RootState } from '../../../store';
+import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
 import { setActiveMessengerId } from '../../../store/chat';
 import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';

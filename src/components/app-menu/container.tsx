@@ -1,5 +1,5 @@
 import React from 'react';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { AppMenu } from '.';
 import { Apps, allApps } from '../../lib/apps';

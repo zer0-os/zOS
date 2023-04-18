@@ -14,7 +14,7 @@ import {
 import { fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
-import { store } from '../';
+import { store } from '..';
 
 export interface Payload {
   userId: string;

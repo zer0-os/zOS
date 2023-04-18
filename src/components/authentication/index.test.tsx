@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';

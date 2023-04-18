@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from '.';
 
 import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 const getWeb3 = (web3 = {}) => ({
   activate: () => undefined,

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { setViewMode } from '../../store/theme';
 import { connectContainer } from '../../store/redux-container';
 

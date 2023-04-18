@@ -21,7 +21,7 @@ import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
 import { receive, SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import { update } from '../layout';
-import { rootReducer } from '../index';
+import { rootReducer } from '../reducer';
 import { clearNotifications } from '../notifications/saga';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUserLayout } from '../layout/saga';

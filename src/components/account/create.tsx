@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FormEvent } from 'react';
 import { Dialog } from '@zer0-os/zos-component-library';
 
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { config } from '../../config';
 import { fetchCurrentUserWithChatAccessToken } from '../../store/authentication';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
-import { RootState } from '../store';
+import { RootState } from '../store/reducer';
 import { AppSandbox } from '.';
 import { Apps, PlatformApp } from '../lib/apps';
 import { Chains, ConnectionStatus, Connectors } from '../lib/web3';

@@ -31,8 +31,6 @@ export const relevantNotificationTypes = [
   'chat_channel_mention',
   'chat_channel_message_replied',
   'chat_dm_mention',
-  // XXX did we forget this notification type?
-  // 'chat_dm_message_replied',
 ];
 
 export const relevantNotificationEvents = [

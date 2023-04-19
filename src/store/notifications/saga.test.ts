@@ -11,16 +11,13 @@ import {
   clearNotifications,
   createEventChannel,
   fetch,
-  processNotification,
-  sendBrowserNotification,
   watchForChannelEvent,
 } from './saga';
 import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
-import { fetchNotification, fetchNotifications } from './api';
+import { fetchNotifications } from './api';
 import { sample } from 'lodash';
 import { authChannel } from '../authentication/saga';
 import { multicastChannel } from 'redux-saga';
-import { mapNotification, send as sendBrowserMessage } from '../../lib/browser';
 
 describe('notifications list saga', () => {
   const notificationFetchResponse = [
@@ -149,7 +146,7 @@ describe('notifications list saga', () => {
       .next(notificationChannel)
 
       .next({ abort: undefined, notification })
-      .call(processNotification, notification)
+      .call(addNotification, notification)
       .next()
       .inspect((raceValue) => {
         expect(raceValue).toStrictEqual(
@@ -194,64 +191,6 @@ describe('notifications list saga', () => {
       ...notificationsList.value,
     ]);
     expect(storeNotifications).toStrictEqual({ ...{ [notification.id]: notification }, ...notifications });
-  });
-
-  it('processNotification', async () => {
-    const notification = {
-      id: 'notification-id',
-      name: 'pusher notifications purposely restrict fields like profileSummary',
-    };
-
-    const enhancedNotification = { ...notification, originUser: { id: 'user-id', profileSummary: {} } };
-
-    const {
-      storeState: {
-        normalized: { notifications: storeNotifications },
-      },
-    } = await expectSaga(processNotification, notification)
-      .provide([
-        [
-          matchers.call.fn(fetchNotification),
-          enhancedNotification,
-        ],
-        [
-          matchers.call.fn(sendBrowserNotification),
-          undefined,
-        ],
-      ])
-      .call(fetchNotification, notification.id)
-      .call(addNotification, enhancedNotification)
-      .call(sendBrowserNotification, enhancedNotification)
-      .withReducer(rootReducer)
-      .run();
-
-    expect(storeNotifications[enhancedNotification.id]).toStrictEqual(enhancedNotification);
-  });
-
-  it('sendBrowserNotification', async () => {
-    const enhancedNotification = {
-      id: 'notification-id',
-      name: 'this notification has the originUser and profileSummary',
-      notificationType: 'chat_dm_mention',
-      originUser: {
-        id: 'user-id',
-        profileSummary: {
-          firstName: 'Usain',
-          lastName: 'Bolt',
-        },
-      },
-    };
-
-    await expectSaga(sendBrowserNotification, enhancedNotification)
-      .provide([
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
-        ],
-      ])
-      .call(sendBrowserMessage, mapNotification(enhancedNotification as any))
-      .withReducer(rootReducer)
-      .run();
   });
 
   it('authWatcher', async () => {

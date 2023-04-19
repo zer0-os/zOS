@@ -16,6 +16,14 @@ export class FeatureFlags {
   set channelsApp(value: boolean) {
     this._setBoolean('channelsApp', value);
   }
+
+  get allowInvites() {
+    return this._getBoolean('allowInvites');
+  }
+
+  set allowInvites(value: boolean) {
+    this._setBoolean('allowInvites', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

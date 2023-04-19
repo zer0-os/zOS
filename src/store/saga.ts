@@ -12,6 +12,7 @@ import { saga as theme } from './theme/saga';
 import { saga as layout } from './layout/saga';
 import { saga as notificationsList } from './notifications/saga';
 import { saga as createConversation } from './create-conversation/saga';
+import { saga as createInvitation } from './create-invitation/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -27,6 +28,7 @@ export function* rootSaga() {
     layout,
     notificationsList,
     createConversation,
+    createInvitation,
   };
 
   yield all(

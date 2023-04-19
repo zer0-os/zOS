@@ -7,6 +7,9 @@ import { Channel } from '../../../store/channels';
 import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
+import { InviteDialogContainer } from '../../invite-dialog/container';
+import { Button, Modal } from '@zero-tech/zui/components';
+import { FeatureFlag } from '../../feature-flag';
 
 export interface Properties {
   conversations: Channel[];
@@ -17,10 +20,11 @@ export interface Properties {
 
 interface State {
   filter: string;
+  inviteDialogOpen: boolean;
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
-  state = { filter: '' };
+  state = { filter: '', inviteDialogOpen: false };
 
   searchChanged = (search: string) => {
     this.setState({ filter: search });
@@ -80,6 +84,21 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     );
   };
 
+  openInviteDialog = (): void => {
+    this.setState({ inviteDialogOpen: true });
+  };
+  closeInviteDialog = (): void => {
+    this.setState({ inviteDialogOpen: false });
+  };
+
+  renderInviteDialog = (): JSX.Element => {
+    return (
+      <Modal open={true} onOpenChange={this.closeInviteDialog}>
+        <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
+
   render() {
     return (
       <>
@@ -100,6 +119,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
+        <FeatureFlag featureFlag={'allowInvites'}>
+          <Button variant={'text'} onPress={this.openInviteDialog}>
+            Invite Friends
+          </Button>
+        </FeatureFlag>
+        {this.state.inviteDialogOpen && this.renderInviteDialog()}
       </>
     );
   }

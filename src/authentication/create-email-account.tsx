@@ -25,6 +25,10 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   trackEmail = (value) => this.setState({ email: value });
   trackPassword = (value) => this.setState({ password: value });
 
+  get isValid() {
+    return this.state.email.trim().length > 0 && this.state.password.trim().length > 0;
+  }
+
   render() {
     return (
       <div className={c('')}>
@@ -39,7 +43,9 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
           onChange={this.trackPassword}
         />
 
-        <Button onPress={this.publishOnNext}>Next</Button>
+        <Button onPress={this.publishOnNext} isDisabled={!this.isValid}>
+          Next
+        </Button>
       </div>
     );
   }

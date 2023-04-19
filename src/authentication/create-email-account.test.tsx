@@ -24,4 +24,21 @@ describe('CreateEmailAccount', () => {
 
     expect(onNext).toHaveBeenCalledWith({ email: 'jack@example.com', password: 'abcd9876' });
   });
+
+  it('disables button if any field is empty', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+
+    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+
+    wrapper.find('Input[name="email"]').simulate('change', '   ');
+    wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+
+    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
+    wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
+  });
 });

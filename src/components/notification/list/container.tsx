@@ -69,6 +69,16 @@ export class Container extends React.Component<Properties> {
         originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
         isUnread: notification.isUnread,
       };
+    } else if (notification.notificationType === 'chat_dm_message_replied') {
+      let senderName = displayName(notification.originUser?.profileSummary);
+      return {
+        id: notification.id,
+        createdAt: notification.createdAt,
+        body: `${senderName} replied to you in a conversation`,
+        originatingName: senderName,
+        originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
+        isUnread: notification.isUnread,
+      };
     }
 
     return null;

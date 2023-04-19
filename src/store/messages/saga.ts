@@ -3,6 +3,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
 import { receive } from '../channels';
+import { rawChannelSelector } from '../channels/saga';
 
 import {
   deleteMessageApi,
@@ -339,7 +340,7 @@ export function* receiveNewMessage(action) {
         lastMessage: message,
       })
     ),
-    call(sendBrowserNotification, message),
+    call(sendBrowserNotification, channelId, message),
   ]);
 }
 
@@ -371,7 +372,11 @@ export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
 }
 
-export function* sendBrowserNotification(message) {
+export function* sendBrowserNotification(channelId, message) {
+  const channel = yield select(rawChannelSelector(channelId));
+
+  if (channel?.isChannel) return;
+
   yield call(sendBrowserMessage, mapMessage(message));
 }
 

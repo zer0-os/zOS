@@ -21,6 +21,7 @@ import {
   receiveNewMessage,
   getPreview,
   clearMessages,
+  sendBrowserNotification,
 } from './saga';
 
 import { rootReducer } from '../reducer';
@@ -146,6 +147,74 @@ describe('messages saga', () => {
 
     const messageId = channels[channelId]['messages'][0];
     expect(messages[messageId].preview).not.toBeNull();
+  });
+
+  it('sends a browser notification for a conversation', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+
+    const message = {
+      id: 8667728016,
+      message: 'Hello',
+      parentMessageText: null,
+      createdAt: 1678861267433,
+      updatedAt: 0,
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            isChannel: false,
+          },
+        },
+      },
+    };
+
+    await expectSaga(sendBrowserNotification, channelId, message)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .call(sendBrowserMessage, mapMessage(message as any))
+      .withState(initialState)
+      .run();
+  });
+
+  it('does not send a browser notification for a channel', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+
+    const message = {
+      id: 8667728016,
+      message: 'Hello',
+      parentMessageText: null,
+      createdAt: 1678861267433,
+      updatedAt: 0,
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            isChannel: true,
+          },
+        },
+      },
+    };
+
+    await expectSaga(sendBrowserNotification, channelId, message)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .not.call(sendBrowserMessage, mapMessage(message as any))
+      .withState(initialState)
+      .run();
   });
 
   it('receive new message with link preview', async () => {

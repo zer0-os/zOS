@@ -8,7 +8,7 @@ import {
   markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI,
 } from './api';
 
-const rawChannelSelector = (channelId) => (state) => {
+export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
 };
 

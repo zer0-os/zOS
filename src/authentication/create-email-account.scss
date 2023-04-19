@@ -1,0 +1,10 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.create-email-account {
+  color: theme.$color-greyscale-11;
+}
+
+.main {
+  // XXX: Probably shouldn't name this class "main" since that's the app class
+  pointer-events: all;
+}

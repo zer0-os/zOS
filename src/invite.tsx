@@ -7,6 +7,7 @@ import './invite.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/accept-invite/container';
+import { CreateEmailAccount } from './authentication/create-email-account';
 
 export interface Properties {
   isAuthenticated: boolean;
@@ -37,6 +38,7 @@ export class Container extends React.Component<Properties> {
         <div className='invite-main'>
           <ZeroLogo />
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
+          <CreateEmailAccount onNext={() => null} />
         </div>
       </>
     );

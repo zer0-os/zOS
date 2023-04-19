@@ -171,7 +171,7 @@ export function* fetchNewMessages(action) {
     countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
   }
 
-  const lastMessage = filtredLastMessage(messagesResponse.messages);
+  const lastMessage = filteredLastMessage(messagesResponse.messages);
 
   yield put(
     receive({
@@ -352,7 +352,7 @@ function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: num
   return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
 }
 
-function filtredLastMessage(messages: Message[]): Message {
+function filteredLastMessage(messages: Message[]): Message {
   return messages[Object.keys(messages).pop()];
 }
 

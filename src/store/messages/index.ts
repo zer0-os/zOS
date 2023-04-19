@@ -3,7 +3,7 @@ import {
   SendPayload,
   DeleteMessageActionParameter,
   QueryUploadPayload,
-  MediaPyload,
+  MediaPayload,
   EditPayload,
 } from './saga';
 import { createAction } from '@reduxjs/toolkit';
@@ -82,7 +82,7 @@ const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync)
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
 const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
 const receiveDeleteMessage = createAction<DeleteMessageActionParameter>(SagaActionTypes.receiveDeleteMessage);
-const uploadFileMessage = createAction<MediaPyload>(SagaActionTypes.uploadFileMessage);
+const uploadFileMessage = createAction<MediaPayload>(SagaActionTypes.uploadFileMessage);
 
 const slice = createNormalizedSlice({
   name: 'messages',

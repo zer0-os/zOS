@@ -27,7 +27,7 @@ import {
   EditPayload,
   Payload as PayloadFetchMessages,
   SendPayload as PayloadSendMessage,
-  MediaPyload,
+  MediaPayload,
 } from '../../store/messages/saga';
 import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
 import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
@@ -40,7 +40,7 @@ export interface Properties extends PublicProperties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
-  uploadFileMessage: (payload: MediaPyload) => void;
+  uploadFileMessage: (payload: MediaPayload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   fetchUsers: (payload: PayloadFetchUser) => void;

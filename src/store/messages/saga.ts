@@ -53,7 +53,7 @@ export interface SendPayload {
   file?: FileUploadResult;
 }
 
-export interface MediaPyload {
+export interface MediaPayload {
   channelId?: string;
   media: MediaUtils[];
 }

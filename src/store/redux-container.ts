@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect, ConnectedComponent } from 'react-redux';
-import { RootState } from '.';
+import { RootState } from './reducer';
 
 // XXX
 // interface IContainerComponent<TPublicProps, TContainerProps> {

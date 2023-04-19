@@ -1,5 +1,5 @@
 import React from 'react';
-import { RootState } from '../store';
+import { RootState } from '../store/reducer';
 import { setWalletModalOpen } from '../store/web3';
 import { connectContainer } from '../store/redux-container';
 import { AppSandbox } from '.';

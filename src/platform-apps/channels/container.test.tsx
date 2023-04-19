@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { Redirect } from 'react-router-dom';
 
 import { shallow } from 'enzyme';

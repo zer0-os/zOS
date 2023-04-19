@@ -14,7 +14,6 @@ import {
 import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
-import { store } from '../';
 import { send as sendBrowserMessage } from '../../lib/browser';
 import { mapNotification } from '../../components/notification/utils';
 
@@ -117,7 +116,7 @@ export function* authWatcher() {
     if (userId) {
       yield spawn(watchForChannelEvent, userId);
     } else {
-      yield store.dispatch({ type: SagaActionTypes.CancelEventWatch });
+      yield put({ type: SagaActionTypes.CancelEventWatch });
     }
   }
 }

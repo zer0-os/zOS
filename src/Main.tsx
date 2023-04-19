@@ -1,5 +1,5 @@
 import React from 'react';
-import { RootState } from './store';
+import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { WalletManager } from './components/wallet-manager';
 import { ViewModeToggle } from './components/view-mode-toggle';

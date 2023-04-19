@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { Store } from 'redux';
 
 import { ChannelsContainer } from './container';

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getDeepProperty from 'lodash.get';
 
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { Store } from 'redux';
 
 import { connectContainer } from '../../store/redux-container';

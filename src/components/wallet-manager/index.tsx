@@ -4,7 +4,7 @@ import React from 'react';
 import { config } from '../../config';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3';
 import { isElectron } from '../../utils';

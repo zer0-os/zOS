@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { normalize } from '../../../store/channels-list';
-import { RootState } from '../../../store';
+import { RootState } from '../../../store/reducer';
 import moment from 'moment';
 import { when } from 'jest-when';
 import CreateConversationPanel from './create-conversation-panel';

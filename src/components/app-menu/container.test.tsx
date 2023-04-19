@@ -1,12 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { Container } from './container';
 import { AppMenu } from './index';
 import { allApps, Apps, PlatformApp } from '../../lib/apps';
-
-jest.mock('../../lib/feature-flags');
 
 describe('AppMenuContainer', () => {
   const subject = (props: any = {}) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RootState } from '../../store';
+import { RootState } from '../../store/reducer';
 
 import { ThemeEngine, ViewModes } from '../../shared-components/theme-engine';
 import { Container } from '.';

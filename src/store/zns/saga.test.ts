@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { setRoute } from './saga';
-import { rootReducer, RootState } from '..';
+import { rootReducer, RootState } from '../reducer';
 import { get as getResolver } from '../../lib/zns/domain-resolver';
 
 describe('zns saga', () => {

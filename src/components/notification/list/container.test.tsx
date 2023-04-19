@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { RootState } from '../../../store';
+import { RootState } from '../../../store/reducer';
 import { AsyncListStatus } from '../../../store/normalized';
 
 import { Container, Properties } from './container';

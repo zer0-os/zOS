@@ -2,7 +2,7 @@ import React from 'react';
 
 import ReactDOM from 'react-dom';
 import { ZnsRouteConnect } from './zns-route-connect';
-import { store } from './store';
+import { store, runSagas } from './store';
 import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
@@ -17,6 +17,8 @@ import { AppSandboxContainer } from './app-sandbox/container';
 
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
+
+runSagas();
 
 initializeErrorBoundary();
 

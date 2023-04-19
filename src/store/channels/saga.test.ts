@@ -8,7 +8,7 @@ import {
 } from './api';
 import { joinChannel, loadUsers, markAllMessagesAsReadInChannel, unreadCountUpdated } from './saga';
 
-import { rootReducer } from '..';
+import { rootReducer } from '../reducer';
 
 describe('channels list saga', () => {
   const usersResponse = [

@@ -1,7 +1,11 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { validateInvite } from './saga';
-import { validateInvite as apiValidateInvite } from './api';
+import { createAccount, updateProfile, validateInvite } from './saga';
+import {
+  validateInvite as apiValidateInvite,
+  createAccount as apiCreateAccount,
+  updateProfile as apiUpdateProfile,
+} from './api';
 import { call } from 'redux-saga/effects';
 import { InviteCodeStatus, RegistrationStage, RegistrationState, initialState as initialRegistrationState } from '.';
 import { rootReducer } from '../reducer';
@@ -47,6 +51,50 @@ describe('validate invite', () => {
     expect(returnValue).toEqual(false);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.INVITE_CODE_USED);
     expect(registration.stage).toEqual(RegistrationStage.ValidateInvite);
+  });
+});
+
+describe('createAccount', () => {
+  it('creates a new account with email and password', async () => {
+    const email = 'john@example.com';
+    const password = 'funnyPassword';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(apiCreateAccount, { email, password }),
+          true,
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation }))
+      .run();
+    expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
+    expect(returnValue).toEqual(true);
+  });
+});
+
+describe('updateProfile', () => {
+  it('updates the users profile information', async () => {
+    const name = 'john';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .provide([
+        [
+          call(apiUpdateProfile, { name }),
+          true,
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.ProfileDetails }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.Done);
+    expect(returnValue).toEqual(true);
   });
 });
 

@@ -13,3 +13,14 @@ export async function validateInvite({ code }: { code: string }): Promise<string
     throw error;
   }
 }
+
+export async function createAccount({ email, password }: { email: string; password: string }) {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  return true;
+}
+
+// XXX: Does this already exist, perhaps?
+export async function updateProfile({ name }: { name: string }) {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  return true;
+}

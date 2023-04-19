@@ -7,6 +7,7 @@ import { CreateAccountDetails, Properties } from './create-account-details';
 describe('CreateAccountDetails', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      isLoading: false,
       onCreate: () => null,
       ...props,
     };
@@ -34,5 +35,13 @@ describe('CreateAccountDetails', () => {
 
     wrapper.find('Input[name="name"]').simulate('change', 'Jack Black');
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
+  });
+
+  it('sets button to loading', function () {
+    const wrapper = subject({ isLoading: true });
+    expect(wrapper.find('Button').prop('isLoading')).toEqual(true);
+
+    wrapper.setProps({ isLoading: false });
+    expect(wrapper.find('Button').prop('isLoading')).toEqual(false);
   });
 });

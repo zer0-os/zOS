@@ -7,6 +7,7 @@ import { CreateEmailAccount, Properties } from '.';
 describe('CreateEmailAccount', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      isLoading: false,
       onNext: () => null,
       ...props,
     };
@@ -40,5 +41,13 @@ describe('CreateEmailAccount', () => {
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
     wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
+  });
+
+  it('sets button to loading', function () {
+    const wrapper = subject({ isLoading: true });
+    expect(wrapper.find('Button').prop('isLoading')).toEqual(true);
+
+    wrapper.setProps({ isLoading: false });
+    expect(wrapper.find('Button').prop('isLoading')).toEqual(false);
   });
 });

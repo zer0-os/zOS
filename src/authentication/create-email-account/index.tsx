@@ -7,6 +7,8 @@ import { bem } from '../../lib/bem';
 const c = bem('create-email-account');
 
 export interface Properties {
+  isLoading: boolean;
+
   onNext: (data: { email: string; password: string }) => void;
 }
 
@@ -43,7 +45,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
           onChange={this.trackPassword}
         />
 
-        <Button onPress={this.publishOnNext} isDisabled={!this.isValid}>
+        <Button onPress={this.publishOnNext} isDisabled={!this.isValid} isLoading={this.props.isLoading}>
           Next
         </Button>
       </div>

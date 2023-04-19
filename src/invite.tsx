@@ -5,14 +5,17 @@ import { ReactComponent as ZeroLogo } from './zero-logo.svg';
 
 import './invite.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
-import { RegistrationStage } from './store/registration';
+import { RegistrationStage, updateProfile } from './store/registration';
 import { InviteContainer } from './authentication/accept-invite/container';
-import { CreateEmailAccount } from './authentication/create-email-account';
+import { CreateEmailAccountContainer } from './authentication/create-email-account/container';
+import { CreateAccountDetails } from './authentication/create-account-details';
 
 export interface Properties {
   isAuthenticated: boolean;
   stage: RegistrationStage;
   isLoading: boolean;
+
+  updateProfile: (data: { name: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -26,7 +29,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return { updateProfile };
   }
 
   componentDidMount() {}
@@ -38,7 +41,10 @@ export class Container extends React.Component<Properties> {
         <div className='invite-main'>
           <ZeroLogo />
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
-          <CreateEmailAccount onNext={() => null} />
+          {this.props.stage === RegistrationStage.AccountCreation && <CreateEmailAccountContainer />}
+          {this.props.stage === RegistrationStage.ProfileDetails && (
+            <CreateAccountDetails isLoading={this.props.isLoading} onCreate={this.props.updateProfile} />
+          )}
         </div>
       </>
     );

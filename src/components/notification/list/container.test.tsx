@@ -5,7 +5,6 @@ import { RootState } from '../../../store/reducer';
 import { AsyncListStatus } from '../../../store/normalized';
 
 import { Container, Properties } from './container';
-import { mapNotification } from '../utils';
 
 describe('NotificationsListContainer', () => {
   const subject = (props: Partial<Properties> = {}) => {

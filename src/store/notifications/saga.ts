@@ -37,7 +37,6 @@ export function createEventChannel(userId, pusherClient = new PusherClient()) {
       return {
         key: event,
         callback: (notification) => {
-          // ToDo: return user data in notification
           emit({ ...notification, isUnread: true });
         },
       };

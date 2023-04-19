@@ -11,7 +11,7 @@ import {
   rawNotificationsList,
   relevantNotificationEvents,
 } from '.';
-import { fetchNotifications } from './api';
+import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
 
@@ -68,9 +68,15 @@ export function* watchForChannelEvent(userId) {
     }
 
     if (relevantNotificationTypes.includes(notification.notificationType)) {
-      yield call(addNotification, notification);
+      yield call(processNotification, notification);
     }
   }
+}
+
+export function* processNotification(notification) {
+  const enhancedNotification = yield call(fetchNotification, notification.id);
+
+  yield call(addNotification, enhancedNotification);
 }
 
 export function* addNotification(notification) {

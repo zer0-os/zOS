@@ -14,8 +14,7 @@ import {
 import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
-import { send as sendBrowserMessage } from '../../lib/browser';
-import { mapNotification } from '../../components/notification/utils';
+import { send as sendBrowserMessage, mapNotification } from '../../lib/browser';
 
 export interface Payload {
   userId: string;
@@ -95,9 +94,7 @@ export function* addNotification(notification) {
 }
 
 export function* sendBrowserNotification(notification) {
-  const { body, id } = mapNotification(notification);
-
-  yield call(sendBrowserMessage, { body, tag: id });
+  yield call(sendBrowserMessage, mapNotification(notification));
 }
 
 export function* clearNotifications() {

@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
 import { receive } from '../channels';
 
@@ -15,6 +15,7 @@ import {
 import { extractLink, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
+import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 
 export interface Payload {
   channelId: string;
@@ -329,14 +330,17 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-      messageIdsCache: cachedMessageIds,
-      lastMessage: message,
-    })
-  );
+  yield all([
+    put(
+      receive({
+        id: channelId,
+        messages,
+        messageIdsCache: cachedMessageIds,
+        lastMessage: message,
+      })
+    ),
+    call(sendBrowserNotification, message),
+  ]);
 }
 
 export function* getPreview(message) {
@@ -365,6 +369,10 @@ function* syncChannelsTask(action) {
 
 export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
+}
+
+export function* sendBrowserNotification(message) {
+  yield call(sendBrowserMessage, mapMessage(message));
 }
 
 export function* saga() {

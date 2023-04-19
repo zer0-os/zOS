@@ -24,6 +24,7 @@ import {
 } from './saga';
 
 import { rootReducer } from '../reducer';
+import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {
@@ -134,6 +135,10 @@ describe('messages saga', () => {
             },
           },
         ],
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
       ])
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
@@ -188,12 +193,40 @@ describe('messages saga', () => {
             },
           },
         ],
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
       ])
       .withReducer(rootReducer, initialState as any)
       .run();
 
     const messageId = channels[channelId]['messages'][0];
     expect(messages[messageId].preview).not.toBeNull();
+  });
+
+  it('verify sendBrowserMessage on receive new message', async () => {
+    const message = {
+      id: 8667728016,
+      message: 'Hello world!',
+      parentMessageText: null,
+      createdAt: 1678861267433,
+      updatedAt: 0,
+    };
+
+    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+      .provide([
+        [
+          matchers.call.fn(getLinkPreviews),
+          undefined,
+        ],
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .call(sendBrowserMessage, mapMessage(message as any))
+      .run();
   });
 
   it('reply message', async () => {

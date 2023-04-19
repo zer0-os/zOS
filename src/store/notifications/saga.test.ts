@@ -20,7 +20,7 @@ import { fetchNotification, fetchNotifications } from './api';
 import { sample } from 'lodash';
 import { authChannel } from '../authentication/saga';
 import { multicastChannel } from 'redux-saga';
-import { send as sendBrowserMessage } from '../../lib/browser';
+import { mapNotification, send as sendBrowserMessage } from '../../lib/browser';
 
 describe('notifications list saga', () => {
   const notificationFetchResponse = [
@@ -249,7 +249,7 @@ describe('notifications list saga', () => {
           undefined,
         ],
       ])
-      .call(sendBrowserMessage, { body: 'Usain Bolt mentioned you in a conversation', tag: enhancedNotification.id })
+      .call(sendBrowserMessage, mapNotification(enhancedNotification as any))
       .withReducer(rootReducer)
       .run();
   });

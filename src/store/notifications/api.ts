@@ -6,6 +6,6 @@ export async function fetchNotifications(userId: string) {
 }
 
 export async function fetchNotification(notificationId: string) {
-  const response = await get<any>(`/api/notifications/${notificationId}/enhanced`);
+  const response = await get<any>(`/api/notifications/${notificationId}/enhance`);
   return response.body;
 }

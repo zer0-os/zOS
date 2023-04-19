@@ -15,6 +15,8 @@ import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
 import { authChannel } from '../authentication/saga';
 import { store } from '../';
+import { send as sendBrowserMessage } from '../../lib/browser';
+import { mapNotification } from '../../components/notification/utils';
 
 export interface Payload {
   userId: string;
@@ -68,7 +70,7 @@ export function* watchForChannelEvent(userId) {
     }
 
     if (relevantNotificationTypes.includes(notification.notificationType)) {
-      yield call(processNotification, notificationChannel);
+      yield call(processNotification, notification);
     }
   }
 }
@@ -78,6 +80,7 @@ export function* processNotification(notification) {
 
   yield all([
     call(addNotification, enhancedNotification),
+    call(sendBrowserNotification, enhancedNotification),
   ]);
 }
 
@@ -90,6 +93,12 @@ export function* addNotification(notification) {
       ...existingNotifications,
     ])
   );
+}
+
+export function* sendBrowserNotification(notification) {
+  const { body, id } = mapNotification(notification);
+
+  yield call(sendBrowserMessage, { body, tag: id });
 }
 
 export function* clearNotifications() {

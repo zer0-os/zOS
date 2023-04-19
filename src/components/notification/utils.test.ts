@@ -7,7 +7,7 @@ describe('mapNotification', () => {
 
   describe('unknown type', () => {
     it('maps body with a known channel', () => {
-      const mappedNotification = subject({ notificationType: 'unknown_type' }, {});
+      const mappedNotification = subject({ notificationType: 'unknown_type' }, undefined);
 
       expect(mappedNotification).toBeNull();
     });

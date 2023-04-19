@@ -1,0 +1,101 @@
+@use 'shared-components/theme-engine/theme' as theme;
+@use 'modules/animation' as animation;
+
+@import 'variables';
+@import 'layout';
+
+.main {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+  align-items: center;
+
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+    radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%)
+      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+    radial-gradient(93.63% 93.63% at 100% 0%, #9d0097 0%, rgba(157, 0, 151, 0) 100%)
+      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+    radial-gradient(91.27% 91.27% at 112.3% 83.55%, #52a9ff 0%, rgba(82, 169, 255, 0) 100%)
+      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+    radial-gradient(65.88% 65.88% at -1.79% 99.21%, #4f0895 0%, rgba(79, 8, 149, 0) 100%)
+      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+    #290634;
+
+  //background-color: white;
+
+  &__logo {
+    position: absolute;
+    left: 42%;
+    right: 42%;
+    top: 11.64%;
+    bottom: 13.03%;
+  }
+
+  &__title {
+    /* Header */
+
+    position: absolute;
+    //width: 351px;
+    margin-top: -11%;
+    /* Inter//Heading 1/Large - Reg 36px */
+
+    font-family: 'Inter';
+    font-style: normal;
+    line-height: 16px;
+    /* identical to box height */
+
+    text-align: center;
+
+    /* Dark/Greyscale/Grey-12 */
+
+    color: #ededef;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+  }
+
+  &__input {
+    /* _Field / Flexible */
+    box-sizing: border-box;
+
+    /* Auto layout */
+
+    padding: 8px 1px;
+    width: 284px;
+    height: 40px;
+
+    /* Dark/Greyscale/Transparency/Grey-3
+
+    EBEBFE
+    */
+    background: rgba(235, 235, 254, 0.06);
+    /* Dark/Greyscale/Grey-7 */
+
+    border: 1px solid #404040;
+    border-radius: 8px;
+
+    &__label {
+      color: #a09fa6;
+      font-size: 14px;
+      line-height: 24px;
+      padding-left: 7px;
+    }
+  }
+
+  &__button {
+    // display: flex;
+    // flex-direction: row;
+    // align-items: flex-start;
+    padding: 0px;
+
+    // width: 280px;
+    // height: 40px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+}

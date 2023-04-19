@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { Button, Input } from '@zero-tech/zui/components';
 
-import './create-email-account.scss';
-import { bem } from '../lib/bem';
+import './styles.scss';
+import { bem } from '../../lib/bem';
 const c = bem('create-email-account');
 
 export interface Properties {

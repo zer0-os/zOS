@@ -1,48 +1,26 @@
 export function mapNotification(notification, channelName) {
+  const { notificationType = undefined } = notification;
+
   const channelText = channelName ? `#${channelName}` : 'a channel';
+  let senderName = displayName(notification.originUser?.profileSummary);
 
-  if (notification.notificationType === 'chat_channel_mention') {
-    let senderName = displayName(notification.originUser?.profileSummary);
+  const result = {
+    id: notification.id,
+    createdAt: notification.createdAt,
+    originatingName: senderName,
+    originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
+    isUnread: notification.isUnread,
+    body: undefined,
+  };
 
-    return {
-      id: notification.id,
-      createdAt: notification.createdAt,
-      body: `${senderName} mentioned you in ${channelText}`,
-      originatingName: senderName,
-      originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-      isUnread: notification.isUnread,
-    };
-  } else if (notification.notificationType === 'chat_channel_message_replied') {
-    let senderName = displayName(notification.originUser?.profileSummary);
-
-    return {
-      id: notification.id,
-      createdAt: notification.createdAt,
-      body: `${senderName} replied to you in ${channelText}`,
-      originatingName: senderName,
-      originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-      isUnread: notification.isUnread,
-    };
-  } else if (notification.notificationType === 'chat_dm_mention') {
-    let senderName = displayName(notification.originUser?.profileSummary);
-    return {
-      id: notification.id,
-      createdAt: notification.createdAt,
-      body: `${senderName} mentioned you in a conversation`,
-      originatingName: senderName,
-      originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-      isUnread: notification.isUnread,
-    };
-  } else if (notification.notificationType === 'chat_dm_message_replied') {
-    let senderName = displayName(notification.originUser?.profileSummary);
-    return {
-      id: notification.id,
-      createdAt: notification.createdAt,
-      body: `${senderName} replied to you in a conversation`,
-      originatingName: senderName,
-      originatingImageUrl: notification.originUser?.profileSummary?.profileImage,
-      isUnread: notification.isUnread,
-    };
+  if (notificationType === 'chat_channel_mention') {
+    return { ...result, ...{ body: `${senderName} mentioned you in ${channelText}` } };
+  } else if (notificationType === 'chat_channel_message_replied') {
+    return { ...result, ...{ body: `${senderName} replied to you in ${channelText}` } };
+  } else if (notificationType === 'chat_dm_mention') {
+    return { ...result, ...{ body: `${senderName} mentioned you in a conversation` } };
+  } else if (notificationType === 'chat_dm_message_replied') {
+    return { ...result, ...{ body: `${senderName} replied to you in a conversation` } };
   }
 
   return null;

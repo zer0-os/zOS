@@ -11,7 +11,7 @@ import {
   clearNotifications,
   createEventChannel,
   fetch,
-  processNotification,
+  loadNotification,
   watchForChannelEvent,
 } from './saga';
 import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
@@ -147,7 +147,7 @@ describe('notifications list saga', () => {
       .next(notificationChannel)
 
       .next({ abort: undefined, notification })
-      .call(processNotification, notification)
+      .call(loadNotification, notification)
       .next()
       .inspect((raceValue) => {
         expect(raceValue).toStrictEqual(
@@ -206,7 +206,7 @@ describe('notifications list saga', () => {
       storeState: {
         normalized: { notifications: storeNotifications },
       },
-    } = await expectSaga(processNotification, notification)
+    } = await expectSaga(loadNotification, notification)
       .provide([
         [
           matchers.call.fn(fetchNotification),

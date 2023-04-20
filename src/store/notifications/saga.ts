@@ -68,12 +68,12 @@ export function* watchForChannelEvent(userId) {
     }
 
     if (relevantNotificationTypes.includes(notification.notificationType)) {
-      yield call(processNotification, notification);
+      yield call(loadNotification, notification);
     }
   }
 }
 
-export function* processNotification(notification) {
+export function* loadNotification(notification) {
   const enhancedNotification = yield call(fetchNotification, notification.id);
 
   yield call(addNotification, enhancedNotification);

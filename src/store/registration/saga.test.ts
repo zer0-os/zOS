@@ -54,6 +54,9 @@ describe('validate invite', () => {
   });
 });
 
+// XXX: test error conditisons for both
+// XXX: test the overall saga
+
 describe('createAccount', () => {
   it('creates a new account with email and password', async () => {
     const email = 'john@example.com';

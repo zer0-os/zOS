@@ -8,7 +8,7 @@ export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   isLoading: boolean;
-  isInviteValidated: boolean;
+  inviteStatus: string;
 
   validateInvite: (data: { code: string }) => void;
 }
@@ -19,7 +19,7 @@ export class Container extends React.Component<Properties> {
 
     return {
       isLoading: registration.loading,
-      isInviteValidated: registration.isInviteValidated,
+      inviteStatus: registration.inviteStatus,
     };
   }
 
@@ -30,7 +30,7 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Invite
-        isInviteValidated={this.props.isInviteValidated}
+        inviteStatus={this.props.inviteStatus}
         validateInvite={this.props.validateInvite}
         isLoading={this.props.isLoading}
       />

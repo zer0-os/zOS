@@ -36,7 +36,7 @@ export class Container extends React.Component<Properties> {
         <ThemeEngine theme={Themes.Dark} />
         <div className='invite-main'>
           <ZeroLogo />
-          {this.props.stage === RegistrationStage.AcceptInvite && <InviteContainer />}
+          {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
         </div>
       </>
     );

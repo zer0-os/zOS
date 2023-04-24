@@ -61,7 +61,9 @@ export class Invite extends React.Component<Properties, State> {
 
     return (
       <Alert variant='error' className='invite__input--error'>
-        {errorMessage}
+        {
+          'This invite code has already been redeemed. If you cannot get another invite you can join the waitlist below.'
+        }
       </Alert>
     );
   };
@@ -88,7 +90,7 @@ export class Invite extends React.Component<Properties, State> {
           variant='primary'
           className='invite__button'
           onPress={this.onClick}
-          isDisabled={this.state.inviteCode.length !== INVITE_CODE_LENGTH}
+          isDisabled={this.state.inviteCode.length !== INVITE_CODE_LENGTH || this.state.showAlert}
           isLoading={this.props.isLoading}
         >
           Get access

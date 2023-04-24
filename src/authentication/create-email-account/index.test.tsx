@@ -20,7 +20,7 @@ describe('CreateEmailAccount', () => {
     const wrapper = subject({ onNext });
 
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
-    wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
+    wrapper.find('PasswordInput').simulate('change', 'abcd9876');
     wrapper.find('Button').simulate('press');
 
     expect(onNext).toHaveBeenCalledWith({ email: 'jack@example.com', password: 'abcd9876' });
@@ -35,11 +35,11 @@ describe('CreateEmailAccount', () => {
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
 
     wrapper.find('Input[name="email"]').simulate('change', '   ');
-    wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
+    wrapper.find('PasswordInput').simulate('change', 'abcd9876');
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
 
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
-    wrapper.find('Input[name="password"]').simulate('change', 'abcd9876');
+    wrapper.find('PasswordInput').simulate('change', 'abcd9876');
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
   });
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, Input } from '@zero-tech/zui/components';
+import { Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
@@ -37,13 +37,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
         <h1>Create Email Account</h1>
         <div>Step 1 of 2: Enter your details</div>
         <Input label='Email Address' name='email' value={this.state.email} onChange={this.trackEmail} />
-        <Input
-          label='Password'
-          type='password'
-          name='password'
-          value={this.state.password}
-          onChange={this.trackPassword}
-        />
+        <PasswordInput label='Password' name='password' value={this.state.password} onChange={this.trackPassword} />
 
         <Button onPress={this.publishOnNext} isDisabled={!this.isValid} isLoading={this.props.isLoading}>
           Next

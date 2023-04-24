@@ -34,14 +34,21 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        <h1>Create Email Account</h1>
-        <div>Step 1 of 2: Enter your details</div>
-        <Input label='Email Address' name='email' value={this.state.email} onChange={this.trackEmail} />
-        <PasswordInput label='Password' name='password' value={this.state.password} onChange={this.trackPassword} />
+        <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
+        <div className={c('sub-heading')}>Step 1 of 2: Enter your details</div>
+        <form className={c('form')}>
+          <Input label='Email Address' name='email' value={this.state.email} onChange={this.trackEmail} />
+          <PasswordInput label='Password' name='password' value={this.state.password} onChange={this.trackPassword} />
 
-        <Button onPress={this.publishOnNext} isDisabled={!this.isValid} isLoading={this.props.isLoading}>
-          Next
-        </Button>
+          <Button
+            className={c('button')}
+            onPress={this.publishOnNext}
+            isDisabled={!this.isValid}
+            isLoading={this.props.isLoading}
+          >
+            Next
+          </Button>
+        </form>
       </div>
     );
   }

@@ -60,15 +60,17 @@ export class UserMenuPopupContent extends React.Component<Properties> {
 
     return (
       <div className='user-menu-popup'>
-        <h3>
-          <span title={address} className='user-menu-popup__address'>
-            <span>{address.slice(0, 6)}</span>
-            <span>...</span>
-            <span className='eth-address__address-last-four'>{address.slice(-4)}</span>
-          </span>
-        </h3>
+        {address && (
+          <h3>
+            <span title={address} className='user-menu-popup__address'>
+              <span>{address.slice(0, 6)}</span>
+              <span>...</span>
+              <span className='eth-address__address-last-four'>{address.slice(-4)}</span>
+            </span>
+          </h3>
+        )}
         <Button variant='primary' onPress={this.props.onDisconnect}>
-          Disconnect
+          {address ? 'Disconnect' : 'Logout'}
         </Button>
       </div>
     );

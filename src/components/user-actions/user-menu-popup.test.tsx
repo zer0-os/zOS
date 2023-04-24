@@ -20,6 +20,22 @@ describe('UserActions', () => {
     expect(wrapper.find('.user-menu-popup__address').text()).toEqual('0x1234...9876');
   });
 
+  it('does not render address if user does not have one', () => {
+    const wrapper = subject({ address: '' });
+
+    expect(wrapper).not.toHaveElement('.user-menu-popup__address');
+  });
+
+  it('button text renders depending on address', () => {
+    const wrapper = subject({ address: '' });
+
+    expect(wrapper.find('Button').children().text()).toEqual('Logout');
+
+    wrapper.setProps({ address: '0x1234000000000000000000000000000000009876' });
+
+    expect(wrapper.find('Button').children().text()).toEqual('Disconnect');
+  });
+
   it('publishes disconnect', () => {
     const onDisconnect = jest.fn();
 

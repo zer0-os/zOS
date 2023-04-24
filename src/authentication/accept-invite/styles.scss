@@ -1,0 +1,92 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.invite {
+  &__title {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 0px;
+    margin-bottom: 21px;
+    margin-top: 90px;
+
+    text-align: center;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    color: theme.$color-greyscale-12;
+  }
+
+  &__text {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    text-align: center;
+    color: theme.$color-greyscale-11;
+    line-height: 0px;
+    margin-bottom: 28px;
+  }
+
+  &__input {
+    width: 284px;
+    height: 40px;
+
+    background: theme.$color-greyscale-transparency-3;
+    margin-top: 8px;
+  }
+
+  &__button {
+    padding: 0px 16px;
+    gap: 8px;
+    isolation: isolate;
+
+    width: 280px;
+    height: 40px;
+
+    border-radius: 100px;
+    margin-top: 20px;
+  }
+
+  &__subtext1 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 6px;
+
+    line-height: 80px;
+    white-space: nowrap;
+
+    &__text1 {
+      width: 162px;
+      height: 24px;
+      color: theme.$color-greyscale-11;
+    }
+
+    &__text2 {
+      width: 272px;
+      height: 24px;
+      color: theme.$color-greyscale-12;
+    }
+  }
+
+  &__subtext2 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 6px;
+    width: 190px;
+    height: 24px;
+    white-space: nowrap;
+    line-height: 20px;
+
+    &__text1 {
+      width: 162px;
+      color: theme.$color-greyscale-11;
+    }
+
+    &__text2 {
+      width: 272px;
+      color: theme.$color-greyscale-12;
+    }
+  }
+}

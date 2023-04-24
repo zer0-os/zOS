@@ -4,6 +4,7 @@ jest.mock('@zero-tech/zui/components', () => ({
   Input: () => null,
   LoadingIndicator: () => null,
   Modal: () => null,
+  PasswordInput: () => null,
   ThemeEngine: () => null,
   Wizard: () => null,
   Accordion: () => null,

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { CreateAccountDetails, Properties } from './create-account-details';
+import { CreateAccountDetails, Properties } from '.';
 
 describe('CreateAccountDetails', () => {
   const subject = (props: Partial<Properties>) => {

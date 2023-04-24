@@ -11,10 +11,11 @@ import {
   clearNotifications,
   createEventChannel,
   fetch,
+  loadNotification,
   watchForChannelEvent,
 } from './saga';
 import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
-import { fetchNotifications } from './api';
+import { fetchNotification, fetchNotifications } from './api';
 import { sample } from 'lodash';
 import { authChannel } from '../authentication/saga';
 import { multicastChannel } from 'redux-saga';
@@ -146,7 +147,7 @@ describe('notifications list saga', () => {
       .next(notificationChannel)
 
       .next({ abort: undefined, notification })
-      .call(addNotification, notification)
+      .call(loadNotification, notification)
       .next()
       .inspect((raceValue) => {
         expect(raceValue).toStrictEqual(
@@ -191,6 +192,33 @@ describe('notifications list saga', () => {
       ...notificationsList.value,
     ]);
     expect(storeNotifications).toStrictEqual({ ...{ [notification.id]: notification }, ...notifications });
+  });
+
+  it('processNotification', async () => {
+    const notification = {
+      id: 'notification-id',
+      name: 'pusher notifications purposely restrict fields like profileSummary',
+    };
+
+    const enhancedNotification = { ...notification, originUser: { id: 'user-id', profileSummary: {} } };
+
+    const {
+      storeState: {
+        normalized: { notifications: storeNotifications },
+      },
+    } = await expectSaga(loadNotification, notification)
+      .provide([
+        [
+          matchers.call.fn(fetchNotification),
+          enhancedNotification,
+        ],
+      ])
+      .call(fetchNotification, notification.id)
+      .call(addNotification, enhancedNotification)
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeNotifications[enhancedNotification.id]).toStrictEqual(enhancedNotification);
   });
 
   it('authWatcher', async () => {

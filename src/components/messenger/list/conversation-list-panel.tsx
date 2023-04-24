@@ -87,13 +87,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   openInviteDialog = (): void => {
     this.setState({ inviteDialogOpen: true });
   };
+
   closeInviteDialog = (): void => {
     this.setState({ inviteDialogOpen: false });
   };
 
   renderInviteDialog = (): JSX.Element => {
     return (
-      <Modal open={true} onOpenChange={this.closeInviteDialog}>
+      <Modal open={this.state.inviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
       </Modal>
     );
@@ -124,7 +125,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             Invite Friends
           </Button>
         </FeatureFlag>
-        {this.state.inviteDialogOpen && this.renderInviteDialog()}
+        {this.renderInviteDialog()}
       </>
     );
   }

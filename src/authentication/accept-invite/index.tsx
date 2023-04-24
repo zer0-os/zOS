@@ -61,9 +61,7 @@ export class Invite extends React.Component<Properties, State> {
 
     return (
       <Alert variant='error' className='invite__input--error'>
-        {
-          'This invite code has already been redeemed. If you cannot get another invite you can join the waitlist below.'
-        }
+        {errorMessage}
       </Alert>
     );
   };

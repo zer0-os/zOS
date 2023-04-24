@@ -372,10 +372,18 @@ export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
 }
 
-export function* sendBrowserNotification(channelId, message) {
+export function isOwner(currentUser, entityUserId) {
+  if (!currentUser || !entityUserId) return false;
+
+  return currentUser.id === entityUserId;
+}
+
+export function* sendBrowserNotification(channelId, message: Message) {
   const channel = yield select(rawChannelSelector(channelId));
 
   if (channel?.isChannel) return;
+
+  if (isOwner(yield select(currentUserSelector()), message.sender?.userId)) return;
 
   yield call(sendBrowserMessage, mapMessage(message));
 }

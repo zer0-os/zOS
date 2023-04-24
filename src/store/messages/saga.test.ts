@@ -171,7 +171,7 @@ describe('messages saga', () => {
       },
     };
 
-    await expectSaga(sendBrowserNotification, channelId, message)
+    await expectSaga(sendBrowserNotification, channelId, message as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),
@@ -179,6 +179,45 @@ describe('messages saga', () => {
         ],
       ])
       .call(sendBrowserMessage, mapMessage(message as any))
+      .withState(initialState)
+      .run();
+  });
+
+  it('does not send a browser notification when the user is the sender', async () => {
+    const user = {
+      id: 'the-user-id',
+    };
+    const channelId = '0x000000000000000000000000000000000000000A';
+
+    const message = {
+      id: 8667728016,
+      message: 'I should not receive this message, because I sent it',
+      parentMessageText: null,
+      createdAt: 1678861267433,
+      updatedAt: 0,
+      sender: { userId: user.id },
+    };
+
+    const initialState = {
+      authentication: { user: { data: user } },
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            isChannel: false,
+          },
+        },
+      },
+    };
+
+    await expectSaga(sendBrowserNotification, channelId, message as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .not.call(sendBrowserMessage, mapMessage(message as any))
       .withState(initialState)
       .run();
   });
@@ -205,7 +244,7 @@ describe('messages saga', () => {
       },
     };
 
-    await expectSaga(sendBrowserNotification, channelId, message)
+    await expectSaga(sendBrowserNotification, channelId, message as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),

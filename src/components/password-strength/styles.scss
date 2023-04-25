@@ -1,0 +1,42 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.password-strength {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+
+  // Note: using the theme.$var syntax does not work when defining a css var
+  &[data-strength='weak'] {
+    --strength-color: var(--color-failure-11);
+  }
+  &[data-strength='acceptable'] {
+    --strength-color: var(--color-secondary-11);
+  }
+  &[data-strength='good'] {
+    --strength-color: var(--color-secondary-11);
+  }
+  &[data-strength='strong'] {
+    --strength-color: var(--color-success-11);
+  }
+
+  &__status-bars {
+    width: 100%;
+    display: flex;
+    gap: 3px;
+    margin-bottom: 5px;
+  }
+
+  &__status-bar {
+    flex-grow: 1;
+    border: 1px solid theme.$color-greyscale-9;
+
+    &[data-status='filled'] {
+      border-color: var(--strength-color);
+    }
+  }
+
+  &__strength-text {
+    color: var(--strength-color);
+    text-transform: capitalize;
+  }
+}

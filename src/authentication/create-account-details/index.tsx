@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, Input } from '@zero-tech/zui/components';
+import { Alert, Button, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
@@ -8,6 +8,11 @@ const c = bem('create-account-details');
 
 export interface Properties {
   isLoading: boolean;
+  errors: {
+    name?: string;
+    general?: string;
+  };
+
   onCreate: (data: { name: string }) => void;
 }
 
@@ -28,6 +33,17 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
     return this.state.name.trim().length > 0;
   }
 
+  get nameError() {
+    if (this.props.errors.name) {
+      return { variant: 'error', text: this.props.errors.name } as any;
+    }
+    return null;
+  }
+
+  get generalError() {
+    return this.props.errors.general;
+  }
+
   render() {
     return (
       <div className={c('')}>
@@ -40,7 +56,15 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             name='name'
             value={this.state.name}
             onChange={this.trackName}
+            error={!!this.nameError}
+            alert={this.nameError}
+            alertClassName={c('alert')}
           />
+          {this.generalError && (
+            <Alert variant='error' className={c('alert')}>
+              {this.generalError}
+            </Alert>
+          )}
           <Button
             className={c('button')}
             onPress={this.publishOnCreate}

@@ -2,6 +2,7 @@ import { call, put, select, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
+  ProfileDetailsErrors,
   RegistrationStage,
   SagaActionTypes,
   setInviteStatus,
@@ -63,13 +64,13 @@ export function* createAccount(action) {
         yield put(setErrors([]));
         return true;
       } else {
-        //XXX user fetch error
+        yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
       }
     } else {
       yield put(setErrors([result.response]));
     }
   } catch (e) {
-    // XXX
+    yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
   } finally {
     yield put(setLoading(false));
   }
@@ -80,17 +81,25 @@ export function* updateProfile(action) {
   const { name } = action.payload;
   yield put(setLoading(true));
   try {
+    if (!name.trim()) {
+      yield put(setErrors([ProfileDetailsErrors.NAME_REQUIRED]));
+      return false;
+    }
+
     const profileId = yield select((state) => state.registration.profileId);
     const success = yield call(apiUpdateProfile, { id: profileId, firstName: name });
     if (success) {
       yield put(setStage(RegistrationStage.Done));
       return true;
+    } else {
+      yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
     }
   } catch (e) {
-    // XXX
+    yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
   } finally {
     yield put(setLoading(false));
   }
+  return false;
 }
 
 export function* saga() {

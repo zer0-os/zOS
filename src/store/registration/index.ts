@@ -34,11 +34,17 @@ export type RegistrationState = {
 };
 
 export enum AccountCreationErrors {
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   EMAIL_REQUIRED = 'EMAIL_REQUIRED',
   EMAIL_INVALID = 'EMAIL_INVALID',
   EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
   PASSWORD_REQUIRED = 'PASSWORD_REQUIRED',
   PASSWORD_INVALID = 'PASSWORD_INVALID',
+}
+
+export enum ProfileDetailsErrors {
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+  NAME_REQUIRED = 'NAME_REQUIRED',
 }
 
 export const initialState: RegistrationState = {

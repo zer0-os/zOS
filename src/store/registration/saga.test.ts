@@ -10,12 +10,14 @@ import { call } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
+  ProfileDetailsErrors,
   RegistrationStage,
   RegistrationState,
   initialState as initialRegistrationState,
 } from '.';
 import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('validate invite', () => {
   it('valites invite code, returns true if VALID', async () => {
@@ -130,6 +132,56 @@ describe('createAccount', () => {
     expect(returnValue).toEqual(false);
   });
 
+  it('sets error state if api call throws an exception', async () => {
+    const email = 'john@example.com';
+    const password = 'funnyPassword';
+    const inviteCode = '123987';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          throwError(new Error('Stub api error')),
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.errors).toEqual([AccountCreationErrors.UNKNOWN_ERROR]);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('sets error state if fetching the new user fails', async () => {
+    const email = 'john@example.com';
+    const password = 'funnyPassword';
+    const inviteCode = '123987';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          { success: true, response: {} },
+        ],
+        [
+          call(fetchCurrentUser),
+          false,
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.errors).toEqual([AccountCreationErrors.UNKNOWN_ERROR]);
+    expect(returnValue).toEqual(false);
+  });
+
   it('clears errors on success', async () => {
     const email = 'john@example.com';
     const password = 'funnyPassword';
@@ -177,6 +229,44 @@ describe('updateProfile', () => {
 
     expect(registration.stage).toEqual(RegistrationStage.Done);
     expect(returnValue).toEqual(true);
+  });
+
+  it('sets error state if updating the profile fails', async () => {
+    const name = 'john';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .provide([
+        [
+          call(apiUpdateProfile, { id: 'abc', firstName: name }),
+          throwError(new Error('Stub api error')),
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
+    expect(registration.errors).toEqual([ProfileDetailsErrors.UNKNOWN_ERROR]);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('validates data', async () => {
+    const name = '';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
+    expect(registration.errors).toEqual([
+      ProfileDetailsErrors.NAME_REQUIRED,
+    ]);
+    expect(returnValue).toEqual(false);
   });
 });
 

@@ -8,6 +8,7 @@ describe('CreateAccountDetails', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isLoading: false,
+      errors: {},
       onCreate: () => null,
       ...props,
     };
@@ -43,5 +44,17 @@ describe('CreateAccountDetails', () => {
 
     wrapper.setProps({ isLoading: false });
     expect(wrapper.find('Button').prop('isLoading')).toEqual(false);
+  });
+
+  it('renders name errors', function () {
+    const wrapper = subject({ errors: { name: 'invalid' } });
+
+    expect(wrapper.find('Input[name="name"]').prop('alert')).toEqual({ variant: 'error', text: 'invalid' });
+  });
+
+  it('renders general errors', function () {
+    const wrapper = subject({ errors: { general: 'invalid' } });
+
+    expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
 });

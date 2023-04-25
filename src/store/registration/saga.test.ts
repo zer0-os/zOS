@@ -38,7 +38,7 @@ describe('validate invite', () => {
 
     expect(returnValue).toEqual(true);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
-    expect(registration.stage).toEqual(RegistrationStage.Done); // replace assertion with the next state
+    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
   });
 
   it('valites invite code, returns false if NOT VALID and stays on invite stage', async () => {

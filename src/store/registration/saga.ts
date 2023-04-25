@@ -26,7 +26,7 @@ export function* validateInvite(action) {
     yield put(setInviteStatus(inviteCodeStatus));
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
-      yield put(setStage(RegistrationStage.Done)); // probably replace this with next valid state
+      yield put(setStage(RegistrationStage.AccountCreation));
       return true;
     }
 

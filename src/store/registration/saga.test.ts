@@ -7,7 +7,13 @@ import {
   updateProfile as apiUpdateProfile,
 } from './api';
 import { call } from 'redux-saga/effects';
-import { InviteCodeStatus, RegistrationStage, RegistrationState, initialState as initialRegistrationState } from '.';
+import {
+  AccountCreationErrors,
+  InviteCodeStatus,
+  RegistrationStage,
+  RegistrationState,
+  initialState as initialRegistrationState,
+} from '.';
 import { rootReducer } from '../reducer';
 
 describe('validate invite', () => {
@@ -79,7 +85,26 @@ describe('createAccount', () => {
     expect(returnValue).toEqual(true);
   });
 
-  it('sets error state', async () => {
+  it('ensures data exists', async () => {
+    const email = '';
+    const password = '';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.errors).toEqual([
+      AccountCreationErrors.EMAIL_REQUIRED,
+      AccountCreationErrors.PASSWORD_REQUIRED,
+    ]);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('sets error state from api call', async () => {
     const email = 'john@example.com';
     const password = 'funnyPassword';
     const inviteCode = '123987';
@@ -100,6 +125,29 @@ describe('createAccount', () => {
     expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
     expect(registration.errors).toEqual(['EMAIL_INVALID']);
     expect(returnValue).toEqual(false);
+  });
+
+  it('clears errors on success', async () => {
+    const email = 'john@example.com';
+    const password = 'funnyPassword';
+    const inviteCode = '123987';
+
+    const {
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          { success: true, response: {} },
+        ],
+      ])
+      .withReducer(
+        rootReducer,
+        initialState({ errors: ['existing_error'], stage: RegistrationStage.AccountCreation, inviteCode })
+      )
+      .run();
+
+    expect(registration.errors).toEqual([]);
   });
 });
 

@@ -1,5 +1,6 @@
 import { call, put, select, take } from 'redux-saga/effects';
 import {
+  AccountCreationErrors,
   InviteCodeStatus,
   RegistrationStage,
   SagaActionTypes,
@@ -37,10 +38,24 @@ export function* createAccount(action) {
   yield put(setLoading(true));
   try {
     const inviteCode = yield select((state) => state.registration.inviteCode);
+    const validationErrors = [];
+    if (!email.trim()) {
+      validationErrors.push(AccountCreationErrors.EMAIL_REQUIRED);
+    }
+    if (!password.trim()) {
+      validationErrors.push(AccountCreationErrors.PASSWORD_REQUIRED);
+    }
+
+    if (validationErrors.length) {
+      yield put(setErrors(validationErrors));
+      return false;
+    }
+
     // Handle is a required field. To try to ensure uniqueness, we'll use the email address.
-    const result = yield call(apiCreateAccount, { email, password, handle: email, inviteCode });
+    const result = yield call(apiCreateAccount, { email: email.trim(), password, handle: email, inviteCode });
     if (result.success) {
       yield put(setStage(RegistrationStage.ProfileDetails));
+      yield put(setErrors([]));
       return true;
     } else {
       yield put(setErrors([result.response]));

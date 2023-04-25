@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Linkify from 'linkify-react';
 import { Message } from '.';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../link-preview';

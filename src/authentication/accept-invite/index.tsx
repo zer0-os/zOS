@@ -88,7 +88,7 @@ export class Invite extends React.Component<Properties, State> {
           variant='primary'
           className='invite__button'
           onPress={this.onClick}
-          isDisabled={this.state.inviteCode.length !== INVITE_CODE_LENGTH || this.state.showAlert}
+          isDisabled={this.state.inviteCode.length !== INVITE_CODE_LENGTH}
           isLoading={this.props.isLoading}
         >
           Get access

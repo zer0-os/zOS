@@ -25,6 +25,7 @@ export enum InviteCodeStatus {
 export type RegistrationState = {
   stage: RegistrationStage;
   loading: boolean;
+  errors: string[];
 
   inviteCodeStatus: string;
   name: string;
@@ -35,6 +36,7 @@ export const initialState: RegistrationState = {
   inviteCodeStatus: InviteCodeStatus.VALID,
   loading: false,
   stage: RegistrationStage.ValidateInvite,
+  errors: [],
 
   name: '',
   inviteCode: '',
@@ -60,8 +62,11 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<RegistrationState['stage']>) => {
       state.stage = action.payload;
     },
+    setErrors: (state, action: PayloadAction<RegistrationState['errors']>) => {
+      state.errors = action.payload;
+    },
   },
 });
 
-export const { setInviteStatus, setName, setLoading, setStage } = slice.actions;
+export const { setInviteStatus, setName, setLoading, setStage, setErrors } = slice.actions;
 export const { reducer } = slice;

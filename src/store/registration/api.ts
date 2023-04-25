@@ -27,12 +27,19 @@ export async function createAccount({
 }) {
   const user = { email, password, handle };
   try {
-    await post('/api/v2/accounts/createAndAuthorize').send({ user, inviteSlug: inviteCode });
+    const response = await post('/api/v2/accounts/createAndAuthorize').send({ user, inviteSlug: inviteCode });
+    return {
+      success: true,
+      response: response.body,
+    };
   } catch (error: any) {
-    return false;
+    if (error?.response?.status === 400) {
+      return {
+        success: false,
+        response: error.response.body.code,
+      };
+    }
   }
-
-  return true;
 }
 
 // XXX: Does this already exist, perhaps?

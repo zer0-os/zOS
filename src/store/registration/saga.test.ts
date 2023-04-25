@@ -70,13 +70,36 @@ describe('createAccount', () => {
       .provide([
         [
           call(apiCreateAccount, { email, password, inviteCode, handle: email }),
-          true,
+          { success: true, response: {} },
         ],
       ])
-      .withReducer(rootReducer, initialState({ inviteCode, stage: RegistrationStage.AccountCreation }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
       .run();
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
     expect(returnValue).toEqual(true);
+  });
+
+  it('sets error state', async () => {
+    const email = 'john@example.com';
+    const password = 'funnyPassword';
+    const inviteCode = '123987';
+
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          { success: false, response: 'EMAIL_INVALID' },
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.errors).toEqual(['EMAIL_INVALID']);
+    expect(returnValue).toEqual(false);
   });
 });
 

@@ -65,12 +65,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
               {this.generalError}
             </Alert>
           )}
-          <Button
-            className={c('button')}
-            onPress={this.publishOnCreate}
-            isDisabled={!this.isValid}
-            isLoading={this.props.isLoading}
-          >
+          <Button className={c('button')} onPress={this.publishOnCreate} isLoading={this.props.isLoading}>
             Create Account
           </Button>
         </form>

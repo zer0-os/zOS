@@ -26,18 +26,6 @@ describe('CreateAccountDetails', () => {
     expect(onCreate).toHaveBeenCalledWith({ name: 'Jack Black' });
   });
 
-  it('disables button if name is empty', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-
-    wrapper.find('Input[name="name"]').simulate('change', '   ');
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-
-    wrapper.find('Input[name="name"]').simulate('change', 'Jack Black');
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
-  });
-
   it('sets button to loading', function () {
     const wrapper = subject({ isLoading: true });
     expect(wrapper.find('Button').prop('isLoading')).toEqual(true);

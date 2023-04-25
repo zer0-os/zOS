@@ -28,13 +28,16 @@ export type RegistrationState = {
 
   inviteCodeStatus: string;
   name: string;
+  inviteCode: string;
 };
+
 export const initialState: RegistrationState = {
   inviteCodeStatus: InviteCodeStatus.VALID,
   loading: false,
   stage: RegistrationStage.ValidateInvite,
 
   name: '',
+  inviteCode: '',
 };
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);

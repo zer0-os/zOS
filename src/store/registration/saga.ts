@@ -1,4 +1,4 @@
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
 import { InviteCodeStatus, RegistrationStage, SagaActionTypes, setInviteStatus, setLoading, setStage } from '.';
 import {
   validateInvite as apiValidateInvite,
@@ -28,7 +28,9 @@ export function* createAccount(action) {
   const { email, password } = action.payload;
   yield put(setLoading(true));
   try {
-    const success = yield call(apiCreateAccount, { email, password });
+    const inviteCode = yield select((state) => state.registration.inviteCode);
+    // Handle is a required field. To try to ensure uniqueness, we'll use the email address.
+    const success = yield call(apiCreateAccount, { email, password, handle: email, inviteCode });
     if (success) {
       yield put(setStage(RegistrationStage.ProfileDetails));
       return true;

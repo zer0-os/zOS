@@ -61,6 +61,7 @@ describe('createAccount', () => {
   it('creates a new account with email and password', async () => {
     const email = 'john@example.com';
     const password = 'funnyPassword';
+    const inviteCode = '123987';
 
     const {
       returnValue,
@@ -68,11 +69,11 @@ describe('createAccount', () => {
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password }),
+          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
           true,
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation }))
+      .withReducer(rootReducer, initialState({ inviteCode, stage: RegistrationStage.AccountCreation }))
       .run();
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
     expect(returnValue).toEqual(true);

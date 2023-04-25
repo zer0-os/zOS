@@ -1,5 +1,5 @@
 import { InviteCodeStatus } from '.';
-import { post } from '../../lib/api/rest';
+import { patch, post } from '../../lib/api/rest';
 
 export async function validateInvite({ code }: { code: string }): Promise<string> {
   try {
@@ -39,11 +39,23 @@ export async function createAccount({
         response: error.response.body.code,
       };
     }
+    throw error;
   }
 }
 
-// XXX: Does this already exist, perhaps?
-export async function updateProfile({ name }: { name: string }) {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  return true;
+export async function updateProfile({ id, firstName }: { id: string; firstName: string }) {
+  try {
+    const response = await patch(`/api/profiles/${id}`).send({ firstName: firstName });
+    return {
+      success: true,
+      response: response.body,
+    };
+  } catch (error: any) {
+    if (error?.response?.status === 400) {
+      return {
+        success: false,
+        response: error.response.body.code,
+      };
+    }
+  }
 }

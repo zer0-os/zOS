@@ -2,6 +2,7 @@ import React from 'react';
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { ReactComponent as ZeroLogo } from './zero-logo.svg';
+import { Redirect } from 'react-router-dom';
 
 import './invite.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
@@ -45,6 +46,7 @@ export class Container extends React.Component<Properties> {
           {this.props.stage === RegistrationStage.ProfileDetails && (
             <CreateAccountDetails isLoading={this.props.isLoading} onCreate={this.props.updateProfile} />
           )}
+          {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
         </div>
       </>
     );

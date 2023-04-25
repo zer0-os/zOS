@@ -15,6 +15,7 @@ import {
   initialState as initialRegistrationState,
 } from '.';
 import { rootReducer } from '../reducer';
+import { fetchCurrentUser } from '../authentication/api';
 
 describe('validate invite', () => {
   it('valites invite code, returns true if VALID', async () => {
@@ -60,9 +61,6 @@ describe('validate invite', () => {
   });
 });
 
-// XXX: test error conditisons for both
-// XXX: test the overall saga
-
 describe('createAccount', () => {
   it('creates a new account with email and password', async () => {
     const email = 'john@example.com';
@@ -78,10 +76,15 @@ describe('createAccount', () => {
           call(apiCreateAccount, { email, password, inviteCode, handle: email }),
           { success: true, response: {} },
         ],
+        [
+          call(fetchCurrentUser),
+          { profileSummary: { id: '123' } },
+        ],
       ])
       .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
       .run();
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
+    expect(registration.profileId).toEqual('123');
     expect(returnValue).toEqual(true);
   });
 
@@ -140,6 +143,10 @@ describe('createAccount', () => {
           call(apiCreateAccount, { email, password, inviteCode, handle: email }),
           { success: true, response: {} },
         ],
+        [
+          call(fetchCurrentUser),
+          { profileSummary: { id: '123' } },
+        ],
       ])
       .withReducer(
         rootReducer,
@@ -161,11 +168,11 @@ describe('updateProfile', () => {
     } = await expectSaga(updateProfile, { payload: { name } })
       .provide([
         [
-          call(apiUpdateProfile, { name }),
+          call(apiUpdateProfile, { id: 'abc', firstName: name }),
           true,
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.ProfileDetails }))
+      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.Done);

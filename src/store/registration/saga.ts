@@ -7,6 +7,7 @@ import {
   setInviteStatus,
   setErrors,
   setLoading,
+  setProfileId,
   setStage,
 } from '.';
 import {
@@ -14,6 +15,7 @@ import {
   createAccount as apiCreateAccount,
   updateProfile as apiUpdateProfile,
 } from './api';
+import { fetchCurrentUser } from '../authentication/api';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -54,12 +56,20 @@ export function* createAccount(action) {
     // Handle is a required field. To try to ensure uniqueness, we'll use the email address.
     const result = yield call(apiCreateAccount, { email: email.trim(), password, handle: email, inviteCode });
     if (result.success) {
-      yield put(setStage(RegistrationStage.ProfileDetails));
-      yield put(setErrors([]));
-      return true;
+      const userFetch = yield call(fetchCurrentUser);
+      if (userFetch) {
+        yield put(setProfileId(userFetch.profileSummary.id));
+        yield put(setStage(RegistrationStage.ProfileDetails));
+        yield put(setErrors([]));
+        return true;
+      } else {
+        //XXX user fetch error
+      }
     } else {
       yield put(setErrors([result.response]));
     }
+  } catch (e) {
+    // XXX
   } finally {
     yield put(setLoading(false));
   }
@@ -70,11 +80,14 @@ export function* updateProfile(action) {
   const { name } = action.payload;
   yield put(setLoading(true));
   try {
-    const success = yield call(apiUpdateProfile, { name });
+    const profileId = yield select((state) => state.registration.profileId);
+    const success = yield call(apiUpdateProfile, { id: profileId, firstName: name });
     if (success) {
       yield put(setStage(RegistrationStage.Done));
       return true;
     }
+  } catch (e) {
+    // XXX
   } finally {
     yield put(setLoading(false));
   }

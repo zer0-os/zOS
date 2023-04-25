@@ -1,16 +1,20 @@
 import { call, put, take } from 'redux-saga/effects';
-import { RegistrationStage, SagaActionTypes, setLoading, setStage } from '.';
+import { InviteCodeStatus, RegistrationStage, SagaActionTypes, setInviteStatus, setLoading, setStage } from '.';
 import { validateInvite as apiValidateInvite } from './api';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
   yield put(setLoading(true));
   try {
-    const success = yield call(apiValidateInvite, { code });
-    if (success) {
-      yield put(setStage(RegistrationStage.Done));
+    const inviteCodeStatus = yield call(apiValidateInvite, { code });
+    yield put(setInviteStatus(inviteCodeStatus));
+
+    if (inviteCodeStatus === InviteCodeStatus.VALID) {
+      yield put(setStage(RegistrationStage.Done)); // probably replace this with next valid state
       return true;
     }
+
+    return false;
   } finally {
     yield put(setLoading(false));
   }

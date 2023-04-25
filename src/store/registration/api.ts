@@ -1,9 +1,15 @@
-//import { post } from '../../lib/api/rest';
+import { InviteCodeStatus } from '.';
+import { post } from '../../lib/api/rest';
 
-export async function validateInvite({ code }: { code: string }) {
-  //const response = await post(`/invite/${code}/validate`);
-  console.log('code', code);
+export async function validateInvite({ code }: { code: string }): Promise<string> {
+  try {
+    await post(`/invite/${code}/validate`);
+    return InviteCodeStatus.VALID;
+  } catch (error: any) {
+    if (error?.response?.status === 400) {
+      return error.response.body.code;
+    }
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  return true;
+    throw error;
+  }
 }

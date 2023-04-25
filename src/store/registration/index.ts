@@ -5,21 +5,30 @@ export enum SagaActionTypes {
 }
 
 export enum RegistrationStage {
-  AcceptInvite = 'invite',
+  ValidateInvite = 'invite',
   Done = 'done',
+}
+
+// referenced from zero_api
+export enum InviteCodeStatus {
+  VALID = 'VALID',
+  INVITE_CODE_NOT_FOUND = 'INVITE_CODE_NOT_FOUND',
+  INVITE_CODE_CANCELED = 'INVITE_CODE_CANCELED',
+  INVITE_CODE_USED = 'INVITE_CODE_USED',
+  INVITE_CODE_EXPIRED = 'INVITE_CODE_EXPIRED',
 }
 
 export type RegistrationState = {
   stage: RegistrationStage;
   loading: boolean;
 
-  isInviteValidated: boolean;
+  inviteCodeStatus: string;
 };
 
 export const initialState: RegistrationState = {
-  isInviteValidated: false,
+  inviteCodeStatus: InviteCodeStatus.VALID,
   loading: false,
-  stage: RegistrationStage.AcceptInvite,
+  stage: RegistrationStage.ValidateInvite,
 };
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
@@ -28,8 +37,8 @@ const slice = createSlice({
   name: 'registration',
   initialState,
   reducers: {
-    setIsInviteCodeValid: (state, action: PayloadAction<RegistrationState['isInviteValidated']>) => {
-      state.isInviteValidated = action.payload;
+    setInviteStatus: (state, action: PayloadAction<RegistrationState['inviteCodeStatus']>) => {
+      state.inviteCodeStatus = action.payload;
     },
     setLoading: (state, action: PayloadAction<RegistrationState['loading']>) => {
       state.loading = action.payload;
@@ -40,5 +49,5 @@ const slice = createSlice({
   },
 });
 
-export const { setIsInviteCodeValid, setLoading, setStage } = slice.actions;
+export const { setInviteStatus, setLoading, setStage } = slice.actions;
 export const { reducer } = slice;

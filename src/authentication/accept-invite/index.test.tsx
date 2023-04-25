@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 import { Invite, Properties } from '.';
 import { InviteCodeStatus } from '../../store/registration';
 
-describe('CreateEmailAccount', () => {
+describe('Invite', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isLoading: false,

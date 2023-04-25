@@ -10,6 +10,7 @@ describe('Container', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isLoading: false,
+      errors: {},
       createAccount: () => null,
       ...props,
     };

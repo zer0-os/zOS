@@ -259,7 +259,7 @@ describe('message', () => {
       message: 'http://zos.io',
     });
 
-    expect(wrapper.find(Linkify).exists()).toBe(true);
+    expect(wrapper.find(ContentHighlighter).exists()).toBe(true);
   });
 
   describe('Lightbox', () => {

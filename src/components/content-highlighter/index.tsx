@@ -2,6 +2,8 @@ import React from 'react';
 import { textToPlainEmojis } from './text-to-emojis';
 
 import './styles.scss';
+import Linkify from 'linkify-react';
+import * as linkifyjs from 'linkifyjs';
 
 export interface Properties {
   message: string;
@@ -45,7 +47,29 @@ export class ContentHighlighter extends React.Component<Properties> {
     });
   }
 
+  renderMessageWithLinks(): React.ReactElement {
+    const { message } = this.props;
+    const hasLinks = linkifyjs.find(message);
+
+    if (hasLinks.length) {
+      return (
+        <Linkify
+          options={{
+            attributes: {
+              target: '_blank',
+              class: 'text-message__link',
+            },
+          }}
+        >
+          {this.renderContent(this.props.message)}
+        </Linkify>
+      );
+    } else {
+      return <div>{this.renderContent(this.props.message)}</div>;
+    }
+  }
+
   render() {
-    return <div>{this.renderContent(this.props.message)}</div>;
+    return this.renderMessageWithLinks();
   }
 }

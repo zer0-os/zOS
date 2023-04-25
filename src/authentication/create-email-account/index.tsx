@@ -73,6 +73,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             name='password'
             value={this.state.password}
             onChange={this.trackPassword}
+            error={!!this.passwordError}
             alert={this.passwordError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}

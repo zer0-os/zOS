@@ -32,6 +32,14 @@ export type RegistrationState = {
   inviteCode: string;
 };
 
+export enum AccountCreationErrors {
+  EMAIL_REQUIRED = 'EMAIL_REQUIRED',
+  EMAIL_INVALID = 'EMAIL_INVALID',
+  EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
+  PASSWORD_REQUIRED = 'PASSWORD_REQUIRED',
+  PASSWORD_INVALID = 'PASSWORD_INVALID',
+}
+
 export const initialState: RegistrationState = {
   inviteCodeStatus: InviteCodeStatus.VALID,
   loading: false,

@@ -14,13 +14,13 @@ const INVITE_CODE_LENGTH = 6;
 
 interface State {
   inviteCode: string;
-  showAlert: boolean;
+  renderAlert: boolean;
 }
 
 export class Invite extends React.Component<Properties, State> {
   state: State = {
     inviteCode: '',
-    showAlert: false,
+    renderAlert: false,
   };
 
   onInviteCodeChanged = (code: string) => {
@@ -28,18 +28,18 @@ export class Invite extends React.Component<Properties, State> {
   };
 
   onClick = async () => {
-    this.setState({ showAlert: true });
+    this.setState({ renderAlert: true });
     this.props.validateInvite({ code: this.state.inviteCode });
   };
 
   componentDidUpdate(_prevProps: Readonly<Properties>, prevState: Readonly<State>): void {
     // Hide alert when invite code is changed
-    if (prevState.inviteCode !== this.state.inviteCode && this.state.showAlert) {
-      this.setState({ showAlert: false });
+    if (prevState.inviteCode !== this.state.inviteCode && this.state.renderAlert) {
+      this.setState({ renderAlert: false });
     }
   }
 
-  showAlert = (status: string) => {
+  renderAlert = (status: string) => {
     let errorMessage: string;
     switch (status) {
       case InviteCodeStatus.INVITE_CODE_NOT_FOUND:
@@ -80,9 +80,9 @@ export class Invite extends React.Component<Properties, State> {
           type='number'
         />
 
-        {this.state.showAlert &&
+        {this.state.renderAlert &&
           this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
-          this.showAlert(this.props.inviteCodeStatus)}
+          this.renderAlert(this.props.inviteCodeStatus)}
 
         <Button
           variant='primary'

@@ -24,7 +24,7 @@ describe('validate invite', () => {
       .run();
 
     expect(returnValue).toEqual(true);
-    expect(registration.inviteStatus).toEqual(InviteCodeStatus.VALID);
+    expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
     expect(registration.stage).toEqual(RegistrationStage.Done); // replace assertion with the next state
   });
 
@@ -45,7 +45,7 @@ describe('validate invite', () => {
       .run();
 
     expect(returnValue).toEqual(false);
-    expect(registration.inviteStatus).toEqual(InviteCodeStatus.INVITE_CODE_USED);
+    expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.INVITE_CODE_USED);
     expect(registration.stage).toEqual(RegistrationStage.ValidateInvite);
   });
 });

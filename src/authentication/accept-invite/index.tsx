@@ -4,7 +4,7 @@ import './styles.scss';
 import { InviteCodeStatus } from '../../store/registration';
 
 export interface Properties {
-  inviteStatus: string;
+  inviteCodeStatus: string;
   isLoading: boolean;
 
   validateInvite: (data: { code: string }) => void;
@@ -81,8 +81,8 @@ export class Invite extends React.Component<Properties, State> {
         />
 
         {this.state.showAlert &&
-          this.props.inviteStatus !== InviteCodeStatus.VALID &&
-          this.showAlert(this.props.inviteStatus)}
+          this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
+          this.showAlert(this.props.inviteCodeStatus)}
 
         <Button
           variant='primary'

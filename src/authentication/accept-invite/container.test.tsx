@@ -7,7 +7,7 @@ describe('Container', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isLoading: false,
-      inviteStatus: '',
+      inviteCodeStatus: '',
       validateInvite: () => null,
       ...props,
     };
@@ -16,11 +16,11 @@ describe('Container', () => {
   };
 
   it('passes data down', function () {
-    const wrapper = subject({ isLoading: true, inviteStatus: InviteCodeStatus.VALID });
+    const wrapper = subject({ isLoading: true, inviteCodeStatus: InviteCodeStatus.VALID });
     expect(wrapper.find('Invite').props()).toEqual(
       expect.objectContaining({
         isLoading: true,
-        inviteStatus: InviteCodeStatus.VALID,
+        inviteCodeStatus: InviteCodeStatus.VALID,
       })
     );
   });

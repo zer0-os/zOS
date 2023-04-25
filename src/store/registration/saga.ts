@@ -6,10 +6,10 @@ export function* validateInvite(action) {
   const { code } = action.payload;
   yield put(setLoading(true));
   try {
-    const inviteStatus = yield call(apiValidateInvite, { code });
-    yield put(setInviteStatus(inviteStatus));
+    const inviteCodeStatus = yield call(apiValidateInvite, { code });
+    yield put(setInviteStatus(inviteCodeStatus));
 
-    if (inviteStatus === InviteCodeStatus.VALID) {
+    if (inviteCodeStatus === InviteCodeStatus.VALID) {
       yield put(setStage(RegistrationStage.Done)); // probably replace this with next valid state
       return true;
     }

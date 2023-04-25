@@ -9,7 +9,7 @@ describe('Invite', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isLoading: false,
-      inviteStatus: '',
+      inviteCodeStatus: '',
       validateInvite: () => null,
       ...props,
     };
@@ -64,12 +64,12 @@ describe('Invite', () => {
 
     wrapper.find('Button').simulate('press');
 
-    wrapper.setProps({ inviteStatus: InviteCodeStatus.INVITE_CODE_USED });
+    wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_USED });
     expect(wrapper.find('Alert').prop('children')).toEqual(
       'This invite code has already been redeemed. If you cannot get another invite you can join the waitlist below.'
     );
 
-    wrapper.setProps({ inviteStatus: InviteCodeStatus.INVITE_CODE_NOT_FOUND });
+    wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_NOT_FOUND });
     expect(wrapper.find('Alert').prop('children')).toEqual('Invite code not found. Please check your invite message.');
   });
 });

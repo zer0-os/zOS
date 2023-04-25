@@ -22,11 +22,11 @@ export type RegistrationState = {
   stage: RegistrationStage;
   loading: boolean;
 
-  inviteStatus: string;
+  inviteCodeStatus: string;
 };
 
 export const initialState: RegistrationState = {
-  inviteStatus: InviteCodeStatus.VALID,
+  inviteCodeStatus: InviteCodeStatus.VALID,
   loading: false,
   stage: RegistrationStage.ValidateInvite,
 };
@@ -37,8 +37,8 @@ const slice = createSlice({
   name: 'registration',
   initialState,
   reducers: {
-    setInviteStatus: (state, action: PayloadAction<RegistrationState['inviteStatus']>) => {
-      state.inviteStatus = action.payload;
+    setInviteStatus: (state, action: PayloadAction<RegistrationState['inviteCodeStatus']>) => {
+      state.inviteCodeStatus = action.payload;
     },
     setLoading: (state, action: PayloadAction<RegistrationState['loading']>) => {
       state.loading = action.payload;

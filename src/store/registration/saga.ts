@@ -10,6 +10,7 @@ import {
   setLoading,
   setProfileId,
   setStage,
+  setInviteCode,
 } from '.';
 import {
   validateInvite as apiValidateInvite,
@@ -27,6 +28,7 @@ export function* validateInvite(action) {
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
       yield put(setStage(RegistrationStage.AccountCreation));
+      yield put(setInviteCode(code));
       return true;
     }
 

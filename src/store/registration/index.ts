@@ -79,8 +79,11 @@ const slice = createSlice({
     setProfileId: (state, action: PayloadAction<RegistrationState['profileId']>) => {
       state.profileId = action.payload;
     },
+    setInviteCode: (state, action: PayloadAction<RegistrationState['inviteCode']>) => {
+      state.inviteCode = action.payload;
+    },
   },
 });
 
-export const { setInviteStatus, setLoading, setStage, setErrors, setProfileId } = slice.actions;
+export const { setInviteStatus, setLoading, setStage, setErrors, setProfileId, setInviteCode } = slice.actions;
 export const { reducer } = slice;

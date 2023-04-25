@@ -38,6 +38,7 @@ describe('validate invite', () => {
 
     expect(returnValue).toEqual(true);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
+    expect(registration.inviteCode).toEqual(code);
     expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
   });
 

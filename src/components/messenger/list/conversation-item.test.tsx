@@ -113,16 +113,17 @@ describe('ConversationItem', () => {
   });
 
   it('renders last message timestamp', function () {
+    const now = moment();
     const wrapper = subject({
       conversation: {
         lastMessage: {
-          createdAt: 1680033123552,
+          createdAt: now.valueOf(),
         },
         otherMembers: [],
       } as any,
     });
 
-    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual('Mar 28');
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('MMM DD'));
   });
 
   it('renders last message summary', function () {

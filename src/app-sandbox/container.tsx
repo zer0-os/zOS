@@ -58,7 +58,7 @@ export class Container extends React.Component<Properties, State> {
       selectedApp: type,
       user: { account: address },
       layout: layout.value,
-      isAuthenticated: !!state.authentication.user?.data && !!address,
+      isAuthenticated: !!state.authentication.user?.data,
     };
   }
 

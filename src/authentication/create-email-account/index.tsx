@@ -4,13 +4,15 @@ import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
+import { PasswordStrength } from '../../components/password-strength';
+import { Strength, passwordStrength } from '../../lib/password';
 const c = bem('create-email-account');
 
 export interface Properties {
   isLoading: boolean;
   errors: {
     email?: string;
-    password?: string;
+    password?: string | string[];
     general?: string;
   };
 
@@ -20,17 +22,31 @@ export interface Properties {
 interface State {
   email: string;
   password: string;
+  strength: Strength;
+}
+
+function unorderedList(arr) {
+  return (
+    <ul className={c('error-list')}>
+      {arr.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
-  state = { email: '', password: '' };
+  state = { email: '', password: '', strength: 0 };
 
   publishOnNext = () => {
     this.props.onNext({ email: this.state.email, password: this.state.password });
   };
 
   trackEmail = (value) => this.setState({ email: value });
-  trackPassword = (value) => this.setState({ password: value });
+  trackPassword = (value) => {
+    const strength = passwordStrength(value);
+    this.setState({ password: value, strength });
+  };
 
   get isValid() {
     return this.state.email.trim().length > 0 && this.state.password.trim().length > 0;
@@ -44,10 +60,13 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get passwordError() {
-    if (this.props.errors.password) {
-      return { variant: 'error', text: this.props.errors.password } as any;
+    if (!this.props.errors.password) {
+      return null;
     }
-    return null;
+    if (Array.isArray(this.props.errors.password)) {
+      return { variant: 'error', text: unorderedList(this.props.errors.password) } as any;
+    }
+    return { variant: 'error', text: this.props.errors.password } as any;
   }
 
   get generalError() {
@@ -78,6 +97,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             alert={this.passwordError}
             alertClassName={c('alert')}
           />
+          <PasswordStrength strength={this.state.strength} />
           {this.generalError && (
             <Alert variant='error' className={c('alert')}>
               {this.generalError}

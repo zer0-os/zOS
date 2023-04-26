@@ -3,6 +3,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { CreateEmailAccount } from '.';
 import { AccountCreationErrors, createAccount } from '../../store/registration';
+import { passwordRulesDescription } from '../../lib/password';
 
 export interface PublicProperties {}
 
@@ -10,7 +11,7 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   errors: {
     email?: string;
-    password?: string;
+    password?: string | string[];
     general?: string;
   };
   createAccount: (data: { email: string; password: string }) => void;
@@ -42,8 +43,11 @@ export class Container extends React.Component<Properties> {
         case AccountCreationErrors.PASSWORD_REQUIRED:
           errorObject.password = 'Password is required';
           break;
+        case AccountCreationErrors.PASSWORD_TOO_WEAK:
+          errorObject.password = passwordRulesDescription();
+          break;
         case AccountCreationErrors.PASSWORD_INVALID:
-          errorObject.password = 'Password is too weak';
+          errorObject.password = passwordRulesDescription();
           break;
         default:
           errorObject.general = 'An error has occurred';

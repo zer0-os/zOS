@@ -18,6 +18,7 @@ import {
   updateProfile as apiUpdateProfile,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
+import { passwordStrength } from '../../lib/password';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -43,14 +44,7 @@ export function* createAccount(action) {
   yield put(setLoading(true));
   try {
     const inviteCode = yield select((state) => state.registration.inviteCode);
-    const validationErrors = [];
-    if (!email.trim()) {
-      validationErrors.push(AccountCreationErrors.EMAIL_REQUIRED);
-    }
-    if (!password.trim()) {
-      validationErrors.push(AccountCreationErrors.PASSWORD_REQUIRED);
-    }
-
+    const validationErrors = yield call(validateAccountInfo, { email, password });
     if (validationErrors.length) {
       yield put(setErrors(validationErrors));
       return false;
@@ -77,6 +71,22 @@ export function* createAccount(action) {
     yield put(setLoading(false));
   }
   return false;
+}
+
+export function validateAccountInfo({ email, password }) {
+  const validationErrors = [];
+
+  if (!email.trim()) {
+    validationErrors.push(AccountCreationErrors.EMAIL_REQUIRED);
+  }
+
+  if (!password.trim()) {
+    validationErrors.push(AccountCreationErrors.PASSWORD_REQUIRED);
+  } else if (passwordStrength(password) < 2) {
+    validationErrors.push(AccountCreationErrors.PASSWORD_TOO_WEAK);
+  }
+
+  return validationErrors;
 }
 
 export function* updateProfile(action) {

@@ -73,10 +73,16 @@ describe('Container', () => {
         expect(props.errors).toEqual({ password: 'Password is required' });
       });
 
+      it('weak password', () => {
+        const props = subject({ errors: [AccountCreationErrors.PASSWORD_TOO_WEAK] });
+
+        expect(props.errors.password[0]).toEqual('Password must:');
+      });
+
       it('invalid password', () => {
         const props = subject({ errors: [AccountCreationErrors.PASSWORD_INVALID] });
 
-        expect(props.errors).toEqual({ password: 'Password is too weak' });
+        expect(props.errors.password[0]).toEqual('Password must:');
       });
     });
 

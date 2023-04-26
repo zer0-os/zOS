@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { createAccount, updateProfile, validateInvite } from './saga';
+import { createAccount, updateProfile, validateAccountInfo, validateInvite } from './saga';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
@@ -64,10 +64,11 @@ describe('validate invite', () => {
   });
 });
 
+const VALID_PASSWORD = 'aA1!aaaa';
 describe('createAccount', () => {
   it('creates a new account with email and password', async () => {
     const email = 'john@example.com';
-    const password = 'funnyPassword';
+    const password = VALID_PASSWORD;
     const inviteCode = '123987';
 
     const {
@@ -91,28 +92,30 @@ describe('createAccount', () => {
     expect(returnValue).toEqual(true);
   });
 
-  it('ensures data exists', async () => {
-    const email = '';
-    const password = '';
-
+  it('sets error state if validation fails', async () => {
+    const email = 'any';
+    const password = 'any';
     const {
       returnValue,
       storeState: { registration },
     } = await expectSaga(createAccount, { payload: { email, password } })
+      .provide([
+        [
+          call(validateAccountInfo, { email, password }),
+          [AccountCreationErrors.EMAIL_REQUIRED],
+        ],
+      ])
       .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation }))
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
-    expect(registration.errors).toEqual([
-      AccountCreationErrors.EMAIL_REQUIRED,
-      AccountCreationErrors.PASSWORD_REQUIRED,
-    ]);
+    expect(registration.errors).toEqual([AccountCreationErrors.EMAIL_REQUIRED]);
     expect(returnValue).toEqual(false);
   });
 
   it('sets error state from api call', async () => {
     const email = 'john@example.com';
-    const password = 'funnyPassword';
+    const password = VALID_PASSWORD;
     const inviteCode = '123987';
 
     const {
@@ -135,7 +138,7 @@ describe('createAccount', () => {
 
   it('sets error state if api call throws an exception', async () => {
     const email = 'john@example.com';
-    const password = 'funnyPassword';
+    const password = VALID_PASSWORD;
     const inviteCode = '123987';
 
     const {
@@ -158,7 +161,7 @@ describe('createAccount', () => {
 
   it('sets error state if fetching the new user fails', async () => {
     const email = 'john@example.com';
-    const password = 'funnyPassword';
+    const password = VALID_PASSWORD;
     const inviteCode = '123987';
 
     const {
@@ -185,7 +188,7 @@ describe('createAccount', () => {
 
   it('clears errors on success', async () => {
     const email = 'john@example.com';
-    const password = 'funnyPassword';
+    const password = VALID_PASSWORD;
     const inviteCode = '123987';
 
     const {
@@ -268,6 +271,35 @@ describe('updateProfile', () => {
       ProfileDetailsErrors.NAME_REQUIRED,
     ]);
     expect(returnValue).toEqual(false);
+  });
+});
+
+describe('validateAccountInfo', () => {
+  it('ensures email exists', async () => {
+    const email = '';
+    const password = 'aA1!aaaa';
+
+    const errors = validateAccountInfo({ email, password });
+
+    expect(errors).toEqual([AccountCreationErrors.EMAIL_REQUIRED]);
+  });
+
+  it('ensures password exists', async () => {
+    const email = 'blah';
+    const password = '';
+
+    const errors = validateAccountInfo({ email, password });
+
+    expect(errors).toEqual([AccountCreationErrors.PASSWORD_REQUIRED]);
+  });
+
+  it('ensures password is strong enough', async () => {
+    const email = 'blah';
+    const password = 'aabbccdd';
+
+    const errors = validateAccountInfo({ email, password });
+
+    expect(errors).toEqual([AccountCreationErrors.PASSWORD_TOO_WEAK]);
   });
 });
 

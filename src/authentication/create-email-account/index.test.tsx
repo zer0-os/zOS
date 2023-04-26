@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CreateEmailAccount, Properties } from '.';
+import { passwordStrength } from '../../lib/password';
 
 describe('CreateEmailAccount', () => {
   const subject = (props: Partial<Properties>) => {
@@ -51,5 +52,15 @@ describe('CreateEmailAccount', () => {
     const wrapper = subject({ errors: { general: 'invalid' } });
 
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
+  });
+
+  it('updates the password strength when passwords are entered', function () {
+    const wrapper = subject({ errors: { general: 'invalid' } });
+
+    const password = 'aA1!bbcddd';
+    const expectedStrength = passwordStrength(password);
+    wrapper.find('PasswordInput').simulate('change', password);
+
+    expect(wrapper.find('PasswordStrength').prop('strength')).toEqual(expectedStrength);
   });
 });

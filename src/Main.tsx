@@ -56,8 +56,11 @@ export class Container extends React.Component<Properties> {
             </div>
           </div>
           <div className='main__navigation-platform'>
-            <div className='main__network'>
-              <Logo className={'main__network__logo'} />
+            <div>
+              <div className='main__network'>
+                <Logo className={'main__network__logo'} />
+                <span>Wilder World</span>
+              </div>
             </div>
             <div className='main__app-menu-container'>
               <AppMenuContainer />

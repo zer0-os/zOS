@@ -45,6 +45,11 @@
     min-width: 48px;
     margin-bottom: 10px;
 
+    @include for-left-collapse() {
+      min-width: 40px;
+      height: 40px;
+    }
+
     color: theme-zui.$color-primary-transparency-11;
 
     &.selected {
@@ -68,6 +73,7 @@
       @include for-left-collapse() {
         padding: 0;
         width: 95%;
+        justify-content: center;
 
         & img {
           padding-right: 0;

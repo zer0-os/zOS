@@ -3,9 +3,7 @@ import { config } from '../../config';
 
 let provider;
 export function getProvider() {
-  if (!provider) {
-    provider = createProvider();
-  }
+  provider = provider ?? createProvider();
   return provider;
 }
 

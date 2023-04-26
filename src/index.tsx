@@ -29,7 +29,7 @@ const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
 const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
-  if (route === 'invite') return <Redirect to={'/invite'} />;
+  if (route === 'get-access') return <Redirect to={'/get-access'} />;
 
   return <Redirect to={`/${route}/${config.defaultApp}`} />;
 };
@@ -41,7 +41,7 @@ ReactDOM.render(
         <EscapeManagerProvider>
           <Router history={history}>
             <Web3ReactContextProvider>
-              <Route path='/invite' exact component={Invite} />
+              <Route path='/get-access' exact component={Invite} />
               <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
               <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
             </Web3ReactContextProvider>

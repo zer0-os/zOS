@@ -58,7 +58,6 @@ $breakpoint-collapse-menu: 1294px;
 
   > div {
     display: flex;
-    flex-direction: column;
     flex: 1;
     width: 100%;
   }
@@ -69,10 +68,10 @@ $breakpoint-collapse-menu: 1294px;
   }
 
   > div:first-of-type {
-    justify-content: flex-start;
+    align-items: flex-start;
   }
 
   > div:last-of-type {
-    justify-content: flex-end;
+    align-items: flex-end;
   }
 }

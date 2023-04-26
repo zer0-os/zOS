@@ -6,7 +6,7 @@ import { Message as MessageModel, MediaType, EditMessageOptions } from '../../st
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
-import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../message-input/container';
@@ -192,7 +192,7 @@ export class ChatView extends React.Component<Properties, State> {
         )}
         {isLightboxOpen && (
           <Lightbox
-            provider={cloudinaryProvider}
+            provider={getProvider()}
             items={lightboxMedia}
             startingIndex={lightboxStartIndex}
             onClose={this.closeLightBox}

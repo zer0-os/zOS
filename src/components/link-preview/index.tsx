@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { BackgroundImage, BackgroundImageProperties, VideoPlayer, ButtonLink } from '@zer0-os/zos-component-library';
 import { LinkPreviewType } from '../../lib/link-preview';
-import { provider as cloudinaryProvider } from '../../lib/cloudinary/provider';
+import { getProvider } from '../../lib/cloudinary/provider';
 
 require('./styles.scss');
 
@@ -25,7 +25,13 @@ interface State {
   width: number;
 }
 
-const TWITTER_LOGO = cloudinaryProvider.getSource({ src: 'twitter-logo.png', local: false, options: {} });
+let twitterLogo;
+function getTwitterLogo() {
+  if (!twitterLogo) {
+    twitterLogo = getProvider().getSource({ src: 'twitter-logo.png', local: false, options: {} });
+  }
+  return twitterLogo;
+}
 
 export class LinkPreview extends React.Component<Properties, State> {
   state = { width: 0 };
@@ -131,14 +137,14 @@ export class LinkPreview extends React.Component<Properties, State> {
 
     if (providerName === 'Twitter') {
       options.background = 'transparent';
-      source = TWITTER_LOGO;
+      source = getTwitterLogo();
     }
 
     const props: BackgroundImageProperties = {
       source,
       options,
       className: 'link-preview__banner-image',
-      provider: cloudinaryProvider,
+      provider: getProvider(),
     };
 
     const ratio = this.bannerRatio;

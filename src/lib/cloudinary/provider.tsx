@@ -1,7 +1,15 @@
 import { CloudinaryProvider } from '@zer0-os/zos-component-library';
 import { config } from '../../config';
 
-export const provider = new CloudinaryProvider({
-  cloud_name: config.cloudinary.cloud_name,
-  max_file_size: config.cloudinary.max_file_size,
-});
+let provider;
+export function getProvider() {
+  provider = provider ?? createProvider();
+  return provider;
+}
+
+function createProvider() {
+  return new CloudinaryProvider({
+    cloud_name: config.cloudinary.cloud_name,
+    max_file_size: config.cloudinary.max_file_size,
+  });
+}

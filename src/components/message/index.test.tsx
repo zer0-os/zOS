@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Linkify from 'linkify-react';
 import { Message } from '.';
 import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
@@ -259,7 +258,7 @@ describe('message', () => {
       message: 'http://zos.io',
     });
 
-    expect(wrapper.find(Linkify).exists()).toBe(true);
+    expect(wrapper.find(ContentHighlighter).exists()).toBe(true);
   });
 
   describe('Lightbox', () => {

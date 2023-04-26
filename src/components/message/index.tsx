@@ -1,7 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import Linkify from 'linkify-react';
-import * as linkifyjs from 'linkifyjs';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
@@ -157,28 +155,6 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  renderMessageWithLinks(): React.ReactElement {
-    const { message } = this.props;
-    const hasLinks = linkifyjs.find(message);
-
-    if (hasLinks.length) {
-      return (
-        <Linkify
-          options={{
-            attributes: {
-              target: '_blank',
-              class: 'text-message__link',
-            },
-          }}
-        >
-          <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />
-        </Linkify>
-      );
-    } else {
-      return <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />;
-    }
-  }
-
   render() {
     const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
 
@@ -205,7 +181,7 @@ export class Message extends React.Component<Properties, State> {
                 {sender.firstName} {sender.lastName}
               </div>
               {!this.state.isEditing && (
-                <div className={classNames(preview ? 'message__block-preview' : 'message__block-body')}>
+                <div className={classNames('message__block-body')}>
                   {media && this.renderMedia(media)}
                   {this.props.parentMessageText && (
                     <div className='message__block-reply'>
@@ -217,9 +193,9 @@ export class Message extends React.Component<Properties, State> {
                       </span>
                     </div>
                   )}
-                  {message && this.renderMessageWithLinks()}
+                  {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
                   {preview && !hidePreview && (
-                    <div className='message__block-preview-with-remove'>
+                    <div className='message__block-preview'>
                       <LinkPreview url={preview.url} {...preview} />
                       {isOwner && (
                         <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />

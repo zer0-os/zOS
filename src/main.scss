@@ -57,6 +57,23 @@ $border-color-hover: theme-zui.$color-primary-7;
     }
   }
 
+  &__network {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+
+    padding-top: calc(12px - $platform-padding);
+    padding-left: calc(16px - $platform-padding);
+
+    > &__logo {
+      height: 40px;
+      width: 40px;
+
+      object-fit: contain;
+      border-radius: 100%;
+    }
+  }
+
   &.has-context-panel.context-panel-open &__header {
     left: calc($width-navigation + $width-application-navigation);
 

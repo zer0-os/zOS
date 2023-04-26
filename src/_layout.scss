@@ -46,3 +46,32 @@ $breakpoint-collapse-menu: 1294px;
     @content;
   }
 }
+
+/*
+ * requires 3 div children, second div
+ * will remain centered
+ */
+@mixin distribute-evenly {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  > div:nth-child(2) {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  > div:first-of-type {
+    justify-content: flex-start;
+  }
+
+  > div:last-of-type {
+    justify-content: flex-end;
+  }
+}

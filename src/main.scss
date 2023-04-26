@@ -148,12 +148,6 @@ $border-color-hover: theme-zui.$color-primary-7;
   }
 
   &__view-mode-toggle {
-    padding: 0;
-    position: fixed;
-    bottom: 4px;
-    left: 4px;
-    padding: 12px;
-
     &:hover {
       background-color: theme.$background-color-app-panel-hover;
       border-radius: 9999px;

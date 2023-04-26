@@ -6,6 +6,14 @@ export enum Strength {
   Strong = 4,
 }
 
+export function passwordRulesDescription() {
+  return [
+    'Password must:',
+    'be at least 8 characters',
+    'contain 1 lowercase, 1 uppercase, 1 number, 1 special character (!@#$%^&amp;*)',
+  ];
+}
+
 export function passwordStrength(password: string): any {
   if (password.trim() === '') {
     return Strength.None;
@@ -42,16 +50,4 @@ export function hasMoreThan2IdenticalCharactiersInARow(password: string): any {
     }
   }
   return false;
-}
-
-// Function returns a string explaining the password rules:
-// return 1 if
-// 8 characters
-// 1 lowercase
-// 1 uppercase
-// 1 number
-// 1 special character
-// XXX
-export function passwordRulesDescription(): any {
-  return '8 characters, 1 lowercase, 1 uppercase, 1 number, 1 special character';
 }

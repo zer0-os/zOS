@@ -12,7 +12,7 @@ export interface Properties {
   isLoading: boolean;
   errors: {
     email?: string;
-    password?: string;
+    password?: string | string[];
     general?: string;
   };
 
@@ -23,6 +23,16 @@ interface State {
   email: string;
   password: string;
   strength: Strength;
+}
+
+function unorderedList(arr) {
+  return (
+    <ul className={c('error-list')}>
+      {arr.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
@@ -50,10 +60,13 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get passwordError() {
-    if (this.props.errors.password) {
-      return { variant: 'error', text: this.props.errors.password } as any;
+    if (!this.props.errors.password) {
+      return null;
     }
-    return null;
+    if (Array.isArray(this.props.errors.password)) {
+      return { variant: 'error', text: unorderedList(this.props.errors.password) } as any;
+    }
+    return { variant: 'error', text: this.props.errors.password } as any;
   }
 
   get generalError() {

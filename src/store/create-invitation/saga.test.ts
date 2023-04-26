@@ -6,7 +6,7 @@ import { SagaActionTypes } from '.';
 import { dynamic, throwError } from 'redux-saga-test-plan/providers';
 import { call } from 'redux-saga/effects';
 
-jest.mock('../../config', () => ({ config: { inviteUrl: 'https://www.example.com/invite', cloudinary: {} } }));
+jest.mock('../../config', () => ({ config: { inviteUrl: 'https://www.example.com/invite' } }));
 
 describe('fetchInvite', () => {
   describe('fetchInvite', () => {

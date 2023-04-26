@@ -4,8 +4,7 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
-import { CloudinaryProvider } from '@zer0-os/zos-component-library';
-import { provider } from '../../lib/cloudinary/provider';
+import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
@@ -28,7 +27,6 @@ interface Properties extends MessageModel {
     data?: Partial<EditMessageOptions>
   ) => void;
   onReply: (reply: ParentMessage) => void;
-  cloudinaryProvider: CloudinaryProvider;
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
@@ -41,7 +39,6 @@ export interface State {
   isEditing: boolean;
 }
 export class Message extends React.Component<Properties, State> {
-  static defaultProps = { cloudinaryProvider: provider };
   state = {
     isEditing: false,
   } as State;
@@ -169,7 +166,7 @@ export class Message extends React.Component<Properties, State> {
         {this.props.showSenderAvatar && (
           <div className='message__left'>
             <div
-              style={{ backgroundImage: `url(${provider.getSourceUrl(sender.profileImage)})` }}
+              style={{ backgroundImage: `url(${getProvider().getSourceUrl(sender.profileImage)})` }}
               className='message__author-avatar'
             />
           </div>

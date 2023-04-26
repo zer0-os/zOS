@@ -8,7 +8,7 @@ import Tooltip from '../../tooltip';
 import { IconButton } from '../../icon-button';
 import { Channel, denormalize } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { provider as imageProvider } from '../../../lib/cloudinary/provider';
+import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
@@ -148,7 +148,7 @@ export class Container extends React.Component<Properties, State> {
             <span>
               <div
                 style={{
-                  backgroundImage: `url(${imageProvider.getSourceUrl(this.avatarUrl())})`,
+                  backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
                 }}
                 className={classNames(
                   'direct-message-chat__header-avatar',

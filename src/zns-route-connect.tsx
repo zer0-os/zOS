@@ -24,9 +24,9 @@ export interface Properties {
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(_state: RootState): Partial<Properties> {
+  static mapState(state: RootState): Partial<Properties> {
     return {
-      isAuthenticated: !!_state.authentication.user?.data && !!_state.web3.value.address,
+      isAuthenticated: !!state.authentication.user?.data,
     };
   }
 

@@ -2,7 +2,8 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { PasswordStrength, Properties, Strength } from '.';
+import { PasswordStrength, Properties } from '.';
+import { Strength } from '../../lib/password';
 
 describe('PasswordStrength', () => {
   const subject = (props: Partial<Properties>) => {

@@ -1,16 +1,10 @@
 import * as React from 'react';
 
+import { Strength } from '../../lib/password';
+
 import './styles.scss';
 import { bem } from '../../lib/bem';
 const c = bem('password-strength');
-
-export enum Strength {
-  None = 0,
-  Weak = 1,
-  Acceptable = 2,
-  Good = 3,
-  Strong = 4,
-}
 
 export interface Properties {
   strength: Strength;

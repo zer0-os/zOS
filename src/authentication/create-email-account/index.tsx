@@ -4,6 +4,8 @@ import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
+import { PasswordStrength } from '../../components/password-strength';
+import { Strength, passwordStrength } from '../../lib/password';
 const c = bem('create-email-account');
 
 export interface Properties {
@@ -20,17 +22,21 @@ export interface Properties {
 interface State {
   email: string;
   password: string;
+  strength: Strength;
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
-  state = { email: '', password: '' };
+  state = { email: '', password: '', strength: 0 };
 
   publishOnNext = () => {
     this.props.onNext({ email: this.state.email, password: this.state.password });
   };
 
   trackEmail = (value) => this.setState({ email: value });
-  trackPassword = (value) => this.setState({ password: value });
+  trackPassword = (value) => {
+    const strength = passwordStrength(value);
+    this.setState({ password: value, strength });
+  };
 
   get isValid() {
     return this.state.email.trim().length > 0 && this.state.password.trim().length > 0;
@@ -78,6 +84,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             alert={this.passwordError}
             alertClassName={c('alert')}
           />
+          <PasswordStrength strength={this.state.strength} />
           {this.generalError && (
             <Alert variant='error' className={c('alert')}>
               {this.generalError}

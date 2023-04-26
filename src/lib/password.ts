@@ -1,37 +1,49 @@
+export enum Strength {
+  None = 0,
+  Weak = 1,
+  Acceptable = 2,
+  Good = 3,
+  Strong = 4,
+}
+
 export function passwordStrength(password: string): any {
+  if (password.trim() === '') {
+    return Strength.None;
+  }
+
   if (password.length < 8) {
-    return 0;
+    return Strength.Weak;
   }
 
   if (!password.match(/[a-z]/)) {
-    return 0;
+    return Strength.Weak;
   }
 
   if (!password.match(/[A-Z]/)) {
-    return 0;
+    return Strength.Weak;
   }
 
   if (!password.match(/[!@#$%^&*]/)) {
-    return 0;
+    return Strength.Weak;
   }
 
   if (!password.match(/[0-9]/)) {
-    return 0;
+    return Strength.Weak;
   }
 
   if (hasMoreThan2IdenticalCharactiersInARow(password)) {
-    return 1;
+    return Strength.Acceptable;
   }
 
   if (password.length < 10) {
-    return 1;
+    return Strength.Acceptable;
   }
 
   if (password.length < 16) {
-    return 2;
+    return Strength.Good;
   }
 
-  return 3;
+  return Strength.Strong;
 }
 
 export function hasMoreThan2IdenticalCharactiersInARow(password: string): any {

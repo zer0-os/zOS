@@ -59,7 +59,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
       <div className={c('')}>
         <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
         <div className={c('sub-heading')}>Step 1 of 2: Enter your details</div>
-        <form className={c('form')}>
+        <div className={c('form')}>
           <Input
             label='Email Address'
             name='email'
@@ -87,7 +87,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
           <Button className={c('button')} onPress={this.publishOnNext} isLoading={this.props.isLoading}>
             Next
           </Button>
-        </form>
+        </div>
       </div>
     );
   }

@@ -10,7 +10,7 @@ export function passwordRulesDescription() {
   return [
     'Password must:',
     'be at least 8 characters',
-    'contain 1 lowercase, 1 uppercase, 1 number, 1 special character (!@#$%^&amp;*)',
+    'contain 1 lowercase, 1 uppercase, 1 number, 1 special character (!@#$%^&*)',
   ];
 }
 

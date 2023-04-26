@@ -15,27 +15,16 @@ export function passwordStrength(password: string): any {
     return Strength.Weak;
   }
 
-  if (!password.match(/[a-z]/)) {
+  if (
+    !password.match(/[a-z]/) ||
+    !password.match(/[A-Z]/) ||
+    !password.match(/[!@#$%^&*]/) ||
+    !password.match(/[0-9]/)
+  ) {
     return Strength.Weak;
   }
 
-  if (!password.match(/[A-Z]/)) {
-    return Strength.Weak;
-  }
-
-  if (!password.match(/[!@#$%^&*]/)) {
-    return Strength.Weak;
-  }
-
-  if (!password.match(/[0-9]/)) {
-    return Strength.Weak;
-  }
-
-  if (hasMoreThan2IdenticalCharactiersInARow(password)) {
-    return Strength.Acceptable;
-  }
-
-  if (password.length < 10) {
+  if (hasMoreThan2IdenticalCharactiersInARow(password) || password.length < 10) {
     return Strength.Acceptable;
   }
 

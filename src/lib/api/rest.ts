@@ -51,6 +51,10 @@ export function put<T>(path: string) {
   return Request.put<T>(apiUrl(path)).set(xPlatFormHeader).withCredentials();
 }
 
+export function patch<T>(path: string) {
+  return Request.patch<T>(apiUrl(path)).set(xPlatFormHeader).withCredentials();
+}
+
 export function del<T>(path: string) {
   return Request.delete<T>(apiUrl(path)).set(xPlatFormHeader).withCredentials();
 }

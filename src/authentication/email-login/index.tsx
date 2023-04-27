@@ -74,7 +74,7 @@ export class EmailLogin extends React.Component<Properties, State> {
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
           <Button className={c('button')} onPress={this.publishOnSubmit} isLoading={this.props.isLoading}>
-            Next
+            Login
           </Button>
         </div>
       </div>

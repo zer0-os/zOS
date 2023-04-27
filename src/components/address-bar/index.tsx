@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { PlatformApp } from '../../lib/apps';
 
 import { Icons, IconButton, ZnsLink } from '@zer0-os/zos-component-library';
+import { IconSearchMd } from '@zero-tech/zui/icons';
 
 import { ZNSDropdown } from '../zns-dropdown';
 
@@ -125,7 +126,10 @@ export class AddressBar extends React.Component<Properties, State> {
               className='address-bar__search-trigger-region'
               onClick={this.showAddressBarMode(AddressBarMode.Search)}
             >
-              {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
+              <div className={'address-bar__end'}>
+                {this.hasSelectedApp && <span className='address-bar__route-app'>{this.app.name}</span>}
+                <IconSearchMd size={16} />
+              </div>
             </span>
           </div>
         )}

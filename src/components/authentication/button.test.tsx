@@ -16,8 +16,7 @@ describe('Button', () => {
     const setWalletModalOpen = jest.fn();
 
     const wrapper = subject({ setWalletModalOpen });
-
-    wrapper.simulate('click');
+    wrapper.prop('onPress')?.();
 
     expect(setWalletModalOpen).toHaveBeenCalledWith(true);
   });

@@ -114,12 +114,6 @@ export class Message extends React.Component<Properties, State> {
   deleteMessage = (): void => this.props.onDelete(this.props.messageId);
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
   editMessage = (content: string, mentionedUserIds: string[], data?: Partial<EditMessageOptions> | any) => {
-    console.log('i am here');
-    console.log('content ', content);
-    console.log('mentionedUserIds ', mentionedUserIds);
-    console.log('data ', data);
-    console.log('typeof data ', typeof data);
-
     this.props.onEdit(this.props.messageId, content, mentionedUserIds, data);
     this.toggleEdit();
   };

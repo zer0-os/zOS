@@ -46,8 +46,8 @@ $height-address-bar-inner: 19px;
 
     color: theme.$font-color-primary;
     &:hover {
-      background: theme.$address-bar-background-color-inner-hover;
-      border: 1px solid theme.$address-bar-border-color-inner-hover;
+      background: theme-zui.$color-primary-2;
+      border: 1px solid theme-zui.$color-primary-4;
     }
   }
 
@@ -80,8 +80,8 @@ $height-address-bar-inner: 19px;
     min-height: $height-address-bar-inner + $padding-border-factor;
     width: 99.7%;
 
-    background: theme.$address-bar-background-color-inner-hover;
-    border: 1px solid theme.$address-bar-border-color-inner-hover;
+    background: theme-zui.$color-primary-2;
+    border: 1px solid theme-zui.$color-primary-4;
   }
 
   &__protocol,

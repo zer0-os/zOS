@@ -86,7 +86,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             onChange={this.trackEmail}
             error={!!this.emailError}
             alert={this.emailError}
-            alertClassName={c('alert')}
           />
           <PasswordInput
             label='Password'
@@ -95,14 +94,9 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             onChange={this.trackPassword}
             error={!!this.passwordError}
             alert={this.passwordError}
-            alertClassName={c('alert')}
           />
           <PasswordStrength strength={this.state.strength} />
-          {this.generalError && (
-            <Alert variant='error' className={c('alert')}>
-              {this.generalError}
-            </Alert>
-          )}
+          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
           <Button className={c('button')} onPress={this.publishOnNext} isLoading={this.props.isLoading}>
             Next

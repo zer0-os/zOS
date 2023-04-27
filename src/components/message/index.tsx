@@ -131,9 +131,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   editActions = (value: string, mentionedUserIds: string[]) => {
-    return (
-      <EditMessageActions onEdit={this.editMessage.bind(this, value, mentionedUserIds)} onCancel={this.toggleEdit} />
-    );
+    return <EditMessageActions onEdit={() => this.editMessage(value, mentionedUserIds)} onCancel={this.toggleEdit} />;
   };
 
   renderMenu(): React.ReactElement {

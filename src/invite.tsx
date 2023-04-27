@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import './invite.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { RegistrationStage } from './store/registration';
-import { InviteContainer } from './authentication/accept-invite/container';
+import { InviteContainer } from './authentication/validate-invite/container';
 import { CreateEmailAccountContainer } from './authentication/create-email-account/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
 

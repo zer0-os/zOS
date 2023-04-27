@@ -10,7 +10,8 @@ export interface Properties {
   validateInvite: (data: { code: string }) => void;
 }
 
-const INVITE_CODE_LENGTH = 6;
+// allow upto 14 chars (number/string)
+const MAX_INVITE_CODE_LENGTH = 14;
 
 interface State {
   inviteCode: string;
@@ -77,7 +78,7 @@ export class Invite extends React.Component<Properties, State> {
           placeholder='E.g. 123456'
           value={this.state.inviteCode}
           className='invite__input'
-          type='number'
+          type='text'
         />
 
         {this.state.renderAlert &&
@@ -88,7 +89,7 @@ export class Invite extends React.Component<Properties, State> {
           variant='primary'
           className='invite__button'
           onPress={this.onClick}
-          isDisabled={this.state.inviteCode.length !== INVITE_CODE_LENGTH}
+          isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
           isLoading={this.props.isLoading}
         >
           Get access

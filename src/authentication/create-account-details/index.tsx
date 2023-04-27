@@ -58,13 +58,8 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             onChange={this.trackName}
             error={!!this.nameError}
             alert={this.nameError}
-            alertClassName={c('alert')}
           />
-          {this.generalError && (
-            <Alert variant='error' className={c('alert')}>
-              {this.generalError}
-            </Alert>
-          )}
+          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
           <Button className={c('button')} onPress={this.publishOnCreate} isLoading={this.props.isLoading}>
             Create Account
           </Button>

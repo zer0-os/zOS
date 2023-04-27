@@ -108,18 +108,17 @@ $border-color-hover: theme-zui.$color-primary-7;
 
   &__header {
     position: absolute;
+    top: $platform-padding;
     display: flex;
     align-items: center;
     gap: 16px;
     padding: 0 16px;
-    background: linear-gradient(180deg, #0a0a0a 5%, rgba(10, 10, 10, 0) 84.9%);
 
     @include layout-transition(left);
     @include layout-sidekick-transition(right);
 
     left: $width-navigation;
     right: 0;
-    height: 96px;
 
     @include for-left-collapse() {
       left: $width-collapsed-navigation;

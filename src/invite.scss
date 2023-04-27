@@ -3,7 +3,9 @@
 .invite-main {
   display: flex;
   flex-direction: column;
-  padding: 8% 0 0 0;
+  padding: 104px 0 0 0;
+  box-sizing: border-box;
+
   justify-content: flex-start;
   align-content: flex-start;
   align-items: center;
@@ -19,10 +21,20 @@
       /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
     #290634;
 
-  position: fixed;
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
   z-index: 10;
+
+  > * {
+    flex-shrink: 0;
+  }
+
+  > *:last-child {
+    margin-bottom: 150px;
+  }
 }

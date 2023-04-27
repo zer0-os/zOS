@@ -8,6 +8,7 @@
 }
 
 .app-menu {
+  width: 100%;
   font-size: 20px;
   user-select: none;
 
@@ -44,13 +45,14 @@
     line-height: 48px;
     min-width: 48px;
     margin-bottom: 10px;
+    width: 100%;
 
     @include for-left-collapse() {
       min-width: 40px;
       height: 40px;
     }
 
-    color: theme-zui.$color-primary-transparency-11;
+    color: theme-zui.$color-primary-transparency-12;
 
     &.selected {
       @include selected();

@@ -20,10 +20,10 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { registration } = state;
+    const { login } = state;
     return {
-      isLoading: registration.loading,
-      errors: Container.mapErrors(registration.errors),
+      isLoading: login.loading,
+      errors: Container.mapErrors(login.errors),
     };
   }
 

@@ -13,6 +13,7 @@ import { reducer as notificationsList } from './notifications';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
+import { reducer as login } from './login';
 
 export const rootReducer = combineReducers({
   layout,
@@ -28,6 +29,7 @@ export const rootReducer = combineReducers({
   createConversation,
   createInvitation,
   registration,
+  login,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

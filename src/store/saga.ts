@@ -14,6 +14,7 @@ import { saga as notificationsList } from './notifications/saga';
 import { saga as createConversation } from './create-conversation/saga';
 import { saga as createInvitation } from './create-invitation/saga';
 import { saga as registration } from './registration/saga';
+import { saga as login } from './login/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -31,6 +32,7 @@ export function* rootSaga() {
     createConversation,
     createInvitation,
     registration,
+    login,
   };
 
   yield all(

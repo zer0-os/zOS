@@ -18,6 +18,7 @@ import { AppSandboxContainer } from './app-sandbox/container';
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
+import { Login } from './login';
 
 runSagas();
 
@@ -30,6 +31,7 @@ const history = isElectron() ? createHashHistory() : createBrowserHistory();
 const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
   if (route === 'get-access') return <Redirect to={'/get-access'} />;
+  if (route === 'login') return <Redirect to={'/login'} />;
 
   return <Redirect to={`/${route}/${config.defaultApp}`} />;
 };
@@ -42,6 +44,7 @@ ReactDOM.render(
           <Router history={history}>
             <Web3ReactContextProvider>
               <Route path='/get-access' exact component={Invite} />
+              <Route path='/login' exact component={Login} />
               <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
               <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
             </Web3ReactContextProvider>

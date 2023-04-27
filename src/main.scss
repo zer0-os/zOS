@@ -110,7 +110,9 @@ $border-color-hover: theme-zui.$color-primary-7;
     position: absolute;
     display: flex;
     align-items: center;
-    background: linear-gradient(180deg, #0a0a0a 27.08%, rgba(10, 10, 10, 0) 84.9%);
+    gap: 16px;
+    padding: 0 16px;
+    background: linear-gradient(180deg, #0a0a0a 5%, rgba(10, 10, 10, 0) 84.9%);
 
     @include layout-transition(left);
     @include layout-sidekick-transition(right);
@@ -129,7 +131,6 @@ $border-color-hover: theme-zui.$color-primary-7;
     display: flex;
     justify-content: center;
     flex: 1 0;
-    padding: 0 4px 0 64px;
   }
 
   &__address-bar {
@@ -140,7 +141,6 @@ $border-color-hover: theme-zui.$color-primary-7;
   &__wallet-manager-wrapper {
     height: 48px;
     flex: 0 0 auto;
-    width: $width-sidekick + 60;
     display: flex;
     justify-content: center;
     align-items: center;

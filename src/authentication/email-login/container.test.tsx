@@ -30,12 +30,12 @@ describe('Container', () => {
   });
 
   describe('mapState', () => {
-    const subject = (registrationState: Partial<LoginState> = {}) => {
+    const subject = (loginState: Partial<LoginState> = {}) => {
       const state = {
-        registration: {
+        login: {
           loading: false,
           errors: [],
-          ...registrationState,
+          ...loginState,
         },
       } as RootState;
       return Container.mapState(state);

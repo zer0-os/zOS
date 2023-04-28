@@ -3,19 +3,43 @@ const path = require('path');
 const mustache = require('mustache');
 const readline = require('readline');
 
-const destinationPath = process.argv[2];
-const componentName = path
-  .basename(destinationPath)
-  .split('-')
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join('');
+const type = process.argv[2];
+const destinationPath = process.argv[3];
+let name;
+let params = {};
 
-console.log(`Generating component ${componentName} in ${destinationPath}`);
+if (type === 'component') {
+  name = path
+    .basename(destinationPath)
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+  params = { componentName: name };
+} else if (type === 'saga') {
+  name = path
+    .basename(destinationPath)
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+  params = {
+    sagaName: name,
+    sagaNameLower: name.charAt(0).toLowerCase() + name.slice(1),
+  };
+} else {
+  console.error(`Unknown type ${type}. Please specify "component" or "saga".`);
+  process.exit(1);
+}
 
-const files = [
-  { template: path.join('templates', 'component', 'index.tsx.mustache'), filename: 'index.tsx' },
-  { template: path.join('templates', 'component', 'index.test.tsx.mustache'), filename: 'index.test.tsx' },
-];
+const templateDir = path.join('.', 'templates', type);
+const templateFiles = fs
+  .readdirSync(templateDir)
+  .filter((filename) => filename.endsWith('.mustache'))
+  .map((filename) => {
+    return {
+      template: path.join(templateDir, filename),
+      filename: filename.replace(/\.mustache$/, ''),
+    };
+  });
 
 // Check if folder exists
 if (fs.existsSync(destinationPath)) {
@@ -41,13 +65,13 @@ function createComponent() {
   fs.mkdirSync(destinationPath);
 
   // Generate files from templates
-  files.forEach((file) => {
+  templateFiles.forEach((file) => {
     const templatePath = path.join('.', file.template);
     const template = fs.readFileSync(templatePath, 'utf8');
-    const output = mustache.render(template, { componentName });
+    const output = mustache.render(template, params);
     const filePath = path.join(destinationPath, file.filename);
     fs.writeFileSync(filePath, output);
   });
 
-  console.log(`Component ${componentName} created at ${destinationPath}.`);
+  console.log(`${type} ${name} created at ${destinationPath}.`);
 }

@@ -1,0 +1,21 @@
+import { call, put, take } from 'redux-saga/effects';
+
+import { SagaActionTypes, setLoading } from '.';
+import { apiCall } from './api';
+
+// TODO: add to ../saga.ts
+
+export function* start(action) {
+  yield put(setLoading(true));
+  try {
+    yield call(apiCall, {});
+  } catch (e) {
+  } finally {
+    yield put(setLoading(false));
+  }
+}
+
+export function* saga() {
+  const action = yield take(SagaActionTypes.Start);
+  yield call(start, action);
+}

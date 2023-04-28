@@ -1,5 +1,6 @@
 @use '../../shared-components/theme-engine/theme' as theme;
 @use '../../modules/animation' as animation;
+@use '~@zero-tech/zui/styles/theme' as theme-zui;
 @import '../../variables';
 
 @keyframes partial-fadein {
@@ -26,8 +27,8 @@ $height-address-bar-inner: 19px;
 
 .address-bar {
   height: $height-address-bar;
-  background-color: theme.$background-color-primary;
-  border: 1px solid theme.$address-bar-border-color-outer;
+  background-color: theme-zui.$color-primary-1;
+  border: 1px solid theme-zui.$color-primary-3;
   border-radius: 24px;
   padding: 3px;
 
@@ -38,15 +39,15 @@ $height-address-bar-inner: 19px;
 
   &__inner,
   &__inner-search {
-    border: 1px solid theme.$address-bar-border-color-inner;
+    border: 1px solid theme-zui.$color-primary-4;
     border-radius: 20px;
 
     padding: 10px;
 
     color: theme.$font-color-primary;
     &:hover {
-      background: theme.$address-bar-background-color-inner-hover;
-      border: 1px solid theme.$address-bar-border-color-inner-hover;
+      background: theme-zui.$color-primary-2;
+      border: 1px solid theme-zui.$color-primary-4;
     }
   }
 
@@ -79,8 +80,8 @@ $height-address-bar-inner: 19px;
     min-height: $height-address-bar-inner + $padding-border-factor;
     width: 99.7%;
 
-    background: theme.$address-bar-background-color-inner-hover;
-    border: 1px solid theme.$address-bar-border-color-inner-hover;
+    background: theme-zui.$color-primary-2;
+    border: 1px solid theme-zui.$color-primary-4;
   }
 
   &__protocol,
@@ -91,9 +92,6 @@ $height-address-bar-inner: 19px;
   }
 
   &__search-trigger-region {
-    background-image: url(../../search-icon.svg);
-    background-repeat: no-repeat;
-    background-position: 100%;
     flex: 1 1 auto;
     cursor: pointer;
     display: flex;
@@ -153,10 +151,15 @@ $height-address-bar-inner: 19px;
       0px 0px 24px theme.$drop-shadow-primary-color;
   }
 
+  &__end {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   &__route-app {
     color: theme.$font-color-primary;
     font-weight: 400;
-    margin-right: 24px;
     padding: 2px 8px;
     background: rgba(177, 78, 255, 0.25);
     border-radius: 12px;

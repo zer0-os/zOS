@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { connectContainer } from '../../store/redux-container';
 import { setWalletModalOpen } from '../../store/web3';
-import { Button as ComponentButton } from '@zer0-os/zos-component-library';
+import { Button as ZUIButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
@@ -28,9 +28,12 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <div onClick={this.openModal} className={classNames(this.props.className, 'authentication__connect-wrapper')}>
-        <ComponentButton>Connect</ComponentButton>
-      </div>
+      <ZUIButton
+        onPress={this.openModal}
+        className={classNames(this.props.className, 'authentication__connect-wrapper')}
+      >
+        Connect
+      </ZUIButton>
     );
   }
 }

@@ -49,13 +49,23 @@ export class Container extends React.Component<Properties> {
       <div className={mainClassName}>
         <div className='main__navigation'>
           <div className='main__navigation-world'>
-            <ViewModeToggle className='main__view-mode-toggle' />
+            <div></div>
+            <div></div>
+            <div>
+              <ViewModeToggle className='main__view-mode-toggle' />
+            </div>
           </div>
           <div className='main__navigation-platform'>
-            <Logo className='main__logo' />
+            <div>
+              <div className='main__network'>
+                <Logo className={'main__network__logo'} />
+                <span>Wilder World</span>
+              </div>
+            </div>
             <div className='main__app-menu-container'>
               <AppMenuContainer />
             </div>
+            <div></div>
           </div>
         </div>
         <div className='main__header'>

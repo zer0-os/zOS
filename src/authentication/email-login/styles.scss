@@ -1,0 +1,53 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.email-login {
+  color: theme.$color-greyscale-11;
+
+  &__heading {
+    text-align: center;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 44px;
+    color: theme.$color-greyscale-12;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    margin-top: 80px;
+    margin-bottom: 0px;
+  }
+
+  &__sub-heading {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: theme.$color-greyscale-10;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+
+    & > * {
+      width: 280px;
+    }
+  }
+
+  &__button {
+    height: 40px;
+  }
+
+  &__alert {
+    box-sizing: border-box;
+  }
+
+  &__error-list {
+    padding-left: 40px;
+
+    li:first-child {
+      margin-left: -30px;
+      list-style-type: none;
+    }
+  }
+}

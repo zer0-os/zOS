@@ -123,7 +123,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('MMM DD'));
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('MMM D'));
   });
 
   it('renders last message summary', function () {

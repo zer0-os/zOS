@@ -69,6 +69,18 @@ describe('Container', () => {
 
         expect(props.errors).toEqual({ general: 'An error has occurred' });
       });
+
+      it('profile does not exist', () => {
+        const props = subject({ errors: [EmailLoginErrors.PROFILE_NOT_EXISTS] });
+
+        expect(props.errors).toEqual({ general: 'Email or Password incorrect' });
+      });
+
+      it('invalid email or password', () => {
+        const props = subject({ errors: [EmailLoginErrors.INVALID_EMAIL_PASSWORD] });
+
+        expect(props.errors).toEqual({ general: 'Email or Password incorrect' });
+      });
     });
   });
 });

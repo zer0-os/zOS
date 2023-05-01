@@ -1,0 +1,4 @@
+export async function apiCall(_obj: any) {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return { success: true, response: {} };
+}

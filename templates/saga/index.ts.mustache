@@ -1,0 +1,31 @@
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+// TODO: Add reducer to ../reducer.ts
+// TODO: Add saga to ../saga.ts
+
+export enum SagaActionTypes {
+  Start = '{{sagaName}}/start',
+}
+
+export type {{sagaName}}State = {
+  loading: boolean;
+};
+
+export const initialState: {{sagaName}}State = {
+  loading: false,
+};
+
+export const start = createAction<{}>(SagaActionTypes.Start);
+
+const slice = createSlice({
+  name: '{{sagaNameLower}}',
+  initialState,
+  reducers: {
+    setLoading: (state, action: PayloadAction<{{sagaName}}State['loading']>) => {
+      state.loading = action.payload;
+    },
+  },
+});
+
+export const { setLoading } = slice.actions;
+export const { reducer } = slice;

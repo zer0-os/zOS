@@ -51,6 +51,12 @@
     }
   }
 
+  &__other-options {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid theme.$color-greyscale-transparency-7;
+  }
+
   a,
   a:link,
   a:visited,

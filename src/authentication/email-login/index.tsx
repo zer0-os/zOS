@@ -29,7 +29,8 @@ export class EmailLogin extends React.Component<Properties, State> {
   trackEmail = (value) => this.setState({ email: value });
   trackPassword = (value) => this.setState({ password: value });
 
-  publishOnSubmit = () => {
+  publishOnSubmit = (e) => {
+    e.preventDefault();
     this.props.onSubmit({ email: this.state.email, password: this.state.password });
   };
 
@@ -56,7 +57,7 @@ export class EmailLogin extends React.Component<Properties, State> {
       <div className={c('')}>
         <h3 className={c('heading')}>LOG IN</h3>
         <div className={c('sub-heading')}>Join us!</div>
-        <div className={c('form')}>
+        <form className={c('form')} onSubmit={this.publishOnSubmit}>
           <Input
             label='Email Address'
             name='email'
@@ -74,12 +75,12 @@ export class EmailLogin extends React.Component<Properties, State> {
             alert={this.passwordError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button className={c('button')} onPress={this.publishOnSubmit} isLoading={this.props.isLoading}>
+          <Button className={c('button')} isLoading={this.props.isLoading} isSubmit>
             Login
           </Button>
-          <div className={c('other-options')}>
-            New to ZERO? <Link to='/get-access'>Create an account</Link>
-          </div>
+        </form>
+        <div className={c('other-options')}>
+          New to ZERO? <Link to='/get-access'>Create an account</Link>
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CreateAccountDetails, Properties } from '.';
+import { inputEvent } from '../../test/utils';
 
 describe('CreateAccountDetails', () => {
   const subject = (props: Partial<Properties>) => {
@@ -21,7 +22,7 @@ describe('CreateAccountDetails', () => {
     const wrapper = subject({ onCreate });
 
     wrapper.find('Input[name="name"]').simulate('change', 'Jack Black');
-    wrapper.find('Button').simulate('press');
+    wrapper.find('form').simulate('submit', inputEvent());
 
     expect(onCreate).toHaveBeenCalledWith({ name: 'Jack Black' });
   });

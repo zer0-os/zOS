@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { EmailLogin, Properties } from '.';
+import { inputEvent } from '../../test/utils';
 
 describe('EmailLogin', () => {
   const subject = (props: Partial<Properties>) => {
@@ -16,13 +17,13 @@ describe('EmailLogin', () => {
     return shallow(<EmailLogin {...allProps} />);
   };
 
-  it('publishes form data when button is clicked', function () {
+  it('publishes form data when form is submitted', function () {
     const onSubmit = jest.fn();
     const wrapper = subject({ onSubmit });
 
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
     wrapper.find('PasswordInput').simulate('change', 'abcd9876');
-    wrapper.find('Button').simulate('press');
+    wrapper.find('form').simulate('submit', inputEvent());
 
     expect(onSubmit).toHaveBeenCalledWith({ email: 'jack@example.com', password: 'abcd9876' });
   });

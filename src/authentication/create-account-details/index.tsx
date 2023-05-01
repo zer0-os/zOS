@@ -23,7 +23,8 @@ interface State {
 export class CreateAccountDetails extends React.Component<Properties, State> {
   state = { name: '' };
 
-  publishOnCreate = () => {
+  publishOnCreate = (e) => {
+    e.preventDefault();
     this.props.onCreate({ name: this.state.name });
   };
 
@@ -49,7 +50,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
       <div className={c('')}>
         <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
         <div className={c('sub-heading')}>Step 2 of 2: What should we call you?</div>
-        <form className={c('form')}>
+        <form className={c('form')} onSubmit={this.publishOnCreate}>
           <Input
             label='What is your name?'
             helperText='This will be your name that is visible to others on Zero'
@@ -60,7 +61,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             alert={this.nameError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button className={c('button')} onPress={this.publishOnCreate} isLoading={this.props.isLoading}>
+          <Button className={c('button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>
         </form>

@@ -38,7 +38,8 @@ function unorderedList(arr) {
 export class CreateEmailAccount extends React.Component<Properties, State> {
   state = { email: '', password: '', strength: 0 };
 
-  publishOnNext = () => {
+  publishOnNext = (e) => {
+    e.preventDefault();
     this.props.onNext({ email: this.state.email, password: this.state.password });
   };
 
@@ -78,7 +79,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
       <div className={c('')}>
         <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
         <div className={c('sub-heading')}>Step 1 of 2: Enter your details</div>
-        <div className={c('form')}>
+        <form className={c('form')} onSubmit={this.publishOnNext}>
           <Input
             label='Email Address'
             name='email'
@@ -98,10 +99,10 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
           <PasswordStrength strength={this.state.strength} />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
-          <Button className={c('button')} onPress={this.publishOnNext} isLoading={this.props.isLoading}>
+          <Button className={c('button')} isLoading={this.props.isLoading} isSubmit>
             Next
           </Button>
-        </div>
+        </form>
       </div>
     );
   }

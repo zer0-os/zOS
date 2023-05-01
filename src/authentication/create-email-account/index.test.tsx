@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { CreateEmailAccount, Properties } from '.';
 import { passwordStrength } from '../../lib/password';
+import { inputEvent } from '../../test/utils';
 
 describe('CreateEmailAccount', () => {
   const subject = (props: Partial<Properties>) => {
@@ -23,7 +24,7 @@ describe('CreateEmailAccount', () => {
 
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
     wrapper.find('PasswordInput').simulate('change', 'abcd9876');
-    wrapper.find('Button').simulate('press');
+    wrapper.find('form').simulate('submit', inputEvent());
 
     expect(onNext).toHaveBeenCalledWith({ email: 'jack@example.com', password: 'abcd9876' });
   });

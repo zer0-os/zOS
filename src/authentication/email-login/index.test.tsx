@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { EmailLogin, Properties } from '.';
+import { inputEvent } from '../../test/utils';
 
 describe('EmailLogin', () => {
   const subject = (props: Partial<Properties>) => {
@@ -53,11 +54,3 @@ describe('EmailLogin', () => {
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
 });
-
-function inputEvent(attrs = {}) {
-  return {
-    preventDefault: () => {},
-    stopPropagation: () => {},
-    ...attrs,
-  };
-}

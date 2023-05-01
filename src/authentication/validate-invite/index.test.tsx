@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { Invite, Properties } from '.';
 import { InviteCodeStatus } from '../../store/registration';
+import { inputEvent } from '../../test/utils';
 
 describe('Invite', () => {
   const subject = (props: Partial<Properties>) => {
@@ -53,7 +54,7 @@ describe('Invite', () => {
     const wrapper = subject({ validateInvite });
 
     wrapper.find('Input').simulate('change', code);
-    wrapper.find('Button').simulate('press');
+    wrapper.find('form').simulate('submit', inputEvent());
 
     wrapper.setProps({ isLoading: false });
     expect(validateInvite).toHaveBeenCalledWith({ code });
@@ -62,7 +63,7 @@ describe('Invite', () => {
   it('shows alert if invite is not valid', function () {
     const wrapper = subject({});
 
-    wrapper.find('Button').simulate('press');
+    wrapper.find('form').simulate('submit', inputEvent());
 
     wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_USED });
     expect(wrapper.find('Alert').prop('children')).toEqual(

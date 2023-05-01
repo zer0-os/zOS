@@ -28,7 +28,8 @@ export class Invite extends React.Component<Properties, State> {
     this.setState({ inviteCode: code });
   };
 
-  onClick = async () => {
+  submitForm = async (e) => {
+    e.preventDefault();
     this.setState({ renderAlert: true });
     this.props.validateInvite({ code: this.state.inviteCode });
   };
@@ -73,27 +74,29 @@ export class Invite extends React.Component<Properties, State> {
         <h3 className='invite__title'>Add your invite code</h3>
         <p className='invite__text'>This is the 6 digit code you received in your invite</p>
 
-        <Input
-          onChange={this.onInviteCodeChanged}
-          placeholder='E.g. 123456'
-          value={this.state.inviteCode}
-          className='invite__input'
-          type='text'
-        />
+        <form onSubmit={this.submitForm}>
+          <Input
+            onChange={this.onInviteCodeChanged}
+            placeholder='E.g. 123456'
+            value={this.state.inviteCode}
+            className='invite__input'
+            type='text'
+          />
 
-        {this.state.renderAlert &&
-          this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
-          this.renderAlert(this.props.inviteCodeStatus)}
+          {this.state.renderAlert &&
+            this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
+            this.renderAlert(this.props.inviteCodeStatus)}
 
-        <Button
-          variant='primary'
-          className='invite__button'
-          onPress={this.onClick}
-          isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
-          isLoading={this.props.isLoading}
-        >
-          Get access
-        </Button>
+          <Button
+            variant='primary'
+            className='invite__button'
+            isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
+            isLoading={this.props.isLoading}
+            isSubmit
+          >
+            Get access
+          </Button>
+        </form>
 
         {/* TODO: hyperlink the second texts */}
         <div className='invite__subtext1'>

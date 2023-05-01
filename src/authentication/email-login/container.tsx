@@ -37,6 +37,12 @@ export class Container extends React.Component<Properties> {
         case EmailLoginErrors.PASSWORD_REQUIRED:
           errorObject.password = 'Password is required';
           break;
+        case EmailLoginErrors.PROFILE_NOT_EXISTS:
+          errorObject.general = 'Email or Password incorrect';
+          break;
+        case EmailLoginErrors.INVALID_EMAIL_PASSWORD:
+          errorObject.general = 'Email or Password incorrect';
+          break;
         default:
           errorObject.general = 'An error has occurred';
           break;

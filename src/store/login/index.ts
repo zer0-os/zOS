@@ -5,9 +5,15 @@ export enum SagaActionTypes {
 }
 
 export type LoginState = {
+  stage: LoginStage;
   loading: boolean;
   errors: string[];
 };
+
+export enum LoginStage {
+  EmailLogin = 'email',
+  Done = 'done',
+}
 
 export enum EmailLoginErrors {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
@@ -18,6 +24,7 @@ export enum EmailLoginErrors {
 }
 
 export const initialState: LoginState = {
+  stage: LoginStage.EmailLogin,
   loading: false,
   errors: [],
 };
@@ -28,6 +35,9 @@ const slice = createSlice({
   name: 'login',
   initialState,
   reducers: {
+    setStage: (state, action: PayloadAction<LoginState['stage']>) => {
+      state.stage = action.payload;
+    },
     setLoading: (state, action: PayloadAction<LoginState['loading']>) => {
       state.loading = action.payload;
     },
@@ -37,5 +47,5 @@ const slice = createSlice({
   },
 });
 
-export const { setLoading, setErrors } = slice.actions;
+export const { setLoading, setErrors, setStage } = slice.actions;
 export const { reducer } = slice;

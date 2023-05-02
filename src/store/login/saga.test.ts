@@ -5,7 +5,7 @@ import { emailLogin as apiEmailLogin } from './api';
 
 import { call } from 'redux-saga/effects';
 
-import { EmailLoginErrors, LoginState, initialState as initialRegistrationState } from '.';
+import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegistrationState } from '.';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -15,7 +15,10 @@ describe('emailLogin', () => {
     const email = 'any email';
     const password = 'any password';
 
-    const { returnValue } = await expectSaga(emailLogin, { payload: { email, password } })
+    const {
+      returnValue,
+      storeState: { login },
+    } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [
           call(apiEmailLogin, { email, password }),
@@ -26,6 +29,7 @@ describe('emailLogin', () => {
       .run();
 
     expect(returnValue).toEqual(true);
+    expect(login.stage).toEqual(LoginStage.Done);
   });
 
   it('sets error state if validation fails', async () => {

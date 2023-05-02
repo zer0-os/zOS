@@ -56,7 +56,6 @@ export class EmailLogin extends React.Component<Properties, State> {
     return (
       <div className={c('')}>
         <h3 className={c('heading')}>LOG IN</h3>
-        <div className={c('sub-heading')}>Join us!</div>
         <form className={c('form')} onSubmit={this.publishOnSubmit}>
           <Input
             label='Email Address'

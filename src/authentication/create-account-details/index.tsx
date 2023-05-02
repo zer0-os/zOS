@@ -61,7 +61,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             alert={this.nameError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button className={c('button')} isLoading={this.props.isLoading} isSubmit>
+          <Button isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>
         </form>

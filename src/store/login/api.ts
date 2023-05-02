@@ -1,7 +1,19 @@
-// import { patch, post } from '../../lib/api/rest';
+import { post } from '../../lib/api/rest';
 
 export async function emailLogin({ email, password }: { email: string; password: string }) {
-  console.log(email, password);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return { success: true, response: {} };
+  try {
+    const response = await post('/api/v2/accounts/login').send({ email, password });
+    return {
+      success: true,
+      response: response.body,
+    };
+  } catch (error: any) {
+    if (error?.response?.status === 400) {
+      return {
+        success: false,
+        response: error.response.body.code,
+      };
+    }
+    throw error;
+  }
 }

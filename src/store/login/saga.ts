@@ -1,7 +1,7 @@
 import { call, put, take } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
-import { EmailLoginErrors, SagaActionTypes, setErrors, setLoading } from '.';
+import { EmailLoginErrors, LoginStage, SagaActionTypes, setErrors, setLoading, setStage } from '.';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -17,6 +17,7 @@ export function* emailLogin(action) {
 
     const result = yield call(apiEmailLogin, { email, password });
     if (result.success) {
+      yield put(setStage(LoginStage.Done));
       return true;
     } else {
       yield put(setErrors([result.response]));

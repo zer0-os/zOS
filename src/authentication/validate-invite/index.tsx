@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { Button, Input, Alert } from '@zero-tech/zui/components';
-import './styles.scss';
 import { InviteCodeStatus } from '../../store/registration';
+
+import './styles.scss';
+import { bem } from '../../lib/bem';
+const c = bem('validate-invite');
 
 export interface Properties {
   inviteCodeStatus: string;
@@ -61,25 +64,20 @@ export class Invite extends React.Component<Properties, State> {
         errorMessage = 'Invite code error.';
     }
 
-    return (
-      <Alert variant='error' className='invite__input--error'>
-        {errorMessage}
-      </Alert>
-    );
+    return <Alert variant='error'>{errorMessage}</Alert>;
   };
 
   render() {
     return (
-      <>
-        <h3 className='invite__title'>Add your invite code</h3>
-        <p className='invite__text'>This is the 6 digit code you received in your invite</p>
+      <div className={c('')}>
+        <h3 className={c('heading')}>Add your invite code</h3>
+        <div className={c('sub-heading')}>This is the 6 digit code you received in your invite</div>
 
-        <form onSubmit={this.submitForm}>
+        <form className={c('form')} onSubmit={this.submitForm}>
           <Input
             onChange={this.onInviteCodeChanged}
             placeholder='E.g. 123456'
             value={this.state.inviteCode}
-            className='invite__input'
             type='text'
           />
 
@@ -89,7 +87,6 @@ export class Invite extends React.Component<Properties, State> {
 
           <Button
             variant='primary'
-            className='invite__button'
             isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
             isLoading={this.props.isLoading}
             isSubmit
@@ -98,17 +95,18 @@ export class Invite extends React.Component<Properties, State> {
           </Button>
         </form>
 
-        {/* TODO: hyperlink the second texts */}
-        <div className='invite__subtext1'>
-          <p className='invite__subtext1__text1'> Not been invited yet? </p>
-          <p className='invite__subtext1__text2'>Subscribe for public launch updates </p>
-        </div>
+        <div className={c('other-options')}>
+          <div>
+            <span>Not been invited yet? </span>
+            <a href='/get-access'>Subscribe for public launch updates</a>
+          </div>
 
-        <div className='invite__subtext2'>
-          <p className='invite__subtext2__text1'> Already on ZERO? </p>
-          <p className='invite__subtext2__text2'>Log in </p>
+          <div>
+            <span>Already on ZERO? </span>
+            <a href='/get-access'>Log in</a>
+          </div>
         </div>
-      </>
+      </div>
     );
   }
 }

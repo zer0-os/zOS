@@ -99,7 +99,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
           <PasswordStrength strength={this.state.strength} />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
-          <Button className={c('button')} isLoading={this.props.isLoading} isSubmit>
+          <Button isLoading={this.props.isLoading} isSubmit>
             Next
           </Button>
         </form>

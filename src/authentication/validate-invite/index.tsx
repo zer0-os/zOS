@@ -98,7 +98,7 @@ export class Invite extends React.Component<Properties, State> {
         <div className={c('other-options')}>
           <div>
             <span>Not been invited yet? </span>
-            <a href='/get-access'>Subscribe for public launch updates</a>
+            <a href='https://www.zine.live/#/portal/signup'>Subscribe for public launch updates</a>
           </div>
 
           <div>

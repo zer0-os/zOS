@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
@@ -103,6 +104,12 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             Next
           </Button>
         </form>
+        <div className={c('other-options')}>
+          <div>
+            <span>Already on ZERO? </span>
+            <Link to='/login'>Log in</Link>
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+
 import { Button, Input, Alert } from '@zero-tech/zui/components';
 import { InviteCodeStatus } from '../../store/registration';
 
@@ -103,7 +105,7 @@ export class Invite extends React.Component<Properties, State> {
 
           <div>
             <span>Already on ZERO? </span>
-            <a href='/get-access'>Log in</a>
+            <Link to='/login'>Log in</Link>
           </div>
         </div>
       </div>

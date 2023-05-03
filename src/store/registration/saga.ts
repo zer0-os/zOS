@@ -8,14 +8,14 @@ import {
   setInviteStatus,
   setErrors,
   setLoading,
-  setProfileId,
   setStage,
   setInviteCode,
+  setUserId,
 } from '.';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
-  updateProfile as apiUpdateProfile,
+  completeAccount as apiCompleteAccount,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
@@ -55,7 +55,7 @@ export function* createAccount(action) {
     if (result.success) {
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
-        yield put(setProfileId(userFetch.profileSummary.id));
+        yield put(setUserId(userFetch.id));
         yield put(setStage(RegistrationStage.ProfileDetails));
         yield put(setErrors([]));
         return true;
@@ -98,9 +98,9 @@ export function* updateProfile(action) {
       return false;
     }
 
-    const profileId = yield select((state) => state.registration.profileId);
-    const success = yield call(apiUpdateProfile, { id: profileId, firstName: name });
-    if (success) {
+    const { userId, inviteCode } = yield select((state) => state.registration);
+    const response = yield call(apiCompleteAccount, { userId, name, inviteCode });
+    if (response.success) {
       yield put(setStage(RegistrationStage.Done));
       return true;
     } else {

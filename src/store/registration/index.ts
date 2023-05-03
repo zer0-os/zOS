@@ -28,7 +28,7 @@ export type RegistrationState = {
   errors: string[];
 
   inviteCodeStatus: string;
-  profileId: string;
+  userId: string;
   inviteCode: string;
 };
 
@@ -53,7 +53,7 @@ export const initialState: RegistrationState = {
   stage: RegistrationStage.ValidateInvite,
   errors: [],
 
-  profileId: '',
+  userId: '',
   inviteCode: '',
 };
 
@@ -77,8 +77,8 @@ const slice = createSlice({
     setErrors: (state, action: PayloadAction<RegistrationState['errors']>) => {
       state.errors = action.payload;
     },
-    setProfileId: (state, action: PayloadAction<RegistrationState['profileId']>) => {
-      state.profileId = action.payload;
+    setUserId: (state, action: PayloadAction<RegistrationState['userId']>) => {
+      state.userId = action.payload;
     },
     setInviteCode: (state, action: PayloadAction<RegistrationState['inviteCode']>) => {
       state.inviteCode = action.payload;
@@ -86,5 +86,5 @@ const slice = createSlice({
   },
 });
 
-export const { setInviteStatus, setLoading, setStage, setErrors, setProfileId, setInviteCode } = slice.actions;
+export const { setInviteStatus, setLoading, setStage, setErrors, setUserId, setInviteCode } = slice.actions;
 export const { reducer } = slice;

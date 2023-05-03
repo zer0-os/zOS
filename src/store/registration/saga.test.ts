@@ -4,7 +4,7 @@ import { createAccount, updateProfile, validateAccountInfo, validateInvite } fro
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
-  updateProfile as apiUpdateProfile,
+  completeAccount as apiCompleteAccount,
 } from './api';
 import { call } from 'redux-saga/effects';
 import {
@@ -82,13 +82,13 @@ describe('createAccount', () => {
         ],
         [
           call(fetchCurrentUser),
-          { profileSummary: { id: '123' } },
+          { id: '123' },
         ],
       ])
       .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
       .run();
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
-    expect(registration.profileId).toEqual('123');
+    expect(registration.userId).toEqual('123');
     expect(returnValue).toEqual(true);
   });
 
@@ -201,7 +201,7 @@ describe('createAccount', () => {
         ],
         [
           call(fetchCurrentUser),
-          { profileSummary: { id: '123' } },
+          { id: '123' },
         ],
       ])
       .withReducer(
@@ -224,11 +224,14 @@ describe('updateProfile', () => {
     } = await expectSaga(updateProfile, { payload: { name } })
       .provide([
         [
-          call(apiUpdateProfile, { id: 'abc', firstName: name }),
-          true,
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123' }),
+          { success: true },
         ],
       ])
-      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
+      .withReducer(
+        rootReducer,
+        initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
+      )
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.Done);
@@ -244,11 +247,14 @@ describe('updateProfile', () => {
     } = await expectSaga(updateProfile, { payload: { name } })
       .provide([
         [
-          call(apiUpdateProfile, { id: 'abc', firstName: name }),
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123' }),
           throwError(new Error('Stub api error')),
         ],
       ])
-      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
+      .withReducer(
+        rootReducer,
+        initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
+      )
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
@@ -263,7 +269,7 @@ describe('updateProfile', () => {
       returnValue,
       storeState: { registration },
     } = await expectSaga(updateProfile, { payload: { name } })
-      .withReducer(rootReducer, initialState({ profileId: 'abc', stage: RegistrationStage.ProfileDetails }))
+      .withReducer(rootReducer, initialState({ userId: 'abc', stage: RegistrationStage.ProfileDetails }))
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);

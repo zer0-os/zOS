@@ -43,9 +43,9 @@ export async function createAccount({
   }
 }
 
-export async function updateProfile({ id, firstName }: { id: string; firstName: string }) {
+export async function completeAccount({ userId, firstName }: { userId: string; firstName: string }) {
   try {
-    const response = await patch(`/api/profiles/${id}`).send({ firstName: firstName });
+    const response = await post('/api/v2/accounts/finalize').send({ userId, inviteCode: 'code', firstName });
     return {
       success: true,
       response: response.body,

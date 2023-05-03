@@ -1,5 +1,5 @@
 import { InviteCodeStatus } from '.';
-import { patch, post } from '../../lib/api/rest';
+import { post } from '../../lib/api/rest';
 
 export async function validateInvite({ code }: { code: string }): Promise<string> {
   try {
@@ -43,9 +43,17 @@ export async function createAccount({
   }
 }
 
-export async function completeAccount({ userId, firstName }: { userId: string; firstName: string }) {
+export async function completeAccount({
+  userId,
+  name,
+  inviteCode,
+}: {
+  userId: string;
+  name: string;
+  inviteCode: string;
+}) {
   try {
-    const response = await post('/api/v2/accounts/finalize').send({ userId, inviteCode: 'code', firstName });
+    const response = await post('/api/v2/accounts/finalize').send({ userId, inviteCode, name });
     return {
       success: true,
       response: response.body,

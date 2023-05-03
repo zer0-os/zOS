@@ -98,8 +98,8 @@ export function* updateProfile(action) {
       return false;
     }
 
-    const userId = yield select((state) => state.registration.userId);
-    const response = yield call(apiCompleteAccount, { userId, firstName: name });
+    const { userId, inviteCode } = yield select((state) => state.registration);
+    const response = yield call(apiCompleteAccount, { userId, name, inviteCode });
     if (response.success) {
       yield put(setStage(RegistrationStage.Done));
       return true;

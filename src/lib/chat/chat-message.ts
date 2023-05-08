@@ -1,5 +1,8 @@
-import { Message } from '../../store/messages';
+import { AdminMessageType, Message } from '../../store/messages';
+import { RootState } from '../../store/reducer';
 import { ChatMember } from './types';
+import { denormalize as denormalizeUser } from '../../store/users';
+import { currentUserSelector } from '../../store/authentication/saga';
 
 const DEFAULT_MEDIA_TYPE = 'image';
 
@@ -116,4 +119,21 @@ export function map(sendbirdMessage) {
     ...extractMessageData(data, messageType.toLowerCase() === 'file'),
     isAdmin: messageType.toLowerCase() === 'admin',
   } as unknown as Message;
+}
+
+export function adminMessageText(message: Message, state: RootState) {
+  const user = currentUserSelector()(state);
+
+  let text = message.message;
+  if (message.admin?.type === AdminMessageType.JOINED_ZERO) {
+    if (message.admin?.inviteeId === user.id) {
+      const inviter = denormalizeUser(message.admin.inviterId, state);
+      text = inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : text;
+    } else {
+      const invitee = denormalizeUser(message.admin.inviteeId, state);
+      text = invitee?.firstName ? `${invitee.firstName} joined you on Zero` : text;
+    }
+  }
+
+  return text;
 }

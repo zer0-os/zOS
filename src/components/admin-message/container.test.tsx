@@ -21,40 +21,20 @@ describe('Container', () => {
     };
 
     describe('text', () => {
-      it('returns default message if users not found', () => {
-        const props = subject('current-user', {}, { message: { message: 'some message', admin: {} } as Message });
-
-        expect(props.text).toEqual('some message');
-      });
-
-      it('translates message if current user was invitee', () => {
+      it('translates admin messages', () => {
         const props = subject(
           'current-user',
           { 'inviter-id': { id: 'inviter-id', firstName: 'Courtney' } },
           {
             message: {
               message: 'some message',
+              isAdmin: true,
               admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'current-user' },
             } as Message,
           }
         );
 
         expect(props.text).toEqual('You joined Courtney on Zero');
-      });
-
-      it('translates message if current user was inviter', () => {
-        const props = subject(
-          'current-user',
-          { 'invitee-id': { id: 'invitee-id', firstName: 'Julie' } },
-          {
-            message: {
-              message: 'some message',
-              admin: { type: AdminMessageType.JOINED_ZERO, inviteeId: 'invitee-id', inviterId: 'current-user' },
-            } as Message,
-          }
-        );
-
-        expect(props.text).toEqual('Julie joined you on Zero');
       });
     });
   });

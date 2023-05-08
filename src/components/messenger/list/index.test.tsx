@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { normalize } from '../../../store/channels-list';
+import { normalize as normalizeUsers } from '../../../store/users';
 import { RootState } from '../../../store/reducer';
 import moment from 'moment';
 import { when } from 'jest-when';
@@ -10,6 +11,7 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
+import { AdminMessageType } from '../../../store/messages';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -208,15 +210,24 @@ describe('messenger-list', () => {
   });
 
   describe('mapState', () => {
-    const subject = (channels, createConversationState = {}) => {
-      return DirectMessageChat.mapState(getState(channels, createConversationState));
+    const subject = (channels, createConversationState = {}, currentUser = [{ userId: '', firstName: '' }]) => {
+      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser));
     };
 
-    const getState = (channels, createConversationState = {}) => {
+    const getState = (channels, createConversationState = {}, users = [{ userId: '' }]) => {
       const channelData = normalize(channels);
+      const userData = normalizeUsers(users);
       return {
+        authentication: {
+          user: {
+            data: { id: users[0].userId },
+          },
+        },
         channelsList: { value: channelData.result },
-        normalized: channelData.entities,
+        normalized: {
+          ...userData.entities,
+          ...channelData.entities,
+        } as any,
         createConversation: {
           startGroupChat: {},
           groupDetails: {},
@@ -268,6 +279,33 @@ describe('messenger-list', () => {
 
       expect(state.conversations.map((c) => c.messagePreview)).toEqual([
         'The last message',
+        'Second message last',
+      ]);
+    });
+
+    test('admin messagePreview', () => {
+      const state = subject(
+        [
+          {
+            id: 'convo-1',
+            lastMessage: {
+              message: 'The last message',
+              isAdmin: true,
+              admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'invitee-id' },
+            },
+            isChannel: false,
+          },
+          { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
+        ],
+        {},
+        [
+          { userId: 'inviter-id', firstName: 'current user' },
+          { userId: 'invitee-id', firstName: 'Courtney' },
+        ]
+      );
+
+      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+        'Courtney joined you on Zero',
         'Second message last',
       ]);
     });

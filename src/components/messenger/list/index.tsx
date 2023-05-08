@@ -26,6 +26,7 @@ import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
+import { adminMessageText } from '../../../lib/chat/chat-message';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -54,7 +55,12 @@ export class Container extends React.Component<Properties> {
       .sort((messengerA, messengerB) =>
         compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
       )
-      .map((conversation) => ({ ...conversation, messagePreview: conversation.lastMessage?.message }));
+      .map((conversation) => ({
+        ...conversation,
+        messagePreview: conversation.lastMessage?.isAdmin
+          ? adminMessageText(conversation.lastMessage, state)
+          : conversation.lastMessage?.message,
+      }));
 
     return {
       conversations,

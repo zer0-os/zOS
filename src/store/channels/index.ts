@@ -5,7 +5,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { Payload, UnreadCountUpdatedPayload } from './types';
 
 export interface User {
-  id: string;
+  userId: string;
   firstName: string;
   lastName: string;
   profileId: string;

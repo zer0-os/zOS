@@ -9,10 +9,10 @@ import { ParentMessage } from '../../lib/chat/types';
 
 export interface PublicProperties {
   className?: string;
-  onSubmit: (message: string, mentionedUserIds: User['id'][], media: Media[]) => void;
+  onSubmit: (message: string, mentionedUserIds: User['userId'][], media: Media[]) => void;
   initialValue?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
-  renderAfterInput?: (value: string, mentionedUserIds: User['id'][]) => React.ReactNode;
+  renderAfterInput?: (value: string, mentionedUserIds: User['userId'][]) => React.ReactNode;
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   id?: string;
   reply?: null | ParentMessage;

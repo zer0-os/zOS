@@ -10,7 +10,7 @@ export interface Media {
 }
 export interface UserForMention {
   display: string;
-  id: User['id'];
+  id: User['userId'];
 }
 
 export interface Image {

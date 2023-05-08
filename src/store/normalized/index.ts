@@ -20,9 +20,14 @@ export interface NormalizedListSliceConfig {
   schema: nSchema.Entity;
 }
 
+export interface SchemaOptions {
+  idAttribute: string;
+}
+
 export interface NormalizedSliceConfig {
   name: string;
   schemaDefinition?: Schema;
+  options?: SchemaOptions;
 }
 
 const receiveNormalized = (state, action: PayloadAction<any>) => {

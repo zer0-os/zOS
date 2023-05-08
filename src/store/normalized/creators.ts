@@ -62,7 +62,7 @@ export class Creators {
   public createNormalizedSlice = (config: NormalizedSliceConfig) => {
     const { receive: receiveNormalized } = this.normalizedSlice.actions;
 
-    const schema = new nSchema.Entity(config.name, config.schemaDefinition);
+    const schema = new nSchema.Entity(config.name, config.schemaDefinition, config.options ?? {});
 
     const normalizer = new Normalizer(schema);
 

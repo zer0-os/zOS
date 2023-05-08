@@ -1,8 +1,6 @@
-import React from 'react';
-
 import { Container, PublicProperties } from './container';
 import { RootState } from '../../store/reducer';
-import { AdminMessageType, Message, normalize } from '../../store/messages';
+import { AdminMessageType, Message } from '../../store/messages';
 
 describe('Container', () => {
   describe('mapState', () => {

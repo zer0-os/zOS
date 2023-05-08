@@ -1,7 +1,6 @@
 import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
-import { schema as usersSchema } from '../users';
 import { createAction } from '@reduxjs/toolkit';
 import { Payload, UnreadCountUpdatedPayload } from './types';
 
@@ -53,7 +52,6 @@ const slice = createNormalizedSlice({
   name: 'channels',
   schemaDefinition: {
     messages: [messageSchema],
-    users: [usersSchema],
   },
 });
 

@@ -8,7 +8,6 @@ import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
-import { User as UserModel } from '../../store/channels/index';
 import { MessageInput } from '../message-input/container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../authentication/button';
@@ -43,7 +42,6 @@ export interface Properties {
   joinChannel: () => void;
   resetCountNewMessage: () => void;
   countNewMessages: number;
-  users: UserModel[];
   className?: string;
   reply?: null | ParentMessage;
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
@@ -183,7 +181,7 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(this.props.id, search, this.props.users);
+    return await searchMentionableUsersForChannel(this.props.id, search);
   };
 
   render() {

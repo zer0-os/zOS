@@ -1,12 +1,11 @@
 import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
-import { schema as usersSchema } from '../users';
 import { createAction } from '@reduxjs/toolkit';
 import { Payload, UnreadCountUpdatedPayload } from './types';
 
 export interface User {
-  id: string;
+  userId: string;
   firstName: string;
   lastName: string;
   profileId: string;
@@ -24,7 +23,6 @@ export interface Channel {
   id: string;
   name: string;
   messages: Message[];
-  users: User[];
   otherMembers: User[];
   hasMore: boolean;
   countNewMessages: number;
@@ -41,13 +39,11 @@ export interface Channel {
 }
 
 export enum SagaActionTypes {
-  LoadUsers = 'channels/saga/loadUsers',
   JoinChannel = 'channels/saga/joinChannel',
   MarkAllMessagesAsReadInChannel = 'channels/saga/markAllMessagesAsReadInChannel',
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
 }
 
-const loadUsers = createAction<Payload>(SagaActionTypes.LoadUsers);
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
 const markAllMessagesAsReadInChannel = createAction<Payload>(SagaActionTypes.MarkAllMessagesAsReadInChannel);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
@@ -56,10 +52,9 @@ const slice = createNormalizedSlice({
   name: 'channels',
   schemaDefinition: {
     messages: [messageSchema],
-    users: [usersSchema],
   },
 });
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { loadUsers, joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated, removeAll };
+export { joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated, removeAll };

@@ -277,7 +277,7 @@ describe('messenger-chat', () => {
 
 function stubUser(attrs: Partial<User> = {}): User {
   return {
-    id: 'user-id',
+    userId: 'user-id',
     firstName: 'first-name',
     lastName: 'first-name',
     isOnline: false,

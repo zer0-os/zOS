@@ -2,35 +2,11 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
 
-import {
-  fetchUsersByChannelId,
-  joinChannel as joinChannelAPI,
-  markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI,
-} from './api';
+import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
 };
-
-export function* loadUsers(action) {
-  const { channelId } = action.payload;
-
-  const users = yield call(fetchUsersByChannelId, channelId);
-
-  if (users) {
-    const formatUsers = users.map(({ userId: id, ...rest }) => ({
-      id,
-      ...rest,
-    }));
-
-    yield put(
-      receive({
-        id: channelId,
-        users: formatUsers,
-      })
-    );
-  }
-}
 
 export function* joinChannel(action) {
   const { channelId } = action.payload;
@@ -85,7 +61,6 @@ export function* clearChannels() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.LoadUsers, loadUsers);
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
   yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
   yield takeLatest(SagaActionTypes.UnreadCountUpdated, unreadCountUpdated);

@@ -23,7 +23,7 @@ interface Properties extends MessageModel {
   onEdit: (
     messageId: number,
     message: string,
-    mentionedUserIds: User['id'][],
+    mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
   onReply: (reply: ParentMessage) => void;

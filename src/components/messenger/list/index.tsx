@@ -34,7 +34,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   stage: SagaStage;
   groupUsers: Option[];
-  conversations: Channel[];
+  conversations: (Channel & { messagePreview?: string })[];
   isFetchingExistingConversations: boolean;
   isGroupCreating: boolean;
 
@@ -50,9 +50,11 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const { createConversation } = state;
-    const conversations = denormalizeConversations(state).sort((messengerA, messengerB) =>
-      compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
-    );
+    const conversations = denormalizeConversations(state)
+      .sort((messengerA, messengerB) =>
+        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+      )
+      .map((conversation) => ({ ...conversation, messagePreview: conversation.lastMessage?.message }));
 
     return {
       conversations,

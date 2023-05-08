@@ -7,9 +7,6 @@ import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
 
 describe('ChannelViewContainer', () => {
-  const USER_DATA = {
-    userId: '12',
-  };
   const subject = (props: any = {}) => {
     const allProps = {
       channel: null,
@@ -23,7 +20,6 @@ describe('ChannelViewContainer', () => {
       activeMessengerId: '',
       sendMessage: () => undefined,
       uploadFileMessage: () => undefined,
-      fetchUsers: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
       markAllMessagesAsReadInChannel: () => undefined,
@@ -115,14 +111,6 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
-  it('fetches users on mount', () => {
-    const fetchUsers = jest.fn();
-
-    subject({ fetchUsers, channelId: 'the-channel-id' });
-
-    expect(fetchUsers).not.toHaveBeenCalledWith({ channelId: 'the-channel-id' });
-  });
-
   it('fetches messages when channel id is set', () => {
     const fetchMessages = jest.fn();
     const stopSyncChannels = jest.fn();
@@ -137,51 +125,6 @@ describe('ChannelViewContainer', () => {
     wrapper.setProps({ channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
-  });
-
-  it('fetches users when users is set', () => {
-    const fetchUsers = jest.fn();
-
-    const wrapper = subject({
-      fetchUsers,
-      channelId: 'the-channel-id',
-      channel: { name: 'first channel', shouldSyncChannels: false },
-      context: {
-        isAuthenticated: true,
-      },
-    });
-
-    wrapper.setProps({
-      user: {
-        isLoading: false,
-        data: USER_DATA,
-      },
-    });
-
-    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
-  });
-
-  it('fetches users when channel id is updated', () => {
-    const fetchUsers = jest.fn();
-
-    const wrapper = subject({
-      fetchUsers,
-      channelId: 'the-first-channel-id',
-      channel: { name: 'first channel', shouldSyncChannels: false },
-      user: {
-        isLoading: false,
-        data: USER_DATA,
-      },
-      context: {
-        isAuthenticated: true,
-      },
-    });
-
-    wrapper.setProps({
-      channelId: 'the-channel-id',
-    });
-
-    expect(fetchUsers).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
   it('fetches messages when channel id is updated', () => {

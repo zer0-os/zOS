@@ -14,13 +14,7 @@ import {
   stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import {
-  Channel,
-  denormalize,
-  loadUsers as fetchUsers,
-  joinChannel,
-  markAllMessagesAsReadInChannel,
-} from '../../store/channels';
+import { Channel, denormalize, joinChannel, markAllMessagesAsReadInChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -29,7 +23,6 @@ import {
   SendPayload as PayloadSendMessage,
   MediaPayload,
 } from '../../store/messages/saga';
-import { Payload as PayloadFetchUser } from '../../store/channels-list/types';
 import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
@@ -43,7 +36,6 @@ export interface Properties extends PublicProperties {
   uploadFileMessage: (payload: MediaPayload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
-  fetchUsers: (payload: PayloadFetchUser) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
   markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
@@ -86,7 +78,6 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
-      fetchUsers,
       sendMessage,
       uploadFileMessage,
       startMessageSync,
@@ -104,7 +95,6 @@ export class Container extends React.Component<Properties, State> {
     const { channelId } = this.props;
     if (channelId) {
       this.props.fetchMessages({ channelId });
-      this.fetchChannelMembers(channelId);
     }
   }
 
@@ -114,7 +104,6 @@ export class Container extends React.Component<Properties, State> {
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
-      this.fetchChannelMembers(channelId);
       this.setState({
         isFirstMessagesFetchDone: false,
         reply: null,
@@ -128,7 +117,6 @@ export class Container extends React.Component<Properties, State> {
       this.props.user.data !== null
     ) {
       this.props.fetchMessages({ channelId });
-      this.fetchChannelMembers(channelId);
       this.setState({
         isFirstMessagesFetchDone: false,
       });
@@ -171,12 +159,6 @@ export class Container extends React.Component<Properties, State> {
   componentWillUnmount() {
     const { channelId } = this.props;
     this.props.stopSyncChannels({ channelId });
-  }
-
-  fetchChannelMembers(channelId: string): void {
-    if (this.props.context.isAuthenticated) {
-      this.props.fetchUsers({ channelId });
-    }
   }
 
   resetCountNewMessage = () => {

@@ -135,6 +135,8 @@ describe('sendbird events', () => {
       hidePreview: false,
       image: undefined,
       media: undefined,
+      isAdmin: false,
+      admin: {},
     });
   });
 });

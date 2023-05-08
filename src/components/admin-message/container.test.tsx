@@ -22,7 +22,11 @@ describe('Container', () => {
 
     describe('text', () => {
       it('returns default message if users not found', () => {
-        const props = subject('current-user', {}, { message: { message: 'some message', admin: {} } as Message });
+        const props = subject(
+          'current-user',
+          {},
+          { message: { message: 'some message', isAdmin: true, admin: {} } as Message }
+        );
 
         expect(props.text).toEqual('some message');
       });
@@ -34,6 +38,7 @@ describe('Container', () => {
           {
             message: {
               message: 'some message',
+              isAdmin: true,
               admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'current-user' },
             } as Message,
           }
@@ -49,6 +54,7 @@ describe('Container', () => {
           {
             message: {
               message: 'some message',
+              isAdmin: true,
               admin: { type: AdminMessageType.JOINED_ZERO, inviteeId: 'invitee-id', inviterId: 'current-user' },
             } as Message,
           }

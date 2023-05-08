@@ -19,6 +19,7 @@ export function messageFactory(messageText: string, user: User, parentMessage: P
     id: Date.now(),
     mentionedUserIds: [],
     message: messageText,
+    isAdmin: false,
     parentMessageText: parentMessage ? parentMessage.message : '',
     sender: {
       userId: user.id,

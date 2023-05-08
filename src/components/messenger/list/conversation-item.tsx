@@ -13,7 +13,7 @@ import moment from 'moment';
 const c = bem('conversation-item');
 
 export interface Properties {
-  conversation: Channel;
+  conversation: Channel & { messagePreview?: string };
   onClick: (conversationId: string) => void;
 }
 
@@ -79,8 +79,8 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   get message() {
-    if (this.props.conversation?.lastMessage?.message) {
-      return this.props.conversation?.lastMessage?.message;
+    if (this.props.conversation?.messagePreview) {
+      return this.props.conversation?.messagePreview;
     }
     return '';
   }

@@ -126,12 +126,10 @@ describe('ConversationItem', () => {
     expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('MMM D'));
   });
 
-  it('renders last message summary', function () {
+  it('renders the message preview', function () {
     const wrapper = subject({
       conversation: {
-        lastMessage: {
-          message: 'I said something here',
-        },
+        messagePreview: 'I said something here',
         otherMembers: [],
       } as any,
     });

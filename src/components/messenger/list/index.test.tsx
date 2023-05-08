@@ -260,6 +260,18 @@ describe('messenger-list', () => {
       expect(state.isGroupCreating).toEqual(true);
     });
 
+    test('messagePreview', () => {
+      const state = subject([
+        { id: 'convo-1', lastMessage: { message: 'The last message' }, isChannel: false },
+        { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
+      ]);
+
+      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+        'The last message',
+        'Second message last',
+      ]);
+    });
+
     test('stage', () => {
       const state = subject([], { stage: Stage.GroupDetails });
 

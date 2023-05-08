@@ -24,7 +24,6 @@ export interface Channel {
   id: string;
   name: string;
   messages: Message[];
-  users: User[];
   otherMembers: User[];
   hasMore: boolean;
   countNewMessages: number;

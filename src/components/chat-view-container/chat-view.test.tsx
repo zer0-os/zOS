@@ -1,9 +1,9 @@
 import React from 'react';
 import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
-import { ChatView } from './chat-view';
+import { ChatView, Properties } from './chat-view';
 
-import { MediaType } from '../../store/messages';
+import { MediaType, Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
@@ -11,6 +11,7 @@ import { MessageInput } from '../message-input/container';
 import { Button as ConnectButton } from '../authentication/button';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
+import { User } from '../../store/authentication/types';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../platform-apps/channels/util/api', () => {
@@ -23,20 +24,31 @@ jest.mock('../../platform-apps/channels/util/api', () => {
 
 describe('ChatView', () => {
   const MESSAGES_TEST = [
-    { id: 'message-1', message: 'what', sender: { userId: 1 }, createdAt: 1658776625730 },
-    { id: 'message-2', message: 'hello', sender: { userId: 2 }, createdAt: 1659018545428 },
-    { id: 'message-3', message: 'hey', sender: { userId: 2 }, createdAt: 1659018545428 },
-    { id: 'message-4', message: 'ok!', sender: { userId: 2 }, createdAt: 1659018545428 },
-  ];
+    { id: 1111, message: 'what', sender: { userId: '1' }, createdAt: 1658776625730 },
+    { id: 2222, message: 'hello', sender: { userId: '2' }, createdAt: 1659018545428 },
+    { id: 3333, message: 'hey', sender: { userId: '2' }, createdAt: 1659018545428 },
+    { id: 4444, message: 'ok!', sender: { userId: '2' }, createdAt: 1659018545428 },
+  ] as MessageModel[];
 
-  const subject = (props: any = {}) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      id: '',
       name: '',
       messages: [],
       hasJoined: false,
       user: null,
-      joinChannel: () => undefined,
+      joinChannel: () => null,
       countNewMessages: 0,
+      onFetchMore: () => null,
+      sendMessage: () => null,
+      deleteMessage: () => null,
+      editMessage: () => null,
+      onRemove: () => null,
+      onReply: () => null,
+      resetCountNewMessage: () => null,
+      onMessageInputRendered: () => null,
+      isDirectMessage: true,
+
       ...props,
     };
 
@@ -44,11 +56,11 @@ describe('ChatView', () => {
   };
 
   it('render channel name', () => {
-    const wrapper = subject({ name: 'first channel' });
+    const wrapper = subject({ name: 'first channel', isDirectMessage: false });
 
-    const textes = wrapper.find('.channel-view__name h1').text().trim();
+    const text = wrapper.find('.channel-view__name h1').text().trim();
 
-    expect(textes).toStrictEqual('Welcome to #first channel');
+    expect(text).toStrictEqual('Welcome to #first channel');
   });
 
   it('render a message for each message', () => {
@@ -57,10 +69,10 @@ describe('ChatView', () => {
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
 
     expect(ids).toIncludeAllMembers([
-      'message-1',
-      'message-2',
-      'message-3',
-      'message-4',
+      1111,
+      2222,
+      3333,
+      4444,
     ]);
   });
 
@@ -78,7 +90,7 @@ describe('ChatView', () => {
 
   it('render a header Date contain Today', () => {
     const messages = [
-      { id: 'message-one', message: 'what', createdAt: Date.now() },
+      { id: 111, message: 'what', createdAt: Date.now() } as MessageModel,
     ];
 
     const wrapper = subject({ messages });
@@ -130,7 +142,7 @@ describe('ChatView', () => {
   });
 
   it('should not render MessageInput if user not a member', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User });
 
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
@@ -138,20 +150,20 @@ describe('ChatView', () => {
   });
 
   it('render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User });
 
     expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(true);
   });
 
   it('should not render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, user: { id: 'userId-test' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, user: { id: 'userId-test' } as User });
 
     expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(false);
   });
 
   it('should joinChannel when click joinButton', () => {
     const joinChannel = jest.fn();
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' }, joinChannel });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User, joinChannel });
 
     wrapper.find('.channel-view__join-wrapper').simulate('click');
 
@@ -182,7 +194,7 @@ describe('ChatView', () => {
   });
 
   it('passes isOwner prop to Message', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: '2' } });
+    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: '2' } as User });
 
     const classNames = wrapper.find(Message).map((m) => m.prop('isOwner'));
 
@@ -212,26 +224,20 @@ describe('ChatView', () => {
       const imageMedia = { url: 'image.jpg', type: MediaType.Image };
       const messages = [
         {
-          id: 'message-1',
-          message: 'image message',
+          id: 1,
           media: imageMedia,
-          sender: { userId: 1 },
-          createdAt: 1658776625730,
-        },
+          sender: { userId: '1' },
+        } as MessageModel,
         {
-          id: 'message-2',
-          message: 'video message',
+          id: 2,
           media: { url: 'video.avi', type: MediaType.Video },
-          sender: { userId: 1 },
-          createdAt: 1658776625731,
-        },
+          sender: { userId: '1' },
+        } as MessageModel,
         {
-          id: 'message-3',
-          message: 'audio message',
+          id: 3,
           media: { url: 'video.mp3', type: MediaType.Audio },
-          sender: { userId: 1 },
-          createdAt: 1658776625732,
-        },
+          sender: { userId: '1' },
+        } as MessageModel,
       ];
       const wrapper = subject({ messages });
       wrapper.find(Message).at(1).simulate('imageClick');
@@ -240,70 +246,24 @@ describe('ChatView', () => {
     });
 
     it('does not render Lightbox', () => {
-      const messages = [
-        {
-          id: 'message-1',
-          message: 'image message',
-          media: { url: 'image.jpg', type: MediaType.Image },
-          sender: { userId: 1 },
-          createdAt: 1658776625730,
-        },
-        {
-          id: 'message-2',
-          message: 'video message',
-          media: { url: 'video.avi', type: MediaType.Video },
-          sender: { userId: 1 },
-          createdAt: 1658776625731,
-        },
-        {
-          id: 'message-3',
-          message: 'audio message',
-          media: { url: 'video.mp3', type: MediaType.Audio },
-          sender: { userId: 1 },
-          createdAt: 1658776625732,
-        },
-      ];
-      const wrapper = subject({ messages });
+      const wrapper = subject({ messages: [] });
 
       expect(wrapper.find(Lightbox).exists()).toBeFalsy();
     });
   });
 
   it('does not render channel name in case of a direct message', () => {
-    const messages = [
-      {
-        id: 'message-1',
-        message: 'image message',
-        media: { url: 'image.jpg', type: MediaType.Image },
-        sender: { userId: 1 },
-        createdAt: 1658776625730,
-      },
-      {
-        id: 'message-2',
-        message: 'video message',
-        media: { url: 'video.avi', type: MediaType.Video },
-        sender: { userId: 1 },
-        createdAt: 1658776625731,
-      },
-      {
-        id: 'message-3',
-        message: 'audio message',
-        media: { url: 'video.mp3', type: MediaType.Audio },
-        sender: { userId: 1 },
-        createdAt: 1658776625732,
-      },
-    ];
-    const wrapper = subject({ messages, isDirectMessage: true });
+    const wrapper = subject({ messages: [], isDirectMessage: true });
 
     expect(wrapper.find('.channel-view__name').exists()).toBeFalsy();
   });
 
   it('searches for user mentions', async () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, id: '5', users: ['user'] });
+    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, id: '5' });
     const input = wrapper.find(IfAuthenticated).find(MessageInput);
 
     await input.prop('getUsersForMentions')('bob');
 
-    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', ['user']);
+    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob');
   });
 });

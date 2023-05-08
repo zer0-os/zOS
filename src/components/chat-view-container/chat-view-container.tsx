@@ -289,7 +289,6 @@ export class Container extends React.Component<Properties, State> {
           editMessage={this.handleEditMessage}
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
-          users={this.channel.users || []}
           hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
           countNewMessages={this.state.countNewMessages}
           resetCountNewMessage={this.resetCountNewMessage}

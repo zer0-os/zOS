@@ -135,6 +135,30 @@ describe('sendbird events', () => {
       hidePreview: false,
       image: undefined,
       media: undefined,
+      isAdmin: false,
+      admin: {},
     });
+  });
+
+  it('maps an admin message', () => {
+    const adminData = { type: 'some_type', meta: 'some meta' };
+    const rawSendbirdResponse = {
+      channelUrl: 'sendbird_group_channel_31029_6f063fff39f551d8ac68fe6d117a52033e292e32',
+      channelType: 'group',
+      messageId: 8728123760,
+      messageType: 'admin',
+      data: JSON.stringify({ admin: adminData }),
+      message: 'some admin message',
+    };
+
+    const mappedMessage = mapMessage(rawSendbirdResponse);
+
+    expect(mappedMessage).toEqual(
+      expect.objectContaining({
+        id: 8728123760,
+        isAdmin: true,
+        admin: adminData,
+      })
+    );
   });
 });

@@ -17,6 +17,7 @@ import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
+import { AdminMessageContainer } from '../admin-message/container';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -136,25 +137,29 @@ export class ChatView extends React.Component<Properties, State> {
             // eslint-disable-next-line eqeqeq
             this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
-          return (
-            <Message
-              className={classNames('messages__message', {
-                'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
-              })}
-              onImageClick={this.openLightbox}
-              key={message.id}
-              messageId={message.id}
-              updatedAt={message.updatedAt}
-              isOwner={isUserOwnerOfTheMessage}
-              onDelete={this.props.deleteMessage}
-              onEdit={this.props.editMessage}
-              onReply={this.props.onReply}
-              parentMessageText={message.parentMessageText}
-              getUsersForMentions={this.searchMentionableUsers}
-              showSenderAvatar={this.props.showSenderAvatar}
-              {...message}
-            />
-          );
+          if (message.isAdmin) {
+            return <AdminMessageContainer key={message.id} message={message} />;
+          } else {
+            return (
+              <Message
+                className={classNames('messages__message', {
+                  'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
+                })}
+                onImageClick={this.openLightbox}
+                key={message.id}
+                messageId={message.id}
+                updatedAt={message.updatedAt}
+                isOwner={isUserOwnerOfTheMessage}
+                onDelete={this.props.deleteMessage}
+                onEdit={this.props.editMessage}
+                onReply={this.props.onReply}
+                parentMessageText={message.parentMessageText}
+                getUsersForMentions={this.searchMentionableUsers}
+                showSenderAvatar={this.props.showSenderAvatar}
+                {...message}
+              />
+            );
+          }
         })}
       </div>
     );

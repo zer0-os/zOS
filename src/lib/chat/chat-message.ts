@@ -86,6 +86,7 @@ function extractMessageData(jsonData, isMediaMessage) {
   let mentionedUsers = [];
   let hidePreview = false;
   let media;
+  let admin;
 
   try {
     const data = jsonData ? JSON.parse(jsonData) : {};
@@ -96,9 +97,10 @@ function extractMessageData(jsonData, isMediaMessage) {
 
     mentionedUsers = data.mentionedUsers || [];
     hidePreview = data.hidePreview || false;
+    admin = data.admin || {};
   } catch (e) {}
 
-  return { mentionedUsers, hidePreview, media, image: media };
+  return { mentionedUsers, hidePreview, media, image: media, admin };
 }
 
 export function map(sendbirdMessage) {
@@ -111,6 +113,7 @@ export function map(sendbirdMessage) {
     createdAt,
     updatedAt,
     sender: getSender(sender),
-    ...extractMessageData(data, messageType === 'file'),
+    ...extractMessageData(data, messageType.toLowerCase() === 'file'),
+    isAdmin: messageType.toLowerCase() === 'admin',
   } as unknown as Message;
 }

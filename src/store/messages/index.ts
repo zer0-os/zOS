@@ -43,10 +43,16 @@ export interface InfoUploadResponse {
   apiUrl: string;
   query: QueryUploadPayload;
 }
+
+export enum AdminMessageType {
+  JOINED_ZERO = 'JOINED_ZERO',
+}
+
 export interface Message {
   id: number;
   message?: string;
   parentMessageText?: string;
+  isAdmin: boolean;
   createdAt: number;
   updatedAt: number;
   sender: Sender;
@@ -55,6 +61,11 @@ export interface Message {
   hidePreview: boolean;
   preview: LinkPreview;
   media?: Media;
+  admin?: {
+    type: AdminMessageType;
+    inviterId?: string;
+    inviteeId?: string;
+  };
 }
 
 export interface EditMessageOptions {

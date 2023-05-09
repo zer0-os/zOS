@@ -18,6 +18,7 @@ import {
   completeAccount as apiCompleteAccount,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
+import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
 
 export function* validateInvite(action) {
@@ -50,8 +51,15 @@ export function* createAccount(action) {
       return false;
     }
 
+    const { nonceToken } = yield call(nonceApi);
     // Handle is a required field. To try to ensure uniqueness, we'll use the email address.
-    const result = yield call(apiCreateAccount, { email: email.trim(), password, handle: email, inviteCode });
+    const result = yield call(apiCreateAccount, {
+      email: email.trim(),
+      password,
+      handle: email,
+      inviteCode,
+      nonceToken,
+    });
     if (result.success) {
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {

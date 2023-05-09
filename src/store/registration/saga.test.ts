@@ -17,10 +17,11 @@ import {
 } from '.';
 import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
+import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('validate invite', () => {
-  it('valites invite code, returns true if VALID', async () => {
+  it('validates invite code, returns true if VALID', async () => {
     const code = '123456';
 
     const {
@@ -42,7 +43,7 @@ describe('validate invite', () => {
     expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
   });
 
-  it('valites invite code, returns false if NOT VALID and stays on invite stage', async () => {
+  it('validates invite code, returns false if NOT VALID and stays on invite stage', async () => {
     const code = '654321';
 
     const {
@@ -70,6 +71,7 @@ describe('createAccount', () => {
     const email = 'john@example.com';
     const password = VALID_PASSWORD;
     const inviteCode = '123987';
+    const nonceToken = 'abc123';
 
     const {
       returnValue,
@@ -77,7 +79,11 @@ describe('createAccount', () => {
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          call(nonceApi),
+          { nonceToken },
+        ],
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email, nonceToken }),
           { success: true, response: {} },
         ],
         [
@@ -117,6 +123,7 @@ describe('createAccount', () => {
     const email = 'john@example.com';
     const password = VALID_PASSWORD;
     const inviteCode = '123987';
+    const nonceToken = 'abc123';
 
     const {
       returnValue,
@@ -124,7 +131,11 @@ describe('createAccount', () => {
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          call(nonceApi),
+          { nonceToken },
+        ],
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email, nonceToken }),
           { success: false, response: 'EMAIL_INVALID' },
         ],
       ])
@@ -140,6 +151,7 @@ describe('createAccount', () => {
     const email = 'john@example.com';
     const password = VALID_PASSWORD;
     const inviteCode = '123987';
+    const nonceToken = 'abc123';
 
     const {
       returnValue,
@@ -147,7 +159,11 @@ describe('createAccount', () => {
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          call(nonceApi),
+          { nonceToken },
+        ],
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email, nonceToken }),
           throwError(new Error('Stub api error')),
         ],
       ])
@@ -163,6 +179,7 @@ describe('createAccount', () => {
     const email = 'john@example.com';
     const password = VALID_PASSWORD;
     const inviteCode = '123987';
+    const nonceToken = 'abc123';
 
     const {
       returnValue,
@@ -170,7 +187,11 @@ describe('createAccount', () => {
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          call(nonceApi),
+          { nonceToken },
+        ],
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email, nonceToken }),
           { success: true, response: {} },
         ],
         [
@@ -190,13 +211,18 @@ describe('createAccount', () => {
     const email = 'john@example.com';
     const password = VALID_PASSWORD;
     const inviteCode = '123987';
+    const nonceToken = 'abc123';
 
     const {
       storeState: { registration },
     } = await expectSaga(createAccount, { payload: { email, password } })
       .provide([
         [
-          call(apiCreateAccount, { email, password, inviteCode, handle: email }),
+          call(nonceApi),
+          { nonceToken },
+        ],
+        [
+          call(apiCreateAccount, { email, password, inviteCode, handle: email, nonceToken }),
           { success: true, response: {} },
         ],
         [

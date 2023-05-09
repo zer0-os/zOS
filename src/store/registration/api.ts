@@ -19,15 +19,19 @@ export async function createAccount({
   password,
   handle,
   inviteCode,
+  nonceToken,
 }: {
   email: string;
   password: string;
   handle: string;
   inviteCode: string;
+  nonceToken: string;
 }) {
   const user = { email, password, handle };
   try {
-    const response = await post('/api/v2/accounts/createAndAuthorize').send({ user, inviteSlug: inviteCode });
+    const response = await post('/api/v2/accounts/createAndAuthorize')
+      .set('Authorization', `Nonce ${nonceToken}`)
+      .send({ user, inviteSlug: inviteCode });
     return {
       success: true,
       response: response.body,

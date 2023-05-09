@@ -7,6 +7,18 @@ export async function nonceOrAuthorize(signedWeb3Token: string): Promise<Authori
   return response.body;
 }
 
+export async function nonce(signedWeb3Token?: string): Promise<AuthorizationResponse> {
+  if (signedWeb3Token) {
+    const response = await post('/authentication/nonce').set('Authorization', `Web3 ${signedWeb3Token}`);
+
+    return response.body;
+  }
+
+  const response = await post('/authentication/nonce');
+
+  return response.body;
+}
+
 export async function fetchCurrentUser(): Promise<User> {
   const response = await get('/api/users/current').catch((err) => console.log(err));
 

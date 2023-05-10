@@ -14,6 +14,7 @@ import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
 import { reducer as login } from './login';
+import { reducer as rewards } from './rewards';
 
 export const rootReducer = combineReducers({
   layout,
@@ -30,6 +31,7 @@ export const rootReducer = combineReducers({
   createInvitation,
   registration,
   login,
+  rewards,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

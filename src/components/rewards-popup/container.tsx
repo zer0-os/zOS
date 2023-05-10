@@ -19,7 +19,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return <>{createPortal(<RewardsPopup usd={''} zero={''} onClose={this.props.onClose} />, document.body)}</>;
+    return <>{createPortal(<RewardsPopup usd={'9836'} zero={''} onClose={this.props.onClose} />, document.body)}</>;
   }
 }
 

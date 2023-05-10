@@ -304,6 +304,32 @@ describe('updateProfile', () => {
     ]);
     expect(returnValue).toEqual(false);
   });
+
+  it('updates the first time login status', async () => {
+    const name = 'john';
+
+    const {
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .provide([
+        [
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123' }),
+          { success: true },
+        ],
+      ])
+      .withReducer(
+        rootReducer,
+        initialState({
+          isFirstTimeLogin: false,
+          userId: 'abc',
+          inviteCode: 'INV123',
+          stage: RegistrationStage.ProfileDetails,
+        })
+      )
+      .run();
+
+    expect(registration.isFirstTimeLogin).toEqual(true);
+  });
 });
 
 describe('validateAccountInfo', () => {

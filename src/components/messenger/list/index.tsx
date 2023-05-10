@@ -43,6 +43,7 @@ export interface Properties extends PublicProperties {
   conversations: (Channel & { messagePreview?: string })[];
   isFetchingExistingConversations: boolean;
   isGroupCreating: boolean;
+  isFirstTimeLogin: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -59,7 +60,7 @@ interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { createConversation } = state;
+    const { createConversation, registration } = state;
     const conversations = denormalizeConversations(state)
       .sort((messengerA, messengerB) =>
         compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
@@ -77,6 +78,7 @@ export class Container extends React.Component<Properties, State> {
       groupUsers: createConversation.groupUsers,
       isGroupCreating: createConversation.groupDetails.isCreating,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
+      isFirstTimeLogin: registration.isFirstTimeLogin,
     };
   }
 
@@ -93,6 +95,11 @@ export class Container extends React.Component<Properties, State> {
   }
 
   state = { isRewardsPopupOpen: false };
+
+  constructor(props: Properties) {
+    super(props);
+    this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
+  }
 
   componentDidMount(): void {
     this.props.fetchConversations();

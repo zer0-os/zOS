@@ -17,7 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconCurrencyDollar, IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
@@ -27,6 +27,10 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { adminMessageText } from '../../../lib/chat/chat-message';
+import { RewardsPopupContainer } from '../../rewards-popup/container';
+
+import { bem } from '../../../lib/bem';
+const c = bem('messenger-list');
 
 export interface PublicProperties {
   onClose: () => void;
@@ -48,7 +52,11 @@ export interface Properties extends PublicProperties {
   createConversation: (payload: CreateMessengerConversation) => void;
 }
 
-export class Container extends React.Component<Properties> {
+interface State {
+  isRewardsPopupOpen: boolean;
+}
+
+export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const { createConversation } = state;
     const conversations = denormalizeConversations(state)
@@ -83,6 +91,8 @@ export class Container extends React.Component<Properties> {
     };
   }
 
+  state = { isRewardsPopupOpen: false };
+
   componentDidMount(): void {
     this.props.fetchConversations();
   }
@@ -110,6 +120,9 @@ export class Container extends React.Component<Properties> {
     this.props.createConversation(conversation);
   };
 
+  openRewards = () => this.setState({ isRewardsPopupOpen: true });
+  closeRewards = () => this.setState({ isRewardsPopupOpen: false });
+
   renderTitleBar() {
     return (
       <div className='messenger-list__header'>
@@ -124,6 +137,15 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         {this.renderTitleBar()}
+        <div className={c('rewards-bar')}>
+          <button onClick={this.openRewards} className={c('rewards-button')}>
+            <div>Rewards</div>
+            <div className={c('rewards-icon')}>
+              <IconCurrencyDollar size={16} />
+            </div>
+          </button>
+        </div>
+        {this.state.isRewardsPopupOpen && <RewardsPopupContainer onClose={this.closeRewards} />}
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel

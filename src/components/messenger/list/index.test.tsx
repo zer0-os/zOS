@@ -12,6 +12,7 @@ import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { AdminMessageType } from '../../../store/messages';
+import { RewardsPopupContainer } from '../../rewards-popup/container';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -207,6 +208,18 @@ describe('messenger-list', () => {
         isCreating: true,
       })
     );
+  });
+
+  it('opens/closes the rewards popup', async function () {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement(RewardsPopupContainer);
+
+    wrapper.find('.messenger-list__rewards-button').simulate('click');
+    expect(wrapper).toHaveElement(RewardsPopupContainer);
+
+    wrapper.find(RewardsPopupContainer).simulate('close');
+    expect(wrapper).not.toHaveElement(RewardsPopupContainer);
   });
 
   describe('mapState', () => {

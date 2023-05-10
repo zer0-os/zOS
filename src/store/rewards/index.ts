@@ -6,12 +6,12 @@ export enum SagaActionTypes {
 
 export type RewardsState = {
   loading: boolean;
-  total: number;
+  zero: number;
 };
 
 export const initialState: RewardsState = {
   loading: false,
-  total: 0,
+  zero: 0,
 };
 
 export const fetch = createAction<{}>(SagaActionTypes.Fetch);
@@ -23,11 +23,11 @@ const slice = createSlice({
     setLoading: (state, action: PayloadAction<RewardsState['loading']>) => {
       state.loading = action.payload;
     },
-    setTotal: (state, action: PayloadAction<RewardsState['total']>) => {
-      state.total = action.payload;
+    setZero: (state, action: PayloadAction<RewardsState['zero']>) => {
+      state.zero = action.payload;
     },
   },
 });
 
-export const { setLoading, setTotal } = slice.actions;
+export const { setLoading, setZero } = slice.actions;
 export const { reducer } = slice;

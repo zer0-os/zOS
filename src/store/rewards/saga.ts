@@ -1,6 +1,6 @@
 import { call, put, take } from 'redux-saga/effects';
 
-import { SagaActionTypes, setLoading, setTotal } from '.';
+import { SagaActionTypes, setLoading, setZero } from '.';
 import { fetchRewards } from './api';
 
 export function* fetch(action) {
@@ -8,7 +8,7 @@ export function* fetch(action) {
   try {
     const result = yield call(fetchRewards, {});
     if (result.success) {
-      yield put(setTotal(result.response.zero));
+      yield put(setZero(result.response.zero));
     } else {
     }
   } catch (e) {

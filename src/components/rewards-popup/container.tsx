@@ -4,7 +4,9 @@ import { createPortal } from 'react-dom';
 import { connectContainer } from '../../store/redux-container';
 import { RewardsPopup } from '.';
 
-interface PublicProperties {}
+interface PublicProperties {
+  onClose: () => void;
+}
 
 export interface Properties extends PublicProperties {}
 
@@ -17,7 +19,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return <>{createPortal(<RewardsPopup usd={''} zero={''} />, document.body)}</>;
+    return <>{createPortal(<RewardsPopup usd={'9836'} zero={''} onClose={this.props.onClose} />, document.body)}</>;
   }
 }
 

@@ -7,6 +7,7 @@ describe('RewardsPopup', () => {
     const allProps: Properties = {
       usd: '',
       zero: '',
+      onClose: () => null,
       ...props,
     };
 
@@ -23,5 +24,14 @@ describe('RewardsPopup', () => {
     const wrapper = subject({ zero: '838' });
 
     expect(wrapper.find('.rewards-popup__rewards-zero').text()).toEqual('838 ZERO');
+  });
+
+  it('publishes onClose', function () {
+    const onClose = jest.fn();
+    const wrapper = subject({ onClose });
+
+    wrapper.find('.rewards-popup__underlay').simulate('click');
+
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

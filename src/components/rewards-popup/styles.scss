@@ -4,25 +4,35 @@
 .rewards-popup {
   position: absolute;
   z-index: 10;
-  box-sizing: border-box;
-  width: 390px;
-  // TODO: position based on layout
-  top: 50px;
-  left: 50px;
 
-  background-image: url(cloudAsset('rewards_background.svg')), linear-gradient(180deg, #8e4ec6 -44.1%, #141316 42.53%);
-  background-repeat: no-repeat;
+  &__content {
+    box-sizing: border-box;
+    width: 390px;
+    position: absolute;
+    // TODO: currently positioned based on full zOS layout mode
+    top: 32px + 64px;
+    right: 0px;
 
-  // Elevation 1
-  box-shadow: 4px 4px 10px #040304;
-  border-radius: 8px;
+    background-image: url(cloudAsset('rewards_background.svg')), linear-gradient(180deg, #8e4ec6 -44.1%, #141316 42.53%);
+    background-repeat: no-repeat;
 
-  color: theme.$color-greyscale-11;
+    // Elevation 1
+    box-shadow: 4px 4px 10px #040304;
+    border-radius: 8px;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 32px;
+    color: theme.$color-greyscale-11;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 32px;
+  }
+
+  &__close-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
 
   &__heading {
     margin-top: 48px;
@@ -88,5 +98,15 @@
     margin-top: 52px;
     height: 54px; // Non-standard button sized
     width: 100%;
+  }
+
+  &__underlay {
+    justify-content: center;
+    position: fixed;
+    z-index: 15;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
   }
 }

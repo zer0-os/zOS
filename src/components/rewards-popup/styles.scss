@@ -28,6 +28,12 @@
     padding: 40px 32px;
   }
 
+  &__close-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
   &__heading {
     margin-top: 48px;
     font-family: 'Roboto Mono';

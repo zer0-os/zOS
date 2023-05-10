@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { IconGift1, IconTrendUp1 } from '@zero-tech/zui/icons';
-import { Button } from '@zero-tech/zui/components';
+import { IconGift1, IconTrendUp1, IconXClose } from '@zero-tech/zui/icons';
+import { Button, IconButton } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import './styles.scss';
@@ -25,6 +25,13 @@ export class RewardsPopup extends React.Component<Properties> {
       <div className={c('')}>
         <div className={c('underlay')} onClick={this.abort}>
           <div className={c('content')}>
+            <IconButton
+              Icon={IconXClose}
+              className={c('close-button')}
+              variant='tertiary'
+              color='greyscale'
+              onClick={this.abort}
+            />
             <ZeroSymbol height={32} width={32} />
             <span className={c('heading')}>My Rewards</span>
             <div className={c('rewards-usd')}>{this.props.usd}</div>

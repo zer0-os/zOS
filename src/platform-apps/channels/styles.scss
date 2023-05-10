@@ -316,9 +316,6 @@ $scrollbar-width: 5px;
           align-items: center;
           margin: 5px 0;
           &-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             padding-left: 8px;
             border-left: 2px solid theme.$color-primary-5;
             flex-grow: 1;

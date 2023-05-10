@@ -6,12 +6,12 @@ export enum SagaActionTypes {
 
 export type RewardsState = {
   loading: boolean;
-  zero: number;
+  zero: BigInt;
 };
 
 export const initialState: RewardsState = {
   loading: false,
-  zero: 0,
+  zero: BigInt(0),
 };
 
 export const fetch = createAction<{}>(SagaActionTypes.Fetch);

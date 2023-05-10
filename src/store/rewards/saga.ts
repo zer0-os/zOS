@@ -8,7 +8,7 @@ export function* fetch(action) {
   try {
     const result = yield call(fetchRewards, {});
     if (result.success) {
-      yield put(setZero(result.response.zero));
+      yield put(setZero(BigInt(result.response.zero)));
     } else {
     }
   } catch (e) {

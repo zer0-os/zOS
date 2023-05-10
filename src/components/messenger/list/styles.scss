@@ -163,6 +163,18 @@ $side-padding: 16px;
     &:hover {
       font-weight: 700;
     }
+
+    &--open {
+      font-weight: 700;
+      color: theme.$color-primary-11;
+
+      .messenger-list__rewards-icon {
+        background: radial-gradient(66.52% 66.52% at 0% 0%, #b900e3 0%, rgba(111, 25, 131, 0) 100%),
+          radial-gradient(93.63% 93.63% at 100% 0%, #de1cd7 0%, rgba(232, 0, 223, 0) 100%),
+          radial-gradient(99.71% 99.71% at 104.51% 75.11%, #71b8ff 0%, rgba(116, 186, 255, 0) 100%),
+          radial-gradient(65.88% 65.88% at -1.79% 99.21%, #7d12e7 0%, rgba(162, 68, 255, 0) 100%), #290634;
+      }
+    }
   }
 
   &__rewards-icon {

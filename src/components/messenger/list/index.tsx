@@ -30,6 +30,7 @@ import { adminMessageText } from '../../../lib/chat/chat-message';
 import { RewardsPopupContainer } from '../../rewards-popup/container';
 
 import { bem } from '../../../lib/bem';
+import classnames from 'classnames';
 const c = bem('messenger-list');
 
 export interface PublicProperties {
@@ -138,7 +139,12 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.renderTitleBar()}
         <div className={c('rewards-bar')}>
-          <button onClick={this.openRewards} className={c('rewards-button')}>
+          <button
+            onClick={this.openRewards}
+            className={classnames(c('rewards-button'), {
+              [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
+            })}
+          >
             <div>Rewards</div>
             <div className={c('rewards-icon')}>
               <IconCurrencyDollar size={16} />

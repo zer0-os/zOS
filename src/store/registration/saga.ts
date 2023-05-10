@@ -11,6 +11,7 @@ import {
   setStage,
   setInviteCode,
   setUserId,
+  setFirstTimeLogin,
 } from '.';
 import {
   validateInvite as apiValidateInvite,
@@ -109,6 +110,7 @@ export function* updateProfile(action) {
     const { userId, inviteCode } = yield select((state) => state.registration);
     const response = yield call(apiCompleteAccount, { userId, name, inviteCode });
     if (response.success) {
+      yield put(setFirstTimeLogin(true));
       yield put(setStage(RegistrationStage.Done));
       return true;
     } else {

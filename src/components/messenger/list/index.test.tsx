@@ -13,6 +13,7 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { AdminMessageType } from '../../../store/messages';
 import { RewardsPopupContainer } from '../../rewards-popup/container';
+import { RegistrationState } from '../../../store/registration';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -27,6 +28,7 @@ describe('messenger-list', () => {
       conversations: [],
       isFetchingExistingConversations: false,
       isGroupCreating: false,
+      isFirstTimeLogin: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -222,6 +224,12 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(RewardsPopupContainer);
   });
 
+  it('rewards popup is rendered immediately if first time login', async function () {
+    const wrapper = subject({ isFirstTimeLogin: true });
+
+    expect(wrapper).toHaveElement(RewardsPopupContainer);
+  });
+
   describe('mapState', () => {
     const subject = (channels, createConversationState = {}, currentUser = [{ userId: '', firstName: '' }]) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser));
@@ -246,6 +254,7 @@ describe('messenger-list', () => {
           groupDetails: {},
           ...createConversationState,
         },
+        registration: {},
       } as RootState;
     };
 
@@ -343,6 +352,15 @@ describe('messenger-list', () => {
       });
 
       expect(state.isFetchingExistingConversations).toEqual(true);
+    });
+
+    test('isFirstTimeLogin', async () => {
+      const state = DirectMessageChat.mapState({
+        ...getState([]),
+        registration: { isFirstTimeLogin: true } as RegistrationState,
+      });
+
+      expect(state.isFirstTimeLogin).toEqual(true);
     });
   });
 });

@@ -30,6 +30,7 @@ export type RegistrationState = {
   inviteCodeStatus: string;
   userId: string;
   inviteCode: string;
+  isFirstTimeLogin: boolean;
 };
 
 export enum AccountCreationErrors {
@@ -55,6 +56,7 @@ export const initialState: RegistrationState = {
 
   userId: '',
   inviteCode: '',
+  isFirstTimeLogin: false,
 };
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
@@ -83,8 +85,12 @@ const slice = createSlice({
     setInviteCode: (state, action: PayloadAction<RegistrationState['inviteCode']>) => {
       state.inviteCode = action.payload;
     },
+    setFirstTimeLogin: (state, action: PayloadAction<RegistrationState['isFirstTimeLogin']>) => {
+      state.isFirstTimeLogin = action.payload;
+    },
   },
 });
 
-export const { setInviteStatus, setLoading, setStage, setErrors, setUserId, setInviteCode } = slice.actions;
+export const { setInviteStatus, setLoading, setStage, setErrors, setUserId, setInviteCode, setFirstTimeLogin } =
+  slice.actions;
 export const { reducer } = slice;

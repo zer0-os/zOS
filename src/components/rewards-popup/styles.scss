@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../functions';
+@import '../../animation';
 
 .rewards-popup {
   position: absolute;
@@ -12,6 +13,7 @@
     // TODO: currently positioned based on full zOS layout mode
     top: 32px + 64px;
     right: 0px;
+    animation: fadein 0.3s ease-out forwards;
 
     background-image: url(cloudAsset('rewards_background.svg')), linear-gradient(180deg, #8e4ec6 -44.1%, #141316 42.53%);
     background-repeat: no-repeat;

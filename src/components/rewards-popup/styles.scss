@@ -10,8 +10,8 @@
     width: 390px;
     position: absolute;
     // TODO: currently positioned based on full zOS layout mode
-    top: 50px;
-    left: 50px;
+    top: 32px + 64px;
+    right: 0px;
 
     background-image: url(cloudAsset('rewards_background.svg')), linear-gradient(180deg, #8e4ec6 -44.1%, #141316 42.53%);
     background-repeat: no-repeat;

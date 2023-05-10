@@ -1,0 +1,4 @@
+@function cloudAsset($name) {
+  $root: 'https://res.cloudinary.com/fact0ry/image/upload/v1681745540/zero-assets/zos/';
+  @return $root + $name;
+}

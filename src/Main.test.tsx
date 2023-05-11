@@ -139,5 +139,22 @@ describe('Main', () => {
 
       expect(state.isMessengerFullScreen).toBeTrue();
     });
+
+    test('other layout state when messenger is fullscreen', () => {
+      const state = subject({
+        layout: {
+          value: {
+            isContextPanelOpen: true,
+            hasContextPanel: true,
+            isSidekickopen: false,
+            isMessengerFullScreen: true,
+          },
+        } as any,
+      });
+
+      expect(state.isContextPanelOpen).toBeFalse();
+      expect(state.hasContextPanel).toBeFalse();
+      expect(state.isSidekickOpen).toBeTrue();
+    });
   });
 });

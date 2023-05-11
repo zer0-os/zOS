@@ -28,11 +28,20 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const layout = state.layout.value;
 
+    if (layout.isMessengerFullScreen) {
+      return {
+        hasContextPanel: false,
+        isContextPanelOpen: false,
+        isSidekickOpen: true,
+        isMessengerFullScreen: true,
+      };
+    }
+
     return {
       hasContextPanel: layout.hasContextPanel,
       isContextPanelOpen: layout.isContextPanelOpen,
       isSidekickOpen: layout.isSidekickOpen,
-      isMessengerFullScreen: layout.isMessengerFullScreen,
+      isMessengerFullScreen: false,
     };
   }
 

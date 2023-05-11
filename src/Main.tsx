@@ -93,11 +93,14 @@ export class Container extends React.Component<Properties> {
           </div>
         )}
 
-        {this.props.context.isAuthenticated && <Sidekick className='main__sidekick' />}
+        {this.props.context.isAuthenticated && (
+          <>
+            <Sidekick className='main__sidekick' />
+            <MessengerChat />
+          </>
+        )}
 
         <ThemeEngine />
-
-        {this.props.context.isAuthenticated && <MessengerChat />}
       </div>
     );
   }

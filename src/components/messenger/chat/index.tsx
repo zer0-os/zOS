@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
+import { IconExpand1, IconLayoutRight, IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setActiveMessengerId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
@@ -12,6 +12,7 @@ import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
+import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 
 export interface PublicProperties {}
 
@@ -19,19 +20,22 @@ export interface Properties extends PublicProperties {
   activeMessengerId: string;
   setActiveMessengerId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
+  isFullScreen: boolean;
+  enterFullScreenMessenger: () => void;
+  exitFullScreenMessenger: () => void;
 }
 
 interface State {
-  isFullScreen: boolean;
   isMinimized: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
-  state = { isFullScreen: false, isMinimized: false };
+  state = { isMinimized: false };
 
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeMessengerId },
+      layout,
     } = state;
 
     const directMessage = denormalize(activeMessengerId, state);
@@ -39,11 +43,16 @@ export class Container extends React.Component<Properties, State> {
     return {
       activeMessengerId,
       directMessage,
+      isFullScreen: layout.value?.isMessengerFullScreen,
     };
   }
 
   static mapActions(): Partial<Properties> {
-    return { setActiveMessengerId };
+    return {
+      setActiveMessengerId,
+      enterFullScreenMessenger,
+      exitFullScreenMessenger,
+    };
   }
 
   handleClose = (): void => {
@@ -52,17 +61,16 @@ export class Container extends React.Component<Properties, State> {
 
   componentDidUpdate(prevProps: Properties): void {
     if (prevProps.activeMessengerId !== this.props.activeMessengerId) {
-      this.setState({ isFullScreen: false, isMinimized: false });
+      this.setState({ isMinimized: false });
     }
   }
 
-  handleHeaderClick = (): void => {
-    this.setState((state) => ({ isMinimized: false, isFullScreen: state.isMinimized ? false : !state.isFullScreen }));
+  handleMinimizeClick = (): void => {
+    this.setState((state) => ({ isMinimized: !state.isMinimized }));
   };
 
-  handleMinimizeClick = (): void => {
-    this.setState((state) => ({ isMinimized: !state.isMinimized, isFullScreen: false }));
-  };
+  handleMaximize = (): void => this.props.enterFullScreenMessenger();
+  handleDockRight = (): void => this.props.exitFullScreenMessenger();
 
   renderTitle() {
     const { directMessage } = this.props;
@@ -132,15 +140,17 @@ export class Container extends React.Component<Properties, State> {
     return (
       <div
         className={classNames('direct-message-chat', {
-          'direct-message-chat--transition': this.state.isFullScreen !== null || this.state.isMinimized,
-          'direct-message-chat--full-screen': this.state.isFullScreen,
+          'direct-message-chat--transition': this.props.isFullScreen !== null || this.state.isMinimized,
+          'direct-message-chat--full-screen': this.props.isFullScreen,
           'direct-message-chat--minimized': this.state.isMinimized,
           'direct-message-chat--one-on-one': this.isOneOnOne(),
         })}
       >
         <div className='direct-message-chat__content'>
-          <div className='direct-message-chat__title-bar' onClick={this.handleHeaderClick}>
-            <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />
+          <div className='direct-message-chat__title-bar'>
+            {this.props.isFullScreen && <IconButton onClick={this.handleDockRight} Icon={IconLayoutRight} size={12} />}
+            {!this.props.isFullScreen && <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />}
+            {!this.props.isFullScreen && <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />}
             <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
           </div>
 

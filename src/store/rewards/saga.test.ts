@@ -1,6 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { throwError } from 'redux-saga-test-plan/providers';
 
 import { fetch } from './saga';
 import { fetchRewards } from './api';

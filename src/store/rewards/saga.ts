@@ -3,7 +3,7 @@ import { call, put, take } from 'redux-saga/effects';
 import { SagaActionTypes, setLoading, setZero } from '.';
 import { fetchRewards } from './api';
 
-export function* fetch(action) {
+export function* fetch(_action) {
   yield put(setLoading(true));
   try {
     const result = yield call(fetchRewards, {});

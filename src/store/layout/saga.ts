@@ -4,6 +4,7 @@ import { put, takeLatest, select } from 'redux-saga/effects';
 import { update, SagaActionTypes } from './';
 import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 import { User } from '../authentication/types';
+import { featureFlags } from '../../lib/feature-flags';
 
 export const getKeyWithUserId = (key: string) => (state) => {
   const user: User = getDeepProperty(state, 'authentication.user.data', null);
@@ -35,7 +36,7 @@ export function* updateSidekick(action) {
 
 export function* initializeUserLayout(user: { id: string }) {
   const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
-  const isMessengerFullScreen = (window as any).FEATURE_FLAGS.fullScreenMessenger;
+  const isMessengerFullScreen = featureFlags.fullScreenMessenger;
 
   yield put(
     update({

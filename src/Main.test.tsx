@@ -14,6 +14,7 @@ describe('Main', () => {
       isSidekickOpen: false,
       hasContextPanel: false,
       isContextPanelOpen: false,
+      isMessengerFullScreen: false,
       context: {
         isAuthenticated: false,
       },
@@ -77,6 +78,18 @@ describe('Main', () => {
     expect(wrapper).toHaveElement(MessengerChat);
   });
 
+  it('does not render platform navigation if chat is full screen', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper).not.toHaveElement('.main__navigation-platform');
+  });
+
+  it('does not render main header if chat is full screen', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper).not.toHaveElement('.main__header');
+  });
+
   describe('mapState', () => {
     const subject = (state: any) =>
       Main.mapState({
@@ -107,6 +120,16 @@ describe('Main', () => {
       });
 
       expect(state.isContextPanelOpen).toBeTrue();
+    });
+
+    test('isMessengerFullScreen', () => {
+      const state = subject({
+        layout: {
+          value: { isMessengerFullScreen: true },
+        } as any,
+      });
+
+      expect(state.isMessengerFullScreen).toBeTrue();
     });
   });
 });

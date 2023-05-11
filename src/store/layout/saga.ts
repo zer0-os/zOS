@@ -35,10 +35,12 @@ export function* updateSidekick(action) {
 
 export function* initializeUserLayout(user: { id: string }) {
   const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
+  const isMessengerFullScreen = (window as any).FEATURE_FLAGS.fullScreenMessenger;
 
   yield put(
     update({
       isSidekickOpen,
+      isMessengerFullScreen,
     })
   );
 }

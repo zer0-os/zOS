@@ -46,7 +46,15 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <>
-        {createPortal(<RewardsPopup usd={this.stringifyZero()} zero='' onClose={this.props.onClose} />, document.body)}
+        {createPortal(
+          <RewardsPopup
+            usd={this.stringifyZero()}
+            zero=''
+            onClose={this.props.onClose}
+            isLoading={this.props.isLoading}
+          />,
+          document.body
+        )}
       </>
     );
   }

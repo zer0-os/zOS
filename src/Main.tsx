@@ -45,6 +45,7 @@ export class Container extends React.Component<Properties> {
       'context-panel-open': this.props.isContextPanelOpen,
       'sidekick-panel-open': this.props.isSidekickOpen && this.props.context.isAuthenticated,
       'has-context-panel': this.props.hasContextPanel,
+      'messenger-full-screen': this.props.isMessengerFullScreen,
     });
 
     return (

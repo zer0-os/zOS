@@ -52,12 +52,14 @@ describe('Main', () => {
     const wrapper = subject({
       hasContextPanel: false,
       isContextPanelOpen: false,
+      isMessengerFullScreen: false,
     });
 
     const main = wrapper.find('.main');
 
     expect(main.hasClass('has-context-panel')).toBe(false);
     expect(main.hasClass('context-panel-open')).toBe(false);
+    expect(main.hasClass('messenger-full-screen')).toBe(false);
   });
 
   it('adds class when hasContextPanel is true', () => {
@@ -70,6 +72,12 @@ describe('Main', () => {
     const wrapper = subject({ isContextPanelOpen: true });
 
     expect(wrapper.find('.main').hasClass('context-panel-open')).toBe(true);
+  });
+
+  it('adds class when isMessengerFullScreen is true', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper.find('.main').hasClass('messenger-full-screen')).toBe(true);
   });
 
   it('renders direct message chat component', () => {

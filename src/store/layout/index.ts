@@ -12,6 +12,7 @@ const initialState: LayoutState = {
     isContextPanelOpen: false,
     hasContextPanel: false,
     isSidekickOpen: false,
+    isMessengerFullScreen: true,
   },
 };
 

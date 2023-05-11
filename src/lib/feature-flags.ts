@@ -24,6 +24,14 @@ export class FeatureFlags {
   set allowInvites(value: boolean) {
     this._setBoolean('allowInvites', value);
   }
+
+  get fullScreenMessenger() {
+    return this._getBoolean('fullScreenMessenger');
+  }
+
+  set fullScreenMessenger(value: boolean) {
+    this._setBoolean('fullScreenMessenger', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

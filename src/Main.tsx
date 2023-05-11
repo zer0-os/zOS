@@ -18,6 +18,7 @@ export interface Properties {
   hasContextPanel: boolean;
   isContextPanelOpen: boolean;
   isSidekickOpen: boolean;
+  isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
   };
@@ -27,10 +28,20 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const layout = state.layout.value;
 
+    if (layout.isMessengerFullScreen) {
+      return {
+        hasContextPanel: false,
+        isContextPanelOpen: false,
+        isSidekickOpen: true,
+        isMessengerFullScreen: true,
+      };
+    }
+
     return {
       hasContextPanel: layout.hasContextPanel,
       isContextPanelOpen: layout.isContextPanelOpen,
       isSidekickOpen: layout.isSidekickOpen,
+      isMessengerFullScreen: false,
     };
   }
 
@@ -43,6 +54,7 @@ export class Container extends React.Component<Properties> {
       'context-panel-open': this.props.isContextPanelOpen,
       'sidekick-panel-open': this.props.isSidekickOpen && this.props.context.isAuthenticated,
       'has-context-panel': this.props.hasContextPanel,
+      'messenger-full-screen': this.props.isMessengerFullScreen,
     });
 
     return (
@@ -55,27 +67,31 @@ export class Container extends React.Component<Properties> {
               <ViewModeToggle className='main__view-mode-toggle' />
             </div>
           </div>
-          <div className='main__navigation-platform'>
-            <div>
-              <div className='main__network'>
-                <Logo className={'main__network__logo'} />
-                <span>Wilder World</span>
+          {!this.props.isMessengerFullScreen && (
+            <div className='main__navigation-platform'>
+              <div>
+                <div className='main__network'>
+                  <Logo className={'main__network__logo'} />
+                  <span>Wilder World</span>
+                </div>
               </div>
+              <div className='main__app-menu-container'>
+                <AppMenuContainer />
+              </div>
+              <div></div>
             </div>
-            <div className='main__app-menu-container'>
-              <AppMenuContainer />
+          )}
+        </div>
+        {!this.props.isMessengerFullScreen && (
+          <div className='main__header'>
+            <div className='main__address-bar-wrapper'>
+              <AddressBarContainer className='main__address-bar' />
             </div>
-            <div></div>
+            <div className='main__wallet-manager-wrapper'>
+              <WalletManager className='main__wallet-manager' />
+            </div>
           </div>
-        </div>
-        <div className='main__header'>
-          <div className='main__address-bar-wrapper'>
-            <AddressBarContainer className='main__address-bar' />
-          </div>
-          <div className='main__wallet-manager-wrapper'>
-            <WalletManager className='main__wallet-manager' />
-          </div>
-        </div>
+        )}
 
         {this.props.context.isAuthenticated && <Sidekick className='main__sidekick' />}
 

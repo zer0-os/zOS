@@ -32,6 +32,10 @@ $border-color-hover: theme-zui.$color-primary-7;
 
   pointer-events: none;
 
+  &.messenger-full-screen {
+    justify-content: start;
+  }
+
   &__navigation {
     box-sizing: border-box;
     display: flex;

@@ -14,6 +14,7 @@ describe('Main', () => {
       isSidekickOpen: false,
       hasContextPanel: false,
       isContextPanelOpen: false,
+      isMessengerFullScreen: false,
       context: {
         isAuthenticated: false,
       },
@@ -51,12 +52,14 @@ describe('Main', () => {
     const wrapper = subject({
       hasContextPanel: false,
       isContextPanelOpen: false,
+      isMessengerFullScreen: false,
     });
 
     const main = wrapper.find('.main');
 
     expect(main.hasClass('has-context-panel')).toBe(false);
     expect(main.hasClass('context-panel-open')).toBe(false);
+    expect(main.hasClass('messenger-full-screen')).toBe(false);
   });
 
   it('adds class when hasContextPanel is true', () => {
@@ -71,10 +74,28 @@ describe('Main', () => {
     expect(wrapper.find('.main').hasClass('context-panel-open')).toBe(true);
   });
 
+  it('adds class when isMessengerFullScreen is true', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper.find('.main').hasClass('messenger-full-screen')).toBe(true);
+  });
+
   it('renders direct message chat component', () => {
     const wrapper = subject({ context: { isAuthenticated: true } });
 
     expect(wrapper).toHaveElement(MessengerChat);
+  });
+
+  it('does not render platform navigation if chat is full screen', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper).not.toHaveElement('.main__navigation-platform');
+  });
+
+  it('does not render main header if chat is full screen', () => {
+    const wrapper = subject({ isMessengerFullScreen: true });
+
+    expect(wrapper).not.toHaveElement('.main__header');
   });
 
   describe('mapState', () => {
@@ -107,6 +128,33 @@ describe('Main', () => {
       });
 
       expect(state.isContextPanelOpen).toBeTrue();
+    });
+
+    test('isMessengerFullScreen', () => {
+      const state = subject({
+        layout: {
+          value: { isMessengerFullScreen: true },
+        } as any,
+      });
+
+      expect(state.isMessengerFullScreen).toBeTrue();
+    });
+
+    test('other layout state when messenger is fullscreen', () => {
+      const state = subject({
+        layout: {
+          value: {
+            isContextPanelOpen: true,
+            hasContextPanel: true,
+            isSidekickopen: false,
+            isMessengerFullScreen: true,
+          },
+        } as any,
+      });
+
+      expect(state.isContextPanelOpen).toBeFalse();
+      expect(state.hasContextPanel).toBeFalse();
+      expect(state.isSidekickOpen).toBeTrue();
     });
   });
 });

@@ -102,7 +102,11 @@ export class AppSandbox extends React.Component<Properties> {
   }
 
   render() {
-    const { hasContextPanel, isContextPanelOpen, isSidekickOpen } = this.props.layout;
+    const { hasContextPanel, isContextPanelOpen, isSidekickOpen, isMessengerFullScreen } = this.props.layout;
+
+    if (isMessengerFullScreen) {
+      return null;
+    }
 
     const className = classNames('app-sandbox', {
       'context-panel-open': isContextPanelOpen,

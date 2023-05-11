@@ -199,4 +199,10 @@ describe('AppSandbox', () => {
     expect(sandbox.hasClass('context-panel-open')).toBe(true);
     expect(sandbox.hasClass('has-context-panel')).toBe(true);
   });
+
+  it('does not render if messenger is full screen', () => {
+    const wrapper = subject({ layout: { isMessengerFullScreen: true } });
+
+    expect(wrapper.isEmptyRender()).toBeTrue();
+  });
 });

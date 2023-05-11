@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { IconGift1, IconTrendUp1, IconXClose } from '@zero-tech/zui/icons';
-import { Button, IconButton } from '@zero-tech/zui/components';
+import { Button, IconButton, SkeletonText } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import './styles.scss';
@@ -11,6 +11,7 @@ const c = bem('rewards-popup');
 export interface Properties {
   usd: string;
   zero: string;
+  isLoading: boolean;
 
   onClose: () => void;
 }
@@ -34,7 +35,17 @@ export class RewardsPopup extends React.Component<Properties> {
             />
             <ZeroSymbol height={32} width={32} />
             <span className={c('heading')}>My Rewards</span>
-            <div className={c('rewards-usd')}>{this.props.usd}</div>
+            <div className={c('rewards-usd')}>
+              <SkeletonText
+                asyncText={{
+                  isLoading: this.props.isLoading,
+                  text: this.props.usd,
+                }}
+                skeletonOptions={{
+                  width: 50,
+                }}
+              />
+            </div>
             <div className={c('rewards-zero')}>{this.props.zero} ZERO</div>
             <div className={c('info-card')}>
               <div className={c('info-card__icon')}>

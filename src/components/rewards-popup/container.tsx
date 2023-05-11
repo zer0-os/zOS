@@ -12,7 +12,7 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isLoading: boolean;
-  zero: BigInt;
+  zero: string;
 
   fetchRewards: () => void;
 }
@@ -36,19 +36,17 @@ export class Container extends React.Component<Properties> {
   }
 
   stringifyZero() {
-    const stringValue = this.props.zero.toString().padStart(18, '0');
-    const whole = stringValue.slice(0, -18) || '0';
-    const decimal = stringValue.slice(-18).replace(/0+$/, '');
-    return `${whole}.${decimal}`;
+    const stringValue = this.props.zero.padStart(19, '0');
+    const whole = stringValue.slice(0, -18);
+    const decimal = stringValue.slice(-18).slice(0, 4).replace(/0+$/, '');
+    const decimalString = decimal.length > 0 ? `.${decimal}` : '';
+    return `${whole}${decimalString}`;
   }
 
   render() {
     return (
       <>
-        {createPortal(
-          <RewardsPopup usd={this.stringifyZero()} zero={this.stringifyZero()} onClose={this.props.onClose} />,
-          document.body
-        )}
+        {createPortal(<RewardsPopup usd={this.stringifyZero()} zero='' onClose={this.props.onClose} />, document.body)}
       </>
     );
   }

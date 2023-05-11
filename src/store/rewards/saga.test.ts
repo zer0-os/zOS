@@ -14,14 +14,14 @@ describe('fetch', () => {
       .provide([
         [
           call(fetchRewards, {}),
-          { success: true, response: { zero: 517 } },
+          { success: true, response: { zero: '517' } },
         ],
       ])
       .withReducer(rootReducer, initialState({}))
       .call(fetchRewards, {})
       .run();
 
-    expect(storeState.rewards.total).toEqual(517);
+    expect(storeState.rewards.zero).toEqual('517');
   });
 });
 

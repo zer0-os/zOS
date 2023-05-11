@@ -59,9 +59,9 @@ describe('Container', () => {
     });
 
     test('zero', () => {
-      const props = subject({ zero: 17 });
+      const props = subject({ zero: '17' });
 
-      expect(props.zero).toEqual(17);
+      expect(props.zero).toEqual('17');
     });
   });
 });

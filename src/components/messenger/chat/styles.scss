@@ -166,6 +166,12 @@ $recent-indicator-size: 8px;
     }
   }
 
+  &.direct-message-chat--no-title {
+    .channel-view {
+      height: calc(100% - $header-height);
+    }
+  }
+
   &--minimized {
     bottom: calc($title-bar-height + $header-height - $window-height);
   }

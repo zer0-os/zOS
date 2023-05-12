@@ -44,6 +44,7 @@ export interface Properties extends PublicProperties {
   isFetchingExistingConversations: boolean;
   isGroupCreating: boolean;
   isFirstTimeLogin: boolean;
+  includeTitleBar: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -60,7 +61,11 @@ interface State {
 
 export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
-    const { createConversation, registration } = state;
+    const {
+      createConversation,
+      registration,
+      authentication: { user },
+    } = state;
     const conversations = denormalizeConversations(state)
       .sort((messengerA, messengerB) =>
         compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
@@ -79,6 +84,7 @@ export class Container extends React.Component<Properties, State> {
       isGroupCreating: createConversation.groupDetails.isCreating,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
+      includeTitleBar: user?.data?.isAMemberOfWorlds,
     };
   }
 
@@ -144,7 +150,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        {this.renderTitleBar()}
+        {this.props.includeTitleBar && this.renderTitleBar()}
         <div className={c('rewards-bar')}>
           <button
             onClick={this.openRewards}

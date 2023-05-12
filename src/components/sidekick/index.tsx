@@ -38,19 +38,15 @@ export class Container extends React.Component<Properties> {
     return this.props.isOpen;
   }
 
-  renderTabContent(): JSX.Element {
-    return (
-      <div className='sidekick__tab-content--messages'>
-        <MessengerList onClose={this.props.closeConversations} />
-      </div>
-    );
-  }
-
   render() {
     return (
       <IfAuthenticated showChildren>
         <div className={classNames('sidekick', this.props.className, { 'sidekick--open': this.isOpen })}>
-          <div className='sidekick__tab-content'>{this.renderTabContent()}</div>
+          <div className='sidekick__tab-content'>
+            <div className='sidekick__tab-content--messages'>
+              <MessengerList onClose={this.props.closeConversations} />
+            </div>
+          </div>
         </div>
       </IfAuthenticated>
     );

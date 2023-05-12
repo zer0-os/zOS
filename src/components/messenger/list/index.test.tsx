@@ -29,6 +29,7 @@ describe('messenger-list', () => {
       isFetchingExistingConversations: false,
       isGroupCreating: false,
       isFirstTimeLogin: false,
+      includeTitleBar: true,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -230,18 +231,33 @@ describe('messenger-list', () => {
     expect(wrapper).toHaveElement(RewardsPopupContainer);
   });
 
+  it('renders the title bar based on property', function () {
+    const wrapper = subject({ includeTitleBar: true });
+    expect(wrapper).toHaveElement('.messenger-list__header');
+
+    wrapper.setProps({ includeTitleBar: false });
+    expect(wrapper).not.toHaveElement('.messenger-list__header');
+  });
+
   describe('mapState', () => {
-    const subject = (channels, createConversationState = {}, currentUser = [{ userId: '', firstName: '' }]) => {
+    const subject = (
+      channels,
+      createConversationState = {},
+      currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }]
+    ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser));
     };
 
-    const getState = (channels, createConversationState = {}, users = [{ userId: '' }]) => {
+    const getState = (channels, createConversationState = {}, users = [{ userId: '', isAMemberOfWorlds: true }]) => {
       const channelData = normalize(channels);
       const userData = normalizeUsers(users);
       return {
         authentication: {
           user: {
-            data: { id: users[0].userId },
+            data: {
+              id: users[0].userId,
+              isAMemberOfWorlds: users[0].isAMemberOfWorlds,
+            },
           },
         },
         channelsList: { value: channelData.result },
@@ -321,8 +337,8 @@ describe('messenger-list', () => {
         ],
         {},
         [
-          { userId: 'inviter-id', firstName: 'current user' },
-          { userId: 'invitee-id', firstName: 'Courtney' },
+          user({ userId: 'inviter-id', firstName: 'current user' }),
+          user({ userId: 'invitee-id', firstName: 'Courtney' }),
         ]
       );
 
@@ -330,6 +346,10 @@ describe('messenger-list', () => {
         'Courtney joined you on Zero',
         'Second message last',
       ]);
+
+      function user(attrs: Partial<{ userId: string; firstName: string; isAMemberOfWorlds: boolean }> = {}) {
+        return { userId: 'inviter-id', firstName: 'current user', isAMemberOfWorlds: true, ...attrs };
+      }
     });
 
     test('stage', () => {
@@ -361,6 +381,14 @@ describe('messenger-list', () => {
       });
 
       expect(state.isFirstTimeLogin).toEqual(true);
+    });
+
+    test('includeTitleBar', async () => {
+      let state = subject([], {}, [{ userId: 'user', firstName: '', isAMemberOfWorlds: false }]);
+      expect(state.includeTitleBar).toEqual(false);
+
+      state = subject([], {}, [{ userId: 'user', firstName: '', isAMemberOfWorlds: true }]);
+      expect(state.includeTitleBar).toEqual(true);
     });
   });
 });

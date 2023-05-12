@@ -32,6 +32,7 @@ import { RewardsPopupContainer } from '../../rewards-popup/container';
 import { bem } from '../../../lib/bem';
 import classnames from 'classnames';
 import { enterFullScreenMessenger } from '../../../store/layout';
+import { Avatar } from '@zero-tech/zui/components';
 const c = bem('messenger-list');
 
 export interface PublicProperties {
@@ -48,6 +49,8 @@ export interface Properties extends PublicProperties {
   includeTitleBar: boolean;
   allowClose: boolean;
   allowExpand: boolean;
+  includeRewardsAvatar: boolean;
+  userAvatarUrl: string;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -92,6 +95,8 @@ export class Container extends React.Component<Properties, State> {
       includeTitleBar: user?.data?.isAMemberOfWorlds,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
+      includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
+      userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
     };
   }
 
@@ -166,7 +171,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
-        <div className={c('rewards-bar')}>
+        <div
+          className={classnames(c('rewards-bar'), {
+            [c('rewards-bar', 'with-avatar')]: this.props.includeRewardsAvatar,
+          })}
+        >
+          {this.props.includeRewardsAvatar && (
+            <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+          )}
           <button
             onClick={this.openRewards}
             className={classnames(c('rewards-button'), {

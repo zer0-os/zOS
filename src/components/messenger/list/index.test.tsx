@@ -32,6 +32,7 @@ describe('messenger-list', () => {
       isFirstTimeLogin: false,
       includeTitleBar: true,
       allowClose: true,
+      allowExpand: true,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -40,6 +41,7 @@ describe('messenger-list', () => {
       startGroup: () => null,
       back: () => null,
       onClose: () => null,
+      enterFullScreenMessenger: () => null,
       ...props,
     };
 
@@ -65,7 +67,7 @@ describe('messenger-list', () => {
 
     const wrapper = subject({ onClose });
 
-    wrapper.find('.messenger-list__header button').simulate('click');
+    wrapper.find('.messenger-list__header button').at(1).simulate('click');
 
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -243,10 +245,27 @@ describe('messenger-list', () => {
 
   it('renders the close icon as necessary', function () {
     const wrapper = subject({ allowClose: true });
-    expect(wrapper).toHaveElement('.messenger-list__icon-button');
+    expect(wrapper).toHaveElement('IconXClose');
 
     wrapper.setProps({ allowClose: false });
-    expect(wrapper).not.toHaveElement('.messenger-list__icon-button');
+    expect(wrapper).not.toHaveElement('IconXClose');
+  });
+
+  it('renders the expand icon as necessary', function () {
+    const wrapper = subject({ allowExpand: true });
+    expect(wrapper).toHaveElement('IconExpand1');
+
+    wrapper.setProps({ allowExpand: false });
+    expect(wrapper).not.toHaveElement('IconExpand1');
+  });
+
+  it('opens full screen mode', function () {
+    const enterFullScreenMessenger = jest.fn();
+    const wrapper = subject({ enterFullScreenMessenger, allowExpand: true });
+
+    wrapper.find('.messenger-list__icon-button').at(0).simulate('click');
+
+    expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
   describe('mapState', () => {
@@ -409,6 +428,20 @@ describe('messenger-list', () => {
         layout: { value: { isMessengerFullScreen: false } } as LayoutState,
       });
       expect(state.allowClose).toEqual(true);
+    });
+
+    test('allowExpand', async () => {
+      let state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
+      });
+      expect(state.allowExpand).toEqual(false);
+
+      state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
+      });
+      expect(state.allowExpand).toEqual(true);
     });
   });
 });

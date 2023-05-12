@@ -26,9 +26,21 @@ const slice = createSlice({
         ...action.payload,
       };
     },
+    enterFullScreenMessenger: (state, _action: PayloadAction) => {
+      state.value = {
+        ...state.value,
+        isMessengerFullScreen: true,
+      };
+    },
+    exitFullScreenMessenger: (state, _action: PayloadAction) => {
+      state.value = {
+        ...state.value,
+        isMessengerFullScreen: false,
+      };
+    },
   },
 });
 
-export const { update } = slice.actions;
+export const { update, enterFullScreenMessenger, exitFullScreenMessenger } = slice.actions;
 export const { reducer } = slice;
 export { AppLayout, LayoutState, UpdateSidekickPayload };

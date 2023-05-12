@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconXClose, IconMinus } from '@zero-tech/zui/icons';
+import { IconXClose, IconMinus, IconExpand1, IconLayoutRight } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
@@ -12,6 +12,9 @@ describe('messenger-chat', () => {
       activeMessengerId: '1',
       setActiveMessengerId: jest.fn(),
       directMessage: null,
+      isFullScreen: false,
+      enterFullScreenMessenger: () => null,
+      exitFullScreenMessenger: () => null,
       ...props,
     };
 
@@ -52,6 +55,24 @@ describe('messenger-chat', () => {
     icon(wrapper, IconXClose).simulate('click');
 
     expect(setActiveDirectMessageId).toHaveBeenCalledWith('');
+  });
+
+  it('publishes full screen event', function () {
+    const enterFullScreenMessenger = jest.fn();
+    const wrapper = subject({ enterFullScreenMessenger });
+
+    icon(wrapper, IconExpand1).simulate('click');
+
+    expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
+  });
+
+  it('publishes exit full screen event', function () {
+    const exitFullScreenMessenger = jest.fn();
+    const wrapper = subject({ exitFullScreenMessenger, isFullScreen: true });
+
+    icon(wrapper, IconLayoutRight).simulate('click');
+
+    expect(exitFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
   describe('title', () => {

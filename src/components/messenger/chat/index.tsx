@@ -21,6 +21,7 @@ export interface Properties extends PublicProperties {
   setActiveMessengerId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
   isFullScreen: boolean;
+  includeTitleBar: boolean;
   enterFullScreenMessenger: () => void;
   exitFullScreenMessenger: () => void;
 }
@@ -34,6 +35,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
+      authentication: { user },
       chat: { activeMessengerId },
       layout,
     } = state;
@@ -44,6 +46,7 @@ export class Container extends React.Component<Properties, State> {
       activeMessengerId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
+      includeTitleBar: user?.data?.isAMemberOfWorlds,
     };
   }
 
@@ -147,12 +150,16 @@ export class Container extends React.Component<Properties, State> {
         })}
       >
         <div className='direct-message-chat__content'>
-          <div className='direct-message-chat__title-bar'>
-            {this.props.isFullScreen && <IconButton onClick={this.handleDockRight} Icon={IconLayoutRight} size={12} />}
-            {!this.props.isFullScreen && <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />}
-            {!this.props.isFullScreen && <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />}
-            <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
-          </div>
+          {this.props.includeTitleBar && (
+            <div className='direct-message-chat__title-bar'>
+              {this.props.isFullScreen && (
+                <IconButton onClick={this.handleDockRight} Icon={IconLayoutRight} size={12} />
+              )}
+              {!this.props.isFullScreen && <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />}
+              {!this.props.isFullScreen && <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />}
+              <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
+            </div>
+          )}
 
           <div className='direct-message-chat__header'>
             <span>

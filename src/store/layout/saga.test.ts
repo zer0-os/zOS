@@ -32,7 +32,7 @@ describe('layout saga', () => {
     it('sets the sidekick to open when previous state was open', async () => {
       stubLocalStorageValue(sidekickKey, 'true');
 
-      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
         .withReducer(reducer, state as any)
         .run();
 
@@ -42,7 +42,7 @@ describe('layout saga', () => {
     it('sets the sidekick to closed when previous state was closed', async () => {
       stubLocalStorageValue(sidekickKey, 'false');
 
-      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
         .withReducer(reducer, state as any)
         .run();
 
@@ -52,7 +52,7 @@ describe('layout saga', () => {
     it('sets the sidekick to open when previous state is unknown', async () => {
       stubLocalStorageValue(sidekickKey, null);
 
-      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
         .withReducer(reducer, state as any)
         .run();
 
@@ -62,11 +62,22 @@ describe('layout saga', () => {
     it('sets the sidekick to open when previous state is not valid', async () => {
       stubLocalStorageValue(sidekickKey, 'garbage');
 
-      const { storeState } = await expectSaga(initializeUserLayout, { id: 'user-id' })
+      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
         .withReducer(reducer, state as any)
         .run();
 
       expect(storeState.value.isSidekickOpen).toBeTrue();
+    });
+
+    describe('isMessengerFullScreen', () => {
+      it('sets the messenger to full screen if user is not a member of worlds', async () => {
+        stubLocalStorageValue('fullScreenMessenger', 'false');
+        const { storeState } = await expectSaga(initializeUserLayout, user({ isAMemberOfWorlds: false }))
+          .withReducer(reducer, state as any)
+          .run();
+
+        expect(storeState.value.isMessengerFullScreen).toBeTrue();
+      });
     });
   });
 
@@ -84,4 +95,8 @@ describe('layout saga', () => {
 function stubLocalStorageValue(key: string, value: string | null) {
   global.localStorage.getItem = jest.fn();
   when(global.localStorage.getItem).calledWith(key).mockReturnValue(value);
+}
+
+function user(attrs) {
+  return { id: 'user-id', isAMemberOfWorlds: false, ...attrs };
 }

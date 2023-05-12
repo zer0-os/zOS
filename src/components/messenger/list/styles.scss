@@ -139,8 +139,13 @@ $side-padding: 16px;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    padding: 0px 16px;
 
     height: 64px;
+
+    &--with-avatar {
+      justify-content: space-between;
+    }
   }
 
   &__rewards-button {

@@ -18,6 +18,8 @@ describe('Container', () => {
     const allProps: Properties = {
       isLoading: false,
       zero: '0',
+      isFullScreen: false,
+      withTitleBar: false,
       fetchRewards: () => null,
       onClose: () => null,
       ...props,
@@ -44,6 +46,7 @@ describe('Container', () => {
   describe('mapState', () => {
     const subject = (rewardsState: Partial<RewardsState> = {}) => {
       const state = {
+        ...baseState(),
         rewards: {
           loading: false,
           ...rewardsState,
@@ -51,6 +54,14 @@ describe('Container', () => {
       } as RootState;
       return Container.mapState(state);
     };
+
+    function baseState() {
+      return {
+        ...authState(),
+        rewards: { loading: false },
+        ...layoutState(),
+      } as RootState;
+    }
 
     test('isLoading', () => {
       const props = subject({ loading: true });
@@ -63,5 +74,45 @@ describe('Container', () => {
 
       expect(props.zero).toEqual('17');
     });
+
+    test('withTitleBar', async () => {
+      let state = Container.mapState({ ...baseState(), ...authState({ isAMemberOfWorlds: false }) } as RootState);
+      expect(state.withTitleBar).toEqual(false);
+
+      state = Container.mapState({ ...baseState(), ...authState({ isAMemberOfWorlds: true }) } as RootState);
+      expect(state.withTitleBar).toEqual(true);
+    });
+
+    test('isFullScreen', async () => {
+      let state = Container.mapState({ ...baseState(), ...layoutState({ isMessengerFullScreen: false }) } as RootState);
+      expect(state.isFullScreen).toEqual(false);
+
+      state = Container.mapState({ ...baseState(), ...layoutState({ isMessengerFullScreen: true }) } as RootState);
+      expect(state.isFullScreen).toEqual(true);
+    });
   });
 });
+
+function authState(user = {}) {
+  return {
+    authentication: {
+      user: {
+        data: {
+          id: 'user-id',
+          isAMemberOfWorlds: false,
+          ...user,
+        },
+      },
+    },
+  };
+}
+
+function layoutState(layout = {}) {
+  return {
+    layout: {
+      value: {
+        ...layout,
+      },
+    },
+  };
+}

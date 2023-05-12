@@ -13,16 +13,25 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   isLoading: boolean;
   zero: string;
+  isFullScreen: boolean;
+  withTitleBar: boolean;
 
   fetchRewards: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { rewards } = state;
+    const {
+      authentication: { user },
+      layout,
+      rewards,
+    } = state;
+
     return {
       isLoading: rewards.loading,
       zero: rewards.zero,
+      withTitleBar: !!user?.data?.isAMemberOfWorlds,
+      isFullScreen: layout.value.isMessengerFullScreen,
     };
   }
   static mapActions() {
@@ -52,6 +61,8 @@ export class Container extends React.Component<Properties> {
             zero=''
             onClose={this.props.onClose}
             isLoading={this.props.isLoading}
+            isFullScreen={this.props.isFullScreen}
+            withTitleBar={this.props.withTitleBar}
           />,
           document.body
         )}

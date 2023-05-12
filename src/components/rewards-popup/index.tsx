@@ -6,12 +6,15 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
+import classnames from 'classnames';
 const c = bem('rewards-popup');
 
 export interface Properties {
   usd: string;
   zero: string;
   isLoading: boolean;
+  isFullScreen: boolean;
+  withTitleBar: boolean;
 
   onClose: () => void;
 }
@@ -23,7 +26,12 @@ export class RewardsPopup extends React.Component<Properties> {
 
   render() {
     return (
-      <div className={c('')}>
+      <div
+        className={classnames(c(''), {
+          [c('', 'full-screen')]: this.props.isFullScreen,
+          [c('', 'with-title')]: this.props.withTitleBar,
+        })}
+      >
         <div className={c('underlay')} onClick={this.abort}>
           <div className={c('content')}>
             <IconButton

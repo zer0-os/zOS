@@ -145,6 +145,7 @@ export class Container extends React.Component<Properties, State> {
         className={classNames('direct-message-chat', {
           'direct-message-chat--transition': this.props.isFullScreen !== null || this.state.isMinimized,
           'direct-message-chat--full-screen': this.props.isFullScreen,
+          'direct-message-chat--no-title': !this.props.includeTitleBar,
           'direct-message-chat--minimized': this.state.isMinimized,
           'direct-message-chat--one-on-one': this.isOneOnOne(),
         })}

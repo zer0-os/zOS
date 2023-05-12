@@ -13,6 +13,7 @@ describe('messenger-chat', () => {
       setActiveMessengerId: jest.fn(),
       directMessage: null,
       isFullScreen: false,
+      includeTitleBar: true,
       enterFullScreenMessenger: () => null,
       exitFullScreenMessenger: () => null,
       ...props,

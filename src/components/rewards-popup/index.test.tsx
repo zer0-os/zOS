@@ -8,6 +8,8 @@ describe('RewardsPopup', () => {
       usd: '',
       zero: '',
       isLoading: false,
+      isFullScreen: false,
+      withTitleBar: true,
       onClose: () => null,
       ...props,
     };

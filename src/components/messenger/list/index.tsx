@@ -17,7 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import { IconCurrencyDollar, IconXClose } from '@zero-tech/zui/icons';
+import { IconCurrencyDollar, IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
@@ -31,6 +31,7 @@ import { RewardsPopupContainer } from '../../rewards-popup/container';
 
 import { bem } from '../../../lib/bem';
 import classnames from 'classnames';
+import { enterFullScreenMessenger } from '../../../store/layout';
 const c = bem('messenger-list');
 
 export interface PublicProperties {
@@ -46,6 +47,7 @@ export interface Properties extends PublicProperties {
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
   allowClose: boolean;
+  allowExpand: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -54,6 +56,7 @@ export interface Properties extends PublicProperties {
   fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  enterFullScreenMessenger: () => void;
 }
 
 interface State {
@@ -88,6 +91,7 @@ export class Container extends React.Component<Properties, State> {
       isFirstTimeLogin: registration.isFirstTimeLogin,
       includeTitleBar: user?.data?.isAMemberOfWorlds,
       allowClose: !layout?.value?.isMessengerFullScreen,
+      allowExpand: !layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -100,6 +104,7 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
+      enterFullScreenMessenger,
     };
   }
 
@@ -143,6 +148,11 @@ export class Container extends React.Component<Properties, State> {
   renderTitleBar() {
     return (
       <div className='messenger-list__header'>
+        {this.props.allowExpand && (
+          <button className='messenger-list__icon-button' onClick={this.props.enterFullScreenMessenger}>
+            <IconExpand1 label='Expand Messenger' size={12} isFilled={false} />
+          </button>
+        )}
         {this.props.allowClose && (
           <button className='messenger-list__icon-button' onClick={this.props.onClose}>
             <IconXClose label='Close Messenger' size={12} isFilled={false} />

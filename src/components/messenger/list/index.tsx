@@ -45,6 +45,7 @@ export interface Properties extends PublicProperties {
   isGroupCreating: boolean;
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
+  allowClose: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -65,6 +66,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
+      layout,
     } = state;
     const conversations = denormalizeConversations(state)
       .sort((messengerA, messengerB) =>
@@ -85,6 +87,7 @@ export class Container extends React.Component<Properties, State> {
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       includeTitleBar: user?.data?.isAMemberOfWorlds,
+      allowClose: !layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -140,9 +143,11 @@ export class Container extends React.Component<Properties, State> {
   renderTitleBar() {
     return (
       <div className='messenger-list__header'>
-        <button className='messenger-list__icon-button' onClick={this.props.onClose}>
-          <IconXClose label='Close Messenger' size={12} isFilled={false} />
-        </button>
+        {this.props.allowClose && (
+          <button className='messenger-list__icon-button' onClick={this.props.onClose}>
+            <IconXClose label='Close Messenger' size={12} isFilled={false} />
+          </button>
+        )}
       </div>
     );
   }

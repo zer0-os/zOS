@@ -14,6 +14,7 @@ import { Stage } from '../../../store/create-conversation';
 import { AdminMessageType } from '../../../store/messages';
 import { RewardsPopupContainer } from '../../rewards-popup/container';
 import { RegistrationState } from '../../../store/registration';
+import { LayoutState } from '../../../store/layout/types';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -30,6 +31,7 @@ describe('messenger-list', () => {
       isGroupCreating: false,
       isFirstTimeLogin: false,
       includeTitleBar: true,
+      allowClose: true,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -239,6 +241,14 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement('.messenger-list__header');
   });
 
+  it('renders the close icon as necessary', function () {
+    const wrapper = subject({ allowClose: true });
+    expect(wrapper).toHaveElement('.messenger-list__icon-button');
+
+    wrapper.setProps({ allowClose: false });
+    expect(wrapper).not.toHaveElement('.messenger-list__icon-button');
+  });
+
   describe('mapState', () => {
     const subject = (
       channels,
@@ -346,10 +356,6 @@ describe('messenger-list', () => {
         'Courtney joined you on Zero',
         'Second message last',
       ]);
-
-      function user(attrs: Partial<{ userId: string; firstName: string; isAMemberOfWorlds: boolean }> = {}) {
-        return { userId: 'inviter-id', firstName: 'current user', isAMemberOfWorlds: true, ...attrs };
-      }
     });
 
     test('stage', () => {
@@ -384,11 +390,29 @@ describe('messenger-list', () => {
     });
 
     test('includeTitleBar', async () => {
-      let state = subject([], {}, [{ userId: 'user', firstName: '', isAMemberOfWorlds: false }]);
+      let state = subject([], {}, [user({ isAMemberOfWorlds: false })]);
       expect(state.includeTitleBar).toEqual(false);
 
-      state = subject([], {}, [{ userId: 'user', firstName: '', isAMemberOfWorlds: true }]);
+      state = subject([], {}, [user({ isAMemberOfWorlds: true })]);
       expect(state.includeTitleBar).toEqual(true);
+    });
+
+    test('allowClose', async () => {
+      let state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
+      });
+      expect(state.allowClose).toEqual(false);
+
+      state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
+      });
+      expect(state.allowClose).toEqual(true);
     });
   });
 });
+
+function user(attrs: Partial<{ userId: string; firstName: string; isAMemberOfWorlds: boolean }> = {}) {
+  return { userId: 'inviter-id', firstName: 'current user', isAMemberOfWorlds: true, ...attrs };
+}

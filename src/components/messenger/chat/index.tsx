@@ -183,6 +183,7 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <ChatViewContainer
+            key={this.props.activeMessengerId} // Render new component for a new chat
             channelId={this.props.activeMessengerId}
             className='direct-message-chat__channel'
             isDirectMessage

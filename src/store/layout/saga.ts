@@ -4,7 +4,6 @@ import { put, takeLatest, select } from 'redux-saga/effects';
 import { update, SagaActionTypes } from './';
 import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 import { User } from '../authentication/types';
-import { featureFlags } from '../../lib/feature-flags';
 
 export const getKeyWithUserId = (key: string) => (state) => {
   const user: User = getDeepProperty(state, 'authentication.user.data', null);

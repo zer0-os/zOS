@@ -200,7 +200,7 @@ describe('authentication saga', () => {
   describe('clearUserState', () => {
     it('resets layout', async () => {
       await expectSaga(clearUserState)
-        .put(update({ isSidekickOpen: false }))
+        .put(update({ isSidekickOpen: false, isMessengerFullScreen: false }))
         .put(receive([]))
         .withReducer(rootReducer)
         .run();

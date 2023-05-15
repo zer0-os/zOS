@@ -20,13 +20,14 @@ export async function nonce(signedWeb3Token?: string): Promise<AuthorizationResp
 }
 
 export async function fetchCurrentUser(): Promise<User> {
-  const response = await get('/api/users/current').catch((err) => console.log(err));
-
-  if (response) {
+  try {
+    const response = await get('/api/users/current');
     return response.body;
-  } else {
-    return null;
+  } catch (error) {
+    console.log(error);
   }
+
+  return null;
 }
 
 export async function clearSession(): Promise<AuthorizationResponse> {

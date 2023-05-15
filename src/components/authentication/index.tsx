@@ -8,6 +8,8 @@ import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3'
 import { nonceOrAuthorize, terminate, fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
+import { Redirect } from 'react-router-dom';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
@@ -22,10 +24,14 @@ export interface Properties {
 }
 
 interface State {
-  hasConnected: boolean;
+  isLoggedIn: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
+  state: State = {
+    isLoggedIn: true,
+  };
+
   static defaultProps = {
     personalSignToken,
   };
@@ -75,6 +81,12 @@ export class Container extends React.Component<Properties, State> {
     ) {
       this.props.terminateAuthorization();
     }
+
+    // loading is done, but user data is still null (that means fetchCurrentUser saga failed),
+    // then "force login"
+    if (prevProps.user.isLoading === true && this.props.user.isLoading === false && this.props.user.data === null) {
+      this.setState({ isLoggedIn: false });
+    }
   }
 
   async authorize() {
@@ -97,8 +109,14 @@ export class Container extends React.Component<Properties, State> {
       });
   }
 
+  redirectIfNotLoggedIn = () => {
+    if (!this.state.isLoggedIn && !featureFlags.allowPublicZOS) {
+      return <Redirect to='/login' />;
+    }
+  };
+
   render() {
-    return null;
+    return <>{this.redirectIfNotLoggedIn()}</>;
   }
 }
 

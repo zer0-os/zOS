@@ -4,6 +4,7 @@ import { RootState } from '../../store/reducer';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
+import { Redirect } from 'react-router-dom';
 
 describe('Authentication', () => {
   const USER_DATA = {
@@ -156,6 +157,40 @@ describe('Authentication', () => {
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     expect(terminateAuthorization).toHaveBeenCalled();
+  });
+
+  it('should set logged in state to false, if user is loaded but user data is still null, and redirects to login', () => {
+    const wrapper = subject({
+      user: {
+        isLoading: true,
+        data: null,
+      },
+    });
+
+    wrapper.setProps({ user: { isLoading: false, data: null } }); // go from loading to loaded
+
+    // check state
+    expect(wrapper.state()).toStrictEqual({ isLoggedIn: false });
+
+    // assert redirect
+    expect(wrapper.find(Redirect).exists()).toBeTruthy();
+    expect(wrapper.find(Redirect).prop('to')).toStrictEqual('/login');
+  });
+
+  it('should set logged in state to true, if user is loaded and user data is not null', () => {
+    const wrapper = subject({
+      user: {
+        isLoading: true,
+        data: null,
+      },
+    });
+
+    wrapper.setProps({ user: { isLoading: false, data: USER_DATA } }); // go from loading to loaded
+
+    expect(wrapper.state()).toStrictEqual({ isLoggedIn: true });
+
+    // assert no redirect
+    expect(wrapper.find(Redirect).exists()).toBeFalsy();
   });
 
   describe('mapState', () => {

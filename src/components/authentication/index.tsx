@@ -9,6 +9,7 @@ import { nonceOrAuthorize, terminate, fetchCurrentUserWithChatAccessToken } from
 import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
 import { Redirect } from 'react-router-dom';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
@@ -83,7 +84,7 @@ export class Container extends React.Component<Properties, State> {
 
     // loading is done, but user data is still null (that means fetchCurrentUser saga failed),
     // then "force login"
-    if (this.props.user.isLoading === false && this.props.user.data === null) {
+    if (prevProps.user.isLoading === true && this.props.user.isLoading === false && this.props.user.data === null) {
       this.setState({ isLoggedIn: false });
     }
   }
@@ -109,7 +110,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   redirectIfNotLoggedIn = () => {
-    if (!this.state.isLoggedIn) {
+    if (!featureFlags.allowPublicZOS && !this.state.isLoggedIn) {
       return <Redirect to='/login' />;
     }
   };

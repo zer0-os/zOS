@@ -24,6 +24,14 @@ export class FeatureFlags {
   set allowInvites(value: boolean) {
     this._setBoolean('allowInvites', value);
   }
+
+  get allowPublicZOS() {
+    return this._getBoolean('allowPublicZOS');
+  }
+
+  set allowPublicZOS(value: boolean) {
+    this._setBoolean('allowPublicZOS', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

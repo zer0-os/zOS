@@ -489,10 +489,30 @@ $scrollbar-width: 5px;
 // Message sizing
 .direct-message-chat--full-screen {
   .messages__message {
+    box-sizing: border-box;
     float: left;
-    max-width: 50%;
+    max-width: 100%;
   }
   .messages__message.message--owner {
     float: right;
+  }
+
+  // We don't quite have the full layout supported at this width but eventually.
+  @media (min-width: 320px) {
+    .messages__message {
+      max-width: 85%;
+    }
+  }
+
+  @media (min-width: 744px) {
+    .messages__message {
+      max-width: 75%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .messages__message {
+      max-width: 50%;
+    }
   }
 }

@@ -83,7 +83,7 @@ export class Container extends React.Component<Properties, State> {
 
     // loading is done, but user data is still null (that means fetchCurrentUser saga failed),
     // then "force login"
-    if (this.props.user.data === null && this.props.user.isLoading === false) {
+    if (this.props.user.isLoading === false && this.props.user.data === null) {
       this.setState({ isLoggedIn: false });
     }
   }

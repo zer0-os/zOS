@@ -110,7 +110,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   redirectIfNotLoggedIn = () => {
-    if (!featureFlags.allowPublicZOS && !this.state.isLoggedIn) {
+    if (!this.state.isLoggedIn && !featureFlags.allowPublicZOS) {
       return <Redirect to='/login' />;
     }
   };

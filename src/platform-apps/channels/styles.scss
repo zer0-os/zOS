@@ -241,8 +241,13 @@ $scrollbar-width: 5px;
       }
     }
 
-    .message {
+    &__message-row {
+      clear: both;
       margin: 8px 16px;
+    }
+
+    .message {
+      margin: 8px 0px;
       overflow: hidden;
 
       &--owner {
@@ -478,5 +483,16 @@ $scrollbar-width: 5px;
 .messages__container .messages .messages__message:hover {
   .message__menu {
     right: 0px;
+  }
+}
+
+// Message sizing
+.direct-message-chat--full-screen {
+  .messages__message {
+    float: left;
+    max-width: 50%;
+  }
+  .messages__message.message--owner {
+    float: right;
   }
 }

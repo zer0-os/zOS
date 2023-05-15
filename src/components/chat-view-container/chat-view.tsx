@@ -139,23 +139,24 @@ export class ChatView extends React.Component<Properties, State> {
             return <AdminMessageContainer key={message.id} message={message} />;
           } else {
             return (
-              <Message
-                className={classNames('messages__message', {
-                  'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
-                })}
-                onImageClick={this.openLightbox}
-                key={message.id}
-                messageId={message.id}
-                updatedAt={message.updatedAt}
-                isOwner={isUserOwnerOfTheMessage}
-                onDelete={this.props.deleteMessage}
-                onEdit={this.props.editMessage}
-                onReply={this.props.onReply}
-                parentMessageText={message.parentMessageText}
-                getUsersForMentions={this.searchMentionableUsers}
-                showSenderAvatar={this.props.showSenderAvatar}
-                {...message}
-              />
+              <div key={message.id} className='messages__message-row'>
+                <Message
+                  className={classNames('messages__message', {
+                    'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
+                  })}
+                  onImageClick={this.openLightbox}
+                  messageId={message.id}
+                  updatedAt={message.updatedAt}
+                  isOwner={isUserOwnerOfTheMessage}
+                  onDelete={this.props.deleteMessage}
+                  onEdit={this.props.editMessage}
+                  onReply={this.props.onReply}
+                  parentMessageText={message.parentMessageText}
+                  getUsersForMentions={this.searchMentionableUsers}
+                  showSenderAvatar={this.props.showSenderAvatar}
+                  {...message}
+                />
+              </div>
             );
           }
         })}

@@ -109,7 +109,7 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
-      enterFullScreenMessenger,
+      enterFullScreenMessenger: () => enterFullScreenMessenger(),
     };
   }
 

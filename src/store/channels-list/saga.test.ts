@@ -23,6 +23,8 @@ import {
 import { SagaActionTypes, setStatus } from '.';
 import { rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
+import { conversationsChannel } from './channels';
+import { multicastChannel } from 'redux-saga';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -57,16 +59,36 @@ describe('channels list saga', () => {
       .run();
   });
 
-  it('fetches direct messages', async () => {
-    await expectSaga(fetchConversations)
-      .provide([
-        [
-          matchers.call.fn(fetchConversationsApi),
-          MOCK_CHANNELS,
-        ],
-      ])
-      .call(fetchConversationsApi)
-      .run();
+  describe('fetchConversations', () => {
+    it('fetches direct messages', async () => {
+      await expectSaga(fetchConversations)
+        .provide([
+          [
+            matchers.call.fn(fetchConversationsApi),
+            MOCK_CHANNELS,
+          ],
+        ])
+        .call(fetchConversationsApi)
+        .run();
+    });
+
+    it('announces conversations loaded', async () => {
+      const conversationsChannelStub = multicastChannel();
+
+      await expectSaga(fetchConversations)
+        .provide([
+          [
+            matchers.call.fn(fetchConversationsApi),
+            MOCK_CHANNELS,
+          ],
+          [
+            matchers.call.fn(conversationsChannel),
+            conversationsChannelStub,
+          ],
+        ])
+        .put(conversationsChannelStub, { loaded: true })
+        .run();
+    });
   });
 
   it('creates conversation', async () => {

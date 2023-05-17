@@ -1,4 +1,4 @@
-import { call, put, select, take } from 'redux-saga/effects';
+import { call, put, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
@@ -21,6 +21,9 @@ import {
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
+import { conversationsChannel } from '../channels-list/channels';
+import { rawConversationsList } from '../channels-list/saga';
+import { setActiveMessengerId } from '../chat';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -140,4 +143,21 @@ export function* saga() {
     const action = yield take(SagaActionTypes.UpdateProfile);
     success = yield call(updateProfile, action);
   } while (!success);
+
+  yield spawn(conversationsWatcher);
+}
+
+export function* channelsLoaded() {
+  const existingConversationsList = yield select(rawConversationsList());
+  if (existingConversationsList.length > 0) {
+    yield put(setActiveMessengerId(existingConversationsList[0]));
+  }
+}
+
+function* conversationsWatcher() {
+  const channel = yield call(conversationsChannel);
+  const payload = yield take(channel, '*');
+  if (payload.loaded) {
+    yield call(channelsLoaded);
+  }
 }

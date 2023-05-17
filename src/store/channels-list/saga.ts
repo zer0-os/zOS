@@ -14,12 +14,13 @@ import { AsyncListStatus } from '../normalized';
 import { channelMapper, filterChannelsList } from './utils';
 import { setActiveMessengerId } from '../chat';
 import { clearChannels } from '../channels/saga';
+import { conversationsChannel } from './channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
-const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
+export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* fetchChannels(action) {
@@ -52,6 +53,10 @@ export function* fetchConversations() {
       ...conversationsList,
     ])
   );
+
+  // Publish a system message across the channel
+  const channel = yield call(conversationsChannel);
+  yield put(channel, { loaded: true });
 }
 
 export function* createConversation(action) {

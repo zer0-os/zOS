@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { createAccount, updateProfile, validateAccountInfo, validateInvite } from './saga';
+import { channelsLoaded, createAccount, updateProfile, validateAccountInfo, validateInvite } from './saga';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
@@ -15,10 +15,11 @@ import {
   RegistrationState,
   initialState as initialRegistrationState,
 } from '.';
-import { rootReducer } from '../reducer';
+import { RootState, rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { setActiveMessengerId } from '../chat';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -358,6 +359,22 @@ describe('validateAccountInfo', () => {
     const errors = validateAccountInfo({ email, password });
 
     expect(errors).toEqual([AccountCreationErrors.PASSWORD_TOO_WEAK]);
+  });
+});
+
+describe('channelsLoaded', () => {
+  it('opens the first conversation', async () => {
+    await expectSaga(channelsLoaded)
+      .withReducer(rootReducer, {
+        channelsList: { value: ['1234'] } as any,
+        normalized: {
+          channels: {
+            '1234': { isChannel: false },
+          },
+        } as any,
+      } as RootState)
+      .put(setActiveMessengerId('1234'))
+      .run();
   });
 });
 

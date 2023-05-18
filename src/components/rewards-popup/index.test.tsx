@@ -72,4 +72,14 @@ describe('RewardsPopup', () => {
 
     expect(wrapper.state('rewardsFAQModalOpen')).toEqual(true);
   });
+
+  it('closes the rewards faq modal', function () {
+    const wrapper = subject({});
+
+    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
+    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(true);
+
+    wrapper.find('.rewards-popup__rewards-faq-modal__close').simulate('click');
+    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(false);
+  });
 });

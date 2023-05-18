@@ -119,7 +119,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
-        <Button variant={'text'} onPress={this.openInviteDialog}>
+        <Button className={'messages-list__invite-button'} variant={'text'} onPress={this.openInviteDialog}>
           Invite Friends
         </Button>
         {this.renderInviteDialog()}

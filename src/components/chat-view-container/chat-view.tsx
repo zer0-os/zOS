@@ -130,14 +130,17 @@ export class ChatView extends React.Component<Properties, State> {
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
         {allMessages.map((message, index) => {
-          const isFirstFromUser = index === 0 || message.sender.userId !== allMessages[index - 1].sender.userId;
-          const isUserOwnerOfTheMessage =
-            // eslint-disable-next-line eqeqeq
-            this.props.user && message.sender && this.props.user.id == message.sender.userId;
-
           if (message.isAdmin) {
             return <AdminMessageContainer key={message.id} message={message} />;
           } else {
+            const isFirstFromUser =
+              index === 0 ||
+              allMessages[index - 1].isAdmin ||
+              message.sender.userId !== allMessages[index - 1].sender.userId;
+            const isUserOwnerOfTheMessage =
+              // eslint-disable-next-line eqeqeq
+              this.props.user && message.sender && this.props.user.id == message.sender.userId;
+
             return (
               <div key={message.id} className='messages__message-row'>
                 <Message

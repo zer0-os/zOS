@@ -17,14 +17,6 @@ export class FeatureFlags {
     this._setBoolean('channelsApp', value);
   }
 
-  get allowInvites() {
-    return this._getBoolean('allowInvites');
-  }
-
-  set allowInvites(value: boolean) {
-    this._setBoolean('allowInvites', value);
-  }
-
   get allowPublicZOS() {
     return this._getBoolean('allowPublicZOS');
   }

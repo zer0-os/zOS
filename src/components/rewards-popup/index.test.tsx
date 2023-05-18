@@ -49,4 +49,27 @@ describe('RewardsPopup', () => {
 
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it('prevent closing the rewards modal if you click "inside" it', function () {
+    const verifyCalled = jest.fn();
+    const wrapper = subject({});
+
+    wrapper.find('.rewards-popup__content').simulate('click', {
+      stopPropagation: () => {
+        verifyCalled();
+      },
+    });
+
+    // asserts that the stopPropagation function was called
+    expect(verifyCalled).toHaveBeenCalledOnce();
+  });
+
+  it('opens the rewards faq modal on clicking the footer (learn more) text', function () {
+    const wrapper = subject({});
+    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(false);
+
+    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
+
+    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(true);
+  });
 });

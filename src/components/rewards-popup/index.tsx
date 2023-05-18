@@ -1,12 +1,13 @@
 import * as React from 'react';
 
 import { IconGift1, IconTrendUp1, IconXClose } from '@zero-tech/zui/icons';
-import { Button, IconButton, SkeletonText } from '@zero-tech/zui/components';
+import { Button, IconButton, SkeletonText, Modal, Accordion } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import classnames from 'classnames';
+import { rewardsFaq } from './constants';
 const c = bem('rewards-popup');
 
 export interface Properties {
@@ -19,9 +20,43 @@ export interface Properties {
   onClose: () => void;
 }
 
-export class RewardsPopup extends React.Component<Properties> {
+interface State {
+  rewardsFAQModalOpen: boolean;
+}
+
+export class RewardsPopup extends React.Component<Properties, State> {
+  state = { rewardsFAQModalOpen: false };
+
   abort = () => {
     this.props.onClose();
+  };
+
+  preventAbortOnChildClick = (e) => {
+    e.stopPropagation();
+  };
+
+  openRewardsFAQModal = (): void => {
+    this.setState({ rewardsFAQModalOpen: true });
+  };
+
+  closeRewardsFAQModal = (): void => {
+    this.setState({ rewardsFAQModalOpen: false });
+  };
+
+  renderRewardsFAQModal = (): JSX.Element => {
+    return (
+      <Modal
+        open={this.state.rewardsFAQModalOpen}
+        onOpenChange={this.closeRewardsFAQModal}
+        className={c('rewards-faq-modal')}
+      >
+        <div className={c('rewards-faq-modal__title-bar')}>
+          <h3 className={c('rewards-faq-modal__title')}>Zero Rewards</h3>
+          <IconButton className={c('rewards-faq-modal__close')} Icon={IconXClose} onClick={this.closeRewardsFAQModal} />
+        </div>
+        <Accordion contrast='low' items={rewardsFaq} />
+      </Modal>
+    );
   };
 
   render() {
@@ -33,7 +68,7 @@ export class RewardsPopup extends React.Component<Properties> {
         })}
       >
         <div className={c('underlay')} onClick={this.abort}>
-          <div className={c('content')}>
+          <div className={c('content')} onClick={this.preventAbortOnChildClick}>
             <IconButton
               Icon={IconXClose}
               className={c('close-button')}
@@ -74,8 +109,13 @@ export class RewardsPopup extends React.Component<Properties> {
             <Button className={c('button')} isDisabled={true}>
               Redeem coming soon
             </Button>
+
+            <div className={c('rewards-faq-text')} onClick={this.openRewardsFAQModal}>
+              Learn more about Zero rewards
+            </div>
           </div>
         </div>
+        {this.renderRewardsFAQModal()}
       </div>
     );
   }

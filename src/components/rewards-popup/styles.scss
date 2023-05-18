@@ -110,7 +110,7 @@
   }
 
   &__button {
-    margin-top: 52px;
+    margin-top: 22px;
     height: 54px; // Non-standard button sized
     width: 100%;
   }
@@ -123,5 +123,53 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+  }
+
+  &__rewards-faq-text {
+    margin-top: 35px;
+    color: #ffffff;
+
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    text-decoration: underline;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__rewards-faq-modal {
+    padding: 40px;
+    position: absolute;
+    width: 608px;
+    box-shadow: 12px 11px 54px #040304;
+
+    &__title-bar {
+      display: flex;
+      height: 53px;
+      border-bottom: 1px solid theme.$color-primary-4;
+      margin-bottom: 20px;
+      color: theme.$color-greyscale-12;
+
+      > *:first-child {
+        flex-grow: 1;
+      }
+    }
+
+    &__title {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 29px;
+      margin: 0px;
+    }
+
+    &__close {
+      height: 28px;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
   }
 }

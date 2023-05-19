@@ -7,7 +7,6 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import classnames from 'classnames';
-import { rewardsFaq } from './constants';
 const c = bem('rewards-popup');
 
 export interface Properties {
@@ -18,6 +17,7 @@ export interface Properties {
   withTitleBar: boolean;
 
   onClose: () => void;
+  openRewardsFAQModal: () => void;
 }
 
 interface State {
@@ -35,28 +35,13 @@ export class RewardsPopup extends React.Component<Properties, State> {
     e.stopPropagation();
   };
 
-  openRewardsFAQModal = (): void => {
-    this.setState({ rewardsFAQModalOpen: true });
+  openRewardsFAQModal = (e): void => {
+    this.props.onClose();
+    this.props.openRewardsFAQModal();
   };
 
   closeRewardsFAQModal = (): void => {
     this.setState({ rewardsFAQModalOpen: false });
-  };
-
-  renderRewardsFAQModal = (): JSX.Element => {
-    return (
-      <Modal
-        open={this.state.rewardsFAQModalOpen}
-        onOpenChange={this.closeRewardsFAQModal}
-        className={c('rewards-faq-modal')}
-      >
-        <div className={c('rewards-faq-modal__title-bar')}>
-          <h3 className={c('rewards-faq-modal__title')}>Zero Rewards</h3>
-          <IconButton className={c('rewards-faq-modal__close')} Icon={IconXClose} onClick={this.closeRewardsFAQModal} />
-        </div>
-        <Accordion contrast='low' items={rewardsFaq} />
-      </Modal>
-    );
   };
 
   render() {
@@ -115,7 +100,6 @@ export class RewardsPopup extends React.Component<Properties, State> {
             </div>
           </div>
         </div>
-        {this.renderRewardsFAQModal()}
       </div>
     );
   }

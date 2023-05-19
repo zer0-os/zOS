@@ -8,6 +8,7 @@ import { fetch as fetchRewards } from '../../store/rewards';
 
 interface PublicProperties {
   onClose: () => void;
+  openRewardsFAQModal: () => void;
 }
 
 export interface Properties extends PublicProperties {
@@ -60,6 +61,7 @@ export class Container extends React.Component<Properties> {
             usd={this.stringifyZero()}
             zero=''
             onClose={this.props.onClose}
+            openRewardsFAQModal={this.props.openRewardsFAQModal}
             isLoading={this.props.isLoading}
             isFullScreen={this.props.isFullScreen}
             withTitleBar={this.props.withTitleBar}

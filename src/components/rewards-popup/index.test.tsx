@@ -11,6 +11,7 @@ describe('RewardsPopup', () => {
       isFullScreen: false,
       withTitleBar: true,
       onClose: () => null,
+      openRewardsFAQModal: () => null,
       ...props,
     };
 
@@ -62,24 +63,5 @@ describe('RewardsPopup', () => {
 
     // asserts that the stopPropagation function was called
     expect(verifyCalled).toHaveBeenCalledOnce();
-  });
-
-  it('opens the rewards faq modal on clicking the footer (learn more) text', function () {
-    const wrapper = subject({});
-    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(false);
-
-    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
-
-    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(true);
-  });
-
-  it('closes the rewards faq modal', function () {
-    const wrapper = subject({});
-
-    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
-    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(true);
-
-    wrapper.find('.rewards-popup__rewards-faq-modal__close').simulate('click');
-    expect(wrapper.state('rewardsFAQModalOpen')).toEqual(false);
   });
 });

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 const link = (text: string, href: string) => (
-  <a href={href} target='_blank' style={{ color: '#01F4CB', textDecoration: 'underline' }}>
+  <a href={href} target='_blank' rel='noreferrer' style={{ color: '#01F4CB', textDecoration: 'underline' }}>
     {text}
   </a>
 );

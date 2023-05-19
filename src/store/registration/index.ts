@@ -46,6 +46,7 @@ export enum AccountCreationErrors {
 export enum ProfileDetailsErrors {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   NAME_REQUIRED = 'NAME_REQUIRED',
+  FILE_UPLOAD_ERROR = 'FILE_UPLOAD_ERROR',
 }
 
 export const initialState: RegistrationState = {
@@ -61,7 +62,7 @@ export const initialState: RegistrationState = {
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
 export const createAccount = createAction<{ email: string; password: string }>(SagaActionTypes.CreateAccount);
-export const updateProfile = createAction<{ name: string }>(SagaActionTypes.UpdateProfile);
+export const updateProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.UpdateProfile);
 
 const slice = createSlice({
   name: 'registration',

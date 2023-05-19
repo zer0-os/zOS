@@ -17,6 +17,7 @@ import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
   completeAccount as apiCompleteAccount,
+  uploadImage,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
@@ -102,7 +103,7 @@ export function validateAccountInfo({ email, password }) {
 }
 
 export function* updateProfile(action) {
-  const { name } = action.payload;
+  const { name, image } = action.payload;
   yield put(setLoading(true));
   try {
     if (!name.trim()) {
@@ -110,8 +111,19 @@ export function* updateProfile(action) {
       return false;
     }
 
+    let profileImage = '';
+    if (image) {
+      try {
+        const uploadResult = yield call(uploadImage, image);
+        profileImage = uploadResult.url;
+      } catch (error) {
+        yield put(setErrors([ProfileDetailsErrors.FILE_UPLOAD_ERROR]));
+        return false;
+      }
+    }
+
     const { userId, inviteCode } = yield select((state) => state.registration);
-    const response = yield call(apiCompleteAccount, { userId, name, inviteCode });
+    const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage });
     if (response.success) {
       yield put(setFirstTimeLogin(true));
       yield put(setStage(RegistrationStage.Done));

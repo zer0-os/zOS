@@ -46,6 +46,14 @@ describe('Container', () => {
       expect(props.isLoading).toEqual(true);
     });
 
+    describe('image errors', () => {
+      it('failed upload', () => {
+        const props = subject({ errors: [ProfileDetailsErrors.FILE_UPLOAD_ERROR] });
+
+        expect(props.errors).toEqual({ image: 'Error uploading image' });
+      });
+    });
+
     describe('name errors', () => {
       it('empty name', () => {
         const props = subject({ errors: [ProfileDetailsErrors.NAME_REQUIRED] });

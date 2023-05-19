@@ -11,6 +11,7 @@ describe('RewardsPopup', () => {
       isFullScreen: false,
       withTitleBar: true,
       onClose: () => null,
+      openRewardsFAQModal: () => null,
       ...props,
     };
 
@@ -48,5 +49,29 @@ describe('RewardsPopup', () => {
     wrapper.find('.rewards-popup__underlay').simulate('click');
 
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('prevent closing the rewards modal if you click "inside" it', function () {
+    const verifyCalled = jest.fn();
+    const wrapper = subject({});
+
+    wrapper.find('.rewards-popup__content').simulate('click', {
+      stopPropagation: () => {
+        verifyCalled();
+      },
+    });
+
+    // asserts that the stopPropagation function was called
+    expect(verifyCalled).toHaveBeenCalledOnce();
+  });
+
+  it('opens rewards faq modal if you click on the learn more', function () {
+    const openRewardsFAQModal = jest.fn();
+    const wrapper = subject({ openRewardsFAQModal });
+
+    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
+
+    // asserts that the stopPropagation function was called
+    expect(openRewardsFAQModal).toHaveBeenCalledOnce();
   });
 });

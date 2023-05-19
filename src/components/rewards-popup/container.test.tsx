@@ -22,6 +22,7 @@ describe('Container', () => {
       withTitleBar: false,
       fetchRewards: () => null,
       onClose: () => null,
+      openRewardsFAQModal: () => null,
       ...props,
     };
 

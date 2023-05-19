@@ -110,7 +110,7 @@
   }
 
   &__button {
-    margin-top: 52px;
+    margin-top: 22px;
     height: 54px; // Non-standard button sized
     width: 100%;
   }
@@ -123,5 +123,19 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+  }
+
+  &__rewards-faq-text {
+    margin-top: 35px;
+    color: #ffffff;
+
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    text-decoration: underline;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }

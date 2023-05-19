@@ -17,11 +17,32 @@ export interface Properties {
   withTitleBar: boolean;
 
   onClose: () => void;
+  openRewardsFAQModal: () => void;
 }
 
-export class RewardsPopup extends React.Component<Properties> {
+interface State {
+  rewardsFAQModalOpen: boolean;
+}
+
+export class RewardsPopup extends React.Component<Properties, State> {
+  state = { rewardsFAQModalOpen: false };
+
   abort = () => {
     this.props.onClose();
+  };
+
+  preventAbortOnChildClick = (e) => {
+    e.stopPropagation();
+  };
+
+  // close the rewards popup and open the rewards FAQ modal
+  openRewardsFAQModal = (): void => {
+    this.props.onClose();
+    this.props.openRewardsFAQModal();
+  };
+
+  closeRewardsFAQModal = (): void => {
+    this.setState({ rewardsFAQModalOpen: false });
   };
 
   render() {
@@ -33,7 +54,7 @@ export class RewardsPopup extends React.Component<Properties> {
         })}
       >
         <div className={c('underlay')} onClick={this.abort}>
-          <div className={c('content')}>
+          <div className={c('content')} onClick={this.preventAbortOnChildClick}>
             <IconButton
               Icon={IconXClose}
               className={c('close-button')}
@@ -74,6 +95,10 @@ export class RewardsPopup extends React.Component<Properties> {
             <Button className={c('button')} isDisabled={true}>
               Redeem coming soon
             </Button>
+
+            <div className={c('rewards-faq-text')} onClick={this.openRewardsFAQModal}>
+              Learn more about Zero rewards
+            </div>
           </div>
         </div>
       </div>

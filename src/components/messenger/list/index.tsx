@@ -33,6 +33,7 @@ import { bem } from '../../../lib/bem';
 import classnames from 'classnames';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Avatar } from '@zero-tech/zui/components';
+import { RewardsFAQModal } from '../../rewards-faq-modal';
 const c = bem('messenger-list');
 
 export interface PublicProperties {
@@ -64,6 +65,7 @@ export interface Properties extends PublicProperties {
 
 interface State {
   isRewardsPopupOpen: boolean;
+  isRewardsFAQModalOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -113,7 +115,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { isRewardsPopupOpen: false };
+  state = { isRewardsPopupOpen: false, isRewardsFAQModalOpen: false };
 
   constructor(props: Properties) {
     super(props);
@@ -149,6 +151,8 @@ export class Container extends React.Component<Properties, State> {
 
   openRewards = () => this.setState({ isRewardsPopupOpen: true });
   closeRewards = () => this.setState({ isRewardsPopupOpen: false });
+  openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
+  closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
 
   renderTitleBar() {
     return (
@@ -191,7 +195,18 @@ export class Container extends React.Component<Properties, State> {
             </div>
           </button>
         </div>
-        {this.state.isRewardsPopupOpen && <RewardsPopupContainer onClose={this.closeRewards} />}
+        {this.state.isRewardsPopupOpen && (
+          <RewardsPopupContainer
+            onClose={this.closeRewards}
+            openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
+          />
+        )}
+        {this.state.isRewardsFAQModalOpen && (
+          <RewardsFAQModal
+            isRewardsFAQModalOpen={this.state.isRewardsFAQModalOpen}
+            closeRewardsFAQModal={this.closeRewardsFAQModal}
+          />
+        )}
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel

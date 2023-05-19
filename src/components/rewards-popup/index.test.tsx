@@ -64,4 +64,14 @@ describe('RewardsPopup', () => {
     // asserts that the stopPropagation function was called
     expect(verifyCalled).toHaveBeenCalledOnce();
   });
+
+  it('opens rewards faq modal if you click on the learn more', function () {
+    const openRewardsFAQModal = jest.fn();
+    const wrapper = subject({ openRewardsFAQModal });
+
+    wrapper.find('.rewards-popup__rewards-faq-text').simulate('click');
+
+    // asserts that the stopPropagation function was called
+    expect(openRewardsFAQModal).toHaveBeenCalledOnce();
+  });
 });

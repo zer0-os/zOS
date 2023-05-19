@@ -49,7 +49,6 @@ describe('Container', () => {
     describe('email errors', () => {
       it('empty email', () => {
         let props = subject({ errors: [AccountCreationErrors.EMAIL_REQUIRED] });
-
         expect(props.errors).toEqual({ email: 'Email is required' });
 
         props = subject({ errors: [AccountCreationErrors.PROFILE_PRIMARY_EMAIL_REQUIRED] });
@@ -64,7 +63,6 @@ describe('Container', () => {
 
       it('email exists', () => {
         let props = subject({ errors: [AccountCreationErrors.EMAIL_ALREADY_EXISTS] });
-
         expect(props.errors).toEqual({ email: 'This email already exists' });
 
         props = subject({ errors: [AccountCreationErrors.PROFILE_PRIMARY_EMAIL_ALREADY_EXISTS] });

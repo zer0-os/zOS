@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { IconGift1, IconTrendUp1, IconXClose } from '@zero-tech/zui/icons';
-import { Button, IconButton, SkeletonText, Modal, Accordion } from '@zero-tech/zui/components';
+import { Button, IconButton, SkeletonText } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import './styles.scss';
@@ -35,7 +35,8 @@ export class RewardsPopup extends React.Component<Properties, State> {
     e.stopPropagation();
   };
 
-  openRewardsFAQModal = (e): void => {
+  // close the rewards popup and open the rewards FAQ modal
+  openRewardsFAQModal = (): void => {
     this.props.onClose();
     this.props.openRewardsFAQModal();
   };

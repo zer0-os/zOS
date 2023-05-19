@@ -24,7 +24,18 @@ describe('CreateAccountDetails', () => {
     wrapper.find('Input[name="name"]').simulate('change', 'Jack Black');
     wrapper.find('form').simulate('submit', inputEvent());
 
-    expect(onCreate).toHaveBeenCalledWith({ name: 'Jack Black' });
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ name: 'Jack Black' }));
+  });
+
+  it('includes cover photo onCreate', function () {
+    const image = { some: 'image' };
+    const onCreate = jest.fn();
+    const wrapper = subject({ onCreate });
+
+    wrapper.find('ImageUpload').simulate('change', image);
+    wrapper.find('form').simulate('submit', inputEvent());
+
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ image }));
   });
 
   it('sets button to loading', function () {
@@ -33,6 +44,12 @@ describe('CreateAccountDetails', () => {
 
     wrapper.setProps({ isLoading: false });
     expect(wrapper.find('Button').prop('isLoading')).toEqual(false);
+  });
+
+  it('renders image errors', function () {
+    const wrapper = subject({ errors: { image: 'invalid' } });
+
+    expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
 
   it('renders name errors', function () {

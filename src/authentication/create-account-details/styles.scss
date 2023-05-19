@@ -15,4 +15,9 @@
   &__form {
     @include form();
   }
+
+  &__image-upload {
+    display: flex;
+    justify-content: center;
+  }
 }

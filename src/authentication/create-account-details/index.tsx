@@ -4,31 +4,35 @@ import { Alert, Button, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
+import { ImageUpload } from '../../components/image-upload';
 const c = bem('create-account-details');
 
 export interface Properties {
   isLoading: boolean;
   errors: {
+    image?: string;
     name?: string;
     general?: string;
   };
 
-  onCreate: (data: { name: string }) => void;
+  onCreate: (data: { name: string; image: File | null }) => void;
 }
 
 interface State {
   name: string;
+  image: File | null;
 }
 
 export class CreateAccountDetails extends React.Component<Properties, State> {
-  state = { name: '' };
+  state = { name: '', image: null };
 
   publishOnCreate = (e) => {
     e.preventDefault();
-    this.props.onCreate({ name: this.state.name });
+    this.props.onCreate({ name: this.state.name, image: this.state.image });
   };
 
   trackName = (value) => this.setState({ name: value });
+  trackImage = (image) => this.setState({ image });
 
   get isValid() {
     return this.state.name.trim().length > 0;
@@ -44,6 +48,9 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
   get generalError() {
     return this.props.errors.general;
   }
+  get imageError() {
+    return this.props.errors.image;
+  }
 
   render() {
     return (
@@ -51,6 +58,10 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
         <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
         <div className={c('sub-heading')}>Step 2 of 2: What should we call you?</div>
         <form className={c('form')} onSubmit={this.publishOnCreate}>
+          <div className={c('image-upload')}>
+            <ImageUpload onChange={this.trackImage} />
+          </div>
+          {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
           <Input
             label='What is your name?'
             helperText='This will be your name that is visible to others on Zero'

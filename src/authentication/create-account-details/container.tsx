@@ -10,10 +10,11 @@ export interface PublicProperties {}
 export interface Properties extends PublicProperties {
   isLoading: boolean;
   errors: {
+    image?: string;
     name?: string;
     general?: string;
   };
-  updateProfile: (data: { name: string }) => void;
+  updateProfile: (data: { name: string; image: File | null }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -32,6 +33,9 @@ export class Container extends React.Component<Properties> {
       switch (error) {
         case ProfileDetailsErrors.NAME_REQUIRED:
           errorObject.name = 'Name is required';
+          break;
+        case ProfileDetailsErrors.FILE_UPLOAD_ERROR:
+          errorObject.image = 'Error uploading image';
           break;
         default:
           errorObject.general = 'An error has occurred';

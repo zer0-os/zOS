@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RootState } from '../../store/reducer';
 
-import { Button, WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { Container } from '.';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import { UserActionsContainer } from '../user-actions/container';
+import { WalletType } from '../wallet-select/wallets';
 
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
@@ -47,7 +47,7 @@ describe('WalletManager', () => {
       isAuthenticated: true,
     });
 
-    expect(wrapper.find(Button).exists()).toBe(false);
+    expect(wrapper.find('Button').exists()).toBe(false);
   });
 
   it('renders user actions when set', () => {
@@ -86,13 +86,13 @@ describe('WalletManager', () => {
   it('does not render wallet select modal', () => {
     const wrapper = subject();
 
-    expect(wrapper.find(WalletSelectModal).exists()).toBe(false);
+    expect(wrapper.find('WalletSelectModal').exists()).toBe(false);
   });
 
   it('should render all available wallets', () => {
     const wrapper = subject({ isWalletModalOpen: true });
 
-    expect(wrapper.find(WalletSelectModal).prop('wallets')).toStrictEqual([
+    expect(wrapper.find('WalletSelectModal').prop('wallets')).toStrictEqual([
       WalletType.Metamask,
       WalletType.WalletConnect,
       WalletType.Coinbase,
@@ -106,7 +106,7 @@ describe('WalletManager', () => {
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
   });
 
   it('passes isConnecting of true when wallet selected', () => {
@@ -115,34 +115,34 @@ describe('WalletManager', () => {
       isWalletModalOpen: true,
     });
 
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
   });
 
   it('passes isConnecting of false when wallet selected and status becomes connected', () => {
     const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
 
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
 
     // assert pre-condition
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
 
     // re-open modal, as it will be closed at this point
     wrapper.find(ConnectButton).simulate('click');
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(false);
   });
 
   it('closes wallet select modal onClose', () => {
     const setWalletModalOpen = jest.fn();
     const wrapper = subject({ isWalletModalOpen: true, setWalletModalOpen });
 
-    wrapper.find(WalletSelectModal).simulate('close');
+    wrapper.find('WalletSelectModal').simulate('close');
 
     expect(setWalletModalOpen).toHaveBeenCalledWith(false);
   });
@@ -165,13 +165,13 @@ describe('WalletManager', () => {
   it('should show list of wallet when status is disconnected', () => {
     const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
 
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(true);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
 
     wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected });
 
-    expect(wrapper.find(WalletSelectModal).prop('isConnecting')).toBe(false);
+    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(false);
   });
 
   it('calls update connector when wallet selected', () => {
@@ -179,7 +179,7 @@ describe('WalletManager', () => {
 
     const wrapper = subject({ updateConnector, isWalletModalOpen: true });
 
-    wrapper.find(WalletSelectModal).simulate('select', Connectors.Metamask);
+    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
 
     expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
   });
@@ -191,7 +191,7 @@ describe('WalletManager', () => {
       connectionStatus: ConnectionStatus.NetworkNotSupported,
     });
 
-    expect(wrapper.find(WalletSelectModal).prop('isNotSupportedNetwork')).toBe(true);
+    expect(wrapper.find('WalletSelectModal').prop('isNotSupportedNetwork')).toBe(true);
   });
 
   describe('mapState', () => {

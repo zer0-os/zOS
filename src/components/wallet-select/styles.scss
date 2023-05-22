@@ -75,6 +75,7 @@ $left-padding: 12px;
     a {
       color: theme.$color-greyscale-12;
       border-bottom: 1px solid theme.$color-greyscale-12;
+      text-decoration: none !important;
     }
   }
 
@@ -86,7 +87,6 @@ $left-padding: 12px;
     width: 6px;
     display: inline-block;
     color: theme.$color-greyscale-12;
-    text-decoration: underline;
   }
 
   &__connecting-indicator {

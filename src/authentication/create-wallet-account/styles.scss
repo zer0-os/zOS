@@ -1,0 +1,29 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../styles';
+
+.create-wallet-account {
+  @include base();
+
+  &__heading {
+    @include heading();
+  }
+
+  &__sub-heading {
+    @include sub-heading();
+  }
+
+  &__select-wallet {
+    box-sizing: border-box;
+    background-color: theme.$color-primary-2;
+    border: 1px solid theme.$color-primary-5;
+    border-radius: 8px;
+    padding: 16px 6px 24px;
+    width: 256px;
+    margin: auto;
+  }
+
+  &__other-options {
+    text-align: center;
+    padding-top: 64px;
+  }
+}

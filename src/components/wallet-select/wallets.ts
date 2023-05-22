@@ -41,7 +41,6 @@ const wallets: { [walletType: string]: Wallet } = {
 };
 
 for (const wallet in wallets) {
-  // XXX: factory-dev?!!!... move to production
   wallets[wallet].imageSource = [
     'https://res.cloudinary.com/fact0ry-dev/image/upload/v1637005920/zero-assets/wallet-providers',
     wallets[wallet].imageSource,

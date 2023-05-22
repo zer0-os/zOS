@@ -1,4 +1,3 @@
-import { WalletSelectModal, WalletType } from '@zer0-os/zos-component-library';
 import classNames from 'classnames';
 import React from 'react';
 import { config } from '../../config';
@@ -13,6 +12,9 @@ import './styles.scss';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { updateSidekick } from '../../store/layout';
 import { UserActionsContainer } from '../user-actions/container';
+
+import { WalletSelectModal } from '../wallet-select/modal';
+import { WalletType } from '../wallet-select/wallets';
 
 interface PublicProperties {
   className?: string;

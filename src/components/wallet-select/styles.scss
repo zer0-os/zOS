@@ -1,0 +1,93 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+$left-padding: 12px;
+
+.zos-wallet-select {
+  color: theme.$color-greyscale-12;
+
+  &__title-bar {
+    border-bottom: 1px solid theme.$color-primary-4;
+    padding-bottom: 16px;
+    padding-left: $left-padding;
+  }
+
+  &__title {
+    margin: 0px;
+    padding: 0px;
+
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  &__wallet-provider {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 7px $left-padding;
+    height: 56px;
+    cursor: pointer;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: theme.$color-primary-4;
+    }
+  }
+
+  &__wallet-provider-logo {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 28px;
+    background-color: theme.$color-primary-1;
+    padding: 2px;
+  }
+
+  &__wallet-provider-logo img {
+    width: 24px;
+    height: 24px;
+    transition: opacity var(--animation-time-medium) ease-in-out;
+    vertical-align: middle;
+  }
+
+  &__footer {
+    border-top: 1px solid theme.$color-primary-4;
+    padding-top: 16px;
+    padding-left: $left-padding;
+
+    color: theme.$color-greyscale-11;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+
+    a {
+      color: theme.$color-greyscale-12;
+      border-bottom: 1px solid theme.$color-greyscale-12;
+    }
+  }
+
+  &__footer-link {
+    margin-top: 12px;
+  }
+  &__external-icon {
+    height: 6px;
+    width: 6px;
+    display: inline-block;
+    color: theme.$color-greyscale-12;
+    text-decoration: underline;
+  }
+
+  &__connecting-indicator {
+    display: flex;
+    justify-content: center;
+    padding: 18px;
+  }
+}

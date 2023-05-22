@@ -31,7 +31,7 @@ export class WalletSelectModal extends React.Component<Properties> {
     return (
       <Modal
         open={true}
-        className={classNames('wallet-select-modal', this.props.className)}
+        className={classNames('zos-wallet-select-modal', this.props.className)}
         onOpenChange={this.openChanged}
       >
         <WalletSelect

@@ -22,19 +22,19 @@ describe('WalletSelect', () => {
   it('does not render wallets when connecting', () => {
     const wrapper = subject({ isConnecting: true, wallets: [WalletType.Metamask] });
 
-    expect(wrapper.find('.wallet-select__wallet').exists()).toBe(false);
+    expect(wrapper.find('.zos-wallet-select__wallet').exists()).toBe(false);
   });
 
   it('does renders connecting indicator when connecting', () => {
     const wrapper = subject({ isConnecting: true, wallets: [WalletType.Metamask] });
 
-    expect(wrapper.find('.wallet-select__connecting-indicator').exists()).toBe(true);
+    expect(wrapper.find('.zos-wallet-select__connecting-indicator').exists()).toBe(true);
   });
 
   it('renders a single wallet', () => {
     const wrapper = subject({ wallets: [WalletType.Metamask] });
 
-    const renderedName = wrapper.find('.wallet-select__wallet-name').at(0);
+    const renderedName = wrapper.find('.zos-wallet-select__wallet-name').at(0);
 
     expect(renderedName.text().trim()).toBe('Metamask');
   });
@@ -42,7 +42,7 @@ describe('WalletSelect', () => {
   it('defaults to all wallets', () => {
     const wrapper = subject();
 
-    const renderedNames = wrapper.find('.wallet-select__wallet-name').map((element) => element.text().trim());
+    const renderedNames = wrapper.find('.zos-wallet-select__wallet-name').map((element) => element.text().trim());
 
     expect(renderedNames).toIncludeSameMembers([
       'Wallet Connect',
@@ -59,7 +59,7 @@ describe('WalletSelect', () => {
 
     const wrapper = subject({ wallets, onSelect });
 
-    wrapper.find('.wallet-select__wallet-provider').at(0).simulate('click');
+    wrapper.find('.zos-wallet-select__wallet-provider').at(0).simulate('click');
 
     expect(onSelect).toHaveBeenCalledWith(WalletType.Metamask);
   });

@@ -53,8 +53,4 @@ export const rewardsFaq = [
       'The ability to withdraw your $ZERO to an external wallet will be introduced at a future date, to support the release of our ZNS (ZERO Naming System) domain functionality. Until then, sit tight and enjoy watching numba go up!',
     title: 'Is Zero a DAO?',
   },
-  {
-    title: 'blah',
-    content: () => <div>'blah'</div>,
-  },
 ];

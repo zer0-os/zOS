@@ -15,6 +15,8 @@ import { AdminMessageType } from '../../../store/messages';
 import { RewardsPopupContainer } from '../../rewards-popup/container';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
+import { RewardsState } from '../../../store/rewards';
+import { TooltipPopup } from '../../tooltip-popup/tooltip-popup';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -35,6 +37,8 @@ describe('messenger-list', () => {
       allowExpand: true,
       includeRewardsAvatar: false,
       userAvatarUrl: '',
+      zero: '',
+      isRewardsLoading: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -44,6 +48,7 @@ describe('messenger-list', () => {
       back: () => null,
       onClose: () => null,
       enterFullScreenMessenger: () => null,
+      fetchRewards: () => null,
       ...props,
     };
 
@@ -237,6 +242,42 @@ describe('messenger-list', () => {
     expect(wrapper).toHaveElement(RewardsPopupContainer);
   });
 
+  it('parses token number to renderable string', function () {
+    const wrapper = subject({ zero: '9123456789111315168' });
+    wrapper.find('.messenger-list__rewards-button').simulate('click');
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.1234');
+
+    wrapper.setProps({ zero: '9123000000000000000' });
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.123');
+
+    wrapper.setProps({ zero: '23456789111315168' });
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0.0234');
+
+    wrapper.setProps({ zero: '0' });
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0');
+  });
+
+  it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {
+    const wrapper = subject({ zero: '9000000000000000000', includeRewardsAvatar: false });
+    expect(wrapper).not.toHaveElement(TooltipPopup);
+  });
+
+  it('rewards tooltip popup is rendered upon load', async function () {
+    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, includeRewardsAvatar: true });
+
+    expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
+    expect(wrapper.find(TooltipPopup).prop('content')).toEqual('You’ve earned 9 ZERO today');
+    expect(wrapper.state()['isRewardsTooltipOpen']).toBeTrue();
+  });
+
+  it('closes rewards tooltip popup if clicked on close icon', async function () {
+    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, includeRewardsAvatar: true });
+    expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
+
+    wrapper.find(TooltipPopup).simulate('close');
+    expect(wrapper.find(TooltipPopup).prop('open')).toBeFalse();
+  });
+
   it('renders the title bar based on property', function () {
     const wrapper = subject({ includeTitleBar: true });
     expect(wrapper).toHaveElement('.messenger-list__header');
@@ -282,12 +323,18 @@ describe('messenger-list', () => {
     const subject = (
       channels,
       createConversationState = {},
-      currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }]
+      currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
+      rewardsState = {}
     ) => {
-      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser));
+      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, rewardsState));
     };
 
-    const getState = (channels, createConversationState = {}, users = [{ userId: '', isAMemberOfWorlds: true }]) => {
+    const getState = (
+      channels,
+      createConversationState = {},
+      users = [{ userId: '', isAMemberOfWorlds: true }],
+      rewardsState: Partial<RewardsState> = {}
+    ) => {
       const channelData = normalize(channels);
       const userData = normalizeUsers(users);
       return {
@@ -310,6 +357,10 @@ describe('messenger-list', () => {
           ...createConversationState,
         },
         registration: {},
+        rewards: {
+          loading: false,
+          ...rewardsState,
+        },
       } as RootState;
     };
 
@@ -385,6 +436,18 @@ describe('messenger-list', () => {
         'Courtney joined you on Zero',
         'Second message last',
       ]);
+    });
+
+    test('isLoading', () => {
+      const state = subject([], {}, undefined, { loading: true });
+
+      expect(state.isRewardsLoading).toEqual(true);
+    });
+
+    test('zero', () => {
+      const state = subject([], {}, undefined, { zero: '17' });
+
+      expect(state.zero).toEqual('17');
     });
 
     test('stage', () => {

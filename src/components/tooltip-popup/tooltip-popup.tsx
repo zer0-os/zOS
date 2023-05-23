@@ -17,6 +17,8 @@ export interface Properties {
   onClose: () => void;
 }
 
+// TODO: move to zUI
+// reference: https://github.com/zer0-os/zUI/blob/master/src/components/Tooltip/Tooltip.tsx
 export class TooltipPopup extends React.Component<Properties> {
   render() {
     return (

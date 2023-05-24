@@ -56,6 +56,8 @@ export interface Properties extends PublicProperties {
   includeRewardsAvatar: boolean;
   userAvatarUrl: string;
   zero: string;
+  zeroPreviousDay: string;
+  isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
 
   startCreateConversation: () => void;
@@ -73,7 +75,6 @@ interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
   isRewardsTooltipOpen: boolean;
-  isRewardsPopupOpenedOnce: boolean; // to track if the user has viewed the rewards "once"
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -107,8 +108,10 @@ export class Container extends React.Component<Properties, State> {
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
+      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       zero: rewards.zero,
+      zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
     };
   }
@@ -131,7 +134,6 @@ export class Container extends React.Component<Properties, State> {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
     isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
-    isRewardsPopupOpenedOnce: false,
   };
 
   constructor(props: Properties) {
@@ -167,12 +169,22 @@ export class Container extends React.Component<Properties, State> {
     this.props.createConversation(conversation);
   };
 
-  openRewards = () =>
+  getLastViewedRewards = () => localStorage.getItem('last_viewed_rewards');
+  setLastViewedRewards = (rewards: string) => localStorage.setItem('last_viewed_rewards', rewards);
+  isNewRewardsLoaded = () => this.getLastViewedRewards() !== this.props.zeroPreviousDay;
+
+  openRewards = () => {
     this.setState({
       isRewardsPopupOpen: true,
-      isRewardsPopupOpenedOnce: true,
       isRewardsTooltipOpen: false,
     });
+
+    // to track if the user has viewed today's rewards "once"
+    if (this.isNewRewardsLoaded) {
+      this.setLastViewedRewards(this.props.zeroPreviousDay);
+    }
+  };
+
   closeRewards = () => this.setState({ isRewardsPopupOpen: false });
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
@@ -195,8 +207,8 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  stringifyZero() {
-    const stringValue = this.props.zero.padStart(19, '0');
+  stringifyZero(zero: string) {
+    const stringValue = zero.padStart(19, '0');
     const whole = stringValue.slice(0, -18);
     const decimal = stringValue.slice(-18).slice(0, 4).replace(/0+$/, '');
     const decimalString = decimal.length > 0 ? `.${decimal}` : '';
@@ -222,7 +234,7 @@ export class Container extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.props.includeRewardsAvatar && !this.state.isRewardsPopupOpenedOnce && (
+            {this.props.isMessengerFullScreen && this.isNewRewardsLoaded() && (
               <Status type='idle' className={c('rewards-icon__status')} />
             )}
           </div>
@@ -235,12 +247,12 @@ export class Container extends React.Component<Properties, State> {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
-        {this.props.includeRewardsAvatar ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.props.isMessengerFullScreen && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
           <TooltipPopup
             open={this.props.isRewardsLoading === false && this.state.isRewardsTooltipOpen}
             align='center'
             side='left'
-            content={`You’ve earned ${this.stringifyZero()} ZERO today`}
+            content={`You’ve earned ${this.stringifyZero(this.props.zeroPreviousDay)} ZERO today`}
             onClose={this.closeRewardsTooltip}
           >
             {this.renderRewardsBar()}
@@ -253,7 +265,7 @@ export class Container extends React.Component<Properties, State> {
           <RewardsPopupContainer
             onClose={this.closeRewards}
             openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
-            zero={this.stringifyZero()}
+            zero={this.stringifyZero(this.props.zero)}
             isLoading={this.props.isRewardsLoading}
           />
         )}

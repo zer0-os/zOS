@@ -32,7 +32,8 @@ import { RewardsPopupContainer } from '../../rewards-popup/container';
 import { bem } from '../../../lib/bem';
 import classnames from 'classnames';
 import { enterFullScreenMessenger } from '../../../store/layout';
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar, Modal, Button } from '@zero-tech/zui/components';
+import { InviteDialogContainer } from '../../invite-dialog/container';
 import { RewardsFAQModal } from '../../rewards-faq-modal';
 const c = bem('messenger-list');
 
@@ -66,6 +67,8 @@ export interface Properties extends PublicProperties {
 interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
+  isToastNotificationOpen: boolean;
+  isInviteDialogOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -115,7 +118,12 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { isRewardsPopupOpen: false, isRewardsFAQModalOpen: false };
+  state = {
+    isRewardsPopupOpen: false,
+    isRewardsFAQModalOpen: false,
+    isToastNotificationOpen: false,
+    isInviteDialogOpen: false,
+  };
 
   constructor(props: Properties) {
     super(props);
@@ -150,9 +158,32 @@ export class Container extends React.Component<Properties, State> {
   };
 
   openRewards = () => this.setState({ isRewardsPopupOpen: true });
-  closeRewards = () => this.setState({ isRewardsPopupOpen: false });
+  closeRewards = () => {
+    this.setState({ isRewardsPopupOpen: false });
+    if (this.props.isFirstTimeLogin) {
+      setTimeout(() => {
+        this.setState({ isToastNotificationOpen: true });
+      }, 10000);
+    }
+  };
+
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
+
+  openInviteDialog = () => {
+    this.setState({ isInviteDialogOpen: true });
+  };
+  closeInviteDialog = () => {
+    this.setState({ isInviteDialogOpen: false });
+  };
+
+  renderInviteDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
+        <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
 
   renderTitleBar() {
     return (
@@ -207,6 +238,26 @@ export class Container extends React.Component<Properties, State> {
             closeRewardsFAQModal={this.closeRewardsFAQModal}
           />
         )}
+        {/* To Be replaced */}
+        {console.log(this.state.isToastNotificationOpen)}
+        {this.state.isToastNotificationOpen && (
+          <div
+            style={{
+              display: 'flex',
+              marginLeft: '16px',
+              position: 'absolute',
+              bottom: '70px',
+              width: '100%',
+              zIndex: '9999',
+              background: 'white',
+              color: 'black',
+            }}
+          >
+            I WILL BE REPLACED WITH THE ZUI TOAST NOTIFICATION - THIS IS JUST A BEHAVIOUR TEST
+            <Button onPress={this.openInviteDialog}>INVITE</Button>
+          </div>
+        )}
+
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
@@ -241,6 +292,7 @@ export class Container extends React.Component<Properties, State> {
             />
           )}
         </div>
+        {this.renderInviteDialog()}
       </>
     );
   }

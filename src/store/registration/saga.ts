@@ -1,4 +1,4 @@
-import { call, put, select, spawn, take } from 'redux-saga/effects';
+import { call, put, race, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
@@ -16,6 +16,7 @@ import {
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
+  createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
   uploadImage,
 } from './api';
@@ -69,6 +70,36 @@ export function* createAccount(action) {
       handle: email,
       inviteCode,
       nonceToken,
+    });
+    if (result.success) {
+      const userFetch = yield call(fetchCurrentUser);
+      if (userFetch) {
+        yield put(setUserId(userFetch.id));
+        yield put(setStage(RegistrationStage.ProfileDetails));
+        yield put(setErrors([]));
+        return true;
+      } else {
+        yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+      }
+    } else {
+      yield put(setErrors([result.response]));
+    }
+  } catch (e) {
+    yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+  } finally {
+    yield put(setLoading(false));
+  }
+  return false;
+}
+
+export function* createWeb3Account(action) {
+  const { token } = action.payload;
+  yield put(setLoading(true));
+  try {
+    const inviteCode = yield select((state) => state.registration.inviteCode);
+    const result = yield call(apiCreateWeb3Account, {
+      inviteCode,
+      web3Token: token,
     });
     if (result.success) {
       const userFetch = yield call(fetchCurrentUser);
@@ -152,8 +183,16 @@ export function* saga() {
   } while (!success);
 
   do {
-    const action = yield take(SagaActionTypes.CreateAccount);
-    success = yield call(createAccount, action);
+    const { email, web3 } = yield race({
+      email: take(SagaActionTypes.CreateAccount),
+      web3: take(SagaActionTypes.CreateWeb3Account),
+    });
+    success = false;
+    if (email) {
+      success = yield call(createAccount, email);
+    } else if (web3) {
+      success = yield call(createWeb3Account, web3);
+    }
   } while (!success);
 
   do {

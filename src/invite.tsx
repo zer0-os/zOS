@@ -11,7 +11,7 @@ import { InviteContainer } from './authentication/validate-invite/container';
 import { SelectMethodContainer } from './authentication/select-method/container';
 import { CreateEmailAccountContainer } from './authentication/create-email-account/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
-import { CreateWalletAccount } from './authentication/create-wallet-account';
+import { CreateWalletAccountContainer } from './authentication/create-wallet-account/container';
 
 export interface Properties {
   stage: RegistrationStage;
@@ -38,7 +38,7 @@ export class Container extends React.Component<Properties> {
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
           {this.props.stage === RegistrationStage.SelectMethod && <SelectMethodContainer />}
           {this.props.stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
-          {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccount />}
+          {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
         </div>

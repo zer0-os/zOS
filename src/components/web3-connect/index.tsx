@@ -6,13 +6,14 @@ import { providers } from 'ethers';
 import { inject as injectWeb3 } from '../../lib/web3/web3-react';
 import { inject as injectProviderService } from '../../lib/web3/provider-service';
 import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
-import { setChain, setAddress, setConnectionStatus, updateConnector } from '../../store/web3';
+import { setChain, setAddress, setConnectionStatus, updateConnector, setConnectionError } from '../../store/web3';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
   setConnectionStatus: (status: ConnectionStatus) => void;
   setAddress: (address: string) => void;
   setChain: (chain: Chains) => void;
+  setConnectionError: (message: string) => void;
   updateConnector: (connector: Connectors) => void;
   providerService: { register: (provider: any) => void };
   connectors: { get: (connector: Connectors) => any };
@@ -51,6 +52,7 @@ export class Container extends React.Component<Properties, State> {
       setChain,
       setAddress,
       setConnectionStatus,
+      setConnectionError,
       updateConnector,
     };
   }
@@ -65,7 +67,8 @@ export class Container extends React.Component<Properties, State> {
     this.props.updateConnector(Connectors.Infura);
   }
 
-  onActivateError(): void {
+  onActivateError(message: string): void {
+    this.props.setConnectionError(message);
     this.props.updateConnector(Connectors.None);
     this.props.setConnectionStatus(ConnectionStatus.Disconnected);
   }
@@ -111,7 +114,8 @@ export class Container extends React.Component<Properties, State> {
     try {
       await web3.activate(connector, null, true);
     } catch (error) {
-      this.onActivateError();
+      const message = error instanceof Error ? error.message : String(error);
+      this.onActivateError(message);
     }
   }
 

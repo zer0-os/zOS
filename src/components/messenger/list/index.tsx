@@ -139,6 +139,7 @@ export class Container extends React.Component<Properties, State> {
   constructor(props: Properties) {
     super(props);
     this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
+    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
   }
 
   componentDidMount(): void {
@@ -249,7 +250,7 @@ export class Container extends React.Component<Properties, State> {
         {this.props.includeTitleBar && this.renderTitleBar()}
         {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
           <TooltipPopup
-            open={this.props.isRewardsLoading === false && this.state.isRewardsTooltipOpen}
+            open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'
             side='left'
             content={`You’ve earned ${this.stringifyZero(this.props.zeroPreviousDay)} ZERO today`}

@@ -264,6 +264,16 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(TooltipPopup);
   });
 
+  it('rewards tooltip popup is not rendered if first time log in', async function () {
+    const wrapper = subject({
+      zeroPreviousDay: '9000000000000000000',
+      isMessengerFullScreen: false,
+      isRewardsLoading: false,
+      isFirstTimeLogin: true,
+    });
+    expect(wrapper).not.toHaveElement(TooltipPopup);
+  });
+
   it('rewards tooltip popup is rendered upon load', async function () {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',

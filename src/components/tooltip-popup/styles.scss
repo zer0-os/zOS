@@ -1,0 +1,48 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '~@zero-tech/zui/styles/colors' as colors;
+
+.tooltip-popup {
+  display: block;
+
+  &__trigger {
+    position: relative;
+    margin: unset;
+  }
+
+  &__content {
+    display: flex;
+    padding: 14px;
+    max-width: 32rem;
+    height: 24px;
+    background-color: theme.$color-primary-3;
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 24px;
+
+    /* Dark/Greyscale/Grey-12 */
+    color: theme.$color-greyscale-12;
+
+    &[data-side='right'][data-align='end'] {
+      border-bottom-left-radius: unset;
+    }
+    &[data-side='right'][data-align='start'] {
+      border-top-left-radius: unset;
+    }
+    &[data-side='left'][data-align='end'] {
+      border-bottom-right-radius: unset;
+    }
+    &[data-side='left'][data-align='start'] {
+      border-top-right-radius: unset;
+    }
+  }
+
+  &__arrow {
+    fill: theme.$color-primary-3;
+    margin-top: -1px;
+    margin-bottom: 3px;
+  }
+
+  &__close {
+    margin-left: 8px;
+  }
+}

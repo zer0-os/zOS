@@ -191,6 +191,13 @@ $side-padding: 16px;
     justify-content: center;
     align-items: center;
     color: theme.$color-primary-12;
+
+    &__status {
+      position: absolute;
+      top: 16px;
+      right: 13px;
+      border: 2px solid theme.$color-primary-1;
+    }
   }
 }
 

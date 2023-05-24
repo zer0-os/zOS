@@ -1,7 +1,10 @@
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { SagaActionTypes, setLoading, setZero, setZeroPreviousDay } from '.';
 import { RewardsResp, fetchRewards } from './api';
+import { delay } from '../channels-list/saga';
+
+const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 export function* fetch(_action) {
   yield put(setLoading(true));
@@ -18,7 +21,14 @@ export function* fetch(_action) {
   }
 }
 
+export function* syncFetchRewards() {
+  while (true) {
+    yield call(fetch, {});
+
+    yield call(delay, FETCH_REWARDS_INTERVAL);
+  }
+}
+
 export function* saga() {
-  const action = yield take(SagaActionTypes.Fetch);
-  yield call(fetch, action);
+  yield takeLatest(SagaActionTypes.Fetch, syncFetchRewards);
 }

@@ -234,7 +234,7 @@ export class Container extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.props.isMessengerFullScreen && this.isNewRewardsLoaded() && (
+            {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() && (
               <Status type='idle' className={c('rewards-icon__status')} />
             )}
           </div>
@@ -247,7 +247,7 @@ export class Container extends React.Component<Properties, State> {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
-        {this.props.isMessengerFullScreen && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
           <TooltipPopup
             open={this.props.isRewardsLoading === false && this.state.isRewardsTooltipOpen}
             align='center'

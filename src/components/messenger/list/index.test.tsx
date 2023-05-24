@@ -36,8 +36,10 @@ describe('messenger-list', () => {
       allowClose: true,
       allowExpand: true,
       includeRewardsAvatar: false,
+      isMessengerFullScreen: false,
       userAvatarUrl: '',
       zero: '',
+      zeroPreviousDay: '',
       isRewardsLoading: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
@@ -258,12 +260,16 @@ describe('messenger-list', () => {
   });
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {
-    const wrapper = subject({ zero: '9000000000000000000', includeRewardsAvatar: false });
+    const wrapper = subject({ zeroPreviousDay: '9000000000000000000', isMessengerFullScreen: false });
     expect(wrapper).not.toHaveElement(TooltipPopup);
   });
 
   it('rewards tooltip popup is rendered upon load', async function () {
-    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, includeRewardsAvatar: true });
+    const wrapper = subject({
+      zeroPreviousDay: '9000000000000000000',
+      isRewardsLoading: false,
+      isMessengerFullScreen: true,
+    });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
     expect(wrapper.find(TooltipPopup).prop('content')).toEqual('You’ve earned 9 ZERO today');
@@ -271,7 +277,7 @@ describe('messenger-list', () => {
   });
 
   it('closes rewards tooltip popup if clicked on close icon', async function () {
-    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, includeRewardsAvatar: true });
+    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, isMessengerFullScreen: true });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 
     wrapper.find(TooltipPopup).simulate('close');

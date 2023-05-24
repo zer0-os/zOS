@@ -8,7 +8,9 @@ export enum SagaActionTypes {
 
 export enum RegistrationStage {
   ValidateInvite = 'invite',
-  AccountCreation = 'creation',
+  SelectMethod = 'select-method',
+  EmailAccountCreation = 'email-creation',
+  WalletAccountCreation = 'wallet-creation',
   ProfileDetails = 'details',
   Done = 'done',
 }
@@ -91,9 +93,24 @@ const slice = createSlice({
     setFirstTimeLogin: (state, action: PayloadAction<RegistrationState['isFirstTimeLogin']>) => {
       state.isFirstTimeLogin = action.payload;
     },
+    registerWithEmail: (state, _action: PayloadAction<null>) => {
+      state.stage = RegistrationStage.EmailAccountCreation;
+    },
+    registerWithWallet: (state, _action: PayloadAction<null>) => {
+      state.stage = RegistrationStage.WalletAccountCreation;
+    },
   },
 });
 
-export const { setInviteStatus, setLoading, setStage, setErrors, setUserId, setInviteCode, setFirstTimeLogin } =
-  slice.actions;
+export const {
+  setInviteStatus,
+  setLoading,
+  setStage,
+  setErrors,
+  setUserId,
+  setInviteCode,
+  setFirstTimeLogin,
+  registerWithEmail,
+  registerWithWallet,
+} = slice.actions;
 export const { reducer } = slice;

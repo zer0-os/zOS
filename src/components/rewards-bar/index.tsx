@@ -2,14 +2,13 @@ import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconCurrencyDollar } from '@zero-tech/zui/icons';
 import classnames from 'classnames';
 import * as React from 'react';
-import { CreateMessengerConversation } from '../../store/channels-list/types';
-import { MembersSelectedPayload } from '../../store/create-conversation/types';
 import { RewardsFAQModal } from '../rewards-faq-modal';
 import { RewardsPopupContainer } from '../rewards-popup/container';
 import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
 import { bem } from '../../lib/bem';
 
-const c = bem('messenger-list');
+import './styles.scss';
+const c = bem('rewards-bar');
 
 export interface Properties {
   isFirstTimeLogin: boolean;

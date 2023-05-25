@@ -3,6 +3,7 @@
 
 .tooltip-popup {
   display: block;
+  animation: fadein 600ms ease-out forwards;
 
   &__trigger {
     position: relative;

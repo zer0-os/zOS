@@ -27,15 +27,11 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { adminMessageText } from '../../../lib/chat/chat-message';
-
-import { bem } from '../../../lib/bem';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
-
-const c = bem('messenger-list');
 
 export interface PublicProperties {
   onClose: () => void;

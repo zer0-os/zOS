@@ -24,6 +24,14 @@ export class FeatureFlags {
   set allowPublicZOS(value: boolean) {
     this._setBoolean('allowPublicZOS', value);
   }
+
+  get allowWeb3Registration() {
+    return this._getBoolean('allowWeb3Registration');
+  }
+
+  set allowWeb3Registration(value: boolean) {
+    this._setBoolean('allowWeb3Registration', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

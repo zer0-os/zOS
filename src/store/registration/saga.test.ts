@@ -23,6 +23,11 @@ import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setActiveMessengerId } from '../chat';
 
+const featureFlags = { allowWeb3Registration: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
     const code = '123456';
@@ -43,7 +48,26 @@ describe('validate invite', () => {
     expect(returnValue).toEqual(true);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
     expect(registration.inviteCode).toEqual(code);
-    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
+  });
+
+  it('moves to the method selection stage when feature flag enabled', async () => {
+    const code = '123456';
+    featureFlags.allowWeb3Registration = true;
+
+    const {
+      storeState: { registration },
+    } = await expectSaga(validateInvite, { payload: { code } })
+      .provide([
+        [
+          call(apiValidateInvite, { code }),
+          InviteCodeStatus.VALID,
+        ],
+      ])
+      .withReducer(rootReducer, initialState())
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.SelectMethod);
   });
 
   it('validates invite code, returns false if NOT VALID and stays on invite stage', async () => {
@@ -94,7 +118,7 @@ describe('createAccount', () => {
           { id: '123' },
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.EmailAccountCreation, inviteCode }))
       .run();
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
     expect(registration.userId).toEqual('123');
@@ -114,10 +138,10 @@ describe('createAccount', () => {
           [AccountCreationErrors.EMAIL_REQUIRED],
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.EmailAccountCreation }))
       .run();
 
-    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
     expect(registration.errors).toEqual([AccountCreationErrors.EMAIL_REQUIRED]);
     expect(returnValue).toEqual(false);
   });
@@ -142,10 +166,10 @@ describe('createAccount', () => {
           { success: false, response: 'EMAIL_INVALID' },
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.EmailAccountCreation, inviteCode }))
       .run();
 
-    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
     expect(registration.errors).toEqual(['EMAIL_INVALID']);
     expect(returnValue).toEqual(false);
   });
@@ -170,10 +194,10 @@ describe('createAccount', () => {
           throwError(new Error('Stub api error')),
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.EmailAccountCreation, inviteCode }))
       .run();
 
-    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
     expect(registration.errors).toEqual([AccountCreationErrors.UNKNOWN_ERROR]);
     expect(returnValue).toEqual(false);
   });
@@ -202,10 +226,10 @@ describe('createAccount', () => {
           false,
         ],
       ])
-      .withReducer(rootReducer, initialState({ stage: RegistrationStage.AccountCreation, inviteCode }))
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.EmailAccountCreation, inviteCode }))
       .run();
 
-    expect(registration.stage).toEqual(RegistrationStage.AccountCreation);
+    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
     expect(registration.errors).toEqual([AccountCreationErrors.UNKNOWN_ERROR]);
     expect(returnValue).toEqual(false);
   });
@@ -235,7 +259,7 @@ describe('createAccount', () => {
       ])
       .withReducer(
         rootReducer,
-        initialState({ errors: ['existing_error'], stage: RegistrationStage.AccountCreation, inviteCode })
+        initialState({ errors: ['existing_error'], stage: RegistrationStage.EmailAccountCreation, inviteCode })
       )
       .run();
 

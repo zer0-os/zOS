@@ -191,6 +191,13 @@ $side-padding: 16px;
     justify-content: center;
     align-items: center;
     color: theme.$color-primary-12;
+
+    &__status {
+      position: absolute;
+      top: 16px;
+      right: 13px;
+      border: 2px solid theme.$color-primary-1;
+    }
   }
 }
 
@@ -207,12 +214,21 @@ $side-padding: 16px;
     line-height: 24px;
     color: theme.$color-greyscale-12;
 
-    padding: 20px 10px;
+    padding: 16px;
   }
 
   &__back {
-    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
     cursor: pointer;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: theme.$color-greyscale-transparency-3;
+    }
   }
 }
 

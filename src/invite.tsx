@@ -8,8 +8,10 @@ import './invite.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
+import { SelectMethodContainer } from './authentication/select-method/container';
 import { CreateEmailAccountContainer } from './authentication/create-email-account/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
+import { CreateWalletAccount } from './authentication/create-wallet-account';
 
 export interface Properties {
   stage: RegistrationStage;
@@ -34,7 +36,9 @@ export class Container extends React.Component<Properties> {
         <div className='invite-main'>
           <ZeroLogo />
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
-          {this.props.stage === RegistrationStage.AccountCreation && <CreateEmailAccountContainer />}
+          {this.props.stage === RegistrationStage.SelectMethod && <SelectMethodContainer />}
+          {this.props.stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
+          {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccount />}
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
         </div>

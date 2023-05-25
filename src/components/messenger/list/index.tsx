@@ -32,7 +32,7 @@ import { RewardsPopupContainer } from '../../rewards-popup/container';
 import { bem } from '../../../lib/bem';
 import classnames from 'classnames';
 import { enterFullScreenMessenger } from '../../../store/layout';
-import { Avatar, Button, Modal, Status } from '@zero-tech/zui/components';
+import { Avatar, Modal, Status, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { RewardsFAQModal } from '../../rewards-faq-modal';
 import { TooltipPopup } from '../../tooltip-popup/tooltip-popup';
@@ -76,6 +76,7 @@ interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
   isToastNotificationOpen: boolean;
+  isInviteNotificationComplete: boolean;
   isInviteDialogOpen: boolean;
   isRewardsTooltipOpen: boolean;
 }
@@ -137,6 +138,7 @@ export class Container extends React.Component<Properties, State> {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
     isToastNotificationOpen: false,
+    isInviteNotificationComplete: false,
     isInviteDialogOpen: false,
     isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
@@ -193,7 +195,7 @@ export class Container extends React.Component<Properties, State> {
 
   closeRewards = () => {
     this.setState({ isRewardsPopupOpen: false });
-    if (this.props.isFirstTimeLogin) {
+    if (this.props.isFirstTimeLogin && !this.state.isInviteNotificationComplete) {
       setTimeout(() => {
         this.setState({ isToastNotificationOpen: true });
       }, 10000);
@@ -204,10 +206,13 @@ export class Container extends React.Component<Properties, State> {
   closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
   openInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: true });
+    this.setState({ isInviteDialogOpen: true, isToastNotificationOpen: false, isInviteNotificationComplete: true });
   };
   closeInviteDialog = () => {
     this.setState({ isInviteDialogOpen: false });
+  };
+  closeToastNotification = () => {
+    this.setState({ isToastNotificationOpen: false, isInviteNotificationComplete: true });
   };
 
   renderInviteDialog = (): JSX.Element => {
@@ -215,6 +220,21 @@ export class Container extends React.Component<Properties, State> {
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
       </Modal>
+    );
+  };
+
+  renderToastNotification = (): JSX.Element => {
+    return (
+      <ToastNotification
+        title={'Invite your friends'}
+        description={'To get more rewards simply build your friend network and start messaging'}
+        actionTitle={'Invite Friends'}
+        actionAltText={'invite dialog modal call to action'}
+        positionVariant='left'
+        openToast={this.state.isToastNotificationOpen}
+        onClick={this.openInviteDialog}
+        onClose={this.closeToastNotification}
+      />
     );
   };
 
@@ -303,26 +323,6 @@ export class Container extends React.Component<Properties, State> {
             closeRewardsFAQModal={this.closeRewardsFAQModal}
           />
         )}
-        {/* To Be replaced */}
-        {console.log(this.state.isToastNotificationOpen)}
-        {this.state.isToastNotificationOpen && (
-          <div
-            style={{
-              display: 'flex',
-              marginLeft: '16px',
-              position: 'absolute',
-              bottom: '70px',
-              width: '100%',
-              zIndex: '9999',
-              background: 'white',
-              color: 'black',
-            }}
-          >
-            I WILL BE REPLACED WITH THE ZUI TOAST NOTIFICATION - THIS IS JUST A BEHAVIOUR TEST
-            <Button onPress={this.openInviteDialog}>INVITE</Button>
-          </div>
-        )}
-
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
@@ -356,8 +356,9 @@ export class Container extends React.Component<Properties, State> {
               isCreating={this.props.isGroupCreating}
             />
           )}
+          {this.state.isInviteDialogOpen && this.renderInviteDialog()}
+          {this.state.isToastNotificationOpen && this.renderToastNotification()}
         </div>
-        {this.renderInviteDialog()}
       </>
     );
   }

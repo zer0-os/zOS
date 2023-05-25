@@ -60,9 +60,13 @@ export class Container extends React.Component<Properties> {
   };
 
   authorize = async () => {
-    const { providerService } = this.props;
-    const signedToken = await personalSignToken(providerService.get(), this.props.currentAddress);
-    this.props.createWeb3Account({ token: signedToken });
+    try {
+      const { providerService } = this.props;
+      const signedToken = await personalSignToken(providerService.get(), this.props.currentAddress);
+      this.props.createWeb3Account({ token: signedToken });
+    } catch (error) {
+      this.props.updateConnector(Connectors.None);
+    }
   };
 
   render() {

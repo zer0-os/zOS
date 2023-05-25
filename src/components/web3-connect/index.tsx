@@ -114,9 +114,19 @@ export class Container extends React.Component<Properties, State> {
     try {
       await web3.activate(connector, null, true);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.onActivateError(message);
+      this.onActivateError(this.translateError(error));
     }
+  }
+
+  translateError(error: any) {
+    if (error.code && error.code === -32002) {
+      return 'Wallet request already pending. Please close the Metamask window and try again.';
+    }
+
+    if (error.message) {
+      return error.message;
+    }
+    return String(error);
   }
 
   syncGlobalsForConnectedStatus() {

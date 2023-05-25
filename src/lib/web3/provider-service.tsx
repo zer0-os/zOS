@@ -13,6 +13,9 @@ export class ProviderService {
 }
 
 export const service = new ProviderService();
+export function getService() {
+  return service;
+}
 export function inject<T>(ChildComponent: any) {
   return class ProviderServiceInjector extends React.Component<T> {
     render() {

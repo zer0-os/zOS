@@ -15,6 +15,10 @@ export interface Properties {
 }
 
 export class CreateWalletAccount extends React.Component<Properties> {
+  get showError() {
+    return this.props.error && !this.props.isConnecting;
+  }
+
   render() {
     return (
       <div className={c('')}>
@@ -24,7 +28,7 @@ export class CreateWalletAccount extends React.Component<Properties> {
           <div className={c('select-wallet')}>
             <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />
           </div>
-          {this.props.error && <Alert variant='error'>{this.props.error}</Alert>}
+          {this.showError && <Alert variant='error'>{this.props.error}</Alert>}
         </div>
         <div className={c('other-options')}>
           <div>

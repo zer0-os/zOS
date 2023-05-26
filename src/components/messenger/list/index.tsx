@@ -130,10 +130,6 @@ export class Container extends React.Component<Properties, State> {
     isInviteDialogOpen: false,
   };
 
-  constructor(props: Properties) {
-    super(props);
-  }
-
   componentDidMount(): void {
     this.props.fetchConversations();
     this.props.fetchRewards({});

@@ -88,4 +88,12 @@ describe('rewards-bar', () => {
     wrapper.find(TooltipPopup).simulate('close');
     expect(wrapper.find(TooltipPopup).prop('open')).toBeFalse();
   });
+
+  it('renders the rewards avatar as necessary', function () {
+    let wrapper = subject({ includeRewardsAvatar: true });
+    expect(wrapper).toHaveElement('Avatar');
+
+    wrapper.setProps({ includeRewardsAvatar: false });
+    expect(wrapper).not.toHaveElement('Avatar');
+  });
 });

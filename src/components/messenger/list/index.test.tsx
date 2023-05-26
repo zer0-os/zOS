@@ -257,14 +257,6 @@ describe('messenger-list', () => {
     expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
-  it('renders the rewards avatar as necessary', function () {
-    let wrapper = subject({ includeRewardsAvatar: true });
-    expect(wrapper).toHaveElement('Avatar');
-
-    wrapper.setProps({ includeRewardsAvatar: false });
-    expect(wrapper).not.toHaveElement('Avatar');
-  });
-
   describe('mapState', () => {
     const subject = (
       channels,

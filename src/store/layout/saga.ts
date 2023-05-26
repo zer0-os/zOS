@@ -35,7 +35,7 @@ export function* updateSidekick(action) {
 
 export function* initializeUserLayout(user: { id: string; isAMemberOfWorlds: boolean }) {
   const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
-  const isMessengerFullScreen = !user.isAMemberOfWorlds;
+  const isMessengerFullScreen = true;
 
   yield put(
     update({

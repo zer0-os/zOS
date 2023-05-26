@@ -66,12 +66,9 @@ export interface Properties extends PublicProperties {
 }
 
 interface State {
-  isRewardsPopupOpen: boolean;
-  isRewardsFAQModalOpen: boolean;
   isToastNotificationOpen: boolean;
   isInviteNotificationComplete: boolean;
   isInviteDialogOpen: boolean;
-  isRewardsTooltipOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -128,18 +125,13 @@ export class Container extends React.Component<Properties, State> {
   }
 
   state = {
-    isRewardsPopupOpen: false,
-    isRewardsFAQModalOpen: false,
     isToastNotificationOpen: false,
     isInviteNotificationComplete: false,
     isInviteDialogOpen: false,
-    isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
   constructor(props: Properties) {
     super(props);
-    this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
-    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
   }
 
   componentDidMount(): void {

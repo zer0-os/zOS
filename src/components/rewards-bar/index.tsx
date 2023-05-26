@@ -39,6 +39,12 @@ export class RewardsBar extends React.Component<Properties, State> {
     isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
+  constructor(props: Properties) {
+    super(props);
+    this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
+    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
+  }
+
   stringifyZero(zero: string) {
     const stringValue = zero.padStart(19, '0');
     const whole = stringValue.slice(0, -18);
@@ -46,6 +52,31 @@ export class RewardsBar extends React.Component<Properties, State> {
     const decimalString = decimal.length > 0 ? `.${decimal}` : '';
     return `${whole}${decimalString}`;
   }
+
+  getLastViewedRewards = () => localStorage.getItem('last_viewed_rewards');
+  setLastViewedRewards = (rewards: string) => localStorage.setItem('last_viewed_rewards', rewards);
+  isNewRewardsLoaded = () => this.getLastViewedRewards() !== this.props.zeroPreviousDay;
+
+  openRewards = () => {
+    this.setState({
+      isRewardsPopupOpen: true,
+      isRewardsTooltipOpen: false,
+    });
+
+    // to track if the user has viewed today's rewards "once"
+    if (this.isNewRewardsLoaded) {
+      this.setLastViewedRewards(this.props.zeroPreviousDay);
+    }
+  };
+
+  closeRewards = () => {
+    this.setState({ isRewardsPopupOpen: false });
+    this.props.onRewardsPopupClose();
+  };
+
+  openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
+  closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
+  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
   renderRewardsBar() {
     return (
@@ -74,31 +105,6 @@ export class RewardsBar extends React.Component<Properties, State> {
       </div>
     );
   }
-
-  getLastViewedRewards = () => localStorage.getItem('last_viewed_rewards');
-  setLastViewedRewards = (rewards: string) => localStorage.setItem('last_viewed_rewards', rewards);
-  isNewRewardsLoaded = () => this.getLastViewedRewards() !== this.props.zeroPreviousDay;
-
-  openRewards = () => {
-    this.setState({
-      isRewardsPopupOpen: true,
-      isRewardsTooltipOpen: false,
-    });
-
-    // to track if the user has viewed today's rewards "once"
-    if (this.isNewRewardsLoaded) {
-      this.setLastViewedRewards(this.props.zeroPreviousDay);
-    }
-  };
-
-  closeRewards = () => {
-    this.setState({ isRewardsPopupOpen: false });
-    this.props.onRewardsPopupClose();
-  };
-
-  openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
-  closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
   render() {
     return (

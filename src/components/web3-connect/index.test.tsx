@@ -364,6 +364,36 @@ describe('Web3Connect', () => {
     expect(component.hasClass('the-cat-parade')).toBe(true);
   });
 
+  it('clears localstorage & reloads if connectionStatus is Connecting and has been connected but web3 account is not null', () => {
+    const component = subject(
+      {
+        connectionStatus: ConnectionStatus.Disconnected,
+        web3: getWeb3({
+          active: false,
+        }),
+      },
+      <div className='the-cat-parade' />
+    );
+
+    const reload = jest.fn();
+    global.window = Object.create({
+      location: {
+        reload,
+      },
+    });
+
+    // recreate the buggy state, where we have a web3 account but no connection
+    component.setProps({
+      connectionStatus: ConnectionStatus.Connecting,
+      web3: getWeb3({ account: '0x0000000000000000000000000000000000000009', chainId: Chains.Goerli }),
+    });
+    component.setProps({ connectionStatus: ConnectionStatus.Connected });
+    component.setProps({ connectionStatus: ConnectionStatus.Connecting });
+
+    expect(localStorage.getItem('previousConnector')).toBe('none');
+    expect(reload).toHaveBeenCalled();
+  });
+
   describe('mapState', () => {
     const subject = (state: RootState) => Container.mapState(state);
     const getState = (state: any = {}) =>

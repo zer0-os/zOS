@@ -324,9 +324,29 @@ $side-padding: 16px;
     color: theme.$color-greyscale-12;
   }
 
+  &__button-container {
+    display: flex;
+    margin: 24px 0px;
+  }
+
   &__create {
     width: 100%;
-    margin: 16px 0px;
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &__button-icon {
+        color: theme.$color-secondary-11;
+      }
+    }
+
+    &:hover {
+      &__button-icon {
+        color: theme.$color-black;
+      }
+    }
   }
 
   &__field-info {

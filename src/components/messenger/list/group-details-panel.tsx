@@ -8,6 +8,8 @@ import { SelectedUserTag } from './selected-user-tag';
 
 import { bem } from '../../../lib/bem';
 import { ImageUpload } from '../../image-upload';
+import { IconMessagePlusSquare } from '@zero-tech/zui/icons';
+
 const c = bem('group-details-panel');
 
 export interface Properties {
@@ -63,8 +65,9 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
           ))}
         </div>
-        <div>
+        <div className={c('button-container')}>
           <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
+            <IconMessagePlusSquare className={c('button-icon')} isFilled size={18} />
             Create Group
           </Button>
         </div>

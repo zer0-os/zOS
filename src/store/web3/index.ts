@@ -14,13 +14,14 @@ export interface Web3State {
     chainId: Chains;
     address: string;
     connector: Connectors;
+    error: string;
   };
   isWalletModalOpen: boolean;
 }
 
 const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
-  value: { chainId: null, address: '', connector: Connectors.None },
+  value: { chainId: null, address: '', connector: Connectors.None, error: '' },
   isWalletModalOpen: false,
 };
 
@@ -43,9 +44,13 @@ const slice = createSlice({
     setWalletModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isWalletModalOpen = action.payload;
     },
+    setConnectionError: (state, action: PayloadAction<string>) => {
+      state.value.error = action.payload;
+    },
   },
 });
 
-export const { setConnector, setAddress, setChain, setConnectionStatus, setWalletModalOpen } = slice.actions;
+export const { setConnector, setAddress, setChain, setConnectionStatus, setWalletModalOpen, setConnectionError } =
+  slice.actions;
 export const { reducer } = slice;
 export { updateConnector };

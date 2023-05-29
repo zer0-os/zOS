@@ -12,14 +12,18 @@
     @include sub-heading();
   }
 
-  &__select-wallet {
+  &__main {
     box-sizing: border-box;
+    width: 256px;
+    margin: auto;
+  }
+
+  &__select-wallet {
     background-color: theme.$color-primary-2;
     border: 1px solid theme.$color-primary-5;
     border-radius: 8px;
     padding: 16px 6px 24px;
-    width: 256px;
-    margin: auto;
+    margin-bottom: 16px;
   }
 
   &__other-options {

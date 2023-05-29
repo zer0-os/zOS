@@ -45,6 +45,7 @@ describe('Web3Connect', () => {
       setAddress: () => undefined,
       setChain: () => undefined,
       updateConnector: () => undefined,
+      setConnectionError: () => undefined,
       ...props,
       web3: getWeb3(props.web3),
       providerService: {

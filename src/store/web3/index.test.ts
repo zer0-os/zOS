@@ -4,14 +4,14 @@ import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 describe('web3 reducer', () => {
   const initialExistingState: Web3State = {
     status: ConnectionStatus.Disconnected,
-    value: { chainId: null, address: '', connector: Connectors.None },
+    value: { chainId: null, address: '', connector: Connectors.None, error: '' },
     isWalletModalOpen: false,
   };
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       status: ConnectionStatus.Disconnected,
-      value: { chainId: null, address: '', connector: Connectors.None },
+      value: { chainId: null, address: '', connector: Connectors.None, error: '' },
       isWalletModalOpen: false,
     });
   });

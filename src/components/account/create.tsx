@@ -8,6 +8,7 @@ import { fetchCurrentUserWithChatAccessToken } from '../../store/authentication'
 import { createAndAuthorize, updateImageProfile } from '../../store/authentication/api';
 import { AuthenticationState, AuthorizationResponse } from '../../store/authentication/types';
 import { ImageUpload } from '../image-upload';
+import { IconUpload2 } from '@zero-tech/zui/icons';
 import { Button } from '@zer0-os/zos-component-library';
 
 import './styles.scss';
@@ -173,6 +174,8 @@ export class Container extends React.Component<Properties, State> {
     });
   };
 
+  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled />;
+
   renderError(message: string) {
     return (
       <div className='input__error-message'>
@@ -222,7 +225,11 @@ export class Container extends React.Component<Properties, State> {
               This is the image associated with your account that other citizens of ZERO will see
             </p>
             <div className='profile-prompt__image-upload'>
-              <ImageUpload onChange={this.onImageChange} />
+              <ImageUpload
+                onChange={this.onImageChange}
+                icon={this.renderImageUploadIcon()}
+                uploadText='Select or drag and drop'
+              />
             </div>
           </div>
 

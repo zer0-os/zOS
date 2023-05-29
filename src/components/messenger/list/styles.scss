@@ -291,7 +291,8 @@ $side-padding: 16px;
   }
 
   .group-details-panel__image-upload {
-    width: 100%;
+    font-size: $font-size-medium;
+    color: theme.$color-greyscale-12;
   }
 }
 

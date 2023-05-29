@@ -8,6 +8,8 @@ import { SelectedUserTag } from './selected-user-tag';
 
 import { bem } from '../../../lib/bem';
 import { ImageUpload } from '../../image-upload';
+import { IconImagePlus } from '@zero-tech/zui/icons';
+
 const c = bem('group-details-panel');
 
 export interface Properties {
@@ -38,6 +40,8 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
     this.setState({ image });
   };
 
+  renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
+
   render() {
     return (
       <div className={c('')}>
@@ -52,7 +56,12 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <span className={c('label')}>Group image</span>
             <span className={c('optional')}>Optional</span>
           </div>
-          <ImageUpload onChange={this.onImageChange} className={c('image-upload')} />
+          <ImageUpload
+            onChange={this.onImageChange}
+            className={c('image-upload')}
+            icon={this.renderImageUploadIcon()}
+            uploadText={'Upload image'}
+          />
         </div>
         <div className={c('selected-count')}>
           <span className={c('selected-number')}>{this.props.users.length}</span> member

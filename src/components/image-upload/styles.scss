@@ -1,14 +1,14 @@
-@use '../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../variables';
 
 .image-upload {
   width: 120px;
   height: 120px;
-  border: 1px dashed #504f57;
-  background: #1f1825;
+  border: 1px dashed theme.$color-greyscale-8;
+  background: theme.$color-primary-3;
   border-radius: 9999px;
-  color: #ededef;
-  font-size: 12px;
+  color: theme.$color-greyscale-8;
+  font-size: $font-size-small;
   text-align: center;
   overflow: hidden;
 

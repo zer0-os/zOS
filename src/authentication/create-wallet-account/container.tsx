@@ -25,7 +25,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     return {
-      errors: { general: value.error || Container.mapErrors(errors || []).general },
+      errors: { general: value.error || Container.mapErrors(errors) },
       isConnecting: status === ConnectionStatus.Connecting || loading,
     };
   }
@@ -35,21 +35,15 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapErrors(errors: string[]) {
-    const errorObject = {} as Properties['errors'];
-
-    errors.forEach((error) => {
-      switch (error) {
-        case AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS:
-          errorObject.general = 'This address has already been registered';
-          break;
-        default:
-          // XXX: debugging - render the error message raw
-          errorObject.general = error;
-          break;
-      }
-    });
-
-    return errorObject;
+    if (!errors) {
+      return '';
+    }
+    const error = errors[0];
+    if (error === AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS) {
+      return 'This address has already been registered';
+    }
+    // XXX: debugging - render the error message raw
+    return error;
   }
 
   connectorSelected = async (connector) => {

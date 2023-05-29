@@ -65,7 +65,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
           ))}
         </div>
-        <div className={c('button-container')}>
+        <div>
           <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
             <IconMessagePlusSquare className={c('button-icon')} isFilled size={18} />
             Create Group

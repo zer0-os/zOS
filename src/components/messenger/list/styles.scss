@@ -256,13 +256,9 @@ $side-padding: 16px;
     color: theme.$color-greyscale-12;
   }
 
-  &__button-container {
-    display: flex;
-    margin: 24px 0px;
-  }
-
   &__create {
     width: 100%;
+    margin: 24px 0px;
 
     div {
       display: flex;

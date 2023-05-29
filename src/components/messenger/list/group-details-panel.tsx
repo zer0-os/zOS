@@ -45,38 +45,48 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        <PanelHeader title='Group details' onBack={this.props.onBack} />
-        <div>
-          <div className={c('field-info')}>
-            <span className={c('label')}>Group name</span>
-            <span className={c('optional')}>Optional</span>
+        <PanelHeader title='Group Details' onBack={this.props.onBack} />
+
+        <div className={c('details-content')}>
+          <div>
+            <div className={c('field-info')}>
+              <span className={c('label')}>Group name</span>
+              <span className={c('optional')}>Optional</span>
+            </div>
+            <Input value={this.state.name} onChange={this.nameChanged} />
           </div>
-          <Input value={this.state.name} onChange={this.nameChanged} />
-          <div className={c('field-info')}>
-            <span className={c('label')}>Group image</span>
-            <span className={c('optional')}>Optional</span>
+
+          <div>
+            <div className={c('field-info')}>
+              <span className={c('label')}>Group image</span>
+              <span className={c('optional')}>Optional</span>
+            </div>
+            <ImageUpload
+              onChange={this.onImageChange}
+              className={c('image-upload')}
+              icon={this.renderImageUploadIcon()}
+              uploadText={'Upload image'}
+            />
           </div>
-          <ImageUpload
-            onChange={this.onImageChange}
-            className={c('image-upload')}
-            icon={this.renderImageUploadIcon()}
-            uploadText={'Upload image'}
-          />
-        </div>
-        <div className={c('selected-count')}>
-          <span className={c('selected-number')}>{this.props.users.length}</span> member
-          {this.props.users.length === 1 ? '' : 's'} selected
-        </div>
-        <div>
-          {this.props.users.map((u) => (
-            <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
-          ))}
-        </div>
-        <div>
-          <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
-            <IconMessagePlusSquare isFilled size={18} />
-            Create Group
-          </Button>
+
+          <div>
+            <div className={c('selected-count')}>
+              <span className={c('selected-number')}>{this.props.users.length}</span> member
+              {this.props.users.length === 1 ? '' : 's'} selected
+            </div>
+            <div>
+              {this.props.users.map((u) => (
+                <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
+              <IconMessagePlusSquare isFilled size={18} />
+              Create Group
+            </Button>
+          </div>
         </div>
       </div>
     );

@@ -9,6 +9,8 @@ describe('ImageUpload', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       onChange: jest.fn(),
+      icon: <div />,
+      uploadText: 'Upload image',
       ...props,
     };
 

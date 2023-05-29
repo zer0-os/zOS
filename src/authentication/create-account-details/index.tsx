@@ -5,6 +5,8 @@ import { Alert, Button, Input } from '@zero-tech/zui/components';
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
+import { IconUpload2 } from '@zero-tech/zui/icons';
+
 const c = bem('create-account-details');
 
 export interface Properties {
@@ -52,6 +54,8 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
     return this.props.errors.image;
   }
 
+  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled />;
+
   render() {
     return (
       <div className={c('')}>
@@ -59,7 +63,11 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
         <div className={c('sub-heading')}>Step 2 of 2: What should we call you?</div>
         <form className={c('form')} onSubmit={this.publishOnCreate}>
           <div className={c('image-upload')}>
-            <ImageUpload onChange={this.trackImage} />
+            <ImageUpload
+              onChange={this.trackImage}
+              icon={this.renderImageUploadIcon()}
+              uploadText='Select or drag and drop'
+            />
           </div>
           {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
           <Input

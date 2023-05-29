@@ -40,7 +40,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
     this.setState({ image });
   };
 
-  renderImageUploadIcon = (): JSX.Element => <IconImagePlus size={24} color='#EDEDEF' />;
+  renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
   render() {
     return (

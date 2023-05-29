@@ -174,7 +174,7 @@ export class Container extends React.Component<Properties, State> {
     });
   };
 
-  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled size={24} color='#EDEDEF' />;
+  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled />;
 
   renderError(message: string) {
     return (

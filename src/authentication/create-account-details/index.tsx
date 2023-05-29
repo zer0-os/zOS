@@ -54,7 +54,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
     return this.props.errors.image;
   }
 
-  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled size={24} color='#EDEDEF' />;
+  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled />;
 
   render() {
     return (

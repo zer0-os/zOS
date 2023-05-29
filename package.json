@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {
@@ -33,7 +33,7 @@
     "@zero-tech/zapp-daos": "latest",
     "@zero-tech/zapp-nfts": "latest",
     "@zero-tech/zapp-staking": "latest",
-    "@zero-tech/zui": "^0.22.0",
+    "@zero-tech/zui": "^0.22.1",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

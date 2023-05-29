@@ -17,7 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 
-import { IconCurrencyDollar, IconExpand1, IconXClose } from '@zero-tech/zui/icons';
+import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
@@ -27,18 +27,11 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../autocomplete-members';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { adminMessageText } from '../../../lib/chat/chat-message';
-import { RewardsPopupContainer } from '../../rewards-popup/container';
-
-import { bem } from '../../../lib/bem';
-import classnames from 'classnames';
 import { enterFullScreenMessenger } from '../../../store/layout';
-import { Avatar, Modal, Status, ToastNotification } from '@zero-tech/zui/components';
+import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { RewardsFAQModal } from '../../rewards-faq-modal';
-import { TooltipPopup } from '../../tooltip-popup/tooltip-popup';
 import { fetch as fetchRewards } from '../../../store/rewards';
-
-const c = bem('messenger-list');
+import { RewardsBar } from '../../rewards-bar';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -73,12 +66,9 @@ export interface Properties extends PublicProperties {
 }
 
 interface State {
-  isRewardsPopupOpen: boolean;
-  isRewardsFAQModalOpen: boolean;
   isToastNotificationOpen: boolean;
   isInviteNotificationComplete: boolean;
   isInviteDialogOpen: boolean;
-  isRewardsTooltipOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -135,19 +125,10 @@ export class Container extends React.Component<Properties, State> {
   }
 
   state = {
-    isRewardsPopupOpen: false,
-    isRewardsFAQModalOpen: false,
     isToastNotificationOpen: false,
     isInviteNotificationComplete: false,
     isInviteDialogOpen: false,
-    isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
-
-  constructor(props: Properties) {
-    super(props);
-    this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
-    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
-  }
 
   componentDidMount(): void {
     this.props.fetchConversations();
@@ -177,33 +158,13 @@ export class Container extends React.Component<Properties, State> {
     this.props.createConversation(conversation);
   };
 
-  getLastViewedRewards = () => localStorage.getItem('last_viewed_rewards');
-  setLastViewedRewards = (rewards: string) => localStorage.setItem('last_viewed_rewards', rewards);
-  isNewRewardsLoaded = () => this.getLastViewedRewards() !== this.props.zeroPreviousDay;
-
-  openRewards = () => {
-    this.setState({
-      isRewardsPopupOpen: true,
-      isRewardsTooltipOpen: false,
-    });
-
-    // to track if the user has viewed today's rewards "once"
-    if (this.isNewRewardsLoaded) {
-      this.setLastViewedRewards(this.props.zeroPreviousDay);
-    }
-  };
-
-  closeRewards = () => {
-    this.setState({ isRewardsPopupOpen: false });
+  onRewardsPopupClose = () => {
     if (this.props.isFirstTimeLogin && !this.state.isInviteNotificationComplete) {
       setTimeout(() => {
         this.setState({ isToastNotificationOpen: true });
       }, 10000);
     }
   };
-  openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
-  closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
   openInviteDialog = () => {
     this.setState({ isInviteDialogOpen: true, isToastNotificationOpen: false, isInviteNotificationComplete: true });
@@ -255,74 +216,22 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  stringifyZero(zero: string) {
-    const stringValue = zero.padStart(19, '0');
-    const whole = stringValue.slice(0, -18);
-    const decimal = stringValue.slice(-18).slice(0, 4).replace(/0+$/, '');
-    const decimalString = decimal.length > 0 ? `.${decimal}` : '';
-    return `${whole}${decimalString}`;
-  }
-
-  renderRewardsBar() {
-    return (
-      <div
-        className={classnames(c('rewards-bar'), {
-          [c('rewards-bar', 'with-avatar')]: this.props.includeRewardsAvatar,
-        })}
-      >
-        {this.props.includeRewardsAvatar && (
-          <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
-        )}
-        <button
-          onClick={this.openRewards}
-          className={classnames(c('rewards-button'), {
-            [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
-          })}
-        >
-          <div>Rewards</div>
-          <div className={c('rewards-icon')}>
-            <IconCurrencyDollar size={16} />
-            {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() && (
-              <Status type='idle' className={c('rewards-icon__status')} />
-            )}
-          </div>
-        </button>
-      </div>
-    );
-  }
-
   render() {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
-        {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
-          <TooltipPopup
-            open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
-            align='center'
-            side='left'
-            content={`You’ve earned ${this.stringifyZero(this.props.zeroPreviousDay)} ZERO today`}
-            onClose={this.closeRewardsTooltip}
-          >
-            {this.renderRewardsBar()}
-          </TooltipPopup>
-        ) : (
-          this.renderRewardsBar()
-        )}
 
-        {this.state.isRewardsPopupOpen && (
-          <RewardsPopupContainer
-            onClose={this.closeRewards}
-            openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
-            zero={this.stringifyZero(this.props.zero)}
-            isLoading={this.props.isRewardsLoading}
-          />
-        )}
-        {this.state.isRewardsFAQModalOpen && (
-          <RewardsFAQModal
-            isRewardsFAQModalOpen={this.state.isRewardsFAQModalOpen}
-            closeRewardsFAQModal={this.closeRewardsFAQModal}
-          />
-        )}
+        <RewardsBar
+          zero={this.props.zero}
+          zeroPreviousDay={this.props.zeroPreviousDay}
+          isRewardsLoading={this.props.isRewardsLoading}
+          isMessengerFullScreen={this.props.isMessengerFullScreen}
+          isFirstTimeLogin={this.props.isFirstTimeLogin}
+          includeRewardsAvatar={this.props.includeRewardsAvatar}
+          userAvatarUrl={this.props.userAvatarUrl}
+          onRewardsPopupClose={this.onRewardsPopupClose}
+        />
+
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel

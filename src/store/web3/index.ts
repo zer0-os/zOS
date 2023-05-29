@@ -4,9 +4,11 @@ import { WalletType } from '@zer0-os/zos-component-library';
 
 export enum SagaActionTypes {
   UpdateConnector = 'web3/saga/updateConnector',
+  SetAddress = 'web3/saga/setAddress',
 }
 
-const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);
+export const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);
+export const setAddress = createAction<string>(SagaActionTypes.SetAddress);
 
 export interface Web3State {
   status: ConnectionStatus;
@@ -35,7 +37,7 @@ const slice = createSlice({
     setConnector: (state, action: PayloadAction<Connectors>) => {
       state.value.connector = action.payload;
     },
-    setAddress: (state, action: PayloadAction<string>) => {
+    setWalletAddress: (state, action: PayloadAction<string>) => {
       state.value.address = action.payload;
     },
     setChain: (state, action: PayloadAction<Chains>) => {
@@ -50,7 +52,6 @@ const slice = createSlice({
   },
 });
 
-export const { setConnector, setAddress, setChain, setConnectionStatus, setWalletModalOpen, setConnectionError } =
+export const { setConnector, setWalletAddress, setChain, setConnectionStatus, setWalletModalOpen, setConnectionError } =
   slice.actions;
 export const { reducer } = slice;
-export { updateConnector };

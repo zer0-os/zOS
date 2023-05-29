@@ -28,6 +28,10 @@ import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setActiveMessengerId } from '../chat';
 import { featureFlags } from '../../lib/feature-flags';
+import { Connectors, personalSignToken } from '../../lib/web3';
+import { getService } from '../../lib/web3/provider-service';
+import { updateConnector } from '../web3';
+import { web3Channel } from '../web3/channels';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -97,24 +101,30 @@ export function* createWeb3Account(action) {
   const { token } = action.payload;
   yield put(setLoading(true));
   try {
-    const inviteCode = yield select((state) => state.registration.inviteCode);
-    const result = yield call(apiCreateWeb3Account, {
-      inviteCode,
-      web3Token: token,
-    });
-    if (result.success) {
-      const userFetch = yield call(fetchCurrentUser);
-      if (userFetch) {
-        yield put(setUserId(userFetch.id));
-        yield put(setStage(RegistrationStage.ProfileDetails));
-        yield put(setErrors([]));
-        return true;
-      } else {
-        yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
-      }
-    } else {
-      yield put(setErrors([result.response]));
-    }
+    // XXX: temporary to show success
+    yield put(
+      setErrors([
+        `Got a signed token: ${token.substring(0, 6)}`,
+      ])
+    );
+    // const inviteCode = yield select((state) => state.registration.inviteCode);
+    // const result = yield call(apiCreateWeb3Account, {
+    //   inviteCode,
+    //   web3Token: token,
+    // });
+    // if (result.success) {
+    //   const userFetch = yield call(fetchCurrentUser);
+    //   if (userFetch) {
+    //     yield put(setUserId(userFetch.id));
+    //     yield put(setStage(RegistrationStage.ProfileDetails));
+    //     yield put(setErrors([]));
+    //     return true;
+    //   } else {
+    //     yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+    //   }
+    // } else {
+    //   yield put(setErrors([result.response]));
+    // }
   } catch (e) {
     yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
   } finally {
@@ -122,6 +132,63 @@ export function* createWeb3Account(action) {
   }
   return false;
 }
+
+// XXX: test this...use yields and calls, etc.
+export function* authorizeAndCreateWeb3Account(action) {
+  console.log('updating connector', action);
+  const { connector } = action.payload;
+  yield put(updateConnector(connector));
+
+  // XXX: If you've already signed then the address won't change. Web3 needs to
+  // be able to handle this case and just provide the address.
+  const channel = yield call(web3Channel);
+  let addressChangedAction;
+  while (!addressChangedAction) {
+    const web3Action = yield take(channel, '*');
+    console.log('got a multicast', web3Action);
+    if (web3Action.type === 'ADDRESS_CHANGED') {
+      addressChangedAction = web3Action;
+    }
+  }
+  console.log('address changed in saga!');
+
+  const address = addressChangedAction.payload;
+
+  // XXX: Wrap with status (aka, connecting, signing, registering, etc)
+  yield put(setLoading(true));
+  try {
+    const token = yield getSignedToken(address);
+    if (!token) {
+      yield put(setErrors(['XXX: Sign token error']));
+      return false;
+    }
+    // XXX: test when this endpoint just errors
+    return yield call(createWeb3Account, { payload: { token } });
+  } catch (e) {
+    yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+  } finally {
+    yield put(setLoading(false));
+  }
+}
+
+export function* getSignedToken(address) {
+  const provider = yield getService().get();
+  try {
+    return yield personalSignToken(provider, address);
+  } catch (error) {
+    yield put(updateConnector(Connectors.None));
+  }
+  return null;
+}
+
+// translateError(error: any) {
+//   if (error.code && error.code === -32603) {
+//     // Metamask: User rejected the signature request by closing the window or clicking Reject
+//     return '';
+//   }
+
+//   return 'Error signing token';
+// }
 
 export function validateAccountInfo({ email, password }) {
   const validationErrors = [];
@@ -195,7 +262,7 @@ function* createAccountPage() {
     if (email) {
       success = yield call(createAccount, email);
     } else if (web3) {
-      success = yield call(createWeb3Account, web3);
+      success = yield call(authorizeAndCreateWeb3Account, web3);
     }
   } while (!success);
 }

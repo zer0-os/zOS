@@ -264,16 +264,6 @@ $side-padding: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
-
-      &__button-icon {
-        color: theme.$color-secondary-11;
-      }
-    }
-
-    &:hover {
-      &__button-icon {
-        color: theme.$color-black;
-      }
     }
   }
 

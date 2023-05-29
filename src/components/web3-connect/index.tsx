@@ -120,13 +120,10 @@ export class Container extends React.Component<Properties, State> {
 
   translateError(error: any) {
     if (error.code && error.code === -32002) {
-      return 'Wallet request already pending. Please close the Metamask window and try again.';
+      return 'Wallet request already pending. You may have another window already open.';
     }
 
-    if (error.message) {
-      return error.message;
-    }
-    return String(error);
+    return 'Error connecting';
   }
 
   syncGlobalsForConnectedStatus() {

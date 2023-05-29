@@ -8,7 +8,7 @@ import { SelectedUserTag } from './selected-user-tag';
 
 import { bem } from '../../../lib/bem';
 import { ImageUpload } from '../../image-upload';
-import { IconImagePlus } from '@zero-tech/zui/icons';
+import { IconImagePlus, IconMessagePlusSquare } from '@zero-tech/zui/icons';
 
 const c = bem('group-details-panel');
 
@@ -74,6 +74,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
         <div>
           <Button onPress={this.createGroup} className={c('create')} isLoading={this.props.isCreating}>
+            <IconMessagePlusSquare isFilled size={18} />
             Create Group
           </Button>
         </div>

@@ -258,7 +258,13 @@ $side-padding: 16px;
 
   &__create {
     width: 100%;
-    margin: 16px 0px;
+    margin: 24px 0px;
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   }
 
   &__field-info {

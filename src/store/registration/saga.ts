@@ -28,10 +28,7 @@ import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setActiveMessengerId } from '../chat';
 import { featureFlags } from '../../lib/feature-flags';
-import { Connectors, personalSignToken } from '../../lib/web3';
-import { getService } from '../../lib/web3/provider-service';
-import { updateConnector } from '../web3';
-import { web3Channel } from '../web3/channels';
+import { getSignedToken } from '../web3/saga';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -135,29 +132,12 @@ export function* createWeb3Account(action) {
 
 // XXX: test this...use yields and calls, etc.
 export function* authorizeAndCreateWeb3Account(action) {
-  console.log('updating connector', action);
+  console.log('authing via connector', action.payload);
   const { connector } = action.payload;
-  yield put(updateConnector(connector));
 
-  // XXX: If you've already signed then the address won't change. Web3 needs to
-  // be able to handle this case and just provide the address.
-  const channel = yield call(web3Channel);
-  let addressChangedAction;
-  while (!addressChangedAction) {
-    const web3Action = yield take(channel, '*');
-    console.log('got a multicast', web3Action);
-    if (web3Action.type === 'ADDRESS_CHANGED') {
-      addressChangedAction = web3Action;
-    }
-  }
-  console.log('address changed in saga!');
-
-  const address = addressChangedAction.payload;
-
-  // XXX: Wrap with status (aka, connecting, signing, registering, etc)
   yield put(setLoading(true));
   try {
-    const token = yield getSignedToken(address);
+    const token = yield getSignedToken(connector);
     if (!token) {
       yield put(setErrors(['XXX: Sign token error']));
       return false;
@@ -169,16 +149,6 @@ export function* authorizeAndCreateWeb3Account(action) {
   } finally {
     yield put(setLoading(false));
   }
-}
-
-export function* getSignedToken(address) {
-  const provider = yield getService().get();
-  try {
-    return yield personalSignToken(provider, address);
-  } catch (error) {
-    yield put(updateConnector(Connectors.None));
-  }
-  return null;
 }
 
 // translateError(error: any) {

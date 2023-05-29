@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { connectContainer } from '../../store/redux-container';
-import { ConnectionStatus, Connectors } from '../../lib/web3';
+import { Connectors } from '../../lib/web3';
 import { AccountCreationErrors, createWeb3Account } from '../../store/registration';
 
 import { CreateWalletAccount } from '.';
@@ -9,6 +9,7 @@ import { RootState } from '../../store/reducer';
 import { Web3Connect } from '../../components/web3-connect';
 
 export interface Properties {
+  // XXX: simplify even further to just a single error
   errors: {
     general: string;
   };
@@ -20,13 +21,13 @@ export interface Properties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      web3: { status, value },
+      web3: { value },
       registration: { errors, loading },
     } = state;
 
     return {
       errors: { general: value.error || Container.mapErrors(errors) },
-      isConnecting: status === ConnectionStatus.Connecting || loading,
+      isConnecting: loading,
     };
   }
 

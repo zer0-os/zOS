@@ -10,6 +10,8 @@
   }
 
   &__content {
+    animation: fadein 700ms ease-out forwards;
+
     display: flex;
     padding: 14px;
     max-width: 32rem;

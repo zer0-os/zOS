@@ -8,8 +8,7 @@ import { SelectedUserTag } from './selected-user-tag';
 
 import { bem } from '../../../lib/bem';
 import { ImageUpload } from '../../image-upload';
-import { IconMessagePlusSquare } from '@zero-tech/zui/icons';
-import { IconImagePlus } from '@zero-tech/zui/icons';
+import { IconImagePlus, IconMessagePlusSquare } from '@zero-tech/zui/icons';
 
 const c = bem('group-details-panel');
 

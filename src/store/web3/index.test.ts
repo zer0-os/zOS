@@ -11,7 +11,7 @@ describe('web3 reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       status: ConnectionStatus.Disconnected,
-      value: { chainId: null, address: '', connector: Connectors.None },
+      value: { chainId: null, address: '', connector: Connectors.None, error: '' },
       isWalletModalOpen: false,
     });
   });

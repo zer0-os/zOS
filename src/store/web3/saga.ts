@@ -1,4 +1,4 @@
-import { takeLatest, put, takeEvery, call, take } from 'redux-saga/effects';
+import { takeLatest, put, takeEvery, call, take, select } from 'redux-saga/effects';
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress } from '.';
 
 import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
@@ -19,11 +19,12 @@ export function* setAddress(action) {
 }
 
 export function* getSignedToken(connector) {
-  yield updateConnector({ payload: connector });
+  let address = yield select((state) => state.web3.value.address);
 
-  // XXX: If you've already signed then the address won't change. Web3 needs to
-  // be able to handle this case and just provide the address.
-  const address = yield call(waitForAddressChange);
+  if (!address) {
+    yield updateConnector({ payload: connector });
+    address = yield call(waitForAddressChange);
+  }
 
   const providerService = yield call(getProviderService);
   try {

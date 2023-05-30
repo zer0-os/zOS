@@ -175,13 +175,16 @@ export function* updateProfile(action) {
   return false;
 }
 
-export function* saga() {
+function* validateInvitePage() {
   let success;
   do {
     const action = yield take(SagaActionTypes.ValidateInvite);
     success = yield call(validateInvite, action);
   } while (!success);
+}
 
+function* createAccountPage() {
+  let success;
   do {
     const { email, web3 } = yield race({
       email: take(SagaActionTypes.CreateAccount),
@@ -194,13 +197,23 @@ export function* saga() {
       success = yield call(createWeb3Account, web3);
     }
   } while (!success);
+}
 
+function* updateProfilePage() {
+  let success;
   do {
     const action = yield take(SagaActionTypes.UpdateProfile);
     success = yield call(updateProfile, action);
   } while (!success);
+}
 
-  yield spawn(conversationsWatcher);
+export function* saga() {
+  yield validateInvitePage();
+  yield createAccountPage();
+  yield updateProfilePage();
+
+  // After successful registration
+  yield spawn(openFirstConversation);
 }
 
 export function* channelsLoaded() {
@@ -210,7 +223,7 @@ export function* channelsLoaded() {
   }
 }
 
-function* conversationsWatcher() {
+function* openFirstConversation() {
   const channel = yield call(conversationsChannel);
   const payload = yield take(channel, '*');
   if (payload.loaded) {

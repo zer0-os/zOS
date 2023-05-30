@@ -4,7 +4,6 @@ import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress } 
 import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
 import { web3Channel } from './channels';
 import { getService as getProviderService } from '../../lib/web3/provider-service';
-import { getProvider } from '../../lib/cloudinary/provider';
 
 export function* updateConnector(action) {
   yield put(setConnector(action.payload));

@@ -1,7 +1,15 @@
 import { expectSaga } from 'redux-saga-test-plan';
+import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { channelsLoaded, createAccount, updateProfile, validateAccountInfo, validateInvite } from './saga';
+import {
+  channelsLoaded,
+  createAccount,
+  openInviteToastWhenRewardsPopupClosed,
+  updateProfile,
+  validateAccountInfo,
+  validateInvite,
+} from './saga';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
@@ -15,6 +23,7 @@ import {
   ProfileDetailsErrors,
   RegistrationStage,
   RegistrationState,
+  SagaActionTypes,
   initialState as initialRegistrationState,
 } from '.';
 import { RootState, rootReducer } from '../reducer';
@@ -454,6 +463,28 @@ describe('channelsLoaded', () => {
       } as RootState)
       .put(setActiveMessengerId('1234'))
       .run();
+  });
+});
+
+describe('openInviteToastWhenRewardsPopupClosed', () => {
+  it('sets the invite open flag after the rewards propup is closed', async () => {
+    const {
+      storeState: { registration },
+    } = await expectSaga(openInviteToastWhenRewardsPopupClosed)
+      .provide([
+        [
+          matchers.take(SagaActionTypes.RewardsPopupClosed),
+          { type: SagaActionTypes.RewardsPopupClosed },
+        ],
+        [
+          call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
+          true,
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ isInviteToastOpen: false }))
+      .run();
+
+    expect(registration.isInviteToastOpen).toEqual(true);
   });
 });
 

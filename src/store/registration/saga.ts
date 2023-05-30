@@ -233,7 +233,7 @@ function* openFirstConversation() {
   }
 }
 
-function* openInviteToastWhenRewardsPopupClosed() {
+export function* openInviteToastWhenRewardsPopupClosed() {
   yield take(SagaActionTypes.RewardsPopupClosed);
   yield delay(10000);
   yield put(setInviteToastOpen(true));

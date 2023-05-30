@@ -3,20 +3,19 @@ import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress } 
 
 import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
 import { web3Channel } from './channels';
-import { getService } from '../../lib/web3/provider-service';
+import { getService as getProviderService } from '../../lib/web3/provider-service';
+import { getProvider } from '../../lib/cloudinary/provider';
 
 export function* updateConnector(action) {
-  console.log('updating connector', action.payload);
   yield put(setConnector(action.payload));
   yield put(setConnectionStatus(ConnectionStatus.Connecting));
 }
 
 export function* setAddress(action) {
-  console.log('setting address?', action);
   yield put(setWalletAddress(action.payload));
+
   // Publish a system message across the channel
   const channel = yield call(web3Channel);
-  console.log('publishing!!', action.payload);
   yield put(channel, { type: 'ADDRESS_CHANGED', payload: action.payload });
 }
 
@@ -25,20 +24,21 @@ export function* getSignedToken(connector) {
 
   // XXX: If you've already signed then the address won't change. Web3 needs to
   // be able to handle this case and just provide the address.
-  const channel = yield call(web3Channel);
-  const addressChangedAction = yield take(channel, 'ADDRESS_CHANGED');
-  console.log('got a multicast', addressChangedAction);
+  const address = yield call(waitForAddressChange);
 
-  // XXX: if address is null....
-  const address = addressChangedAction.payload;
-
-  const provider = yield getService().get();
+  const providerService = yield call(getProviderService);
   try {
-    return yield personalSignToken(provider, address);
+    return yield call(personalSignToken, providerService.get(), address);
   } catch (error) {
     yield updateConnector(Connectors.None);
   }
   return null;
+}
+
+export function* waitForAddressChange() {
+  const channel = yield call(web3Channel);
+  const action = yield take(channel, 'ADDRESS_CHANGED');
+  return action.payload;
 }
 
 export function* saga() {

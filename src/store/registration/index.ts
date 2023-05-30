@@ -5,6 +5,7 @@ export enum SagaActionTypes {
   CreateAccount = 'registration/createAccount',
   CreateWeb3Account = 'registration/createWeb3Account',
   UpdateProfile = 'registration/updateProfile',
+  RewardsPopupClosed = 'registration/rewardsPopupClosed',
 }
 
 export enum RegistrationStage {
@@ -34,6 +35,7 @@ export type RegistrationState = {
   userId: string;
   inviteCode: string;
   isFirstTimeLogin: boolean;
+  isInviteToastOpen: boolean;
 };
 
 export enum AccountCreationErrors {
@@ -64,12 +66,14 @@ export const initialState: RegistrationState = {
   userId: '',
   inviteCode: '',
   isFirstTimeLogin: false,
+  isInviteToastOpen: false,
 };
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
 export const createAccount = createAction<{ email: string; password: string }>(SagaActionTypes.CreateAccount);
 export const createWeb3Account = createAction<{ token: string }>(SagaActionTypes.CreateWeb3Account);
 export const updateProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.UpdateProfile);
+export const rewardsPopupClosed = createAction(SagaActionTypes.RewardsPopupClosed);
 
 const slice = createSlice({
   name: 'registration',
@@ -102,6 +106,9 @@ const slice = createSlice({
     registerWithWallet: (state, _action: PayloadAction<null>) => {
       state.stage = RegistrationStage.WalletAccountCreation;
     },
+    setInviteToastOpen: (state, action: PayloadAction<RegistrationState['isInviteToastOpen']>) => {
+      state.isInviteToastOpen = action.payload;
+    },
   },
 });
 
@@ -115,5 +122,6 @@ export const {
   setFirstTimeLogin,
   registerWithEmail,
   registerWithWallet,
+  setInviteToastOpen,
 } = slice.actions;
 export const { reducer } = slice;

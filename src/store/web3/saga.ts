@@ -42,6 +42,5 @@ export function* waitForAddressChange() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.UpdateConnector, updateConnector);
-  // XXX: Temporary? Does this happen more organically based on other events?
   yield takeEvery(SagaActionTypes.SetAddress, setAddress);
 }

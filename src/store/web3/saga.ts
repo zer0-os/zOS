@@ -26,15 +26,8 @@ export function* getSignedToken(connector) {
   // XXX: If you've already signed then the address won't change. Web3 needs to
   // be able to handle this case and just provide the address.
   const channel = yield call(web3Channel);
-  let addressChangedAction;
-  while (!addressChangedAction) {
-    const web3Action = yield take(channel, '*');
-    console.log('got a multicast', web3Action);
-    if (web3Action.type === 'ADDRESS_CHANGED') {
-      addressChangedAction = web3Action;
-    }
-  }
-  console.log('address changed in saga!');
+  const addressChangedAction = yield take(channel, 'ADDRESS_CHANGED');
+  console.log('got a multicast', addressChangedAction);
 
   // XXX: if address is null....
   const address = addressChangedAction.payload;

@@ -39,6 +39,7 @@ describe('messenger-list', () => {
       zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
+      isInviteNotificationOpen: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -49,6 +50,7 @@ describe('messenger-list', () => {
       onClose: () => null,
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
+      rewardsPopupClosed: () => null,
       ...props,
     };
 

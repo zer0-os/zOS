@@ -53,8 +53,10 @@ jest.mock('@zero-tech/zui/components', () => ({
   Tabs: () => null,
   TabsNav: () => null,
   TextStack: () => null,
+  ToastNotification: () => null,
   ToggleGroup: () => null,
   BASE_CLASSNAME: () => null,
   Tooltip: () => null,
+  Video: () => null,
 }));
 export {};

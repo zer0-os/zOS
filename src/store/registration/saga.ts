@@ -1,4 +1,4 @@
-import { call, put, race, select, spawn, take } from 'redux-saga/effects';
+import { call, delay, put, race, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
@@ -12,6 +12,7 @@ import {
   setInviteCode,
   setUserId,
   setFirstTimeLogin,
+  setInviteToastOpen,
 } from '.';
 import {
   validateInvite as apiValidateInvite,
@@ -214,6 +215,7 @@ export function* saga() {
 
   // After successful registration
   yield spawn(openFirstConversation);
+  yield spawn(openInviteToastWhenRewardsPopupClosed);
 }
 
 export function* channelsLoaded() {
@@ -229,4 +231,10 @@ function* openFirstConversation() {
   if (payload.loaded) {
     yield call(channelsLoaded);
   }
+}
+
+export function* openInviteToastWhenRewardsPopupClosed() {
+  yield take(SagaActionTypes.RewardsPopupClosed);
+  yield delay(10000);
+  yield put(setInviteToastOpen(true));
 }

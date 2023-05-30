@@ -32,6 +32,7 @@ import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
+import { rewardsPopupClosed } from '../../../store/registration';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -53,6 +54,7 @@ export interface Properties extends PublicProperties {
   zeroPreviousDay: string;
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
+  isInviteNotificationOpen: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -63,11 +65,10 @@ export interface Properties extends PublicProperties {
   createConversation: (payload: CreateMessengerConversation) => void;
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
+  rewardsPopupClosed: () => void;
 }
 
 interface State {
-  isToastNotificationOpen: boolean;
-  isInviteNotificationComplete: boolean;
   isInviteDialogOpen: boolean;
 }
 
@@ -98,6 +99,7 @@ export class Container extends React.Component<Properties, State> {
       isGroupCreating: createConversation.groupDetails.isCreating,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
+      isInviteNotificationOpen: registration.isInviteToastOpen,
       includeTitleBar: user?.data?.isAMemberOfWorlds,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
@@ -121,12 +123,11 @@ export class Container extends React.Component<Properties, State> {
       membersSelected,
       fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
+      rewardsPopupClosed,
     };
   }
 
   state = {
-    isToastNotificationOpen: false,
-    isInviteNotificationComplete: false,
     isInviteDialogOpen: false,
   };
 
@@ -158,22 +159,11 @@ export class Container extends React.Component<Properties, State> {
     this.props.createConversation(conversation);
   };
 
-  onRewardsPopupClose = () => {
-    if (this.props.isFirstTimeLogin && !this.state.isInviteNotificationComplete) {
-      setTimeout(() => {
-        this.setState({ isToastNotificationOpen: true });
-      }, 10000);
-    }
-  };
-
   openInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: true, isToastNotificationOpen: false, isInviteNotificationComplete: true });
+    this.setState({ isInviteDialogOpen: true });
   };
   closeInviteDialog = () => {
     this.setState({ isInviteDialogOpen: false });
-  };
-  closeToastNotification = () => {
-    this.setState({ isToastNotificationOpen: false, isInviteNotificationComplete: true });
   };
 
   renderInviteDialog = (): JSX.Element => {
@@ -192,9 +182,8 @@ export class Container extends React.Component<Properties, State> {
         actionTitle={'Invite Friends'}
         actionAltText={'invite dialog modal call to action'}
         positionVariant='left'
-        openToast={this.state.isToastNotificationOpen}
+        openToast={this.props.isInviteNotificationOpen}
         onClick={this.openInviteDialog}
-        onClose={this.closeToastNotification}
       />
     );
   };
@@ -229,7 +218,7 @@ export class Container extends React.Component<Properties, State> {
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           includeRewardsAvatar={this.props.includeRewardsAvatar}
           userAvatarUrl={this.props.userAvatarUrl}
-          onRewardsPopupClose={this.onRewardsPopupClose}
+          onRewardsPopupClose={this.props.rewardsPopupClosed}
         />
 
         <div className='direct-message-members'>
@@ -266,7 +255,7 @@ export class Container extends React.Component<Properties, State> {
             />
           )}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
-          {this.state.isToastNotificationOpen && this.renderToastNotification()}
+          {this.renderToastNotification()}
         </div>
       </>
     );

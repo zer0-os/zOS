@@ -1,7 +1,10 @@
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, take, takeLatest } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
-import { EmailLoginErrors, LoginStage, SagaActionTypes, setErrors, setLoading, setStage } from '.';
+import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
+import { getSignedToken } from '../web3/saga';
+import { nonceOrAuthorize } from '../authentication/saga';
+import { setWalletModalOpen } from '../web3';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -44,7 +47,37 @@ export function validateEmailLogin({ email, password }) {
   return validationErrors;
 }
 
+export function* web3Login(action) {
+  const connector = action.payload;
+
+  yield put(setLoading(true));
+  yield put(setErrors([]));
+  try {
+    let result = yield call(getSignedToken, connector);
+    if (!result.success) {
+      yield put(setErrors([result.error]));
+      return;
+    }
+
+    result = yield call(nonceOrAuthorize, { payload: { signedWeb3Token: result.token } });
+    if (result.nonce) {
+      // For now, receiving a nonce means we are not logged in as it wants you
+      // to create a new account. This is to support the existing zOS flow where you can
+      // create a new account from the public zOS UI.
+      yield put(setErrors([Web3LoginErrors.PROFILE_NOT_FOUND]));
+    } else {
+      yield put(setStage(LoginStage.Done));
+    }
+    // Note: only impacts public zOS. Keeping the two flows together for now while things are refactored.
+    yield put(setWalletModalOpen(false));
+  } finally {
+    yield put(setLoading(false));
+  }
+}
+
 export function* saga() {
+  yield takeLatest(SagaActionTypes.Web3Login, web3Login);
+
   let success;
   do {
     const action = yield take(SagaActionTypes.EmailLogin);

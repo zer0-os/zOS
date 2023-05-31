@@ -12,6 +12,7 @@ import { WalletType } from '../wallet-select/wallets';
 describe('WalletManager', () => {
   const subject = (props: any = {}) => {
     const allProps = {
+      loginByWeb3: () => undefined,
       updateConnector: () => undefined,
       setWalletModalOpen: () => undefined,
       ...props,
@@ -101,41 +102,10 @@ describe('WalletManager', () => {
     ]);
   });
 
-  it('passes isConnecting of true when connection status is Connecting', () => {
-    const wrapper = subject({ isWalletModalOpen: true });
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
+  it('passes isConnecting to wallet modal', () => {
+    const wrapper = subject({ isConnecting: true, isWalletModalOpen: true });
 
     expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
-  });
-
-  it('passes isConnecting of true when wallet selected', () => {
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-      isWalletModalOpen: true,
-    });
-
-    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
-
-    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
-  });
-
-  it('passes isConnecting of false when wallet selected and status becomes connected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
-
-    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connecting });
-
-    // assert pre-condition
-    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
-
-    // re-open modal, as it will be closed at this point
-    wrapper.find(ConnectButton).simulate('click');
-
-    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(false);
   });
 
   it('closes wallet select modal onClose', () => {
@@ -147,41 +117,14 @@ describe('WalletManager', () => {
     expect(setWalletModalOpen).toHaveBeenCalledWith(false);
   });
 
-  it('closes wallet select modal when status is connected', () => {
-    const setWalletModalOpen = jest.fn();
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-      isWalletModalOpen: true,
-      setWalletModalOpen,
-    });
+  it('calls login when wallet selected', () => {
+    const loginByWeb3 = jest.fn();
 
-    // straight to Connected from Disconnected. we should not force this
-    // to pass through Connecting
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
-
-    expect(setWalletModalOpen).toHaveBeenCalledWith(false);
-  });
-
-  it('should show list of wallet when status is disconnected', () => {
-    const wrapper = subject({ connectionStatus: ConnectionStatus.Connected, isWalletModalOpen: true });
+    const wrapper = subject({ loginByWeb3, isWalletModalOpen: true });
 
     wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
 
-    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(true);
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Disconnected });
-
-    expect(wrapper.find('WalletSelectModal').prop('isConnecting')).toBe(false);
-  });
-
-  it('calls update connector when wallet selected', () => {
-    const updateConnector = jest.fn();
-
-    const wrapper = subject({ updateConnector, isWalletModalOpen: true });
-
-    wrapper.find('WalletSelectModal').simulate('select', Connectors.Metamask);
-
-    expect(updateConnector).toHaveBeenCalledWith(Connectors.Metamask);
+    expect(loginByWeb3).toHaveBeenCalledWith(Connectors.Metamask);
   });
 
   it('passes isNotSupportedNetwork of true when network is not supported', () => {
@@ -205,6 +148,7 @@ describe('WalletManager', () => {
         authentication: getAuthentication({
           ...(state.authentication || {}),
         }),
+        login: {},
       } as RootState);
 
     const getWeb3 = (web3: any = {}) => ({
@@ -237,14 +181,6 @@ describe('WalletManager', () => {
       const state = subject(getState({ web3: getWeb3({ value: { address } }) }));
 
       expect(state.currentAddress).toEqual(address);
-    });
-
-    test('currentConnector', () => {
-      const currentConnector = Connectors.Fortmatic;
-
-      const state = subject(getState({ web3: getWeb3({ value: { connector: currentConnector } }) }));
-
-      expect(state.currentConnector).toEqual(Connectors.Fortmatic);
     });
 
     test('isNotSupportedNetwork', () => {

@@ -5,7 +5,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { updateConnector, Web3State, setWalletModalOpen } from '../../store/web3';
+import { Web3State, setWalletModalOpen, updateConnector } from '../../store/web3';
 import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
@@ -15,6 +15,7 @@ import { UserActionsContainer } from '../user-actions/container';
 
 import { WalletSelectModal } from '../wallet-select/modal';
 import { WalletType } from '../wallet-select/wallets';
+import { loginByWeb3 } from '../../store/login';
 
 interface PublicProperties {
   className?: string;
@@ -22,68 +23,47 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   currentAddress: string;
-  currentConnector: Connectors;
   connectionStatus: ConnectionStatus;
   updateConnector: (connector: WalletType | Connectors.None) => void;
+  loginByWeb3: (connector: Connectors) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
   userImageUrl: string;
   userIsOnline: boolean;
   updateConversationState: (isOpen: boolean) => void;
   isConversationListOpen: boolean;
+  isConnecting: boolean;
 }
 
-export interface State {
-  walletSelected: boolean;
-}
-
-export class Container extends React.Component<Properties, State> {
+export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       web3: { status, value, isWalletModalOpen },
       authentication: { user },
+      login,
       layout,
     } = state;
 
     const userData = user?.data;
 
     return {
-      currentConnector: value.connector,
       currentAddress: value.address,
       connectionStatus: status,
       isWalletModalOpen,
       userImageUrl: userData?.profileSummary?.profileImage || '',
       userIsOnline: !!userData?.isOnline,
       isConversationListOpen: !!layout?.value?.isSidekickOpen,
+      isConnecting: login.loading,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       updateConnector,
+      loginByWeb3,
       setWalletModalOpen,
       updateConversationState: (isOpen: boolean) => updateSidekick({ isOpen }),
     };
-  }
-
-  state = { walletSelected: false };
-
-  componentDidUpdate(prevProps: Properties) {
-    if (
-      this.props.connectionStatus === ConnectionStatus.Connected &&
-      prevProps.connectionStatus !== ConnectionStatus.Connected
-    ) {
-      this.closeModal();
-      this.setState({ walletSelected: false });
-    }
-
-    if (
-      (this.props.connectionStatus === ConnectionStatus.Disconnected ||
-        this.props.connectionStatus === ConnectionStatus.NetworkNotSupported) &&
-      prevProps.connectionStatus !== this.props.connectionStatus
-    ) {
-      this.setState({ walletSelected: false });
-    }
   }
 
   handleDisconnect = () => {
@@ -92,10 +72,6 @@ export class Container extends React.Component<Properties, State> {
 
   get showModal(): boolean {
     return this.props.isWalletModalOpen;
-  }
-
-  get isConnecting(): boolean {
-    return this.state.walletSelected || this.props.connectionStatus === ConnectionStatus.Connecting;
   }
 
   get isNetworkNotSupported(): boolean {
@@ -125,12 +101,10 @@ export class Container extends React.Component<Properties, State> {
     ];
   }
 
-  openModal = () => this.props.setWalletModalOpen(true);
   closeModal = () => this.props.setWalletModalOpen(false);
 
-  handleWalletSelected = (connector: WalletType) => {
-    this.setState({ walletSelected: true });
-    this.props.updateConnector(connector);
+  handleWalletSelected = (connector) => {
+    this.props.loginByWeb3(connector);
   };
 
   render() {
@@ -152,7 +126,7 @@ export class Container extends React.Component<Properties, State> {
         {this.showModal && (
           <WalletSelectModal
             wallets={this.availableWallets}
-            isConnecting={this.isConnecting}
+            isConnecting={this.props.isConnecting}
             isNotSupportedNetwork={this.isNetworkNotSupported}
             networkName={this.getNetworkNameById}
             onClose={this.closeModal}

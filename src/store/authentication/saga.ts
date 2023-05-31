@@ -40,6 +40,8 @@ export function* nonceOrAuthorize(action) {
 
     yield processUserAccount({ user, chatAccessToken, isLoading: false });
   }
+
+  return { nonce };
 }
 
 export function* terminate() {

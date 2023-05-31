@@ -9,10 +9,7 @@ import { RootState } from '../../store/reducer';
 import { Web3Connect } from '../../components/web3-connect';
 
 export interface Properties {
-  // XXX: simplify even further to just a single error
-  errors: {
-    general: string;
-  };
+  error: string;
   isConnecting: boolean;
 
   createWeb3Account: (payload: { connector: Connectors }) => void;
@@ -26,7 +23,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     return {
-      errors: { general: value.error || Container.mapErrors(errors) },
+      error: value.error || Container.mapErrors(errors),
       isConnecting: loading,
     };
   }
@@ -43,8 +40,7 @@ export class Container extends React.Component<Properties> {
     if (error === AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS) {
       return 'This address has already been registered';
     }
-    // XXX: debugging - render the error message raw
-    return error;
+    return 'An error has occurred';
   }
 
   connectorSelected = async (connector) => {
@@ -57,7 +53,7 @@ export class Container extends React.Component<Properties> {
         <Web3Connect>
           <CreateWalletAccount
             onSelect={this.connectorSelected}
-            error={this.props.errors.general}
+            error={this.props.error}
             isConnecting={this.props.isConnecting}
           />
         </Web3Connect>

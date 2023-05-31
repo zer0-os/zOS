@@ -167,16 +167,6 @@ export class Container extends React.Component<Properties, State> {
     if (web3.account !== previouslyAccount) {
       this.props.setAddress(web3.account);
     }
-
-    if (
-      connectionStatus === ConnectionStatus.Connecting &&
-      previousConnectionStatus === ConnectionStatus.Connected &&
-      web3.account
-    ) {
-      localStorage.removeItem('previousConnector');
-      window.location.reload();
-      this.reconnectPreviousConnector();
-    }
   }
 
   get shouldRender() {

@@ -28,6 +28,7 @@ import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setActiveMessengerId } from '../chat';
 import { featureFlags } from '../../lib/feature-flags';
+import { getSignedToken } from '../web3/saga';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -93,15 +94,18 @@ export function* createAccount(action) {
   return false;
 }
 
-export function* createWeb3Account(action) {
-  const { token } = action.payload;
+export function* authorizeAndCreateWeb3Account(action) {
+  const { connector } = action.payload;
+
   yield put(setLoading(true));
   try {
+    let result = yield call(getSignedToken, connector);
+    if (!result.success) {
+      yield put(setErrors([result.error]));
+      return false;
+    }
     const inviteCode = yield select((state) => state.registration.inviteCode);
-    const result = yield call(apiCreateWeb3Account, {
-      inviteCode,
-      web3Token: token,
-    });
+    result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: result.token });
     if (result.success) {
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
@@ -195,7 +199,7 @@ function* createAccountPage() {
     if (email) {
       success = yield call(createAccount, email);
     } else if (web3) {
-      success = yield call(createWeb3Account, web3);
+      success = yield call(authorizeAndCreateWeb3Account, web3);
     }
   } while (!success);
 }

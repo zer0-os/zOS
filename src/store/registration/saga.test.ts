@@ -3,6 +3,7 @@ import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
+  authorizeAndCreateWeb3Account,
   channelsLoaded,
   createAccount,
   openInviteToastWhenRewardsPopupClosed,
@@ -13,6 +14,7 @@ import {
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
+  createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
   uploadImage,
 } from './api';
@@ -31,6 +33,8 @@ import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setActiveMessengerId } from '../chat';
+import { Connectors } from '../../lib/web3';
+import { getSignedToken } from '../web3/saga';
 
 const featureFlags = { allowWeb3Registration: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -485,6 +489,37 @@ describe('openInviteToastWhenRewardsPopupClosed', () => {
       .run();
 
     expect(registration.isInviteToastOpen).toEqual(true);
+  });
+});
+
+describe('authorizeAndCreateWeb3Account', () => {
+  it('creates a web3 account', async () => {
+    const inviteCode = 'INV123';
+    const signedToken = '0x9876';
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(authorizeAndCreateWeb3Account, { payload: { connector: Connectors.Metamask } })
+      .provide([
+        [
+          call(getSignedToken, Connectors.Metamask),
+          { success: true, token: signedToken },
+        ],
+        [
+          call(apiCreateWeb3Account, { inviteCode, web3Token: signedToken }),
+          { success: true, response: {} },
+        ],
+        [
+          call(fetchCurrentUser),
+          { id: '123' },
+        ],
+      ])
+      .withReducer(rootReducer, initialState({ stage: RegistrationStage.WalletAccountCreation, inviteCode }))
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
+    expect(registration.userId).toEqual('123');
+    expect(returnValue).toEqual(true);
   });
 });
 

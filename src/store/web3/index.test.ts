@@ -1,4 +1,12 @@
-import { reducer, setConnectionStatus, setConnector, setAddress, setChain, Web3State, setWalletModalOpen } from '.';
+import {
+  reducer,
+  setConnectionStatus,
+  setConnector,
+  setWalletAddress,
+  setChain,
+  Web3State,
+  setWalletModalOpen,
+} from '.';
 import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 
 describe('web3 reducer', () => {
@@ -29,7 +37,7 @@ describe('web3 reducer', () => {
   });
 
   it('should replace existing state with new address', () => {
-    const actual = reducer(initialExistingState, setAddress('0x0000000000000000000000000000000000000007'));
+    const actual = reducer(initialExistingState, setWalletAddress('0x0000000000000000000000000000000000000007'));
 
     expect(actual.value.address).toEqual('0x0000000000000000000000000000000000000007');
   });

@@ -94,10 +94,26 @@ export function* createAccount(action) {
   return false;
 }
 
-export function* createWeb3Account(action) {
-  const { token } = action.payload;
+// XXX
+// translateError(error: any) {
+//   if (error.code && error.code === -32603) {
+//     // Metamask: User rejected the signature request by closing the window or clicking Reject
+//     return '';
+//   }
+
+//   return 'Error signing token';
+// }
+export function* authorizeAndCreateWeb3Account(action) {
+  const { connector } = action.payload;
+
   yield put(setLoading(true));
   try {
+    const token = yield call(getSignedToken, connector);
+    if (!token) {
+      // XXX: real errors here
+      yield put(setErrors(['XXX: Sign token error']));
+      return false;
+    }
     // XXX: temporary to show success
     yield put(
       setErrors([
@@ -105,10 +121,7 @@ export function* createWeb3Account(action) {
       ])
     );
     // const inviteCode = yield select((state) => state.registration.inviteCode);
-    // const result = yield call(apiCreateWeb3Account, {
-    //   inviteCode,
-    //   web3Token: token,
-    // });
+    // const result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: token });
     // if (result.success) {
     //   const userFetch = yield call(fetchCurrentUser);
     //   if (userFetch) {
@@ -129,36 +142,6 @@ export function* createWeb3Account(action) {
   }
   return false;
 }
-
-// XXX: test this...use yields and calls, etc.
-export function* authorizeAndCreateWeb3Account(action) {
-  console.log('authing via connector', action.payload);
-  const { connector } = action.payload;
-
-  yield put(setLoading(true));
-  try {
-    const token = yield getSignedToken(connector);
-    if (!token) {
-      yield put(setErrors(['XXX: Sign token error']));
-      return false;
-    }
-    // XXX: test when this endpoint just errors
-    return yield call(createWeb3Account, { payload: { token } });
-  } catch (e) {
-    yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
-  } finally {
-    yield put(setLoading(false));
-  }
-}
-
-// translateError(error: any) {
-//   if (error.code && error.code === -32603) {
-//     // Metamask: User rejected the signature request by closing the window or clicking Reject
-//     return '';
-//   }
-
-//   return 'Error signing token';
-// }
 
 export function validateAccountInfo({ email, password }) {
   const validationErrors = [];

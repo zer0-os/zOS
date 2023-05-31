@@ -19,9 +19,10 @@ export function* setAddress(action) {
 }
 
 export function* getSignedToken(connector) {
-  let address = yield select((state) => state.web3.value.address);
+  let current = yield select((state) => state.web3.value);
 
-  if (!address) {
+  let address = current.address;
+  if (current.connector !== connector || !current.address) {
     yield updateConnector({ payload: connector });
     address = yield call(waitForAddressChange);
   }

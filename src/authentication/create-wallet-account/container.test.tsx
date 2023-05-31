@@ -20,7 +20,7 @@ describe('Container', () => {
       test('web3 connection error', () => {
         let props = subject({ web3: { value: { error: 'Web3 Error' } } as Web3State });
 
-        expect(props.errors).toEqual({ general: 'Web3 Error' });
+        expect(props.error).toEqual('Web3 Error');
       });
 
       test('registration error: address already exists', () => {
@@ -28,7 +28,7 @@ describe('Container', () => {
           registration: { errors: [AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS] } as RegistrationState,
         });
 
-        expect(props.errors).toEqual({ general: 'This address has already been registered' });
+        expect(props.error).toEqual('This address has already been registered');
       });
     });
 

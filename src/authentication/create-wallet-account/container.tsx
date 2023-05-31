@@ -17,14 +17,11 @@ export interface Properties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const {
-      web3: { value },
-      registration: { errors, loading },
-    } = state;
+    const { registration } = state;
 
     return {
-      error: value.error || Container.mapErrors(errors),
-      isConnecting: loading,
+      error: Container.mapErrors(registration.errors),
+      isConnecting: registration.loading,
     };
   }
 
@@ -40,7 +37,7 @@ export class Container extends React.Component<Properties> {
     if (error === AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS) {
       return 'This address has already been registered';
     }
-    return 'An error has occurred';
+    return error;
   }
 
   connectorSelected = async (connector) => {

@@ -94,47 +94,38 @@ export function* createAccount(action) {
   return false;
 }
 
-// XXX
-// translateError(error: any) {
-//   if (error.code && error.code === -32603) {
-//     // Metamask: User rejected the signature request by closing the window or clicking Reject
-//     return '';
-//   }
-
-//   return 'Error signing token';
-// }
 export function* authorizeAndCreateWeb3Account(action) {
   const { connector } = action.payload;
 
   yield put(setLoading(true));
   try {
-    const token = yield call(getSignedToken, connector);
-    if (!token) {
-      // XXX: real errors here
-      yield put(setErrors(['XXX: Sign token error']));
+    let result = yield call(getSignedToken, connector);
+    if (!result.success) {
+      yield put(setErrors([result.error]));
       return false;
     }
+    const token = result.token;
     // XXX: temporary to show success
-    yield put(
-      setErrors([
-        `Got a signed token: ${token.substring(0, 6)}`,
-      ])
-    );
-    // const inviteCode = yield select((state) => state.registration.inviteCode);
-    // const result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: token });
-    // if (result.success) {
-    //   const userFetch = yield call(fetchCurrentUser);
-    //   if (userFetch) {
-    //     yield put(setUserId(userFetch.id));
-    //     yield put(setStage(RegistrationStage.ProfileDetails));
-    //     yield put(setErrors([]));
-    //     return true;
-    //   } else {
-    //     yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
-    //   }
-    // } else {
-    //   yield put(setErrors([result.response]));
-    // }
+    // yield put(
+    //   setErrors([
+    //     `Got a signed token: ${token.substring(0, 6)}`,
+    //   ])
+    // );
+    const inviteCode = yield select((state) => state.registration.inviteCode);
+    result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: token });
+    if (result.success) {
+      const userFetch = yield call(fetchCurrentUser);
+      if (userFetch) {
+        yield put(setUserId(userFetch.id));
+        yield put(setStage(RegistrationStage.ProfileDetails));
+        yield put(setErrors([]));
+        return true;
+      } else {
+        yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+      }
+    } else {
+      yield put(setErrors([result.response]));
+    }
   } catch (e) {
     yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
   } finally {

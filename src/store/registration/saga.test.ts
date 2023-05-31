@@ -503,7 +503,7 @@ describe('authorizeAndCreateWeb3Account', () => {
       .provide([
         [
           call(getSignedToken, Connectors.Metamask),
-          signedToken,
+          { success: true, token: signedToken },
         ],
         [
           call(apiCreateWeb3Account, { inviteCode, web3Token: signedToken }),

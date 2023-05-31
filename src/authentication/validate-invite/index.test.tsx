@@ -72,5 +72,10 @@ describe('Invite', () => {
 
     wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_NOT_FOUND });
     expect(wrapper.find('Alert').prop('children')).toEqual('Invite code not found. Please check your invite message.');
+
+    wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_MAX_USES });
+    expect(wrapper.find('Alert').prop('children')).toEqual(
+      'This invite has been used too many times. Please use a new invite code.'
+    );
   });
 });

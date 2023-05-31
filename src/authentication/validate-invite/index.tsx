@@ -25,7 +25,7 @@ interface State {
 
 export class Invite extends React.Component<Properties, State> {
   state: State = {
-    inviteCode: '67E44B', // XXX
+    inviteCode: '',
     renderAlert: false,
   };
 

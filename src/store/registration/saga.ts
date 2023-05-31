@@ -104,15 +104,8 @@ export function* authorizeAndCreateWeb3Account(action) {
       yield put(setErrors([result.error]));
       return false;
     }
-    const token = result.token;
-    // XXX: temporary to show success
-    // yield put(
-    //   setErrors([
-    //     `Got a signed token: ${token.substring(0, 6)}`,
-    //   ])
-    // );
     const inviteCode = yield select((state) => state.registration.inviteCode);
-    result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: token });
+    result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: result.token });
     if (result.success) {
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {

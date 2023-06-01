@@ -5,7 +5,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { Web3State, setWalletModalOpen, updateConnector } from '../../store/web3';
+import { Web3State, setWalletModalOpen } from '../../store/web3';
 import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';

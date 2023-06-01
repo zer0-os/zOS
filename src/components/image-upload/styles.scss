@@ -1,51 +1,78 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../variables';
 
-.image-upload {
-  width: 120px;
-  height: 120px;
-  border: 1px dashed theme.$color-greyscale-8;
-  background: theme.$color-primary-3;
-  border-radius: 9999px;
-  color: theme.$color-greyscale-8;
-  font-size: $font-size-small;
-  text-align: center;
-  overflow: hidden;
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  max-width: 181px;
 
-  &__dropzone {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: theme.$color-greyscale-12;
-    cursor: pointer;
-  }
+  .image-upload {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed theme.$color-greyscale-8;
+    background: theme.$color-primary-3;
+    border-radius: 9999px;
+    color: theme.$color-greyscale-8;
+    font-size: $font-size-small;
+    text-align: center;
+    overflow: hidden;
 
-  &__image-container {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: flex-end;
+    &[data-variant='error'] {
+      border: 1px dashed theme.$color-failure-8;
+      background: theme.$color-failure-4;
+    }
 
-    height: 100%;
-    width: 100%;
-  }
+    &__dropzone {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: theme.$color-greyscale-12;
+      cursor: pointer;
+    }
 
-  &__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+    &__text-content {
+      word-break: break-all;
+    }
 
-  &__edit-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
+    &__image-container {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: flex-end;
 
-    width: 32px;
-    height: 32px;
+      height: 100%;
+      width: 100%;
+    }
+
+    &__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &__edit-button {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+
+      width: 32px;
+      height: 32px;
+    }
+
+    &__error-message {
+      color: theme.$color-failure-11;
+      line-height: 18px;
+      text-align: center;
+      white-space: break-spaces;
+      font-size: $font-size-small;
+    }
   }
 }

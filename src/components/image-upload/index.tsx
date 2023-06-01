@@ -1,7 +1,7 @@
 import React, { Component, ReactElement } from 'react';
 import Dropzone, { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 
-import { IconEdit5 } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconEdit5 } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -12,6 +12,8 @@ export interface Properties {
   icon: ReactElement;
   uploadText: string;
   onChange: (file: File) => void;
+  onError?: boolean;
+  errorMessage?: string;
 }
 
 interface State {
@@ -21,6 +23,10 @@ interface State {
 export class ImageUpload extends Component<Properties, State> {
   state = { files: [] };
   fileInputRef = React.createRef<HTMLInputElement>();
+
+  dataVariant = this.props.onError ? 'error' : '';
+  icon = this.props.onError ? <IconAlertCircle isFilled /> : this.props.icon;
+  textContent = this.props.onError ? this.state?.files[0]?.name : this.props.uploadText;
 
   onDrop = (files: File[]) => {
     this.setState({ files });
@@ -66,8 +72,8 @@ export class ImageUpload extends Component<Properties, State> {
     return (
       <div {...rootProps} className='image-upload__dropzone'>
         <input {...inputProps} />
-        {this.props.icon}
-        <p>{this.props.uploadText}</p>
+        {this.icon}
+        <p className='image-upload__text-content'>{this.textContent}</p>
       </div>
     );
   };
@@ -82,11 +88,14 @@ export class ImageUpload extends Component<Properties, State> {
         maxFiles={1}
       >
         {({ getRootProps, getInputProps }) => (
-          <section className={classNames('image-upload', this.props.className)}>
-            {this.state.files.length === 0
-              ? this.renderPlaceholder(getRootProps(), getInputProps())
-              : this.renderImage(getRootProps(), getInputProps())}
-          </section>
+          <div className='image-upload-container'>
+            <section className={classNames('image-upload', this.props.className)} data-variant={this.dataVariant}>
+              {this.state.files.length === 0
+                ? this.renderPlaceholder(getRootProps(), getInputProps())
+                : this.renderImage(getRootProps(), getInputProps())}
+            </section>
+            {!this.props.onError && <div className='image-upload__error-message'>{this.props.errorMessage}</div>}
+          </div>
         )}
       </Dropzone>
     );

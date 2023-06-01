@@ -65,11 +65,11 @@ export class InviteDialog extends React.Component<Properties, State> {
           <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
         <div className={c('content')}>
-          <Image
-            src={`${this.props.assetsPath}/ReachingHands.png`}
-            alt='Hands reaching out to connect'
-            className={c('image')}
-          />
+          {/*<Image*/}
+          {/*  src={`${this.props.assetsPath}/ReachingHands.png`}*/}
+          {/*  alt='Hands reaching out to connect'*/}
+          {/*  className={c('image')}*/}
+          {/*/>*/}
           <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
           <div className={c('byline')}>
             The larger and more active your network of contacts is, the more you will receive in rewards. Let's take
@@ -78,8 +78,11 @@ export class InviteDialog extends React.Component<Properties, State> {
             <br />
           </div>
           <div className={c('code-block')}>
-            {!this.props.inviteCode && <Skeleton width={'100%'} height={'96px'} />}
-            {this.props.inviteCode && <pre>{this.inviteText}</pre>}
+            {this.props.inviteCode ? (
+              <textarea readOnly={true}>{this.inviteText}</textarea>
+            ) : (
+              <Skeleton width={'100%'} height={'100px'} />
+            )}
             <button
               className={c('inline-button', 'right')}
               onClick={this.writeInviteToClipboard}

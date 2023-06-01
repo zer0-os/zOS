@@ -27,6 +27,7 @@ export class ImageUpload extends Component<Properties, State> {
   dataVariant = this.props.onError ? 'error' : '';
   icon = this.props.onError ? <IconAlertCircle isFilled /> : this.props.icon;
   textContent = this.props.onError ? this.state?.files[0]?.name : this.props.uploadText;
+  errorMessage = this.props.errorMessage || 'Image upload failed. Please try again.';
 
   onDrop = (files: File[]) => {
     this.setState({ files });
@@ -94,7 +95,7 @@ export class ImageUpload extends Component<Properties, State> {
                 ? this.renderPlaceholder(getRootProps(), getInputProps())
                 : this.renderImage(getRootProps(), getInputProps())}
             </section>
-            {this.props.onError && <div className='image-upload__error-message'>{this.props.errorMessage}</div>}
+            {this.props.onError && <div className='image-upload__error-message'>{this.errorMessage}</div>}
           </div>
         )}
       </Dropzone>

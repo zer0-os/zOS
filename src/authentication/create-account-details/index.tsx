@@ -67,6 +67,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
               onChange={this.trackImage}
               icon={this.renderImageUploadIcon()}
               uploadText='Select or drag and drop'
+              onError={Boolean(this.props.errors.image)}
             />
           </div>
           {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}

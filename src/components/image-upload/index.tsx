@@ -94,7 +94,7 @@ export class ImageUpload extends Component<Properties, State> {
                 ? this.renderPlaceholder(getRootProps(), getInputProps())
                 : this.renderImage(getRootProps(), getInputProps())}
             </section>
-            {!this.props.onError && <div className='image-upload__error-message'>{this.props.errorMessage}</div>}
+            {this.props.onError && <div className='image-upload__error-message'>{this.props.errorMessage}</div>}
           </div>
         )}
       </Dropzone>

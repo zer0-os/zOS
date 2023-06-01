@@ -30,6 +30,12 @@ export class ImageUpload extends Component<Properties, State> {
     }
   };
 
+  onSimulateClick = () => {
+    if (this.fileInputRef.current) {
+      this.fileInputRef.current.click(); // simulating a click on the file input when the button is clicked
+    }
+  };
+
   renderImage = (rootProps: DropzoneRootProps, inputProps: DropzoneInputProps) => {
     const file = this.state.files[0];
 
@@ -50,12 +56,18 @@ export class ImageUpload extends Component<Properties, State> {
           color='primary'
           variant='primary'
           Icon={IconEdit5}
-          onClick={() => {
-            if (this.fileInputRef.current) {
-              this.fileInputRef.current.click(); // simulating a click on the file input when the button is clicked
-            }
-          }}
+          onClick={this.onSimulateClick}
         />
+      </div>
+    );
+  };
+
+  renderPlaceholder = (rootProps: DropzoneRootProps, inputProps: DropzoneInputProps) => {
+    return (
+      <div {...rootProps} className='image-upload__dropzone'>
+        <input {...inputProps} />
+        {this.props.icon}
+        <p>{this.props.uploadText}</p>
       </div>
     );
   };
@@ -71,15 +83,9 @@ export class ImageUpload extends Component<Properties, State> {
       >
         {({ getRootProps, getInputProps }) => (
           <section className={classNames('image-upload', this.props.className)}>
-            {this.state.files.length === 0 ? (
-              <div {...getRootProps({ className: 'image-upload__dropzone' })}>
-                <input {...getInputProps()} />
-                {this.props.icon}
-                <p>{this.props.uploadText}</p>
-              </div>
-            ) : (
-              this.renderImage(getRootProps(), getInputProps())
-            )}
+            {this.state.files.length === 0
+              ? this.renderPlaceholder(getRootProps(), getInputProps())
+              : this.renderImage(getRootProps(), getInputProps())}
           </section>
         )}
       </Dropzone>

@@ -149,24 +149,6 @@ describe('Authentication', () => {
     expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
-  it('should call terminateAuthorization when disconnect event triggered', () => {
-    const terminateAuthorization = jest.fn();
-
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-      user: {
-        isLoading: false,
-        data: USER_DATA,
-      },
-
-      terminateAuthorization,
-    });
-
-    wrapper.setProps({ connectionStatus: ConnectionStatus.Connected });
-
-    expect(terminateAuthorization).toHaveBeenCalled();
-  });
-
   it('should set logged in state to false, if user is loaded but user data is still null, and redirects to login', () => {
     const wrapper = subject({
       user: {

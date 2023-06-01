@@ -13,7 +13,7 @@ describe('WalletManager', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       loginByWeb3: () => undefined,
-      updateConnector: () => undefined,
+      logout: () => undefined,
       setWalletModalOpen: () => undefined,
       ...props,
     };
@@ -72,15 +72,15 @@ describe('WalletManager', () => {
     );
   });
 
-  it('calls update connector when disconnect event occurs', () => {
-    const updateConnector = jest.fn();
+  it('calls logout when disconnect occurs', () => {
+    const logout = jest.fn();
     const currentAddress = '0x0000000000000000000000000000000000000001';
 
-    const wrapper = subject({ updateConnector, currentAddress });
+    const wrapper = subject({ logout, currentAddress });
 
     wrapper.find(UserActionsContainer).simulate('disconnect');
 
-    expect(updateConnector).toHaveBeenCalledWith('none');
+    expect(logout).toHaveBeenCalled();
     expect(wrapper.find(ConnectButton).exists()).toBe(true);
   });
 

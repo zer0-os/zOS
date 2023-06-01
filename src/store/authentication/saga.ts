@@ -17,6 +17,8 @@ import { clearNotifications } from '../notifications/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
 import { multicastChannel } from 'redux-saga';
+import { updateConnector } from '../web3/saga';
+import { Connectors } from '../../lib/web3';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -134,7 +136,13 @@ export function* clearUserState() {
 export function* saga() {
   yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
   yield takeLatest(SagaActionTypes.Terminate, terminate);
+  yield takeLatest(SagaActionTypes.Logout, logout);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
+}
+
+export function* logout() {
+  yield call(updateConnector, { payload: Connectors.None });
+  yield call(terminate);
 }
 
 let theChannel;

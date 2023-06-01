@@ -49,7 +49,7 @@ export function* getSignedToken(connector) {
     const token = yield call(personalSignToken, providerService.get(), address);
     return { success: true, token };
   } catch (error) {
-    yield updateConnector(Connectors.None);
+    yield updateConnector({ payload: Connectors.None });
     return { success: false, error: 'Error signing token' };
   }
 }

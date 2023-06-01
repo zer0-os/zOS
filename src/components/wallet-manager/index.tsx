@@ -5,7 +5,7 @@ import { ConnectionStatus, Connectors } from '../../lib/web3';
 import { getChainNameFromId } from '../../lib/web3/chains';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { Web3State, setWalletModalOpen, updateConnector } from '../../store/web3';
+import { Web3State, setWalletModalOpen } from '../../store/web3';
 import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
@@ -16,6 +16,7 @@ import { UserActionsContainer } from '../user-actions/container';
 import { WalletSelectModal } from '../wallet-select/modal';
 import { WalletType } from '../wallet-select/wallets';
 import { loginByWeb3 } from '../../store/login';
+import { logout } from '../../store/authentication';
 
 interface PublicProperties {
   className?: string;
@@ -24,7 +25,7 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   currentAddress: string;
   connectionStatus: ConnectionStatus;
-  updateConnector: (connector: WalletType | Connectors.None) => void;
+  logout: () => void;
   loginByWeb3: (connector: Connectors) => void;
   setWalletModalOpen: (isWalletModalOpen: boolean) => void;
   isWalletModalOpen: Web3State['isWalletModalOpen'];
@@ -59,7 +60,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      updateConnector,
+      logout,
       loginByWeb3,
       setWalletModalOpen,
       updateConversationState: (isOpen: boolean) => updateSidekick({ isOpen }),
@@ -67,7 +68,7 @@ export class Container extends React.Component<Properties> {
   }
 
   handleDisconnect = () => {
-    this.props.updateConnector(Connectors.None);
+    this.props.logout();
   };
 
   get showModal(): boolean {

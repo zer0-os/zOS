@@ -1,4 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
+import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { setUser } from '.';
@@ -9,6 +10,7 @@ import {
   initializeUserState,
   clearUserState,
   processUserAccount,
+  logout,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -27,6 +29,8 @@ import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUserLayout } from '../layout/saga';
 import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
+import { updateConnector } from '../web3/saga';
+import { Connectors } from '../../lib/web3';
 
 const authorizationResponse = {
   accessToken: 'eyJh-access-token',
@@ -216,5 +220,28 @@ describe('authentication saga', () => {
         .withReducer(rootReducer)
         .run();
     });
+  });
+});
+
+describe('logout', () => {
+  function expectLogoutSaga() {
+    return expectSaga(logout).provide([
+      [
+        matchers.call.fn(updateConnector),
+        null,
+      ],
+      [
+        call(terminate),
+        null,
+      ],
+    ]);
+  }
+
+  it('clears the web3 connection', async () => {
+    await expectLogoutSaga().call(updateConnector, { payload: Connectors.None }).run();
+  });
+
+  it('clears the user session', async () => {
+    await expectLogoutSaga().call(terminate).run();
   });
 });

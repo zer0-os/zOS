@@ -44,6 +44,13 @@ export function* getSignedTokenForConnector(connector) {
     address = result.address;
   }
 
+  return yield call(getSignedToken, address);
+}
+
+export function* getSignedToken(address = null) {
+  if (!address) {
+    address = yield select((state) => state.web3.value.address);
+  }
   const providerService = yield call(getProviderService);
   try {
     const token = yield call(personalSignToken, providerService.get(), address);

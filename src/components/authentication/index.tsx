@@ -10,6 +10,7 @@ import { AuthenticationState } from '../../store/authentication/types';
 import { updateConnector } from '../../store/web3';
 import { Redirect } from 'react-router-dom';
 import { featureFlags } from '../../lib/feature-flags';
+import { web3ChangeAccount } from '../../store/login';
 
 export interface Properties {
   connectionStatus: ConnectionStatus;
@@ -19,6 +20,7 @@ export interface Properties {
   nonceOrAuthorize: (payload: { signedWeb3Token: string }) => void;
   terminateAuthorization: () => void;
   fetchCurrentUserWithChatAccessToken: () => void;
+  web3ChangeAccount: () => void;
   user: AuthenticationState['user'];
   personalSignToken: any;
 }
@@ -55,6 +57,7 @@ export class Container extends React.Component<Properties, State> {
       fetchCurrentUserWithChatAccessToken,
       terminateAuthorization: terminate,
       updateConnector,
+      web3ChangeAccount,
     };
   }
 
@@ -81,23 +84,8 @@ export class Container extends React.Component<Properties, State> {
   }
 
   async authorize() {
-    const {
-      personalSignToken,
-      currentAddress,
-      nonceOrAuthorize,
-      updateConnector,
-      terminateAuthorization,
-      providerService,
-    } = this.props;
-
-    await personalSignToken(providerService.get(), currentAddress)
-      .then((signedWeb3Token) => {
-        terminateAuthorization();
-        nonceOrAuthorize({ signedWeb3Token });
-      })
-      .catch((_error) => {
-        updateConnector(Connectors.None);
-      });
+    // XXX: This shouldn't happen in the component. Move up to event based sagas.
+    this.props.web3ChangeAccount();
   }
 
   redirectIfNotLoggedIn = () => {

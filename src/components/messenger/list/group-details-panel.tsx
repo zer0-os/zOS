@@ -56,7 +56,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             <Input value={this.state.name} onChange={this.nameChanged} />
           </div>
 
-          <div>
+          <div className={c('field-info-container')}>
             <div className={c('field-info')}>
               <span className={c('label')}>Group image</span>
               <span className={c('optional')}>Optional</span>

@@ -1,5 +1,9 @@
 import React, { Component, ReactElement } from 'react';
-import Dropzone from 'react-dropzone';
+import Dropzone, { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
+
+import { IconAlertCircle, IconEdit5 } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
+
 import './styles.scss';
 import classNames from 'classnames';
 
@@ -8,16 +12,24 @@ export interface Properties {
   icon: ReactElement;
   uploadText: string;
   onChange: (file: File) => void;
+  isError?: boolean;
+  errorMessage?: string;
 }
 
 interface State {
-  files: any;
+  files: File[];
 }
 
 export class ImageUpload extends Component<Properties, State> {
   state = { files: [] };
+  fileInputRef = React.createRef<HTMLInputElement>();
 
-  onDrop = (files) => {
+  dataVariant = this.props.isError ? 'error' : '';
+  icon = this.props.isError ? <IconAlertCircle isFilled /> : this.props.icon;
+  textContent = this.props.isError ? this.state?.files[0]?.name : this.props.uploadText;
+  errorMessage = this.props.errorMessage || 'Image upload failed. Please try again.';
+
+  onDrop = (files: File[]) => {
     this.setState({ files });
 
     if (typeof this.props.onChange === 'function') {
@@ -25,18 +37,45 @@ export class ImageUpload extends Component<Properties, State> {
     }
   };
 
-  renderImage = () => {
+  onSimulateClick = () => {
+    if (this.fileInputRef.current) {
+      this.fileInputRef.current.click(); // simulating a click on the file input when the button is clicked
+    }
+  };
+
+  renderImage = (rootProps: DropzoneRootProps, inputProps: DropzoneInputProps) => {
     const file = this.state.files[0];
 
     return (
-      <img
-        className='image-upload__image'
-        src={URL.createObjectURL(file)}
-        onLoad={() => {
-          URL.revokeObjectURL(file.preview);
-        }}
-        alt='Profile'
-      />
+      <div {...rootProps} className='image-upload__image-container'>
+        <input {...inputProps} ref={this.fileInputRef} />
+        <img
+          className='image-upload__image'
+          src={URL.createObjectURL(file)}
+          onLoad={() => {
+            URL.revokeObjectURL(file.preview);
+          }}
+          alt='Profile'
+        />
+        <IconButton
+          className={'image-upload__edit-button'}
+          type='button'
+          color='primary'
+          variant='primary'
+          Icon={IconEdit5}
+          onClick={this.onSimulateClick}
+        />
+      </div>
+    );
+  };
+
+  renderPlaceholder = (rootProps: DropzoneRootProps, inputProps: DropzoneInputProps) => {
+    return (
+      <div {...rootProps} className='image-upload__dropzone'>
+        <input {...inputProps} />
+        {this.icon}
+        <p className='image-upload__text-content'>{this.textContent}</p>
+      </div>
     );
   };
 
@@ -50,17 +89,14 @@ export class ImageUpload extends Component<Properties, State> {
         maxFiles={1}
       >
         {({ getRootProps, getInputProps }) => (
-          <section className={classNames('image-upload', this.props.className)}>
-            {this.state.files.length === 0 ? (
-              <div {...getRootProps({ className: 'image-upload__dropzone' })}>
-                <input {...getInputProps()} />
-                {this.props.icon}
-                <p>{this.props.uploadText}</p>
-              </div>
-            ) : (
-              this.renderImage()
-            )}
-          </section>
+          <div className='image-upload-container'>
+            <section className={classNames('image-upload', this.props.className)} data-variant={this.dataVariant}>
+              {this.state.files.length === 0
+                ? this.renderPlaceholder(getRootProps(), getInputProps())
+                : this.renderImage(getRootProps(), getInputProps())}
+            </section>
+            {this.props.isError && <div className='image-upload__error-message'>{this.errorMessage}</div>}
+          </div>
         )}
       </Dropzone>
     );

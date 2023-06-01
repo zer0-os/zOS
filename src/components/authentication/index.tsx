@@ -73,16 +73,6 @@ export class Container extends React.Component<Properties, State> {
       this.authorize();
     }
 
-    if (
-      prevProps.connectionStatus !== ConnectionStatus.Connected &&
-      this.props.connectionStatus === ConnectionStatus.Connected &&
-      this.props.user.isLoading === false &&
-      !this.props.currentAddress &&
-      this.props.user.data !== null
-    ) {
-      this.props.terminateAuthorization();
-    }
-
     // loading is done, but user data is still null (that means fetchCurrentUser saga failed),
     // then "force login"
     if (prevProps.user.isLoading === true && this.props.user.isLoading === false && this.props.user.data === null) {

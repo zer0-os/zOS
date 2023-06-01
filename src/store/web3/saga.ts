@@ -28,7 +28,7 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedToken(connector) {
+export function* getSignedTokenForConnector(connector) {
   let current = yield select((state) => state.web3.value);
 
   let address = current.address;

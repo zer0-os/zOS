@@ -2,7 +2,7 @@ import { call, put, take, takeLatest } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
 import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
-import { getSignedToken } from '../web3/saga';
+import { getSignedTokenForConnector } from '../web3/saga';
 import { nonceOrAuthorize } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
 
@@ -53,7 +53,7 @@ export function* web3Login(action) {
   yield put(setLoading(true));
   yield put(setErrors([]));
   try {
-    let result = yield call(getSignedToken, connector);
+    let result = yield call(getSignedTokenForConnector, connector);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return;

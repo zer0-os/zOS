@@ -229,7 +229,7 @@ export class Container extends React.Component<Properties, State> {
                 onChange={this.onImageChange}
                 icon={this.renderImageUploadIcon()}
                 uploadText='Select or drag and drop'
-                onError={Boolean(this.state.error)}
+                isError={Boolean(this.state.error)}
                 errorMessage={this.state.error}
               />
             </div>

@@ -12,7 +12,7 @@ export interface Properties {
   icon: ReactElement;
   uploadText: string;
   onChange: (file: File) => void;
-  onError?: boolean;
+  isError?: boolean;
   errorMessage?: string;
 }
 
@@ -24,9 +24,9 @@ export class ImageUpload extends Component<Properties, State> {
   state = { files: [] };
   fileInputRef = React.createRef<HTMLInputElement>();
 
-  dataVariant = this.props.onError ? 'error' : '';
-  icon = this.props.onError ? <IconAlertCircle isFilled /> : this.props.icon;
-  textContent = this.props.onError ? this.state?.files[0]?.name : this.props.uploadText;
+  dataVariant = this.props.isError ? 'error' : '';
+  icon = this.props.isError ? <IconAlertCircle isFilled /> : this.props.icon;
+  textContent = this.props.isError ? this.state?.files[0]?.name : this.props.uploadText;
   errorMessage = this.props.errorMessage || 'Image upload failed. Please try again.';
 
   onDrop = (files: File[]) => {
@@ -95,7 +95,7 @@ export class ImageUpload extends Component<Properties, State> {
                 ? this.renderPlaceholder(getRootProps(), getInputProps())
                 : this.renderImage(getRootProps(), getInputProps())}
             </section>
-            {this.props.onError && <div className='image-upload__error-message'>{this.errorMessage}</div>}
+            {this.props.isError && <div className='image-upload__error-message'>{this.errorMessage}</div>}
           </div>
         )}
       </Dropzone>

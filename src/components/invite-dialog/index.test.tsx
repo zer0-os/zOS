@@ -59,6 +59,20 @@ describe('InviteDialog', () => {
     expect(wrapper.find('.invite-dialog__inline-button').prop('disabled')).toBeTrue();
   });
 
+  describe('invite text', () => {
+    it('renders the invite code in a textarea', function () {
+      const wrapper = subject({ inviteCode: '23817' });
+
+      expect(wrapper.find('textarea').text()).toContain('23817');
+    });
+
+    it('should not be editable', function () {
+      const wrapper = subject({ inviteCode: '23817' });
+
+      expect(wrapper.find('textarea').prop('readOnly')).toBeTrue();
+    });
+  });
+
   it('publishes close event.', function () {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });

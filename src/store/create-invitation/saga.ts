@@ -12,7 +12,7 @@ export function* fetchInvite() {
     });
 
     if (cancel) {
-      return yield put(reset);
+      return yield put(reset());
     }
 
     try {

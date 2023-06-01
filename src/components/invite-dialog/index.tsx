@@ -65,11 +65,11 @@ export class InviteDialog extends React.Component<Properties, State> {
           <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
         <div className={c('content')}>
-          {/*<Image*/}
-          {/*  src={`${this.props.assetsPath}/ReachingHands.png`}*/}
-          {/*  alt='Hands reaching out to connect'*/}
-          {/*  className={c('image')}*/}
-          {/*/>*/}
+          <Image
+            src={`${this.props.assetsPath}/ReachingHands.png`}
+            alt='Hands reaching out to connect'
+            className={c('image')}
+          />
           <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
           <div className={c('byline')}>
             The larger and more active your network of contacts is, the more you will receive in rewards. Let's take

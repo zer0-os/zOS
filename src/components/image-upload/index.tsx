@@ -1,5 +1,5 @@
 import React, { Component, ReactElement } from 'react';
-import Dropzone from 'react-dropzone';
+import Dropzone, { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 
 import { IconEdit5 } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
@@ -20,26 +20,7 @@ interface State {
 
 export class ImageUpload extends Component<Properties, State> {
   state = { files: [] };
-
   fileInputRef = React.createRef<HTMLInputElement>();
-
-  openFileDialog = () => {
-    if (this.fileInputRef.current) {
-      this.fileInputRef.current.click();
-    }
-  };
-
-  onEditClick = () => {
-    if (this.fileInputRef.current) {
-      this.fileInputRef.current.click();
-    }
-  };
-
-  handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      this.onDrop(Array.from(e.target.files));
-    }
-  };
 
   onDrop = (files: File[]) => {
     this.setState({ files });
@@ -49,11 +30,12 @@ export class ImageUpload extends Component<Properties, State> {
     }
   };
 
-  renderImage = () => {
+  renderImage = (rootProps: DropzoneRootProps, inputProps: DropzoneInputProps) => {
     const file = this.state.files[0];
 
     return (
-      <div className='image-upload__image-container'>
+      <div {...rootProps} className='image-upload__image-container'>
+        <input {...inputProps} ref={this.fileInputRef} />
         <img
           className='image-upload__image'
           src={URL.createObjectURL(file)}
@@ -68,9 +50,12 @@ export class ImageUpload extends Component<Properties, State> {
           color='primary'
           variant='primary'
           Icon={IconEdit5}
-          onClick={this.onEditClick}
+          onClick={() => {
+            if (this.fileInputRef.current) {
+              this.fileInputRef.current.click(); // simulating a click on the file input when the button is clicked
+            }
+          }}
         />
-        <input type='file' className='image-upload__input' ref={this.fileInputRef} onChange={this.handleFileChange} />
       </div>
     );
   };
@@ -93,7 +78,7 @@ export class ImageUpload extends Component<Properties, State> {
                 <p>{this.props.uploadText}</p>
               </div>
             ) : (
-              this.renderImage()
+              this.renderImage(getRootProps(), getInputProps())
             )}
           </section>
         )}

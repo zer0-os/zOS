@@ -229,8 +229,6 @@ export class Container extends React.Component<Properties, State> {
                 onChange={this.onImageChange}
                 icon={this.renderImageUploadIcon()}
                 uploadText='Select or drag and drop'
-                isError={Boolean(this.state.error)}
-                errorMessage={this.state.error}
               />
             </div>
           </div>
@@ -249,6 +247,8 @@ export class Container extends React.Component<Properties, State> {
             />
             {Boolean(this.state.displayNameError) && this.renderError(this.state.displayNameError)}
           </div>
+
+          {Boolean(this.state.error) && this.renderError(this.state.error)}
 
           <div className='profile-prompt__submit'>
             <Button tabIndex={0} onClick={this.onSubmit} onEnterKeyPress={this.onSubmit}>

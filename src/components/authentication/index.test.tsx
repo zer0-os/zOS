@@ -97,7 +97,7 @@ describe('Authentication', () => {
     expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
   });
 
-  it('should terminateAuthorization before authorize', async () => {
+  it('should terminateAuthorization before reauthorize', async () => {
     const nonceOrAuthorize = jest.fn();
     const terminateAuthorization = jest.fn();
 
@@ -110,7 +110,11 @@ describe('Authentication', () => {
       nonceOrAuthorize,
     });
 
-    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
+    await wrapper.setProps({
+      connectionStatus: ConnectionStatus.Connected,
+      currentAddress,
+      user: { isLoading: false, data: USER_DATA },
+    });
 
     await new Promise(setImmediate);
 
@@ -133,7 +137,11 @@ describe('Authentication', () => {
       nonceOrAuthorize,
     });
 
-    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress });
+    await wrapper.setProps({
+      connectionStatus: ConnectionStatus.Connected,
+      currentAddress,
+      user: { isLoading: false, data: USER_DATA },
+    });
 
     await new Promise(setImmediate);
 

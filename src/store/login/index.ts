@@ -1,7 +1,9 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Connectors } from '../../lib/web3';
 
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
+  Web3Login = 'login/web3Login',
 }
 
 export type LoginState = {
@@ -23,6 +25,10 @@ export enum EmailLoginErrors {
   INVALID_EMAIL_PASSWORD = 'INVALID_EMAIL_PASSWORD',
 }
 
+export enum Web3LoginErrors {
+  PROFILE_NOT_FOUND = 'PROFILE_NOT_FOUND',
+}
+
 export const initialState: LoginState = {
   stage: LoginStage.EmailLogin,
   loading: false,
@@ -30,6 +36,7 @@ export const initialState: LoginState = {
 };
 
 export const loginByEmail = createAction<{ email: string; password: string }>(SagaActionTypes.EmailLogin);
+export const loginByWeb3 = createAction<Connectors>(SagaActionTypes.Web3Login);
 
 const slice = createSlice({
   name: 'login',

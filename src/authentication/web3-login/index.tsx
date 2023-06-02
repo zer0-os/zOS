@@ -3,6 +3,7 @@ import * as React from 'react';
 import { bem } from '../../lib/bem';
 const c = bem('web3-login');
 import './styles.scss';
+import { WalletSelect } from '../../components/wallet-select';
 
 export interface Web3LoginProperties {
   error: string;
@@ -16,6 +17,10 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
   render() {
     const { error, isConnecting, onSelect } = this.props;
 
-    return <></>;
+    return (
+      <div>
+        <WalletSelect isConnecting={isConnecting} onSelect={onSelect} />
+      </div>
+    );
   }
 }

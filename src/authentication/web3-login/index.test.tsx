@@ -32,12 +32,18 @@ describe('Web3Login', () => {
 
   describe('error handling', () => {
     it('shows an error', function () {
-      const wrapper = subject({ error: 'something went wrong' });
+      const errorText = 'something went wrong';
+      const wrapper = subject({ error: errorText });
 
-      expect(wrapper).toHaveElement('Alert');
-      expect(wrapper).toHaveText('something went wrong');
+      const alert = wrapper.find('Alert');
+      expect(wrapper.exists()).toBeTruthy();
+      expect(alert.prop('variant')).toEqual('error');
+      expect(alert.prop('children')).toEqual(errorText);
+    });
 
-      wrapper.setProps({ error: '' });
+    it('does not show an error when error is empty', function () {
+      const wrapper = subject({ error: '' });
+
       expect(wrapper).not.toHaveElement('Alert');
     });
   });

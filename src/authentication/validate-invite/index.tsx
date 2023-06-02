@@ -62,6 +62,9 @@ export class Invite extends React.Component<Properties, State> {
       case InviteCodeStatus.INVITE_CODE_EXPIRED:
         errorMessage = 'This invite code has been expired. Please use a new invite code.';
         break;
+      case InviteCodeStatus.INVITE_CODE_MAX_USES:
+        errorMessage = 'This invite has been used too many times. Please use a new invite code.';
+        break;
       default:
         errorMessage = 'Invite code error.';
     }

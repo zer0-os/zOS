@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Alert } from '@zero-tech/zui/components';
+import { Alert, Button } from '@zero-tech/zui/components';
 import { WalletSelect } from '../../components/wallet-select';
 
 import { bem } from '../../lib/bem';
@@ -23,7 +23,11 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
 
     return (
       <div>
-        <WalletSelect isConnecting={isConnecting} onSelect={onSelect} />
+        {isConnecting ? (
+          <Button isDisabled={true}>Waiting for wallet confirmation</Button>
+        ) : (
+          <WalletSelect isConnecting={true} onSelect={onSelect} />
+        )}
         {shouldShowError && <Alert variant='error'>{error}</Alert>}
       </div>
     );

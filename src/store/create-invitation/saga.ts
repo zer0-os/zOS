@@ -18,7 +18,14 @@ export function* fetchInvite() {
     try {
       const invitation = yield call(getInvite);
       // For now, we don't include the code in the url
-      yield put(setInvite({ code: invitation.slug, url: config.inviteUrl }));
+      yield put(
+        setInvite({
+          code: invitation.slug,
+          url: config.inviteUrl,
+          invitesUsed: invitation.invitesUsed,
+          maxUses: invitation.maxInvitesPerUser,
+        })
+      );
       return;
     } catch (e) {
       // Listen again

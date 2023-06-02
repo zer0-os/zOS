@@ -138,4 +138,20 @@
       }
     }
   }
+
+  &__remaining-invite {
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    gap: 10px;
+    align-items: center;
+
+    background: theme.$color-primary-3;
+    border-radius: 8px;
+    margin-top: 16px;
+  }
+
+  &__no-invite-left {
+    color: theme.$color-success-11;
+  }
 }

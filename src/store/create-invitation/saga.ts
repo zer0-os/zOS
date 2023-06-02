@@ -2,7 +2,7 @@ import { take, put, call, race, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
-import { authChannel } from '../authentication/saga';
+import { authChannel } from '../authentication/channels';
 
 export function* fetchInvite() {
   while (true) {

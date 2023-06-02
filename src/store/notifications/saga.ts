@@ -13,7 +13,7 @@ import {
 } from '.';
 import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
-import { authChannel } from '../authentication/saga';
+import { authChannel } from '../authentication/channels';
 
 export interface Payload {
   userId: string;

@@ -19,6 +19,7 @@ import { clearMessages } from '../messages/saga';
 import { multicastChannel } from 'redux-saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
+import { Events, authChannel } from './channels';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -102,20 +103,13 @@ export function* processUserAccount(params: {
       : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
   });
 
-  let type = '';
   if (user) {
     yield spawn(initializeUserState, user);
-    // XXX: move to a constant
-    type = 'USER_LOGIN';
+    yield publishUserLogin(user);
   } else {
     yield spawn(clearUserState);
-    type = 'USER_LOGOUT';
+    yield publishUserLogout();
   }
-
-  // XXX: MOve the auth channel to a separate file and put the event types in there too.
-  // Publish a message across the authChannel
-  const channel = yield call(authChannel);
-  yield put(channel, { type, userId: user?.id });
 }
 
 export function* initializeUserState(user: User) {
@@ -150,10 +144,12 @@ export function* logout() {
   yield call(terminate);
 }
 
-let theChannel;
-export function* authChannel() {
-  if (!theChannel) {
-    theChannel = yield call(multicastChannel);
-  }
-  return theChannel;
+function* publishUserLogin(user) {
+  const channel = yield call(authChannel);
+  yield put(channel, { type: Events.UserLogin, userId: user.id });
+}
+
+function* publishUserLogout() {
+  const channel = yield call(authChannel);
+  yield put(channel, { type: Events.UserLogout });
 }

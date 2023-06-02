@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import { WalletSelect } from '../../components/wallet-select';
+
 import { bem } from '../../lib/bem';
 const c = bem('web3-login');
 import './styles.scss';
-import { WalletSelect } from '../../components/wallet-select';
 
 export interface Web3LoginProperties {
   error: string;

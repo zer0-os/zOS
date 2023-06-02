@@ -17,8 +17,7 @@ describe('Web3LoginContainer', () => {
   describe('mapState', () => {
     it('should map state to props', () => {
       const state = {
-        web3: { value: { error: 'error' } },
-        login: { loading: true },
+        login: { loading: true, errors: ['error'] },
       };
 
       const props = Container.mapState(state as any);

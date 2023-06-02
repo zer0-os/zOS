@@ -17,13 +17,13 @@ export interface Web3LoginContainerProperties {
 export class Container extends React.Component<Web3LoginContainerProperties> {
   static mapState(state: RootState): Partial<Web3LoginContainerProperties> {
     const {
-      web3: { value },
-      login,
+      login: { errors, loading },
     } = state;
 
     return {
-      error: value.error,
-      isConnecting: login.loading,
+      // @note: casting here as there's only one error at a time when logging in via web3
+      error: errors?.[0],
+      isConnecting: loading,
     };
   }
 

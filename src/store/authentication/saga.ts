@@ -102,15 +102,23 @@ export function* processUserAccount(params: {
       : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
   });
 
+  // XXX: I wonder if we have weird race conditions if we rely on these events
+  // and, for account change, we'd get a logout AND a login event...in succession...
+  // which happens first...who's process runs when...figure this out.
+  let type = '';
   if (user) {
     yield spawn(initializeUserState, user);
+    // XXX: move to a constant
+    type = 'USER_LOGIN';
   } else {
     yield spawn(clearUserState);
+    type = 'USER_LOGOUT';
   }
 
+  // XXX: MOve the auth channel to a separate file and put the event types in there too.
   // Publish a message across the authChannel
   const channel = yield call(authChannel);
-  yield put(channel, { userId: user?.id });
+  yield put(channel, { type, userId: user?.id });
 }
 
 export function* initializeUserState(user: User) {

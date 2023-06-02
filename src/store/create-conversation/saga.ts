@@ -129,9 +129,7 @@ function* handleGroupDetails() {
 function* authWatcher() {
   const channel = yield call(authChannel);
   while (true) {
-    const payload = yield take(channel, '*');
-    if (!payload.userId) {
-      yield put({ type: SagaActionTypes.Cancel });
-    }
+    yield take(channel, 'USER_LOGOUT');
+    yield put({ type: SagaActionTypes.Cancel });
   }
 }

@@ -1,13 +1,13 @@
 import React from 'react';
-import { RootState } from './store/reducer';
-import { connectContainer } from './store/redux-container';
-import { ReactComponent as ZeroLogo } from './zero-logo.svg';
+import { RootState } from '../../store/reducer';
+import { connectContainer } from '../../store/redux-container';
+import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 import { Redirect } from 'react-router-dom';
 
 import './login.scss';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
-import { EmailLoginContainer } from './authentication/email-login/container';
-import { LoginStage } from './store/login';
+import { EmailLoginContainer } from '../../authentication/email-login/container';
+import { LoginStage } from '../../store/login';
 
 export interface Properties {}
 

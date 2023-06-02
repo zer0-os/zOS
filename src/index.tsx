@@ -18,7 +18,7 @@ import { AppSandboxContainer } from './app-sandbox/container';
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
-import { Login } from './login';
+import { Login } from './pages';
 
 runSagas();
 

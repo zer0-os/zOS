@@ -12,6 +12,8 @@ describe('Container', () => {
       inviteCode: '',
       inviteUrl: '',
       assetPath: '',
+      invitesUsed: 0,
+      maxInvitesPerUser: 0,
       fetchInvite: () => null,
       ...props,
     };

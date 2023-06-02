@@ -1,14 +1,78 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../styles';
 
+@mixin flex() {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+}
+
 .web3-login {
-  @include base();
+  //@include base();
+  @include flex();
+
+  margin-top: 80px;
+  box-sizing: border-box;
+
+  a {
+    color: theme.$color-greyscale-12;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+
+    > * {
+      color: theme.$color-greyscale-12 !important;
+      margin: 0;
+      padding: 0;
+    }
+  }
 
   &__heading {
-    @include heading();
+    font-size: 16px;
+    font-weight: 400;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
   }
 
   &__sub-heading {
-    @include sub-heading();
+    font-size: 24px;
+  }
+
+  &__login {
+    @include flex();
+    width: 256px;
+  }
+
+  &__connecting {
+    @include flex();
+
+    // @todo: add this variant to zUI
+    button {
+      text-transform: unset;
+      border: 1px solid theme.$color-greyscale-11;
+    }
+  }
+
+  &__spinner {
+    animation: spin 2s linear infinite;
+  }
+
+  &__select-wallet {
+    background-color: theme.$color-primary-2;
+    border: 1px solid theme.$color-primary-5;
+    border-radius: 8px;
+    padding: 16px 6px 24px;
+  }
+
+  &__options {
+    @include flex();
+    text-align: center;
   }
 }

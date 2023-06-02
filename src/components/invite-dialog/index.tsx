@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Image, Skeleton } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
 import { IconButton } from '../icon-button';
@@ -9,6 +9,7 @@ import { IconButton } from '../icon-button';
 import './styles.scss';
 
 import { bem } from '../../lib/bem';
+import classNames from 'classnames';
 const c = bem('invite-dialog');
 
 export interface Clipboard {
@@ -17,6 +18,8 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
+  invitesUsed: number;
+  maxInvitesPerUser: number;
   inviteUrl: string;
   assetsPath: string;
   clipboard?: Clipboard;
@@ -36,6 +39,10 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     clearTimeout(this.buttonTimeout);
+  }
+
+  getInvitesRemaining() {
+    return Math.max(this.props.maxInvitesPerUser - this.props.invitesUsed, 0);
   }
 
   get inviteText() {
@@ -87,6 +94,20 @@ export class InviteDialog extends React.Component<Properties, State> {
             >
               {this.state.copyText}
             </button>
+          </div>
+          <div className={c('remaining-invite')}>
+            <IconGift1
+              className={classNames({
+                [c('no-invite-left')]: this.getInvitesRemaining() === 0,
+              })}
+            />
+            <div
+              className={classNames({
+                [c('no-invite-left')]: this.getInvitesRemaining() === 0,
+              })}
+            >
+              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxInvitesPerUser}</b> invites remaining
+            </div>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ export interface Clipboard {
 export interface Properties {
   inviteCode: string;
   invitesUsed: number;
-  maxInvitesPerUser: number;
+  maxUses: number;
   inviteUrl: string;
   assetsPath: string;
   clipboard?: Clipboard;
@@ -42,7 +42,7 @@ export class InviteDialog extends React.Component<Properties, State> {
   }
 
   getInvitesRemaining() {
-    return Math.max(this.props.maxInvitesPerUser - this.props.invitesUsed, 0);
+    return Math.max(this.props.maxUses - this.props.invitesUsed, 0);
   }
 
   get inviteText() {
@@ -95,18 +95,12 @@ export class InviteDialog extends React.Component<Properties, State> {
               {this.state.copyText}
             </button>
           </div>
-          <div className={c('remaining-invite')}>
-            <IconGift1
-              className={classNames({
-                [c('no-invite-left')]: this.getInvitesRemaining() === 0,
-              })}
-            />
-            <div
-              className={classNames({
-                [c('no-invite-left')]: this.getInvitesRemaining() === 0,
-              })}
-            >
-              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxInvitesPerUser}</b> invites remaining
+          <div
+            className={classNames(c('remaining-invite'), { [c('no-invite-left')]: this.getInvitesRemaining() === 0 })}
+          >
+            <IconGift1 />
+            <div>
+              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
             </div>
           </div>
         </div>

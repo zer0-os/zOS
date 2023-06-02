@@ -12,7 +12,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   inviteCode: string;
   invitesUsed: number;
-  maxInvitesPerUser: number;
+  maxUses: number;
   inviteUrl: string;
   assetPath: string;
 
@@ -28,7 +28,7 @@ export class Container extends React.Component<Properties> {
       inviteUrl: createInvitation.url,
       assetPath: config.assetsPath,
       invitesUsed: createInvitation.invitesUsed,
-      maxInvitesPerUser: createInvitation.maxInvitesPerUser,
+      maxUses: createInvitation.maxUses,
     };
   }
 
@@ -45,7 +45,7 @@ export class Container extends React.Component<Properties> {
       <InviteDialog
         inviteCode={this.props.inviteCode}
         invitesUsed={this.props.invitesUsed}
-        maxInvitesPerUser={this.props.maxInvitesPerUser}
+        maxUses={this.props.maxUses}
         inviteUrl={this.props.inviteUrl}
         assetsPath={this.props.assetPath}
         onClose={this.props.onClose}

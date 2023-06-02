@@ -11,14 +11,14 @@ export type CreateInvitationState = {
   code: string;
   url: string;
   invitesUsed: number;
-  maxInvitesPerUser: number;
+  maxUses: number;
 };
 
 const initialState: CreateInvitationState = {
   code: '',
   url: '',
   invitesUsed: 0,
-  maxInvitesPerUser: 0,
+  maxUses: 0,
 };
 
 const slice = createSlice({
@@ -29,13 +29,13 @@ const slice = createSlice({
       state.code = action.payload.code;
       state.url = action.payload.url;
       state.invitesUsed = action.payload.invitesUsed;
-      state.maxInvitesPerUser = action.payload.maxInvitesPerUser;
+      state.maxUses = action.payload.maxUses;
     },
     reset: (state, _action: PayloadAction) => {
       state.code = initialState.code;
       state.url = initialState.url;
       state.invitesUsed = initialState.invitesUsed;
-      state.maxInvitesPerUser = initialState.maxInvitesPerUser;
+      state.maxUses = initialState.maxUses;
     },
   },
 });

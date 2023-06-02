@@ -11,7 +11,7 @@ describe('InviteDialog', () => {
       inviteUrl: '',
       assetsPath: '',
       invitesUsed: 0,
-      maxInvitesPerUser: 0,
+      maxUses: 0,
       clipboard: { write: () => null },
       ...props,
     };
@@ -72,11 +72,11 @@ describe('InviteDialog', () => {
 
   it('displays text in green if no invites remaining', function () {
     // 2 invites left
-    let wrapper = subject({ inviteCode: '123456', invitesUsed: 3, maxInvitesPerUser: 5 });
+    let wrapper = subject({ inviteCode: '123456', invitesUsed: 3, maxUses: 5 });
     expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeFalse();
 
     // no invite left
-    wrapper = subject({ inviteCode: '123456', invitesUsed: 5, maxInvitesPerUser: 5 });
+    wrapper = subject({ inviteCode: '123456', invitesUsed: 5, maxUses: 5 });
     expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeTrue();
   });
 });

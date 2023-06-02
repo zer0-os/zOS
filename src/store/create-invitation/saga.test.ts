@@ -21,7 +21,7 @@ describe('fetchInvite', () => {
           ],
         ])
         .withReducer(rootReducer, {
-          createInvitation: { code: '', url: '', invitesUsed: 0, maxInvitesPerUser: 0 },
+          createInvitation: { code: '', url: '', invitesUsed: 0, maxUses: 0 },
         } as any)
         .dispatch({ type: SagaActionTypes.GetCode })
         .run();
@@ -30,7 +30,7 @@ describe('fetchInvite', () => {
         code: '98762',
         url: 'https://www.example.com/invite',
         invitesUsed: 3,
-        maxInvitesPerUser: 6,
+        maxUses: 6,
       });
     });
 
@@ -39,12 +39,12 @@ describe('fetchInvite', () => {
         storeState: { createInvitation },
       } = await expectSaga(fetchInvite)
         .withReducer(rootReducer, {
-          createInvitation: { code: 'something', url: 'url', invitesUsed: 2, maxInvitesPerUser: 3 },
+          createInvitation: { code: 'something', url: 'url', invitesUsed: 2, maxUses: 3 },
         } as any)
         .dispatch({ type: SagaActionTypes.Cancel })
         .run();
 
-      expect(createInvitation).toEqual({ code: '', url: '', invitesUsed: 0, maxInvitesPerUser: 0 });
+      expect(createInvitation).toEqual({ code: '', url: '', invitesUsed: 0, maxUses: 0 });
     });
 
     it('listens again if an error occurs', async () => {

@@ -47,13 +47,13 @@ export function* nonceOrAuthorize(action) {
 }
 
 export function* terminate() {
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+
   try {
     yield call(clearSessionApi);
   } catch {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
-
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
 }
 
 export function* getCurrentUserWithChatAccessToken() {
@@ -102,9 +102,6 @@ export function* processUserAccount(params: {
       : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
   });
 
-  // XXX: I wonder if we have weird race conditions if we rely on these events
-  // and, for account change, we'd get a logout AND a login event...in succession...
-  // which happens first...who's process runs when...figure this out.
   let type = '';
   if (user) {
     yield spawn(initializeUserState, user);

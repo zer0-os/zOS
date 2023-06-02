@@ -78,8 +78,11 @@ export class InviteDialog extends React.Component<Properties, State> {
             <br />
           </div>
           <div className={c('code-block')}>
-            {!this.props.inviteCode && <Skeleton width={'100%'} height={'96px'} />}
-            {this.props.inviteCode && <pre>{this.inviteText}</pre>}
+            {this.props.inviteCode ? (
+              <textarea readOnly={true}>{this.inviteText}</textarea>
+            ) : (
+              <Skeleton width={'100%'} height={'100px'} />
+            )}
             <button
               className={c('inline-button', 'right')}
               onClick={this.writeInviteToClipboard}

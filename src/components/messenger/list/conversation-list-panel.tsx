@@ -4,7 +4,7 @@ import Tooltip from '../../tooltip';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { SearchConversations } from '../search-conversations';
 import { Channel } from '../../../store/channels';
-import { IconMessagePlusSquare, IconMessageQuestionSquare } from '@zero-tech/zui/icons';
+import { IconMessagePlusSquare, IconMessageQuestionSquare, IconUserPlus1 } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -119,7 +119,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
-        <Button className={'messages-list__invite-button'} variant={'text'} onPress={this.openInviteDialog}>
+        <Button
+          className={'messages-list__invite-button'}
+          variant={'text'}
+          onPress={this.openInviteDialog}
+          startEnhancer={<IconUserPlus1 />}
+        >
           Invite Friends
         </Button>
         {this.renderInviteDialog()}

@@ -26,7 +26,7 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
         {isConnecting ? (
           <Button isDisabled={true}>Waiting for wallet confirmation</Button>
         ) : (
-          <WalletSelect isConnecting={true} onSelect={onSelect} />
+          <WalletSelect isConnecting={false} onSelect={onSelect} />
         )}
         {shouldShowError && <Alert variant='error'>{error}</Alert>}
       </div>

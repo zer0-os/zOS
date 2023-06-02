@@ -52,7 +52,9 @@ describe('Web3Login', () => {
     it('shows a loading indicator', function () {
       const wrapper = subject({ isConnecting: true });
 
-      expect(wrapper).toHaveText('Waiting for wallet confirmation');
+      const button = wrapper.find('Button');
+      expect(button.prop('isDisabled')).toBeTruthy();
+      expect(button.prop('children')).toEqual('Waiting for wallet confirmation');
     });
 
     it('does not show error', function () {

@@ -16,7 +16,6 @@ import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
-import { multicastChannel } from 'redux-saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { Events, authChannel } from './channels';

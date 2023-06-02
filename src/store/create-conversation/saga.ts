@@ -1,4 +1,4 @@
-import { put, call, select, race, take, fork, takeEvery } from 'redux-saga/effects';
+import { put, call, select, race, take, fork } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';

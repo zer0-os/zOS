@@ -1,11 +1,11 @@
 import * as React from 'react';
 
+import { Alert } from '@zero-tech/zui/components';
 import { WalletSelect } from '../../components/wallet-select';
 
 import { bem } from '../../lib/bem';
 const c = bem('web3-login');
 import './styles.scss';
-import { Alert } from '@zero-tech/zui/components';
 
 export interface Web3LoginProperties {
   error: string;

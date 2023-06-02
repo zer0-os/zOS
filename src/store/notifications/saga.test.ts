@@ -17,7 +17,7 @@ import {
 import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
 import { fetchNotification, fetchNotifications } from './api';
 import { sample } from 'lodash';
-import { authChannel } from '../authentication/saga';
+import { authChannel } from '../authentication/channels';
 import { multicastChannel } from 'redux-saga';
 
 describe('notifications list saga', () => {

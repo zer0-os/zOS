@@ -10,11 +10,15 @@ export const fetchInvite = createAction(SagaActionTypes.GetCode);
 export type CreateInvitationState = {
   code: string;
   url: string;
+  invitesUsed: number;
+  maxInvitesPerUser: number;
 };
 
 const initialState: CreateInvitationState = {
   code: '',
   url: '',
+  invitesUsed: 0,
+  maxInvitesPerUser: 0,
 };
 
 const slice = createSlice({
@@ -24,10 +28,14 @@ const slice = createSlice({
     setInvite: (state, action: PayloadAction<CreateInvitationState>) => {
       state.code = action.payload.code;
       state.url = action.payload.url;
+      state.invitesUsed = action.payload.invitesUsed;
+      state.maxInvitesPerUser = action.payload.maxInvitesPerUser;
     },
     reset: (state, _action: PayloadAction) => {
       state.code = initialState.code;
       state.url = initialState.url;
+      state.invitesUsed = initialState.invitesUsed;
+      state.maxInvitesPerUser = initialState.maxInvitesPerUser;
     },
   },
 });

@@ -3,7 +3,8 @@ import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, set
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setActiveMessengerId } from '../chat';
-import { authChannel, currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/saga';
+import { Events, authChannel } from '../authentication/channels';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -129,9 +130,7 @@ function* handleGroupDetails() {
 function* authWatcher() {
   const channel = yield call(authChannel);
   while (true) {
-    const payload = yield take(channel, '*');
-    if (!payload.userId) {
-      yield put({ type: SagaActionTypes.Cancel });
-    }
+    yield take(channel, Events.UserLogout);
+    yield put({ type: SagaActionTypes.Cancel });
   }
 }

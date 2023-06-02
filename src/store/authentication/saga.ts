@@ -16,9 +16,9 @@ import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
-import { multicastChannel } from 'redux-saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
+import { Events, authChannel } from './channels';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -47,13 +47,13 @@ export function* nonceOrAuthorize(action) {
 }
 
 export function* terminate() {
+  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+
   try {
     yield call(clearSessionApi);
   } catch {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
-
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
 }
 
 export function* getCurrentUserWithChatAccessToken() {
@@ -104,13 +104,11 @@ export function* processUserAccount(params: {
 
   if (user) {
     yield spawn(initializeUserState, user);
+    yield publishUserLogin(user);
   } else {
     yield spawn(clearUserState);
+    yield publishUserLogout();
   }
-
-  // Publish a message across the authChannel
-  const channel = yield call(authChannel);
-  yield put(channel, { userId: user?.id });
 }
 
 export function* initializeUserState(user: User) {
@@ -145,10 +143,12 @@ export function* logout() {
   yield call(terminate);
 }
 
-let theChannel;
-export function* authChannel() {
-  if (!theChannel) {
-    theChannel = yield call(multicastChannel);
-  }
-  return theChannel;
+function* publishUserLogin(user) {
+  const channel = yield call(authChannel);
+  yield put(channel, { type: Events.UserLogin, userId: user.id });
+}
+
+function* publishUserLogout() {
+  const channel = yield call(authChannel);
+  yield put(channel, { type: Events.UserLogout });
 }

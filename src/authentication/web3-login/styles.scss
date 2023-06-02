@@ -1,0 +1,14 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../styles';
+
+.web3-login {
+  @include base();
+
+  &__heading {
+    @include heading();
+  }
+
+  &__sub-heading {
+    @include sub-heading();
+  }
+}

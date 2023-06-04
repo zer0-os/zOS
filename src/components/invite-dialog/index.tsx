@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Image, Skeleton } from '@zero-tech/zui/components';
+import { Image, Skeleton, Alert } from '@zero-tech/zui/components';
 import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
@@ -22,6 +22,7 @@ export interface Properties {
   maxUses: number;
   inviteUrl: string;
   assetsPath: string;
+  isUserInFullScreenModeAndInWorlds: boolean;
   clipboard?: Clipboard;
 
   onClose?: () => void;
@@ -77,6 +78,14 @@ export class InviteDialog extends React.Component<Properties, State> {
             alt='Hands reaching out to connect'
             className={c('image')}
           />
+
+          {this.props.isUserInFullScreenModeAndInWorlds && (
+            <Alert variant='info' className={c('network-alert')}>
+              This invite will add someone to your direct messages, <b>not</b> your current network. If you would like
+              to add someone to your network, invite from your network options.
+            </Alert>
+          )}
+
           <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
           <div className={c('byline')}>
             The larger and more active your network of contacts is, the more you will receive in rewards. Let's take

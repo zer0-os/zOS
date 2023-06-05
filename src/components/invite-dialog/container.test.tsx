@@ -32,8 +32,7 @@ describe('Container', () => {
   describe('mapState', () => {
     const subject = (
       invitationState: Partial<CreateInvitationState> = {},
-      userState: Partial<RootState['authentication']['user']['data']> = {},
-      layoutState: Partial<RootState['layout']['value']> = {}
+      userState: Partial<RootState['authentication']['user']['data']> = {}
     ) => {
       const state = {
         createInvitation: { code: '', ...invitationState },
@@ -45,9 +44,6 @@ describe('Container', () => {
               ...userState,
             },
           },
-        },
-        layout: {
-          value: { isMessengerFullScreen: false, ...layoutState },
         },
       } as RootState;
       return Container.mapState(state);
@@ -66,7 +62,7 @@ describe('Container', () => {
     });
 
     it('isAMemberOfWorlds', () => {
-      const props = subject({}, { isAMemberOfWorlds: true }, {});
+      const props = subject({}, { isAMemberOfWorlds: true });
 
       expect(props.isAMemberOfWorlds).toEqual(true);
     });

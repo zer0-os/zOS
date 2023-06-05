@@ -16,7 +16,6 @@ export interface Properties extends PublicProperties {
   inviteUrl: string;
   assetPath: string;
   isAMemberOfWorlds: boolean;
-  isMessengerFullScreen: boolean;
 
   fetchInvite: () => void;
 }
@@ -26,7 +25,6 @@ export class Container extends React.Component<Properties> {
     const {
       createInvitation,
       authentication: { user },
-      layout,
     } = state;
 
     return {
@@ -36,7 +34,6 @@ export class Container extends React.Component<Properties> {
       invitesUsed: createInvitation.invitesUsed,
       maxUses: createInvitation.maxUses,
       isAMemberOfWorlds: user?.data?.isAMemberOfWorlds,
-      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -57,7 +54,7 @@ export class Container extends React.Component<Properties> {
         inviteUrl={this.props.inviteUrl}
         assetsPath={this.props.assetPath}
         onClose={this.props.onClose}
-        isUserInFullScreenModeAndInWorlds={this.props.isMessengerFullScreen && this.props.isAMemberOfWorlds}
+        isUserAMemberOfWorlds={this.props.isAMemberOfWorlds}
       />
     );
   }

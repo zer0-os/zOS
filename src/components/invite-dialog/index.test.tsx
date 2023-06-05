@@ -12,7 +12,7 @@ describe('InviteDialog', () => {
       assetsPath: '',
       invitesUsed: 0,
       maxUses: 0,
-      isUserInFullScreenModeAndInWorlds: false,
+      isUserAMemberOfWorlds: false,
       clipboard: { write: () => null },
       ...props,
     };
@@ -96,10 +96,10 @@ describe('InviteDialog', () => {
   });
 
   it('renders network notification alert if user is in full screen, and is a part of networks', function () {
-    let wrapper = subject({ inviteCode: '123456', isUserInFullScreenModeAndInWorlds: false });
+    let wrapper = subject({ inviteCode: '123456', isUserAMemberOfWorlds: false });
     expect(wrapper.find('.invite-dialog__network-alert').exists()).toBeFalse();
 
-    wrapper = subject({ inviteCode: '123456', isUserInFullScreenModeAndInWorlds: true });
+    wrapper = subject({ inviteCode: '123456', isUserAMemberOfWorlds: true });
     expect(wrapper.find('.invite-dialog__network-alert').exists()).toBeTrue();
   });
 });

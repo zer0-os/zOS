@@ -15,7 +15,6 @@ describe('Container', () => {
       invitesUsed: 0,
       maxUses: 0,
       isAMemberOfWorlds: false,
-      isMessengerFullScreen: false,
       fetchInvite: () => null,
       ...props,
     };
@@ -70,12 +69,6 @@ describe('Container', () => {
       const props = subject({}, { isAMemberOfWorlds: true }, {});
 
       expect(props.isAMemberOfWorlds).toEqual(true);
-    });
-
-    it('isMessengerFullScreen', () => {
-      const props = subject({}, {}, { isMessengerFullScreen: false });
-
-      expect(props.isMessengerFullScreen).toEqual(false);
     });
   });
 });

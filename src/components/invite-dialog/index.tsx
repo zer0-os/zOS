@@ -22,7 +22,7 @@ export interface Properties {
   maxUses: number;
   inviteUrl: string;
   assetsPath: string;
-  isUserInFullScreenModeAndInWorlds: boolean;
+  isUserAMemberOfWorlds: boolean;
   clipboard?: Clipboard;
 
   onClose?: () => void;
@@ -79,10 +79,9 @@ export class InviteDialog extends React.Component<Properties, State> {
             className={c('image')}
           />
 
-          {this.props.isUserInFullScreenModeAndInWorlds && (
+          {this.props.isUserAMemberOfWorlds && (
             <Alert variant='info' className={c('network-alert')}>
-              This invite will add someone to your direct messages, <b>not</b> your current network. If you would like
-              to add someone to your network, invite from your network options.
+              This invite will add someone to your direct messages, <b>not</b> your current network.
             </Alert>
           )}
 

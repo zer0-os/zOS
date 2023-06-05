@@ -29,7 +29,7 @@ $side-padding: 16px;
       font-size: 14px;
       font-weight: 400;
       color: themeDeprecated.$font-color-primary;
-      margin-top: 40px;
+
       &-icon {
         display: flex;
         flex-direction: column;
@@ -46,16 +46,17 @@ $side-padding: 16px;
         cursor: pointer;
       }
     }
+
     &__items {
       flex-grow: 1;
       display: flex;
+      gap: 24px;
       flex-direction: column;
       padding-bottom: 16px;
 
       animation: conversation-slide-in 600ms ease-in forwards;
 
       &-conversations-input {
-        margin-bottom: 18px;
         padding: 0px $side-padding;
       }
     }
@@ -351,15 +352,20 @@ $side-padding: 16px;
   align-items: center;
   cursor: pointer;
   height: 56px;
-  width: 100%;
-  margin: 24px 0px;
+  margin-bottom: 8px;
+  padding: 0 8px;
 
   font-style: normal;
-  font-weight: 400;
+  font-weight: 700;
   font-size: $font-size-small;
-  line-height: 15px;
+  line-height: 17px;
 
   color: theme.$color-greyscale-12;
+
+  &:hover {
+    background-color: theme.$color-primary-3;
+    border-radius: 8px;
+  }
 
   & > * {
     flex-shrink: 0;
@@ -372,12 +378,11 @@ $side-padding: 16px;
   }
 
   &__header {
-    overflow: hidden;
     display: flex;
-    align-content: stretch;
-    align-items: flex-end;
+    align-items: baseline;
     width: 100%;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
+    overflow: hidden;
   }
 
   &__name {
@@ -386,15 +391,15 @@ $side-padding: 16px;
     text-overflow: ellipsis;
     flex-grow: 1;
     font-size: $font-size-medium;
-    line-height: 150%;
+    line-height: 12px;
   }
 
   &__timestamp {
     color: theme.$color-greyscale-11;
+    font-weight: 400;
     font-size: 10px;
-    line-height: 150%;
-    flex-grow: 0;
-    flex-shrink: 0;
+    line-height: 12px;
+    white-space: nowrap;
   }
 
   &__message {
@@ -408,27 +413,32 @@ $side-padding: 16px;
   }
 
   &__unread-count {
-    flex-grow: 0;
-    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+
+    width: 16px;
+    height: 16px;
+
     background-color: theme.$color-primary-8;
     color: theme.$color-primary-transparency-12;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    font-size: $font-size-small;
-    line-height: 20px;
-    margin-left: 3px;
+
+    font-size: 8px;
+    line-height: 11px;
   }
 
   &__content {
     display: flex;
-    align-content: stretch;
+    align-items: center;
     width: 100%;
   }
 
   &__message {
     flex-grow: 1;
+    padding-right: 1px;
   }
 
   &__group-icon {
@@ -452,6 +462,42 @@ $side-padding: 16px;
     bottom: -0.125rem;
     right: -0.125rem;
     border: 0.125rem solid var(--color-primary-1);
+  }
+}
+
+.user-search-results {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+
+  &__title {
+    padding: 10px 0;
+    color: theme.$color-greyscale-11;
+    font-size: $font-size-medium;
+    line-height: 17px;
+  }
+}
+
+.user-search-results-item {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 8px;
+  gap: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: theme.$color-primary-3;
+    border-radius: 8px;
+  }
+
+  &__label {
+    font-size: $font-size-medium;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 

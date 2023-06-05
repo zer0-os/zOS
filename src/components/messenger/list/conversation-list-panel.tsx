@@ -9,24 +9,44 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
+import { Item } from '../autocomplete-members';
+import { UserSearchResults } from './user-search-results';
 
 export interface Properties {
   conversations: Channel[];
 
-  onConversationClick: (conversationId: string) => void;
+  search: (input: string) => any;
   startConversation: () => void;
+  onConversationClick: (conversationId: string) => void;
+}
+
+interface Option {
+  value: string;
+  label: string;
+  image?: string;
 }
 
 interface State {
   filter: string;
   inviteDialogOpen: boolean;
+  userSearchResults: Option[];
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
-  state = { filter: '', inviteDialogOpen: false };
+  state = { filter: '', inviteDialogOpen: false, userSearchResults: [] };
 
-  searchChanged = (search: string) => {
+  searchChanged = async (search: string) => {
     this.setState({ filter: search });
+
+    if (!search) {
+      return this.setState({ userSearchResults: null });
+    }
+
+    const items: Item[] = await this.props.search(search);
+    const conversationMemberIds = this.props.conversations.flatMap((c) => c.otherMembers.map((m) => m.profileId));
+    const filteredItems = items.filter((item) => !conversationMemberIds.includes(item.id));
+
+    this.setState({ userSearchResults: filteredItems.map(this.itemToOption) });
   };
 
   get filteredConversations() {
@@ -39,6 +59,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
   }
+
+  itemToOption = (item: Item): Option => {
+    return {
+      value: item.id,
+      label: item.name,
+      image: item.image,
+    };
+  };
 
   renderNewMessageModal = (): JSX.Element => {
     return (
@@ -115,9 +143,15 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             {this.filteredConversations.map((c) => (
               <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
             ))}
+
+            {/* fix any types for user search results and result */}
+            {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
+              <UserSearchResults results={this.state.userSearchResults} onClick={this.props.onConversationClick} />
+            )}
           </div>
         </div>
         {/* Note: this does not work. directMessages is never null */}
+        {/* This should change to this.filteredConversations?.length === 0 */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
         <Button
           className={'messages-list__invite-button'}

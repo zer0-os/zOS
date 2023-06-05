@@ -33,6 +33,7 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
 import { rewardsPopupClosed } from '../../../store/registration';
+import { searchAllUsers } from '../../../store/users/api';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -142,6 +143,12 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
+  usersAll = async (search: string) => {
+    const users: MemberNetworks[] = await searchAllUsers(search);
+
+    return users.map((user) => ({ ...user, image: user.profileImage }));
+  };
+
   createOneOnOneConversation = (id: string) => {
     this.props.createConversation({ userIds: [id] });
   };
@@ -224,6 +231,7 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
+              search={this.usersAll}
               conversations={this.props.conversations}
               onConversationClick={this.props.openConversation}
               startConversation={this.props.startCreateConversation}

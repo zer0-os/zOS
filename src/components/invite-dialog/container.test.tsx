@@ -14,6 +14,7 @@ describe('Container', () => {
       assetPath: '',
       invitesUsed: 0,
       maxUses: 0,
+      isAMemberOfWorlds: false,
       fetchInvite: () => null,
       ...props,
     };
@@ -29,9 +30,21 @@ describe('Container', () => {
   });
 
   describe('mapState', () => {
-    const subject = (invitationState: Partial<CreateInvitationState> = {}) => {
+    const subject = (
+      invitationState: Partial<CreateInvitationState> = {},
+      userState: Partial<RootState['authentication']['user']['data']> = {}
+    ) => {
       const state = {
         createInvitation: { code: '', ...invitationState },
+        authentication: {
+          user: {
+            data: {
+              id: 'some-id',
+              isAMemberOfWorlds: false,
+              ...userState,
+            },
+          },
+        },
       } as RootState;
       return Container.mapState(state);
     };
@@ -46,6 +59,12 @@ describe('Container', () => {
       const props = subject({ url: 'some-url' });
 
       expect(props.inviteUrl).toEqual('some-url');
+    });
+
+    it('isAMemberOfWorlds', () => {
+      const props = subject({}, { isAMemberOfWorlds: true });
+
+      expect(props.isAMemberOfWorlds).toEqual(true);
     });
   });
 });

@@ -15,13 +15,17 @@ export interface Properties extends PublicProperties {
   maxUses: number;
   inviteUrl: string;
   assetPath: string;
+  isAMemberOfWorlds: boolean;
 
   fetchInvite: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { createInvitation } = state;
+    const {
+      createInvitation,
+      authentication: { user },
+    } = state;
 
     return {
       inviteCode: createInvitation.code,
@@ -29,6 +33,7 @@ export class Container extends React.Component<Properties> {
       assetPath: config.assetsPath,
       invitesUsed: createInvitation.invitesUsed,
       maxUses: createInvitation.maxUses,
+      isAMemberOfWorlds: user?.data?.isAMemberOfWorlds,
     };
   }
 
@@ -49,6 +54,7 @@ export class Container extends React.Component<Properties> {
         inviteUrl={this.props.inviteUrl}
         assetsPath={this.props.assetPath}
         onClose={this.props.onClose}
+        isUserAMemberOfWorlds={this.props.isAMemberOfWorlds}
       />
     );
   }

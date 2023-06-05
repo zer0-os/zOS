@@ -13,6 +13,3 @@ export function* getAuthChannel() {
   }
   return theChannel;
 }
-
-// Temporary until all consumers update
-export const authChannel = getAuthChannel;

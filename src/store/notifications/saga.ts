@@ -13,7 +13,7 @@ import {
 } from '.';
 import { fetchNotification, fetchNotifications } from './api';
 import PusherClient from '../../lib/pusher';
-import { authChannel } from '../authentication/channels';
+import { getAuthChannel } from '../authentication/channels';
 
 export interface Payload {
   userId: string;
@@ -97,7 +97,7 @@ export function* clearNotifications() {
 }
 
 export function* authWatcher() {
-  const channel = yield call(authChannel);
+  const channel = yield call(getAuthChannel);
 
   while (true) {
     const { userId = undefined } = yield take(channel, '*');

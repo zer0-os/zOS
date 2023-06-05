@@ -18,7 +18,7 @@ import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
-import { Events, authChannel } from './channels';
+import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 
@@ -130,12 +130,12 @@ export function* logout() {
 }
 
 export function* publishUserLogin(user) {
-  const channel = yield call(authChannel);
+  const channel = yield call(getAuthChannel);
   yield put(channel, { type: Events.UserLogin, userId: user.id });
 }
 
 export function* publishUserLogout() {
-  const channel = yield call(authChannel);
+  const channel = yield call(getAuthChannel);
   yield put(channel, { type: Events.UserLogout });
 }
 

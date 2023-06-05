@@ -4,7 +4,6 @@ import { Connectors } from '../../lib/web3';
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
   Web3Login = 'login/web3Login',
-  Web3ChangeAccount = 'login/web3ChangeAccount',
 }
 
 export type LoginState = {

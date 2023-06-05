@@ -6,9 +6,12 @@ export enum Web3Events {
 }
 
 let theWeb3Channel;
-export function* web3Channel() {
+export function* getWeb3Channel() {
   if (!theWeb3Channel) {
     theWeb3Channel = yield call(multicastChannel);
   }
   return theWeb3Channel;
 }
+
+// Temporary until all consumers update
+export const web3Channel = getWeb3Channel;

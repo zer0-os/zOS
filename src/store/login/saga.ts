@@ -1,11 +1,12 @@
-import { call, put, take, takeLatest } from 'redux-saga/effects';
+import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
 import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
-import { getSignedToken, getSignedTokenForConnector, updateConnector } from '../web3/saga';
+import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
 import { logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
-import { Connectors } from '../../lib/web3';
+import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { Web3Events, getWeb3Channel } from '../web3/channels';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -79,11 +80,12 @@ export function* web3Login(action) {
 export function* web3ChangeAccount() {
   let result = yield call(getSignedToken);
   if (!result.success) {
-    // I'm not sure if this is the right thing to do.
-    // If you don't sign the token and we reset this to None
-    // then the connector is in a weird state where we have your
-    // newly selected address but you're logged into a different account
-    yield call(updateConnector, { payload: Connectors.None });
+    // If you reject signing the token, we log you out so we don't end up
+    // in a weird state where the cookie doesn't match the current connection.
+    // You an always log back in. It may not be ideal but at least we're not in
+    // a corrupt state.
+    yield call(logout);
+    return;
   }
 
   yield call(terminate);
@@ -99,10 +101,38 @@ export function* web3ChangeAccount() {
   }
 }
 
+function* listenForWeb3AccountChanges() {
+  const authChannel = yield call(getAuthChannel);
+  const web3Channel = yield call(getWeb3Channel);
+  const result = yield race({
+    accounChanged: take(web3Channel, Web3Events.AddressChanged),
+    logout: take(authChannel, AuthEvents.UserLogout),
+  });
+
+  if (result.logout) {
+    return;
+  }
+
+  yield call(web3ChangeAccount);
+}
+
+function* listenForLoginEvents() {
+  // This might be a little dicey. We dont' currently verify that your session
+  // matches the web3 account that you're connected to when you refresh the page.
+  const authChannel = yield call(getAuthChannel);
+
+  while (true) {
+    yield take(authChannel, AuthEvents.UserLogin);
+
+    if (yield call(isWeb3AccountConnected)) {
+      yield spawn(listenForWeb3AccountChanges);
+    }
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForLoginEvents);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
-  // XXX: this should only be happening if we logged in via web3
-  yield takeLatest(SagaActionTypes.Web3ChangeAccount, web3ChangeAccount);
 
   let success;
   do {

@@ -5,6 +5,11 @@ import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3'
 import { Web3Events, web3Channel } from './channels';
 import { getService as getProviderService } from '../../lib/web3/provider-service';
 
+export function* isWeb3AccountConnected() {
+  const state = yield select((state) => state.web3);
+  return state.status === ConnectionStatus.Connected && state.value.address !== null;
+}
+
 export function* updateConnector(action) {
   yield put(setConnector(action.payload));
   yield put(setConnectionStatus(ConnectionStatus.Connecting));

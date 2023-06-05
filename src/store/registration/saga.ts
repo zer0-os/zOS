@@ -27,7 +27,6 @@ import { passwordStrength } from '../../lib/password';
 import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setActiveMessengerId } from '../chat';
-import { featureFlags } from '../../lib/feature-flags';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
@@ -39,11 +38,7 @@ export function* validateInvite(action) {
     yield put(setInviteStatus(inviteCodeStatus));
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
-      if (!featureFlags.allowWeb3Registration) {
-        yield put(setStage(RegistrationStage.EmailAccountCreation));
-      } else {
-        yield put(setStage(RegistrationStage.SelectMethod));
-      }
+      yield put(setStage(RegistrationStage.SelectMethod));
       yield put(setInviteCode(code));
       return true;
     }

@@ -3,33 +3,22 @@ import { shallow } from 'enzyme';
 import { RootState } from '../../store/reducer';
 
 import { ConnectionStatus, Connectors } from '../../lib/web3';
-import { Container } from '.';
+import { Container, Properties } from '.';
 import { Redirect } from 'react-router-dom';
+import { AuthenticationState } from '../../store/authentication/types';
 
 describe('Authentication', () => {
   const USER_DATA = {
-    userId: '12',
-  };
+    id: '12',
+  } as AuthenticationState['user']['data'];
 
-  let signedWeb3Token = '0x0098';
-
-  const subject = (props: any = {}) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
-      providerService: {
-        get: () => ({
-          provider: {
-            sendAsync: jest.fn(),
-          },
-        }),
-      },
       user: {
         isLoading: false,
         data: null,
       },
       fetchCurrentUserWithChatAccessToken: jest.fn(),
-      terminateAuthorization: jest.fn(),
-      personalSignToken: jest.fn().mockResolvedValue(signedWeb3Token),
-      updateConnector: jest.fn(),
       ...props,
     };
 
@@ -54,8 +43,6 @@ describe('Authentication', () => {
         isLoading: true,
         data: null,
       },
-
-      authorize,
     });
 
     expect(authorize).not.toHaveBeenCalled();
@@ -69,84 +56,9 @@ describe('Authentication', () => {
         isLoading: false,
         data: USER_DATA,
       },
-      authorize,
     });
 
     expect(authorize).not.toHaveBeenCalled();
-  });
-
-  it('when the account in metamask is changed verify we retrieve a new signed token', async () => {
-    const personalSignToken = jest.fn().mockRejectedValue('0x0093');
-
-    const currentAddress = '0x00';
-    const changedAddress = '0x95';
-
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Connected,
-      currentAddress,
-      user: {
-        isLoading: false,
-        data: USER_DATA,
-      },
-
-      personalSignToken,
-    });
-
-    await wrapper.setProps({ connectionStatus: ConnectionStatus.Connected, currentAddress: changedAddress });
-
-    expect(personalSignToken).toHaveBeenCalledWith(expect.any(Object), changedAddress);
-  });
-
-  it('should terminateAuthorization before reauthorize', async () => {
-    const nonceOrAuthorize = jest.fn();
-    const terminateAuthorization = jest.fn();
-
-    const currentAddress = '0x00';
-
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-
-      terminateAuthorization,
-      nonceOrAuthorize,
-    });
-
-    await wrapper.setProps({
-      connectionStatus: ConnectionStatus.Connected,
-      currentAddress,
-      user: { isLoading: false, data: USER_DATA },
-    });
-
-    await new Promise(setImmediate);
-
-    expect(terminateAuthorization).toHaveBeenCalled();
-    expect(nonceOrAuthorize).toHaveBeenCalledWith({ signedWeb3Token });
-
-    expect(terminateAuthorization).toHaveBeenCalledBefore(nonceOrAuthorize);
-  });
-
-  it('should call updateConnector when personalSignToken returns error', async () => {
-    const updateConnector = jest.fn();
-    const nonceOrAuthorize = jest.fn();
-    const currentAddress = '0x00';
-
-    const wrapper = subject({
-      connectionStatus: ConnectionStatus.Disconnected,
-      personalSignToken: jest.fn().mockRejectedValue('error'),
-
-      updateConnector,
-      nonceOrAuthorize,
-    });
-
-    await wrapper.setProps({
-      connectionStatus: ConnectionStatus.Connected,
-      currentAddress,
-      user: { isLoading: false, data: USER_DATA },
-    });
-
-    await new Promise(setImmediate);
-
-    expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
-    expect(nonceOrAuthorize).not.toHaveBeenCalled();
   });
 
   it('should set logged in state to false, if user is loaded but user data is still null, and redirects to login', () => {
@@ -214,21 +126,7 @@ describe('Authentication', () => {
       ...(authentication || {}),
     });
 
-    test('status', () => {
-      const state = subject(getState({ web3: getWeb3({ status: ConnectionStatus.Connected }) }));
-
-      expect(state.connectionStatus).toEqual(ConnectionStatus.Connected);
-    });
-
-    test('currentAddress', () => {
-      const address = '0x0000000000000000000000000000000000000002';
-
-      const state = subject(getState({ web3: getWeb3({ value: { address } }) }));
-
-      expect(state.currentAddress).toEqual(address);
-    });
-
-    test('accessToken', () => {
+    test('user', () => {
       const user = {
         isLoading: false,
         data: USER_DATA,

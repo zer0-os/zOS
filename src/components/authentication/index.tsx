@@ -2,18 +2,12 @@ import React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { inject as injectWeb3 } from '../../lib/web3/web3-react';
-import { inject as injectProviderService } from '../../lib/web3/provider-service';
-import { ConnectionStatus } from '../../lib/web3';
 import { fetchCurrentUserWithChatAccessToken } from '../../store/authentication';
 import { AuthenticationState } from '../../store/authentication/types';
 import { Redirect } from 'react-router-dom';
 import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
-  connectionStatus: ConnectionStatus;
-  providerService: { get: () => any };
-  currentAddress: string;
   fetchCurrentUserWithChatAccessToken: () => void;
   user: AuthenticationState['user'];
 }
@@ -30,12 +24,8 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
-      web3: { status, value },
     } = state;
-
     return {
-      currentAddress: value.address,
-      connectionStatus: status,
       user,
     };
   }
@@ -69,4 +59,4 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-export const Authentication = injectProviderService(injectWeb3(connectContainer<{}>(Container)));
+export const Authentication = connectContainer<{}>(Container);

@@ -36,11 +36,6 @@ import { setActiveMessengerId } from '../chat';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 
-const featureFlags = { allowWeb3Registration: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
     const code = '123456';
@@ -61,12 +56,10 @@ describe('validate invite', () => {
     expect(returnValue).toEqual(true);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
     expect(registration.inviteCode).toEqual(code);
-    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
   });
 
-  it('moves to the method selection stage when feature flag enabled', async () => {
+  it('moves to the method selection stage when invite code is valid', async () => {
     const code = '123456';
-    featureFlags.allowWeb3Registration = true;
 
     const {
       storeState: { registration },

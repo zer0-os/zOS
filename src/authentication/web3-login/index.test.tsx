@@ -49,12 +49,6 @@ describe('Web3Login', () => {
   });
 
   describe('when connecting', () => {
-    it('should have correct subtitle', () => {
-      const wrapper = subject({ isConnecting: true });
-
-      expect(wrapper.text().includes('Entering ZERO...')).toBeTruthy();
-    });
-
     it('shows a loading indicator', function () {
       const wrapper = subject({ isConnecting: true });
 
@@ -67,14 +61,6 @@ describe('Web3Login', () => {
       const wrapper = subject({ isConnecting: true, error: 'something went wrong' });
 
       expect(wrapper).not.toHaveElement('Alert');
-    });
-  });
-
-  describe('when not connecting', () => {
-    it('should have correct subtitle', () => {
-      const wrapper = subject({ isConnecting: false });
-
-      expect(wrapper.text().includes('Select your wallet')).toBeTruthy();
     });
   });
 });

@@ -9,21 +9,17 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
-import { Item } from '../autocomplete-members';
+import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
+import { itemToOption } from '../lib/utils';
 
 export interface Properties {
   conversations: Channel[];
 
   search: (input: string) => any;
   startConversation: () => void;
+  onCreateConversation: (userId: string) => void;
   onConversationClick: (conversationId: string) => void;
-}
-
-interface Option {
-  value: string;
-  label: string;
-  image?: string;
 }
 
 interface State {
@@ -44,9 +40,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
     const items: Item[] = await this.props.search(search);
     const conversationMemberIds = this.props.conversations.flatMap((c) => c.otherMembers.map((m) => m.profileId));
-    const filteredItems = items.filter((item) => !conversationMemberIds.includes(item.id));
+    const filteredItems = items?.filter((item) => !conversationMemberIds.includes(item.id));
 
-    this.setState({ userSearchResults: filteredItems.map(this.itemToOption) });
+    this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
   get filteredConversations() {
@@ -59,14 +55,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
   }
-
-  itemToOption = (item: Item): Option => {
-    return {
-      value: item.id,
-      label: item.name,
-      image: item.image,
-    };
-  };
 
   renderNewMessageModal = (): JSX.Element => {
     return (
@@ -144,9 +132,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
             ))}
 
-            {/* fix any types for user search results and result */}
             {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
-              <UserSearchResults results={this.state.userSearchResults} onClick={this.props.onConversationClick} />
+              <UserSearchResults results={this.state.userSearchResults} onCreate={this.props.onCreateConversation} />
             )}
           </div>
         </div>

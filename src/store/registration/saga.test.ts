@@ -34,12 +34,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setActiveMessengerId } from '../chat';
 import { Connectors } from '../../lib/web3';
-import { getSignedToken } from '../web3/saga';
-
-const featureFlags = { allowWeb3Registration: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
+import { getSignedTokenForConnector } from '../web3/saga';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -61,12 +56,10 @@ describe('validate invite', () => {
     expect(returnValue).toEqual(true);
     expect(registration.inviteCodeStatus).toEqual(InviteCodeStatus.VALID);
     expect(registration.inviteCode).toEqual(code);
-    expect(registration.stage).toEqual(RegistrationStage.EmailAccountCreation);
   });
 
-  it('moves to the method selection stage when feature flag enabled', async () => {
+  it('moves to the method selection stage when invite code is valid', async () => {
     const code = '123456';
-    featureFlags.allowWeb3Registration = true;
 
     const {
       storeState: { registration },
@@ -502,7 +495,7 @@ describe('authorizeAndCreateWeb3Account', () => {
     } = await expectSaga(authorizeAndCreateWeb3Account, { payload: { connector: Connectors.Metamask } })
       .provide([
         [
-          call(getSignedToken, Connectors.Metamask),
+          call(getSignedTokenForConnector, Connectors.Metamask),
           { success: true, token: signedToken },
         ],
         [

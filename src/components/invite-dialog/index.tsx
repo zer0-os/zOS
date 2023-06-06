@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Image, Skeleton } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { Image, Skeleton, Alert } from '@zero-tech/zui/components';
+import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
 import { IconButton } from '../icon-button';
@@ -9,6 +9,7 @@ import { IconButton } from '../icon-button';
 import './styles.scss';
 
 import { bem } from '../../lib/bem';
+import classNames from 'classnames';
 const c = bem('invite-dialog');
 
 export interface Clipboard {
@@ -17,8 +18,11 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
+  invitesUsed: number;
+  maxUses: number;
   inviteUrl: string;
   assetsPath: string;
+  isUserAMemberOfWorlds: boolean;
   clipboard?: Clipboard;
 
   onClose?: () => void;
@@ -36,6 +40,10 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     clearTimeout(this.buttonTimeout);
+  }
+
+  getInvitesRemaining() {
+    return Math.max(this.props.maxUses - this.props.invitesUsed, 0);
   }
 
   get inviteText() {
@@ -70,6 +78,13 @@ export class InviteDialog extends React.Component<Properties, State> {
             alt='Hands reaching out to connect'
             className={c('image')}
           />
+
+          {this.props.isUserAMemberOfWorlds && (
+            <Alert variant='info' className={c('network-alert')}>
+              This invite will add someone to your direct messages, <b>not</b> your current network.
+            </Alert>
+          )}
+
           <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
           <div className={c('byline')}>
             The larger and more active your network of contacts is, the more you will receive in rewards. Let's take
@@ -90,6 +105,14 @@ export class InviteDialog extends React.Component<Properties, State> {
             >
               {this.state.copyText}
             </button>
+          </div>
+          <div
+            className={classNames(c('remaining-invite'), { [c('no-invite-left')]: this.getInvitesRemaining() === 0 })}
+          >
+            <IconGift1 />
+            <div>
+              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
+            </div>
           </div>
         </div>
       </div>

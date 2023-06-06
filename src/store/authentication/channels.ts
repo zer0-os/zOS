@@ -7,9 +7,12 @@ export enum Events {
 }
 
 let theChannel;
-export function* authChannel() {
+export function* getAuthChannel() {
   if (!theChannel) {
     theChannel = yield call(multicastChannel);
   }
   return theChannel;
 }
+
+// Temporary until all consumers update
+export const authChannel = getAuthChannel;

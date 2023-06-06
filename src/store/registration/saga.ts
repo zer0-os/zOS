@@ -27,8 +27,8 @@ import { passwordStrength } from '../../lib/password';
 import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setActiveMessengerId } from '../chat';
-import { featureFlags } from '../../lib/feature-flags';
-import { getSignedToken } from '../web3/saga';
+import { getSignedTokenForConnector } from '../web3/saga';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -38,11 +38,7 @@ export function* validateInvite(action) {
     yield put(setInviteStatus(inviteCodeStatus));
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
-      if (!featureFlags.allowWeb3Registration) {
-        yield put(setStage(RegistrationStage.EmailAccountCreation));
-      } else {
-        yield put(setStage(RegistrationStage.SelectMethod));
-      }
+      yield put(setStage(RegistrationStage.SelectMethod));
       yield put(setInviteCode(code));
       return true;
     }
@@ -99,7 +95,7 @@ export function* authorizeAndCreateWeb3Account(action) {
 
   yield put(setLoading(true));
   try {
-    let result = yield call(getSignedToken, connector);
+    let result = yield call(getSignedTokenForConnector, connector);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return false;
@@ -168,6 +164,7 @@ export function* updateProfile(action) {
     if (response.success) {
       yield put(setFirstTimeLogin(true));
       yield put(setStage(RegistrationStage.Done));
+      yield spawn(clearRegistrationStateOnLogout);
       return true;
     } else {
       yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
@@ -210,6 +207,13 @@ function* updateProfilePage() {
     const action = yield take(SagaActionTypes.UpdateProfile);
     success = yield call(updateProfile, action);
   } while (!success);
+}
+
+function* clearRegistrationStateOnLogout() {
+  const authChannel = yield call(getAuthChannel);
+  yield take(authChannel, AuthEvents.UserLogout);
+  yield put(setFirstTimeLogin(false));
+  yield put(setInviteToastOpen(false));
 }
 
 export function* saga() {

@@ -55,6 +55,7 @@ export function* createConversation(action) {
 
 export function* saga() {
   yield fork(authWatcher);
+  yield fork(handleCreateConversation);
 
   while (true) {
     yield take(SagaActionTypes.Start);
@@ -101,6 +102,13 @@ const PREVIOUS_STAGES = {
   [Stage.StartGroupChat]: Stage.CreateOneOnOne,
   [Stage.GroupDetails]: Stage.StartGroupChat,
 };
+
+function* handleCreateConversation() {
+  while (true) {
+    const action = yield take(SagaActionTypes.CreateConversation);
+    yield call(createConversation, action);
+  }
+}
 
 function* handleOneOnOne() {
   const action = yield take([

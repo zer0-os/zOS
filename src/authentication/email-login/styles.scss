@@ -1,26 +1,5 @@
-@use '~@zero-tech/zui/styles/theme' as theme;
 @import '../styles';
 
 .email-login {
-  @include base();
-
-  &__heading {
-    @include heading();
-  }
-
-  &__sub-heading {
-    @include sub-heading();
-  }
-
-  &__form {
-    margin-top: 32px;
-    @include form();
-  }
-
-  &__other-options {
-    text-align: center;
-    margin-top: 32px;
-    padding-top: 32px;
-    border-top: 1px solid theme.$color-greyscale-transparency-7;
-  }
+  @include form();
 }

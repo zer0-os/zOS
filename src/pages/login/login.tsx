@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
@@ -33,8 +33,14 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
         <ThemeEngine theme={Themes.Dark} />
         <div className='login-main'>
           <ZeroLogo />
+          <h3>Log in</h3>
           {this.props.stage === LoginStage.EmailLogin && <EmailLoginContainer />}
           {this.props.stage === LoginStage.Done && <Redirect to='/' />}
+          <div>
+            <span>
+              New to ZERO? <Link to='/get-access'>Create an account</Link>
+            </span>
+          </div>
         </div>
       </>
     );

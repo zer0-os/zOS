@@ -4,7 +4,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { LoginStage, switchLoginStage } from '../../store/login';
 
-import { LoginComponent } from './component';
+import { LoginComponent } from './login-component';
 
 export interface LoginContainerProperties {
   isLoggingIn: boolean;

@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { getSignedToken, updateConnector, waitForAddressChange, waitForError } from './saga';
+import { getSignedTokenForConnector, updateConnector, waitForAddressChange, waitForError } from './saga';
 import { Connectors, ConnectionStatus, personalSignToken } from '../../lib/web3';
 import { reducer } from '.';
 import { call } from 'redux-saga/effects';
@@ -25,9 +25,9 @@ describe('web3 saga', () => {
   });
 });
 
-describe('getSignedToken', () => {
+describe(getSignedTokenForConnector, () => {
   it('connects and waits for an address change when connection is not already set up', async () => {
-    const { returnValue } = await expectSaga(getSignedToken, Connectors.Metamask)
+    const { returnValue } = await expectSaga(getSignedTokenForConnector, Connectors.Metamask)
       .provide([
         [
           call(waitForAddressChange),
@@ -50,7 +50,7 @@ describe('getSignedToken', () => {
   });
 
   it('connects when the connector has changed', async () => {
-    const { returnValue } = await expectSaga(getSignedToken, Connectors.Metamask)
+    const { returnValue } = await expectSaga(getSignedTokenForConnector, Connectors.Metamask)
       .provide([
         [
           call(waitForAddressChange),
@@ -74,7 +74,7 @@ describe('getSignedToken', () => {
   });
 
   it('does not try to connect again if an address/connector is already selected', async () => {
-    const { returnValue } = await expectSaga(getSignedToken, Connectors.Metamask)
+    const { returnValue } = await expectSaga(getSignedTokenForConnector, Connectors.Metamask)
       .provide([
         [
           call(getService),
@@ -93,7 +93,7 @@ describe('getSignedToken', () => {
   });
 
   it('returns an error when connection error occurs', async () => {
-    const { returnValue } = await expectSaga(getSignedToken, Connectors.Metamask)
+    const { returnValue } = await expectSaga(getSignedTokenForConnector, Connectors.Metamask)
       .provide([
         [
           call(waitForError),
@@ -108,7 +108,7 @@ describe('getSignedToken', () => {
   });
 
   it('returns an error when signing error occurs', async () => {
-    const { returnValue } = await expectSaga(getSignedToken, Connectors.Metamask)
+    const { returnValue } = await expectSaga(getSignedTokenForConnector, Connectors.Metamask)
       .provide([
         [
           call(waitForAddressChange),

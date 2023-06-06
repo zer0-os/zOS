@@ -2,8 +2,13 @@ import { takeLatest, put, takeEvery, call, take, select, race } from 'redux-saga
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress, setWalletConnectionError } from '.';
 
 import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
-import { web3Channel } from './channels';
+import { Web3Events, web3Channel } from './channels';
 import { getService as getProviderService } from '../../lib/web3/provider-service';
+
+export function* isWeb3AccountConnected() {
+  const state = yield select((state) => state.web3);
+  return state.status === ConnectionStatus.Connected && state.value.address !== null;
+}
 
 export function* updateConnector(action) {
   yield put(setConnector(action.payload));
@@ -13,9 +18,8 @@ export function* updateConnector(action) {
 export function* setAddress(action) {
   yield put(setWalletAddress(action.payload));
 
-  // Publish a system message across the channel
   const channel = yield call(web3Channel);
-  yield put(channel, { type: 'ADDRESS_CHANGED', payload: action.payload });
+  yield put(channel, { type: Web3Events.AddressChanged, payload: action.payload });
 }
 
 export function* setConnectionError(action) {
@@ -28,7 +32,7 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedToken(connector) {
+export function* getSignedTokenForConnector(connector) {
   let current = yield select((state) => state.web3.value);
 
   let address = current.address;
@@ -44,6 +48,13 @@ export function* getSignedToken(connector) {
     address = result.address;
   }
 
+  return yield call(getSignedToken, address);
+}
+
+export function* getSignedToken(address = null) {
+  if (!address) {
+    address = yield select((state) => state.web3.value.address);
+  }
   const providerService = yield call(getProviderService);
   try {
     const token = yield call(personalSignToken, providerService.get(), address);
@@ -56,7 +67,7 @@ export function* getSignedToken(connector) {
 
 export function* waitForAddressChange() {
   const channel = yield call(web3Channel);
-  const action = yield take(channel, 'ADDRESS_CHANGED');
+  const action = yield take(channel, Web3Events.AddressChanged);
   return action.payload;
 }
 

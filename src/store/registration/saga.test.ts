@@ -34,7 +34,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setActiveMessengerId } from '../chat';
 import { Connectors } from '../../lib/web3';
-import { getSignedToken } from '../web3/saga';
+import { getSignedTokenForConnector } from '../web3/saga';
 
 const featureFlags = { allowWeb3Registration: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -502,7 +502,7 @@ describe('authorizeAndCreateWeb3Account', () => {
     } = await expectSaga(authorizeAndCreateWeb3Account, { payload: { connector: Connectors.Metamask } })
       .provide([
         [
-          call(getSignedToken, Connectors.Metamask),
+          call(getSignedTokenForConnector, Connectors.Metamask),
           { success: true, token: signedToken },
         ],
         [

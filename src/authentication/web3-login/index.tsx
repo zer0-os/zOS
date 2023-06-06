@@ -4,9 +4,10 @@ import { Alert, Button } from '@zero-tech/zui/components';
 import { IconLoading2 } from '@zero-tech/zui/icons';
 import { WalletSelect } from '../../components/wallet-select';
 
-import { bem } from '../../lib/bem';
-const c = bem('web3-login');
 import './styles.scss';
+import { bem } from '../../lib/bem';
+
+const c = bem('web3-login');
 
 export interface Web3LoginProperties {
   error: string;

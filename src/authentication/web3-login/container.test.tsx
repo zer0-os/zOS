@@ -1,13 +1,12 @@
 import { Container, Web3LoginContainerProperties } from './container';
 import { shallow } from 'enzyme';
-import { Connectors } from '../../lib/web3';
 
 describe('Web3LoginContainer', () => {
   const subject = (props: Partial<Web3LoginContainerProperties>) => {
     const allProps: Web3LoginContainerProperties = {
       error: '',
       isConnecting: false,
-      loginByWeb3: (connector: Connectors) => null,
+      loginByWeb3: () => null,
       ...props,
     };
 

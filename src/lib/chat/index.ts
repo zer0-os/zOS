@@ -28,6 +28,7 @@ export class Chat {
     }) as SendbirdGroupChat;
 
     this.sendbird.options.sessionTokenRefreshTimeout = 1800; // 30min Max
+    this.sendbird.options.websocketResponseTimeout = 1800; // 30min Max
   }
 
   async connect(userId: string, accessToken) {
@@ -45,6 +46,13 @@ export class Chat {
     this.initSessionHandler(events);
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
+
+    // every 10s set the app to foreground, to prevent sendbird sdk from disconnecting
+    // when the app is in the background.
+    // note: this is a temporary fix, we should find a better way to handle this
+    setInterval(() => {
+      this.sendbird.setForegroundState();
+    }, 10 * 1000);
   }
 
   initSessionHandler(events: RealtimeChatEvents) {

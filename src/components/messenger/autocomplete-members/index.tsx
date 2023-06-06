@@ -1,9 +1,11 @@
 import React from 'react';
 
+import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { IconSearchMd } from '@zero-tech/zui/icons';
+import { itemToOption } from '../lib/utils';
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
@@ -15,28 +17,8 @@ interface State {
   searchString: string;
 }
 
-export interface Item {
-  id: string;
-  name: string;
-  image?: string;
-}
-
-export interface Option {
-  value: string;
-  label: string;
-  image?: string;
-}
-
 export class AutocompleteMembers extends React.Component<Properties, State> {
   state = { results: null, searchString: '' };
-
-  itemToOption = (item: Item): Option => {
-    return {
-      value: item.id,
-      label: item.name,
-      image: item.image,
-    };
-  };
 
   searchChanged = async (searchString: string) => {
     this.setState({ searchString });
@@ -46,7 +28,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
     const items = await this.props.search(searchString);
 
-    this.setState({ results: items.map(this.itemToOption) });
+    this.setState({ results: items.map(itemToOption) });
   };
 
   itemClicked = (event: any) => {

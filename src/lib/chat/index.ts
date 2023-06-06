@@ -1,4 +1,4 @@
-import SendbirdChat, { ConnectionHandler, SessionHandler } from '@sendbird/chat';
+import SendbirdChat, { ConnectionHandler, ConnectionState, LogLevel, SessionHandler } from '@sendbird/chat';
 import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import { config } from '../../config';
 
@@ -29,6 +29,7 @@ export class Chat {
 
     this.sendbird.options.sessionTokenRefreshTimeout = 1800; // 30min Max
     this.sendbird.options.websocketResponseTimeout = 1800; // 30min Max
+    //this.sendbird.logLevel = LogLevel.DEBUG;
   }
 
   async connect(userId: string, accessToken) {
@@ -47,12 +48,13 @@ export class Chat {
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
 
-    // every 10s set the app to foreground, to prevent sendbird sdk from disconnecting
-    // when the app is in the background.
-    // note: this is a temporary fix, we should find a better way to handle this
+    // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
+    // to prevent sendbird sdk from disconnecting (when the app is in the background)
     setInterval(() => {
-      this.sendbird.setForegroundState();
-    }, 10 * 1000);
+      if (this.sendbird.connectionState === ConnectionState.CLOSED) {
+        this.sendbird.setForegroundState();
+      }
+    }, 5 * 1000);
   }
 
   initSessionHandler(events: RealtimeChatEvents) {
@@ -79,6 +81,9 @@ export class Chat {
       onReconnectStarted: () => events.reconnectStart(),
       onReconnectSucceeded: () => events.reconnectStop(),
       onReconnectFailed: () => this.sendbird.reconnect(),
+      onDisconnected: () => {
+        console.log('disconnected at: ', new Date().valueOf());
+      },
     });
 
     this.sendbird.addConnectionHandler('connectionHandler', connectionHandler);

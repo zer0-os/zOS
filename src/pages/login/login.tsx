@@ -1,28 +1,29 @@
 import React from 'react';
-import { RootState } from '../../store/reducer';
-import { connectContainer } from '../../store/redux-container';
-import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 import { Redirect } from 'react-router-dom';
 
-import './login.scss';
-import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
-import { EmailLoginContainer } from '../../authentication/email-login/container';
+import { RootState } from '../../store/reducer';
+import { connectContainer } from '../../store/redux-container';
 import { LoginStage } from '../../store/login';
 
-export interface Properties {}
+import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
+import { EmailLoginContainer } from '../../authentication/email-login/container';
+import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 
-export interface Properties {
+import './login.scss';
+
+export interface LoginContainerProperties {
   stage: LoginStage;
 }
-export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
+
+export class LoginContainer extends React.Component<LoginContainerProperties> {
+  static mapState(state: RootState): Partial<LoginContainerProperties> {
     const { login } = state;
     return {
       stage: login.stage,
     };
   }
 
-  static mapActions(_props: Properties): Partial<Properties> {
+  static mapActions(_props: LoginContainerProperties): Partial<LoginContainerProperties> {
     return {};
   }
 
@@ -40,4 +41,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const Login = connectContainer<{}>(Container);
+export const Login = connectContainer<{}>(LoginContainer);

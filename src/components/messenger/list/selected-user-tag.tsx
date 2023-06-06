@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Option } from '../autocomplete-members';
+import { Option } from '../lib/types';
 
 import { Avatar } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';

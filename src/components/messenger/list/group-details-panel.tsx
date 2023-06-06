@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Button, Input } from '@zero-tech/zui/components';
 
-import { Option } from '../autocomplete-members';
+import { Option } from '../lib/types';
 import { PanelHeader } from './panel-header';
 import { SelectedUserTag } from './selected-user-tag';
 

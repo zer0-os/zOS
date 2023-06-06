@@ -79,6 +79,7 @@ export function* web3Login(action) {
  * Switches login stage. Used for switching between login options when logging in.
  */
 export function* switchLoginStage(action) {
+  yield put(setErrors([]));
   yield put(setStage(action.payload));
 }
 

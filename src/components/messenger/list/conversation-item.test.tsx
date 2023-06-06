@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { ConversationItem, Properties } from './conversation-item';
 import moment from 'moment';
+import { ContentHighlighter } from '../../content-highlighter';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -134,7 +135,7 @@ describe('ConversationItem', () => {
       } as any,
     });
 
-    expect(wrapper.find('.conversation-item__message').text()).toEqual('I said something here');
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('I said something here');
   });
 
   describe('status', () => {

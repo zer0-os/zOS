@@ -414,20 +414,19 @@ $side-padding: 16px;
 
   &__unread-count {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0px;
-
-    width: 16px;
-    height: 16px;
-
+    flex-grow: 0;
+    flex-shrink: 0;
     background-color: theme.$color-primary-8;
     color: theme.$color-primary-transparency-12;
     border-radius: 50%;
-
+    width: 16px;
+    height: 16px;
+    text-align: center;
     font-size: 8px;
     line-height: 11px;
+    margin-left: 3px;
   }
 
   &__content {
@@ -476,19 +475,19 @@ $side-padding: 16px;
     font-size: $font-size-medium;
     line-height: 17px;
   }
-}
 
-.user-search-results-item {
-  display: flex;
-  align-items: center;
-  height: 56px;
-  padding: 0 8px;
-  gap: 16px;
-  cursor: pointer;
+  &__item {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 8px;
+    gap: 16px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: theme.$color-primary-3;
-    border-radius: 8px;
+    &:hover {
+      background-color: theme.$color-primary-3;
+      border-radius: 8px;
+    }
   }
 
   &__label {

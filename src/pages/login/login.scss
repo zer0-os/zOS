@@ -2,26 +2,24 @@
 
 // XXX: Merge this with the invite page styles...there's some kind of root authentication page that needs to be created?
 
-.login-main {
+$login-gap: 32px;
+$login-width: 280px;
+$login-padding-top: 104px;
+$login-padding-bottom: 150px;
+
+@mixin flex($gap-size) {
   display: flex;
   flex-direction: column;
-  padding: 104px 0 0 0;
-  box-sizing: border-box;
-
-  justify-content: flex-start;
-  align-content: flex-start;
   align-items: center;
+  gap: $gap-size;
+}
 
+.login {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-    radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
-    radial-gradient(93.63% 93.63% at 100% 0%, #9d0097 0%, rgba(157, 0, 151, 0) 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
-    radial-gradient(91.27% 91.27% at 112.3% 83.55%, #52a9ff 0%, rgba(82, 169, 255, 0) 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
-    radial-gradient(65.88% 65.88% at -1.79% 99.21%, #4f0895 0%, rgba(79, 8, 149, 0) 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
-    #290634;
+    radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%),
+    radial-gradient(93.63% 93.63% at 100% 0%, #9d0097 0%, rgba(157, 0, 151, 0) 100%),
+    radial-gradient(91.27% 91.27% at 112.3% 83.55%, #52a9ff 0%, rgba(82, 169, 255, 0) 100%),
+    radial-gradient(65.88% 65.88% at -1.79% 99.21%, #4f0895 0%, rgba(79, 8, 149, 0) 100%), #290634;
 
   position: absolute;
   overflow-y: auto;
@@ -32,11 +30,79 @@
   left: 0;
   z-index: 10;
 
-  > * {
-    flex-shrink: 0;
+  &__content {
+    @include flex($login-gap);
+
+    width: $login-width;
+    padding: $login-padding-top 0 $login-padding-bottom 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+
+    > * {
+      width: 100%;
+    }
+
+    hr {
+      border-top: 1px solid theme.$color-greyscale-transparency-7;
+      margin: 0;
+    }
   }
 
-  > *:last-child {
-    margin-bottom: 150px;
+  &__header {
+    margin: (80px - $login-gap) 0 0 0;
+    padding: 0;
+
+    text-align: center;
+    font-size: 36px;
+    font-weight: normal;
+    color: theme.$color-greyscale-12;
+    text-transform: uppercase;
+
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  }
+
+  &__login {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__options {
+    @include flex(16px);
+
+    span {
+      color: theme.$color-greyscale-11;
+    }
+
+    button {
+      padding: 16px;
+      width: 100%;
+
+      background: none;
+      border: 1px solid #b14eff40; // @note: didn't see a color variable in Figma
+      border-radius: 28px;
+      font-size: 16px;
+
+      cursor: pointer;
+
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  }
+
+  &__other {
+    @include flex(16px);
+
+    > span {
+      color: theme.$color-greyscale-11;
+
+      > a {
+        color: theme.$color-greyscale-12;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+    }
   }
 }

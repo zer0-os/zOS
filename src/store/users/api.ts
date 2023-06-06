@@ -6,9 +6,3 @@ export async function searchMyNetworksByName(filter: string): Promise<MemberNetw
     .catch((_error) => null)
     .then((response) => response?.body || []);
 }
-
-export async function searchAllUsers(filter: string): Promise<MemberNetworks[]> {
-  return await get('/api/search/all', { filter })
-    .catch((_error) => null)
-    .then((response) => response?.body || []);
-}

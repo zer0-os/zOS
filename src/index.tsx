@@ -18,7 +18,7 @@ import { AppSandboxContainer } from './app-sandbox/container';
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
-import { Login } from './pages';
+import { LoginPage } from './pages';
 
 runSagas();
 
@@ -44,7 +44,7 @@ ReactDOM.render(
           <Router history={history}>
             <Web3ReactContextProvider>
               <Route path='/get-access' exact component={Invite} />
-              <Route path='/login' exact component={Login} />
+              <Route path='/login' exact component={LoginPage} />
               <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
               <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
             </Web3ReactContextProvider>

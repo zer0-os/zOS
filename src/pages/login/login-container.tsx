@@ -45,4 +45,4 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
   }
 }
 
-export const Login = connectContainer<{}>(LoginContainer);
+export const LoginPage = connectContainer<{}>(LoginContainer);

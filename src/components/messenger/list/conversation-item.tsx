@@ -13,6 +13,7 @@ import moment from 'moment';
 const c = bem('conversation-item');
 
 export interface Properties {
+  filter: string;
   conversation: Channel & { messagePreview?: string };
   onClick: (conversationId: string) => void;
 }
@@ -85,6 +86,26 @@ export class ConversationItem extends React.Component<Properties> {
     return '';
   }
 
+  highlightedName = () => {
+    const { filter, conversation } = this.props;
+    const name = conversation.name || otherMembersToString(conversation.otherMembers);
+    const regex = new RegExp(`(${filter})`, 'i');
+
+    if (filter !== '') {
+      return name.split(regex).map((part, index) =>
+        part.toLowerCase() === filter.toLowerCase() ? (
+          <span key={index} className='highlighted'>
+            {part}
+          </span>
+        ) : (
+          part
+        )
+      );
+    }
+
+    return name;
+  };
+
   render() {
     const { conversation } = this.props;
     return (
@@ -102,7 +123,7 @@ export class ConversationItem extends React.Component<Properties> {
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
-              <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
+              <div className={c('name')}>{this.highlightedName()}</div>
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>

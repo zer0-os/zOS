@@ -393,6 +393,10 @@ $side-padding: 16px;
     font-size: $font-size-medium;
   }
 
+  &__highlighted {
+    color: theme.$color-primary-11;
+  }
+
   &__timestamp {
     color: theme.$color-greyscale-11;
     font-weight: 400;

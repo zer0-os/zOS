@@ -133,7 +133,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </div>
           <div className='messages-list__item-list'>
             {this.filteredConversations.map((c) => (
-              <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
+              <ConversationItem
+                key={c.id}
+                conversation={c}
+                filter={this.state.filter}
+                onClick={this.props.onConversationClick}
+              />
             ))}
 
             {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (

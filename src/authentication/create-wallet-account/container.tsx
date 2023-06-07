@@ -6,7 +6,6 @@ import { AccountCreationErrors, createWeb3Account } from '../../store/registrati
 
 import { CreateWalletAccount } from '.';
 import { RootState } from '../../store/reducer';
-import { Web3Connect } from '../../components/web3-connect';
 
 export interface Properties {
   error: string;
@@ -46,15 +45,11 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <>
-        <Web3Connect>
-          <CreateWalletAccount
-            onSelect={this.connectorSelected}
-            error={this.props.error}
-            isConnecting={this.props.isConnecting}
-          />
-        </Web3Connect>
-      </>
+      <CreateWalletAccount
+        onSelect={this.connectorSelected}
+        error={this.props.error}
+        isConnecting={this.props.isConnecting}
+      />
     );
   }
 }

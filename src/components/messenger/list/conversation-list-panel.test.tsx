@@ -8,8 +8,10 @@ describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       conversations: [],
+      search: () => undefined,
       onConversationClick: () => null,
       startConversation: () => null,
+      onCreateConversation: () => null,
       ...props,
     };
 
@@ -57,7 +59,36 @@ describe('ConversationListPanel', () => {
       'convo-3',
     ]);
   });
+
+  it('renders user search results', async function () {
+    const search = jest.fn();
+    search.mockResolvedValue([
+      { name: 'jack', id: 'user-1', image: 'image-1' },
+      { name: 'jacklyn', id: 'user-3', image: 'image-3' },
+    ]);
+
+    const wrapper = subject({ search });
+
+    await searchFor(wrapper, 'ja');
+
+    let userSearchResults = renderedUserSearchResults(wrapper);
+
+    expect(userSearchResults).toStrictEqual([
+      { value: 'user-1', label: 'jack', image: 'image-1' },
+      { value: 'user-3', label: 'jacklyn', image: 'image-3' },
+    ]);
+  });
 });
+
+function renderedUserSearchResults(wrapper) {
+  return wrapper.find('UserSearchResults').prop('results');
+}
+
+async function searchFor(wrapper, searchString) {
+  const searchInput = wrapper.find('SearchConversations');
+  const onChange = searchInput.prop('onChange');
+  await onChange({ target: { value: searchString } });
+}
 
 function renderedConversations(wrapper) {
   return wrapper.find('ConversationItem').map((node) => node.prop('conversation')) as Channel[];

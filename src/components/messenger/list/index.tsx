@@ -24,7 +24,7 @@ import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
-import { Option } from '../autocomplete-members';
+import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { adminMessageText } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
@@ -224,7 +224,9 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-members'>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
+              search={this.usersInMyNetworks}
               conversations={this.props.conversations}
+              onCreateConversation={this.createOneOnOneConversation}
               onConversationClick={this.props.openConversation}
               startConversation={this.props.startCreateConversation}
             />

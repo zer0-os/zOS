@@ -9,24 +9,44 @@ import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
+import { Item, Option } from '../lib/types';
+import { UserSearchResults } from './user-search-results';
+import { conversationToOption, itemToOption } from '../lib/utils';
 
 export interface Properties {
   conversations: Channel[];
 
-  onConversationClick: (conversationId: string) => void;
+  search: (input: string) => any;
   startConversation: () => void;
+  onCreateConversation: (userId: string) => void;
+  onConversationClick: (conversationId: string) => void;
 }
 
 interface State {
   filter: string;
   inviteDialogOpen: boolean;
+  userSearchResults: Option[];
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
-  state = { filter: '', inviteDialogOpen: false };
+  state = { filter: '', inviteDialogOpen: false, userSearchResults: [] };
 
-  searchChanged = (search: string) => {
-    this.setState({ filter: search });
+  searchChanged = async (search: string) => {
+    const tempSearch = search;
+
+    if (!tempSearch) {
+      return this.setState({ filter: tempSearch, userSearchResults: null });
+    }
+
+    const oneOnOneConversations = this.props.conversations.filter((c) => c.otherMembers.length === 1);
+    const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
+
+    this.setState({ filter: tempSearch, userSearchResults: oneOnOneConversations.flatMap(conversationToOption) });
+
+    const items: Item[] = await this.props.search(tempSearch);
+    const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id));
+
+    this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
   get filteredConversations() {
@@ -115,9 +135,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             {this.filteredConversations.map((c) => (
               <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
             ))}
+
+            {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
+              <UserSearchResults results={this.state.userSearchResults} onCreate={this.props.onCreateConversation} />
+            )}
           </div>
         </div>
         {/* Note: this does not work. directMessages is never null */}
+        {/* This should change to this.filteredConversations?.length === 0 */}
         {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
         <Button
           className={'messages-list__invite-button'}

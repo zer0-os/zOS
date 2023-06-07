@@ -58,8 +58,16 @@ export function* saga() {
   yield fork(authWatcher);
 
   while (true) {
-    yield take(SagaActionTypes.Start);
-    yield startConversation();
+    const { startEvent, createConversationEvent } = yield race({
+      startEvent: take(SagaActionTypes.Start),
+      createConversationEvent: take(SagaActionTypes.CreateConversation),
+    });
+
+    if (startEvent) {
+      yield call(startConversation);
+    } else if (createConversationEvent) {
+      yield call(createConversation, createConversationEvent);
+    }
   }
 }
 

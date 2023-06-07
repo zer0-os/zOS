@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { lastSeenText } from './utils';
+import { highlightFilter, lastSeenText } from './utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
@@ -42,6 +42,13 @@ export class ConversationItem extends React.Component<Properties> {
     // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
     return !url.startsWith('https://static.sendbird.com/sample');
   }
+
+  highlightedName = () => {
+    const { filter, conversation } = this.props;
+    const name = conversation.name || otherMembersToString(conversation.otherMembers);
+
+    return highlightFilter(name, filter);
+  };
 
   renderAvatar() {
     if (this.props.conversation.otherMembers.length === 1) {
@@ -85,26 +92,6 @@ export class ConversationItem extends React.Component<Properties> {
     }
     return '';
   }
-
-  highlightedName = () => {
-    const { filter, conversation } = this.props;
-    const name = conversation.name || otherMembersToString(conversation.otherMembers);
-    const regex = new RegExp(`(${filter})`, 'i');
-
-    if (filter !== '') {
-      return name.split(regex).map((part, index) =>
-        part.toLowerCase() === filter.toLowerCase() ? (
-          <span key={index} className='highlighted'>
-            {part}
-          </span>
-        ) : (
-          part
-        )
-      );
-    }
-
-    return name;
-  };
 
   render() {
     const { conversation } = this.props;

@@ -27,8 +27,7 @@ export class Chat {
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;
 
-    this.sendbird.options.sessionTokenRefreshTimeout = 1800; // 30min Max
-    this.sendbird.options.websocketResponseTimeout = 1800; // 30min Max
+    this.sendbird.options.sessionTokenRefreshTimeout = 2 * 60 * 60; // 2 hour
   }
 
   async connect(userId: string, accessToken) {

@@ -6,7 +6,6 @@ import { loginByWeb3 } from '../../store/login';
 import { connectContainer } from '../../store/redux-container';
 
 import { Web3Login } from '.';
-import { Web3Connect } from '../../components/web3-connect';
 
 export interface Web3LoginContainerProperties {
   error: string;
@@ -33,9 +32,7 @@ export class Container extends React.Component<Web3LoginContainerProperties> {
 
   render() {
     return (
-      <Web3Connect>
-        <Web3Login error={this.props.error} isConnecting={this.props.isConnecting} onSelect={this.props.loginByWeb3} />
-      </Web3Connect>
+      <Web3Login error={this.props.error} isConnecting={this.props.isConnecting} onSelect={this.props.loginByWeb3} />
     );
   }
 }

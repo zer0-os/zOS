@@ -5,7 +5,6 @@ import { History } from 'history';
 
 import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
-import { Web3Connect } from './components/web3-connect';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
 import { Authentication } from './components/authentication';
@@ -99,12 +98,10 @@ export class Container extends React.Component<Properties> {
       <>
         <Authentication />
         <CreateAccount />
-        <Web3Connect>
-          <AuthenticationContextProvider value={this.authenticationContext}>
-            <ChatConnect />
-            <Main />
-          </AuthenticationContextProvider>
-        </Web3Connect>
+        <AuthenticationContextProvider value={this.authenticationContext}>
+          <ChatConnect />
+          <Main />
+        </AuthenticationContextProvider>
       </>
     );
   }

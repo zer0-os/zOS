@@ -1,8 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container } from './zns-route-connect';
-import { Main } from './Main';
-import { Web3Connect } from './components/web3-connect';
 import { Authentication } from './components/authentication';
 
 describe('ZnsRouteConnect', () => {
@@ -47,14 +45,6 @@ describe('ZnsRouteConnect', () => {
 
     return shallow(<Container {...allProps} />);
   };
-
-  it('renders Main component as child of Web3Connect', () => {
-    const container = subject();
-
-    const web3Connect = container.find(Main).closest(Web3Connect);
-
-    expect(web3Connect.exists()).toBe(true);
-  });
 
   it('redirects on mount if znsRoute has no leading zero', () => {
     const replace = jest.fn();

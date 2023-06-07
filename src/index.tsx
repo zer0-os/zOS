@@ -19,6 +19,7 @@ import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
 import { LoginPage } from './pages';
+import { Web3Connect } from './components/web3-connect';
 
 runSagas();
 
@@ -43,10 +44,12 @@ ReactDOM.render(
         <EscapeManagerProvider>
           <Router history={history}>
             <Web3ReactContextProvider>
-              <Route path='/get-access' exact component={Invite} />
-              <Route path='/login' exact component={LoginPage} />
-              <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
-              <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+              <Web3Connect>
+                <Route path='/get-access' exact component={Invite} />
+                <Route path='/login' exact component={LoginPage} />
+                <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
+                <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+              </Web3Connect>
             </Web3ReactContextProvider>
           </Router>
         </EscapeManagerProvider>

@@ -4,6 +4,7 @@ import { Connectors } from '../../lib/web3';
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
   Web3Login = 'login/web3Login',
+  SwitchLoginStage = 'login/switchLoginStage',
 }
 
 export type LoginState = {
@@ -14,6 +15,7 @@ export type LoginState = {
 
 export enum LoginStage {
   EmailLogin = 'email',
+  Web3Login = 'web3',
   Done = 'done',
 }
 
@@ -37,6 +39,7 @@ export const initialState: LoginState = {
 
 export const loginByEmail = createAction<{ email: string; password: string }>(SagaActionTypes.EmailLogin);
 export const loginByWeb3 = createAction<Connectors>(SagaActionTypes.Web3Login);
+export const switchLoginStage = createAction<LoginStage>(SagaActionTypes.SwitchLoginStage);
 
 const slice = createSlice({
   name: 'login',

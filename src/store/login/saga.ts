@@ -1,4 +1,4 @@
-import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, put, race, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
 import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
@@ -77,6 +77,14 @@ export function* web3Login(action) {
   }
 }
 
+/**
+ * Switches login stage. Used for switching between login options when logging in.
+ */
+export function* switchLoginStage(action) {
+  yield put(setErrors([]));
+  yield put(setStage(action.payload));
+}
+
 export function* web3ChangeAccount() {
   let result = yield call(getSignedToken);
   if (!result.success) {
@@ -133,6 +141,7 @@ function* listenForLoginEvents() {
 export function* saga() {
   yield spawn(listenForLoginEvents);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
+  yield takeEvery(SagaActionTypes.SwitchLoginStage, switchLoginStage); // Add this line
 
   let success;
   do {

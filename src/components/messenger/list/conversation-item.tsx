@@ -10,6 +10,7 @@ import { IconUsers1 } from '@zero-tech/zui/icons';
 
 import { bem } from '../../../lib/bem';
 import moment from 'moment';
+import { ContentHighlighter } from '../../content-highlighter';
 const c = bem('conversation-item');
 
 export interface Properties {
@@ -106,7 +107,9 @@ export class ConversationItem extends React.Component<Properties> {
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>
-              <div className={c('message')}>{this.message}</div>
+              <div className={c('message')}>
+                <ContentHighlighter message={this.message} />
+              </div>
               {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>
           </div>

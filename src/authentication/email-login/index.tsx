@@ -1,11 +1,8 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { bem } from '../../lib/bem';
-const c = bem('email-login');
 
 export interface Properties {
   isLoading: boolean;
@@ -54,34 +51,28 @@ export class EmailLogin extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div className={c('')}>
-        <h3 className={c('heading')}>LOG IN</h3>
-        <form className={c('form')} onSubmit={this.publishOnSubmit}>
-          <Input
-            label='Email Address'
-            name='email'
-            value={this.state.email}
-            onChange={this.trackEmail}
-            error={!!this.emailError}
-            alert={this.emailError}
-          />
-          <PasswordInput
-            label='Password'
-            name='password'
-            value={this.state.password}
-            onChange={this.trackPassword}
-            error={!!this.passwordError}
-            alert={this.passwordError}
-          />
-          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button isLoading={this.props.isLoading} isSubmit>
-            Login
-          </Button>
-        </form>
-        <div className={c('other-options')}>
-          New to ZERO? <Link to='/get-access'>Create an account</Link>
-        </div>
-      </div>
+      <form className={'email-login'} onSubmit={this.publishOnSubmit}>
+        <Input
+          label='Email Address'
+          name='email'
+          value={this.state.email}
+          onChange={this.trackEmail}
+          error={!!this.emailError}
+          alert={this.emailError}
+        />
+        <PasswordInput
+          label='Password'
+          name='password'
+          value={this.state.password}
+          onChange={this.trackPassword}
+          error={!!this.passwordError}
+          alert={this.passwordError}
+        />
+        {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
+        <Button isLoading={this.props.isLoading} isSubmit>
+          Login
+        </Button>
+      </form>
     );
   }
 }

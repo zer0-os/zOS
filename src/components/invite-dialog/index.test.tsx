@@ -10,6 +10,9 @@ describe('InviteDialog', () => {
       inviteCode: '',
       inviteUrl: '',
       assetsPath: '',
+      invitesUsed: 0,
+      maxUses: 0,
+      isUserAMemberOfWorlds: false,
       clipboard: { write: () => null },
       ...props,
     };
@@ -80,5 +83,23 @@ describe('InviteDialog', () => {
     wrapper.find('IconButton').simulate('click');
 
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('displays text in green if no invites remaining', function () {
+    // 2 invites left
+    let wrapper = subject({ inviteCode: '123456', invitesUsed: 3, maxUses: 5 });
+    expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeFalse();
+
+    // no invite left
+    wrapper = subject({ inviteCode: '123456', invitesUsed: 5, maxUses: 5 });
+    expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeTrue();
+  });
+
+  it('renders network notification alert if user is in full screen, and is a part of networks', function () {
+    let wrapper = subject({ inviteCode: '123456', isUserAMemberOfWorlds: false });
+    expect(wrapper.find('.invite-dialog__network-alert').exists()).toBeFalse();
+
+    wrapper = subject({ inviteCode: '123456', isUserAMemberOfWorlds: true });
+    expect(wrapper.find('.invite-dialog__network-alert').exists()).toBeTrue();
   });
 });

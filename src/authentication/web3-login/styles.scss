@@ -1,0 +1,38 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+@mixin flex() {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+}
+
+.web3-login {
+  @include flex();
+
+  &__login {
+    @include flex();
+  }
+
+  &__connecting {
+    @include flex();
+
+    button {
+      text-transform: unset;
+      border: 1px solid theme.$color-greyscale-11;
+    }
+  }
+
+  &__spinner {
+    animation: spin 2s linear infinite;
+  }
+
+  &__select-wallet {
+    background-color: theme.$color-primary-2;
+    border: 1px solid theme.$color-primary-5;
+    border-radius: 8px;
+    padding: 16px 6px 24px;
+    box-sizing: border-box;
+    width: 256px;
+  }
+}

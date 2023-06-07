@@ -34,3 +34,4 @@ export const highlightFilter = (text, filter) => {
 
   return text;
 };
+

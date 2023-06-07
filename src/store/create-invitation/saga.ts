@@ -2,7 +2,7 @@ import { take, put, call, race, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
-import { authChannel } from '../authentication/saga';
+import { authChannel } from '../authentication/channels';
 
 export function* fetchInvite() {
   while (true) {
@@ -18,7 +18,14 @@ export function* fetchInvite() {
     try {
       const invitation = yield call(getInvite);
       // For now, we don't include the code in the url
-      yield put(setInvite({ code: invitation.slug, url: config.inviteUrl }));
+      yield put(
+        setInvite({
+          code: invitation.slug,
+          url: config.inviteUrl,
+          invitesUsed: invitation.invitesUsed,
+          maxUses: invitation.maxInvitesPerUser,
+        })
+      );
       return;
     } catch (e) {
       // Listen again

@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from '@testing-library/react';
 import { shallow } from 'enzyme';
 
 import { ConversationListPanel, Properties } from './conversation-list-panel';
@@ -79,18 +78,19 @@ describe('ConversationListPanel', () => {
       { value: 'user-3', label: 'jacklyn', image: 'image-3' },
     ]);
   });
-
-  function renderedUserSearchResults(wrapper) {
-    return wrapper.find('UserSearchResults').prop('results');
-  }
-
-  async function searchFor(wrapper, searchString) {
-    await act(async () => {
-      wrapper.find('SearchConversations').simulate('change', { target: { value: searchString } });
-    });
-    return new Promise((resolve) => setTimeout(resolve, 0));
-  }
 });
+
+function renderedUserSearchResults(wrapper) {
+  return wrapper.find('UserSearchResults').prop('results');
+}
+
+function searchFor(wrapper, searchString) {
+  const searchInput = wrapper.find('SearchConversations');
+  const onChange = searchInput.prop('onChange');
+  onChange({ target: { value: searchString } });
+
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
 
 function renderedConversations(wrapper) {
   return wrapper.find('ConversationItem').map((node) => node.prop('conversation')) as Channel[];

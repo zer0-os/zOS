@@ -46,13 +46,13 @@ export class Chat {
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
 
-    // every 5s check if the connection state is CLOSED, if it is, set the app to foreground,
+    // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
     // to prevent sendbird sdk from disconnecting (when the app is in the background)
     setInterval(() => {
       if (this.sendbird.connectionState === ConnectionState.CLOSED) {
         this.sendbird.setForegroundState();
       }
-    }, 5 * 1000);
+    }, 10 * 1000);
   }
 
   initSessionHandler(events: RealtimeChatEvents) {

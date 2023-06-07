@@ -84,12 +84,10 @@ function renderedUserSearchResults(wrapper) {
   return wrapper.find('UserSearchResults').prop('results');
 }
 
-function searchFor(wrapper, searchString) {
+async function searchFor(wrapper, searchString) {
   const searchInput = wrapper.find('SearchConversations');
   const onChange = searchInput.prop('onChange');
-  onChange({ target: { value: searchString } });
-
-  return new Promise((resolve) => setTimeout(resolve, 0));
+  await onChange({ target: { value: searchString } });
 }
 
 function renderedConversations(wrapper) {

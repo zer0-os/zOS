@@ -1,4 +1,4 @@
-import SendbirdChat, { ConnectionHandler, SessionHandler } from '@sendbird/chat';
+import SendbirdChat, { ConnectionHandler, ConnectionState, SessionHandler } from '@sendbird/chat';
 import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import { config } from '../../config';
 
@@ -27,7 +27,7 @@ export class Chat {
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;
 
-    this.sendbird.options.sessionTokenRefreshTimeout = 1800; // Max
+    this.sendbird.options.sessionTokenRefreshTimeout = 2 * 60 * 60; // 2 hour
   }
 
   async connect(userId: string, accessToken) {
@@ -45,6 +45,14 @@ export class Chat {
     this.initSessionHandler(events);
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
+
+    // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
+    // to prevent sendbird sdk from disconnecting (when the app is in the background)
+    setInterval(() => {
+      if (this.sendbird.connectionState === ConnectionState.CLOSED) {
+        this.sendbird.setForegroundState();
+      }
+    }, 10 * 1000);
   }
 
   initSessionHandler(events: RealtimeChatEvents) {

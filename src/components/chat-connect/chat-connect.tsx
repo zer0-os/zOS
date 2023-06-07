@@ -9,6 +9,7 @@ import {
   receiveDeleteMessage as receiveDeleteMessageAction,
 } from '../../store/messages';
 import { receiveIsReconnecting } from '../../store/chat';
+import { startChannelsAndConversationsAutoRefresh } from '../../store/channels-list';
 import { RootState } from '../../store/reducer';
 import { unreadCountUpdated } from '../../store/channels';
 import { updateConnector } from '../../store/web3';
@@ -19,8 +20,8 @@ export interface Properties {
   isLoading: boolean;
   chatAccessToken: string;
   chat?: Chat;
-  reconnectStart: () => void;
-  reconnectStop: () => void;
+  receiveIsReconnecting: (payload: boolean) => void;
+  startChannelsAndConversationsAutoRefresh: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
@@ -57,8 +58,8 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      reconnectStart: () => receiveIsReconnecting(true),
-      reconnectStop: () => receiveIsReconnecting(false),
+      receiveIsReconnecting,
+      startChannelsAndConversationsAutoRefresh,
       receiveNewMessage: (channelId: string, message: Message) => receiveNewMessageAction({ channelId, message }),
       receiveUnreadCount: (channelId: string, unreadCount: number) => unreadCountUpdated({ channelId, unreadCount }),
       receiveDeleteMessage: (channelId: string, messageId: number) =>
@@ -74,6 +75,17 @@ export class Container extends React.Component<Properties> {
 
     this.chat = props.chat || chat;
   }
+
+  reconnectStart = () => {
+    this.props.receiveIsReconnecting(true);
+  };
+
+  reconnectStop = () => {
+    this.props.receiveIsReconnecting(false);
+    // after reconnecting fetch (latest) channels and conversations *immediately*.
+    // (instead of waiting for the "regular refresh interval to kick in")
+    this.props.startChannelsAndConversationsAutoRefresh();
+  };
 
   forceReconnect = () => {
     this.chat.reconnect();
@@ -96,15 +108,10 @@ export class Container extends React.Component<Properties> {
   }
 
   async startChatHandler(userId, chatAccessToken) {
-    const {
-      reconnectStart,
-      reconnectStop,
-      receiveNewMessage,
-      receiveDeleteMessage,
-      receiveUnreadCount,
-      invalidChatAccessToken,
-    } = this.props;
+    const { receiveNewMessage, receiveDeleteMessage, receiveUnreadCount, invalidChatAccessToken } = this.props;
 
+    const reconnectStop = this.reconnectStop;
+    const reconnectStart = this.reconnectStart;
     this.chat.initChat({
       reconnectStart,
       reconnectStop,

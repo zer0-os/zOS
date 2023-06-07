@@ -393,10 +393,6 @@ $side-padding: 16px;
     font-size: $font-size-medium;
   }
 
-  &__highlighted {
-    color: theme.$color-primary-11;
-  }
-
   &__timestamp {
     color: theme.$color-greyscale-11;
     font-weight: 400;
@@ -506,4 +502,8 @@ $side-padding: 16px;
 .messages-list__invite-button {
   margin: 0px 16px;
   stroke-width: 2px; // make startEnhancer bold
+}
+
+.highlighted-text {
+  color: theme.$color-primary-11;
 }

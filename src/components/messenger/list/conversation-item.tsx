@@ -1,7 +1,8 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { highlightFilter, lastSeenText } from './utils';
+import { lastSeenText } from './utils';
+import { highlightFilter } from '../lib/utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';

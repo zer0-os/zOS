@@ -1,11 +1,11 @@
 import * as React from 'react';
 
 import { Option } from '../lib/types';
+import { highlightFilter } from '../lib/utils';
 
 import { Avatar } from '@zero-tech/zui/components';
 
 import { bem } from '../../../lib/bem';
-import { highlightFilter } from './utils';
 
 const c = bem('user-search-results');
 

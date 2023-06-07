@@ -11,7 +11,7 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
-import { itemToOption } from '../lib/utils';
+import { conversationToOption, itemToOption } from '../lib/utils';
 
 export interface Properties {
   conversations: Channel[];
@@ -32,16 +32,18 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   state = { filter: '', inviteDialogOpen: false, userSearchResults: [] };
 
   searchChanged = async (search: string) => {
-    this.setState({ filter: search });
+    const tempSearch = search;
 
-    if (!search) {
-      return this.setState({ userSearchResults: null });
+    if (!tempSearch) {
+      return this.setState({ filter: tempSearch, userSearchResults: null });
     }
 
-    const items: Item[] = await this.props.search(search);
     const oneOnOneConversations = this.props.conversations.filter((c) => c.otherMembers.length === 1);
     const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
 
+    this.setState({ filter: tempSearch, userSearchResults: oneOnOneConversations.flatMap(conversationToOption) });
+
+    const items: Item[] = await this.props.search(tempSearch);
     const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id));
 
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });

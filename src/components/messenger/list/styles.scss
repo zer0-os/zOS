@@ -503,3 +503,7 @@ $side-padding: 16px;
   margin: 0px 16px;
   stroke-width: 2px; // make startEnhancer bold
 }
+
+.highlighted-text {
+  color: theme.$color-primary-11;
+}

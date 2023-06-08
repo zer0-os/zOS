@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { lastSeenText } from './utils';
+import { highlightFilter } from '../lib/utils';
 import { Channel } from '../../../store/channels';
 
 import Tooltip from '../../tooltip';
@@ -14,6 +15,7 @@ import { ContentHighlighter } from '../../content-highlighter';
 const c = bem('conversation-item');
 
 export interface Properties {
+  filter: string;
   conversation: Channel & { messagePreview?: string };
   onClick: (conversationId: string) => void;
 }
@@ -42,6 +44,13 @@ export class ConversationItem extends React.Component<Properties> {
     // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
     return !url.startsWith('https://static.sendbird.com/sample');
   }
+
+  highlightedName = () => {
+    const { filter, conversation } = this.props;
+    const name = conversation.name || otherMembersToString(conversation.otherMembers);
+
+    return highlightFilter(name, filter);
+  };
 
   renderAvatar() {
     if (this.props.conversation.otherMembers.length === 1) {
@@ -103,7 +112,7 @@ export class ConversationItem extends React.Component<Properties> {
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
-              <div className={c('name')}>{conversation.name || otherMembersToString(conversation.otherMembers)}</div>
+              <div className={c('name')}>{this.highlightedName()}</div>
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>

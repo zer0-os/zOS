@@ -133,11 +133,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </div>
           <div className='messages-list__item-list'>
             {this.filteredConversations.map((c) => (
-              <ConversationItem key={c.id} conversation={c} onClick={this.props.onConversationClick} />
+              <ConversationItem
+                key={c.id}
+                conversation={c}
+                filter={this.state.filter}
+                onClick={this.props.onConversationClick}
+              />
             ))}
 
             {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
-              <UserSearchResults results={this.state.userSearchResults} onCreate={this.props.onCreateConversation} />
+              <UserSearchResults
+                results={this.state.userSearchResults}
+                filter={this.state.filter}
+                onCreate={this.props.onCreateConversation}
+              />
             )}
           </div>
         </div>

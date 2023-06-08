@@ -8,6 +8,7 @@ import { ContentHighlighter } from '../../content-highlighter';
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      filter: '',
       conversation: {} as any,
       onClick: () => null,
       ...props,

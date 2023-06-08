@@ -6,6 +6,7 @@ import { UserSearchResults, Properties } from './user-search-results';
 describe('UserSearchResults', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      filter: '',
       results: [],
       onCreate: () => null,
       ...props,

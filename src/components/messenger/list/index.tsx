@@ -55,6 +55,7 @@ export interface Properties extends PublicProperties {
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
+  myUserId: string;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -106,6 +107,7 @@ export class Container extends React.Component<Properties, State> {
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
       isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
+      myUserId: user?.data?.id,
       zero: rewards.zero,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
@@ -229,6 +231,7 @@ export class Container extends React.Component<Properties, State> {
               onCreateConversation={this.createOneOnOneConversation}
               onConversationClick={this.props.openConversation}
               startConversation={this.props.startCreateConversation}
+              myUserId={this.props.myUserId}
             />
           )}
           {this.props.stage === SagaStage.CreateOneOnOne && (

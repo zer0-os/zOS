@@ -10,6 +10,7 @@ describe('ConversationItem', () => {
     const allProps: Properties = {
       filter: '',
       conversation: {} as any,
+      myUserId: '',
       onClick: () => null,
       ...props,
     };

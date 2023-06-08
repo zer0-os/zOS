@@ -146,7 +146,6 @@ export class ConversationItem extends React.Component<Properties> {
             </div>
             <div className={c('content')}>
               <div className={c('message')}>
-                {console.log('message: ', this.message)}
                 <ContentHighlighter message={this.message} />
               </div>
               {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}

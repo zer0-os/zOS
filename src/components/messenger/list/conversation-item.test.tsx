@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import { ConversationItem, Properties } from './conversation-item';
 import moment from 'moment';
 import { ContentHighlighter } from '../../content-highlighter';
+import { MediaType } from '../../../store/messages';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -97,6 +98,7 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 0,
         otherMembers: [],
+        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -109,6 +111,7 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 7,
         otherMembers: [],
+        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -121,6 +124,7 @@ describe('ConversationItem', () => {
       conversation: {
         lastMessage: {
           createdAt: now.valueOf(),
+          sender: { userId: 'id' },
         },
         otherMembers: [],
       } as any,
@@ -134,10 +138,34 @@ describe('ConversationItem', () => {
       conversation: {
         messagePreview: 'I said something here',
         otherMembers: [],
+        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
     expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('I said something here');
+  });
+
+  it('renders a text if i sent/received a media message', function () {
+    const conversation: any = {
+      messagePreview: '',
+      otherMembers: [],
+      lastMessage: { sender: { userId: 'my-user-id' }, media: { type: MediaType.Image } },
+    };
+
+    // sent
+    let wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: sent an image');
+
+    // received
+    conversation.lastMessage.sender.userId = 'other-user-id';
+    wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: received an image');
   });
 
   describe('status', () => {
@@ -199,5 +227,6 @@ function convoWith(...otherMembers): any {
   return {
     id: 'convo-id',
     otherMembers,
+    lastMessage: { sender: { ...otherMembers[0], userId: 'id' } },
   };
 }

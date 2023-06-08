@@ -100,7 +100,7 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   get message() {
-    if (!this.props.conversation) {
+    if (!this.props.conversation || (!this.props.conversation.lastMessage && !this.props.conversation.messagePreview)) {
       return '';
     }
 

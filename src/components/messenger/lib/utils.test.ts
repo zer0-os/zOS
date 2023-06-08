@@ -10,6 +10,15 @@ describe('highlightFilter', () => {
     expect(result).toEqual(text);
   });
 
+  it('returns unmodified text when text is not provided', () => {
+    const text = null;
+    const filter = 'world';
+
+    const result = highlightFilter(null, filter);
+
+    expect(result).toEqual(text);
+  });
+
   it('returns highlighted text when filter matches text', () => {
     const text = 'Hello World';
     const filter = 'World';

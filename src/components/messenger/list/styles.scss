@@ -355,8 +355,6 @@ $side-padding: 16px;
   margin-bottom: 8px;
   padding: 0 8px;
 
-  font-style: normal;
-  font-weight: 700;
   font-size: $font-size-small;
   line-height: 17px;
 
@@ -391,6 +389,10 @@ $side-padding: 16px;
     text-overflow: ellipsis;
     flex-grow: 1;
     font-size: $font-size-medium;
+
+    &[data-variant='unread'] {
+      font-weight: 700;
+    }
   }
 
   &__timestamp {
@@ -407,8 +409,20 @@ $side-padding: 16px;
     font-size: $font-size-small;
     line-height: 15px;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    padding-right: 1px;
+
+    div {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &[data-variant='unread'] {
+      div {
+        font-weight: 700;
+        color: theme.$color-greyscale-12;
+      }
+    }
   }
 
   &__unread-count {
@@ -432,11 +446,6 @@ $side-padding: 16px;
     display: flex;
     align-items: center;
     width: 100%;
-  }
-
-  &__message {
-    flex-grow: 1;
-    padding-right: 1px;
   }
 
   &__group-icon {

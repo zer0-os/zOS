@@ -97,6 +97,9 @@ export class ConversationItem extends React.Component<Properties> {
 
   render() {
     const { conversation } = this.props;
+    const hasUnreadMessages = conversation.unreadCount !== 0;
+    const dataVariant = hasUnreadMessages && 'unread';
+
     return (
       <Tooltip
         placement='left'
@@ -112,14 +115,16 @@ export class ConversationItem extends React.Component<Properties> {
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
-              <div className={c('name')}>{this.highlightedName()}</div>
+              <div className={c('name')} data-variant={dataVariant}>
+                {this.highlightedName()}
+              </div>
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>
-              <div className={c('message')}>
+              <div className={c('message')} data-variant={dataVariant}>
                 <ContentHighlighter message={this.message} />
               </div>
-              {conversation.unreadCount !== 0 && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
+              {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       conversations: [],
+      myUserId: '',
       search: () => undefined,
       onConversationClick: () => null,
       startConversation: () => null,

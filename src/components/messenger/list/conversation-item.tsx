@@ -12,11 +12,14 @@ import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../lib/bem';
 import moment from 'moment';
 import { ContentHighlighter } from '../../content-highlighter';
+import { MediaType } from '../../../store/messages';
 const c = bem('conversation-item');
 
 export interface Properties {
   filter: string;
   conversation: Channel & { messagePreview?: string };
+  myUserId: string;
+
   onClick: (conversationId: string) => void;
 }
 
@@ -88,11 +91,37 @@ export class ConversationItem extends React.Component<Properties> {
     return '';
   }
 
-  get message() {
-    if (this.props.conversation?.messagePreview) {
-      return this.props.conversation?.messagePreview;
+  isLastMessageSentOrReceived(lastMessage) {
+    if (lastMessage.sender.userId === this.props.myUserId) {
+      return 'sent';
     }
-    return '';
+
+    return 'received';
+  }
+
+  get message() {
+    if (!this.props.conversation) {
+      return '';
+    }
+
+    const { messagePreview, lastMessage } = this.props.conversation;
+    if (messagePreview) {
+      return messagePreview;
+    }
+
+    const str = this.isLastMessageSentOrReceived(this.props.conversation.lastMessage);
+    switch (lastMessage?.media?.type) {
+      case MediaType.Image:
+        return `You: ${str} an image`;
+      case MediaType.Video:
+        return `You: ${str} a video`;
+      case MediaType.File:
+        return `You: ${str} a file`;
+      case MediaType.Audio:
+        return `You: ${str} an audio`;
+      default:
+        return '';
+    }
   }
 
   render() {

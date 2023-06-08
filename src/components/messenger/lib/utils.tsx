@@ -20,7 +20,7 @@ export const conversationToOption = (conversation: Channel): Option[] => {
 export const highlightFilter = (text, filter) => {
   const regex = new RegExp(`(${filter})`, 'i');
 
-  if (filter !== '') {
+  if (filter !== '' && text) {
     return text.split(regex).map((part, index) =>
       part.toLowerCase() === filter.toLowerCase() ? (
         <span key={index} className='highlighted-text'>

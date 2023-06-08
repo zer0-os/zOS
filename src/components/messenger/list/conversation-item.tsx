@@ -100,7 +100,7 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   get message() {
-    if (!this.props.conversation) {
+    if (!this.props.conversation || (!this.props.conversation.lastMessage && !this.props.conversation.messagePreview)) {
       return '';
     }
 
@@ -109,7 +109,7 @@ export class ConversationItem extends React.Component<Properties> {
       return messagePreview;
     }
 
-    const str = this.isLastMessageSentOrReceived(this.props.conversation.lastMessage);
+    const str = this.isLastMessageSentOrReceived(this.props.conversation?.lastMessage);
     switch (lastMessage?.media?.type) {
       case MediaType.Image:
         return `You: ${str} an image`;

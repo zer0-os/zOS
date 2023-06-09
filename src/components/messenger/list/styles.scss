@@ -69,6 +69,13 @@ $side-padding: 16px;
       overflow: auto;
       padding: 0px $side-padding;
     }
+
+    &__empty {
+      padding: 8px;
+      color: theme.$color-greyscale-11;
+      font-size: $font-size-medium;
+      line-height: 17px;
+    }
   }
 }
 
@@ -479,7 +486,7 @@ $side-padding: 16px;
   margin-top: 24px;
 
   &__title {
-    padding: 10px 0;
+    padding: 8px;
     color: theme.$color-greyscale-11;
     font-size: $font-size-medium;
     line-height: 17px;

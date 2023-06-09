@@ -401,6 +401,8 @@ $side-padding: 16px;
     font-size: 10px;
     line-height: 12px;
     white-space: nowrap;
+    flex-grow: 0;
+    flex-shrink: 0;
   }
 
   &__message {
@@ -409,6 +411,9 @@ $side-padding: 16px;
     font-size: $font-size-small;
     line-height: 15px;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex-grow: 1;
     padding-right: 1px;
 
     div {

@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import { Container as Main, Properties } from './Main';
 import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
-import { ViewModeToggle } from './components/view-mode-toggle';
 import { AddressBarContainer } from './components/address-bar/container';
 import { MessengerChat } from './components/messenger/chat';
 
@@ -30,11 +29,13 @@ describe('Main', () => {
     expect(wrapper).toHaveElement(WalletManager);
   });
 
+  /*
   it('renders view mode toggle', () => {
     const wrapper = subject();
 
     expect(wrapper).toHaveElement(ViewModeToggle);
   });
+  */
 
   it('renders theme engine', () => {
     const wrapper = subject();

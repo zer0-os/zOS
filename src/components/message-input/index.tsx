@@ -208,6 +208,10 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   clipboardEvent = async (event) => {
+    if (document.activeElement !== this.textareaRef.current) {
+      return;
+    }
+
     const items = event.clipboardData.items;
 
     const newImages: any[] = Array.from(items)

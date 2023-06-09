@@ -445,6 +445,7 @@ $side-padding: 16px;
   &__content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
   }
 

@@ -29,14 +29,6 @@ describe('Main', () => {
     expect(wrapper).toHaveElement(WalletManager);
   });
 
-  /*
-  it('renders view mode toggle', () => {
-    const wrapper = subject();
-
-    expect(wrapper).toHaveElement(ViewModeToggle);
-  });
-  */
-
   it('renders theme engine', () => {
     const wrapper = subject();
 

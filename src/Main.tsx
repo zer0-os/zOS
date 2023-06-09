@@ -59,13 +59,6 @@ export class Container extends React.Component<Properties> {
     return (
       <div className={mainClassName}>
         <div className='main__navigation'>
-          {/* <div className='main__navigation-world'>
-            <div></div>
-            <div></div>
-            <div>
-              <ViewModeToggle className='main__view-mode-toggle' />
-            </div>
-          </div> */}
           {!this.props.isMessengerFullScreen && (
             <div className='main__navigation-platform'>
               <div>

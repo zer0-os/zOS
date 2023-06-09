@@ -409,6 +409,8 @@ $side-padding: 16px;
     font-size: $font-size-small;
     line-height: 15px;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     padding-right: 1px;
 
     div {

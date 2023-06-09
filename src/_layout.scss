@@ -6,8 +6,13 @@ $width-platform-navigation: 224px;
 $width-collapsed-platform-navigation: 54px;
 $width-application-navigation: 224px;
 
-$width-navigation: calc($width-platform-navigation + $width-world-navigation);
-$width-collapsed-navigation: calc($width-world-navigation + $width-collapsed-platform-navigation);
+/*
+For when we do add networks:-
++ $width-navigation: calc($width-platform-navigation + $width-world-navigation);
++ $width-collapsed-navigation: calc($width-world-navigation + $width-collapsed-platform-navigation);
+*/
+$width-navigation: $width-platform-navigation;
+$width-collapsed-navigation: $width-collapsed-platform-navigation;
 $width-application-content: 736px;
 $width-sidekick: 270px;
 $height-main: 65px;

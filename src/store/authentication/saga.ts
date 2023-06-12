@@ -11,7 +11,7 @@ import {
 } from './api';
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
-import { clearUserLayout, initializeUserLayout } from '../layout/saga';
+import { clearUserLayout, initializePublicLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
@@ -20,6 +20,8 @@ import { clearMessages } from '../messages/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { Events, authChannel } from './channels';
+import { getHistory } from '../../lib/browser';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -53,10 +55,11 @@ export function* completeUserLogin() {
   yield publishUserLogin(user);
 }
 
-export function* terminate() {
+export function* terminate(isChangeAccount = false) {
   yield put(setUser({ data: null, nonce: null, isLoading: false }));
   yield put(setChatAccessToken({ value: null, isLoading: false }));
   yield spawn(clearUserState);
+  yield redirectUnauthenticatedUser(isChangeAccount);
   yield publishUserLogout();
 
   try {
@@ -144,4 +147,19 @@ function* publishUserLogin(user) {
 function* publishUserLogout() {
   const channel = yield call(authChannel);
   yield put(channel, { type: Events.UserLogout });
+}
+
+function* redirectUnauthenticatedUser(isChangeAccount: boolean) {
+  const history = getHistory();
+
+  if (featureFlags.allowPublicZOS) {
+    yield initializePublicLayout();
+  }
+
+  if (isChangeAccount || featureFlags.allowPublicZOS) {
+    history.replace({ pathname: '/' });
+    return;
+  }
+
+  history.replace({ pathname: '/login' });
 }

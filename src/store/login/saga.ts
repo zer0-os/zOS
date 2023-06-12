@@ -1,7 +1,16 @@
 import getDeepProperty from 'lodash.get';
 import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
+import {
+  EmailLoginErrors,
+  LoginStage,
+  SagaActionTypes,
+  Web3LoginErrors,
+  reset,
+  setErrors,
+  setLoading,
+  setStage,
+} from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
@@ -99,7 +108,7 @@ export function* web3ChangeAccount() {
     return;
   }
 
-  yield call(terminate);
+  yield call(terminate, true);
 
   result = yield call(nonceOrAuthorize, { payload: { signedWeb3Token: result.token } });
   if (result.nonce) {
@@ -161,14 +170,18 @@ export function* openFirstConversationAfterChannelsLoaded() {
   }
 }
 
+function* listenForLogoutEvents() {
+  const authChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(authChannel, AuthEvents.UserLogout);
+    yield put(reset());
+  }
+}
+
 export function* saga() {
   yield spawn(listenForLoginEvents);
+  yield spawn(listenForLogoutEvents);
+  yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
-  yield takeEvery(SagaActionTypes.SwitchLoginStage, switchLoginStage); // Add this line
-
-  let success;
-  do {
-    const action = yield take(SagaActionTypes.EmailLogin);
-    success = yield call(emailLogin, action);
-  } while (!success);
+  yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
 }

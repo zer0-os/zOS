@@ -54,8 +54,9 @@ const slice = createSlice({
     setErrors: (state, action: PayloadAction<LoginState['errors']>) => {
       state.errors = action.payload;
     },
+    reset: () => initialState,
   },
 });
 
-export const { setLoading, setErrors, setStage } = slice.actions;
+export const { setLoading, setErrors, setStage, reset } = slice.actions;
 export const { reducer } = slice;

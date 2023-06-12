@@ -1,10 +1,9 @@
 import getDeepProperty from 'lodash.get';
 import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { emailLogin as apiEmailLogin } from './api';
 import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
-import { logout, nonceOrAuthorize, terminate } from '../authentication/saga';
+import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
@@ -24,7 +23,7 @@ export function* emailLogin(action) {
       return false;
     }
 
-    const result = yield call(apiEmailLogin, { email, password });
+    const result = yield call(authenticateByEmail, email, password);
     if (result.success) {
       yield put(setStage(LoginStage.Done));
       return true;

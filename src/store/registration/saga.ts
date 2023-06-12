@@ -26,6 +26,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { completeUserLogin, setAuthentication } from '../authentication/saga';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -66,7 +67,9 @@ export function* createAccount(action) {
       inviteCode,
       nonceToken,
     });
+
     if (result.success) {
+      yield setAuthentication({ chatAccessToken: result.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));
@@ -100,6 +103,7 @@ export function* authorizeAndCreateWeb3Account(action) {
     const inviteCode = yield select((state) => state.registration.inviteCode);
     result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: result.token });
     if (result.success) {
+      yield setAuthentication({ chatAccessToken: result.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));
@@ -160,6 +164,7 @@ export function* updateProfile(action) {
     const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage });
     if (response.success) {
       yield put(setFirstTimeLogin(true));
+      yield completeUserLogin();
       yield put(setStage(RegistrationStage.Done));
       yield spawn(clearRegistrationStateOnLogout);
       return true;

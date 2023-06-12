@@ -7,7 +7,6 @@ import { setRoute } from './store/zns';
 import { setSelectedApp } from './store/apps';
 import { Main } from './Main';
 import { Apps } from './lib/apps';
-import { Authentication } from './components/authentication';
 import { Create as CreateAccount } from './components/account/create';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 import { ChatConnect } from './components/chat-connect/chat-connect';
@@ -96,7 +95,6 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <>
-        <Authentication />
         <CreateAccount />
         <AuthenticationContextProvider value={this.authenticationContext}>
           <ChatConnect />

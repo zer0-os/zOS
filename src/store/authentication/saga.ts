@@ -7,6 +7,7 @@ import {
   fetchCurrentUser,
   clearSession as clearSessionApi,
   fetchChatAccessToken,
+  emailLogin as apiEmailLogin,
 } from './api';
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
@@ -28,26 +29,35 @@ export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
 
+export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }) {
+  yield put(setChatAccessToken({ value: chatAccessToken, isLoading: false }));
+}
+
 export function* nonceOrAuthorize(action) {
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
-
   const { signedWeb3Token } = action.payload;
-
   const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
-
   if (nonce) {
-    yield put(setUser({ nonce, isLoading: false }));
+    yield put(setUser({ nonce }));
   } else {
-    const user = yield call(fetchCurrentUser);
-
-    yield processUserAccount({ user, chatAccessToken, isLoading: false });
+    yield setAuthentication({ chatAccessToken });
+    yield completeUserLogin();
   }
 
   return { nonce };
 }
 
+export function* completeUserLogin() {
+  const user = yield call(fetchCurrentUser);
+  yield put(setUser({ data: user, isLoading: false }));
+  yield spawn(initializeUserState, user);
+  yield publishUserLogin(user);
+}
+
 export function* terminate() {
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+  yield put(setUser({ data: null, nonce: null, isLoading: false }));
+  yield put(setChatAccessToken({ value: null, isLoading: false }));
+  yield spawn(clearUserState);
+  yield publishUserLogout();
 
   try {
     yield call(clearSessionApi);
@@ -57,17 +67,29 @@ export function* terminate() {
 }
 
 export function* getCurrentUserWithChatAccessToken() {
-  yield processUserAccount({ user: null, chatAccessToken: null, isLoading: true });
+  try {
+    const user = yield call(fetchCurrentUser);
+    if (!user) {
+      return false;
+    }
 
-  const user = yield call(fetchCurrentUser);
-
-  if (user) {
     const { chatAccessToken } = yield call(fetchChatAccessToken);
-
-    yield processUserAccount({ user, chatAccessToken, isLoading: false });
-  } else {
-    yield processUserAccount({ isLoading: false });
+    yield setAuthentication({ chatAccessToken });
+    yield completeUserLogin();
+    return true;
+  } catch (e) {
+    return false;
   }
+}
+
+export function* authenticateByEmail(email, password) {
+  const result = yield call(apiEmailLogin, { email, password });
+  if (!result.success) {
+    return result;
+  }
+  yield setAuthentication({ chatAccessToken: result.chatAccessToken });
+  yield completeUserLogin();
+  return result;
 }
 
 export function* processUserAccount(params: {
@@ -76,39 +98,12 @@ export function* processUserAccount(params: {
   chatAccessToken?: string;
   isLoading: boolean;
 }) {
-  const { user = null, nonce = null, chatAccessToken = null, isLoading = false } = params;
-
-  yield all([
-    put(
-      setUser({
-        data: user,
-        nonce,
-        isLoading,
-      })
-    ),
-    put(
-      setChatAccessToken({
-        value: chatAccessToken,
-        isLoading,
-      })
-    ),
-  ]);
-
-  if (isLoading) return;
-
+  const { user = null, nonce = null, isLoading = false } = params;
   yield put({
     type: user
       ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
       : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
   });
-
-  if (user) {
-    yield spawn(initializeUserState, user);
-    yield publishUserLogin(user);
-  } else {
-    yield spawn(clearUserState);
-    yield publishUserLogout();
-  }
 }
 
 export function* initializeUserState(user: User) {
@@ -132,8 +127,6 @@ export function* clearUserState() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
-  yield takeLatest(SagaActionTypes.Terminate, terminate);
   yield takeLatest(SagaActionTypes.Logout, logout);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }

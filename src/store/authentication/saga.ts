@@ -1,7 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
-import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -93,20 +92,6 @@ export function* authenticateByEmail(email, password) {
   yield setAuthentication({ chatAccessToken: result.chatAccessToken });
   yield completeUserLogin();
   return result;
-}
-
-export function* processUserAccount(params: {
-  user?: User;
-  nonce?: string;
-  chatAccessToken?: string;
-  isLoading: boolean;
-}) {
-  const { user = null, nonce = null, isLoading = false } = params;
-  yield put({
-    type: user
-      ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
-      : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
-  });
 }
 
 export function* initializeUserState(user: User) {

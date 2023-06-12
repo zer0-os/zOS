@@ -19,6 +19,7 @@ export interface Properties {
   filter: string;
   conversation: Channel & { messagePreview?: string };
   myUserId: string;
+  activeMessengerId: string;
 
   onClick: (conversationId: string) => void;
 }
@@ -125,9 +126,10 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   render() {
-    const { conversation } = this.props;
+    const { conversation, activeMessengerId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
-    const dataVariant = hasUnreadMessages && 'unread';
+    const isActive = conversation.id === activeMessengerId;
+    const dataVariant = (hasUnreadMessages || isActive) && 'highlighted';
 
     return (
       <Tooltip

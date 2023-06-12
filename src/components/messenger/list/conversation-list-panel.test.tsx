@@ -9,6 +9,7 @@ describe('ConversationListPanel', () => {
     const allProps: Properties = {
       conversations: [],
       myUserId: '',
+      activeMessengerId: '',
       search: () => undefined,
       onConversationClick: () => null,
       startConversation: () => null,

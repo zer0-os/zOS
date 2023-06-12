@@ -420,17 +420,20 @@ $side-padding: 16px;
     text-overflow: ellipsis;
     padding-right: 1px;
 
-    div {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
     &[data-variant='unread'] {
+      font-weight: 700;
+      color: theme.$color-greyscale-12;
+
       div {
         font-weight: 700;
         color: theme.$color-greyscale-12;
       }
+    }
+
+    div {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 
@@ -447,6 +450,7 @@ $side-padding: 16px;
     height: 16px;
     text-align: center;
     font-size: 8px;
+    font-weight: 700;
     line-height: 11px;
     margin-left: 3px;
   }

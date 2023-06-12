@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, race, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
   EmailLoginErrors,

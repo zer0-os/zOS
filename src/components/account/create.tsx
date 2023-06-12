@@ -61,6 +61,8 @@ export class Container extends React.Component<Properties, State> {
   }
 
   componentDidUpdate = async (prevProps: Properties) => {
+    // Note: The whole management of this flow should be moved to a saga so this can be completed
+    // properly with proper app state management.
     const {
       user: { nonce },
       currentAddress,
@@ -73,13 +75,7 @@ export class Container extends React.Component<Properties, State> {
       });
     }
 
-    if (
-      this.state.showDialog &&
-      this.props.user.isLoading === false &&
-      prevProps.user &&
-      prevProps.user.data === null &&
-      this.props.user.data !== null
-    ) {
+    if (this.state.showDialog && !prevProps.user?.data && !!this.props.user?.data) {
       this.updateProfileImage();
     }
   };

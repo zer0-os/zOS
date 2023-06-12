@@ -17,7 +17,6 @@ interface ProfileSummary {
 }
 
 export interface UserPayload {
-  isLoading?: boolean;
   data?: User;
   nonce?: string;
 }
@@ -39,6 +38,5 @@ export interface User {
 
 export interface AuthenticationState {
   user: UserPayload;
-  loading: boolean;
   nonce?: string;
 }

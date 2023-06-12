@@ -12,7 +12,6 @@ const fetchCurrentUserWithChatAccessToken = createAction<Payload>(SagaActionType
 
 const initialState: AuthenticationState = {
   user: { data: null },
-  loading: false,
 };
 
 const slice = createSlice({

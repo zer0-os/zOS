@@ -39,7 +39,7 @@ export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
   const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
   if (nonce) {
-    yield put(setUser({ nonce }));
+    yield put(setUser({ nonce, data: null }));
   } else {
     yield setAuthentication({ chatAccessToken });
     yield completeUserLogin();

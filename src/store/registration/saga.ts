@@ -164,7 +164,7 @@ export function* updateProfile(action) {
     const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage });
     if (response.success) {
       yield put(setFirstTimeLogin(true));
-      yield completeUserLogin();
+      yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
       yield spawn(clearRegistrationStateOnLogout);
       return true;
@@ -211,7 +211,7 @@ function* updateProfilePage() {
   } while (!success);
 }
 
-function* clearRegistrationStateOnLogout() {
+export function* clearRegistrationStateOnLogout() {
   const authChannel = yield call(getAuthChannel);
   yield take(authChannel, AuthEvents.UserLogout);
   yield put(setFirstTimeLogin(false));

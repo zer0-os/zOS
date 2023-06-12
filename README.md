@@ -40,6 +40,6 @@ A high level overview of the Component, Connected Component, Redux Saga, Normali
 
 1. Increment the version number in the `package.json` file and update the `package-lock.json` (`npm install --package-lock-only`)
 1. Create a PR and merge your version update
-1. View https://github.com/zer0-os/zOS/releases, find your new release and edit it, ensure that `Set as the latest release` is checked, and click the `Update Release` button
+1. View https://github.com/zer0-os/zOS/releases, find your new release and edit it, ensure that `Set as the latest release` is checked, and click the `Publish Release` button
 1. View https://github.com/zer0-os/zOS/actions, watch for your release deployment to complete
 1. View https://zos.zer0.io, open the Developer Tools Console, verify that your version number is correct (matches your version increment in package.json from the first step)

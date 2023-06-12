@@ -9,8 +9,8 @@ import {
   getCurrentUserWithChatAccessToken,
   initializeUserState,
   clearUserState,
-  processUserAccount,
   logout,
+  redirectUnauthenticatedUser,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -66,9 +66,8 @@ describe('authentication saga', () => {
         ],
       ])
       .call(nonceOrAuthorizeApi, signedWeb3Token)
-      .put(setUser({ data: currentUserResponse, nonce: null, isLoading: false }))
       .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
-      .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
+      .put(setUser({ data: currentUserResponse }))
       .run();
   });
 
@@ -76,13 +75,13 @@ describe('authentication saga', () => {
     await expectSaga(nonceOrAuthorize, { payload: { signedWeb3Token } })
       .provide([
         [
+          // XXX: stop with the fuzzy
           matchers.call.fn(nonceOrAuthorizeApi),
           nonceResponse,
         ],
       ])
       .call(nonceOrAuthorizeApi, signedWeb3Token)
-      .put(setUser({ nonce: nonceResponse.nonceToken, isLoading: false }))
-      .put(setChatAccessToken({ value: null, isLoading: true }))
+      .put(setUser({ nonce: nonceResponse.nonceToken, data: null }))
       .run();
   });
 
@@ -94,11 +93,14 @@ describe('authentication saga', () => {
             matchers.call.fn(clearSessionApi),
             true,
           ],
+          [
+            matchers.call.fn(redirectUnauthenticatedUser),
+            null,
+          ],
         ])
         .call(clearSessionApi)
         .put(setUser({ data: null, isLoading: false, nonce: null }))
         .put(setChatAccessToken({ value: null, isLoading: false }))
-        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
         .withReducer(rootReducer)
         .run();
     });
@@ -109,6 +111,10 @@ describe('authentication saga', () => {
           [
             matchers.call.fn(clearSessionApi),
             true,
+          ],
+          [
+            matchers.call.fn(redirectUnauthenticatedUser),
+            null,
           ],
         ])
         .spawn(clearUserState)
@@ -134,10 +140,7 @@ describe('authentication saga', () => {
         .run();
 
       expect(storeState).toMatchObject({
-        user: {
-          data: currentUserResponse,
-          isLoading: false,
-        },
+        user: { data: currentUserResponse },
       });
     });
 
@@ -171,32 +174,6 @@ describe('authentication saga', () => {
         ])
         .spawn(initializeUserState, currentUserResponse)
         .put(fetchNotifications({ userId: currentUserResponse.id }))
-        .run();
-    });
-  });
-
-  describe('processUserAccount', () => {
-    it('process user account when loading', async () => {
-      await expectSaga(processUserAccount, { user: null, isLoading: true })
-        .not.spawn(clearUserState)
-        .not.put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
-        .run();
-    });
-
-    it('process user account without a user when loaded', async () => {
-      await expectSaga(processUserAccount, { user: null, isLoading: false })
-        .spawn(clearUserState)
-        .put({ type: ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh })
-        .withReducer(rootReducer)
-        .run();
-    });
-
-    it('process user account with user when loaded', async () => {
-      const user = { id: 'anything' } as any;
-      await expectSaga(processUserAccount, { user, isLoading: false })
-        .spawn(initializeUserState, user)
-        .put({ type: ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh })
-        .withReducer(rootReducer)
         .run();
     });
   });

@@ -49,7 +49,7 @@ export function* nonceOrAuthorize(action) {
 
 export function* completeUserLogin() {
   const user = yield call(fetchCurrentUser);
-  yield put(setUser({ data: user, isLoading: false }));
+  yield put(setUser({ data: user }));
   yield spawn(initializeUserState, user);
   yield publishUserLogin(user);
 }
@@ -58,7 +58,7 @@ export function* terminate(isChangeAccount = false) {
   yield put(setUser({ data: null, nonce: null, isLoading: false }));
   yield put(setChatAccessToken({ value: null, isLoading: false }));
   yield spawn(clearUserState);
-  yield redirectUnauthenticatedUser(isChangeAccount);
+  yield call(redirectUnauthenticatedUser, isChangeAccount);
   yield publishUserLogout();
 
   try {
@@ -134,7 +134,7 @@ function* publishUserLogout() {
   yield put(channel, { type: Events.UserLogout });
 }
 
-function* redirectUnauthenticatedUser(isChangeAccount: boolean) {
+export function* redirectUnauthenticatedUser(isChangeAccount: boolean) {
   const history = getHistory();
 
   if (featureFlags.allowPublicZOS) {

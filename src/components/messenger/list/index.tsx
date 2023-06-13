@@ -2,7 +2,7 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
-import { setActiveMessengerId } from '../../../store/chat';
+import { setactiveConversationId } from '../../../store/chat';
 import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -116,7 +116,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      openConversation: setActiveMessengerId,
+      openConversation: setactiveConversationId,
       fetchConversations,
       createConversation,
       startCreateConversation,

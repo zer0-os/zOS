@@ -26,7 +26,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
 import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
-import { setActiveMessengerId } from '../chat';
+import { setactiveConversationId } from '../chat';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
@@ -229,7 +229,7 @@ export function* saga() {
 export function* channelsLoaded() {
   const existingConversationsList = yield select(rawConversationsList());
   if (existingConversationsList.length > 0) {
-    yield put(setActiveMessengerId(existingConversationsList[0]));
+    yield put(setactiveConversationId(existingConversationsList[0]));
   }
 }
 

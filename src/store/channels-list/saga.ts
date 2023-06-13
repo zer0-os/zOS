@@ -12,7 +12,7 @@ import {
 } from './api';
 import { AsyncListStatus } from '../normalized';
 import { channelMapper, filterChannelsList } from './utils';
-import { setActiveMessengerId } from '../chat';
+import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
 
@@ -93,7 +93,7 @@ export function* createConversation(action) {
         ])
       );
     }
-    yield put(setActiveMessengerId(conversation.id));
+    yield put(setactiveConversationId(conversation.id));
   }
 }
 

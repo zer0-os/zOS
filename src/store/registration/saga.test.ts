@@ -32,7 +32,7 @@ import { RootState, rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { setActiveMessengerId } from '../chat';
+import { setactiveConversationId } from '../chat';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 
@@ -458,7 +458,7 @@ describe('channelsLoaded', () => {
           },
         } as any,
       } as RootState)
-      .put(setActiveMessengerId('1234'))
+      .put(setactiveConversationId('1234'))
       .run();
   });
 });

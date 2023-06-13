@@ -17,7 +17,7 @@ describe('ChannelViewContainer', () => {
         isLoading: false,
         data: null,
       },
-      activeMessengerId: '',
+      activeConversationId: '',
       sendMessage: () => undefined,
       uploadFileMessage: () => undefined,
       deleteMessage: () => undefined,
@@ -353,8 +353,8 @@ describe('ChannelViewContainer', () => {
     expect(textareaRef.current.focus).toHaveBeenCalled();
   });
 
-  it('should not call focus on message input render if activeMessengerId not equal the id of textareaRef', () => {
-    const activeMessengerId = '1';
+  it('should not call focus on message input render if activeConversationId not equal the id of textareaRef', () => {
+    const activeConversationId = '1';
     const textareaRef = {
       current: {
         focus: jest.fn(),
@@ -362,23 +362,23 @@ describe('ChannelViewContainer', () => {
       },
     };
 
-    const wrapper = subject({ activeMessengerId });
+    const wrapper = subject({ activeConversationId });
 
     (wrapper.instance() as any).onMessageInputRendered(textareaRef);
 
     expect(textareaRef.current.focus).not.toHaveBeenCalled();
   });
 
-  it('should call focus on message input render if activeMessengerId equal the id of textareaRef', () => {
-    const activeMessengerId = '1';
+  it('should call focus on message input render if activeConversationId equal the id of textareaRef', () => {
+    const activeConversationId = '1';
     const textareaRef = {
       current: {
         focus: jest.fn(),
-        id: activeMessengerId,
+        id: activeConversationId,
       },
     };
 
-    const wrapper = subject({ activeMessengerId });
+    const wrapper = subject({ activeConversationId });
 
     (wrapper.instance() as any).onMessageInputRendered(textareaRef);
 
@@ -398,7 +398,7 @@ describe('ChannelViewContainer', () => {
           },
         },
         chat: {
-          activeMessengerId: '1',
+          activeConversationId: '1',
         },
       } as RootState);
 

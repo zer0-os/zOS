@@ -6,7 +6,7 @@ import { setGroupCreating, reducer, Stage, setFetchingConversations, setStage } 
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
-import { setActiveMessengerId } from '../chat';
+import { setactiveConversationId } from '../chat';
 import { select } from 'redux-saga/effects';
 import { currentUserSelector } from '../authentication/saga';
 
@@ -103,7 +103,7 @@ describe('create conversation saga', () => {
 
     it('opens the existing conversation', async () => {
       await expectWithExistingChannels([{ id: 'convo-1' }])
-        .put(setActiveMessengerId('convo-1'))
+        .put(setactiveConversationId('convo-1'))
         .run();
     });
 

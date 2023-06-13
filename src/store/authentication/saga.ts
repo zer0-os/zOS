@@ -92,8 +92,8 @@ export function* authenticateByEmail(email, password) {
   if (!result.success) {
     return result;
   }
-  yield setAuthentication({ chatAccessToken: result.chatAccessToken });
-  yield completeUserLogin();
+  yield call(setAuthentication, { chatAccessToken: result.chatAccessToken });
+  yield call(completeUserLogin);
   return result;
 }
 

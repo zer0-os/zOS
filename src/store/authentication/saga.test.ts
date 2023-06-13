@@ -14,12 +14,15 @@ import {
   completeUserLogin,
   publishUserLogin,
   publishUserLogout,
+  authenticateByEmail,
+  setAuthentication,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
   clearSession as clearSessionApi,
   fetchChatAccessToken,
+  emailLogin,
 } from './api';
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
@@ -276,9 +279,50 @@ describe('logout', () => {
   });
 });
 
+describe(authenticateByEmail, () => {
+  it('completes the whole auth process', async () => {
+    const email = 'valid email';
+    const password = 'valid password';
+    const chatAccessToken = 'token';
+    const { returnValue } = await expectSaga(authenticateByEmail, email, password)
+      .provide([
+        stubResponse(call(emailLogin, { email, password }), { success: true, chatAccessToken }),
+        ...successResponses(),
+      ])
+      .call(setAuthentication, { chatAccessToken })
+      .call(completeUserLogin)
+      .run();
+
+    expect(returnValue.success).toEqual(true);
+  });
+
+  it('returns errors result if login failed', async () => {
+    const email = 'invalid email';
+    const password = 'invalid password';
+    const { returnValue } = await expectSaga(authenticateByEmail, email, password)
+      .provide([stubResponse(call(emailLogin, { email, password }), { success: false, error: 'something' })])
+      .run();
+
+    expect(returnValue).toEqual({ success: false, error: 'something' });
+  });
+
+  function successResponses() {
+    return [
+      [
+        matchers.call.fn(fetchCurrentUser),
+        { userId: 'id-1', id: 'id-1' },
+      ],
+      [
+        matchers.call.fn(fetchChatAccessToken),
+        { chatAccessToken: 'abc-a123' },
+      ],
+    ] as any;
+  }
+});
+
 function stubResponse(matcher, response) {
   return [
     matcher,
     response,
-  ];
+  ] as any;
 }

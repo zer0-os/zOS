@@ -128,8 +128,8 @@ export class ConversationItem extends React.Component<Properties> {
   render() {
     const { conversation, activeConversationId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
-    const isUnread = hasUnreadMessages && 'true';
-    const isActive = conversation.id === activeConversationId && 'true';
+    const isUnread = hasUnreadMessages ? 'true' : 'false';
+    const isActive = conversation.id === activeConversationId ? 'true' : 'false';
 
     return (
       <Tooltip

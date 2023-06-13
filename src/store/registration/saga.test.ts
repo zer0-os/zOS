@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
   authorizeAndCreateWeb3Account,
-  channelsLoaded,
+  openFirstConversation,
   createAccount,
   openInviteToastWhenRewardsPopupClosed,
   updateProfile,
@@ -447,9 +447,9 @@ describe('validateAccountInfo', () => {
   });
 });
 
-describe('channelsLoaded', () => {
+describe('openFirstConversation', () => {
   it('opens the first conversation', async () => {
-    await expectSaga(channelsLoaded)
+    await expectSaga(openFirstConversation)
       .withReducer(rootReducer, {
         channelsList: { value: ['1234'] } as any,
         normalized: {

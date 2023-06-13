@@ -222,22 +222,22 @@ export function* saga() {
   yield updateProfilePage();
 
   // After successful registration
-  yield spawn(openFirstConversation);
+  yield spawn(openFirstConversationAfterChannelsLoaded);
   yield spawn(openInviteToastWhenRewardsPopupClosed);
 }
 
-export function* channelsLoaded() {
+export function* openFirstConversation() {
   const existingConversationsList = yield select(rawConversationsList());
   if (existingConversationsList.length > 0) {
     yield put(setactiveConversationId(existingConversationsList[0]));
   }
 }
 
-function* openFirstConversation() {
+function* openFirstConversationAfterChannelsLoaded() {
   const channel = yield call(conversationsChannel);
   const payload = yield take(channel, '*');
   if (payload.loaded) {
-    yield call(channelsLoaded);
+    yield call(openFirstConversation);
   }
 }
 

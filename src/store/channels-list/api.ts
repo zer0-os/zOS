@@ -8,7 +8,7 @@ export async function fetchChannels(id: string) {
     const channels = await get<any>(`/api/networks/${id}/chatChannels`);
     return await channels.body;
   } catch (error: any) {
-    console.log('Error occured while fetching chatChannels ', error?.response?.body?.error); // eg. error.code = ENOTFOUND
+    console.log('Error occured while fetching chatChannels ', error?.response); // eg. error.code = ENOTFOUND
     return [];
   }
 }

@@ -133,6 +133,9 @@ function* listenForLoginEvents() {
   while (true) {
     yield take(authChannel, AuthEvents.UserLogin);
 
+    // After successful login
+    yield spawn(openFirstConversationAfterChannelsLoaded);
+
     if (yield call(isWeb3AccountConnected)) {
       yield spawn(listenForWeb3AccountChanges);
     }
@@ -149,7 +152,4 @@ export function* saga() {
     const action = yield take(SagaActionTypes.EmailLogin);
     success = yield call(emailLogin, action);
   } while (!success);
-
-  // After successful login
-  yield spawn(openFirstConversationAfterChannelsLoaded);
 }

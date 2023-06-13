@@ -309,12 +309,16 @@ describe(authenticateByEmail, () => {
   function successResponses() {
     return [
       [
-        matchers.call.fn(fetchCurrentUser),
-        { userId: 'id-1', id: 'id-1' },
+        matchers.call.fn(emailLogin),
+        { success: true },
       ],
       [
-        matchers.call.fn(fetchChatAccessToken),
-        { chatAccessToken: 'abc-a123' },
+        matchers.call.fn(setAuthentication),
+        null,
+      ],
+      [
+        matchers.call.fn(completeUserLogin),
+        null,
       ],
     ] as any;
   }

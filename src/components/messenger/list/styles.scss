@@ -431,19 +431,6 @@ $side-padding: 16px;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-
-    div {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    &[data-variant='unread'] {
-      div {
-        font-weight: 700;
-        color: theme.$color-greyscale-12;
-      }
-    }
   }
 
   &__unread-count {

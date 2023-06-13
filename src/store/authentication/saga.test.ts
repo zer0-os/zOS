@@ -12,6 +12,7 @@ import {
   logout,
   redirectUnauthenticatedUser,
   completeUserLogin,
+  publishUserLogin,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -82,6 +83,57 @@ describe(nonceOrAuthorize, () => {
       .put(setUser({ nonce: nonceResponse.nonceToken, data: null }))
       .run();
   });
+});
+
+describe(completeUserLogin, () => {
+  it('loads the user info', async () => {
+    const { storeState } = await expectSaga(completeUserLogin)
+      .provide([
+        stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        ...successResponses(),
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.authentication.user).toMatchObject({ data: { fake: 'user-response' } });
+  });
+
+  it('sets up user state', async () => {
+    await expectSaga(completeUserLogin)
+      .provide([
+        stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        ...successResponses(),
+      ])
+      .call(initializeUserState, { fake: 'user-response' })
+      .run();
+  });
+
+  it('publishes user login event', async () => {
+    await expectSaga(completeUserLogin)
+      .provide([
+        stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        ...successResponses(),
+      ])
+      .call(publishUserLogin, { fake: 'user-response' })
+      .run();
+  });
+
+  function successResponses() {
+    return [
+      [
+        call(fetchCurrentUser),
+        { user: 'stubbed' },
+      ],
+      [
+        matchers.call.fn(initializeUserState),
+        null,
+      ],
+      [
+        matchers.call.fn(publishUserLogin),
+        null,
+      ],
+    ] as any;
+  }
 });
 
 describe('terminate', () => {
@@ -155,7 +207,7 @@ describe('getCurrentUserWithChatAccessToken', () => {
           chatAccessTokenResponse,
         ],
       ])
-      .spawn(initializeUserState, currentUserResponse)
+      .call(initializeUserState, currentUserResponse)
       .run();
   });
 
@@ -171,7 +223,7 @@ describe('getCurrentUserWithChatAccessToken', () => {
           chatAccessTokenResponse,
         ],
       ])
-      .spawn(initializeUserState, currentUserResponse)
+      .call(initializeUserState, currentUserResponse)
       .put(fetchNotifications({ userId: currentUserResponse.id }))
       .run();
   });
@@ -220,3 +272,10 @@ describe('logout', () => {
     await expectLogoutSaga().call(terminate).run();
   });
 });
+
+function stubResponse(matcher, response) {
+  return [
+    matcher,
+    response,
+  ];
+}

@@ -50,8 +50,8 @@ export function* nonceOrAuthorize(action) {
 export function* completeUserLogin() {
   const user = yield call(fetchCurrentUser);
   yield put(setUser({ data: user }));
-  yield spawn(initializeUserState, user);
-  yield publishUserLogin(user);
+  yield call(initializeUserState, user);
+  yield call(publishUserLogin, user);
 }
 
 export function* terminate(isChangeAccount = false) {
@@ -124,7 +124,7 @@ export function* logout() {
   yield call(terminate);
 }
 
-function* publishUserLogin(user) {
+export function* publishUserLogin(user) {
   const channel = yield call(authChannel);
   yield put(channel, { type: Events.UserLogin, userId: user.id });
 }

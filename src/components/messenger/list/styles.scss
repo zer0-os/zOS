@@ -367,11 +367,7 @@ $side-padding: 16px;
 
   color: theme.$color-greyscale-12;
 
-  &:hover {
-    background-color: theme.$color-primary-3;
-    border-radius: 8px;
-  }
-
+  &:hover,
   &[data-variant='selected'] {
     background-color: theme.$color-primary-3;
     border-radius: 8px;

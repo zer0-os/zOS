@@ -7,6 +7,7 @@ import { logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
+import { openFirstConversationAfterChannelsLoaded } from '../registration/saga';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -148,4 +149,7 @@ export function* saga() {
     const action = yield take(SagaActionTypes.EmailLogin);
     success = yield call(emailLogin, action);
   } while (!success);
+
+  // After successful login
+  yield spawn(openFirstConversationAfterChannelsLoaded);
 }

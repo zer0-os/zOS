@@ -158,7 +158,7 @@ export class Container extends React.Component<Properties, State> {
               )}
               {!this.props.isFullScreen && <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />}
               {!this.props.isFullScreen && <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />}
-              <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
+              {!this.props.isFullScreen && <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />}
             </div>
           )}
 

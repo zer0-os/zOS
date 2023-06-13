@@ -424,6 +424,11 @@ $side-padding: 16px;
     &[data-variant='unread'] {
       font-weight: 700;
       color: theme.$color-greyscale-12;
+
+      div {
+        font-weight: 700;
+        color: theme.$color-greyscale-12;
+      }
     }
 
     div {

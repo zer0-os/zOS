@@ -41,7 +41,7 @@ export function* nonceOrAuthorize(action) {
     yield put(setUser({ nonce, data: null }));
   } else {
     yield setAuthentication({ chatAccessToken });
-    yield completeUserLogin();
+    yield call(completeUserLogin);
   }
 
   return { nonce };

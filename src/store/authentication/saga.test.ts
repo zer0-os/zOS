@@ -11,6 +11,7 @@ import {
   clearUserState,
   logout,
   redirectUnauthenticatedUser,
+  completeUserLogin,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -21,7 +22,7 @@ import {
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { fetch as fetchNotifications } from '../notifications';
-import { receive, SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
+import { receive } from '../channels-list';
 import { update } from '../layout';
 import { rootReducer } from '../reducer';
 import { clearNotifications } from '../notifications/saga';
@@ -32,15 +33,6 @@ import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 
-const authorizationResponse = {
-  accessToken: 'eyJh-access-token',
-  chatAccessToken: 'chat-access-token',
-};
-
-const nonceResponse = {
-  nonceToken: 'expiring-nonce-token',
-};
-
 const currentUserResponse = {
   userId: 'id-1',
   id: 'id-1',
@@ -50,24 +42,31 @@ const chatAccessTokenResponse = {
   chatAccessToken: 'abc-a123',
 };
 
-describe('authentication saga', () => {
+describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
+  const authorizationResponse = {
+    accessToken: 'eyJh-access-token',
+    chatAccessToken: 'chat-access-token',
+  };
 
-  it('nonceOrAuthorize with accessToken', async () => {
+  const nonceResponse = {
+    nonceToken: 'expiring-nonce-token',
+  };
+
+  it('completes authentication when tokens are returned', async () => {
     await expectSaga(nonceOrAuthorize, { payload: { signedWeb3Token } })
       .provide([
         [
-          matchers.call.fn(nonceOrAuthorizeApi),
+          call(nonceOrAuthorizeApi, signedWeb3Token),
           authorizationResponse,
         ],
         [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
+          matchers.call.fn(completeUserLogin),
+          null,
         ],
       ])
-      .call(nonceOrAuthorizeApi, signedWeb3Token)
       .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
-      .put(setUser({ data: currentUserResponse }))
+      .call(completeUserLogin)
       .run();
   });
 
@@ -75,8 +74,7 @@ describe('authentication saga', () => {
     await expectSaga(nonceOrAuthorize, { payload: { signedWeb3Token } })
       .provide([
         [
-          // XXX: stop with the fuzzy
-          matchers.call.fn(nonceOrAuthorizeApi),
+          call(nonceOrAuthorizeApi, signedWeb3Token),
           nonceResponse,
         ],
       ])
@@ -84,119 +82,119 @@ describe('authentication saga', () => {
       .put(setUser({ nonce: nonceResponse.nonceToken, data: null }))
       .run();
   });
+});
 
-  describe('terminate', () => {
-    it('verifies terminate orchestration', async () => {
-      await expectSaga(terminate)
-        .provide([
-          [
-            matchers.call.fn(clearSessionApi),
-            true,
-          ],
-          [
-            matchers.call.fn(redirectUnauthenticatedUser),
-            null,
-          ],
-        ])
-        .call(clearSessionApi)
-        .put(setUser({ data: null, isLoading: false, nonce: null }))
-        .put(setChatAccessToken({ value: null, isLoading: false }))
-        .withReducer(rootReducer)
-        .run();
-    });
+describe('terminate', () => {
+  it('verifies terminate orchestration', async () => {
+    await expectSaga(terminate)
+      .provide([
+        [
+          matchers.call.fn(clearSessionApi),
+          true,
+        ],
+        [
+          matchers.call.fn(redirectUnauthenticatedUser),
+          null,
+        ],
+      ])
+      .call(clearSessionApi)
+      .put(setUser({ data: null, isLoading: false, nonce: null }))
+      .put(setChatAccessToken({ value: null, isLoading: false }))
+      .withReducer(rootReducer)
+      .run();
+  });
 
-    it('clears the user state', async () => {
-      await expectSaga(terminate)
-        .provide([
-          [
-            matchers.call.fn(clearSessionApi),
-            true,
-          ],
-          [
-            matchers.call.fn(redirectUnauthenticatedUser),
-            null,
-          ],
-        ])
-        .spawn(clearUserState)
-        .withReducer(rootReducer)
-        .run();
+  it('clears the user state', async () => {
+    await expectSaga(terminate)
+      .provide([
+        [
+          matchers.call.fn(clearSessionApi),
+          true,
+        ],
+        [
+          matchers.call.fn(redirectUnauthenticatedUser),
+          null,
+        ],
+      ])
+      .spawn(clearUserState)
+      .withReducer(rootReducer)
+      .run();
+  });
+});
+
+describe('getCurrentUserWithChatAccessToken', () => {
+  it('stores user', async () => {
+    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
+      .provide([
+        [
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
+        ],
+        [
+          matchers.call.fn(fetchChatAccessToken),
+          chatAccessTokenResponse,
+        ],
+      ])
+      .withReducer(reducer)
+      .run();
+
+    expect(storeState).toMatchObject({
+      user: { data: currentUserResponse },
     });
   });
 
-  describe('getCurrentUserWithChatAccessToken', () => {
-    it('stores user', async () => {
-      const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
-        .provide([
-          [
-            matchers.call.fn(fetchCurrentUser),
-            currentUserResponse,
-          ],
-          [
-            matchers.call.fn(fetchChatAccessToken),
-            chatAccessTokenResponse,
-          ],
-        ])
-        .withReducer(reducer)
-        .run();
-
-      expect(storeState).toMatchObject({
-        user: { data: currentUserResponse },
-      });
-    });
-
-    it('initializes the user state', async () => {
-      await expectSaga(getCurrentUserWithChatAccessToken)
-        .provide([
-          [
-            matchers.call.fn(fetchCurrentUser),
-            currentUserResponse,
-          ],
-          [
-            matchers.call.fn(fetchChatAccessToken),
-            chatAccessTokenResponse,
-          ],
-        ])
-        .spawn(initializeUserState, currentUserResponse)
-        .run();
-    });
-
-    it('fetch notification', async () => {
-      await expectSaga(getCurrentUserWithChatAccessToken)
-        .provide([
-          [
-            matchers.call.fn(fetchCurrentUser),
-            currentUserResponse,
-          ],
-          [
-            matchers.call.fn(fetchChatAccessToken),
-            chatAccessTokenResponse,
-          ],
-        ])
-        .spawn(initializeUserState, currentUserResponse)
-        .put(fetchNotifications({ userId: currentUserResponse.id }))
-        .run();
-    });
+  it('initializes the user state', async () => {
+    await expectSaga(getCurrentUserWithChatAccessToken)
+      .provide([
+        [
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
+        ],
+        [
+          matchers.call.fn(fetchChatAccessToken),
+          chatAccessTokenResponse,
+        ],
+      ])
+      .spawn(initializeUserState, currentUserResponse)
+      .run();
   });
 
-  describe('clearUserState', () => {
-    it('resets layout', async () => {
-      await expectSaga(clearUserState)
-        .put(update({ isSidekickOpen: false, isMessengerFullScreen: false }))
-        .put(receive([]))
-        .withReducer(rootReducer)
-        .run();
-    });
+  it('fetch notification', async () => {
+    await expectSaga(getCurrentUserWithChatAccessToken)
+      .provide([
+        [
+          matchers.call.fn(fetchCurrentUser),
+          currentUserResponse,
+        ],
+        [
+          matchers.call.fn(fetchChatAccessToken),
+          chatAccessTokenResponse,
+        ],
+      ])
+      .spawn(initializeUserState, currentUserResponse)
+      .put(fetchNotifications({ userId: currentUserResponse.id }))
+      .run();
+  });
+});
 
-    it('verifies state reset calls', async () => {
-      await expectSaga(clearUserState)
-        .call(clearChannelsAndConversations)
-        .call(clearMessages)
-        .call(clearUsers)
-        .call(clearNotifications)
-        .call(clearUserLayout)
-        .withReducer(rootReducer)
-        .run();
-    });
+describe('clearUserState', () => {
+  it('resets layout', async () => {
+    await expectSaga(clearUserState)
+      .put(update({ isSidekickOpen: false, isMessengerFullScreen: false }))
+      .put(receive([]))
+      .withReducer(rootReducer)
+      .run();
+  });
+
+  it('verifies state reset calls', async () => {
+    await expectSaga(clearUserState)
+      .call(clearChannelsAndConversations)
+      .call(clearMessages)
+      .call(clearUsers)
+      .call(clearNotifications)
+      .call(clearUserLayout)
+      .withReducer(rootReducer)
+      .run();
   });
 });
 

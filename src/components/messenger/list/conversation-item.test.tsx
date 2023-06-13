@@ -12,6 +12,7 @@ describe('ConversationItem', () => {
       filter: '',
       conversation: {} as any,
       myUserId: '',
+      activeConversationId: '',
       onClick: () => null,
       ...props,
     };

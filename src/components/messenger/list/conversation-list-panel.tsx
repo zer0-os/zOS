@@ -16,6 +16,7 @@ import { conversationToOption, itemToOption } from '../lib/utils';
 export interface Properties {
   conversations: Channel[];
   myUserId: string;
+  activeConversationId: string;
 
   search: (input: string) => any;
   startConversation: () => void;
@@ -140,6 +141,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                 filter={this.state.filter}
                 onClick={this.props.onConversationClick}
                 myUserId={this.props.myUserId}
+                activeConversationId={this.props.activeConversationId}
               />
             ))}
 

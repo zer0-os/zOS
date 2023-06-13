@@ -265,15 +265,17 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
+      chat = { activeConversationId: '' },
       rewardsState = {}
     ) => {
-      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, rewardsState));
+      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat, rewardsState));
     };
 
     const getState = (
       channels,
       createConversationState = {},
       users = [{ userId: '', isAMemberOfWorlds: true }],
+      chat = { activeConversationId: '' },
       rewardsState: Partial<RewardsState> = {}
     ) => {
       const channelData = normalize(channels);
@@ -287,6 +289,7 @@ describe('messenger-list', () => {
             },
           },
         },
+        chat,
         channelsList: { value: channelData.result },
         normalized: {
           ...userData.entities,
@@ -380,15 +383,21 @@ describe('messenger-list', () => {
     });
 
     test('isLoading', () => {
-      const state = subject([], {}, undefined, { loading: true });
+      const state = subject([], {}, undefined, undefined, { loading: true });
 
       expect(state.isRewardsLoading).toEqual(true);
     });
 
     test('zero', () => {
-      const state = subject([], {}, undefined, { zero: '17' });
+      const state = subject([], {}, undefined, undefined, { zero: '17' });
 
       expect(state.zero).toEqual('17');
+    });
+
+    test('activeConversationId', () => {
+      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id' });
+
+      expect(state.activeConversationId).toEqual('active-channel-id');
     });
 
     test('stage', () => {

@@ -56,6 +56,7 @@ export interface Properties extends PublicProperties {
   isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
   myUserId: string;
+  activeConversationId?: string;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -79,6 +80,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
+      chat: { activeConversationId },
       layout,
       rewards,
     } = state;
@@ -95,6 +97,7 @@ export class Container extends React.Component<Properties, State> {
 
     return {
       conversations,
+      activeConversationId,
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
       isGroupCreating: createConversation.groupDetails.isCreating,
@@ -232,6 +235,7 @@ export class Container extends React.Component<Properties, State> {
               onConversationClick={this.props.openConversation}
               startConversation={this.props.startCreateConversation}
               myUserId={this.props.myUserId}
+              activeConversationId={this.props.activeConversationId}
             />
           )}
           {this.props.stage === SagaStage.CreateOneOnOne && (

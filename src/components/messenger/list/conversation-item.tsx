@@ -19,6 +19,7 @@ export interface Properties {
   filter: string;
   conversation: Channel & { messagePreview?: string };
   myUserId: string;
+  activeConversationId: string;
 
   onClick: (conversationId: string) => void;
 }
@@ -125,9 +126,10 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   render() {
-    const { conversation } = this.props;
+    const { conversation, activeConversationId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
-    const dataVariant = hasUnreadMessages && 'unread';
+    const isUnread = hasUnreadMessages && 'true';
+    const isActive = conversation.id === activeConversationId && 'true';
 
     return (
       <Tooltip
@@ -140,17 +142,17 @@ export class ConversationItem extends React.Component<Properties> {
           ],
         }}
       >
-        <div className={c('')} onClick={this.handleMemberClick}>
+        <div className={c('')} onClick={this.handleMemberClick} is-active={isActive}>
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
-              <div className={c('name')} data-variant={dataVariant}>
+              <div className={c('name')} is-unread={isUnread}>
                 {this.highlightedName()}
               </div>
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>
-              <div className={c('message')} data-variant={dataVariant}>
+              <div className={c('message')} is-unread={isUnread}>
                 <ContentHighlighter message={this.message} />
               </div>
               {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}

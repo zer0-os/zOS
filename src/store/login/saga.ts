@@ -1,4 +1,5 @@
-import { call, put, race, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import getDeepProperty from 'lodash.get';
+import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { emailLogin as apiEmailLogin } from './api';
 import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
@@ -7,7 +8,9 @@ import { logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
-import { openFirstConversationAfterChannelsLoaded } from '../registration/saga';
+import { conversationsChannel } from '../channels-list/channels';
+import { rawConversationsList } from '../channels-list/saga';
+import { setactiveConversationId } from '../chat';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -139,6 +142,23 @@ function* listenForLoginEvents() {
     if (yield call(isWeb3AccountConnected)) {
       yield spawn(listenForWeb3AccountChanges);
     }
+  }
+}
+
+export function* openFirstConversation() {
+  const existingConversationsList = yield select(rawConversationsList());
+  if (existingConversationsList.length > 0) {
+    yield put(setactiveConversationId(existingConversationsList[0]));
+  }
+}
+
+export function* openFirstConversationAfterChannelsLoaded() {
+  const channel = yield call(conversationsChannel);
+  const payload = yield take(channel, '*');
+
+  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
+  if (payload.loaded && isMessengerFullScreen) {
+    yield call(openFirstConversation);
   }
 }
 

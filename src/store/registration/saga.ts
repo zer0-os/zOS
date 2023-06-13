@@ -1,4 +1,3 @@
-import getDeepProperty from 'lodash.get';
 import { call, delay, put, race, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
@@ -25,9 +24,6 @@ import {
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
-import { conversationsChannel } from '../channels-list/channels';
-import { rawConversationsList } from '../channels-list/saga';
-import { setactiveConversationId } from '../chat';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
@@ -223,25 +219,7 @@ export function* saga() {
   yield updateProfilePage();
 
   // After successful registration
-  yield spawn(openFirstConversationAfterChannelsLoaded);
   yield spawn(openInviteToastWhenRewardsPopupClosed);
-}
-
-export function* openFirstConversation() {
-  const existingConversationsList = yield select(rawConversationsList());
-  if (existingConversationsList.length > 0) {
-    yield put(setactiveConversationId(existingConversationsList[0]));
-  }
-}
-
-export function* openFirstConversationAfterChannelsLoaded() {
-  const channel = yield call(conversationsChannel);
-  const payload = yield take(channel, '*');
-
-  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
-  if (payload.loaded && isMessengerFullScreen) {
-    yield call(openFirstConversation);
-  }
 }
 
 export function* openInviteToastWhenRewardsPopupClosed() {

@@ -4,7 +4,7 @@ import { put, takeLatest, select, call } from 'redux-saga/effects';
 import { update, SagaActionTypes } from './';
 import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 import { User } from '../authentication/types';
-import { openFirstConversation } from '../registration/saga';
+import { openFirstConversation } from '../login/saga';
 
 export const getKeyWithUserId = (key: string) => (state) => {
   const user: User = getDeepProperty(state, 'authentication.user.data', null);

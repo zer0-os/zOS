@@ -4,7 +4,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
   authorizeAndCreateWeb3Account,
-  openFirstConversation,
   createAccount,
   openInviteToastWhenRewardsPopupClosed,
   updateProfile,
@@ -444,22 +443,6 @@ describe('validateAccountInfo', () => {
     const errors = validateAccountInfo({ email, password });
 
     expect(errors).toEqual([AccountCreationErrors.PASSWORD_TOO_WEAK]);
-  });
-});
-
-describe('openFirstConversation', () => {
-  it('opens the first conversation', async () => {
-    await expectSaga(openFirstConversation)
-      .withReducer(rootReducer, {
-        channelsList: { value: ['1234'] } as any,
-        normalized: {
-          channels: {
-            '1234': { isChannel: false },
-          },
-        } as any,
-      } as RootState)
-      .put(setactiveConversationId('1234'))
-      .run();
   });
 });
 

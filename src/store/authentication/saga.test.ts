@@ -13,6 +13,7 @@ import {
   redirectUnauthenticatedUser,
   completeUserLogin,
   publishUserLogin,
+  publishUserLogout,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -137,41 +138,55 @@ describe(completeUserLogin, () => {
 });
 
 describe('terminate', () => {
-  it('verifies terminate orchestration', async () => {
-    await expectSaga(terminate)
-      .provide([
-        [
-          matchers.call.fn(clearSessionApi),
-          true,
-        ],
-        [
-          matchers.call.fn(redirectUnauthenticatedUser),
-          null,
-        ],
-      ])
-      .call(clearSessionApi)
-      .put(setUser({ data: null, isLoading: false, nonce: null }))
-      .put(setChatAccessToken({ value: null, isLoading: false }))
+  it('clears authentication state', async () => {
+    const { storeState } = await expectSaga(terminate)
+      .provide([...successResponses()])
       .withReducer(rootReducer)
       .run();
+
+    expect(storeState.authentication.user).toMatchObject({ data: null, nonce: null });
   });
 
   it('clears the user state', async () => {
     await expectSaga(terminate)
-      .provide([
-        [
-          matchers.call.fn(clearSessionApi),
-          true,
-        ],
-        [
-          matchers.call.fn(redirectUnauthenticatedUser),
-          null,
-        ],
-      ])
-      .spawn(clearUserState)
-      .withReducer(rootReducer)
+      .provide([...successResponses()])
+      .call(clearUserState)
       .run();
   });
+
+  it('redirects the user to the appropriate landing page', async () => {
+    await expectSaga(terminate, true)
+      .provide([...successResponses()])
+      .call(redirectUnauthenticatedUser, true)
+      .run();
+  });
+
+  it('publishes the user logout event', async () => {
+    await expectSaga(terminate)
+      .provide([...successResponses()])
+      .call(publishUserLogout)
+      .run();
+  });
+
+  it('clears the user cookie', async () => {
+    await expectSaga(terminate)
+      .provide([...successResponses()])
+      .call(clearSessionApi)
+      .run();
+  });
+
+  function successResponses() {
+    return [
+      [
+        matchers.call.fn(clearSessionApi),
+        true,
+      ],
+      [
+        matchers.call.fn(redirectUnauthenticatedUser),
+        null,
+      ],
+    ] as any;
+  }
 });
 
 describe('getCurrentUserWithChatAccessToken', () => {

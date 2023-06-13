@@ -55,17 +55,18 @@ export function* completeUserLogin() {
 }
 
 export function* terminate(isChangeAccount = false) {
-  yield put(setUser({ data: null, nonce: null, isLoading: false }));
+  yield put(setUser({ data: null, nonce: null }));
   yield put(setChatAccessToken({ value: null, isLoading: false }));
-  yield spawn(clearUserState);
-  yield call(redirectUnauthenticatedUser, isChangeAccount);
-  yield publishUserLogout();
 
   try {
     yield call(clearSessionApi);
   } catch {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
+
+  yield call(clearUserState);
+  yield call(redirectUnauthenticatedUser, isChangeAccount);
+  yield call(publishUserLogout);
 }
 
 export function* getCurrentUserWithChatAccessToken() {
@@ -95,6 +96,7 @@ export function* authenticateByEmail(email, password) {
 }
 
 export function* initializeUserState(user: User) {
+  // Note: This should probably all live in the appropriate areas and listen to the logout event
   yield initializeUserLayout(user);
 
   yield put(
@@ -105,6 +107,7 @@ export function* initializeUserState(user: User) {
 }
 
 export function* clearUserState() {
+  // Note: This should probably all live in the appropriate areas and listen to the logout event
   yield all([
     call(clearChannelsAndConversations),
     call(clearMessages),
@@ -129,7 +132,7 @@ export function* publishUserLogin(user) {
   yield put(channel, { type: Events.UserLogin, userId: user.id });
 }
 
-function* publishUserLogout() {
+export function* publishUserLogout() {
   const channel = yield call(authChannel);
   yield put(channel, { type: Events.UserLogout });
 }

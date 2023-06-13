@@ -368,7 +368,7 @@ $side-padding: 16px;
   color: theme.$color-greyscale-12;
 
   &:hover,
-  &[data-variant='selected'] {
+  &[is-active='true'] {
     background-color: theme.$color-primary-3;
     border-radius: 8px;
   }
@@ -398,7 +398,7 @@ $side-padding: 16px;
     flex-grow: 1;
     font-size: $font-size-medium;
 
-    &[data-variant='unread'] {
+    &[is-unread='true'] {
       font-weight: 700;
     }
   }
@@ -421,7 +421,7 @@ $side-padding: 16px;
     text-overflow: ellipsis;
     padding-right: 1px;
 
-    &[data-variant='unread'] {
+    &[is-unread='true'] {
       font-weight: 700;
       color: theme.$color-greyscale-12;
 

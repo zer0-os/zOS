@@ -4,7 +4,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
   authorizeAndCreateWeb3Account,
-  channelsLoaded,
   createAccount,
   openInviteToastWhenRewardsPopupClosed,
   updateProfile,
@@ -28,11 +27,10 @@ import {
   SagaActionTypes,
   initialState as initialRegistrationState,
 } from '.';
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { setactiveConversationId } from '../chat';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 
@@ -444,22 +442,6 @@ describe('validateAccountInfo', () => {
     const errors = validateAccountInfo({ email, password });
 
     expect(errors).toEqual([AccountCreationErrors.PASSWORD_TOO_WEAK]);
-  });
-});
-
-describe('channelsLoaded', () => {
-  it('opens the first conversation', async () => {
-    await expectSaga(channelsLoaded)
-      .withReducer(rootReducer, {
-        channelsList: { value: ['1234'] } as any,
-        normalized: {
-          channels: {
-            '1234': { isChannel: false },
-          },
-        } as any,
-      } as RootState)
-      .put(setactiveConversationId('1234'))
-      .run();
   });
 });
 

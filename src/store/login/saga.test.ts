@@ -1,14 +1,15 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { emailLogin, validateEmailLogin } from './saga';
+import { emailLogin, openFirstConversation, validateEmailLogin } from './saga';
 import { emailLogin as apiEmailLogin } from './api';
 
 import { call } from 'redux-saga/effects';
 
 import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegistrationState } from '.';
 
-import { rootReducer } from '../reducer';
+import { RootState, rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { setactiveConversationId } from '../chat';
 
 describe('emailLogin', () => {
   it('logs the user in', async () => {
@@ -132,6 +133,22 @@ describe('validateEmailLogin', () => {
     const errors = validateEmailLogin({ email, password });
 
     expect(errors).toEqual([EmailLoginErrors.PASSWORD_REQUIRED]);
+  });
+});
+
+describe('openFirstConversation', () => {
+  it('opens the first conversation', async () => {
+    await expectSaga(openFirstConversation)
+      .withReducer(rootReducer, {
+        channelsList: { value: ['1234'] } as any,
+        normalized: {
+          channels: {
+            '1234': { isChannel: false },
+          },
+        } as any,
+      } as RootState)
+      .put(setactiveConversationId('1234'))
+      .run();
   });
 });
 

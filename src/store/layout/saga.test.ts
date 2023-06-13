@@ -1,9 +1,15 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { when } from 'jest-when';
 
-import { updateSidekick as updateSidekickSaga, initializeUserLayout, clearUserLayout } from './saga';
+import {
+  updateSidekick as updateSidekickSaga,
+  initializeUserLayout,
+  clearUserLayout,
+  enterFullScreenMessenger,
+} from './saga';
 
 import { reducer } from '.';
+import { setactiveConversationId } from '../chat';
 
 describe('layout saga', () => {
   const sidekickKey = 'user-id-isSidekickOpen';
@@ -15,6 +21,7 @@ describe('layout saga', () => {
         },
       },
     },
+    chat: { activeConversationId: 'channel-id' },
   };
 
   describe('updateSidekick', () => {
@@ -74,6 +81,24 @@ describe('layout saga', () => {
         stubLocalStorageValue('fullScreenMessenger', 'false');
         const { storeState } = await expectSaga(initializeUserLayout, user({ isAMemberOfWorlds: false }))
           .withReducer(reducer, state as any)
+          .run();
+
+        expect(storeState.value.isMessengerFullScreen).toBeTrue();
+      });
+
+      it('enters full screen messenger, and opens the first conversation if activeConversationId is null', async () => {
+        const { storeState } = await expectSaga(enterFullScreenMessenger, {})
+          .withReducer(reducer, {
+            ...state,
+            channelsList: { value: ['first-channel-id'] } as any,
+            normalized: {
+              channels: {
+                'first-channel-id': { isChannel: false },
+              },
+            },
+            chat: { activeConversationId: null },
+          } as any)
+          .put(setactiveConversationId('first-channel-id'))
           .run();
 
         expect(storeState.value.isMessengerFullScreen).toBeTrue();

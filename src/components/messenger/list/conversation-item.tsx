@@ -125,11 +125,24 @@ export class ConversationItem extends React.Component<Properties> {
     }
   }
 
-  render() {
+  get dataVariant() {
     const { conversation, activeMessengerId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
+    if (hasUnreadMessages) {
+      return 'unread';
+    }
+
     const isActive = conversation.id === activeMessengerId;
-    const dataVariant = (hasUnreadMessages || isActive) && 'highlighted';
+    if (isActive) {
+      return 'selected';
+    }
+
+    return '';
+  }
+
+  render() {
+    const { conversation } = this.props;
+    const hasUnreadMessages = conversation.unreadCount !== 0;
 
     return (
       <Tooltip
@@ -142,17 +155,17 @@ export class ConversationItem extends React.Component<Properties> {
           ],
         }}
       >
-        <div className={c('')} onClick={this.handleMemberClick}>
+        <div className={c('')} onClick={this.handleMemberClick} data-variant={this.dataVariant}>
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
-              <div className={c('name')} data-variant={dataVariant}>
+              <div className={c('name')} data-variant={this.dataVariant}>
                 {this.highlightedName()}
               </div>
               <div className={c('timestamp')}>{this.displayDate}</div>
             </div>
             <div className={c('content')}>
-              <div className={c('message')} data-variant={dataVariant}>
+              <div className={c('message')} data-variant={this.dataVariant}>
                 <ContentHighlighter message={this.message} />
               </div>
               {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}

@@ -372,6 +372,11 @@ $side-padding: 16px;
     border-radius: 8px;
   }
 
+  &[data-variant='selected'] {
+    background-color: theme.$color-primary-3;
+    border-radius: 8px;
+  }
+
   & > * {
     flex-shrink: 0;
   }
@@ -397,7 +402,7 @@ $side-padding: 16px;
     flex-grow: 1;
     font-size: $font-size-medium;
 
-    &[data-variant='highlighted'] {
+    &[data-variant='unread'] {
       font-weight: 700;
     }
   }
@@ -435,6 +440,13 @@ $side-padding: 16px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+    }
+
+    &[data-variant='unread'] {
+      div {
+        font-weight: 700;
+        color: theme.$color-greyscale-12;
+      }
     }
   }
 

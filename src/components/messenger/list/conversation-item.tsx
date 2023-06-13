@@ -19,7 +19,7 @@ export interface Properties {
   filter: string;
   conversation: Channel & { messagePreview?: string };
   myUserId: string;
-  activeMessengerId: string;
+  activeConversationId: string;
 
   onClick: (conversationId: string) => void;
 }
@@ -126,13 +126,13 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   get dataVariant() {
-    const { conversation, activeMessengerId } = this.props;
+    const { conversation, activeConversationId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
     if (hasUnreadMessages) {
       return 'unread';
     }
 
-    const isActive = conversation.id === activeMessengerId;
+    const isActive = conversation.id === activeConversationId;
     if (isActive) {
       return 'selected';
     }

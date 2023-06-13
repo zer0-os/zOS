@@ -59,8 +59,8 @@ export function* enterFullScreenMessenger(_action) {
   yield put(update({ isMessengerFullScreen: true }));
 
   // open the first conversation when entering full screen
-  const activeMessengerId = yield select((state) => getDeepProperty(state, 'chat.activeMessengerId'));
-  if (!activeMessengerId) {
+  const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId'));
+  if (!activeConversationId) {
     yield call(openFirstConversation);
   }
 }

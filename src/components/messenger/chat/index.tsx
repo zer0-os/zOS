@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconExpand1, IconLayoutRight, IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
-import { setActiveMessengerId } from '../../../store/chat';
+import { setactiveConversationId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
@@ -17,8 +17,8 @@ import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../stor
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
-  activeMessengerId: string;
-  setActiveMessengerId: (activeDirectMessageId: string) => void;
+  activeConversationId: string;
+  setactiveConversationId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
   isFullScreen: boolean;
   includeTitleBar: boolean;
@@ -36,14 +36,14 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
-      chat: { activeMessengerId },
+      chat: { activeConversationId },
       layout,
     } = state;
 
-    const directMessage = denormalize(activeMessengerId, state);
+    const directMessage = denormalize(activeConversationId, state);
 
     return {
-      activeMessengerId,
+      activeConversationId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
       includeTitleBar: user?.data?.isAMemberOfWorlds,
@@ -52,18 +52,18 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(): Partial<Properties> {
     return {
-      setActiveMessengerId,
+      setactiveConversationId,
       enterFullScreenMessenger,
       exitFullScreenMessenger,
     };
   }
 
   handleClose = (): void => {
-    this.props.setActiveMessengerId('');
+    this.props.setactiveConversationId('');
   };
 
   componentDidUpdate(prevProps: Properties): void {
-    if (prevProps.activeMessengerId !== this.props.activeMessengerId) {
+    if (prevProps.activeConversationId !== this.props.activeConversationId) {
       this.setState({ isMinimized: false });
     }
   }
@@ -136,7 +136,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   render() {
-    if (!this.props.activeMessengerId) {
+    if (!this.props.activeConversationId) {
       return null;
     }
 
@@ -183,8 +183,8 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <ChatViewContainer
-            key={this.props.activeMessengerId} // Render new component for a new chat
-            channelId={this.props.activeMessengerId}
+            key={this.props.activeConversationId} // Render new component for a new chat
+            channelId={this.props.activeConversationId}
             className='direct-message-chat__channel'
             isDirectMessage
             showSenderAvatar={!this.isOneOnOne()}

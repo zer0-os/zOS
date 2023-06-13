@@ -27,11 +27,10 @@ import {
   SagaActionTypes,
   initialState as initialRegistrationState,
 } from '.';
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { setactiveConversationId } from '../chat';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 

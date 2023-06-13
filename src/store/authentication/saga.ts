@@ -47,8 +47,10 @@ export function* nonceOrAuthorize(action) {
   return { nonce };
 }
 
-export function* completeUserLogin() {
-  const user = yield call(fetchCurrentUser);
+export function* completeUserLogin(user = null) {
+  if (!user) {
+    user = yield call(fetchCurrentUser);
+  }
   yield put(setUser({ data: user }));
   yield call(initializeUserState, user);
   yield call(publishUserLogin, user);
@@ -78,7 +80,7 @@ export function* getCurrentUserWithChatAccessToken() {
 
     const { chatAccessToken } = yield call(fetchChatAccessToken);
     yield setAuthentication({ chatAccessToken });
-    yield completeUserLogin();
+    yield completeUserLogin(user);
     return true;
   } catch (e) {
     return false;

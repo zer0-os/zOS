@@ -23,7 +23,6 @@ import {
 } from './api';
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
-import { fetch as fetchNotifications } from '../notifications';
 import { receive } from '../channels-list';
 import { update } from '../layout';
 import { rootReducer } from '../reducer';
@@ -34,15 +33,6 @@ import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
-
-const currentUserResponse = {
-  userId: 'id-1',
-  id: 'id-1',
-};
-
-const chatAccessTokenResponse = {
-  chatAccessToken: 'abc-a123',
-};
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -189,59 +179,57 @@ describe('terminate', () => {
   }
 });
 
-describe('getCurrentUserWithChatAccessToken', () => {
-  it('stores user', async () => {
+describe(getCurrentUserWithChatAccessToken, () => {
+  it('sets the user state', async () => {
     const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
       .provide([
-        [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
-        ],
-        [
-          matchers.call.fn(fetchChatAccessToken),
-          chatAccessTokenResponse,
-        ],
+        stubResponse(call(fetchCurrentUser), { stub: 'user-data' }),
+        ...successResponses(),
       ])
       .withReducer(reducer)
       .run();
 
     expect(storeState).toMatchObject({
-      user: { data: currentUserResponse },
+      user: { data: { stub: 'user-data' } },
     });
   });
 
-  it('initializes the user state', async () => {
-    await expectSaga(getCurrentUserWithChatAccessToken)
+  it('sets the authentication state', async () => {
+    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
       .provide([
-        [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
-        ],
-        [
-          matchers.call.fn(fetchChatAccessToken),
-          chatAccessTokenResponse,
-        ],
+        stubResponse(call(fetchChatAccessToken), { chatAccessToken: 'token' }),
+        ...successResponses(),
       ])
-      .call(initializeUserState, currentUserResponse)
+      .withReducer(rootReducer)
       .run();
+
+    // Maybe we should just test that we called it since we don't own this state?
+    expect(storeState.chat.chatAccessToken.value).toEqual('token');
   });
 
-  it('fetch notification', async () => {
-    await expectSaga(getCurrentUserWithChatAccessToken)
+  it('returns false if fetching the user fails. I.E., the user is not logged in.', async () => {
+    const { returnValue } = await expectSaga(getCurrentUserWithChatAccessToken)
       .provide([
-        [
-          matchers.call.fn(fetchCurrentUser),
-          currentUserResponse,
-        ],
-        [
-          matchers.call.fn(fetchChatAccessToken),
-          chatAccessTokenResponse,
-        ],
+        stubResponse(call(fetchChatAccessToken), null),
+        ...successResponses(),
       ])
-      .call(initializeUserState, currentUserResponse)
-      .put(fetchNotifications({ userId: currentUserResponse.id }))
       .run();
+
+    expect(returnValue).toEqual(false);
   });
+
+  function successResponses() {
+    return [
+      [
+        matchers.call.fn(fetchCurrentUser),
+        { userId: 'id-1', id: 'id-1' },
+      ],
+      [
+        matchers.call.fn(fetchChatAccessToken),
+        { chatAccessToken: 'abc-a123' },
+      ],
+    ] as any;
+  }
 });
 
 describe('clearUserState', () => {

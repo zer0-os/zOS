@@ -70,7 +70,7 @@ describe('NotificationsListContainer', () => {
 
     test('userId', () => {
       const state = subject({
-        authentication: { user: { data: { id: 'user-id' } as any }, loading: false },
+        authentication: { user: { data: { id: 'user-id' } as any } },
       });
 
       expect(state.userId).toEqual('user-id');

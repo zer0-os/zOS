@@ -17,6 +17,7 @@ import { AppLayout, AppContextPanel, AppContent } from '@zer0-os/zos-component-l
 import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
+import { ScrollbarContainer } from '../../components/scrollbar-container';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -91,7 +92,9 @@ export class Container extends React.Component<Properties> {
       <Provider store={this.props.store}>
         <AppLayout className='channels'>
           <AppContextPanel>
-            <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
+            <ScrollbarContainer variant='on-hover'>
+              <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
+            </ScrollbarContainer>
           </AppContextPanel>
           <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
         </AppLayout>

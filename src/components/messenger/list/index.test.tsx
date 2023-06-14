@@ -310,13 +310,22 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-02').valueOf() }, isChannel: false },
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf() }, isChannel: false },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
+        { id: 'convo-3', createdAt: moment('2023-03-04').valueOf(), isChannel: false },
+        {
+          id: 'convo-4',
+          createdAt: moment('2023-03-05').valueOf(),
+          lastMessage: { createdAt: moment('2023-03-02').valueOf() },
+          isChannel: false,
+        },
       ]);
 
       expect(state.conversations.map((c) => c.id)).toEqual([
-        'convo-2',
+        'convo-3',
         'convo-1',
+        'convo-4',
+        'convo-2',
       ]);
     });
 

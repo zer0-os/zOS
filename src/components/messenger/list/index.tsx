@@ -85,8 +85,8 @@ export class Container extends React.Component<Properties, State> {
       rewards,
     } = state;
     const conversations = denormalizeConversations(state)
-      .sort((messengerA, messengerB) =>
-        compareDatesDesc(messengerA.lastMessage?.createdAt, messengerB.lastMessage?.createdAt)
+      .sort((a, b) =>
+        compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
       )
       .map((conversation) => ({
         ...conversation,

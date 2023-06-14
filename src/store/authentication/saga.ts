@@ -56,7 +56,7 @@ export function* completeUserLogin(user = null) {
   yield call(publishUserLogin, user);
 }
 
-export function* terminate(isChangeAccount = false) {
+export function* terminate(isAccountChange = false) {
   yield put(setUser({ data: null, nonce: null }));
   yield put(setChatAccessToken({ value: null, isLoading: false }));
 
@@ -67,7 +67,7 @@ export function* terminate(isChangeAccount = false) {
   }
 
   yield call(clearUserState);
-  yield call(redirectUnauthenticatedUser, isChangeAccount);
+  yield call(redirectUnauthenticatedUser, isAccountChange);
   yield call(publishUserLogout);
 }
 
@@ -139,14 +139,14 @@ export function* publishUserLogout() {
   yield put(channel, { type: Events.UserLogout });
 }
 
-export function* redirectUnauthenticatedUser(isChangeAccount: boolean) {
+export function* redirectUnauthenticatedUser(isAccountChange: boolean) {
   const history = getHistory();
 
   if (featureFlags.allowPublicZOS) {
     yield initializePublicLayout();
   }
 
-  if (isChangeAccount || featureFlags.allowPublicZOS) {
+  if (isAccountChange || featureFlags.allowPublicZOS) {
     history.replace({ pathname: '/' });
     return;
   }

@@ -57,13 +57,19 @@ export class Container extends React.Component<Properties> {
   componentDidMount() {
     const { domainId } = this.props;
 
-    this.props.fetchChannels(domainId);
+    if (domainId) {
+      this.props.fetchChannels(domainId);
+    }
   }
 
   componentDidUpdate(prevProps: Properties) {
     const { user, domainId } = this.props;
 
-    if (prevProps.user.data !== user.data) {
+    if (!domainId) {
+      return;
+    }
+
+    if (prevProps.user.data !== user.data || prevProps.domainId !== domainId) {
       this.props.fetchChannels(domainId);
     }
   }

@@ -1,7 +1,7 @@
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { takeLatest, put, call, take, race, all, select } from 'redux-saga/effects';
+import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive } from '.';
 
 import {
@@ -15,6 +15,7 @@ import { channelMapper, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
+import { Events, getAuthChannel } from '../authentication/channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -147,7 +148,26 @@ export function* channelsReceived(action) {
   yield put(receive(newChannelList));
 }
 
+function* listenForUserLogin() {
+  const userChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(userChannel, Events.UserLogin);
+    // Note: not sure why these were tied together. They're separate portions of the application.
+    yield startChannelsAndConversationsRefresh();
+  }
+}
+
+function* listenForUserLogout() {
+  const userChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(userChannel, Events.UserLogout);
+    yield put({ type: SagaActionTypes.StopChannelsAndConversationsAutoRefresh });
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForUserLogin);
+  yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);

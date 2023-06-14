@@ -1,7 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
 import { emailLogin, openFirstConversation, validateEmailLogin } from './saga';
-import { emailLogin as apiEmailLogin } from './api';
 
 import { call } from 'redux-saga/effects';
 
@@ -10,6 +9,7 @@ import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegist
 import { RootState, rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setactiveConversationId } from '../chat';
+import { authenticateByEmail } from '../authentication/saga';
 
 describe('emailLogin', () => {
   it('logs the user in', async () => {
@@ -22,7 +22,7 @@ describe('emailLogin', () => {
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [
-          call(apiEmailLogin, { email, password }),
+          call(authenticateByEmail, email, password),
           { success: true, response: {} },
         ],
       ])
@@ -64,7 +64,7 @@ describe('emailLogin', () => {
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [
-          call(apiEmailLogin, { email, password }),
+          call(authenticateByEmail, email, password),
           { success: false, response: EmailLoginErrors.UNKNOWN_ERROR },
         ],
       ])
@@ -85,7 +85,7 @@ describe('emailLogin', () => {
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [
-          call(apiEmailLogin, { email, password }),
+          call(authenticateByEmail, email, password),
           throwError(new Error('Stub api error')),
         ],
       ])
@@ -105,7 +105,7 @@ describe('emailLogin', () => {
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [
-          call(apiEmailLogin, { email, password }),
+          call(authenticateByEmail, email, password),
           { success: true, response: {} },
         ],
       ])

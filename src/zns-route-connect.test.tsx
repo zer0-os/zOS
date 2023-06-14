@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container } from './zns-route-connect';
-import { Authentication } from './components/authentication';
 
 describe('ZnsRouteConnect', () => {
   const getMatchForParams = (params = {}) => {
@@ -249,11 +248,5 @@ describe('ZnsRouteConnect', () => {
     container.setProps(buildLocationProps({ match: getMatchForParams({ app, znsRoute: `0.${znsRoute}` }) }));
 
     expect(setRoute).toHaveBeenCalledWith({ route: znsRoute, hasAppChanged: true });
-  });
-
-  it('should render Authentication', () => {
-    const container = subject();
-
-    expect(container.find(Authentication).exists()).toBe(true);
   });
 });

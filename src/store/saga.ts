@@ -16,9 +16,11 @@ import { saga as createInvitation } from './create-invitation/saga';
 import { saga as registration } from './registration/saga';
 import { saga as login } from './login/saga';
 import { saga as rewards } from './rewards/saga';
+import { saga as pageLoad } from './page-load/saga';
 
 export function* rootSaga() {
   const allSagas = {
+    pageLoad,
     web3,
     zns,
     apps,

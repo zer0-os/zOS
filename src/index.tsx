@@ -7,10 +7,9 @@ import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route } from 'react-router-dom';
-import { createBrowserHistory, createHashHistory } from 'history';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { config } from './config';
-import { isElectron, showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
+import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
 import { AppSandboxContainer } from './app-sandbox/container';
@@ -20,6 +19,7 @@ import './index.scss';
 import { Invite } from './invite';
 import { LoginPage } from './pages';
 import { Web3Connect } from './components/web3-connect';
+import { getHistory } from './lib/browser';
 
 runSagas();
 
@@ -27,7 +27,7 @@ initializeErrorBoundary();
 
 showReleaseVersionInConsole();
 
-const history = isElectron() ? createHashHistory() : createBrowserHistory();
+export const history = getHistory();
 
 const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;

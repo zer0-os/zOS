@@ -393,7 +393,6 @@ describe('ChannelViewContainer', () => {
         },
         authentication: {
           user: {
-            isLoading: false,
             data: null,
           },
         },

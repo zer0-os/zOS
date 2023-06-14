@@ -1,10 +1,18 @@
 import getDeepProperty from 'lodash.get';
-import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, race, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
-import { emailLogin as apiEmailLogin } from './api';
-import { EmailLoginErrors, LoginStage, SagaActionTypes, Web3LoginErrors, setErrors, setLoading, setStage } from '.';
+import {
+  EmailLoginErrors,
+  LoginStage,
+  SagaActionTypes,
+  Web3LoginErrors,
+  reset,
+  setErrors,
+  setLoading,
+  setStage,
+} from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
-import { logout, nonceOrAuthorize, terminate } from '../authentication/saga';
+import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
@@ -24,7 +32,7 @@ export function* emailLogin(action) {
       return false;
     }
 
-    const result = yield call(apiEmailLogin, { email, password });
+    const result = yield call(authenticateByEmail, email, password);
     if (result.success) {
       yield put(setStage(LoginStage.Done));
       return true;
@@ -100,7 +108,7 @@ export function* web3ChangeAccount() {
     return;
   }
 
-  yield call(terminate);
+  yield call(terminate, true);
 
   result = yield call(nonceOrAuthorize, { payload: { signedWeb3Token: result.token } });
   if (result.nonce) {
@@ -128,7 +136,7 @@ function* listenForWeb3AccountChanges() {
   yield call(web3ChangeAccount);
 }
 
-function* listenForLoginEvents() {
+function* listenForUserLogin() {
   // This might be a little dicey. We dont' currently verify that your session
   // matches the web3 account that you're connected to when you refresh the page.
   const authChannel = yield call(getAuthChannel);
@@ -162,14 +170,18 @@ export function* openFirstConversationAfterChannelsLoaded() {
   }
 }
 
-export function* saga() {
-  yield spawn(listenForLoginEvents);
-  yield takeLatest(SagaActionTypes.Web3Login, web3Login);
-  yield takeEvery(SagaActionTypes.SwitchLoginStage, switchLoginStage); // Add this line
+function* listenForUserLogout() {
+  const authChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(authChannel, AuthEvents.UserLogout);
+    yield put(reset());
+  }
+}
 
-  let success;
-  do {
-    const action = yield take(SagaActionTypes.EmailLogin);
-    success = yield call(emailLogin, action);
-  } while (!success);
+export function* saga() {
+  yield spawn(listenForUserLogin);
+  yield spawn(listenForUserLogout);
+  yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
+  yield takeLatest(SagaActionTypes.Web3Login, web3Login);
+  yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
 }

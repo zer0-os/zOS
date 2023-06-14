@@ -110,12 +110,7 @@ export class Container extends React.Component<Properties, State> {
       });
     }
 
-    if (
-      channelId &&
-      this.props.user.isLoading === false &&
-      prevProps.user.data === null &&
-      this.props.user.data !== null
-    ) {
+    if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
       this.props.fetchMessages({ channelId });
       this.setState({
         isFirstMessagesFetchDone: false,

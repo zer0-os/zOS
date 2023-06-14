@@ -4,6 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
   authorizeAndCreateWeb3Account,
+  clearRegistrationStateOnLogout,
   createAccount,
   openInviteToastWhenRewardsPopupClosed,
   updateProfile,
@@ -17,7 +18,7 @@ import {
   completeAccount as apiCompleteAccount,
   uploadImage,
 } from './api';
-import { call } from 'redux-saga/effects';
+import { call, spawn } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
@@ -33,6 +34,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
+import { completeUserLogin } from '../authentication/saga';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -284,6 +286,14 @@ describe('updateProfile', () => {
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
           { success: true },
         ],
+        [
+          call(completeUserLogin),
+          null,
+        ],
+        [
+          spawn(clearRegistrationStateOnLogout),
+          null,
+        ],
       ])
       .withReducer(
         rootReducer,
@@ -310,6 +320,14 @@ describe('updateProfile', () => {
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: 'image-url' }),
           { success: true },
+        ],
+        [
+          call(completeUserLogin),
+          null,
+        ],
+        [
+          spawn(clearRegistrationStateOnLogout),
+          null,
         ],
       ])
       .withReducer(
@@ -399,6 +417,14 @@ describe('updateProfile', () => {
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
           { success: true },
+        ],
+        [
+          call(completeUserLogin),
+          null,
+        ],
+        [
+          spawn(clearRegistrationStateOnLogout),
+          null,
         ],
       ])
       .withReducer(

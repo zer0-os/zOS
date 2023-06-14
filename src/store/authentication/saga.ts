@@ -1,16 +1,16 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, all, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, all } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
-import { SagaActionTypes as ChannelsListSagaActionTypes } from '../channels-list';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
   clearSession as clearSessionApi,
   fetchChatAccessToken,
+  emailLogin as apiEmailLogin,
 } from './api';
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
-import { clearUserLayout, initializeUserLayout } from '../layout/saga';
+import { clearUserLayout, initializePublicLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
@@ -19,6 +19,8 @@ import { clearMessages } from '../messages/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { Events, authChannel } from './channels';
+import { getHistory } from '../../lib/browser';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -28,90 +30,75 @@ export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
 
+export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }) {
+  yield put(setChatAccessToken({ value: chatAccessToken, isLoading: false }));
+}
+
 export function* nonceOrAuthorize(action) {
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: true });
-
   const { signedWeb3Token } = action.payload;
-
   const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
-
   if (nonce) {
-    yield put(setUser({ nonce, isLoading: false }));
+    yield put(setUser({ nonce, data: null }));
   } else {
-    const user = yield call(fetchCurrentUser);
-
-    yield processUserAccount({ user, chatAccessToken, isLoading: false });
+    yield setAuthentication({ chatAccessToken });
+    yield call(completeUserLogin);
   }
 
   return { nonce };
 }
 
-export function* terminate() {
-  yield processUserAccount({ user: null, nonce: null, chatAccessToken: null, isLoading: false });
+export function* completeUserLogin(user = null) {
+  if (!user) {
+    user = yield call(fetchCurrentUser);
+  }
+  yield put(setUser({ data: user }));
+  yield call(initializeUserState, user);
+  yield call(publishUserLogin, user);
+}
+
+export function* terminate(isAccountChange = false) {
+  yield put(setUser({ data: null, nonce: null }));
+  yield put(setChatAccessToken({ value: null, isLoading: false }));
 
   try {
     yield call(clearSessionApi);
   } catch {
     /* No operation, if user is unauthenticated deleting the cookie fails */
   }
+
+  yield call(clearUserState);
+  yield call(redirectUnauthenticatedUser, isAccountChange);
+  yield call(publishUserLogout);
 }
 
 export function* getCurrentUserWithChatAccessToken() {
-  yield processUserAccount({ user: null, chatAccessToken: null, isLoading: true });
+  try {
+    const user = yield call(fetchCurrentUser);
+    if (!user) {
+      return false;
+    }
 
-  const user = yield call(fetchCurrentUser);
-
-  if (user) {
     const { chatAccessToken } = yield call(fetchChatAccessToken);
-
-    yield processUserAccount({ user, chatAccessToken, isLoading: false });
-  } else {
-    yield processUserAccount({ isLoading: false });
+    yield setAuthentication({ chatAccessToken });
+    yield completeUserLogin(user);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
-export function* processUserAccount(params: {
-  user?: User;
-  nonce?: string;
-  chatAccessToken?: string;
-  isLoading: boolean;
-}) {
-  const { user = null, nonce = null, chatAccessToken = null, isLoading = false } = params;
-
-  yield all([
-    put(
-      setUser({
-        data: user,
-        nonce,
-        isLoading,
-      })
-    ),
-    put(
-      setChatAccessToken({
-        value: chatAccessToken,
-        isLoading,
-      })
-    ),
-  ]);
-
-  if (isLoading) return;
-
-  yield put({
-    type: user
-      ? ChannelsListSagaActionTypes.StartChannelsAndConversationsAutoRefresh
-      : ChannelsListSagaActionTypes.StopChannelsAndConversationsAutoRefresh,
-  });
-
-  if (user) {
-    yield spawn(initializeUserState, user);
-    yield publishUserLogin(user);
-  } else {
-    yield spawn(clearUserState);
-    yield publishUserLogout();
+export function* authenticateByEmail(email, password) {
+  const result = yield call(apiEmailLogin, { email, password });
+  if (!result.success) {
+    return result;
   }
+  yield call(setAuthentication, { chatAccessToken: result.chatAccessToken });
+  yield call(completeUserLogin);
+  return result;
 }
 
 export function* initializeUserState(user: User) {
+  // Note: This should probably all live in the appropriate areas and listen to the logout event
   yield initializeUserLayout(user);
 
   yield put(
@@ -122,6 +109,7 @@ export function* initializeUserState(user: User) {
 }
 
 export function* clearUserState() {
+  // Note: This should probably all live in the appropriate areas and listen to the logout event
   yield all([
     call(clearChannelsAndConversations),
     call(clearMessages),
@@ -132,8 +120,6 @@ export function* clearUserState() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.NonceOrAuthorize, nonceOrAuthorize);
-  yield takeLatest(SagaActionTypes.Terminate, terminate);
   yield takeLatest(SagaActionTypes.Logout, logout);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }
@@ -143,12 +129,27 @@ export function* logout() {
   yield call(terminate);
 }
 
-function* publishUserLogin(user) {
+export function* publishUserLogin(user) {
   const channel = yield call(authChannel);
   yield put(channel, { type: Events.UserLogin, userId: user.id });
 }
 
-function* publishUserLogout() {
+export function* publishUserLogout() {
   const channel = yield call(authChannel);
   yield put(channel, { type: Events.UserLogout });
+}
+
+export function* redirectUnauthenticatedUser(isAccountChange: boolean) {
+  const history = getHistory();
+
+  if (featureFlags.allowPublicZOS) {
+    yield initializePublicLayout();
+  }
+
+  if (isAccountChange || featureFlags.allowPublicZOS) {
+    history.replace({ pathname: '/' });
+    return;
+  }
+
+  history.replace({ pathname: '/login' });
 }

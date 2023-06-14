@@ -46,6 +46,15 @@ export function* initializeUserLayout(user: { id: string; isAMemberOfWorlds: boo
   );
 }
 
+export function* initializePublicLayout() {
+  yield put(
+    update({
+      isSidekickOpen: false,
+      isMessengerFullScreen: false,
+    })
+  );
+}
+
 export function* clearUserLayout() {
   yield put(
     update({

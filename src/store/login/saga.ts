@@ -136,7 +136,7 @@ function* listenForWeb3AccountChanges() {
   yield call(web3ChangeAccount);
 }
 
-function* listenForLoginEvents() {
+function* listenForUserLogin() {
   // This might be a little dicey. We dont' currently verify that your session
   // matches the web3 account that you're connected to when you refresh the page.
   const authChannel = yield call(getAuthChannel);
@@ -170,7 +170,7 @@ export function* openFirstConversationAfterChannelsLoaded() {
   }
 }
 
-function* listenForLogoutEvents() {
+function* listenForUserLogout() {
   const authChannel = yield call(getAuthChannel);
   while (true) {
     yield take(authChannel, AuthEvents.UserLogout);
@@ -179,8 +179,8 @@ function* listenForLogoutEvents() {
 }
 
 export function* saga() {
-  yield spawn(listenForLoginEvents);
-  yield spawn(listenForLogoutEvents);
+  yield spawn(listenForUserLogin);
+  yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
   yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);

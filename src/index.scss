@@ -1,7 +1,7 @@
 @use 'modules/font' as fonts;
 @use 'modules/animation' as animation;
 @use 'shared-components/theme-engine/theme' as theme;
-@import '~@zer0-os/zos-component-library/dist/assets/scroll';
+@import './scrollbar';
 
 @import-normalize;
 

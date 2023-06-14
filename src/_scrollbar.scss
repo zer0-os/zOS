@@ -1,0 +1,10 @@
+@mixin scrollbar($width: 4px, $color: rgba(225, 225, 254, 0.15), $radius: 5px, $opacity: 0.19) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color;
+    border-radius: $radius;
+  }
+}

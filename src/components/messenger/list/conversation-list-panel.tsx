@@ -12,6 +12,7 @@ import { Button, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
 import { conversationToOption, itemToOption } from '../lib/utils';
+import { ScrollbarContainer } from '../../scrollbar-container';
 
 export interface Properties {
   conversations: Channel[];
@@ -133,30 +134,33 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               onChange={this.searchChanged}
             />
           </div>
-          <div className='messages-list__item-list'>
-            {this.filteredConversations.map((c) => (
-              <ConversationItem
-                key={c.id}
-                conversation={c}
-                filter={this.state.filter}
-                onClick={this.props.onConversationClick}
-                myUserId={this.props.myUserId}
-                activeConversationId={this.props.activeConversationId}
-              />
-            ))}
 
-            {this.filteredConversations?.length === 0 && this.state.filter !== '' && (
-              <div className='messages-list__empty'>{`You do not have any active conversations with '${this.state.filter}' `}</div>
-            )}
+          <ScrollbarContainer variant='on-hover'>
+            <div className='messages-list__item-list'>
+              {this.filteredConversations.map((c) => (
+                <ConversationItem
+                  key={c.id}
+                  conversation={c}
+                  filter={this.state.filter}
+                  onClick={this.props.onConversationClick}
+                  myUserId={this.props.myUserId}
+                  activeConversationId={this.props.activeConversationId}
+                />
+              ))}
 
-            {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
-              <UserSearchResults
-                results={this.state.userSearchResults}
-                filter={this.state.filter}
-                onCreate={this.props.onCreateConversation}
-              />
-            )}
-          </div>
+              {this.filteredConversations?.length === 0 && this.state.filter !== '' && (
+                <div className='messages-list__empty'>{`You do not have any active conversations with '${this.state.filter}' `}</div>
+              )}
+
+              {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
+                <UserSearchResults
+                  results={this.state.userSearchResults}
+                  filter={this.state.filter}
+                  onCreate={this.props.onCreateConversation}
+                />
+              )}
+            </div>
+          </ScrollbarContainer>
         </div>
         {/* Note: this does not work. directMessages is never null */}
         {/* This should change to this.filteredConversations?.length === 0 */}

@@ -26,7 +26,7 @@ export const channelMapper = (currentChannel): Partial<Channel> => {
     hasJoined: currentChannel.hasJoined,
     otherMembers: currentChannel.otherMembers || [],
     lastMessage: currentChannel.lastMessage || null,
-    lastMessageCreatedAt: currentChannel.lastMessageCreatedAt || null,
+    lastMessageCreatedAt: currentChannel.lastMessage?.createdAt || null,
     isChannel: currentChannel.isChannel === undefined ? true : currentChannel.isChannel,
     groupChannelType: currentChannel.groupChannelType || '',
   };

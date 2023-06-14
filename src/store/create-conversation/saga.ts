@@ -4,7 +4,7 @@ import { channelsReceived, createConversation as performCreateConversation } fro
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setactiveConversationId } from '../chat';
 import { currentUserSelector } from '../authentication/saga';
-import { Events, authChannel } from '../authentication/channels';
+import { Events, getAuthChannel } from '../authentication/channels';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -144,7 +144,7 @@ function* handleGroupDetails() {
 }
 
 function* authWatcher() {
-  const channel = yield call(authChannel);
+  const channel = yield call(getAuthChannel);
   while (true) {
     yield take(channel, Events.UserLogout);
     yield put({ type: SagaActionTypes.Cancel });

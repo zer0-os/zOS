@@ -2,7 +2,7 @@ import { take, put, call, race, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
-import { authChannel } from '../authentication/channels';
+import { getAuthChannel } from '../authentication/channels';
 
 export function* fetchInvite() {
   while (true) {
@@ -34,7 +34,7 @@ export function* fetchInvite() {
 }
 
 export function* saga() {
-  const channel = yield call(authChannel);
+  const channel = yield call(getAuthChannel);
 
   while (true) {
     const { userId = undefined } = yield take(channel, '*');

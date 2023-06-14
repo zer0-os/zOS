@@ -78,10 +78,6 @@ hr.glow:before {
   text-shadow: 0 0 10px var(--glow-text-color);
 }
 
-* {
-  @include scrollbar();
-}
-
 .button-reset {
   cursor: pointer;
   background: none;

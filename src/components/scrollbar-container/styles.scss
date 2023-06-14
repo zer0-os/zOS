@@ -2,6 +2,12 @@
 
 .scrollbar-container {
   position: relative;
+  height: 100%;
+  padding-right: 4px;
+
+  &:hover {
+    padding-right: 0;
+  }
 
   &__content {
     overflow: auto;
@@ -15,6 +21,7 @@
 
       &:hover {
         overflow: auto;
+
         @include scrollbar();
 
         ~ .scrollbar-container__panel {

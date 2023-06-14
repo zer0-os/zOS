@@ -65,8 +65,6 @@ $side-padding: 16px;
       flex-grow: 1;
       // Forcing a height here allows the flex-grow to fill the size without growing too big
       height: 1px;
-
-      overflow: auto;
       padding: 0px $side-padding;
     }
 

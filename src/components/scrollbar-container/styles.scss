@@ -39,5 +39,9 @@
     height: 46px;
     background: linear-gradient(180deg, rgba(31, 27, 34, 0) 0%, rgba(31, 27, 34, 1) 100%);
     box-sizing: border-box;
+
+    &:hover {
+      display: none;
+    }
   }
 }

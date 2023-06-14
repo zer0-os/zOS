@@ -3,7 +3,8 @@
 .scrollbar-container {
   position: relative;
   height: 100%;
-  padding-right: 4px;
+
+  overflow: hidden;
 
   &:hover {
     padding-right: 0;
@@ -17,10 +18,14 @@
     @include scrollbar();
 
     &[data-variant='on-hover'] {
-      overflow: hidden;
+      &::-webkit-scrollbar-thumb {
+        display: none;
+      }
 
       &:hover {
-        overflow: auto;
+        &::-webkit-scrollbar-thumb {
+          display: block;
+        }
 
         @include scrollbar();
 

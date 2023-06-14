@@ -12,8 +12,8 @@ interface State {
 }
 
 export class ScrollbarContainer extends React.Component<Properties, State> {
-  scrollContainerRef;
-  constructor(props) {
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
+  constructor(props: Properties) {
     super(props);
     this.state = {
       showPanel: true,
@@ -32,7 +32,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Properties) {
     if (prevProps.variant !== this.props.variant) {
       const { variant } = this.props;
       const currentRef = this.scrollContainerRef.current;

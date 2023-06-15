@@ -5,6 +5,7 @@ import './styles.scss';
 export interface Properties {
   children: React.ReactNode;
   variant?: 'on-hover' | 'fixed';
+  hasPanel?: boolean;
 }
 
 interface State {
@@ -16,7 +17,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   constructor(props: Properties) {
     super(props);
     this.state = {
-      showPanel: true,
+      showPanel: this.props.hasPanel,
     };
     this.scrollContainerRef = React.createRef();
     this.checkScrollBottom = this.checkScrollBottom.bind(this);

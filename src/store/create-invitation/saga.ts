@@ -1,4 +1,4 @@
-import { take, put, call, race, spawn, takeLatest, takeEvery } from 'redux-saga/effects';
+import { take, put, call, race, spawn, takeEvery } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';

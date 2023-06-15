@@ -1,8 +1,8 @@
-import { take, put, call, race, spawn } from 'redux-saga/effects';
+import { take, put, call, race, spawn, takeLatest, takeEvery } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
-import { getAuthChannel } from '../authentication/channels';
+import { Events, getAuthChannel } from '../authentication/channels';
 
 export function* fetchInvite() {
   while (true) {
@@ -33,16 +33,24 @@ export function* fetchInvite() {
   }
 }
 
-export function* saga() {
-  const channel = yield call(getAuthChannel);
-
+function* listenForUserLogin() {
+  const authChannel = yield call(getAuthChannel);
   while (true) {
-    const { userId = undefined } = yield take(channel, '*');
-
-    if (userId) {
-      yield spawn(fetchInvite);
-    } else {
-      yield put({ type: SagaActionTypes.Cancel });
-    }
+    yield take(authChannel, Events.UserLogin);
+    yield spawn(fetchInvite);
   }
+}
+
+function* listenForUserLogout() {
+  const authChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(authChannel, Events.UserLogout);
+    yield put({ type: SagaActionTypes.Cancel });
+  }
+}
+
+export function* saga() {
+  yield spawn(listenForUserLogin);
+  yield spawn(listenForUserLogout);
+  yield takeEvery(SagaActionTypes.GetCode, fetchInvite);
 }

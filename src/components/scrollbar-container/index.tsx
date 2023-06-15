@@ -17,7 +17,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   constructor(props: Properties) {
     super(props);
     this.state = {
-      showPanel: this.props.hasPanel,
+      showPanel: true,
     };
     this.scrollContainerRef = React.createRef();
     this.checkScrollBottom = this.checkScrollBottom.bind(this);
@@ -67,7 +67,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   }
 
   render() {
-    const { children, variant = 'fixed' } = this.props;
+    const { children, variant = 'fixed', hasPanel } = this.props;
     const { showPanel } = this.state;
 
     return (
@@ -75,7 +75,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
         <div className='scrollbar-container__content' data-variant={variant} ref={this.scrollContainerRef}>
           {children}
         </div>
-        {variant === 'on-hover' && showPanel && <div className='scrollbar-container__panel'></div>}
+        {variant === 'on-hover' && showPanel && hasPanel && <div className='scrollbar-container__panel'></div>}
       </div>
     );
   }

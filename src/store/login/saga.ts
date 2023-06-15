@@ -125,7 +125,7 @@ function* listenForWeb3AccountChanges() {
   const authChannel = yield call(getAuthChannel);
   const web3Channel = yield call(getWeb3Channel);
   const result = yield race({
-    accounChanged: take(web3Channel, Web3Events.AddressChanged),
+    accountChanged: take(web3Channel, Web3Events.AddressChanged),
     logout: take(authChannel, AuthEvents.UserLogout),
   });
 

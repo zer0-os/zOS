@@ -9,7 +9,6 @@ export function* fetchInvite() {
 
   try {
     const invitation = yield call(getInvite);
-    console.log('invitation', invitation);
 
     // For now, we don't include the code in the url
     yield put(

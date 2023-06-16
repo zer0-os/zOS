@@ -10,38 +10,20 @@ export interface Properties {
   placeholder?: string;
 
   onChange: (value: string) => void;
+  searchQuery: string;
 }
 
-interface State {
-  search: string;
-}
-
-export class SearchConversations extends Component<Properties, State> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      search: '',
-    };
-  }
-
-  publishSearch = (search) => {
-    this.setState({ search: search ?? '' });
-    this.props.onChange(search ?? '');
-  };
-
+export class SearchConversations extends Component<Properties> {
   render() {
-    const { className, placeholder } = this.props;
-    const { search } = this.state;
-
     return (
-      <div className={classNames('search_conversation', className)}>
+      <div className={classNames('search_conversation', this.props.className)}>
         <Input
           autoFocus
           type='search'
           className='search_conversation-input'
-          placeholder={placeholder}
-          onChange={this.publishSearch}
-          value={search}
+          placeholder={this.props.placeholder}
+          onChange={this.props.onChange}
+          value={this.props.searchQuery}
           size={'small'}
         />
       </div>

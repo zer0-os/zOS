@@ -5,6 +5,7 @@ import './styles.scss';
 export interface Properties {
   children: React.ReactNode;
   variant?: 'on-hover' | 'fixed';
+  hasPanel?: boolean;
 }
 
 interface State {
@@ -66,7 +67,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   }
 
   render() {
-    const { children, variant = 'fixed' } = this.props;
+    const { children, variant = 'fixed', hasPanel } = this.props;
     const { showPanel } = this.state;
 
     return (
@@ -74,7 +75,7 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
         <div className='scrollbar-container__content' data-variant={variant} ref={this.scrollContainerRef}>
           {children}
         </div>
-        {variant === 'on-hover' && showPanel && <div className='scrollbar-container__panel'></div>}
+        {variant === 'on-hover' && showPanel && hasPanel && <div className='scrollbar-container__panel'></div>}
       </div>
     );
   }

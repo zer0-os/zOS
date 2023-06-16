@@ -7,6 +7,7 @@ describe('ScrollbarContainer', () => {
   const defaultProps: Properties = {
     children: <div>Test Content</div>,
     variant: 'fixed',
+    hasPanel: false,
   };
 
   const subject = (props: Partial<Properties> = {}) => {
@@ -29,9 +30,14 @@ describe('ScrollbarContainer', () => {
     expect(wrapper.find('.scrollbar-container__content').prop('data-variant')).toEqual('on-hover');
   });
 
-  it('displays panel when variant is "on-hover"', () => {
-    const wrapper = subject({ variant: 'on-hover' });
+  it('displays panel when variant is "on-hover" and hasPanel prop is true', () => {
+    const wrapper = subject({ variant: 'on-hover', hasPanel: true });
     expect(wrapper.find('.scrollbar-container__panel')).toHaveLength(1);
+  });
+
+  it('does not display panel when variant is "on-hover" and hasPanel prop is false', () => {
+    const wrapper = subject({ variant: 'on-hover', hasPanel: false });
+    expect(wrapper.find('.scrollbar-container__panel')).toHaveLength(0);
   });
 
   it('does not display panel when variant is "fixed"', () => {

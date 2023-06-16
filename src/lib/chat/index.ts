@@ -46,6 +46,7 @@ export class Chat {
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
 
+    // XXX: Move this to the saga handlers so we can cancel, etc.
     // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
     // to prevent sendbird sdk from disconnecting (when the app is in the background)
     setInterval(() => {
@@ -90,13 +91,14 @@ export class Chat {
   }
 
   initChannelHandlers(events: RealtimeChatEvents): void {
+    // XXX: What event is for edited messages?
     const channelHandler = new GroupChannelHandler({
       onMessageReceived: (channel, message) => {
         console.log('message recieved', channel, message);
         const channelId = this.getChannelId(channel);
 
         if (channel.isGroupChannel()) {
-          console.log('this is a group channel?');
+          console.log('firing event from root sendbird handler');
           events.receiveNewMessage(channelId, this.mapMessage(message));
         }
       },

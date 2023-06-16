@@ -1,4 +1,4 @@
-import { takeLatest, put, takeLeading, select, call, take } from 'redux-saga/effects';
+import { takeLatest, put, takeLeading, select, call, take, takeEvery, fork } from 'redux-saga/effects';
 import { SagaActionTypes, setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
@@ -16,50 +16,52 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.ReceiveIsReconnecting, receiveIsReconnecting);
   // XXX: should do on login event
   yield takeLeading(SagaActionTypes.StartChat, initChat);
-  yield call(listenForChatEvents);
+
+  // XXX: These should be in the approriate places...messages?
+  yield fork(listenForNewMessage);
+  yield fork(listenForDeleteMessage);
 }
 
-function* listenForChatEvents() {
+function* listenForNewMessage() {
   const chatBus = yield call(getChatBus);
   // XXX: Make a busTakeEvery?
   while (true) {
-    console.log('waiting for bus event');
     const newMessageEvent = yield take(chatBus, Events.MessageReceived);
-    console.log('got a bus event');
     const { channelId, message } = newMessageEvent.payload;
     yield put(receiveNewMessage({ channelId, message }));
+  }
+}
+
+function* listenForDeleteMessage() {
+  const chatBus = yield call(getChatBus);
+  while (true) {
+    console.log('waiting for bus delete', Events.MessageDeleted);
+    const action = yield take(chatBus, Events.MessageDeleted);
+    console.log('got a bus delete', action);
+    const { channelId, messageId } = action.payload;
+    yield put(receiveDeleteMessage({ channelId, messageId }));
   }
 }
 
 // XXX: Where do we want to put this stuff?
 // XXX: Convert into saga events
 function* initChat(action) {
-  console.log('initialize chat the saga way');
   const { config } = action.payload;
   // XXX: Do the magic get prop deep thing
   const userId = yield select((state) => state.authentication.user.data.id);
   const chatAccessToken = yield select((state) => state.chat.chatAccessToken.value);
 
   const chatConnection = createChatConnection(config, userId, chatAccessToken);
+  yield takeEvery(chatConnection, convertToBusEvents);
+}
 
+function* convertToBusEvents(action) {
+  // XXX: error handling...what do we want to do.
+  // There shouldn't be any here because it's all the other places that handle things?
+  console.log('bus event!');
   const chatBus = yield call(getChatBus);
-  // XXX: listens to everything...then translate?
-  while (true) {
-    try {
-      // An error from socketChannel will cause the saga jump to the catch block
-      // XXX: takeEvery work here?
-      const payload = yield take(chatConnection);
-      console.log('got a payload', payload);
-      yield put(chatBus, payload);
-      // yield put({ type: INCOMING_PONG_PAYLOAD, payload })
-      // yield fork(pong, socket)
-    } catch (err) {
-      console.error('chat error:', err);
-      // socketChannel is still open in catch block
-      // if we want end the socketChannel, we need close it explicitly
-      // socketChannel.close()
-    }
-  }
+  console.log('publish on bus', action);
+  yield put(chatBus, action);
 }
 
 // function reconnectStart() {

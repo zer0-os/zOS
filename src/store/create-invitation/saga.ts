@@ -1,4 +1,4 @@
-import { put, call, takeLatest } from 'redux-saga/effects';
+import { put, call, takeLeading } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
@@ -26,5 +26,5 @@ export function* fetchInvite() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.GetCode, fetchInvite);
+  yield takeLeading(SagaActionTypes.GetCode, fetchInvite);
 }

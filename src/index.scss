@@ -7,6 +7,10 @@
 
 @import 'variables';
 
+html {
+  overflow: hidden;
+}
+
 body {
   overscroll-behavior-y: none;
   margin: 0;

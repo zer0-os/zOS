@@ -8,7 +8,7 @@ export async function fetchChannels(id: string) {
     const channels = await get<any>(`/api/networks/${id}/chatChannels`);
     return await channels.body;
   } catch (error: any) {
-    console.log('Error occured while fetching chatChannels ', error?.response); // eg. error.code = ENOTFOUND
+    console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
     return [];
   }
 }
@@ -18,7 +18,7 @@ export async function fetchConversations(): Promise<Channel[]> {
     const directMessages = await get<Channel[]>('/directMessages/mine');
     return directMessages.body;
   } catch (error: any) {
-    console.log('Error occured while fetching conversations ', error?.response);
+    console.log('Error occured while fetching conversations ', error?.response ?? error);
     return [];
   }
 }

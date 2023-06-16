@@ -5,6 +5,7 @@ import { chat } from '../../lib/chat';
 export enum Events {
   MessageReceived = 'chat/message/received',
   MessageDeleted = 'chat/message/deleted',
+  UnreadCountChanged = 'chat/message/unreadCountChanged',
 }
 
 let theBus;
@@ -24,6 +25,8 @@ export function createChatConnection(config, userId, chatAccessToken) {
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
     const receiveDeleteMessage = (channelId, messageId) =>
       emit({ type: Events.MessageDeleted, payload: { channelId, messageId } });
+    const receiveUnreadCount = (channelId, unreadCount) =>
+      emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
 
     // XXX: what are the published error events?
     // const errorHandler = (errorEvent) => {
@@ -36,7 +39,7 @@ export function createChatConnection(config, userId, chatAccessToken) {
       reconnectStop: config.reconnectStop,
       receiveNewMessage,
       receiveDeleteMessage,
-      receiveUnreadCount: config.receiveUnreadCount,
+      receiveUnreadCount,
       invalidChatAccessToken: config.invalidChatAccessToken,
     });
     chat.connect(userId, chatAccessToken);

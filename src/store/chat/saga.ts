@@ -20,6 +20,7 @@ export function* saga() {
   // XXX: These should be in the approriate places...messages?
   yield fork(listenForNewMessage);
   yield fork(listenForDeleteMessage);
+  yield fork(listenForUnreadCountChanges);
 }
 
 function* listenForNewMessage() {
@@ -40,6 +41,15 @@ function* listenForDeleteMessage() {
     console.log('got a bus delete', action);
     const { channelId, messageId } = action.payload;
     yield put(receiveDeleteMessage({ channelId, messageId }));
+  }
+}
+
+function* listenForUnreadCountChanges() {
+  const chatBus = yield call(getChatBus);
+  while (true) {
+    console.log('waiting for event', Events.UnreadCountChanged);
+    const action = yield take(chatBus, Events.UnreadCountChanged);
+    yield put(unreadCountUpdated(action.payload));
   }
 }
 

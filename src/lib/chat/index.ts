@@ -94,7 +94,6 @@ export class Chat {
     // XXX: What event is for edited messages?
     const channelHandler = new GroupChannelHandler({
       onMessageReceived: (channel, message) => {
-        console.log('message recieved', channel, message);
         const channelId = this.getChannelId(channel);
 
         if (channel.isGroupChannel()) {

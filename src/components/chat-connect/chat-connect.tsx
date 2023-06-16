@@ -3,12 +3,8 @@ import React from 'react';
 import { chat, Chat } from '../../lib/chat';
 import { StatusIndicator } from './status-indicator';
 import { connectContainer } from '../../store/redux-container';
-import {
-  Message,
-  receiveNewMessage as receiveNewMessageAction,
-  receiveDeleteMessage as receiveDeleteMessageAction,
-} from '../../store/messages';
-import { receiveIsReconnecting } from '../../store/chat';
+import { receiveDeleteMessage as receiveDeleteMessageAction } from '../../store/messages';
+import { initChat, receiveIsReconnecting } from '../../store/chat';
 import { startChannelsAndConversationsAutoRefresh } from '../../store/channels-list';
 import { RootState } from '../../store/reducer';
 import { unreadCountUpdated } from '../../store/channels';
@@ -22,10 +18,10 @@ export interface Properties {
   chat?: Chat;
   receiveIsReconnecting: (payload: boolean) => void;
   startChannelsAndConversationsAutoRefresh: () => void;
-  receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   invalidChatAccessToken: () => void;
+  initChat: (config: any) => void;
   userId: string;
   isReconnecting: boolean;
   context: {
@@ -60,11 +56,11 @@ export class Container extends React.Component<Properties> {
     return {
       receiveIsReconnecting,
       startChannelsAndConversationsAutoRefresh,
-      receiveNewMessage: (channelId: string, message: Message) => receiveNewMessageAction({ channelId, message }),
       receiveUnreadCount: (channelId: string, unreadCount: number) => unreadCountUpdated({ channelId, unreadCount }),
       receiveDeleteMessage: (channelId: string, messageId: number) =>
         receiveDeleteMessageAction({ channelId, messageId }),
       invalidChatAccessToken: () => updateConnector(Connectors.None),
+      initChat,
     };
   }
 
@@ -77,54 +73,74 @@ export class Container extends React.Component<Properties> {
   }
 
   reconnectStart = () => {
+    console.log('reconnect start event?');
     this.props.receiveIsReconnecting(true);
   };
 
   reconnectStop = () => {
+    console.log('reconnect stop event?');
     this.props.receiveIsReconnecting(false);
     // after reconnecting fetch (latest) channels and conversations *immediately*.
     // (instead of waiting for the "regular refresh interval to kick in")
+    console.log('forcing reconnect');
     this.props.startChannelsAndConversationsAutoRefresh();
   };
 
   forceReconnect = () => {
+    console.log('forcing reconnect');
     this.chat.reconnect();
   };
 
   componentDidUpdate(prevProps: Properties) {
+    console.log('did update?');
     const {
       userId,
       chatAccessToken,
       context: { isAuthenticated },
     } = this.props;
 
+    console.log('checking first condition', isAuthenticated, userId, chatAccessToken);
     if (isAuthenticated && userId && chatAccessToken) {
+      console.log('second condition', userId !== prevProps.userId, chatAccessToken !== prevProps.chatAccessToken);
       if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
+        console.log('starting chat');
         this.startChatHandler(userId, chatAccessToken);
       }
     } else {
+      console.log('we are disconnecting');
       this.chat.disconnect();
     }
   }
 
   async startChatHandler(userId, chatAccessToken) {
-    const { receiveNewMessage, receiveDeleteMessage, receiveUnreadCount, invalidChatAccessToken } = this.props;
+    console.log('starting chat handler');
+    const { receiveDeleteMessage, receiveUnreadCount, invalidChatAccessToken } = this.props;
 
     const reconnectStop = this.reconnectStop;
     const reconnectStart = this.reconnectStart;
-    this.chat.initChat({
-      reconnectStart,
-      reconnectStop,
-      receiveNewMessage,
-      receiveDeleteMessage,
-      receiveUnreadCount,
-      invalidChatAccessToken,
-    });
 
-    await this.chat.connect(userId, chatAccessToken);
+    // this.chat.initChat({
+    //   reconnectStart,
+    //   reconnectStop,
+    //   receiveDeleteMessage,
+    //   receiveUnreadCount,
+    //   invalidChatAccessToken,
+    // });
+
+    // await this.chat.connect(userId, chatAccessToken);
+    this.props.initChat({
+      config: {
+        reconnectStart,
+        reconnectStop,
+        receiveDeleteMessage,
+        receiveUnreadCount,
+        invalidChatAccessToken,
+      },
+    });
   }
 
   render() {
+    console.log('rendeirng the chat connector?');
     return this.props.isReconnecting ? <StatusIndicator onForceReconnect={this.forceReconnect} /> : null;
   }
 }

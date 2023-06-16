@@ -3,9 +3,12 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   ReceiveIsReconnecting = 'chat/saga/receiveIsReconnecting',
+  // XXX: remember to remove
+  StartChat = 'chat/saga/startChat',
 }
 
 const receiveIsReconnecting = createAction<boolean>(SagaActionTypes.ReceiveIsReconnecting);
+export const initChat = createAction<boolean>(SagaActionTypes.StartChat);
 
 const initialState: ChatState = {
   chatAccessToken: {

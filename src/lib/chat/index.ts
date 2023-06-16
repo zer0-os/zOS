@@ -27,7 +27,7 @@ export class Chat {
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;
 
-    this.sendbird.options.sessionTokenRefreshTimeout = 2 * 60 * 60; // 2 hour
+    this.sendbird.options.sessionTokenRefreshTimeout = 60;
   }
 
   async connect(userId: string, accessToken) {
@@ -60,6 +60,7 @@ export class Chat {
       onSessionClosed: () => {
         // The session refresh has been denied from the app.
         // The client app should guide the user to a login page to log in again.
+        console.log('session closed from sendbird');
         events.invalidChatAccessToken();
       },
       onSessionTokenRequired: (resolve, _reject) => {
@@ -67,6 +68,7 @@ export class Chat {
         // Refresh the session token and pass it onto the SDK through resolve(NEW_TOKEN).
         // If you don't want to refresh the session, pass on a null value through resolve(null).
         // If any error occurs while refreshing the token, let the SDK know about it through reject(error).
+        console.log('token required');
         resolve(this.accessToken);
       },
     });
@@ -78,7 +80,10 @@ export class Chat {
     const connectionHandler = new ConnectionHandler({
       onReconnectStarted: () => events.reconnectStart(),
       onReconnectSucceeded: () => events.reconnectStop(),
-      onReconnectFailed: () => this.sendbird.reconnect(),
+      onReconnectFailed: () => {
+        console.log('reconnect failed');
+        return this.sendbird.reconnect();
+      },
     });
 
     this.sendbird.addConnectionHandler('connectionHandler', connectionHandler);
@@ -87,9 +92,11 @@ export class Chat {
   initChannelHandlers(events: RealtimeChatEvents): void {
     const channelHandler = new GroupChannelHandler({
       onMessageReceived: (channel, message) => {
+        console.log('message recieved', channel, message);
         const channelId = this.getChannelId(channel);
 
         if (channel.isGroupChannel()) {
+          console.log('this is a group channel?');
           events.receiveNewMessage(channelId, this.mapMessage(message));
         }
       },
@@ -99,6 +106,7 @@ export class Chat {
         events.receiveDeleteMessage(channelId, messageId);
       },
       onChannelChanged: (channel) => {
+        console.log('channel changed?', channel);
         const channelId = this.getChannelId(channel);
 
         events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);

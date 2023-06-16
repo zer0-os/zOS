@@ -17,7 +17,7 @@ import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 
-const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
+const FETCH_CHAT_CHANNEL_INTERVAL = 60000000; // XXX
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);

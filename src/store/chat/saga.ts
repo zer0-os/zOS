@@ -3,10 +3,9 @@ import { SagaActionTypes, setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
 
-import { chat } from '../../lib/chat';
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
-import { getAuthChannel } from '../authentication/channels';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 export function* receiveIsReconnecting(action) {
   yield put(setReconnecting(action.payload));
@@ -81,9 +80,18 @@ function* initChat() {
 
   const chatConnection = createChatConnection(userId, chatAccessToken);
   yield takeEvery(chatConnection, convertToBusEvents);
+  yield fork(closeConnectionOnLogout, chatConnection);
 }
 
 function* convertToBusEvents(action) {
   const chatBus = yield call(getChatBus);
   yield put(chatBus, action);
+}
+
+function* closeConnectionOnLogout(chatConnection) {
+  const authChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(authChannel, AuthEvents.UserLogout);
+    chatConnection.close();
+  }
 }

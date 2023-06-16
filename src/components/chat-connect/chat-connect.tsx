@@ -75,8 +75,6 @@ export class Container extends React.Component<Properties> {
       if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
         this.startChatHandler();
       }
-    } else {
-      this.chat.disconnect();
     }
   }
 

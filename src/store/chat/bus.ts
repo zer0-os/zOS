@@ -19,9 +19,6 @@ export function* getChatBus() {
   return theBus;
 }
 
-// XXX
-// this function creates an event channel from a given socket
-// Setup subscription to incoming `ping` events
 export function createChatConnection(userId, chatAccessToken) {
   return eventChannel((emit) => {
     const receiveNewMessage = (channelId, message) =>
@@ -45,7 +42,7 @@ export function createChatConnection(userId, chatAccessToken) {
     chat.connect(userId, chatAccessToken);
 
     const unsubscribe = () => {
-      // XXX: Close the chat object and destroy?
+      chat.disconnect();
     };
     return unsubscribe;
   });

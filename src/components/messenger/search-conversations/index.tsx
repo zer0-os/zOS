@@ -38,6 +38,7 @@ export class SearchConversations extends Component<Properties, State> {
         <Input
           autoFocus
           type='search'
+          className='search_conversation-input'
           placeholder={placeholder}
           onChange={this.publishSearch}
           value={search}

@@ -61,38 +61,30 @@ export class Container extends React.Component<Properties> {
   }
 
   forceReconnect = () => {
-    console.log('forcing reconnect');
     this.chat.reconnect();
   };
 
   componentDidUpdate(prevProps: Properties) {
-    console.log('did update?');
     const {
       userId,
       chatAccessToken,
       context: { isAuthenticated },
     } = this.props;
 
-    console.log('checking first condition', isAuthenticated, userId, chatAccessToken);
     if (isAuthenticated && userId && chatAccessToken) {
-      console.log('second condition', userId !== prevProps.userId, chatAccessToken !== prevProps.chatAccessToken);
       if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
-        console.log('starting chat');
         this.startChatHandler();
       }
     } else {
-      console.log('we are disconnecting');
       this.chat.disconnect();
     }
   }
 
   async startChatHandler() {
-    console.log('starting chat handler');
     this.props.initChat();
   }
 
   render() {
-    console.log('rendeirng the chat connector?');
     return this.props.isReconnecting ? <StatusIndicator onForceReconnect={this.forceReconnect} /> : null;
   }
 }

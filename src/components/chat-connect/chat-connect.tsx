@@ -3,8 +3,7 @@ import React from 'react';
 import { chat, Chat } from '../../lib/chat';
 import { StatusIndicator } from './status-indicator';
 import { connectContainer } from '../../store/redux-container';
-import { initChat, receiveIsReconnecting } from '../../store/chat';
-import { startChannelsAndConversationsAutoRefresh } from '../../store/channels-list';
+import { initChat } from '../../store/chat';
 import { RootState } from '../../store/reducer';
 import { updateConnector } from '../../store/web3';
 import { Connectors } from '../../lib/web3';
@@ -14,8 +13,6 @@ export interface Properties {
   isLoading: boolean;
   chatAccessToken: string;
   chat?: Chat;
-  receiveIsReconnecting: (payload: boolean) => void;
-  startChannelsAndConversationsAutoRefresh: () => void;
   invalidChatAccessToken: () => void;
   initChat: (config: any) => void;
   userId: string;
@@ -50,8 +47,6 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      receiveIsReconnecting,
-      startChannelsAndConversationsAutoRefresh,
       invalidChatAccessToken: () => updateConnector(Connectors.None),
       initChat,
     };
@@ -64,20 +59,6 @@ export class Container extends React.Component<Properties> {
 
     this.chat = props.chat || chat;
   }
-
-  reconnectStart = () => {
-    console.log('reconnect start event?');
-    this.props.receiveIsReconnecting(true);
-  };
-
-  reconnectStop = () => {
-    console.log('reconnect stop event?');
-    this.props.receiveIsReconnecting(false);
-    // after reconnecting fetch (latest) channels and conversations *immediately*.
-    // (instead of waiting for the "regular refresh interval to kick in")
-    console.log('forcing reconnect');
-    this.props.startChannelsAndConversationsAutoRefresh();
-  };
 
   forceReconnect = () => {
     console.log('forcing reconnect');
@@ -109,20 +90,8 @@ export class Container extends React.Component<Properties> {
     console.log('starting chat handler');
     const { invalidChatAccessToken } = this.props;
 
-    const reconnectStop = this.reconnectStop;
-    const reconnectStart = this.reconnectStart;
-
-    // this.chat.initChat({
-    //   reconnectStart,
-    //   reconnectStop,
-    //   invalidChatAccessToken,
-    // });
-
-    // await this.chat.connect(userId, chatAccessToken);
     this.props.initChat({
       config: {
-        reconnectStart,
-        reconnectStop,
         invalidChatAccessToken,
       },
     });

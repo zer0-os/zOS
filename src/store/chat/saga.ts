@@ -21,6 +21,8 @@ export function* saga() {
   yield fork(listenForNewMessage);
   yield fork(listenForDeleteMessage);
   yield fork(listenForUnreadCountChanges);
+  yield fork(listenForReconnectStart);
+  yield fork(listenForReconnectStop);
 }
 
 function* listenForNewMessage() {
@@ -36,9 +38,7 @@ function* listenForNewMessage() {
 function* listenForDeleteMessage() {
   const chatBus = yield call(getChatBus);
   while (true) {
-    console.log('waiting for bus delete', Events.MessageDeleted);
     const action = yield take(chatBus, Events.MessageDeleted);
-    console.log('got a bus delete', action);
     const { channelId, messageId } = action.payload;
     yield put(receiveDeleteMessage({ channelId, messageId }));
   }
@@ -47,9 +47,28 @@ function* listenForDeleteMessage() {
 function* listenForUnreadCountChanges() {
   const chatBus = yield call(getChatBus);
   while (true) {
-    console.log('waiting for event', Events.UnreadCountChanged);
     const action = yield take(chatBus, Events.UnreadCountChanged);
     yield put(unreadCountUpdated(action.payload));
+  }
+}
+
+function* listenForReconnectStart() {
+  const chatBus = yield call(getChatBus);
+  while (true) {
+    yield take(chatBus, Events.ReconnectStart);
+    yield call(receiveIsReconnecting, true);
+  }
+}
+
+function* listenForReconnectStop() {
+  const chatBus = yield call(getChatBus);
+  while (true) {
+    yield take(chatBus, Events.ReconnectStop);
+    yield call(receiveIsReconnecting, false);
+    // XXX: do we need to start the whole polling here or just do a single one?
+    // after reconnecting fetch (latest) channels and conversations *immediately*.
+    // (instead of waiting for the "regular refresh interval to kick in")
+    yield put(startChannelsAndConversationsAutoRefresh());
   }
 }
 
@@ -66,35 +85,9 @@ function* initChat(action) {
 }
 
 function* convertToBusEvents(action) {
-  // XXX: error handling...what do we want to do.
-  // There shouldn't be any here because it's all the other places that handle things?
-  console.log('bus event!');
   const chatBus = yield call(getChatBus);
-  console.log('publish on bus', action);
   yield put(chatBus, action);
 }
-
-// function reconnectStart() {
-//   console.log('reconnect start event?');
-//   receiveIsReconnecting(true);
-// }
-
-// function reconnectStop() {
-//   console.log('reconnect stop event?');
-//   receiveIsReconnecting(false);
-//   // after reconnecting fetch (latest) channels and conversations *immediately*.
-//   // (instead of waiting for the "regular refresh interval to kick in")
-//   console.log('forcing reconnect');
-//   startChannelsAndConversationsAutoRefresh();
-// }
-
-// function receiveDeleteMessageRaw(channelId: string, messageId: number) {
-//   receiveDeleteMessage({ channelId, messageId });
-// }
-
-// function receiveUnreadCount(channelId: string, unreadCount: number) {
-//   unreadCountUpdated({ channelId, unreadCount });
-// }
 
 // function invalidChatAccessToken() {
 //   // XXX: Is this actually right? Feels like... we should log out properly or something?

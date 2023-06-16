@@ -6,6 +6,8 @@ export enum Events {
   MessageReceived = 'chat/message/received',
   MessageDeleted = 'chat/message/deleted',
   UnreadCountChanged = 'chat/message/unreadCountChanged',
+  ReconnectStart = 'chat/recconectStart',
+  ReconnectStop = 'chat/recconectStop',
 }
 
 let theBus;
@@ -27,16 +29,12 @@ export function createChatConnection(config, userId, chatAccessToken) {
       emit({ type: Events.MessageDeleted, payload: { channelId, messageId } });
     const receiveUnreadCount = (channelId, unreadCount) =>
       emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
-
-    // XXX: what are the published error events?
-    // const errorHandler = (errorEvent) => {
-    //   // create an Error object and put it into the channel
-    //   emit(new Error(errorEvent.reason));
-    // };
+    const reconnectStart = () => emit({ type: Events.ReconnectStart, payload: {} });
+    const reconnectStop = () => emit({ type: Events.ReconnectStop, payload: {} });
 
     chat.initChat({
-      reconnectStart: config.reconnectStart,
-      reconnectStop: config.reconnectStop,
+      reconnectStart,
+      reconnectStop,
       receiveNewMessage,
       receiveDeleteMessage,
       receiveUnreadCount,

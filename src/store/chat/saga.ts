@@ -1,4 +1,4 @@
-import { takeLatest, put, takeLeading, select, call, take, takeEvery, fork } from 'redux-saga/effects';
+import { takeLatest, put, takeLeading, select, call, take, takeEvery, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
@@ -12,9 +12,10 @@ export function* receiveIsReconnecting(action) {
 }
 
 export function* saga() {
+  // XXX: don't need this now because UI is not sending it?
   yield takeLatest(SagaActionTypes.ReceiveIsReconnecting, receiveIsReconnecting);
-  // XXX: should do on login event
-  yield takeLeading(SagaActionTypes.StartChat, initChat);
+
+  yield spawn(connectOnLogin);
 
   // XXX: These should be in the approriate places...messages?
   yield fork(listenForNewMessage);
@@ -72,7 +73,6 @@ function* listenForReconnectStop() {
 }
 
 // XXX: Where do we want to put this stuff?
-// XXX: Convert into saga events
 function* initChat() {
   // XXX: Do the magic get prop deep thing
   const userId = yield select((state) => state.authentication.user.data.id);
@@ -80,7 +80,7 @@ function* initChat() {
 
   const chatConnection = createChatConnection(userId, chatAccessToken);
   yield takeEvery(chatConnection, convertToBusEvents);
-  yield fork(closeConnectionOnLogout, chatConnection);
+  yield spawn(closeConnectionOnLogout, chatConnection);
 }
 
 function* convertToBusEvents(action) {
@@ -88,10 +88,16 @@ function* convertToBusEvents(action) {
   yield put(chatBus, action);
 }
 
+function* connectOnLogin() {
+  const authChannel = yield call(getAuthChannel);
+  yield take(authChannel, AuthEvents.UserLogin);
+  yield initChat();
+}
+
 function* closeConnectionOnLogout(chatConnection) {
   const authChannel = yield call(getAuthChannel);
-  while (true) {
-    yield take(authChannel, AuthEvents.UserLogout);
-    chatConnection.close();
-  }
+  yield take(authChannel, AuthEvents.UserLogout);
+
+  chatConnection.close();
+  yield spawn(connectOnLogin);
 }

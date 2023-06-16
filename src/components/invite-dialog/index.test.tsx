@@ -23,7 +23,7 @@ describe('InviteDialog', () => {
   it('renders the code', function () {
     const wrapper = subject({ inviteCode: '23817' });
 
-    expect(wrapper.find('.invite-dialog__code-block').text()).toContain('23817');
+    expect(wrapper.find('textarea').prop('value')).toContain('23817');
   });
 
   it('copies the invitation to the clipboard', function () {
@@ -66,7 +66,7 @@ describe('InviteDialog', () => {
     it('renders the invite code in a textarea', function () {
       const wrapper = subject({ inviteCode: '23817' });
 
-      expect(wrapper.find('textarea').text()).toContain('23817');
+      expect(wrapper.find('textarea').prop('value')).toContain('23817');
     });
 
     it('should not be editable', function () {

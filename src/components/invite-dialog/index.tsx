@@ -94,7 +94,7 @@ export class InviteDialog extends React.Component<Properties, State> {
           </div>
           <div className={c('code-block')}>
             {this.props.inviteCode ? (
-              <textarea readOnly={true}>{this.inviteText}</textarea>
+              <textarea readOnly={true} value={this.inviteText} />
             ) : (
               <Skeleton width={'100%'} height={'100px'} />
             )}

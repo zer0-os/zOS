@@ -74,13 +74,12 @@ function* listenForReconnectStop() {
 
 // XXX: Where do we want to put this stuff?
 // XXX: Convert into saga events
-function* initChat(action) {
-  const { config } = action.payload;
+function* initChat() {
   // XXX: Do the magic get prop deep thing
   const userId = yield select((state) => state.authentication.user.data.id);
   const chatAccessToken = yield select((state) => state.chat.chatAccessToken.value);
 
-  const chatConnection = createChatConnection(config, userId, chatAccessToken);
+  const chatConnection = createChatConnection(userId, chatAccessToken);
   yield takeEvery(chatConnection, convertToBusEvents);
 }
 
@@ -88,8 +87,3 @@ function* convertToBusEvents(action) {
   const chatBus = yield call(getChatBus);
   yield put(chatBus, action);
 }
-
-// function invalidChatAccessToken() {
-//   // XXX: Is this actually right? Feels like... we should log out properly or something?
-//   //  updateConnector(Connectors.None);
-// }

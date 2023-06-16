@@ -8,6 +8,7 @@ export enum Events {
   UnreadCountChanged = 'chat/message/unreadCountChanged',
   ReconnectStart = 'chat/recconectStart',
   ReconnectStop = 'chat/recconectStop',
+  InvalidToken = 'chat/invalidToken',
 }
 
 let theBus;
@@ -21,7 +22,7 @@ export function* getChatBus() {
 // XXX
 // this function creates an event channel from a given socket
 // Setup subscription to incoming `ping` events
-export function createChatConnection(config, userId, chatAccessToken) {
+export function createChatConnection(userId, chatAccessToken) {
   return eventChannel((emit) => {
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
@@ -31,6 +32,7 @@ export function createChatConnection(config, userId, chatAccessToken) {
       emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
     const reconnectStart = () => emit({ type: Events.ReconnectStart, payload: {} });
     const reconnectStop = () => emit({ type: Events.ReconnectStop, payload: {} });
+    const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
 
     chat.initChat({
       reconnectStart,
@@ -38,7 +40,7 @@ export function createChatConnection(config, userId, chatAccessToken) {
       receiveNewMessage,
       receiveDeleteMessage,
       receiveUnreadCount,
-      invalidChatAccessToken: config.invalidChatAccessToken,
+      invalidChatAccessToken,
     });
     chat.connect(userId, chatAccessToken);
 

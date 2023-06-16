@@ -14,7 +14,7 @@ export interface Properties {
   chatAccessToken: string;
   chat?: Chat;
   invalidChatAccessToken: () => void;
-  initChat: (config: any) => void;
+  initChat: () => void;
   userId: string;
   isReconnecting: boolean;
   context: {
@@ -78,7 +78,7 @@ export class Container extends React.Component<Properties> {
       console.log('second condition', userId !== prevProps.userId, chatAccessToken !== prevProps.chatAccessToken);
       if (userId !== prevProps.userId || chatAccessToken !== prevProps.chatAccessToken) {
         console.log('starting chat');
-        this.startChatHandler(userId, chatAccessToken);
+        this.startChatHandler();
       }
     } else {
       console.log('we are disconnecting');
@@ -86,15 +86,9 @@ export class Container extends React.Component<Properties> {
     }
   }
 
-  async startChatHandler(userId, chatAccessToken) {
+  async startChatHandler() {
     console.log('starting chat handler');
-    const { invalidChatAccessToken } = this.props;
-
-    this.props.initChat({
-      config: {
-        invalidChatAccessToken,
-      },
-    });
+    this.props.initChat();
   }
 
   render() {

@@ -434,6 +434,10 @@ $side-padding: 16px;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+
+    a {
+      pointer-events: none;
+    }
   }
 
   &__unread-count {

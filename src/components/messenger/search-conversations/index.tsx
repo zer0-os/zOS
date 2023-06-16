@@ -1,7 +1,10 @@
-import React from 'react';
-import classNames from 'classnames';
+import React, { Component } from 'react';
 
+import { Input } from '@zero-tech/zui/components';
+
+import classNames from 'classnames';
 import './styles.scss';
+
 export interface Properties {
   className?: string;
   placeholder?: string;
@@ -9,20 +12,36 @@ export interface Properties {
   onChange: (value: string) => void;
 }
 
-export class SearchConversations extends React.Component<Properties> {
+interface State {
+  search: string;
+}
+
+export class SearchConversations extends Component<Properties, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      search: '',
+    };
+  }
+
   publishSearch = (search) => {
-    this.props.onChange(search?.target?.value ?? '');
+    this.setState({ search: search ?? '' });
+    this.props.onChange(search ?? '');
   };
 
   render() {
+    const { className, placeholder } = this.props;
+    const { search } = this.state;
+
     return (
-      <div className={classNames('search_conversation', this.props.className)}>
-        <input
+      <div className={classNames('search_conversation', className)}>
+        <Input
           autoFocus
           type='search'
-          placeholder={this.props.placeholder}
-          className='search_conversation-input'
+          placeholder={placeholder}
           onChange={this.publishSearch}
+          value={search}
+          size={'small'}
         />
       </div>
     );

@@ -13,7 +13,7 @@
     display: flex;
     height: 53px;
     border-bottom: 1px solid theme.$color-primary-4;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     color: theme.$color-greyscale-12;
 
     > *:first-child {
@@ -29,7 +29,11 @@
   }
 
   &__close {
-    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
 
     &:focus-visible {
       outline: none;

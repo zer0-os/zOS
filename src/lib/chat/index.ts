@@ -10,6 +10,7 @@ interface RealtimeChatEvents {
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
+  onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   invalidChatAccessToken: () => void;
 }
@@ -93,6 +94,10 @@ export class Chat {
         if (channel.isGroupChannel()) {
           events.receiveNewMessage(channelId, this.mapMessage(message));
         }
+      },
+      onMessageUpdated: (channel, message) => {
+        const channelId = this.getChannelId(channel);
+        events.onMessageUpdated(channelId, this.mapMessage(message));
       },
       onMessageDeleted: (channel, messageId) => {
         const channelId = this.getChannelId(channel);

@@ -92,6 +92,7 @@ export async function completeAccount({
         response: error.response.body.code,
       };
     }
+    throw error;
   }
 }
 

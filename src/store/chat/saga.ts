@@ -1,5 +1,5 @@
-import { takeLatest, put, takeLeading, select, call, take, takeEvery, fork, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setReconnecting } from '.';
+import { put, select, call, take, takeEvery, fork, spawn } from 'redux-saga/effects';
+import { setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
 
@@ -7,14 +7,7 @@ import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
-export function* receiveIsReconnecting(action) {
-  yield put(setReconnecting(action.payload));
-}
-
 export function* saga() {
-  // XXX: don't need this now because UI is not sending it?
-  yield takeLatest(SagaActionTypes.ReceiveIsReconnecting, receiveIsReconnecting);
-
   yield spawn(connectOnLogin);
 
   // XXX: These should be in the approriate places...messages?
@@ -56,7 +49,7 @@ function* listenForReconnectStart() {
   const chatBus = yield call(getChatBus);
   while (true) {
     yield take(chatBus, Events.ReconnectStart);
-    yield call(receiveIsReconnecting, true);
+    yield put(setReconnecting(true));
   }
 }
 
@@ -64,7 +57,7 @@ function* listenForReconnectStop() {
   const chatBus = yield call(getChatBus);
   while (true) {
     yield take(chatBus, Events.ReconnectStop);
-    yield call(receiveIsReconnecting, false);
+    yield put(setReconnecting(false));
     // XXX: do we need to start the whole polling here or just do a single one?
     // after reconnecting fetch (latest) channels and conversations *immediately*.
     // (instead of waiting for the "regular refresh interval to kick in")

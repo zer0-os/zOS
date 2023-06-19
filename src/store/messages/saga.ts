@@ -62,11 +62,6 @@ export interface MediaPayload {
   media: MediaUtils[];
 }
 
-export interface DeleteMessageActionParameter {
-  channelId?: string;
-  messageId?: number;
-}
-
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };

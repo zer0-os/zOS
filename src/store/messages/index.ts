@@ -1,11 +1,4 @@
-import {
-  Payload,
-  SendPayload,
-  DeleteMessageActionParameter,
-  QueryUploadPayload,
-  MediaPayload,
-  EditPayload,
-} from './saga';
+import { Payload, SendPayload, QueryUploadPayload, MediaPayload, EditPayload } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice, removeAll } from '../normalized';

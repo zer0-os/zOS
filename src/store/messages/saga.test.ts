@@ -27,6 +27,7 @@ import {
 
 import { RootState, rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
+import { call } from 'redux-saga/effects';
 
 describe('messages saga', () => {
   const MESSAGES_RESPONSE = {
@@ -292,14 +293,11 @@ describe('messages saga', () => {
         [
           matchers.call.fn(getLinkPreviews),
           {
-            status: 200,
-            body: {
-              id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
-              url: 'http://www.google.com',
-              type: 'link',
-              title: 'Google',
-              description: 'Search the world information, including webpages.',
-            },
+            id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
+            url: 'http://www.google.com',
+            type: 'link',
+            title: 'Google',
+            description: 'Search the world information, including webpages.',
           },
         ],
         [
@@ -988,9 +986,43 @@ describe(receiveUpdateMessage, () => {
     const { storeState } = await expectSaga(receiveUpdateMessage, {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
+      .provide([
+        ...successResponses(),
+      ])
       .withReducer(rootReducer, { normalized: { messages } as any } as RootState)
       .run();
 
     expect(storeState.normalized.messages).toEqual({ 8667728016: editedMessage });
   });
+
+  it('adds the preview if exists', async () => {
+    const message = { id: 8667728016, message: 'original message' };
+    const messages = { 8667728016: message };
+    const editedMessage = { id: 8667728016, message: 'edited message: www.example.com' };
+    const preview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0', type: 'link' };
+
+    const { storeState } = await expectSaga(receiveUpdateMessage, {
+      payload: { channelId: 'channel-1', message: editedMessage },
+    })
+      .provide([
+        [
+          call(getPreview, editedMessage.message),
+          preview,
+        ],
+        ...successResponses(),
+      ])
+      .withReducer(rootReducer, { normalized: { messages } as any } as RootState)
+      .run();
+
+    expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, preview });
+  });
+
+  function successResponses() {
+    return [
+      [
+        matchers.call.fn(getPreview),
+        null,
+      ],
+    ] as any;
+  }
 });

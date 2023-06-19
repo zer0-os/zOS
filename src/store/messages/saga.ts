@@ -349,6 +349,9 @@ export function* receiveNewMessage(action) {
 export function* receiveUpdateMessage(action) {
   let { message } = action.payload;
 
+  const preview = yield call(getPreview, message.message);
+  message.preview = preview;
+
   yield put(receiveMessage(message));
 }
 

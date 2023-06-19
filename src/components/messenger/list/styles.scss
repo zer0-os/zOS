@@ -73,6 +73,7 @@ $side-padding: 16px;
       color: theme.$color-greyscale-11;
       font-size: $font-size-medium;
       line-height: 17px;
+      word-break: break-word;
     }
   }
 }

@@ -85,7 +85,7 @@ const getCachedMessageIds = (channelId) => (state) => {
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
-const FETCH_CHAT_CHANNEL_INTERVAL = 6000000; // XXX
+const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;

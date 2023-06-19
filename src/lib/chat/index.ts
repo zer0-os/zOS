@@ -27,7 +27,7 @@ export class Chat {
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;
 
-    this.sendbird.options.sessionTokenRefreshTimeout = 60;
+    this.sendbird.options.sessionTokenRefreshTimeout = 2 * 60 * 60; // 2 hour
   }
 
   async connect(userId: string, accessToken) {
@@ -78,16 +78,13 @@ export class Chat {
     const connectionHandler = new ConnectionHandler({
       onReconnectStarted: () => events.reconnectStart(),
       onReconnectSucceeded: () => events.reconnectStop(),
-      onReconnectFailed: () => {
-        return this.sendbird.reconnect();
-      },
+      onReconnectFailed: () => this.sendbird.reconnect(),
     });
 
     this.sendbird.addConnectionHandler('connectionHandler', connectionHandler);
   }
 
   initChannelHandlers(events: RealtimeChatEvents): void {
-    // XXX: What event is for edited messages?
     const channelHandler = new GroupChannelHandler({
       onMessageReceived: (channel, message) => {
         const channelId = this.getChannelId(channel);

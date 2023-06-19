@@ -221,11 +221,9 @@ export function* clearRegistrationStateOnLogout() {
 }
 
 // sets initial state & takes the user to "complete profile" page
-export function* completeProfileOnLogin(user) {
-  const acceptedInviteCode = yield call(apiGetInviteAccepted);
+export function* completePendingUserProfile(user) {
   yield put(setStage(RegistrationStage.ProfileDetails));
   yield put(setUserId(user.id));
-  yield put(setInviteCode(acceptedInviteCode.code));
 
   const history = getHistory();
   history.replace({
@@ -235,19 +233,7 @@ export function* completeProfileOnLogin(user) {
   yield updateProfilePage();
 }
 
-export function* listenForLogin() {
-  const authChannel = yield call(getAuthChannel);
-  yield take(authChannel, AuthEvents.UserLogin);
-
-  const currentUser = yield select(currentUserSelector());
-  if (currentUser.isPending) {
-    yield call(completeProfileOnLogin, currentUser);
-  }
-}
-
 export function* saga() {
-  yield spawn(listenForLogin);
-
   yield validateInvitePage();
   yield createAccountPage();
   yield updateProfilePage();

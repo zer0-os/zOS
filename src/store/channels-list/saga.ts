@@ -16,6 +16,8 @@ import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
+import { takeEveryFromBus } from '../../lib/saga';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -167,6 +169,11 @@ function* listenForUserLogout() {
   }
 }
 
+export function* currentUserAddedToChannel(_action) {
+  // For now, just force a fetch of conversations to refresh the list.
+  yield fetchConversations();
+}
+
 export function* saga() {
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
@@ -175,4 +182,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
   yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
   yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
+
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);
 }

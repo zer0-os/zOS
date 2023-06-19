@@ -1,4 +1,4 @@
-import { put, select, call, take, takeEvery, fork, spawn } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn } from 'redux-saga/effects';
 import { setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
@@ -7,6 +7,7 @@ import getDeepProperty from 'lodash.get';
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { takeEveryFromBus } from '../../lib/saga';
 
 export function* saga() {
   yield spawn(connectOnLogin);
@@ -18,15 +19,6 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, Events.UnreadCountChanged, listenForUnreadCountChanges);
   yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
   yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
-}
-
-function takeEveryFromBus(bus, patternOrChannel, saga, ...args) {
-  return fork(function* () {
-    while (true) {
-      const action = yield take(bus, patternOrChannel);
-      yield fork(saga, ...args.concat(action));
-    }
-  });
 }
 
 function* listenForNewMessage(action) {

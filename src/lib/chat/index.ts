@@ -46,7 +46,6 @@ export class Chat {
     this.initConnectionHandlers(events);
     this.initChannelHandlers(events);
 
-    // XXX: Move this to the saga handlers so we can cancel, etc.
     // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
     // to prevent sendbird sdk from disconnecting (when the app is in the background)
     setInterval(() => {

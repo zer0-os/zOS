@@ -21,6 +21,7 @@ import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
+import { completePendingUserProfile } from '../registration/saga';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -50,6 +51,11 @@ export function* nonceOrAuthorize(action) {
 export function* completeUserLogin(user = null) {
   if (!user) {
     user = yield call(fetchCurrentUser);
+  }
+
+  if (user.isPending) {
+    yield call(completePendingUserProfile, user);
+    return;
   }
   yield put(setUser({ data: user }));
   yield call(initializeUserState, user);

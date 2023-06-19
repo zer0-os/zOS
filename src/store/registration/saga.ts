@@ -27,6 +27,7 @@ import { passwordStrength } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
+import { getHistory } from '../../lib/browser';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -216,6 +217,19 @@ export function* clearRegistrationStateOnLogout() {
   yield take(authChannel, AuthEvents.UserLogout);
   yield put(setFirstTimeLogin(false));
   yield put(setInviteToastOpen(false));
+}
+
+// sets initial state & takes the user to "complete profile" page
+export function* completePendingUserProfile(user) {
+  yield put(setStage(RegistrationStage.ProfileDetails));
+  yield put(setUserId(user.id));
+
+  const history = getHistory();
+  history.replace({
+    pathname: '/get-access',
+  });
+
+  yield updateProfilePage();
 }
 
 export function* saga() {

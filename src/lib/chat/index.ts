@@ -12,6 +12,7 @@ interface RealtimeChatEvents {
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
   onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
+  onUserReceivedInvitation: (channel) => void;
   invalidChatAccessToken: () => void;
 }
 
@@ -108,6 +109,9 @@ export class Chat {
         const channelId = this.getChannelId(channel);
 
         events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
+      },
+      onUserReceivedInvitation: (channel) => {
+        events.onUserReceivedInvitation(this.getChannelId(channel));
       },
     });
 

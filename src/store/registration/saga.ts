@@ -19,7 +19,6 @@ import {
   createAccount as apiCreateAccount,
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
-  getInviteAccepted as apiGetInviteAccepted,
   uploadImage,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
@@ -27,7 +26,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
-import { completeUserLogin, currentUserSelector, setAuthentication } from '../authentication/saga';
+import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 
 export function* validateInvite(action) {

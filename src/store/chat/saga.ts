@@ -11,58 +11,47 @@ export function* saga() {
   yield spawn(connectOnLogin);
 
   // XXX: These should be in the approriate places...messages?
-  yield fork(listenForNewMessage);
-  yield fork(listenForDeleteMessage);
-  yield fork(listenForUnreadCountChanges);
-  yield fork(listenForReconnectStart);
-  yield fork(listenForReconnectStop);
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, Events.MessageReceived, listenForNewMessage);
+  yield takeEveryFromBus(chatBus, Events.MessageDeleted, listenForDeleteMessage);
+  yield takeEveryFromBus(chatBus, Events.UnreadCountChanged, listenForUnreadCountChanges);
+  yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
+  yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
 }
 
-function* listenForNewMessage() {
-  const chatBus = yield call(getChatBus);
-  // XXX: Make a busTakeEvery?
-  while (true) {
-    const newMessageEvent = yield take(chatBus, Events.MessageReceived);
-    const { channelId, message } = newMessageEvent.payload;
-    yield put(receiveNewMessage({ channelId, message }));
-  }
+function takeEveryFromBus(bus, patternOrChannel, saga, ...args) {
+  return fork(function* () {
+    while (true) {
+      const action = yield take(bus, patternOrChannel);
+      yield fork(saga, ...args.concat(action));
+    }
+  });
 }
 
-function* listenForDeleteMessage() {
-  const chatBus = yield call(getChatBus);
-  while (true) {
-    const action = yield take(chatBus, Events.MessageDeleted);
-    const { channelId, messageId } = action.payload;
-    yield put(receiveDeleteMessage({ channelId, messageId }));
-  }
+function* listenForNewMessage(action) {
+  const { channelId, message } = action.payload;
+  yield put(receiveNewMessage({ channelId, message }));
 }
 
-function* listenForUnreadCountChanges() {
-  const chatBus = yield call(getChatBus);
-  while (true) {
-    const action = yield take(chatBus, Events.UnreadCountChanged);
-    yield put(unreadCountUpdated(action.payload));
-  }
+function* listenForDeleteMessage(action) {
+  const { channelId, messageId } = action.payload;
+  yield put(receiveDeleteMessage({ channelId, messageId }));
 }
 
-function* listenForReconnectStart() {
-  const chatBus = yield call(getChatBus);
-  while (true) {
-    yield take(chatBus, Events.ReconnectStart);
-    yield put(setReconnecting(true));
-  }
+function* listenForUnreadCountChanges(action) {
+  yield put(unreadCountUpdated(action.payload));
 }
 
-function* listenForReconnectStop() {
-  const chatBus = yield call(getChatBus);
-  while (true) {
-    yield take(chatBus, Events.ReconnectStop);
-    yield put(setReconnecting(false));
-    // XXX: do we need to start the whole polling here or just do a single one?
-    // after reconnecting fetch (latest) channels and conversations *immediately*.
-    // (instead of waiting for the "regular refresh interval to kick in")
-    yield put(startChannelsAndConversationsAutoRefresh());
-  }
+function* listenForReconnectStart(_action) {
+  yield put(setReconnecting(true));
+}
+
+function* listenForReconnectStop(_action) {
+  yield put(setReconnecting(false));
+  // XXX: do we need to start the whole polling here or just do a single one?
+  // after reconnecting fetch (latest) channels and conversations *immediately*.
+  // (instead of waiting for the "regular refresh interval to kick in")
+  yield put(startChannelsAndConversationsAutoRefresh());
 }
 
 // XXX: Where do we want to put this stuff?
@@ -73,6 +62,7 @@ function* initChat() {
 
   const chatConnection = createChatConnection(userId, chatAccessToken);
   yield takeEvery(chatConnection, convertToBusEvents);
+
   yield spawn(closeConnectionOnLogout, chatConnection);
 }
 
@@ -82,15 +72,12 @@ function* convertToBusEvents(action) {
 }
 
 function* connectOnLogin() {
-  const authChannel = yield call(getAuthChannel);
-  yield take(authChannel, AuthEvents.UserLogin);
+  yield take(yield call(getAuthChannel), AuthEvents.UserLogin);
   yield initChat();
 }
 
 function* closeConnectionOnLogout(chatConnection) {
-  const authChannel = yield call(getAuthChannel);
-  yield take(authChannel, AuthEvents.UserLogout);
-
+  yield take(yield call(getAuthChannel), AuthEvents.UserLogout);
   chatConnection.close();
   yield spawn(connectOnLogin);
 }

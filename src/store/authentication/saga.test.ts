@@ -286,7 +286,7 @@ describe(authenticateByEmail, () => {
     const chatAccessToken = 'token';
     const { returnValue } = await expectSaga(authenticateByEmail, email, password)
       .provide([
-        stubResponse(call(emailLogin, { email, password }), { success: true, chatAccessToken }),
+        stubResponse(call(emailLogin, { email, password }), { success: true, response: { chatAccessToken } }),
         ...successResponses(),
       ])
       .call(setAuthentication, { chatAccessToken })

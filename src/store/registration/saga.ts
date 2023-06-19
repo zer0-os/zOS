@@ -69,7 +69,7 @@ export function* createAccount(action) {
     });
 
     if (result.success) {
-      yield setAuthentication({ chatAccessToken: result.chatAccessToken });
+      yield setAuthentication({ chatAccessToken: result.response.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));
@@ -103,7 +103,7 @@ export function* authorizeAndCreateWeb3Account(action) {
     const inviteCode = yield select((state) => state.registration.inviteCode);
     result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: result.token });
     if (result.success) {
-      yield setAuthentication({ chatAccessToken: result.chatAccessToken });
+      yield setAuthentication({ chatAccessToken: result.response.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));

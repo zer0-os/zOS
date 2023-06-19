@@ -82,7 +82,12 @@ describe('rewards-bar', () => {
   });
 
   it('closes rewards tooltip popup if clicked on close icon', async function () {
-    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, isMessengerFullScreen: true });
+    const wrapper = subject({
+      zero: '9000000000000000000',
+      zeroPreviousDay: '1000000000000000000',
+      isRewardsLoading: false,
+      isMessengerFullScreen: true,
+    });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 
     wrapper.find(TooltipPopup).simulate('close');

@@ -2,6 +2,7 @@ import { put, select, call, take, takeEvery, fork, spawn } from 'redux-saga/effe
 import { setReconnecting } from '.';
 import { unreadCountUpdated } from '../channels';
 import { receiveDeleteMessage, receiveNewMessage } from '../messages';
+import getDeepProperty from 'lodash.get';
 
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
@@ -55,11 +56,7 @@ function* listenForReconnectStop(_action) {
 }
 
 // XXX: Where do we want to put this stuff?
-function* initChat() {
-  // XXX: Do the magic get prop deep thing
-  const userId = yield select((state) => state.authentication.user.data.id);
-  const chatAccessToken = yield select((state) => state.chat.chatAccessToken.value);
-
+function* initChat(userId, chatAccessToken) {
   const chatConnection = createChatConnection(userId, chatAccessToken);
   yield takeEvery(chatConnection, convertToBusEvents);
 
@@ -73,7 +70,14 @@ function* convertToBusEvents(action) {
 
 function* connectOnLogin() {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogin);
-  yield initChat();
+  const userId = yield select((state) => getDeepProperty(state, 'authentication.user.data.id', null));
+  const chatAccessToken = yield select((state) => getDeepProperty(state, 'chat.chatAccessToken.value', null));
+
+  if (!userId || !chatAccessToken) {
+    yield spawn(connectOnLogin); // Wait again
+  }
+
+  yield initChat(userId, chatAccessToken);
 }
 
 function* closeConnectionOnLogout(chatConnection) {

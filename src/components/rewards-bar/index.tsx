@@ -86,7 +86,7 @@ export class RewardsBar extends React.Component<Properties, State> {
         })}
       >
         {this.props.includeRewardsAvatar && (
-          <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+          <Avatar size={'medium'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         )}
         <button
           onClick={this.openRewards}

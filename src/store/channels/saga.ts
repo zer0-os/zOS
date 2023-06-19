@@ -3,6 +3,8 @@ import { takeLatest, put, call, select } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
 
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
+import { takeEveryFromBus } from '../../lib/saga';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
@@ -63,5 +65,6 @@ export function* clearChannels() {
 export function* saga() {
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
   yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
-  yield takeLatest(SagaActionTypes.UnreadCountUpdated, unreadCountUpdated);
+
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

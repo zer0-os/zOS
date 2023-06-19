@@ -13,6 +13,8 @@ function* listenForReconnectStart(_action) {
 
 function* listenForReconnectStop(_action) {
   yield put(setReconnecting(false));
+  // after reconnecting fetch (latest) channels and conversations *immediately*.
+  // (instead of waiting for the "regular refresh interval to kick in")
   yield put(startChannelsAndConversationsAutoRefresh());
 }
 

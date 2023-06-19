@@ -17,6 +17,8 @@ import { extractLink, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
+import { takeEveryFromBus } from '../../lib/saga';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
 
 export interface Payload {
   channelId: string;
@@ -395,7 +397,9 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
-  yield takeLatest(SagaActionTypes.receiveDeleteMessage, receiveDelete);
   yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
+
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
 }

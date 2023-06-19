@@ -15,6 +15,11 @@ export async function validateInvite({ code }: { code: string }): Promise<string
   }
 }
 
+export async function getInviteAccepted(): Promise<{ code: string }> {
+  const response = await get('/invite/accepted');
+  return response.body;
+}
+
 export async function createAccount({
   email,
   password,

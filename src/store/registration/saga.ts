@@ -19,6 +19,7 @@ import {
   createAccount as apiCreateAccount,
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
+  getInviteAccepted as apiGetInviteAccepted,
   uploadImage,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
@@ -26,7 +27,8 @@ import { nonce as nonceApi } from '../authentication/api';
 import { passwordStrength } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
-import { completeUserLogin, setAuthentication } from '../authentication/saga';
+import { completeUserLogin, currentUserSelector, setAuthentication } from '../authentication/saga';
+import { getHistory } from '../../lib/browser';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -218,7 +220,34 @@ export function* clearRegistrationStateOnLogout() {
   yield put(setInviteToastOpen(false));
 }
 
+// sets initial state & takes the user to "complete profile" page
+export function* completeProfileOnLogin(user) {
+  const acceptedInviteCode = yield call(apiGetInviteAccepted);
+  yield put(setStage(RegistrationStage.ProfileDetails));
+  yield put(setUserId(user.id));
+  yield put(setInviteCode(acceptedInviteCode.code));
+
+  const history = getHistory();
+  history.replace({
+    pathname: '/get-access',
+  });
+
+  yield updateProfilePage();
+}
+
+export function* listenForLogin() {
+  const authChannel = yield call(getAuthChannel);
+  yield take(authChannel, AuthEvents.UserLogin);
+
+  const currentUser = yield select(currentUserSelector());
+  if (currentUser.isPending) {
+    yield call(completeProfileOnLogin, currentUser);
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForLogin);
+
   yield validateInvitePage();
   yield createAccountPage();
   yield updateProfilePage();

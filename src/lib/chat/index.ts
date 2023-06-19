@@ -16,6 +16,7 @@ interface RealtimeChatEvents {
 
 export class Chat {
   sendbird: SendbirdGroupChat = null;
+  interval = null;
 
   accessToken: string;
 
@@ -48,8 +49,8 @@ export class Chat {
 
     // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
     // to prevent sendbird sdk from disconnecting (when the app is in the background)
-    setInterval(() => {
-      if (this.sendbird.connectionState === ConnectionState.CLOSED) {
+    this.interval = setInterval(() => {
+      if (this.sendbird && this.sendbird.connectionState === ConnectionState.CLOSED) {
         this.sendbird.setForegroundState();
       }
     }, 10 * 1000);
@@ -113,6 +114,10 @@ export class Chat {
   }
 
   disconnect(): void {
+    if (this.interval !== null) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
     if (this.sendbird !== null) {
       this.sendbird.disconnect().then(() => {
         this.sendbird = null;

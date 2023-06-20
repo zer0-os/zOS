@@ -106,7 +106,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showNewRewards ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.props.showNewRewards ? (
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

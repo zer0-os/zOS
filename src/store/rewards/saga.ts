@@ -1,10 +1,12 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { SagaActionTypes, setLoading, setZero, setZeroPreviousDay } from '.';
+import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroPreviousDay } from '.';
 import { RewardsResp, fetchRewards } from './api';
 import { delay } from '../channels-list/saga';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
+
+const lastViewedRewardsKey = 'last_viewed_rewards';
 
 export function* fetch(_action) {
   yield put(setLoading(true));
@@ -29,6 +31,24 @@ export function* syncFetchRewards() {
   }
 }
 
+export function* checkNewRewardsLoaded() {
+  const zeroPreviousDay = yield select((state) => state.rewards.zeroPreviousDay);
+  const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
+  if (!isFirstTimeLogin && zeroPreviousDay !== '0' && localStorage.getItem(lastViewedRewardsKey) !== zeroPreviousDay) {
+    yield put(setShowNewRewards(true));
+  }
+}
+
+export function* rewardsPopupClosed() {
+  // set last viewed rewards to the current rewards when the popup is closed
+  const { zeroPreviousDay, showNewRewards } = yield select((state) => state.rewards);
+  if (showNewRewards) {
+    localStorage.setItem(lastViewedRewardsKey, zeroPreviousDay);
+    yield put(setShowNewRewards(false));
+  }
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, syncFetchRewards);
+  yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
 }

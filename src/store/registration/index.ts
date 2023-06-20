@@ -6,7 +6,6 @@ export enum SagaActionTypes {
   CreateAccount = 'registration/createAccount',
   CreateWeb3Account = 'registration/createWeb3Account',
   UpdateProfile = 'registration/updateProfile',
-  RewardsPopupClosed = 'registration/rewardsPopupClosed',
 }
 
 export enum RegistrationStage {
@@ -75,7 +74,6 @@ export const validateInvite = createAction<{ code: string }>(SagaActionTypes.Val
 export const createAccount = createAction<{ email: string; password: string }>(SagaActionTypes.CreateAccount);
 export const createWeb3Account = createAction<{ connector: Connectors }>(SagaActionTypes.CreateWeb3Account);
 export const updateProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.UpdateProfile);
-export const rewardsPopupClosed = createAction(SagaActionTypes.RewardsPopupClosed);
 
 const slice = createSlice({
   name: 'registration',

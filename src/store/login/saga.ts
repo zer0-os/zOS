@@ -17,8 +17,9 @@ import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { conversationsChannel } from '../channels-list/channels';
-import { rawConversationsList } from '../channels-list/saga';
+import { delay, rawConversationsList } from '../channels-list/saga';
 import { setactiveConversationId } from '../chat';
+import { checkNewRewardsLoaded } from '../rewards/saga';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -167,6 +168,9 @@ export function* openFirstConversationAfterChannelsLoaded() {
   const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
   if (payload.loaded && isMessengerFullScreen) {
     yield call(openFirstConversation);
+
+    yield delay(2000);
+    yield call(checkNewRewardsLoaded);
   }
 }
 

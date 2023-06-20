@@ -5,7 +5,7 @@ import { ReactComponent as ZeroLogo } from './zero-logo.svg';
 import { Redirect } from 'react-router-dom';
 
 import './invite.scss';
-import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
+import { ThemeEngine, Themes } from '@zero-tech/zui/components';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
 import { SelectMethodContainer } from './authentication/select-method/container';

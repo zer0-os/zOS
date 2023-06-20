@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Link, Redirect } from 'react-router-dom';
 import { LoginStage } from '../../store/login';
-import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
+import { ThemeEngine, Themes } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 
 import { bem } from '../../lib/bem';

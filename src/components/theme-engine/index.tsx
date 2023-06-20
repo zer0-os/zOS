@@ -4,7 +4,7 @@ import { connectContainer } from '../../store/redux-container';
 
 import { ThemeEngine as ThemeEngineComponentDeprecated, ViewModes } from '../../shared-components/theme-engine';
 import { ThemeEngine as ThemeEngineComponent } from '@zero-tech/zui/components';
-import { Themes } from '@zero-tech/zui/components/ThemeEngine';
+import { Themes } from '@zero-tech/zui/components';
 import { setViewMode } from '../../store/theme';
 import { keyStorageLightMode } from '../../store/theme/saga';
 

@@ -2,13 +2,12 @@ import React, { JSXElementConstructor } from 'react';
 import classNames from 'classnames';
 
 import './styles.scss';
-import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 
 export interface Properties {
   className?: string;
   onClick: () => void;
 
-  Icon: JSXElementConstructor<IconProps>;
+  Icon: JSXElementConstructor<any>;
   label?: string;
   size?: string | number;
   isFilled?: boolean;

@@ -1,0 +1,39 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.settings-menu {
+  width: 256px;
+  padding: 8px;
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__user-name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+  }
+
+  &__user-address {
+    font-size: 10px;
+    line-height: 1712pxpx;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

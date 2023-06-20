@@ -15,8 +15,8 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
+import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
-
 import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
@@ -68,6 +68,7 @@ export interface Properties extends PublicProperties {
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
+  logout: () => void;
 }
 
 interface State {
@@ -129,6 +130,7 @@ export class Container extends React.Component<Properties, State> {
       fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
+      logout,
     };
   }
 
@@ -224,6 +226,7 @@ export class Container extends React.Component<Properties, State> {
           includeRewardsAvatar={this.props.includeRewardsAvatar}
           userAvatarUrl={this.props.userAvatarUrl}
           onRewardsPopupClose={this.props.rewardsPopupClosed}
+          onLogout={this.props.logout}
         />
 
         <div className='direct-message-members'>

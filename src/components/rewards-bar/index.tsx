@@ -1,5 +1,5 @@
-import { Avatar, Status } from '@zero-tech/zui/components';
-import { IconCurrencyDollar } from '@zero-tech/zui/icons';
+import { Avatar, DropdownMenu, Status } from '@zero-tech/zui/components';
+import { IconCurrencyDollar, IconLogOut3 } from '@zero-tech/zui/icons';
 import classnames from 'classnames';
 import * as React from 'react';
 import { RewardsFAQModal } from '../rewards-faq-modal';
@@ -20,6 +20,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
 
+  onLogout: () => void;
   onRewardsPopupClose: () => void;
 }
 
@@ -78,6 +79,30 @@ export class RewardsBar extends React.Component<Properties, State> {
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
   closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
+  handleLogout = () => {
+    this.props.onLogout();
+  };
+
+  renderSettingsHeader() {
+    return (
+      <div className={c('settings-user')}>
+        <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+        <div className={c('settings-user-details')}>
+          <div className={c('settings-user-name')}>User Name</div>
+          <div className={c('settings-user-address')}>User Address</div>
+        </div>
+      </div>
+    );
+  }
+
+  renderSettingsOption(icon, label) {
+    return (
+      <div className={c('settings-option')}>
+        {icon} {label}
+      </div>
+    );
+  }
+
   renderRewardsBar() {
     return (
       <div
@@ -86,7 +111,24 @@ export class RewardsBar extends React.Component<Properties, State> {
         })}
       >
         {this.props.includeRewardsAvatar && (
-          <Avatar size={'medium'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+          <DropdownMenu
+            menuClassName={c('settings')}
+            items={[
+              {
+                id: 'header',
+                label: this.renderSettingsHeader(),
+                onSelect: () => {},
+              },
+              {
+                id: 'log-out',
+                label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
+                onSelect: () => this.handleLogout(),
+              },
+            ]}
+            side='right'
+            alignMenu='start'
+            trigger={<Avatar size={'medium'} type={'circle'} imageURL={this.props.userAvatarUrl} />}
+          />
         )}
         <button
           onClick={this.openRewards}

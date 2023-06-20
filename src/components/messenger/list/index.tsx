@@ -30,9 +30,8 @@ import { adminMessageText } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { fetch as fetchRewards } from '../../../store/rewards';
+import { fetch as fetchRewards, rewardsPopupClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
-import { rewardsPopupClosed } from '../../../store/registration';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -59,6 +58,7 @@ export interface Properties extends PublicProperties {
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
+  showNewRewards: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -111,7 +111,6 @@ export class Container extends React.Component<Properties, State> {
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
-      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: user?.data?.handle || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -119,6 +118,7 @@ export class Container extends React.Component<Properties, State> {
       zero: rewards.zero,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
+      showNewRewards: rewards.showNewRewards,
     };
   }
 
@@ -225,7 +225,6 @@ export class Container extends React.Component<Properties, State> {
           zero={this.props.zero}
           zeroPreviousDay={this.props.zeroPreviousDay}
           isRewardsLoading={this.props.isRewardsLoading}
-          isMessengerFullScreen={this.props.isMessengerFullScreen}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           includeRewardsAvatar={this.props.includeRewardsAvatar}
           userName={this.props.userName}
@@ -233,6 +232,7 @@ export class Container extends React.Component<Properties, State> {
           userAvatarUrl={this.props.userAvatarUrl}
           onRewardsPopupClose={this.props.rewardsPopupClosed}
           onLogout={this.props.logout}
+          showNewRewards={this.props.showNewRewards}
         />
 
         <div className='direct-message-members'>

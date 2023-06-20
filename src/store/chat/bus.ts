@@ -7,8 +7,8 @@ export enum Events {
   MessageUpdated = 'chat/message/updated',
   MessageDeleted = 'chat/message/deleted',
   UnreadCountChanged = 'chat/message/unreadCountChanged',
-  ReconnectStart = 'chat/recconectStart',
-  ReconnectStop = 'chat/recconectStop',
+  ReconnectStart = 'chat/reconnectStart',
+  ReconnectStop = 'chat/reconnectStop',
   InvalidToken = 'chat/invalidToken',
   ChannelInvitationReceived = 'chat/channel/invitationReceived',
 }

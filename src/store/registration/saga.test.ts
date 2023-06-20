@@ -25,9 +25,9 @@ import {
   ProfileDetailsErrors,
   RegistrationStage,
   RegistrationState,
-  SagaActionTypes,
   initialState as initialRegistrationState,
 } from '.';
+import { SagaActionTypes as RewardsSagaActionTypes } from '../rewards';
 import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
@@ -478,8 +478,8 @@ describe('openInviteToastWhenRewardsPopupClosed', () => {
     } = await expectSaga(openInviteToastWhenRewardsPopupClosed)
       .provide([
         [
-          matchers.take(SagaActionTypes.RewardsPopupClosed),
-          { type: SagaActionTypes.RewardsPopupClosed },
+          matchers.take(RewardsSagaActionTypes.RewardsPopupClosed),
+          { type: RewardsSagaActionTypes.RewardsPopupClosed },
         ],
         [
           call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.

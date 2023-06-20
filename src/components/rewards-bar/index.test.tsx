@@ -9,13 +9,13 @@ describe('rewards-bar', () => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
       includeRewardsAvatar: false,
-      isMessengerFullScreen: false,
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
       zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
+      showNewRewards: false,
       onRewardsPopupClose: () => {},
       onLogout: () => {},
       ...props,
@@ -58,14 +58,13 @@ describe('rewards-bar', () => {
   });
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {
-    const wrapper = subject({ zeroPreviousDay: '9000000000000000000', isMessengerFullScreen: false });
+    const wrapper = subject({ zeroPreviousDay: '9000000000000000000' });
     expect(wrapper).not.toHaveElement(TooltipPopup);
   });
 
   it('rewards tooltip popup is not rendered if first time log in', async function () {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',
-      isMessengerFullScreen: false,
       isRewardsLoading: false,
       isFirstTimeLogin: true,
     });
@@ -76,7 +75,7 @@ describe('rewards-bar', () => {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
-      isMessengerFullScreen: true,
+      showNewRewards: true,
     });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
@@ -89,7 +88,7 @@ describe('rewards-bar', () => {
       zero: '9000000000000000000',
       zeroPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
-      isMessengerFullScreen: true,
+      showNewRewards: true,
     });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 

@@ -7,8 +7,6 @@ import { bem } from '../../lib/bem';
 
 import './styles.scss';
 
-const c = bem('settings-menu');
-
 export interface Properties {
   userAvatarUrl: string;
 
@@ -21,12 +19,14 @@ export class SettingsMenu extends React.Component<Properties> {
   };
 
   renderSettingsHeader() {
+    const c = bem('header');
+
     return (
-      <div className={c('user')}>
+      <div className={c('')}>
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         <div className={c('user-details')}>
-          <div className={c('user-name')}>User Name</div>
-          <div className={c('user-address')}>User Address</div>
+          <div className={c('name')}>User Name</div>
+          <div className={c('address')}>User Address</div>
         </div>
       </div>
     );
@@ -34,7 +34,7 @@ export class SettingsMenu extends React.Component<Properties> {
 
   renderSettingsOption(icon, label) {
     return (
-      <div className={c('option')}>
+      <div className={'option'}>
         {icon} {label}
       </div>
     );
@@ -43,7 +43,7 @@ export class SettingsMenu extends React.Component<Properties> {
   render() {
     return (
       <DropdownMenu
-        menuClassName={c('')}
+        menuClassName={'settings-menu'}
         items={[
           {
             id: 'header',
@@ -51,7 +51,14 @@ export class SettingsMenu extends React.Component<Properties> {
             onSelect: () => {},
           },
           {
-            id: 'log-out',
+            className: 'divider',
+            id: 'divider',
+            label: <div />,
+            onSelect: () => {},
+          },
+          {
+            className: 'logout',
+            id: 'logout',
             label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
             onSelect: () => this.handleLogout(),
           },

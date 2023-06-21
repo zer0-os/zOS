@@ -4,36 +4,67 @@
   width: 256px;
   padding: 8px;
 
-  &__user {
+  > *:first-child {
+    &:hover {
+      background: none;
+      cursor: default;
+    }
+  }
+
+  .header {
     display: flex;
     align-items: center;
     gap: 16px;
+    pointer-events: none;
+
+    &__user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    &__name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 17px;
+      color: theme.$color-greyscale-12;
+    }
+
+    &__address {
+      font-size: 10px;
+      line-height: 12px;
+      color: theme.$color-greyscale-11;
+    }
   }
 
-  &__user-details {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  &__user-name {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 17px;
-    color: theme.$color-greyscale-12;
-  }
-
-  &__user-address {
-    font-size: 10px;
-    line-height: 1712pxpx;
-    color: theme.$color-greyscale-11;
-  }
-
-  &__option {
+  .option {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 16px;
     line-height: 24px;
+  }
+
+  .zui-dropdown-item.divider {
+    border-bottom: 1px solid theme.$color-primary-5;
+    margin: 8px 0px;
+    padding: 0;
+  }
+
+  .zui-dropdown-item.logout {
+    color: theme.$color-failure-11;
+  }
+
+  //   .zui-dropdown-trigger {
+  //     &:first-child:focus {
+  //       outline: none;
+  //     }
+  //     &:first-child:active {
+  //       outline: none;
+  //     }
+  //   }
+  .zui-dropdown-trigger:focus,
+  .zui-dropdown-menu.open .zui-dropdown-trigger {
+    outline: none;
   }
 }

@@ -437,7 +437,7 @@ $side-padding: 16px;
     }
 
     a {
-      pointer-events: none;
+      pointer-events: none; /* Disable pointer events for clicking urls */
     }
   }
 
@@ -488,6 +488,9 @@ $side-padding: 16px;
     right: -0.125rem;
     border: 0.125rem solid var(--color-primary-1);
   }
+
+  user-select: none; /* Prevent text highlighting */
+  pointer-events: auto; /* Enable pointer events for click event */
 }
 
 .user-search-results {
@@ -524,6 +527,9 @@ $side-padding: 16px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  user-select: none; /* Prevent text highlighting */
+  pointer-events: auto; /* Enable pointer events for click event */
 }
 
 .messages-list__invite-button {

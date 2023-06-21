@@ -21,6 +21,9 @@ $side-padding: 16px;
   flex-direction: column;
   padding-bottom: 16px;
 
+  user-select: none; /* Prevent text highlighting */
+  pointer-events: auto; /* Enable pointer events for click event */
+
   .messages-list {
     &__start {
       display: flex;
@@ -488,9 +491,6 @@ $side-padding: 16px;
     right: -0.125rem;
     border: 0.125rem solid var(--color-primary-1);
   }
-
-  user-select: none; /* Prevent text highlighting */
-  pointer-events: auto; /* Enable pointer events for click event */
 }
 
 .user-search-results {
@@ -527,9 +527,6 @@ $side-padding: 16px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-
-  user-select: none; /* Prevent text highlighting */
-  pointer-events: auto; /* Enable pointer events for click event */
 }
 
 .messages-list__invite-button {

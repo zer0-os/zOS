@@ -15,6 +15,9 @@ const c = bem('rewards-bar');
 export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
+
+  userName: string;
+  userHandle: string;
   userAvatarUrl: string;
 
   zero: string;
@@ -98,7 +101,12 @@ export class RewardsBar extends React.Component<Properties, State> {
         })}
       >
         {this.props.includeRewardsAvatar && (
-          <SettingsMenu onLogout={this.props.onLogout} userAvatarUrl={this.props.userAvatarUrl} />
+          <SettingsMenu
+            onLogout={this.props.onLogout}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+          />
         )}
         <button
           onClick={this.openRewards}

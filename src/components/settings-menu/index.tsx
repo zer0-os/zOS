@@ -1,19 +1,23 @@
 import * as React from 'react';
 
 import { IconLogOut3 } from '@zero-tech/zui/icons';
-import { Avatar, DropdownMenu } from '@zero-tech/zui/components';
+import { Address, Avatar, DropdownMenu } from '@zero-tech/zui/components';
 
 import { bem } from '../../lib/bem';
 
 import './styles.scss';
 
 export interface Properties {
+  userName: string;
+  userHandle: string;
   userAvatarUrl: string;
 
   onLogout: () => void;
 }
 
 export class SettingsMenu extends React.Component<Properties> {
+  containsAtSymbol = this.props.userHandle.includes('@');
+
   handleLogout = () => {
     this.props.onLogout();
   };
@@ -25,8 +29,10 @@ export class SettingsMenu extends React.Component<Properties> {
       <div className={c('')}>
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         <div className={c('user-details')}>
-          <div className={c('name')}>User Name</div>
-          <div className={c('address')}>User Address</div>
+          <div className={c('name')}>{this.props.userName}</div>
+          <div className={c('address')}>
+            {this.containsAtSymbol ? this.props.userHandle : <Address address={this.props.userHandle} />}
+          </div>
         </div>
       </div>
     );

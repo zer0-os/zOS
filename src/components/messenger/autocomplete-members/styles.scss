@@ -44,9 +44,6 @@
       }
     }
   }
-
-  user-select: none; /* Prevent text highlighting */
-  pointer-events: auto; /* Enable pointer events for click event */
 }
 
 .force-extra-specificity.autocomplete-members__search-wrapper {

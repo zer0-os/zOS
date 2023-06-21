@@ -17,6 +17,7 @@ export interface Properties {
 
 export class SettingsMenu extends React.Component<Properties> {
   containsAtSymbol = this.props.userHandle.includes('@');
+  userHandle = this.containsAtSymbol ? this.props.userHandle : <Address address={this.props.userHandle} />;
 
   handleLogout = () => {
     this.props.onLogout();
@@ -30,9 +31,7 @@ export class SettingsMenu extends React.Component<Properties> {
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         <div className={c('user-details')}>
           <div className={c('name')}>{this.props.userName}</div>
-          <div className={c('address')}>
-            {this.containsAtSymbol ? this.props.userHandle : <Address address={this.props.userHandle} />}
-          </div>
+          <div className={c('address')}>{this.userHandle}</div>
         </div>
       </div>
     );

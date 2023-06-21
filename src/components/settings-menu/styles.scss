@@ -54,17 +54,4 @@
   .zui-dropdown-item.logout {
     color: theme.$color-failure-11;
   }
-
-  //   .zui-dropdown-trigger {
-  //     &:first-child:focus {
-  //       outline: none;
-  //     }
-  //     &:first-child:active {
-  //       outline: none;
-  //     }
-  //   }
-  .zui-dropdown-trigger:focus,
-  .zui-dropdown-menu.open .zui-dropdown-trigger {
-    outline: none;
-  }
 }

@@ -21,6 +21,9 @@ $side-padding: 16px;
   flex-direction: column;
   padding-bottom: 16px;
 
+  user-select: none; /* Prevent text highlighting */
+  pointer-events: auto; /* Enable pointer events for click event */
+
   .messages-list {
     &__start {
       display: flex;
@@ -437,7 +440,7 @@ $side-padding: 16px;
     }
 
     a {
-      pointer-events: none;
+      pointer-events: none; /* Disable pointer events for clicking urls */
     }
   }
 

@@ -81,6 +81,15 @@ export class RewardsBar extends React.Component<Properties, State> {
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
   closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
+  showNewRewardsToUser = () => {
+    return (
+      this.props.isMessengerFullScreen &&
+      !this.props.isFirstTimeLogin &&
+      this.isNewRewardsLoaded() &&
+      this.stringifyZero(this.props.zeroPreviousDay) !== '0'
+    );
+  };
+
   renderRewardsBar() {
     return (
       <div
@@ -100,9 +109,7 @@ export class RewardsBar extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() && (
-              <Status type='idle' className={c('rewards-icon__status')} />
-            )}
+            {this.showNewRewardsToUser() && <Status type='idle' className={c('rewards-icon__status')} />}
           </div>
         </button>
       </div>
@@ -112,7 +119,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.showNewRewardsToUser() ? ( // only show the rewards tooltip popup if in full screen mode
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

@@ -7,9 +7,10 @@ export enum Events {
   MessageUpdated = 'chat/message/updated',
   MessageDeleted = 'chat/message/deleted',
   UnreadCountChanged = 'chat/message/unreadCountChanged',
-  ReconnectStart = 'chat/recconectStart',
-  ReconnectStop = 'chat/recconectStop',
+  ReconnectStart = 'chat/reconnectStart',
+  ReconnectStop = 'chat/reconnectStop',
   InvalidToken = 'chat/invalidToken',
+  ChannelInvitationReceived = 'chat/channel/invitationReceived',
 }
 
 let theBus;
@@ -33,6 +34,8 @@ export function createChatConnection(userId, chatAccessToken) {
     const reconnectStart = () => emit({ type: Events.ReconnectStart, payload: {} });
     const reconnectStop = () => emit({ type: Events.ReconnectStop, payload: {} });
     const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
+    const onUserReceivedInvitation = (channelId) =>
+      emit({ type: Events.ChannelInvitationReceived, payload: { channelId } });
 
     chat.initChat({
       reconnectStart,
@@ -42,6 +45,7 @@ export function createChatConnection(userId, chatAccessToken) {
       receiveDeleteMessage,
       receiveUnreadCount,
       invalidChatAccessToken,
+      onUserReceivedInvitation,
     });
     chat.connect(userId, chatAccessToken);
 

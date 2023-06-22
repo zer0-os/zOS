@@ -30,30 +30,6 @@ import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 
 describe('messages saga', () => {
-  const MESSAGES_RESPONSE = {
-    hasMore: true,
-    messages: [
-      { id: 'message 1', message: 'message_0001' },
-      { id: 'message 2', message: 'message_0002' },
-      { id: 'message 3', message: 'message_0003' },
-    ],
-  };
-
-  it('fetches messages', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    await expectSaga(fetch, { payload: { channelId } })
-      .provide([
-        [
-          matchers.call.fn(fetchMessagesByChannelId),
-          MESSAGES_RESPONSE,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelId)
-      .run();
-  });
-
   it('send message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'hello';
@@ -452,22 +428,6 @@ describe('messages saga', () => {
     expect(channels[channelId].messageIdsCache.length).toEqual(1);
   });
 
-  it('fetches messages for referenceTimestamp', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const referenceTimestamp = 1658776625730;
-
-    await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
-      .provide([
-        [
-          matchers.call.fn(fetchMessagesByChannelId),
-          MESSAGES_RESPONSE,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(fetchMessagesByChannelId, channelId, 1658776625730)
-      .run();
-  });
-
   it('upload file message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const media = [
@@ -624,45 +584,6 @@ describe('messages saga', () => {
     ]);
   });
 
-  it('sets hasMore on channel', async () => {
-    const channelId = 'channel-id';
-    const messageResponse = {
-      hasMore: false,
-      messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
-      ],
-    };
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetch, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(fetchMessagesByChannelId),
-          messageResponse,
-        ],
-      ])
-      .run();
-
-    expect(channels[channelId].hasMore).toBe(false);
-  });
-
   it('sets countNewMessages on channel', async () => {
     const channelId = 'channel-id';
     const NEW_MESSAGES_RESPONSE = {
@@ -749,6 +670,140 @@ describe('messages saga', () => {
     expect(channels[channelId].lastMessageCreatedAt).toStrictEqual(10000000009);
   });
 
+  it('stop syncChannels when calling stopSyncChannels', async () => {
+    const channelId = 'channel-id';
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasMore: true,
+            shouldSyncChannels: true,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(stopSyncChannels, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(channels[channelId].shouldSyncChannels).toBe(false);
+  });
+
+  describe('getPreview', () => {
+    it('guards from empty messages (like when you upload a file)', () => {
+      const generator = getPreview(null);
+
+      expect(generator.next().value).toEqual(undefined);
+    });
+  });
+
+  it('removes the messages', async () => {
+    const messages = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
+    const channels = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
+
+    const {
+      storeState: { normalized },
+    } = await expectSaga(clearMessages)
+      .withReducer(rootReducer)
+      .withState({
+        normalized: { messages, channels },
+      })
+      .run(0);
+
+    expect(normalized).toEqual({
+      messages: {},
+      channels,
+    });
+  });
+});
+
+describe(fetch, () => {
+  const MESSAGES_RESPONSE = {
+    hasMore: true,
+    messages: [
+      { id: 'message 1', message: 'message_0001' },
+      { id: 'message 2', message: 'message_0002' },
+      { id: 'message 3', message: 'message_0003' },
+    ],
+  };
+
+  it('fetches messages', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+
+    await expectSaga(fetch, { payload: { channelId } })
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          MESSAGES_RESPONSE,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(fetchMessagesByChannelId, channelId)
+      .run();
+  });
+
+  it('fetches messages for referenceTimestamp', async () => {
+    const channelId = '0x000000000000000000000000000000000000000A';
+    const referenceTimestamp = 1658776625730;
+
+    await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          MESSAGES_RESPONSE,
+        ],
+      ])
+      .withReducer(rootReducer)
+      .call(fetchMessagesByChannelId, channelId, 1658776625730)
+      .run();
+  });
+
+  it('sets hasMore on channel', async () => {
+    const channelId = 'channel-id';
+    const messageResponse = {
+      hasMore: false,
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          [channelId]: {
+            id: channelId,
+            hasMore: true,
+          },
+        },
+      },
+    };
+
+    const {
+      storeState: {
+        normalized: { channels },
+      },
+    } = await expectSaga(fetch, { payload: { channelId } })
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          messageResponse,
+        ],
+      ])
+      .run();
+
+    expect(channels[channelId].hasMore).toBe(false);
+  });
+
   it('sets shouldSyncChannels on channel', async () => {
     const channelId = 'channel-id';
     const NEW_MESSAGES_RESPONSE = {
@@ -790,16 +845,25 @@ describe('messages saga', () => {
     expect(channels[channelId].shouldSyncChannels).toBe(true);
   });
 
-  it('stop syncChannels when calling stopSyncChannels', async () => {
+  it('adds message ids to channels state', async () => {
     const channelId = 'channel-id';
+    const messageResponse = {
+      hasMore: true,
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
 
     const initialState = {
       normalized: {
         channels: {
           [channelId]: {
             id: channelId,
-            hasMore: true,
-            shouldSyncChannels: true,
+            messages: [
+              'old-message-id',
+            ],
           },
         },
       },
@@ -809,11 +873,21 @@ describe('messages saga', () => {
       storeState: {
         normalized: { channels },
       },
-    } = await expectSaga(stopSyncChannels, { payload: { channelId } })
+    } = await expectSaga(fetch, { payload: { channelId } })
       .withReducer(rootReducer, initialState as any)
+      .provide([
+        [
+          matchers.call.fn(fetchMessagesByChannelId),
+          messageResponse,
+        ],
+      ])
       .run();
 
-    expect(channels[channelId].shouldSyncChannels).toBe(false);
+    expect(channels[channelId].messages).toStrictEqual([
+      'the-first-message-id',
+      'the-second-message-id',
+      'the-third-message-id',
+    ]);
   });
 
   it('adds message ids to channels state', async () => {
@@ -933,33 +1007,6 @@ describe('messages saga', () => {
       'the-first-message-id': { id: 'the-first-message-id', message: 'the first message' },
       'the-second-message-id': { id: 'the-second-message-id', message: 'the second message' },
       'the-third-message-id': { id: 'the-third-message-id', message: 'the third message' },
-    });
-  });
-
-  describe('getPreview', () => {
-    it('guards from empty messages (like when you upload a file)', () => {
-      const generator = getPreview(null);
-
-      expect(generator.next().value).toEqual(undefined);
-    });
-  });
-
-  it('removes the messages', async () => {
-    const messages = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
-    const channels = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
-
-    const {
-      storeState: { normalized },
-    } = await expectSaga(clearMessages)
-      .withReducer(rootReducer)
-      .withState({
-        normalized: { messages, channels },
-      })
-      .run(0);
-
-    expect(normalized).toEqual({
-      messages: {},
-      channels,
     });
   });
 });

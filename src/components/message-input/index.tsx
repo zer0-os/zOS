@@ -20,6 +20,8 @@ import MessageAudioRecorder from '../message-audio-recorder';
 import { Giphy, Properties as GiphyProperties } from './giphy';
 
 import './styles.scss';
+import { MediaType } from '../../store/messages';
+import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 
 export interface PublicProperties extends PublicPropertiesContainer {}
 
@@ -35,7 +37,8 @@ export interface Properties extends PublicPropertiesContainer {
 interface State {
   value: string;
   mentionedUserIds: string[];
-  media: any[];
+  media: Media[];
+  attachments: Media[];
   isEmojisActive: boolean;
   isGiphyActive: boolean;
   isMicActive: boolean;
@@ -46,6 +49,7 @@ export class MessageInput extends React.Component<Properties, State> {
     value: this.props.initialValue || '',
     mentionedUserIds: [],
     media: [],
+    attachments: [],
     isMicActive: false,
     isEmojisActive: false,
     isGiphyActive: false,
@@ -81,21 +85,35 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get mimeTypes() {
-    return { 'image/*': [] };
+    return {
+      'image/*': [],
+      'text/*': [],
+      //'video/*': [],
+      'application/pdf': [],
+      'application/msword': [],
+    };
   }
 
   get images() {
-    return this.state.media.filter((m) => m.mediaType === 'image');
+    return this.state.media.filter((m) => m.mediaType === MediaType.Image);
+  }
+
+  get audios() {
+    return this.state.media.filter((m) => m.mediaType === MediaType.Audio);
+  }
+
+  get videos() {
+    return this.state.media.filter((m) => m.mediaType === MediaType.Video);
+  }
+
+  get files() {
+    return this.state.media.filter((m) => m.mediaType === MediaType.File);
   }
 
   focusInput() {
     if (this.textareaRef && this.textareaRef.current) {
       this.textareaRef.current.focus();
     }
-  }
-
-  get audios() {
-    return this.state.media.filter((m) => m.mediaType === 'audio');
   }
 
   onSend = (event): void => {
@@ -201,7 +219,6 @@ export class MessageInput extends React.Component<Properties, State> {
 
   imagesSelected = (acceptedFiles): void => {
     const newImages: Media[] = dropzoneToMedia(acceptedFiles);
-
     if (newImages.length) {
       this.mediaSelected(newImages);
     }
@@ -242,7 +259,7 @@ export class MessageInput extends React.Component<Properties, State> {
         id: giphy.id.toString(),
         name: giphy.title,
         url: giphy.images.preview_gif.url,
-        mediaType: 'image',
+        mediaType: MediaType.Image,
         giphy,
       },
     ]);
@@ -292,6 +309,7 @@ export class MessageInput extends React.Component<Properties, State> {
               <div {...getRootProps({ className: 'mentions-text-area' })}>
                 <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
                 <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
+                <AttachmentCards attachments={this.files} onRemove={this.removeMediaPreview} />
                 {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
                 <div className='message-input__emoji-picker'>
                   <EmojiPicker

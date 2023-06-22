@@ -5,6 +5,7 @@ import { IconButton } from '../icon-button';
 import { Media } from '../message-input/utils';
 
 import './styles.scss';
+import { MediaType } from '../../store/messages';
 
 const AudioReactRecorder = require('audio-react-recorder-fixed').default;
 
@@ -39,7 +40,7 @@ export default class MessageAudioRecorder extends React.Component<Properties, St
       name: 'Recording',
       nativeFile: recordedBlob.blob,
       url: recordedBlob.url,
-      mediaType: 'audio',
+      mediaType: MediaType.Audio,
     });
   };
 

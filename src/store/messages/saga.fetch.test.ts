@@ -75,39 +75,24 @@ describe(fetch, () => {
   });
 
   it('prepends message ids to channels state when referenceTimestamp included', async () => {
-    const channelId = 'channel-id';
     const messageResponse = {
-      hasMore: true,
       messages: [
         { id: 'the-second-message-id', message: 'the second message' },
         { id: 'the-third-message-id', message: 'the third message' },
       ],
     };
 
-    const channel = {
-      id: channelId,
-      messages: [
-        'the-first-message-id',
-      ],
-    };
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: channel,
-        },
-      },
-    };
+    const channel = { id: 'channel-id', messages: [{ id: 'the-first-message-id' }] };
+    const initialState = initialChannelState(channel);
 
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetch, { payload: { channelId, referenceTimestamp: 1658776625730 } })
+    const { storeState } = await expectSaga(fetch, {
+      payload: { channelId: channel.id, referenceTimestamp: 1658776625730 },
+    })
       .withReducer(rootReducer, initialState as any)
       .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
       .run();
 
-    expect(channels[channelId].messages).toEqual([
+    expect(denormalize(channel.id, storeState).messages.map((m) => m.id)).toEqual([
       'the-second-message-id',
       'the-third-message-id',
       'the-first-message-id',
@@ -115,11 +100,15 @@ describe(fetch, () => {
   });
 
   function initialChannelState(channel) {
+    const messages = {};
+    (channel.messages || []).forEach((m) => (messages[m.id] = m));
+
     return {
       normalized: {
         channels: {
           [channel.id]: channel,
         },
+        messages,
       },
     } as any;
   }

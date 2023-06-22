@@ -4,7 +4,6 @@ import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { IconSearchMd } from '@zero-tech/zui/icons';
 import { itemToOption } from '../lib/utils';
 
 export interface Properties {
@@ -45,10 +44,10 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
         <Input
           autoFocus
           type='search'
+          size={'small'}
           placeholder='Search for a person'
           onChange={this.searchChanged}
           value={this.state.searchString}
-          startEnhancer={<IconSearchMd size={18} />}
           wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}
           inputClassName={'autocomplete-members__search-input'}
         />

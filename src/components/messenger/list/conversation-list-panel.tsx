@@ -132,6 +132,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               className='messages-list__items-conversations-search'
               placeholder='Search contacts...'
               onChange={this.searchChanged}
+              searchQuery={this.state.filter}
             />
           </div>
 

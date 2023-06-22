@@ -9,6 +9,7 @@ describe('SearchConversations', () => {
       className: '',
       placeholder: '',
       onChange: () => null,
+      searchQuery: '',
       ...props,
     };
 
@@ -36,13 +37,17 @@ describe('SearchConversations', () => {
     expect(wrapper.find('.search_conversation-input').exists()).toBe(true);
   });
 
-  it('publishes onChange', async () => {
+  it('passes searchQuery to Input', async () => {
+    const searchQuery = 'todo';
+    const wrapper = subject({ searchQuery });
+
+    expect(wrapper.find('.search_conversation-input').prop('value')).toEqual(searchQuery);
+  });
+
+  it('passes onChange to Input', async () => {
     const onChange = jest.fn();
-    const inputSearch = 'anything';
     const wrapper = subject({ onChange });
 
-    wrapper.find('.search_conversation-input').simulate('change', { target: { value: inputSearch } });
-
-    expect(onChange).toHaveBeenCalledWith(inputSearch);
+    expect(wrapper.find('.search_conversation-input').prop('onChange')).toEqual(onChange);
   });
 });

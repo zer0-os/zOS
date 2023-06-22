@@ -88,7 +88,7 @@ export class MessageInput extends React.Component<Properties, State> {
     return {
       'image/*': [],
       'text/*': [],
-      //'video/*': [],
+      'video/*': [],
       'application/pdf': [],
       'application/msword': [],
     };
@@ -309,7 +309,8 @@ export class MessageInput extends React.Component<Properties, State> {
               <div {...getRootProps({ className: 'mentions-text-area' })}>
                 <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
                 <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
-                <AttachmentCards attachments={this.files} onRemove={this.removeMediaPreview} />
+                <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
+                <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
                 {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
                 <div className='message-input__emoji-picker'>
                   <EmojiPicker

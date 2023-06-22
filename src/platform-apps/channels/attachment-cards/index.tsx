@@ -9,6 +9,7 @@ export interface Properties {
   border?: boolean;
   onRemove?: (attachment: any) => void;
   onAttachmentClicked?: (attachment: any) => void;
+  type?: 'video' | 'file';
 }
 
 export default class AttachmentCards extends React.Component<Properties, undefined> {
@@ -36,6 +37,7 @@ export default class AttachmentCards extends React.Component<Properties, undefin
         {attachments.map((attachment) => {
           return (
             <AttachmentCard
+              type={this.props.type}
               key={attachment.url}
               attachment={attachment}
               onRemove={this.props.onRemove ? this.itemRemoved.bind(this, attachment) : null}

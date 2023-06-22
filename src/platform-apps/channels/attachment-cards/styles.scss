@@ -1,5 +1,6 @@
 .attachment-card {
-  display: inline-block;
+  display: inline-flex;
+  align-items: flex-start;
   padding: 10px 10px 10px 15px;
 
   &__name {
@@ -35,8 +36,7 @@
   }
 
   &__delete {
-    display: inline-block;
-    text-align: center;
-    padding-left: 10px;
+    margin-left: 3px;
+    margin-top: -1.5px;
   }
 }

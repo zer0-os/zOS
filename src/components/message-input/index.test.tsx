@@ -131,9 +131,12 @@ describe('MessageInput', () => {
     expect(onRemoveReply).toHaveBeenCalledOnce();
   });
 
-  it('dropzone accept all type of images', function () {
+  it('dropzone accept all type of images, text, .pdf, .doc files', function () {
     const mimeTypes = {
       'image/*': [],
+      'text/*': [],
+      'application/pdf': [],
+      'application/msword': [],
     };
 
     const wrapper = subject({});

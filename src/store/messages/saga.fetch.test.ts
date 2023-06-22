@@ -4,22 +4,14 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { fetchMessagesByChannelId } from './api';
 import { fetch } from './saga';
 import { rootReducer } from '../reducer';
+import { denormalize } from '../channels';
 
 describe(fetch, () => {
-  const MESSAGES_RESPONSE = {
-    hasMore: true,
-    messages: [
-      { id: 'message 1', message: 'message_0001' },
-      { id: 'message 2', message: 'message_0002' },
-      { id: 'message 3', message: 'message_0003' },
-    ],
-  };
-
   it('fetches messages', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
 
     await expectSaga(fetch, { payload: { channelId } })
-      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), MESSAGES_RESPONSE)])
+      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), {})])
       .withReducer(rootReducer)
       .call(fetchMessagesByChannelId, channelId)
       .run();
@@ -30,16 +22,39 @@ describe(fetch, () => {
     const referenceTimestamp = 1658776625730;
 
     await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
-      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), MESSAGES_RESPONSE)])
+      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), { messages: [] })])
       .withReducer(rootReducer)
       .call(fetchMessagesByChannelId, channelId, 1658776625730)
       .run();
   });
 
   it('sets hasMore on channel', async () => {
-    const channelId = 'channel-id';
+    const channel = { id: 'channel-id', hasMore: true };
+    const messageResponse = { hasMore: false };
+
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
+      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
+      .withReducer(rootReducer, initialChannelState(channel))
+      .run();
+
+    expect(denormalize(channel.id, storeState).hasMore).toBe(false);
+  });
+
+  it('forces shouldSyncChannels to be true', async () => {
+    const channel = { id: 'channel-id', shouldSyncChannels: false };
+    const messageResponse = { shouldSyncChannels: false };
+
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
+      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
+      .withReducer(rootReducer, initialChannelState(channel) as any)
+      .run();
+
+    expect(denormalize(channel.id, storeState).shouldSyncChannels).toBe(true);
+  });
+
+  it('adds messages to channel', async () => {
+    const channel = { id: 'channel-id', messages: ['old-message-id'] };
     const messageResponse = {
-      hasMore: false,
       messages: [
         { id: 'the-first-message-id', message: 'the first message' },
         { id: 'the-second-message-id', message: 'the second message' },
@@ -47,102 +62,15 @@ describe(fetch, () => {
       ],
     };
 
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetch, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
+      .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
 
-    expect(channels[channelId].hasMore).toBe(false);
-  });
-
-  it('sets shouldSyncChannels on channel', async () => {
-    const channelId = 'channel-id';
-    const NEW_MESSAGES_RESPONSE = {
-      hasMore: true,
-      messages: [
-        { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-        { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-        { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
-      ],
-      shouldSyncChannels: true,
-    };
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-            shouldSyncChannels: false,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetch, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), NEW_MESSAGES_RESPONSE)])
-      .run();
-
-    expect(channels[channelId].shouldSyncChannels).toBe(true);
-  });
-
-  it('adds message ids to channels state', async () => {
-    const channelId = 'channel-id';
-    const messageResponse = {
-      hasMore: true,
-      messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
-      ],
-    };
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            messages: [
-              'old-message-id',
-            ],
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetch, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
-      .run();
-
-    expect(channels[channelId].messages).toStrictEqual([
-      'the-first-message-id',
-      'the-second-message-id',
-      'the-third-message-id',
+    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
+      { id: 'the-first-message-id', message: 'the first message' },
+      { id: 'the-second-message-id', message: 'the second message' },
+      { id: 'the-third-message-id', message: 'the third message' },
     ]);
   });
 
@@ -156,15 +84,16 @@ describe(fetch, () => {
       ],
     };
 
+    const channel = {
+      id: channelId,
+      messages: [
+        'the-first-message-id',
+      ],
+    };
     const initialState = {
       normalized: {
         channels: {
-          [channelId]: {
-            id: channelId,
-            messages: [
-              'the-first-message-id',
-            ],
-          },
+          [channelId]: channel,
         },
       },
     };
@@ -185,31 +114,15 @@ describe(fetch, () => {
     ]);
   });
 
-  it('adds messages to normalized state', async () => {
-    const response = {
-      hasMore: true,
-      messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
-      ],
-    };
-
-    const {
-      storeState: {
-        normalized: { messages },
+  function initialChannelState(channel) {
+    return {
+      normalized: {
+        channels: {
+          [channel.id]: channel,
+        },
       },
-    } = await expectSaga(fetch, { payload: { channelId: '0x000000000000000000000000000000000000000A' } })
-      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), response)])
-      .withReducer(rootReducer)
-      .run();
-
-    expect(messages).toMatchObject({
-      'the-first-message-id': { id: 'the-first-message-id', message: 'the first message' },
-      'the-second-message-id': { id: 'the-second-message-id', message: 'the second message' },
-      'the-third-message-id': { id: 'the-third-message-id', message: 'the third message' },
-    });
-  });
+    } as any;
+  }
 });
 
 // Duplicated in other tests. Not quite sure where to put a test library file

@@ -7,10 +7,17 @@ import './styles.scss';
 export interface Properties {
   attachments: Attachment[];
   border?: boolean;
+  onRemove?: (attachment: any) => void;
   onAttachmentClicked?: (attachment: any) => void;
 }
 
 export default class AttachmentCards extends React.Component<Properties, undefined> {
+  itemRemoved = (attachment) => {
+    if (this.props.onRemove) {
+      this.props.onRemove(attachment);
+    }
+  };
+
   itemClicked = (attachment) => {
     if (this.props.onAttachmentClicked) {
       this.props.onAttachmentClicked(attachment);
@@ -31,6 +38,7 @@ export default class AttachmentCards extends React.Component<Properties, undefin
             <AttachmentCard
               key={attachment.url}
               attachment={attachment}
+              onRemove={this.props.onRemove ? this.itemRemoved.bind(this, attachment) : null}
               onClick={this.props.onAttachmentClicked ? this.itemClicked : null}
             />
           );

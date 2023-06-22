@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 
 import './styles.scss';
+import { IconXClose } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
 
 export interface Attachment {
   name: string;
@@ -11,6 +13,7 @@ export interface Attachment {
 
 export interface Properties {
   attachment: Attachment;
+  onRemove?: () => void;
   onClick?: (attachment: Attachment) => void;
 }
 
@@ -66,6 +69,13 @@ export default class AttachmentCard extends React.Component<Properties, undefine
   render() {
     const className = classNames('attachment-card', { downloadable: this.hasOnClick() });
 
-    return <div className={className}>{this.file()}</div>;
+    return (
+      <div className={className}>
+        {this.file()}
+        {this.props.onRemove && (
+          <IconButton Icon={IconXClose} onClick={this.props.onRemove} size={17} className='attachment-card__delete' />
+        )}
+      </div>
+    );
   }
 }

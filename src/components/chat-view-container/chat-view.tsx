@@ -17,6 +17,9 @@ import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
 import { AdminMessageContainer } from '../admin-message/container';
+import { Skeleton } from '@zero-tech/zui/components';
+
+import './styles.scss';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -189,6 +192,28 @@ export class ChatView extends React.Component<Properties, State> {
     return await searchMentionableUsersForChannel(this.props.id, search);
   };
 
+  renderLoadingState() {
+    return (
+      <>
+        <div className='chat-view__skeleton chat-view__skeleton--owner'>
+          <Skeleton width={'100%'} height={'52px'} />
+        </div>
+        <div className='chat-view__skeleton chat-view__skeleton--owner'>
+          <Skeleton width={'100%'} height={'327px'} />
+        </div>
+        <div className='chat-view__skeleton'>
+          <Skeleton width={'100%'} height={'327px'} />
+        </div>
+        <div className='chat-view__skeleton'>
+          <Skeleton width={'100%'} height={'52px'} />
+        </div>
+        <div className='chat-view__skeleton chat-view__skeleton--owner'>
+          <Skeleton width={'100%'} height={'100px'} />
+        </div>
+      </>
+    );
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
     const { hasJoined: isMemberOfChannel } = this.props;
@@ -220,6 +245,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
+            {this.renderLoadingState()}
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

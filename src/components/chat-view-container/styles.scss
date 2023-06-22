@@ -1,0 +1,18 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+// Note: there are some classes in various other places (src/platform-apps/channels/styles.scss)
+
+.chat-view {
+  &__skeleton {
+    box-sizing: border-box;
+    padding: 8px 16px;
+    width: 100%;
+    max-width: 560px;
+    clear: both;
+    float: left;
+
+    &--owner {
+      float: right;
+    }
+  }
+}

@@ -10,11 +10,14 @@ describe('rewards-bar', () => {
       isFirstTimeLogin: false,
       includeRewardsAvatar: false,
       isMessengerFullScreen: false,
+      userName: '',
+      userHandle: '',
       userAvatarUrl: '',
       zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
       onRewardsPopupClose: () => {},
+      onLogout: () => {},
       ...props,
     };
 
@@ -82,18 +85,23 @@ describe('rewards-bar', () => {
   });
 
   it('closes rewards tooltip popup if clicked on close icon', async function () {
-    const wrapper = subject({ zero: '9000000000000000000', isRewardsLoading: false, isMessengerFullScreen: true });
+    const wrapper = subject({
+      zero: '9000000000000000000',
+      zeroPreviousDay: '1000000000000000000',
+      isRewardsLoading: false,
+      isMessengerFullScreen: true,
+    });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 
     wrapper.find(TooltipPopup).simulate('close');
     expect(wrapper.find(TooltipPopup).prop('open')).toBeFalse();
   });
 
-  it('renders the rewards avatar as necessary', function () {
+  it('renders the SettingsMenu as necessary', function () {
     let wrapper = subject({ includeRewardsAvatar: true });
-    expect(wrapper).toHaveElement('Avatar');
+    expect(wrapper).toHaveElement('SettingsMenu');
 
     wrapper.setProps({ includeRewardsAvatar: false });
-    expect(wrapper).not.toHaveElement('Avatar');
+    expect(wrapper).not.toHaveElement('SettingsMenu');
   });
 });

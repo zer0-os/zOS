@@ -2,6 +2,7 @@ import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
+import { receive as receiveMessage } from './';
 import { receive } from '../channels';
 import { rawChannelSelector } from '../channels/saga';
 
@@ -17,6 +18,8 @@ import { extractLink, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
+import { takeEveryFromBus } from '../../lib/saga';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
 
 export interface Payload {
   channelId: string;
@@ -58,11 +61,6 @@ export interface SendPayload {
 export interface MediaPayload {
   channelId?: string;
   media: MediaUtils[];
-}
-
-export interface DeleteMessageActionParameter {
-  channelId?: string;
-  messageId?: number;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -313,6 +311,10 @@ export function* receiveNewMessage(action) {
       ...currentMessages,
     ];
 
+    // What is going on here? We set messages above but then we loop around
+    // all the cached message ids... and map messages to something that might be a message or
+    // might be a messageId... but only the last one in the list would ever impact
+    // the messages array because...we keep overwriting it?
     cachedMessageIds.forEach((id, index, object) => {
       messages = messages.map((messageId) => {
         if (messageId === id && message.message && !message.image) {
@@ -342,6 +344,15 @@ export function* receiveNewMessage(action) {
     ),
     call(sendBrowserNotification, channelId, message),
   ]);
+}
+
+export function* receiveUpdateMessage(action) {
+  let { message } = action.payload;
+
+  const preview = yield call(getPreview, message.message);
+  message.preview = preview;
+
+  yield put(receiveMessage(message));
 }
 
 export function* getPreview(message) {
@@ -395,7 +406,10 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.receiveNewMessage, receiveNewMessage);
-  yield takeLatest(SagaActionTypes.receiveDeleteMessage, receiveDelete);
   yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
+
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
 }

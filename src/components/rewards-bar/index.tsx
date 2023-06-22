@@ -1,18 +1,23 @@
-import { Avatar, Status } from '@zero-tech/zui/components';
+import { Status } from '@zero-tech/zui/components';
 import { IconCurrencyDollar } from '@zero-tech/zui/icons';
 import classnames from 'classnames';
 import * as React from 'react';
 import { RewardsFAQModal } from '../rewards-faq-modal';
 import { RewardsPopupContainer } from '../rewards-popup/container';
 import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
+import { SettingsMenu } from '../settings-menu';
 import { bem } from '../../lib/bem';
 
 import './styles.scss';
+
 const c = bem('rewards-bar');
 
 export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
+
+  userName: string;
+  userHandle: string;
   userAvatarUrl: string;
 
   zero: string;
@@ -20,6 +25,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
 
+  onLogout: () => void;
   onRewardsPopupClose: () => void;
 }
 
@@ -78,6 +84,15 @@ export class RewardsBar extends React.Component<Properties, State> {
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
   closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
 
+  showNewRewardsToUser = () => {
+    return (
+      this.props.isMessengerFullScreen &&
+      !this.props.isFirstTimeLogin &&
+      this.isNewRewardsLoaded() &&
+      this.stringifyZero(this.props.zeroPreviousDay) !== '0'
+    );
+  };
+
   renderRewardsBar() {
     return (
       <div
@@ -86,7 +101,12 @@ export class RewardsBar extends React.Component<Properties, State> {
         })}
       >
         {this.props.includeRewardsAvatar && (
-          <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+          <SettingsMenu
+            onLogout={this.props.onLogout}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+          />
         )}
         <button
           onClick={this.openRewards}
@@ -97,9 +117,7 @@ export class RewardsBar extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() && (
-              <Status type='idle' className={c('rewards-icon__status')} />
-            )}
+            {this.showNewRewardsToUser() && <Status type='idle' className={c('rewards-icon__status')} />}
           </div>
         </button>
       </div>
@@ -109,7 +127,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.isMessengerFullScreen && !this.props.isFirstTimeLogin && this.isNewRewardsLoaded() ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.showNewRewardsToUser() ? ( // only show the rewards tooltip popup if in full screen mode
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

@@ -10,12 +10,15 @@ interface RealtimeChatEvents {
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (channelId: string, messageId: number) => void;
+  onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
+  onUserReceivedInvitation: (channel) => void;
   invalidChatAccessToken: () => void;
 }
 
 export class Chat {
   sendbird: SendbirdGroupChat = null;
+  interval = null;
 
   accessToken: string;
 
@@ -48,8 +51,8 @@ export class Chat {
 
     // every 10s check if the connection state is CLOSED, if it is, set the app to foreground,
     // to prevent sendbird sdk from disconnecting (when the app is in the background)
-    setInterval(() => {
-      if (this.sendbird.connectionState === ConnectionState.CLOSED) {
+    this.interval = setInterval(() => {
+      if (this.sendbird && this.sendbird.connectionState === ConnectionState.CLOSED) {
         this.sendbird.setForegroundState();
       }
     }, 10 * 1000);
@@ -93,6 +96,10 @@ export class Chat {
           events.receiveNewMessage(channelId, this.mapMessage(message));
         }
       },
+      onMessageUpdated: (channel, message) => {
+        const channelId = this.getChannelId(channel);
+        events.onMessageUpdated(channelId, this.mapMessage(message));
+      },
       onMessageDeleted: (channel, messageId) => {
         const channelId = this.getChannelId(channel);
 
@@ -102,6 +109,9 @@ export class Chat {
         const channelId = this.getChannelId(channel);
 
         events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
+      },
+      onUserReceivedInvitation: (channel) => {
+        events.onUserReceivedInvitation(this.getChannelId(channel));
       },
     });
 
@@ -113,6 +123,10 @@ export class Chat {
   }
 
   disconnect(): void {
+    if (this.interval !== null) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
     if (this.sendbird !== null) {
       this.sendbird.disconnect().then(() => {
         this.sendbird = null;

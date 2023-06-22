@@ -1,48 +1,30 @@
-import { take, put, call, race, spawn } from 'redux-saga/effects';
+import { put, call, takeLeading } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
-import { getAuthChannel } from '../authentication/channels';
 
 export function* fetchInvite() {
-  while (true) {
-    const { cancel } = yield race({
-      cancel: take(SagaActionTypes.Cancel),
-      get: take(SagaActionTypes.GetCode),
-    });
+  // reset before fetching
+  yield put(reset());
 
-    if (cancel) {
-      return yield put(reset());
-    }
+  try {
+    const invitation = yield call(getInvite);
 
-    try {
-      const invitation = yield call(getInvite);
-      // For now, we don't include the code in the url
-      yield put(
-        setInvite({
-          code: invitation.slug,
-          url: config.inviteUrl,
-          invitesUsed: invitation.invitesUsed,
-          maxUses: invitation.maxInvitesPerUser,
-        })
-      );
-      return;
-    } catch (e) {
-      // Listen again
-    }
+    // For now, we don't include the code in the url
+    yield put(
+      setInvite({
+        code: invitation.slug,
+        url: config.inviteUrl,
+        invitesUsed: invitation.invitesUsed,
+        maxUses: invitation.maxInvitesPerUser,
+      })
+    );
+    return;
+  } catch (e) {
+    // Listen again
   }
 }
 
 export function* saga() {
-  const channel = yield call(getAuthChannel);
-
-  while (true) {
-    const { userId = undefined } = yield take(channel, '*');
-
-    if (userId) {
-      yield spawn(fetchInvite);
-    } else {
-      yield put({ type: SagaActionTypes.Cancel });
-    }
-  }
+  yield takeLeading(SagaActionTypes.GetCode, fetchInvite);
 }

@@ -1,11 +1,4 @@
-import {
-  Payload,
-  SendPayload,
-  DeleteMessageActionParameter,
-  QueryUploadPayload,
-  MediaPayload,
-  EditPayload,
-} from './saga';
+import { Payload, SendPayload, QueryUploadPayload, MediaPayload, EditPayload } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice, removeAll } from '../normalized';
@@ -80,8 +73,6 @@ export enum SagaActionTypes {
   EditMessage = 'messages/saga/editMessage',
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
-  receiveNewMessage = 'messages/saga/receiveNewMessage',
-  receiveDeleteMessage = 'messages/saga/receiveDeleteMessage',
   uploadFileMessage = 'messages/saga/uploadFileMessage',
 }
 
@@ -91,8 +82,6 @@ const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
-const receiveNewMessage = createAction<SendPayload>(SagaActionTypes.receiveNewMessage);
-const receiveDeleteMessage = createAction<DeleteMessageActionParameter>(SagaActionTypes.receiveDeleteMessage);
 const uploadFileMessage = createAction<MediaPayload>(SagaActionTypes.uploadFileMessage);
 
 const slice = createNormalizedSlice({
@@ -101,15 +90,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export {
-  fetch,
-  send,
-  startMessageSync,
-  stopSyncChannels,
-  receiveNewMessage,
-  deleteMessage,
-  editMessage,
-  receiveDeleteMessage,
-  uploadFileMessage,
-  removeAll,
-};
+export { fetch, send, startMessageSync, stopSyncChannels, deleteMessage, editMessage, uploadFileMessage, removeAll };

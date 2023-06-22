@@ -35,6 +35,8 @@ describe('messenger-list', () => {
       allowExpand: true,
       includeRewardsAvatar: false,
       isMessengerFullScreen: false,
+      userName: '',
+      userHandle: '',
       userAvatarUrl: '',
       zero: '',
       zeroPreviousDay: '',
@@ -52,6 +54,7 @@ describe('messenger-list', () => {
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
+      logout: () => null,
       ...props,
     };
 

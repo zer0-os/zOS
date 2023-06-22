@@ -10,7 +10,7 @@ export const rewardsFaq = [
   {
     content:
       'A product does not exist without the people who use it. You — the user — are inherently valuable, as is the content you create, private or public. Big Tech social media recognizes that and exploits you for it, leaving you with nothing. At ZERO, we recognize the wealth of your content by rewarding you with $ZERO tokens. Your social interactions are valuable; you deserve to share that value.',
-    title: 'This seems too good to be true, how can I earn for doing nothing?',
+    title: 'Earning $ZERO for just chatting? What’s the catch? This seems too good to be true.',
   },
   {
     content: (
@@ -36,21 +36,21 @@ export const rewardsFaq = [
         </div>
       </div>
     ),
-    title: 'How does Zero make money if it’s free AND I’m being paid?',
+    title: 'So what is $ZERO?',
   },
   {
     content:
       'We don’t — not for now, at least. As an early adopter of ZERO tech, you are being rewarded simply for being here. Your participation and feedback are crucial to our goal of continual improvement of our zApps and ecosystem. Eventually, as we scale, the your individual rewards will diminish. Congrats on being early! The party’s just starting.',
-    title: 'When can I redeem my tokens into cash?',
+    title: 'How does ZERO make money if the app is free AND I’m being paid?',
   },
   {
     content:
       'By chatting! In a DM, in a group, wherever, in-app. The more meaningful conversations you have with other users, the more rewards you’ll reap. Every 24 hours, or epoch, you will be awarded an appropriate amount of $ZERO derived from the previous day’s activities. The precise formula for determining how much you’ll make is ever-changing to combat botting and accommodate a growing user base.',
-    title: 'What do i need to do to earn tokens?',
+    title: 'How do I earn $ZERO tokens?',
   },
   {
     content:
       'The ability to withdraw your $ZERO to an external wallet will be introduced at a future date, to support the release of our ZNS (ZERO Naming System) domain functionality. Until then, sit tight and enjoy watching numba go up!',
-    title: 'Is Zero a DAO?',
+    title: 'How can I withdraw/redeem my $ZERO?',
   },
 ];

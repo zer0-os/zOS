@@ -3,6 +3,8 @@
 
 .tooltip-popup {
   display: block;
+  z-index: 1000;
+  position: relative;
 
   &__trigger {
     position: relative;

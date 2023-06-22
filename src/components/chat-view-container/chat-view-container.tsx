@@ -54,7 +54,6 @@ interface PublicProperties {
 }
 export interface State {
   countNewMessages: number;
-  isFirstMessagesFetchDone: boolean;
   reply: null | ParentMessage;
 }
 
@@ -89,7 +88,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { countNewMessages: 0, isFirstMessagesFetchDone: false, reply: null };
+  state = { countNewMessages: 0, reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -105,16 +104,12 @@ export class Container extends React.Component<Properties, State> {
       this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
       this.setState({
-        isFirstMessagesFetchDone: false,
         reply: null,
       });
     }
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
       this.props.fetchMessages({ channelId });
-      this.setState({
-        isFirstMessagesFetchDone: false,
-      });
     }
 
     if (
@@ -135,17 +130,11 @@ export class Container extends React.Component<Properties, State> {
       this.setState({ countNewMessages: channel.countNewMessages });
     }
 
-    if (!this.state.isFirstMessagesFetchDone && channel && Boolean(channel.messages)) {
-      this.setState({
-        isFirstMessagesFetchDone: true,
-      });
-    }
-
-    if (this.state.isFirstMessagesFetchDone && channel && channel.unreadCount > 0 && user.data) {
+    if (channel && channel.unreadCount > 0 && user.data) {
       this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
 
-    if (this.state.isFirstMessagesFetchDone && this.textareaRef && channel && Boolean(channel.messages)) {
+    if (this.textareaRef && channel && Boolean(channel.messages)) {
       this.onMessageInputRendered(this.textareaRef);
       this.textareaRef = null;
     }
@@ -253,10 +242,7 @@ export class Container extends React.Component<Properties, State> {
     return (
       <>
         <ChatView
-          className={classNames(
-            { 'channel-view--messages-fetched': this.state.isFirstMessagesFetchDone },
-            this.props.className
-          )}
+          className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
           messages={this.channel.messages || []}

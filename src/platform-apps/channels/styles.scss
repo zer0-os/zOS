@@ -126,10 +126,6 @@ $scrollbar-width: 5px;
     height: 100%;
     box-sizing: border-box;
 
-    &--messages-fetched {
-      animation: fadein animation.$animation-duration-double ease-out forwards;
-    }
-
     &__main {
       padding-right: var(--layout-app-content-right-padding);
     }

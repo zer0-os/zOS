@@ -15,8 +15,8 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
+import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
-
 import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
 import './styles.scss';
@@ -49,6 +49,8 @@ export interface Properties extends PublicProperties {
   allowClose: boolean;
   allowExpand: boolean;
   includeRewardsAvatar: boolean;
+  userName: string;
+  userHandle: string;
   userAvatarUrl: string;
   zero: string;
   zeroPreviousDay: string;
@@ -68,6 +70,7 @@ export interface Properties extends PublicProperties {
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
+  logout: () => void;
 }
 
 interface State {
@@ -109,6 +112,8 @@ export class Container extends React.Component<Properties, State> {
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
       isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
+      userName: user?.data?.profileSummary?.firstName || '',
+      userHandle: user?.data?.handle || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
       zero: rewards.zero,
@@ -129,6 +134,7 @@ export class Container extends React.Component<Properties, State> {
       fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
+      logout,
     };
   }
 
@@ -222,8 +228,11 @@ export class Container extends React.Component<Properties, State> {
           isMessengerFullScreen={this.props.isMessengerFullScreen}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           includeRewardsAvatar={this.props.includeRewardsAvatar}
+          userName={this.props.userName}
+          userHandle={this.props.userHandle}
           userAvatarUrl={this.props.userAvatarUrl}
           onRewardsPopupClose={this.props.rewardsPopupClosed}
+          onLogout={this.props.logout}
         />
 
         <div className='direct-message-members'>

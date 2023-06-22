@@ -1,18 +1,23 @@
-import { Avatar, Status } from '@zero-tech/zui/components';
+import { Status } from '@zero-tech/zui/components';
 import { IconCurrencyDollar } from '@zero-tech/zui/icons';
 import classnames from 'classnames';
 import * as React from 'react';
 import { RewardsFAQModal } from '../rewards-faq-modal';
 import { RewardsPopupContainer } from '../rewards-popup/container';
 import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
+import { SettingsMenu } from '../settings-menu';
 import { bem } from '../../lib/bem';
 
 import './styles.scss';
+
 const c = bem('rewards-bar');
 
 export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
+
+  userName: string;
+  userHandle: string;
   userAvatarUrl: string;
 
   zero: string;
@@ -20,6 +25,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
 
+  onLogout: () => void;
   onRewardsPopupClose: () => void;
 }
 
@@ -95,7 +101,12 @@ export class RewardsBar extends React.Component<Properties, State> {
         })}
       >
         {this.props.includeRewardsAvatar && (
-          <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+          <SettingsMenu
+            onLogout={this.props.onLogout}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+          />
         )}
         <button
           onClick={this.openRewards}

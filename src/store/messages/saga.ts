@@ -294,6 +294,7 @@ export function* stopSyncChannels(action) {
   );
 }
 
+// this also "recieves" the message which I had just "sent". is that ideal or should we handle it?
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 

@@ -65,7 +65,7 @@ function coerceType(type) {
     return 'audio';
   }
 
-  if (type.indexOf('file') !== -1) {
+  if (type.indexOf('file') !== -1 || type.indexOf('application/') !== -1 || type.indexOf('text/') !== -1) {
     return 'file';
   }
 
@@ -103,7 +103,7 @@ function extractMessageData(jsonData, isMediaMessage) {
     admin = data.admin || {};
   } catch (e) {}
 
-  return { mentionedUsers, hidePreview, media, image: media, admin };
+  return { mentionedUsers, hidePreview, media, image: media?.type === 'image' ? media : undefined, admin };
 }
 
 export function map(sendbirdMessage) {

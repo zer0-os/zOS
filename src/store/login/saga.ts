@@ -19,7 +19,6 @@ import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
 import { setactiveConversationId } from '../chat';
-import { checkNewRewardsLoaded } from '../rewards/saga';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;

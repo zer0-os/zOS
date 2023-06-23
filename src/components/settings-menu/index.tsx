@@ -20,7 +20,7 @@ export class SettingsMenu extends React.Component<Properties> {
     return this.props.userHandle.includes('@');
   }
 
-  userHandle() {
+  getUserHandle() {
     return this.containsAtSymbol() ? this.props.userHandle : <Address address={this.props.userHandle} />;
   }
 
@@ -36,7 +36,7 @@ export class SettingsMenu extends React.Component<Properties> {
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         <div className={c('user-details')}>
           <div className={c('name')}>{this.props.userName}</div>
-          <div className={c('address')}>{this.userHandle()}</div>
+          <div className={c('address')}>{this.getUserHandle()}</div>
         </div>
       </div>
     );

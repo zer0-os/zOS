@@ -22,8 +22,8 @@ export interface Properties {
 
   zero: string;
   zeroPreviousDay: string;
-  isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
+  showNewRewards: boolean;
 
   onLogout: () => void;
   onRewardsPopupClose: () => void;
@@ -39,9 +39,6 @@ export class RewardsBar extends React.Component<Properties, State> {
   state = {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
-    isToastNotificationOpen: false,
-    isInviteNotificationComplete: false,
-    isInviteDialogOpen: false,
     isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
@@ -59,20 +56,11 @@ export class RewardsBar extends React.Component<Properties, State> {
     return `${whole}${decimalString}`;
   }
 
-  getLastViewedRewards = () => localStorage.getItem('last_viewed_rewards');
-  setLastViewedRewards = (rewards: string) => localStorage.setItem('last_viewed_rewards', rewards);
-  isNewRewardsLoaded = () => this.getLastViewedRewards() !== this.props.zeroPreviousDay;
-
   openRewards = () => {
     this.setState({
       isRewardsPopupOpen: true,
       isRewardsTooltipOpen: false,
     });
-
-    // to track if the user has viewed today's rewards "once"
-    if (this.isNewRewardsLoaded) {
-      this.setLastViewedRewards(this.props.zeroPreviousDay);
-    }
   };
 
   closeRewards = () => {
@@ -83,15 +71,6 @@ export class RewardsBar extends React.Component<Properties, State> {
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
   closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
-
-  showNewRewardsToUser = () => {
-    return (
-      this.props.isMessengerFullScreen &&
-      !this.props.isFirstTimeLogin &&
-      this.isNewRewardsLoaded() &&
-      this.stringifyZero(this.props.zeroPreviousDay) !== '0'
-    );
-  };
 
   renderRewardsBar() {
     return (
@@ -117,7 +96,7 @@ export class RewardsBar extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.showNewRewardsToUser() && <Status type='idle' className={c('rewards-icon__status')} />}
+            {this.props.showNewRewards && <Status type='idle' className={c('rewards-icon__status')} />}
           </div>
         </button>
       </div>
@@ -127,7 +106,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.showNewRewardsToUser() ? ( // only show the rewards tooltip popup if in full screen mode
+        {this.props.showNewRewards ? (
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

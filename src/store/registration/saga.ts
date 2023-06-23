@@ -14,6 +14,7 @@ import {
   setFirstTimeLogin,
   setInviteToastOpen,
 } from '.';
+import { SagaActionTypes as RewardsSagaActionTypes } from '../rewards';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
@@ -242,7 +243,7 @@ export function* saga() {
 }
 
 export function* openInviteToastWhenRewardsPopupClosed() {
-  yield take(SagaActionTypes.RewardsPopupClosed);
+  yield take(RewardsSagaActionTypes.RewardsPopupClosed);
   yield delay(10000);
   yield put(setInviteToastOpen(true));
 }

@@ -43,6 +43,7 @@ describe('messenger-list', () => {
       isRewardsLoading: false,
       isInviteNotificationOpen: false,
       myUserId: '',
+      showNewRewards: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),

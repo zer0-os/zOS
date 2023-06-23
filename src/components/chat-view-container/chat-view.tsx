@@ -47,6 +47,7 @@ export interface Properties {
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
   isDirectMessage: boolean;
   showSenderAvatar?: boolean;
+  isMessengerFullScreen: boolean;
 }
 
 export interface State {
@@ -193,7 +194,11 @@ export class ChatView extends React.Component<Properties, State> {
     const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
-      <div className={classNames('channel-view', this.props.className)}>
+      <div
+        className={classNames('channel-view', this.props.className, {
+          'channel-view__fullscreen': this.props.isMessengerFullScreen,
+        })}
+      >
         {this.isShowIndicator() && (
           <IndicatorMessage countNewMessages={this.props.countNewMessages} closeIndicator={this.closeIndicator} />
         )}

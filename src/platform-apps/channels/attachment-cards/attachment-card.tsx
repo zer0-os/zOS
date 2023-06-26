@@ -13,7 +13,7 @@ export interface Attachment {
 
 export interface Properties {
   attachment: Attachment;
-  onRemove?: () => void;
+  onRemove?: (attachment: any) => void;
   onClick?: (attachment: Attachment) => void;
   type?: 'video' | 'file';
 }
@@ -22,6 +22,12 @@ export default class AttachmentCard extends React.Component<Properties, undefine
   hasOnClick(): boolean {
     return typeof this.props.onClick === 'function';
   }
+
+  onRemove = () => {
+    if (this.props.onRemove) {
+      this.props.onRemove(this.props.attachment);
+    }
+  };
 
   download = (event) => {
     event.stopPropagation();
@@ -76,7 +82,7 @@ export default class AttachmentCard extends React.Component<Properties, undefine
       <div className={className}>
         {this.file()}
         {this.props.onRemove && (
-          <IconButton Icon={IconXClose} onClick={this.props.onRemove} size={17} className='attachment-card__delete' />
+          <IconButton Icon={IconXClose} onClick={this.onRemove} size={17} className='attachment-card__delete' />
         )}
       </div>
     );

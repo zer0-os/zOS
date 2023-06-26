@@ -13,12 +13,6 @@ export interface Properties {
 }
 
 export default class AttachmentCards extends React.Component<Properties, undefined> {
-  itemRemoved = (attachment) => {
-    if (this.props.onRemove) {
-      this.props.onRemove(attachment);
-    }
-  };
-
   itemClicked = (attachment) => {
     if (this.props.onAttachmentClicked) {
       this.props.onAttachmentClicked(attachment);
@@ -40,7 +34,7 @@ export default class AttachmentCards extends React.Component<Properties, undefin
               type={this.props.type}
               key={attachment.url}
               attachment={attachment}
-              onRemove={this.props.onRemove ? this.itemRemoved.bind(this, attachment) : null}
+              onRemove={this.props.onRemove}
               onClick={this.props.onAttachmentClicked ? this.itemClicked : null}
             />
           );

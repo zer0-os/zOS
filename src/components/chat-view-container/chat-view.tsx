@@ -29,6 +29,7 @@ export interface Properties {
   id: string;
   name: string;
   messages: MessageModel[];
+  hasLoadedMessages: boolean;
   onFetchMore: () => void;
   user: User;
   hasJoined: boolean;
@@ -245,7 +246,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            {this.renderLoadingState()}
+            {!this.props.hasLoadedMessages && this.renderLoadingState()}
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

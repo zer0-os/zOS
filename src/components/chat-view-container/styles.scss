@@ -1,12 +1,27 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../animation';
 
 // Note: there are some classes in various other places (src/platform-apps/channels/styles.scss)
 
-.chat-view {
-  &__skeleton {
+.chat-skeleton {
+  animation: fadein 1s ease-out forwards;
+  width: 100%;
+
+  &__date {
+    clear: both;
+    padding: 8px 0px;
+
+    > div {
+      box-sizing: border-box;
+      width: 111px;
+      height: 15px;
+      margin: auto;
+    }
+  }
+
+  &__message {
     box-sizing: border-box;
-    padding: 8px 16px;
-    width: 100%;
+    padding: 2px 16px;
     max-width: 560px;
     clear: both;
     float: left;

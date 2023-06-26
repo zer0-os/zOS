@@ -38,6 +38,7 @@ export interface Channel {
   icon?: string;
   messageIdsCache?: string[];
   isChannel: boolean;
+  hasLoadedMessages: boolean;
 }
 
 export enum SagaActionTypes {

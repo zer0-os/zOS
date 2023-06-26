@@ -15,6 +15,10 @@ export interface Properties {
   onLogout: () => void;
 }
 
+interface State {
+  isDropdownOpen: boolean;
+}
+
 export class SettingsMenu extends React.Component<Properties> {
   containsAtSymbol() {
     return this.props.userHandle.includes('@');
@@ -26,6 +30,10 @@ export class SettingsMenu extends React.Component<Properties> {
 
   handleLogout = () => {
     this.props.onLogout();
+  };
+
+  handleOpenChange = (isOpen) => {
+    this.setState({ isDropdownOpen: isOpen });
   };
 
   renderSettingsHeader() {
@@ -75,7 +83,15 @@ export class SettingsMenu extends React.Component<Properties> {
         ]}
         side='right'
         alignMenu='start'
-        trigger={<Avatar size={'medium'} type={'circle'} imageURL={this.props.userAvatarUrl} />}
+        onOpenChange={this.handleOpenChange}
+        trigger={
+          <Avatar
+            isActive={this.state.isDropdownOpen}
+            size={'medium'}
+            type={'circle'}
+            imageURL={this.props.userAvatarUrl}
+          />
+        }
       />
     );
   }

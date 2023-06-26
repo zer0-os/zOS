@@ -13,8 +13,9 @@ import {
   editMessageApi,
   uploadFileMessage as uploadFileMessageApi,
   getLinkPreviews,
+  uploadAttachment,
 } from './api';
-import { extractLink, linkifyType, messageFactory } from './utils';
+import { FileType, extractLink, getFileType, linkifyType, messageFactory } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -243,8 +244,24 @@ export function* uploadFileMessage(action) {
 
   let messages = [...existingMessages];
   for (const file of media.filter((i) => i.nativeFile)) {
-    const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
-    messages.push(messagesResponse);
+    if (!file.nativeFile) continue;
+
+    const type = getFileType(file.nativeFile);
+    if (type === FileType.Media) {
+      const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
+      messages.push(messagesResponse);
+    } else {
+      const uploadResponse = yield call(uploadAttachment, file.nativeFile);
+      const messagesResponse = yield call(
+        sendMessagesByChannelId,
+        channelId,
+        undefined,
+        undefined,
+        undefined,
+        uploadResponse
+      );
+      messages.push(messagesResponse.body);
+    }
   }
 
   for (const file of media.filter((i) => i.giphy)) {

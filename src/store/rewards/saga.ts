@@ -34,8 +34,8 @@ export function* syncFetchRewards() {
 }
 
 export function* checkNewRewardsLoaded() {
-  const zeroPreviousDay = yield select((state) => state.rewards.zeroPreviousDay);
-  const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
+  const zeroPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.zeroPreviousDay'));
+  const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
   const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
 
   if (

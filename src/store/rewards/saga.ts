@@ -1,4 +1,5 @@
 import { call, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import getDeepProperty from 'lodash.get';
 
 import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroPreviousDay } from '.';
 import { RewardsResp, fetchRewards } from './api';
@@ -35,7 +36,14 @@ export function* syncFetchRewards() {
 export function* checkNewRewardsLoaded() {
   const zeroPreviousDay = yield select((state) => state.rewards.zeroPreviousDay);
   const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
-  if (!isFirstTimeLogin && zeroPreviousDay !== '0' && localStorage.getItem(lastViewedRewardsKey) !== zeroPreviousDay) {
+  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
+
+  if (
+    isMessengerFullScreen &&
+    !isFirstTimeLogin &&
+    zeroPreviousDay !== '0' &&
+    localStorage.getItem(lastViewedRewardsKey) !== zeroPreviousDay
+  ) {
     yield put(setShowNewRewards(true));
   }
 }

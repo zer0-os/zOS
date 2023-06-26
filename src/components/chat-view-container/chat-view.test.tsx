@@ -48,7 +48,7 @@ describe('ChatView', () => {
       resetCountNewMessage: () => null,
       onMessageInputRendered: () => null,
       isDirectMessage: true,
-
+      isMessengerFullScreen: false,
       ...props,
     };
 

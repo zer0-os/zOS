@@ -107,7 +107,7 @@ export class Container extends React.Component<Properties, State> {
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
-      includeTitleBar: user?.data?.isAMemberOfWorlds,
+      includeTitleBar: !layout?.value?.isMessengerFullScreen,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,

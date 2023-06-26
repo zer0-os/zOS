@@ -33,6 +33,10 @@ $recent-indicator-size: 8px;
       height: calc(100% - $title-bar-height - $header-height);
       display: flex;
       flex-direction: column;
+
+      &__fullscreen {
+        height: calc(100% - $header-height);
+      }
     }
   }
 
@@ -76,6 +80,12 @@ $recent-indicator-size: 8px;
     border-bottom: 1px solid theme.$color-greyscale-transparency-2;
     display: flex;
     gap: 8px;
+
+    > div:last-child {
+      flex-grow: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
 
     &-avatar {
       background-position: center;

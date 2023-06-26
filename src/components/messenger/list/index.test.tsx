@@ -419,7 +419,7 @@ describe('messenger-list', () => {
       expect(state.stage).toEqual(Stage.GroupDetails);
     });
 
-    test('stage', () => {
+    test('groupUsers', () => {
       const state = subject([], { groupUsers: [{ value: 'a-thing' }] });
 
       expect(state.groupUsers).toEqual([{ value: 'a-thing' }]);
@@ -445,10 +445,16 @@ describe('messenger-list', () => {
     });
 
     test('includeTitleBar', async () => {
-      let state = subject([], {}, [user({ isAMemberOfWorlds: false })]);
+      let state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
+      });
       expect(state.includeTitleBar).toEqual(false);
 
-      state = subject([], {}, [user({ isAMemberOfWorlds: true })]);
+      state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
+      });
       expect(state.includeTitleBar).toEqual(true);
     });
 

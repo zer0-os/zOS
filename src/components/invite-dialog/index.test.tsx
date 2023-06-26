@@ -44,9 +44,9 @@ describe('InviteDialog', () => {
     wrapper.find('.invite-dialog__inline-button').simulate('click');
     await new Promise(setImmediate);
 
-    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('Copied');
+    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('COPIED');
     jest.runAllTimers();
-    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('Copy');
+    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('COPY');
   });
 
   it('renders the loading state if code does not exist', function () {

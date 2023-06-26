@@ -4,6 +4,8 @@ import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
+import '../list/styles.scss';
+
 import { itemToOption } from '../lib/utils';
 
 export interface Properties {
@@ -51,6 +53,11 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}
           inputClassName={'autocomplete-members__search-input'}
         />
+
+        {this.state.results?.length === 0 && this.state.results !== '' && (
+          <div className='messages-list__empty'>{`No results for '${this.state.searchString}' `}</div>
+        )}
+
         {this.props.children}
         <div className='autocomplete-members__content'>
           {this.state.results && this.state.results.length > 0 && (

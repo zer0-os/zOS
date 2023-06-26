@@ -19,7 +19,14 @@ interface State {
   isDropdownOpen: boolean;
 }
 
-export class SettingsMenu extends React.Component<Properties> {
+export class SettingsMenu extends React.Component<Properties, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isDropdownOpen: false,
+    };
+  }
+
   containsAtSymbol() {
     return this.props.userHandle.includes('@');
   }

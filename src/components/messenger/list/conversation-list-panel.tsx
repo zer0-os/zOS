@@ -150,7 +150,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               ))}
 
               {this.filteredConversations?.length === 0 && this.state.filter !== '' && (
-                <div className='messages-list__empty'>{`You do not have any active conversations with '${this.state.filter}' `}</div>
+                <div className='messages-list__empty'>{`No results for '${this.state.filter}' `}</div>
               )}
 
               {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (

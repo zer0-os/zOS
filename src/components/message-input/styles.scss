@@ -33,7 +33,7 @@
     flex-direction: column;
     pointer-events: none;
     border-top: 1px solid theme.$color-greyscale-transparency-6;
-    padding: 8px;
+    padding: 8px 16px;
 
     .message-input__input-wrapper {
       flex-grow: 99;

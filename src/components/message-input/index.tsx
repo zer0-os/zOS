@@ -340,8 +340,14 @@ export class MessageInput extends React.Component<Properties, State> {
             />
           </div>
         </div>
-
-        <IconButton onClick={this.startMic} Icon={IconMicrophone2} size={24} className='record-voice__icon' />
+        <div className='message-input__icons'>
+          <IconButton
+            onClick={this.startMic}
+            Icon={IconMicrophone2}
+            size={24}
+            className='message-input__record-voice-icon'
+          />
+        </div>
       </div>
     );
   }

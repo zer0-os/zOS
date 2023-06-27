@@ -37,7 +37,6 @@
 
     .message-input__input-wrapper {
       flex-grow: 99;
-      margin-left: 16px;
       position: relative;
     }
 
@@ -77,6 +76,7 @@
     align-self: center;
     pointer-events: all;
     display: flex;
+    gap: 16px;
   }
 
   &__creator {
@@ -190,6 +190,14 @@
   }
 
   &__giphy-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+  }
+
+  &__record-voice-icon {
     display: flex;
     align-items: center;
     justify-content: center;

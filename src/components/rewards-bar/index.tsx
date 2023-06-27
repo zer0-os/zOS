@@ -15,6 +15,7 @@ const c = bem('rewards-bar');
 export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
+  isMessengerFullScreen: boolean;
 
   userName: string;
   userHandle: string;
@@ -96,7 +97,9 @@ export class RewardsBar extends React.Component<Properties, State> {
           <div>Rewards</div>
           <div className={c('rewards-icon')}>
             <IconCurrencyDollar size={16} />
-            {this.props.showNewRewards && <Status type='idle' className={c('rewards-icon__status')} />}
+            {this.props.showNewRewards && this.props.isMessengerFullScreen && (
+              <Status type='idle' className={c('rewards-icon__status')} />
+            )}
           </div>
         </button>
       </div>
@@ -106,7 +109,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showNewRewards ? (
+        {this.props.showNewRewards && this.props.isMessengerFullScreen ? (
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

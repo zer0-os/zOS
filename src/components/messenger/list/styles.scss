@@ -25,31 +25,6 @@ $side-padding: 16px;
   pointer-events: auto; /* Enable pointer events for click event */
 
   .messages-list {
-    &__start {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 400;
-      color: themeDeprecated.$font-color-primary;
-
-      &-icon {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 12px;
-        path {
-          color: theme.$color-primary-11;
-        }
-      }
-      &-conversation {
-        margin-top: 18px;
-        font-weight: 700;
-        color: theme.$color-secondary-11;
-        cursor: pointer;
-      }
-    }
-
     &__items {
       flex-grow: 1;
       display: flex;

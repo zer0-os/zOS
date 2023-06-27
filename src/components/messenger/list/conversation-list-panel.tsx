@@ -4,7 +4,7 @@ import Tooltip from '../../tooltip';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { SearchConversations } from '../search-conversations';
 import { Channel } from '../../../store/channels';
-import { IconMessagePlusSquare, IconMessageQuestionSquare, IconUserPlus1 } from '@zero-tech/zui/icons';
+import { IconMessagePlusSquare, IconUserPlus1 } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -90,22 +90,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     );
   };
 
-  renderNoMessages = (): JSX.Element => {
-    return (
-      <div className='messages-list__start'>
-        <div className='messages-list__start-title'>
-          <span className='messages-list__start-icon'>
-            <IconMessageQuestionSquare size={34} label='You have no messages yet' />
-          </span>
-          You have no messages yet
-        </div>
-        <span className='messages-list__start-conversation' onClick={this.props.startConversation}>
-          Start a Conversation
-        </span>
-      </div>
-    );
-  };
-
   openInviteDialog = (): void => {
     this.setState({ inviteDialogOpen: true });
   };
@@ -163,9 +147,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             </div>
           </ScrollbarContainer>
         </div>
-        {/* Note: this does not work. directMessages is never null */}
-        {/* This should change to this.filteredConversations?.length === 0 */}
-        {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
         <Button
           className={'messages-list__invite-button'}
           variant={'text'}

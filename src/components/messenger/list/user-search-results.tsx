@@ -5,10 +5,9 @@ import { highlightFilter } from '../lib/utils';
 
 import { Avatar } from '@zero-tech/zui/components';
 
-import { bem } from '../../../lib/bem';
+import { bemClassName } from '../../../lib/bem';
 
-const c = bem('user-search-results');
-const cn = (m?, s?) => ({ className: c(m, s) });
+const cn = bemClassName('user-search-results');
 
 export interface Properties {
   filter: string;

@@ -5,6 +5,13 @@ import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { LinkPreview } from '../../lib/link-preview';
 
+export interface AttachmentUploadResult {
+  name: string;
+  key: string;
+  url: string;
+  type: 'file';
+}
+
 interface Sender {
   userId: string;
   firstName: string;

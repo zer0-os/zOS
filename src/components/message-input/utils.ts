@@ -1,11 +1,12 @@
 import { User } from '../../store/channels';
+import { MediaType } from '../../store/messages';
 
 export interface Media {
   id: string;
   url: string;
   name: string;
   nativeFile?: File;
-  mediaType?: 'image' | 'video' | 'audio';
+  mediaType?: MediaType;
   giphy?: any;
 }
 export interface UserForMention {
@@ -21,19 +22,23 @@ export interface Image {
 }
 
 export const dropzoneToMedia = (files: any[]) => {
-  const images: Image[] = files.map((file) => {
-    let mediaType = 'image';
-    if ((file.type || '').startsWith('video/')) {
-      mediaType = 'video';
+  const media: Media[] = files.map((file) => {
+    let mediaType = MediaType.Image;
+    const fileType = file.type || '';
+    if (fileType.startsWith('video/')) {
+      mediaType = MediaType.Video;
     }
-    if ((file.type || '').startsWith('audio/')) {
-      mediaType = 'audio';
+    if (fileType.startsWith('audio/')) {
+      mediaType = MediaType.Audio;
+    }
+    if (fileType.startsWith('text/') || fileType.startsWith('application/pdf')) {
+      mediaType = MediaType.File;
     }
 
     return { id: Date.now().toString(), url: URL.createObjectURL(file), name: file.name, nativeFile: file, mediaType };
   });
 
-  return images;
+  return media;
 };
 
 export async function addImagePreview(files: any[]) {

@@ -21,9 +21,12 @@ describe('Menu', () => {
     expect(wrapper.find(Dropzone).exists()).toBe(true);
   });
 
-  it('dropzone accept all type of images', function () {
+  it('dropzone accept all type of images, text, .pdf, .doc files', function () {
     const mimeTypes = {
       'image/*': [],
+      'text/*': [],
+      'application/pdf': [],
+      'application/msword': [],
     };
 
     const wrapper = subject({ mimeTypes });

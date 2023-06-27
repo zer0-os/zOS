@@ -434,7 +434,7 @@ describe('messages saga', () => {
         id: 'id image 1',
         url: 'url media',
         name: 'image 1',
-        nativeFile: { path: 'Screen Shot 2022-12-07 at 18.39.01.png' },
+        nativeFile: { path: 'Screen Shot 2022-12-07 at 18.39.01.png', type: 'image/png' },
         mediaType: 'image',
       },
     ];

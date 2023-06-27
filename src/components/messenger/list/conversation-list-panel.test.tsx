@@ -87,7 +87,7 @@ function renderedUserSearchResults(wrapper) {
 }
 
 async function searchFor(wrapper, searchString) {
-  const searchInput = wrapper.find('SearchConversations');
+  const searchInput = wrapper.find('Input');
   const onChange = searchInput.prop('onChange');
   await onChange({ target: { value: searchString } });
 }

@@ -25,6 +25,7 @@ import { rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
+import { denormalize } from '../channels';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -91,61 +92,78 @@ describe('channels list saga', () => {
     });
   });
 
-  it('creates conversation', async () => {
-    const name = 'group';
-    const userIds = ['7867766_7876Z2'];
-    await expectSaga(createConversation, { payload: { userIds, name } })
-      .provide([
-        [
-          matchers.call.fn(createConversationApi),
-          MOCK_CHANNELS,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(createConversationApi, userIds, name, '')
-      .run();
-  });
+  describe('createConversation', () => {
+    it('creates conversation', async () => {
+      const name = 'group';
+      const userIds = ['7867766_7876Z2'];
+      await expectSaga(createConversation, { payload: { userIds, name } })
+        .provide([
+          [
+            matchers.call.fn(createConversationApi),
+            MOCK_CHANNELS,
+          ],
+        ])
+        .withReducer(rootReducer)
+        .call(createConversationApi, userIds, name, '')
+        .run();
+    });
 
-  it('handle existing conversation creation', async () => {
-    const name = 'group';
-    const userIds = ['7867766_7876Z2'];
-    const {
-      storeState: { channelsList, chat },
-    } = await expectSaga(createConversation, { payload: { userIds, name } })
-      .withReducer(rootReducer)
-      .provide([
-        [
-          matchers.call.fn(createConversationApi),
-          MOCK_CREATE_DIRECT_MESSAGE_RESPONSE,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(createConversationApi, userIds, name, '')
-      .run();
+    it('sets hasLoadedMessages to true', async () => {
+      const userIds = ['7867766_7876Z2'];
+      const { storeState } = await expectSaga(createConversation, { payload: { userIds } })
+        .provide([
+          [
+            matchers.call.fn(createConversationApi),
+            { id: 'new-convo' },
+          ],
+        ])
+        .withReducer(rootReducer)
+        .run();
 
-    expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
-    expect(chat.activeConversationId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
-  });
+      expect(denormalize('new-convo', storeState).hasLoadedMessages).toBe(true);
+    });
 
-  it('uploads image when creating conversation', async () => {
-    const name = 'group';
-    const userIds = ['user'];
-    const image = { some: 'file' };
-    await expectSaga(createConversation, { payload: { userIds, name, image } })
-      .provide([
-        [
-          matchers.call.fn(uploadImageApi),
-          { url: 'image-url' },
-        ],
-        [
-          matchers.call.fn(createConversationApi),
-          MOCK_CHANNELS,
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(uploadImageApi, image)
-      .call(createConversationApi, userIds, name, 'image-url')
-      .run();
+    it('handle existing conversation creation', async () => {
+      const name = 'group';
+      const userIds = ['7867766_7876Z2'];
+      const {
+        storeState: { channelsList, chat },
+      } = await expectSaga(createConversation, { payload: { userIds, name } })
+        .withReducer(rootReducer)
+        .provide([
+          [
+            matchers.call.fn(createConversationApi),
+            MOCK_CREATE_DIRECT_MESSAGE_RESPONSE,
+          ],
+        ])
+        .withReducer(rootReducer)
+        .call(createConversationApi, userIds, name, '')
+        .run();
+
+      expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
+      expect(chat.activeConversationId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
+    });
+
+    it('uploads image when creating conversation', async () => {
+      const name = 'group';
+      const userIds = ['user'];
+      const image = { some: 'file' };
+      await expectSaga(createConversation, { payload: { userIds, name, image } })
+        .provide([
+          [
+            matchers.call.fn(uploadImageApi),
+            { url: 'image-url' },
+          ],
+          [
+            matchers.call.fn(createConversationApi),
+            MOCK_CHANNELS,
+          ],
+        ])
+        .withReducer(rootReducer)
+        .call(uploadImageApi, image)
+        .call(createConversationApi, userIds, name, 'image-url')
+        .run();
+    });
   });
 
   it('sets status to Idle', async () => {

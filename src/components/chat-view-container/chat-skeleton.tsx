@@ -6,16 +6,42 @@ import { bem } from '../../lib/bem';
 const c = bem('chat-skeleton');
 
 export interface Properties {
-  templateNumber: 1 | 2 | 3;
+  conversationId: string;
 }
 
-export class ChatSkeleton extends React.Component<Properties> {
+interface State {
+  skeletonId: number;
+}
+
+// Cheezy way to store the last rendered id. This works for now
+// because we only ever render one chat skeleton at a given time.
+let lastSkeletonId = -1;
+
+export class ChatSkeleton extends React.Component<Properties, State> {
+  state = { skeletonId: -1 };
+
+  constructor(props) {
+    super(props);
+    this.state = { skeletonId: this.setNextSkeleton() };
+  }
+
+  componentDidUpdate(prevProps: Readonly<Properties>): void {
+    if (prevProps.conversationId !== this.props.conversationId) {
+      this.setState({ skeletonId: this.setNextSkeleton() });
+    }
+  }
+
+  setNextSkeleton() {
+    lastSkeletonId = (lastSkeletonId + 1) % 3;
+    return lastSkeletonId;
+  }
+
   render() {
     return (
       <div className={c('')}>
-        {this.props.templateNumber === 1 && <ChatSkeleton1 />}
-        {this.props.templateNumber === 2 && <ChatSkeleton2 />}
-        {this.props.templateNumber === 3 && <ChatSkeleton3 />}
+        {this.state.skeletonId === 0 && <ChatSkeleton1 />}
+        {this.state.skeletonId === 1 && <ChatSkeleton2 />}
+        {this.state.skeletonId >= 2 && <ChatSkeleton3 />}
       </div>
     );
   }

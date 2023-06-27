@@ -224,7 +224,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            {!this.props.hasLoadedMessages && <ChatSkeleton templateNumber={1} />}
+            {!this.props.hasLoadedMessages && <ChatSkeleton conversationId={this.props.id} />}
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

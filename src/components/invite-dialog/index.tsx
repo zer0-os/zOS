@@ -48,7 +48,7 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   get inviteText() {
     return (
-      "Here's your invite code for ZERO Messenger:\n" +
+      `Here's your invite code for ZERO Messenger:\n` +
       `${this.props.inviteCode}\n\n` +
       'Join early, earn more:\n' +
       `${this.props.inviteUrl}`
@@ -74,7 +74,7 @@ export class InviteDialog extends React.Component<Properties, State> {
         </div>
         <div className={c('content')}>
           <Image
-            src={`${this.props.assetsPath}/ReachingHands.png`}
+            src={`${this.props.assetsPath}/InviteFriends.png`}
             alt='Hands reaching out to connect'
             className={c('image')}
           />

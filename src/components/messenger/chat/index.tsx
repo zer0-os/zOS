@@ -179,7 +179,12 @@ export class Container extends React.Component<Properties, State> {
 
             {this.props.allowCollapse && (
               <div>
-                <IconButton onClick={this.handleDockRight} Icon={IconCollapse1} size={24} />
+                <IconButton
+                  className='direct-message-chat__icon-collapse'
+                  onClick={this.handleDockRight}
+                  Icon={IconCollapse1}
+                  size={24}
+                />
               </div>
             )}
           </div>

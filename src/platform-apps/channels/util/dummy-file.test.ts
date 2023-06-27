@@ -5,18 +5,28 @@
 // Initial request
 // For our purposes, write a function that takes an integer and returns the appropriate FizzBuzz string: fizzbuzz(int) string
 
-// describing the test what outcome we want
+// Note: We recommend completing the initial request before reading
+// the next feature request because even knowing what the next feature might
+// be may impact how you approach the original problem.
+// Likewise for each feature request, complete the first request before viewing the others and so on.
 
-export const Fizzbuzz = (num: number) => {
-  if (num % 3 === 0 && num % 5 === 0) {
+// FEATURE REQUEST 1
+// I want to be able to specify which value triggers the Fizz
+// and which value triggers the Buzz. If the number is divisible by
+// the first value then print Fizz, divisible by the second then print Buzz,
+// if divisible by both then FizzBuzz.
+// Example: instead of 3 and 5 I want to specify that 2 means Fizz and 7 means Buzz.
+
+export const Fizzbuzz = (inputNumber: number, fizzNumber: number = 3, buzzNumber: number = 5) => {
+  if (inputNumber % fizzNumber === 0 && inputNumber % buzzNumber === 0) {
     return 'FizzBuzz';
-  } else if (num % 5 === 0) {
+  } else if (inputNumber % buzzNumber === 0) {
     return 'Buzz';
-  } else if (num % 3 === 0) {
+  } else if (inputNumber % fizzNumber === 0) {
     return 'Fizz';
   }
 
-  return num.toString();
+  return inputNumber.toString();
 };
 
 describe('Fizzbuzz', () => {
@@ -24,31 +34,25 @@ describe('Fizzbuzz', () => {
     expect(Fizzbuzz(1)).toEqual('1');
   });
 
-  it('should "2" if number passed is 2', function () {
-    expect(Fizzbuzz(2)).toEqual('2');
+  // FIZZ TESTS
+  it('should return "Fizz" if inputNumber is equal to fizzNumber', function () {
+    expect(Fizzbuzz(3, 3)).toEqual('Fizz');
+    expect(Fizzbuzz(6, 3)).toEqual('Fizz');
+    expect(Fizzbuzz(2, 2)).toEqual('Fizz');
+    expect(Fizzbuzz(4, 2)).toEqual('Fizz');
   });
 
-  it('should return "Fizz" if number is equal to 3', function () {
-    expect(Fizzbuzz(3)).toEqual('Fizz');
+  // BUZZ TESTS
+  it('should return "Buzz" if inputNumber is equal to buzzNumber', function () {
+    expect(Fizzbuzz(5, 0, 5)).toEqual('Buzz');
+    expect(Fizzbuzz(10, 0, 5)).toEqual('Buzz');
+    expect(Fizzbuzz(7, 0, 7)).toEqual('Buzz');
   });
 
-  it('should return "Buzz" if number is equal to 5', function () {
-    expect(Fizzbuzz(5)).toEqual('Buzz');
-  });
-
-  it('should return "FizzBuzz" if number is a multiple of 3 and 5', function () {
-    expect(Fizzbuzz(15)).toEqual('FizzBuzz');
-  });
-
-  it('should return "Fizz" if number is equal to 6 (multiple of 3)', function () {
-    expect(Fizzbuzz(6)).toEqual('Fizz');
-  });
-
-  it('should return "Buzz" if number is equal 10 (multiple of 5)', function () {
-    expect(Fizzbuzz(10)).toEqual('Buzz');
-  });
-
-  it('should return "FizzBuzz" if number is equal 30 (multiple of 3 and multiple of 5)', function () {
-    expect(Fizzbuzz(30)).toEqual('FizzBuzz');
+  // FIZZBUZZ TESTS
+  it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
+    expect(Fizzbuzz(15, 3, 5)).toEqual('FizzBuzz');
+    expect(Fizzbuzz(14, 2, 7)).toEqual('FizzBuzz');
+    expect(Fizzbuzz(30, 3, 5)).toEqual('FizzBuzz');
   });
 });

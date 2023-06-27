@@ -43,7 +43,7 @@
     .mentions-text-area {
       font-size: 14px;
       line-height: 17px;
-      padding: 8px 8px 8px 16px;
+      padding: 14px 8px 14px 16px;
       background-color: theme.$color-primary-1;
       border: 1px solid theme.$color-greyscale-6;
       border-radius: 8px;
@@ -156,7 +156,7 @@
       background-color: themeDeprecated.$background-color-primary-selected;
     }
     &__item {
-      padding: 8px 10px;
+      padding: 5px 10px;
       &--focused {
         background-color: #141414;
       }
@@ -180,7 +180,7 @@
     &-action {
       position: absolute;
       right: 10px;
-      bottom: 5px;
+      bottom: 8px;
       z-index: 1;
 
       svg {

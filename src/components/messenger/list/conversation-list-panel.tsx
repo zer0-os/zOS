@@ -11,7 +11,7 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
-import { conversationToOption, itemToOption } from '../lib/utils';
+import { itemToOption } from '../lib/utils';
 import { ScrollbarContainer } from '../../scrollbar-container';
 
 export interface Properties {
@@ -38,13 +38,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const tempSearch = search;
 
     if (!tempSearch) {
-      return this.setState({ filter: tempSearch, userSearchResults: null });
+      return this.setState({ filter: tempSearch, userSearchResults: [] });
     }
+
+    this.setState({ filter: tempSearch });
 
     const oneOnOneConversations = this.props.conversations.filter((c) => c.otherMembers.length === 1);
     const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
-
-    this.setState({ filter: tempSearch, userSearchResults: oneOnOneConversations.flatMap(conversationToOption) });
 
     const items: Item[] = await this.props.search(tempSearch);
     const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id));

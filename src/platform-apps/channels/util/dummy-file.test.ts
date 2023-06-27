@@ -17,13 +17,26 @@
 // if divisible by both then FizzBuzz.
 // Example: instead of 3 and 5 I want to specify that 2 means Fizz and 7 means Buzz.
 
-export const Fizzbuzz = (inputNumber: number, fizzNumber: number = 3, buzzNumber: number = 5) => {
-  if (inputNumber % fizzNumber === 0 && inputNumber % buzzNumber === 0) {
-    return 'FizzBuzz';
-  } else if (inputNumber % buzzNumber === 0) {
-    return 'Buzz';
-  } else if (inputNumber % fizzNumber === 0) {
-    return 'Fizz';
+// FEATURE REQUEST 2
+// I want to be able to specify which words are used.
+// Instead of "Fizz" and "Buzz" allow me to set "Zig" and "Zag" or whatever other two strings I want.
+
+export const Fizzbuzz = (
+  inputNumber: number,
+  fizzNumber: number = 3,
+  buzzNumber: number = 5,
+  fizzWord: string = 'Fizz',
+  buzzWord: string = 'Buzz'
+) => {
+  const isFizz = inputNumber % fizzNumber === 0;
+  const isBuzz = inputNumber % buzzNumber === 0;
+
+  if (isFizz && isBuzz) {
+    return `${fizzWord}${buzzWord}`;
+  } else if (isBuzz) {
+    return buzzWord;
+  } else if (isFizz) {
+    return fizzWord;
   }
 
   return inputNumber.toString();
@@ -34,25 +47,43 @@ describe('Fizzbuzz', () => {
     expect(Fizzbuzz(1)).toEqual('1');
   });
 
-  // FIZZ TESTS
-  it('should return "Fizz" if inputNumber is equal to fizzNumber', function () {
-    expect(Fizzbuzz(3, 3)).toEqual('Fizz');
-    expect(Fizzbuzz(6, 3)).toEqual('Fizz');
-    expect(Fizzbuzz(2, 2)).toEqual('Fizz');
-    expect(Fizzbuzz(4, 2)).toEqual('Fizz');
+  describe('Fizz Tests', () => {
+    it('should return "Fizz" if inputNumber is equal to fizzNumber', function () {
+      expect(Fizzbuzz(3, 3)).toEqual('Fizz');
+      expect(Fizzbuzz(6, 3)).toEqual('Fizz');
+      expect(Fizzbuzz(2, 2)).toEqual('Fizz');
+      expect(Fizzbuzz(4, 2)).toEqual('Fizz');
+    });
+
+    it('should return "Zig" if inputNumber is equal to fizzNumber', function () {
+      expect(Fizzbuzz(3, 3, 0, 'Zig')).toEqual('Zig');
+      expect(Fizzbuzz(3, 3, 0, 'Hello World')).toEqual('Hello World');
+    });
   });
 
-  // BUZZ TESTS
-  it('should return "Buzz" if inputNumber is equal to buzzNumber', function () {
-    expect(Fizzbuzz(5, 0, 5)).toEqual('Buzz');
-    expect(Fizzbuzz(10, 0, 5)).toEqual('Buzz');
-    expect(Fizzbuzz(7, 0, 7)).toEqual('Buzz');
+  describe('Buzz Tests', () => {
+    it('should return "Buzz" if inputNumber is equal to buzzNumber', function () {
+      expect(Fizzbuzz(5, 0, 5)).toEqual('Buzz');
+      expect(Fizzbuzz(10, 0, 5)).toEqual('Buzz');
+      expect(Fizzbuzz(7, 0, 7)).toEqual('Buzz');
+    });
+
+    it('should return "Zag" if inputNumber is equal to buzzNumber', function () {
+      expect(Fizzbuzz(5, 0, 5, '', 'Zag')).toEqual('Zag');
+      expect(Fizzbuzz(5, 0, 5, '', 'Hello World')).toEqual('Hello World');
+    });
   });
 
-  // FIZZBUZZ TESTS
-  it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
-    expect(Fizzbuzz(15, 3, 5)).toEqual('FizzBuzz');
-    expect(Fizzbuzz(14, 2, 7)).toEqual('FizzBuzz');
-    expect(Fizzbuzz(30, 3, 5)).toEqual('FizzBuzz');
+  describe('FizzBuzz Tests', () => {
+    it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
+      expect(Fizzbuzz(15, 3, 5)).toEqual('FizzBuzz');
+      expect(Fizzbuzz(14, 2, 7)).toEqual('FizzBuzz');
+      expect(Fizzbuzz(30, 3, 5)).toEqual('FizzBuzz');
+    });
+
+    it('should return both words if number is a multiple of fizzNumber and buzzNumber', function () {
+      expect(Fizzbuzz(15, 3, 5, 'Zig', 'Zag')).toEqual('ZigZag');
+      expect(Fizzbuzz(15, 3, 5, 'Hello', 'World')).toEqual('HelloWorld');
+    });
   });
 });

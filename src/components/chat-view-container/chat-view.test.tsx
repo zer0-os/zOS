@@ -223,10 +223,10 @@ describe('ChatView', () => {
   it('renders skeleton if messages have not been loaded yet', () => {
     const wrapper = subject({ messages: MESSAGES_TEST, hasLoadedMessages: false });
 
-    expect(wrapper).toHaveElement('Skeleton');
+    expect(wrapper).toHaveElement('ChatSkeleton');
 
     wrapper.setProps({ hasLoadedMessages: true });
-    expect(wrapper).not.toHaveElement('Skeleton');
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
   });
 
   describe('Lightbox', () => {

@@ -37,7 +37,7 @@
 
     .message-input__input-wrapper {
       flex-grow: 99;
-      margin-left: 10px;
+      margin-left: 16px;
       position: relative;
     }
 
@@ -173,11 +173,9 @@
 
 .message-input {
   &__icons {
-    display: inline-flex;
-    justify-content: center;
+    display: flex;
     align-items: center;
-    padding-bottom: 2px;
-    margin-left: 10px;
+    gap: 8px;
 
     &-action {
       position: absolute;
@@ -189,6 +187,14 @@
         color: theme.$color-greyscale-11;
       }
     }
+  }
+
+  &__giphy-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
   }
 
   &__emoji-picker {
@@ -249,4 +255,9 @@
 }
 .image-send__icon {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
 }

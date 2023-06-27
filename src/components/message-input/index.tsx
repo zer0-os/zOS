@@ -275,7 +275,7 @@ export class MessageInput extends React.Component<Properties, State> {
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__icons'>
-          <IconButton onClick={this.openGiphy} Icon={IconStickerCircle} size={16} className='giphy__icon' />
+          <IconButton onClick={this.openGiphy} Icon={IconStickerCircle} size={24} className='giphy__icon' />
         </div>
         <div className='message-input__icons'>
           <Menu onSelected={this.mediaSelected} mimeTypes={this.mimeTypes} maxSize={config.cloudinary.max_file_size} />
@@ -331,13 +331,13 @@ export class MessageInput extends React.Component<Properties, State> {
             <IconButton
               onClick={this.openEmojis}
               Icon={IconFaceSmile}
-              size={16}
+              size={24}
               // className='image-send__icon's
             />
           </div>
         </div>
         <div className='message-input__icons'>
-          <IconButton onClick={this.startMic} Icon={IconMicrophone2} size={16} className='record-voice__icon' />
+          <IconButton onClick={this.startMic} Icon={IconMicrophone2} size={24} className='record-voice__icon' />
         </div>
       </div>
     );

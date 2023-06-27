@@ -8,6 +8,7 @@ import { Avatar } from '@zero-tech/zui/components';
 import { bem } from '../../../lib/bem';
 
 const c = bem('user-search-results');
+const cn = (m?, s?) => ({ className: c(m, s) });
 
 export interface Properties {
   filter: string;
@@ -24,12 +25,12 @@ export class UserSearchResults extends React.Component<Properties> {
     const { filter, results } = this.props;
 
     return (
-      <div className={c('')}>
-        <div className={c('title')}>Start a new conversation:</div>
+      <div {...cn()}>
+        <div {...cn('title')}>Start a new conversation:</div>
         {results.map((userResult) => (
-          <div key={userResult.value} className={c('item')} onClick={() => this.handleUserClick(userResult.value)}>
+          <div {...cn('item')} onClick={() => this.handleUserClick(userResult.value)} key={userResult.value}>
             <Avatar size='regular' type='circle' imageURL={userResult.image} />
-            <div className={c('label')}>{highlightFilter(userResult.label, filter)}</div>
+            <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>
           </div>
         ))}
       </div>

@@ -87,6 +87,7 @@ export function* createConversation(action) {
       Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
 
     if (!hasExistingConversation) {
+      conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
       // add new chat to the list
       yield put(
         receive([

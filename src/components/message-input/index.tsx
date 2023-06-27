@@ -332,12 +332,7 @@ export class MessageInput extends React.Component<Properties, State> {
             )}
           </Dropzone>
           <div className='message-input__icons-action'>
-            <IconButton
-              onClick={this.openEmojis}
-              Icon={IconFaceSmile}
-              size={24}
-              // className='image-send__icon's
-            />
+            <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={24} />
           </div>
         </div>
         <div className='message-input__icons'>

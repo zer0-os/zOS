@@ -41,9 +41,9 @@
     }
 
     .mentions-text-area {
-      padding: 8px 0;
       font-size: 14px;
-      padding: 11px 7px;
+      line-height: 17px;
+      padding: 8px 8px 8px 16px;
       background-color: theme.$color-primary-1;
       border: 1px solid theme.$color-greyscale-6;
       border-radius: 8px;
@@ -156,7 +156,7 @@
       background-color: themeDeprecated.$background-color-primary-selected;
     }
     &__item {
-      padding: 5px 10px;
+      padding: 8px 10px;
       &--focused {
         background-color: #141414;
       }

@@ -40,6 +40,18 @@ describe(fetch, () => {
     expect(denormalize(channel.id, storeState).hasMore).toBe(false);
   });
 
+  it('sets hasLoadedMessages on channel', async () => {
+    const channel = { id: 'channel-id', hasLoadedMessages: false };
+    const messageResponse = {};
+
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
+      .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), messageResponse)])
+      .withReducer(rootReducer, initialChannelState(channel))
+      .run();
+
+    expect(denormalize(channel.id, storeState).hasLoadedMessages).toBe(true);
+  });
+
   it('forces shouldSyncChannels to be true', async () => {
     const channel = { id: 'channel-id', shouldSyncChannels: false };
     const messageResponse = { shouldSyncChannels: false };

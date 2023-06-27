@@ -108,6 +108,7 @@ export function* fetch(action) {
       messages,
       hasMore: messagesResponse.hasMore,
       shouldSyncChannels: true,
+      hasLoadedMessages: true,
     })
   );
 }

@@ -18,6 +18,9 @@ import { searchMentionableUsersForChannel } from '../../platform-apps/channels/u
 import { Message } from '../message';
 import { AdminMessageContainer } from '../admin-message/container';
 
+import './styles.scss';
+import { ChatSkeleton } from './chat-skeleton';
+
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
 }
@@ -26,6 +29,7 @@ export interface Properties {
   id: string;
   name: string;
   messages: MessageModel[];
+  hasLoadedMessages: boolean;
   onFetchMore: () => void;
   user: User;
   hasJoined: boolean;
@@ -220,6 +224,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
+            {!this.props.hasLoadedMessages && <ChatSkeleton conversationId={this.props.id} />}
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

@@ -250,6 +250,7 @@ export class Container extends React.Component<Properties, State> {
           name={this.channel.name}
           isMessengerFullScreen={this.props.isMessengerFullScreen}
           messages={this.channel.messages || []}
+          hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}

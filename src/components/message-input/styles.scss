@@ -181,9 +181,13 @@
 
     &-action {
       position: absolute;
-      right: 13px;
-      bottom: 9px;
+      right: 10px;
+      bottom: 5px;
       z-index: 1;
+
+      svg {
+        color: theme.$color-greyscale-11;
+      }
     }
   }
 

@@ -2,13 +2,12 @@ import * as React from 'react';
 
 import Tooltip from '../../tooltip';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { SearchConversations } from '../search-conversations';
 import { Channel } from '../../../store/channels';
-import { IconMessagePlusSquare, IconUserPlus1 } from '@zero-tech/zui/icons';
+import { IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { Button, Modal } from '@zero-tech/zui/components';
+import { Button, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
 import { itemToOption } from '../lib/utils';
@@ -63,33 +62,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     );
   }
 
-  renderNewMessageModal = (): JSX.Element => {
-    return (
-      <Tooltip
-        placement='left'
-        overlay='Create Zero Message'
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
-      >
-        <div className='header-button'>
-          <span className='header-button__title'>Conversations</span>
-          <span className='header-button__icon' onClick={this.props.startConversation}>
-            <IconButton
-              onClick={this.props.startConversation}
-              Icon={IconMessagePlusSquare}
-              size={18}
-              className='header-button__icon-plus'
-            />
-          </span>
-        </div>
-      </Tooltip>
-    );
-  };
-
   openInviteDialog = (): void => {
     this.setState({ inviteDialogOpen: true });
   };
@@ -109,15 +81,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        <div className='messages-list__direct-messages'>{this.renderNewMessageModal()}</div>
         <div className='messages-list__items'>
-          <div className='messages-list__items-conversations-input'>
-            <SearchConversations
+          <div className='messages-list__items-actions'>
+            <Input
               className='messages-list__items-conversations-search'
-              placeholder='Search contacts...'
               onChange={this.searchChanged}
-              searchQuery={this.state.filter}
+              size={'small'}
+              type={'search'}
+              value={this.state.filter}
             />
+            <Tooltip placement='left' overlay='Create Zero Message'>
+              <div className='messages-list__items-conversations-new'>
+                <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={24} />
+              </div>
+            </Tooltip>
           </div>
 
           <ScrollbarContainer variant='on-hover'>

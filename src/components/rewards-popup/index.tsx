@@ -7,6 +7,7 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import classnames from 'classnames';
+
 const c = bem('rewards-popup');
 
 export interface Properties {
@@ -75,7 +76,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
                 }}
               />
             </div>
-            <div className={c('rewards-zero')}>{this.props.zero} ZERO</div>
+            <div className={c('rewards-zero')}>{this.props.zero} $ZERO</div>
             <div className={c('info-card')}>
               <div className={c('info-card__icon')}>
                 <IconGift1 />

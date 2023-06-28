@@ -240,13 +240,16 @@ $scrollbar-width: 5px;
     }
 
     &__message-row {
+      display: flex;
+      justify-content: flex-end;
       clear: both;
       margin: 8px 16px;
     }
 
     .message {
+      display: flex; // Use flex layout
+      justify-content: flex-end;
       margin: 8px 0px;
-      overflow: hidden;
 
       &--owner {
         flex-direction: row-reverse;
@@ -268,10 +271,6 @@ $scrollbar-width: 5px;
 
         .message__block-reply-text {
           border-color: theme.$color-secondary-5;
-        }
-
-        .message__menu-item {
-          background: linear-gradient(270.5deg, theme.$color-secondary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
         }
 
         .message__block {
@@ -296,6 +295,7 @@ $scrollbar-width: 5px;
 
         .message__block {
           flex: 1;
+          z-index: 1;
         }
       }
 
@@ -412,20 +412,24 @@ $scrollbar-width: 5px;
       }
 
       &__menu {
-        position: absolute;
-        height: 100%;
-        top: 0px;
-        right: -48px;
-        transition: right 0.1s ease-in-out;
+        // position: absolute;
+        // height: 100%;
+        // top: 0px;
+        // right: -48px;
+        // transition: right 0.1s ease-in-out;
+        align-self: center;
+        transition: opacity 0s ease-in-out, transform 0.1s ease-in-out; // Adjust transition timing for opacity
+        transform: translateX(100%); // Hide to the right by moving 100% of its width
+        opacity: 0; // Initially hide the menu
 
         &-item {
-          color: themeDeprecated.$font-color-time;
-          background: linear-gradient(270.5deg, theme.$color-primary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
-          border-radius: 8px;
-          width: 48px;
-          height: 100%;
-          text-align: right;
-          margin: 8px;
+          // color: themeDeprecated.$font-color-time;
+
+          // border-radius: 8px;
+          // width: 48px;
+          // height: 100%;
+          // text-align: right;
+          // margin: 8px;
         }
       }
 
@@ -484,9 +488,11 @@ $scrollbar-width: 5px;
   }
 }
 
-.messages__container .messages .messages__message:hover {
+.messages__container .messages .messages__message-row:hover {
   .message__menu {
-    right: 0px;
+    transform: translateX(0); // Show the menu by moving it back to its original position
+    opacity: 1; // Show the menu with full opacity
+    transition: transform 0.1s ease-in-out, opacity 0s ease-in-out; // Add opacity the menu with full opacity Show the menu by moving it back to its original position
   }
 }
 

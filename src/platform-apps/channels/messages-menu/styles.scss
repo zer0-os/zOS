@@ -1,4 +1,5 @@
-@use '../../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 
 .message__menu {
   &:hover {
@@ -6,6 +7,15 @@
       visibility: visible;
     }
   }
+}
+
+.portal-menu-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: theme.$color-greyscale-12;
+  width: 32px;
+  height: 32px;
 }
 
 .portal-menu {
@@ -20,14 +30,14 @@
     left: 0;
     right: 0;
     opacity: 0;
-    background-color: theme.$underlay-tooltip-background;
+    background-color: themeDeprecated.$underlay-tooltip-background;
     display: block;
     animation: partial-fadein 0.3s ease-out normal forwards;
   }
 
   &__content {
     position: relative;
-    background: theme.$background-color-tertiary;
+    background: themeDeprecated.$background-color-tertiary;
     border-radius: 6px;
     cursor: pointer;
     z-index: 200;
@@ -41,10 +51,10 @@
         overflow: hidden;
         padding: 0 20px;
         cursor: pointer;
-        color: theme.$actionable-inactive-color;
+        color: themeDeprecated.$actionable-inactive-color;
         &:hover {
-          background-color: theme.$actionable-hover-background-tooltip;
-          color: theme.$actionable-color;
+          background-color: themeDeprecated.$actionable-hover-background-tooltip;
+          color: themeDeprecated.$actionable-color;
         }
         span {
           font-family: Inter Regular;
@@ -87,7 +97,7 @@
     h3 {
       font-size: 18px;
       font-weight: 700;
-      color: theme.$actionable-color;
+      color: themeDeprecated.$actionable-color;
     }
   }
 
@@ -103,7 +113,7 @@
     flex-direction: row-reverse;
 
     &-button {
-      color: theme.$actionable-color;
+      color: themeDeprecated.$actionable-color;
       text-transform: uppercase;
       cursor: pointer;
       margin-left: 30px;

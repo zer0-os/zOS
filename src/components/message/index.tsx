@@ -222,8 +222,8 @@ export class Message extends React.Component<Properties, State> {
             </>
           )}
           <div className='message__footer'>{this.renderTime(createdAt)}</div>
-          {this.renderMenu()}
         </div>
+        {this.renderMenu()}
       </div>
     );
   }

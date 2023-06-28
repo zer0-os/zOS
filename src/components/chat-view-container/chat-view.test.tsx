@@ -120,8 +120,8 @@ describe('ChatView', () => {
     const classNames = wrapper.find(Message).map((m) => m.prop('className'));
 
     expect(classNames).toIncludeAllMembers([
-      'messages__message messages__message--first-in-group',
-      'messages__message messages__message--first-in-group',
+      'messages__message messages__message--last-in-group',
+      'messages__message messages__message--last-in-group',
       'messages__message',
       'messages__message',
     ]);

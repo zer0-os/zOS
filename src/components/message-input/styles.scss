@@ -33,18 +33,17 @@
     flex-direction: column;
     pointer-events: none;
     border-top: 1px solid theme.$color-greyscale-transparency-6;
-    padding: 8px;
+    padding: 8px 16px;
 
     .message-input__input-wrapper {
       flex-grow: 99;
-      margin-left: 10px;
       position: relative;
     }
 
     .mentions-text-area {
-      padding: 8px 0;
       font-size: 14px;
-      padding: 11px 7px;
+      line-height: 17px;
+      padding: 14px 8px 14px 16px;
       background-color: theme.$color-primary-1;
       border: 1px solid theme.$color-greyscale-6;
       border-radius: 8px;
@@ -77,6 +76,7 @@
     align-self: center;
     pointer-events: all;
     display: flex;
+    gap: 16px;
   }
 
   &__creator {
@@ -173,18 +173,33 @@
 
 .message-input {
   &__icons {
-    display: inline-flex;
-    justify-content: center;
+    display: flex;
     align-items: center;
-    padding-bottom: 2px;
-    margin-left: 10px;
+    gap: 8px;
 
     &-action {
       position: absolute;
-      right: 13px;
-      bottom: 9px;
+      right: 10px;
+      bottom: 8px;
       z-index: 1;
+      color: theme.$color-greyscale-11;
     }
+  }
+
+  &__giphy-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+  }
+
+  &__record-voice-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
   }
 
   &__emoji-picker {
@@ -245,4 +260,9 @@
 }
 .image-send__icon {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
 }

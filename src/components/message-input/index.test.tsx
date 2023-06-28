@@ -109,7 +109,7 @@ describe('MessageInput', () => {
 
     expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
 
-    wrapper.find('.record-voice__icon').simulate('click');
+    wrapper.find('.message-input__record-voice-icon').simulate('click');
 
     dropzone.setProps({});
 
@@ -200,7 +200,7 @@ describe('MessageInput', () => {
 
       expect(dropzone.find(Giphy).exists()).toBe(false);
 
-      wrapper.find('.giphy__icon').simulate('click');
+      wrapper.find('.message-input__giphy-icon').simulate('click');
 
       dropzone.setProps({});
 
@@ -211,7 +211,7 @@ describe('MessageInput', () => {
       const wrapper = subject({});
       const dropzone = wrapper.find(Dropzone).shallow();
 
-      wrapper.find('.giphy__icon').simulate('click');
+      wrapper.find('.message-input__giphy-icon').simulate('click');
 
       dropzone.setProps({});
 

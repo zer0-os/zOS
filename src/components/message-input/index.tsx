@@ -292,9 +292,13 @@ export class MessageInput extends React.Component<Properties, State> {
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__icons'>
-          <IconButton onClick={this.openGiphy} Icon={IconStickerCircle} size={16} className='giphy__icon' />
-        </div>
-        <div className='message-input__icons'>
+          <IconButton
+            onClick={this.openGiphy}
+            Icon={IconStickerCircle}
+            size={24}
+            className='message-input__giphy-icon'
+          />
+
           <Menu onSelected={this.mediaSelected} mimeTypes={this.mimeTypes} maxSize={config.cloudinary.max_file_size} />
         </div>
 
@@ -347,16 +351,16 @@ export class MessageInput extends React.Component<Properties, State> {
             )}
           </Dropzone>
           <div className='message-input__icons-action'>
-            <IconButton
-              onClick={this.openEmojis}
-              Icon={IconFaceSmile}
-              size={16}
-              // className='image-send__icon's
-            />
+            <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={24} />
           </div>
         </div>
         <div className='message-input__icons'>
-          <IconButton onClick={this.startMic} Icon={IconMicrophone2} size={16} className='record-voice__icon' />
+          <IconButton
+            onClick={this.startMic}
+            Icon={IconMicrophone2}
+            size={24}
+            className='message-input__record-voice-icon'
+          />
         </div>
       </div>
     );

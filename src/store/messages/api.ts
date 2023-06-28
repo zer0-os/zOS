@@ -73,8 +73,6 @@ export async function uploadAttachment(file: File): Promise<AttachmentUploadResu
   });
   const uploadInfo: AttachmentResponse = response.body;
 
-  console.log('uploadInfo', uploadInfo);
-
   await axios.put(uploadInfo.signedUrl, file, {
     timeout: 2 * 60 * 1000,
     headers: {

@@ -4,6 +4,7 @@ import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
 import { AttachmentUploadResult, EditMessageOptions, Media, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
+import axios from 'axios';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
   const filter: any = {};
@@ -72,13 +73,22 @@ export async function uploadAttachment(file: File): Promise<AttachmentUploadResu
   });
   const uploadInfo: AttachmentResponse = response.body;
 
-  // note: for adding progress bar to the upload
-  // https://github.com/m3m3n70/zero-web/blob/development/src/app/api/file/index.ts#L105
+  console.log('uploadInfo', uploadInfo);
+
+  await axios.put(uploadInfo.signedUrl, file, {
+    timeout: 2 * 60 * 1000,
+    headers: {
+      'Content-Type': file.type,
+    },
+    // note: for adding progress bar to the upload
+    // https://github.com/m3m3n70/zero-web/blob/development/src/app/api/file/index.ts#L110
+    onUploadProgress: (_event) => {},
+  });
 
   return {
     name: file.name,
     key: uploadInfo.key,
-    url: uploadInfo.signedUrl,
+    url: uploadInfo.key,
     type: 'file',
   };
 }

@@ -223,6 +223,7 @@ $scrollbar-width: 5px;
     overflow: inherit;
     transition: opacity 0.9s ease-out;
     opacity: 1;
+    clear: both;
 
     .message__header {
       display: flex;

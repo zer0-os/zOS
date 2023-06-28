@@ -90,7 +90,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
                 <IconTrendUp1 />
               </div>
               <div className={c('info-card__text')}>
-                (Coming soon) Redeem your tokens for cash or vote on what you want to see in Zero.
+                (Coming soon) Redeem your tokens for cash or vote on what you want to see in ZERO.
               </div>
             </div>
             <Button className={c('button')} isDisabled={true}>
@@ -98,7 +98,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
             </Button>
 
             <div className={c('rewards-faq-text')} onClick={this.openRewardsFAQModal}>
-              Learn more about Zero rewards
+              Learn more about ZERO rewards
             </div>
           </div>
         </div>

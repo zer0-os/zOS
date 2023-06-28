@@ -48,6 +48,7 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   get inviteText() {
     return (
+      // eslint-disable-next-line
       "Here's your invite code for ZERO Messenger:\n" +
       `${this.props.inviteCode}\n\n` +
       'Join early, earn more:\n' +

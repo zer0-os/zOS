@@ -216,6 +216,8 @@ $scrollbar-width: 5px;
 }
 
 .messages__container {
+  animation: fadein 200ms ease-out forwards;
+
   .messages {
     position: relative;
     overflow: inherit;

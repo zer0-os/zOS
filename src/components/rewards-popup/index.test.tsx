@@ -18,8 +18,9 @@ describe('RewardsPopup', () => {
     return shallow(<RewardsPopup {...allProps} />);
   };
 
-  // @note 29-06-2023
-  //
+  /* @note 29-06-2023
+   * Removed this test as component isn't rigged up to render USD price
+   */
   // it('renders your rewards count in USD', function () {
   //   const wrapper = subject({ usd: '$5.71' });
   //

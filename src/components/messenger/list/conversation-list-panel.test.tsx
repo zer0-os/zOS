@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { shallow } from 'enzyme';
 
 import { ConversationListPanel, Properties } from './conversation-list-panel';
@@ -53,7 +53,7 @@ describe('ConversationListPanel', () => {
       'convo-3',
     ]);
 
-    wrapper.find('SearchConversations').simulate('change', 'jac');
+    wrapper.find('Input').simulate('change', 'jac');
 
     displayChatNames = renderedConversations(wrapper).map((c) => c.name);
     expect(displayChatNames).toStrictEqual([

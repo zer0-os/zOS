@@ -249,6 +249,8 @@ $scrollbar-width: 5px;
       overflow: hidden;
 
       &--owner {
+        flex-direction: row-reverse;
+
         .message__block-body {
           transition: background-color 0.3s ease-out;
           position: relative;
@@ -497,7 +499,6 @@ $scrollbar-width: 5px;
   }
 
   .messages__message.message--owner {
-    flex-direction: row-reverse;
     float: right;
   }
 

@@ -9,6 +9,7 @@ describe('rewards-bar', () => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
       includeRewardsAvatar: false,
+      isMessengerFullScreen: false,
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
@@ -71,11 +72,22 @@ describe('rewards-bar', () => {
     expect(wrapper).not.toHaveElement(TooltipPopup);
   });
 
+  it('does not render rewards tooltip popup if not in full screen', async function () {
+    const wrapper = subject({
+      zeroPreviousDay: '9000000000000000000',
+      isRewardsLoading: false,
+      showNewRewards: true,
+      isMessengerFullScreen: false,
+    });
+    expect(wrapper).not.toHaveElement(TooltipPopup);
+  });
+
   it('rewards tooltip popup is rendered upon load', async function () {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
       showNewRewards: true,
+      isMessengerFullScreen: true,
     });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
@@ -89,6 +101,7 @@ describe('rewards-bar', () => {
       zeroPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
       showNewRewards: true,
+      isMessengerFullScreen: true,
     });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconXClose, IconMinus, IconExpand1, IconLayoutRight } from '@zero-tech/zui/icons';
+import { IconXClose, IconMinus, IconExpand1, IconCollapse1 } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
@@ -13,7 +13,7 @@ describe('messenger-chat', () => {
       setactiveConversationId: jest.fn(),
       directMessage: null,
       isFullScreen: false,
-      includeTitleBar: true,
+      allowCollapse: false,
       enterFullScreenMessenger: () => null,
       exitFullScreenMessenger: () => null,
       ...props,
@@ -69,9 +69,9 @@ describe('messenger-chat', () => {
 
   it('publishes exit full screen event', function () {
     const exitFullScreenMessenger = jest.fn();
-    const wrapper = subject({ exitFullScreenMessenger, isFullScreen: true });
+    const wrapper = subject({ exitFullScreenMessenger, isFullScreen: true, allowCollapse: true });
 
-    icon(wrapper, IconLayoutRight).simulate('click');
+    icon(wrapper, IconCollapse1).simulate('click');
 
     expect(exitFullScreenMessenger).toHaveBeenCalledOnce();
   });

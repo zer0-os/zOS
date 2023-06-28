@@ -3,14 +3,14 @@ import * as React from 'react';
 import Tooltip from '../../tooltip';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { Channel } from '../../../store/channels';
-import { IconMessagePlusSquare, IconMessageQuestionSquare, IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';
+import { IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';
 import { IconButton } from '../../icon-button';
 import { ConversationItem } from './conversation-item';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
-import { conversationToOption, itemToOption } from '../lib/utils';
+import { itemToOption } from '../lib/utils';
 import { ScrollbarContainer } from '../../scrollbar-container';
 
 export interface Properties {
@@ -37,13 +37,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const tempSearch = search;
 
     if (!tempSearch) {
-      return this.setState({ filter: tempSearch, userSearchResults: null });
+      return this.setState({ filter: tempSearch, userSearchResults: [] });
     }
+
+    this.setState({ filter: tempSearch });
 
     const oneOnOneConversations = this.props.conversations.filter((c) => c.otherMembers.length === 1);
     const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
-
-    this.setState({ filter: tempSearch, userSearchResults: oneOnOneConversations.flatMap(conversationToOption) });
 
     const items: Item[] = await this.props.search(tempSearch);
     const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id));
@@ -61,22 +61,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );
   }
-
-  renderNoMessages = (): JSX.Element => {
-    return (
-      <div className='messages-list__start'>
-        <div className='messages-list__start-title'>
-          <span className='messages-list__start-icon'>
-            <IconMessageQuestionSquare size={34} label='You have no messages yet' />
-          </span>
-          You have no messages yet
-        </div>
-        <span className='messages-list__start-conversation' onClick={this.props.startConversation}>
-          Start a Conversation
-        </span>
-      </div>
-    );
-  };
 
   openInviteDialog = (): void => {
     this.setState({ inviteDialogOpen: true });
@@ -127,7 +111,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               ))}
 
               {this.filteredConversations?.length === 0 && this.state.filter !== '' && (
-                <div className='messages-list__empty'>{`You do not have any active conversations with '${this.state.filter}' `}</div>
+                <div className='messages-list__empty'>{`No results for '${this.state.filter}' `}</div>
               )}
 
               {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
@@ -140,9 +124,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             </div>
           </ScrollbarContainer>
         </div>
-        {/* Note: this does not work. directMessages is never null */}
-        {/* This should change to this.filteredConversations?.length === 0 */}
-        {!this.props.conversations && <div className='messages-list__new-messages'>{this.renderNoMessages()}</div>}
         <Button
           className={'messages-list__invite-button'}
           variant={'text'}

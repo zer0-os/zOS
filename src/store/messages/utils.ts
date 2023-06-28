@@ -36,3 +36,17 @@ export function messageFactory(messageText: string, user: User, parentMessage: P
 export function extractLink(messageText: string): linkifyType[] {
   return linkifyjs.find(messageText);
 }
+
+export const enum FileType {
+  Media = 'media',
+  Attachment = 'attachment',
+}
+
+export function getFileType(file: File) {
+  const type = file.type;
+  if (type.startsWith('image/') || type.startsWith('video/') || type.startsWith('audio/')) {
+    return FileType.Media;
+  }
+
+  return FileType.Attachment;
+}

@@ -107,10 +107,11 @@ export class Container extends React.Component<Properties, State> {
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
-      includeTitleBar: user?.data?.isAMemberOfWorlds,
+      includeTitleBar: !layout?.value?.isMessengerFullScreen,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
+      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: user?.data?.handle || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -225,6 +226,7 @@ export class Container extends React.Component<Properties, State> {
           zero={this.props.zero}
           zeroPreviousDay={this.props.zeroPreviousDay}
           isRewardsLoading={this.props.isRewardsLoading}
+          isMessengerFullScreen={this.props.isMessengerFullScreen}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           includeRewardsAvatar={this.props.includeRewardsAvatar}
           userName={this.props.userName}

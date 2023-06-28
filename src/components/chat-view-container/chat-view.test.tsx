@@ -48,7 +48,8 @@ describe('ChatView', () => {
       resetCountNewMessage: () => null,
       onMessageInputRendered: () => null,
       isDirectMessage: true,
-
+      isMessengerFullScreen: false,
+      hasLoadedMessages: true,
       ...props,
     };
 
@@ -217,6 +218,15 @@ describe('ChatView', () => {
     const wrapper = subject({ className });
 
     expect(wrapper.find(`.${className}`).exists()).toBe(true);
+  });
+
+  it('renders skeleton if messages have not been loaded yet', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, hasLoadedMessages: false });
+
+    expect(wrapper).toHaveElement('ChatSkeleton');
+
+    wrapper.setProps({ hasLoadedMessages: true });
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
   });
 
   describe('Lightbox', () => {

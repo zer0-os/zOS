@@ -1,7 +1,8 @@
+import { AttachmentResponse } from '../../lib/api/attachment';
 import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { EditMessageOptions, Media, MessagesResponse } from './index';
+import { AttachmentUploadResult, EditMessageOptions, Media, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -62,6 +63,24 @@ export async function uploadFileMessage(channelId: string, media: File): Promise
   const response = await post<any>(`/upload/chatChannels/${channelId}/message`).attach('file', media);
 
   return response.body;
+}
+
+export async function uploadAttachment(file: File): Promise<AttachmentUploadResult> {
+  const response = await get<any>('/api/feedItems/getAttachmentUploadInfo', undefined, {
+    name: file.name,
+    type: file.type,
+  });
+  const uploadInfo: AttachmentResponse = response.body;
+
+  // note: for adding progress bar to the upload
+  // https://github.com/m3m3n70/zero-web/blob/development/src/app/api/file/index.ts#L105
+
+  return {
+    name: file.name,
+    key: uploadInfo.key,
+    url: uploadInfo.signedUrl,
+    type: 'file',
+  };
 }
 
 export async function getLinkPreviews(link: string): Promise<LinkPreview> {

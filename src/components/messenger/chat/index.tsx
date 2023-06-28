@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconExpand1, IconLayoutRight, IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
+import { IconExpand1, IconMinus, IconUsers1, IconXClose, IconCollapse1 } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setactiveConversationId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
@@ -21,7 +21,7 @@ export interface Properties extends PublicProperties {
   setactiveConversationId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
   isFullScreen: boolean;
-  includeTitleBar: boolean;
+  allowCollapse: boolean;
   enterFullScreenMessenger: () => void;
   exitFullScreenMessenger: () => void;
 }
@@ -35,9 +35,9 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      authentication: { user },
       chat: { activeConversationId },
       layout,
+      authentication: { user },
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
@@ -46,7 +46,7 @@ export class Container extends React.Component<Properties, State> {
       activeConversationId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
-      includeTitleBar: user?.data?.isAMemberOfWorlds,
+      allowCollapse: layout.value?.isMessengerFullScreen && user?.data?.isAMemberOfWorlds,
     };
   }
 
@@ -145,20 +145,16 @@ export class Container extends React.Component<Properties, State> {
         className={classNames('direct-message-chat', {
           'direct-message-chat--transition': this.props.isFullScreen !== null || this.state.isMinimized,
           'direct-message-chat--full-screen': this.props.isFullScreen,
-          'direct-message-chat--no-title': !this.props.includeTitleBar,
           'direct-message-chat--minimized': this.state.isMinimized,
           'direct-message-chat--one-on-one': this.isOneOnOne(),
         })}
       >
         <div className='direct-message-chat__content'>
-          {this.props.includeTitleBar && (
+          {!this.props.isFullScreen && (
             <div className='direct-message-chat__title-bar'>
-              {this.props.isFullScreen && (
-                <IconButton onClick={this.handleDockRight} Icon={IconLayoutRight} size={12} />
-              )}
-              {!this.props.isFullScreen && <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />}
-              {!this.props.isFullScreen && <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />}
-              {!this.props.isFullScreen && <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />}
+              <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />
+              <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />
+              <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
             </div>
           )}
 
@@ -180,6 +176,17 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
+
+            {this.props.allowCollapse && (
+              <div>
+                <IconButton
+                  className='direct-message-chat__icon-collapse'
+                  onClick={this.handleDockRight}
+                  Icon={IconCollapse1}
+                  size={24}
+                />
+              </div>
+            )}
           </div>
 
           <ChatViewContainer

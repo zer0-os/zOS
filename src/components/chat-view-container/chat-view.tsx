@@ -18,6 +18,9 @@ import { searchMentionableUsersForChannel } from '../../platform-apps/channels/u
 import { Message } from '../message';
 import { AdminMessageContainer } from '../admin-message/container';
 
+import './styles.scss';
+import { ChatSkeleton } from './chat-skeleton';
+
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
 }
@@ -26,6 +29,7 @@ export interface Properties {
   id: string;
   name: string;
   messages: MessageModel[];
+  hasLoadedMessages: boolean;
   onFetchMore: () => void;
   user: User;
   hasJoined: boolean;
@@ -47,6 +51,7 @@ export interface Properties {
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
   isDirectMessage: boolean;
   showSenderAvatar?: boolean;
+  isMessengerFullScreen: boolean;
 }
 
 export interface State {
@@ -193,7 +198,11 @@ export class ChatView extends React.Component<Properties, State> {
     const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
-      <div className={classNames('channel-view', this.props.className)}>
+      <div
+        className={classNames('channel-view', this.props.className, {
+          'channel-view__fullscreen': this.props.isMessengerFullScreen,
+        })}
+      >
         {this.isShowIndicator() && (
           <IndicatorMessage countNewMessages={this.props.countNewMessages} closeIndicator={this.closeIndicator} />
         )}
@@ -215,6 +224,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
+            {!this.props.hasLoadedMessages && <ChatSkeleton conversationId={this.props.id} />}
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

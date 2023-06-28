@@ -41,6 +41,7 @@ export interface Properties extends PublicProperties {
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
+  isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
   };
@@ -65,12 +66,14 @@ export class Container extends React.Component<Properties, State> {
     const {
       authentication: { user },
       chat: { activeConversationId },
+      layout,
     } = state;
 
     return {
       channel,
       user,
       activeConversationId,
+      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -245,7 +248,9 @@ export class Container extends React.Component<Properties, State> {
           className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
+          isMessengerFullScreen={this.props.isMessengerFullScreen}
           messages={this.channel.messages || []}
+          hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}

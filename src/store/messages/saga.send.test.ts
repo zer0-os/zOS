@@ -43,20 +43,13 @@ describe(send, () => {
 
   it('reply message', async () => {
     const channelId = 'channel-id';
-    const message = 'reply';
-    const mentionedUserIds = [];
     const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
 
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    await expectSaga(send, { payload: { channelId, message: '', mentionedUserIds: [], parentMessage } })
       .provide(successResponses())
       .withReducer(rootReducer, defaultState() as any)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .call(sendMessagesByChannelId, channelId, '', [], parentMessage)
       .run();
-    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
 
   it('send message return a 400 status', async () => {

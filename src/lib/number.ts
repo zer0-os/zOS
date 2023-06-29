@@ -1,14 +1,15 @@
-import { millify } from 'millify';
+import Decimal from 'decimal.js';
+import millify from 'millify';
 
-export function formatNumber(num: number | string): string {
-  let asNum;
-  if (typeof num === 'string') {
-    asNum = parseFloat(num);
-  } else {
-    asNum = num;
+export function formatNumber(num: string): string {
+  const numAsDecimal = new Decimal(num).toDecimalPlaces(2);
+
+  if (numAsDecimal.abs().greaterThanOrEqualTo(1000000)) {
+    return millify(numAsDecimal.toNumber(), { precision: 2 });
   }
 
-  if (asNum >= 1000000) return millify(asNum, { precision: 2 });
-
-  return asNum.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  return numAsDecimal
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    .replace(/\.0+$/, ''); // remove trailing zeros
 }

@@ -5,8 +5,8 @@ import { RewardsPopup, Properties } from '.';
 describe('RewardsPopup', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      usd: '',
-      zero: '',
+      usd: '1',
+      zero: '1',
       isLoading: false,
       isFullScreen: false,
       withTitleBar: true,

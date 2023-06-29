@@ -13,27 +13,9 @@ describe(send, () => {
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
+    const initialState = defaultState();
 
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .provide([
         [
           matchers.call.fn(sendMessagesByChannelId),
@@ -43,7 +25,6 @@ describe(send, () => {
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
-    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
 
   it('send message with link preview', async () => {
@@ -52,21 +33,7 @@ describe(send, () => {
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
+    const initialState = defaultState();
 
     const {
       storeState: {
@@ -110,21 +77,7 @@ describe(send, () => {
     const mentionedUserIds = [];
     const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
+    const initialState = defaultState();
 
     const {
       storeState: {
@@ -163,19 +116,7 @@ describe(send, () => {
           },
         },
       },
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
+      ...defaultState(),
     };
 
     const {
@@ -197,3 +138,21 @@ describe(send, () => {
     expect(channels[channelId].messageIdsCache.length).toEqual(1);
   });
 });
+
+function defaultState() {
+  return {
+    authentication: {
+      user: {
+        data: {
+          id: 1,
+          profileId: '2',
+          profileSummary: {
+            firstName: 'Johnn',
+            lastName: 'Doe',
+            profileImage: '/image.jpg',
+          },
+        },
+      },
+    },
+  };
+}

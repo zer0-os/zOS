@@ -216,11 +216,14 @@ $scrollbar-width: 5px;
 }
 
 .messages__container {
+  animation: fadein 200ms ease-out forwards;
+
   .messages {
     position: relative;
     overflow: inherit;
     transition: opacity 0.9s ease-out;
     opacity: 1;
+    clear: both;
 
     .message__header {
       display: flex;

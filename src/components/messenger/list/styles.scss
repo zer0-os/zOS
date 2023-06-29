@@ -30,12 +30,32 @@ $side-padding: 16px;
       display: flex;
       gap: 24px;
       flex-direction: column;
-      padding-bottom: 16px;
+      padding: $side-padding 0;
 
       animation: conversation-slide-in 600ms ease-in forwards;
 
-      &-conversations-input {
-        padding: 0px $side-padding;
+      &-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 $side-padding;
+      }
+
+      &-conversations-search {
+        flex: 1;
+
+        // @note: this is here because parent size calculations with flex 1
+        // are a little funky with zUI input right now.
+        input {
+          width: 0;
+        }
+      }
+
+      &-conversations-new {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
       }
     }
 
@@ -74,8 +94,10 @@ $side-padding: 16px;
 
   &__icon {
     z-index: 30;
+
     &-plus {
       cursor: pointer;
+
       path {
         stroke: themeDeprecated.$actionable-active-color;
       }

@@ -33,7 +33,7 @@ interface State {
 }
 
 export class InviteDialog extends React.Component<Properties, State> {
-  state = { copyText: 'Copy' };
+  state = { copyText: 'COPY' };
   buttonTimeout = null;
 
   static defaultProps = { clipboard: clipboard };
@@ -48,9 +48,10 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   get inviteText() {
     return (
-      'Here is an invite code for Zero messenger:\n' +
+      // eslint-disable-next-line
+      "Here's your invite code for ZERO Messenger:\n" +
       `${this.props.inviteCode}\n\n` +
-      'Get exclusive access:\n' +
+      'Join early, earn more:\n' +
       `${this.props.inviteUrl}`
     );
   }
@@ -58,8 +59,8 @@ export class InviteDialog extends React.Component<Properties, State> {
   writeInviteToClipboard = async () => {
     try {
       await this.props.clipboard.write(this.inviteText);
-      this.setState({ copyText: 'Copied' });
-      this.buttonTimeout = setTimeout(() => this.setState({ copyText: 'Copy' }), 3000);
+      this.setState({ copyText: 'COPIED' });
+      this.buttonTimeout = setTimeout(() => this.setState({ copyText: 'COPY' }), 3000);
     } catch (e) {
       // Assume copying succeeds. There's not much we can do if it fails.
     }
@@ -69,12 +70,12 @@ export class InviteDialog extends React.Component<Properties, State> {
     return (
       <div className={c('')}>
         <div className={c('title-bar')}>
-          <h3 className={c('title')}>Invite to Messenger</h3>
+          <h3 className={c('title')}>Invite to ZERO Messenger</h3>
           <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
         <div className={c('content')}>
           <Image
-            src={`${this.props.assetsPath}/ReachingHands.png`}
+            src={`${this.props.assetsPath}/InviteFriends.png`}
             alt='Hands reaching out to connect'
             className={c('image')}
           />
@@ -85,11 +86,9 @@ export class InviteDialog extends React.Component<Properties, State> {
             </Alert>
           )}
 
-          <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
+          <div className={c('heading')}>Invite a friend. Chat on ZERO. Earn rewards.</div>
           <div className={c('byline')}>
-            The larger and more active your network of contacts is, the more you will receive in rewards. Let's take
-            back ownership of our social platforms.
-            <br />
+            The more active you are, the more you earn. Take back ownership of your content and get rewarded.
             <br />
           </div>
           <div className={c('code-block')}>

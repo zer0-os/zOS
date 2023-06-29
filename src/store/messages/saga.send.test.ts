@@ -4,7 +4,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
 import { rootReducer } from '../reducer';
-import { send as sendBrowserMessage } from '../../lib/browser';
 
 describe(send, () => {
   it('send message', async () => {
@@ -57,10 +56,6 @@ describe(send, () => {
               description: 'Search the world information, including webpages.',
             },
           },
-        ],
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
         ],
       ])
       .withReducer(rootReducer, initialState as any)

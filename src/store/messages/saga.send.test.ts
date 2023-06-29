@@ -8,7 +8,7 @@ import { stubResponse } from '../../test/saga';
 
 describe(send, () => {
   it('send message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
@@ -21,7 +21,7 @@ describe(send, () => {
   });
 
   it('send message with link preview', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'www.google.com';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
@@ -56,7 +56,7 @@ describe(send, () => {
   });
 
   it('reply message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'reply';
     const mentionedUserIds = [];
     const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
@@ -74,7 +74,7 @@ describe(send, () => {
   });
 
   it('send message return a 400 status', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;

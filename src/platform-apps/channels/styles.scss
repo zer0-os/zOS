@@ -298,9 +298,6 @@ $scrollbar-width: 5px;
       }
 
       &--sender-avatar {
-        display: flex;
-        // gap: 8px;
-
         .message__block {
           flex: 1;
           z-index: 1;
@@ -484,9 +481,9 @@ $scrollbar-width: 5px;
 
 .messages__container .messages .messages__message-row:hover {
   .message__menu {
-    transform: translateX(0); // Show the menu by moving it back to its original position
-    opacity: 1; // Show the menu with full opacity
-    transition: transform 0.1s ease-in-out, opacity 0s ease-in-out; // Add opacity the menu with full opacity Show the menu by moving it back to its original position
+    transform: translateX(0);
+    transition: transform 0.1s ease-in-out, opacity 0s ease-in-out;
+    opacity: 1;
   }
 }
 
@@ -494,14 +491,7 @@ $scrollbar-width: 5px;
 .direct-message-chat--full-screen {
   .messages__message {
     box-sizing: border-box;
-    // float: left;
     max-width: 100%;
-  }
-
-  .messages__message.message--owner {
-    display: flex;
-    // float: right;
-    gap: 8px;
   }
 
   .messages__message {

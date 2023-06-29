@@ -1,14 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 
-.message__menu {
-  &:hover {
-    .message__menu {
-      visibility: visible;
-    }
-  }
-}
-
 .portal-menu-button-icon {
   display: flex;
   align-items: center;
@@ -64,16 +56,6 @@
           position: relative;
           top: 1px;
         }
-      }
-    }
-  }
-}
-
-.message__block {
-  &:hover {
-    .message__menu {
-      &-item {
-        visibility: visible;
       }
     }
   }

@@ -6,41 +6,26 @@
 .rewards-popup {
   $padding-x: 32px;
   $padding-y: 40px;
+  $size: 16px;
 
   position: absolute;
   z-index: 10;
 
   &__arrow {
-    $size: 16px;
-
     position: relative;
     height: 0;
     width: 100%;
 
     z-index: -1;
 
-    &[data-position='top'] {
-      &::after {
-        $height: $size / 2;
-        $width: $size;
-        top: -$padding-y - $height;
-        left: calc(100% - $width / 2);
-        height: 8px;
-        width: 16px;
-        clip-path: polygon(0 100%, 50% 0, 100% 100%); // make a triangle
-      }
-    }
-
-    &[data-position='left'] {
-      &::after {
-        $height: $size;
-        $width: $size / 2;
-        top: -$padding-y + 16px;
-        left: -$padding-x - $width;
-        height: 16px;
-        width: 8px;
-        clip-path: polygon(100% 0, 0 50%, 100% 100%); /* rotated triangle */
-      }
+    &::after {
+      $height: $size / 2;
+      $width: $size;
+      top: -$padding-y - $height;
+      left: calc(100% - $width / 2);
+      height: 8px;
+      width: 16px;
+      clip-path: polygon(0 100%, 50% 0, 100% 100%); // make a triangle
     }
 
     &::after {
@@ -83,6 +68,18 @@
   &--full-screen.rewards-popup--with-title {
     .rewards-popup__content {
       top: 40px;
+    }
+
+    &__arrow {
+      &::after {
+        $height: $size;
+        $width: $size / 2;
+        top: -$padding-y + 16px;
+        left: -$padding-x - $width;
+        height: 16px;
+        width: 8px;
+        clip-path: polygon(100% 0, 0 50%, 100% 100%); /* rotated triangle */
+      }
     }
   }
 

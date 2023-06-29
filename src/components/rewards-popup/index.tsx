@@ -56,7 +56,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
       >
         <div className={c('underlay')} onClick={this.abort}>
           <div className={c('content')} onClick={this.preventAbortOnChildClick}>
-            <div className={c('arrow')} data-position={this.props.isFullScreen ? 'left' : 'top'}></div>
+            <div className={c('arrow')}></div>
             <IconButton
               Icon={IconXClose}
               className={c('close-button')}

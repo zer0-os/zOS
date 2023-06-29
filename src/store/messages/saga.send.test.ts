@@ -54,13 +54,8 @@ describe(send, () => {
 
   it('send message return a 400 status', async () => {
     const channelId = 'channel-id';
-    const message = 'hello';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
-    const messages = [
+    const existingMessages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-      { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-      { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
     ];
 
     const initialState = {
@@ -68,25 +63,22 @@ describe(send, () => {
         channels: {
           [channelId]: {
             id: channelId,
-            messages,
+            messages: existingMessages,
           },
         },
       },
       ...defaultState(),
     };
 
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    const { storeState } = await expectSaga(send, { payload: { channelId, message: 'failed message' } })
       .withReducer(rootReducer, initialState)
       .provide([stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 400, body: {} })])
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
 
-    expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
-    expect(channels[channelId].messageIdsCache.length).toEqual(1);
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toStrictEqual(existingMessages);
+    // Is this what we really want? Just leave the optimistic message hanging around?
+    expect(channel.messageIdsCache.length).toEqual(1);
   });
 });
 

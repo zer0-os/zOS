@@ -4,6 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
 import { rootReducer } from '../reducer';
+import { stubResponse } from '../../test/saga';
 
 describe(send, () => {
   it('send message', async () => {
@@ -15,12 +16,7 @@ describe(send, () => {
     const initialState = defaultState();
 
     await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-      ])
+      .provide(successResponses())
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
@@ -41,10 +37,6 @@ describe(send, () => {
     } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .provide([
         [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-        [
           matchers.call.fn(getLinkPreviews),
           {
             status: 200,
@@ -57,6 +49,7 @@ describe(send, () => {
             },
           },
         ],
+        ...successResponses(),
       ])
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
@@ -79,12 +72,7 @@ describe(send, () => {
         normalized: { channels },
       },
     } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-      ])
+      .provide(successResponses())
       .withReducer(rootReducer, initialState as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
@@ -120,12 +108,7 @@ describe(send, () => {
       },
     } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 400, body: {} },
-        ],
-      ])
+      .provide([stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 400, body: {} })])
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
 
@@ -150,4 +133,10 @@ function defaultState() {
       },
     },
   };
+}
+
+function successResponses() {
+  return [
+    stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 200, body: { id: 'message 1', message: {} } }),
+  ];
 }

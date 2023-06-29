@@ -257,6 +257,7 @@ $scrollbar-width: 5px;
       justify-content: flex-end;
       margin: 8px 0px;
       gap: 8px;
+      overflow: hidden;
 
       &--owner {
         flex-direction: row-reverse;

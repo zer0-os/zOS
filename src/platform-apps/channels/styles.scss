@@ -241,15 +241,19 @@ $scrollbar-width: 5px;
 
     &__message-row {
       display: flex;
-      justify-content: flex-end;
       clear: both;
       margin: 8px 16px;
+
+      &--owner {
+        justify-content: flex-end;
+      }
     }
 
     .message {
-      display: flex; // Use flex layout
+      display: flex;
       justify-content: flex-end;
       margin: 8px 0px;
+      gap: 8px;
 
       &--owner {
         flex-direction: row-reverse;
@@ -281,6 +285,10 @@ $scrollbar-width: 5px;
             display: none;
           }
         }
+
+        .message__menu {
+          transform: translateX(100%);
+        }
       }
 
       &--media {
@@ -291,7 +299,7 @@ $scrollbar-width: 5px;
 
       &--sender-avatar {
         display: flex;
-        gap: 8px;
+        // gap: 8px;
 
         .message__block {
           flex: 1;
@@ -306,6 +314,7 @@ $scrollbar-width: 5px;
         padding: 8px;
         color: themeDeprecated.$card-text-color;
         overflow: hidden;
+        z-index: 1;
 
         &-body {
           display: block;
@@ -412,25 +421,10 @@ $scrollbar-width: 5px;
       }
 
       &__menu {
-        // position: absolute;
-        // height: 100%;
-        // top: 0px;
-        // right: -48px;
-        // transition: right 0.1s ease-in-out;
         align-self: center;
-        transition: opacity 0s ease-in-out, transform 0.1s ease-in-out; // Adjust transition timing for opacity
-        transform: translateX(100%); // Hide to the right by moving 100% of its width
-        opacity: 0; // Initially hide the menu
-
-        &-item {
-          // color: themeDeprecated.$font-color-time;
-
-          // border-radius: 8px;
-          // width: 48px;
-          // height: 100%;
-          // text-align: right;
-          // margin: 8px;
-        }
+        transition: opacity 0s ease-in-out, transform 0.1s ease-in-out;
+        transform: translateX(-100%);
+        opacity: 0;
       }
 
       &__left {
@@ -500,12 +494,14 @@ $scrollbar-width: 5px;
 .direct-message-chat--full-screen {
   .messages__message {
     box-sizing: border-box;
-    float: left;
+    // float: left;
     max-width: 100%;
   }
 
   .messages__message.message--owner {
-    float: right;
+    display: flex;
+    // float: right;
+    gap: 8px;
   }
 
   .messages__message {

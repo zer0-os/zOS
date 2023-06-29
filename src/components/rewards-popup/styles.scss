@@ -3,37 +3,39 @@
 @import '../../animation';
 @import '../../layout';
 
-.rewards-popup {
-  $padding-x: 32px;
-  $padding-y: 40px;
-  $size: 16px;
+$content-padding-x: 32px;
+$content-padding-y: 40px;
 
-  position: absolute;
-  z-index: 10;
+@mixin arrow($position) {
+  $is-top: $position == 'top';
+  $arrow-size: 16px;
 
-  &__arrow {
+  .rewards-popup__arrow {
     position: relative;
     height: 0;
     width: 100%;
-
-    z-index: -1;
-
-    &::after {
-      $height: $size / 2;
-      $width: $size;
-      top: -$padding-y - $height;
-      left: calc(100% - $width / 2);
-      height: 8px;
-      width: 16px;
-      clip-path: polygon(0 100%, 50% 0, 100% 100%); // make a triangle
-    }
 
     &::after {
       content: '';
       position: absolute;
       background: theme.$color-primary-2;
+
+      $height: if($is-top, $arrow-size / 2, $arrow-size);
+      $width: if($is-top, $arrow-size, $arrow-size / 2);
+      height: $height;
+      width: $width;
+      top: if($is-top, -$content-padding-y - $height, -$content-padding-y + 16px);
+      left: if($is-top, calc(100% - $width / 2), -$content-padding-x - $width);
+      clip-path: if($is-top, polygon(0 100%, 50% 0, 100% 100%), polygon(100% 0, 0 50%, 100% 100%));
     }
   }
+}
+
+.rewards-popup {
+  position: absolute;
+  z-index: 10;
+
+  @include arrow('top');
 
   &__content {
     box-sizing: border-box;
@@ -55,7 +57,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: $padding-y $padding-x;
+    padding: $content-padding-y $content-padding-x;
   }
 
   &--full-screen {
@@ -63,23 +65,13 @@
       top: 2px;
       left: $width-sidekick + $width-world-navigation + 2px;
     }
+
+    @include arrow('left');
   }
 
   &--full-screen.rewards-popup--with-title {
     .rewards-popup__content {
       top: 40px;
-    }
-
-    &__arrow {
-      &::after {
-        $height: $size;
-        $width: $size / 2;
-        top: -$padding-y + 16px;
-        left: -$padding-x - $width;
-        height: 16px;
-        width: 8px;
-        clip-path: polygon(100% 0, 0 50%, 100% 100%); /* rotated triangle */
-      }
     }
   }
 

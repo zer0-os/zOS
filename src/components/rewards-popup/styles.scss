@@ -45,8 +45,14 @@
 
   &__close-button {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 18px;
+    right: 18px;
+
+    svg {
+      path {
+        color: theme.$color-greyscale-12;
+      }
+    }
   }
 
   &__heading {

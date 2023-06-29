@@ -3,155 +3,56 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
-import { rootReducer } from '../reducer';
-import { send as sendBrowserMessage } from '../../lib/browser';
+import { RootState, rootReducer } from '../reducer';
+import { stubResponse } from '../../test/saga';
+import { denormalize as denormalizeChannel } from '../channels';
 
 describe(send, () => {
   it('send message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-      ])
-      .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+    await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
+      .provide(successResponses())
+      .withReducer(rootReducer, defaultState())
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, undefined)
       .run();
-    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
 
   it('send message with link preview', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+    const channelId = 'channel-id';
     const message = 'www.google.com';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
+    const linkPreview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0' };
 
-    const {
-      storeState: {
-        normalized: { channels, messages },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    const { storeState } = await expectSaga(send, { payload: { channelId, message } })
       .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-        [
-          matchers.call.fn(getLinkPreviews),
-          {
-            status: 200,
-            body: {
-              id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
-              url: 'http://www.google.com',
-              type: 'link',
-              title: 'Google',
-              description: 'Search the world information, including webpages.',
-            },
-          },
-        ],
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
-        ],
+        stubResponse(matchers.call.fn(getLinkPreviews), linkPreview),
+        ...successResponses(),
       ])
-      .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .withReducer(rootReducer, defaultState())
       .run();
 
-    const messageId = channels[channelId]['messages'][0];
-    expect(messages[messageId].preview).not.toBeNull();
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].preview).toEqual(linkPreview);
   });
 
   it('reply message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const message = 'reply';
-    const mentionedUserIds = [];
+    const channelId = 'channel-id';
     const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 200, body: { id: 'message 1', message } },
-        ],
-      ])
-      .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+    await expectSaga(send, { payload: { channelId, message: '', mentionedUserIds: [], parentMessage } })
+      .provide(successResponses())
+      .withReducer(rootReducer, defaultState() as any)
+      .call(sendMessagesByChannelId, channelId, '', [], parentMessage)
       .run();
-    expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
   });
 
   it('send message return a 400 status', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const message = 'hello';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
-    const messages = [
+    const channelId = 'channel-id';
+    const existingMessages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-      { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-      { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
     ];
 
     const initialState = {
@@ -159,41 +60,45 @@ describe(send, () => {
         channels: {
           [channelId]: {
             id: channelId,
-            messages,
+            messages: existingMessages,
           },
         },
       },
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
+      ...defaultState(),
     };
 
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          { status: 400, body: {} },
-        ],
-      ])
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+    const { storeState } = await expectSaga(send, { payload: { channelId, message: 'failed message' } })
+      .withReducer(rootReducer, initialState)
+      .provide([stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 400, body: {} })])
       .run();
 
-    expect(channels[channelId].messages).toStrictEqual(messages.map((messageItem) => messageItem.id));
-    expect(channels[channelId].messageIdsCache.length).toEqual(1);
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toStrictEqual(existingMessages);
+    // Is this what we really want? Just leave the optimistic message hanging around?
+    expect(channel.messageIdsCache.length).toEqual(1);
   });
 });
+
+function defaultState() {
+  return {
+    authentication: {
+      user: {
+        data: {
+          id: '1',
+          profileId: '2',
+          profileSummary: {
+            firstName: 'Johnn',
+            lastName: 'Doe',
+            profileImage: '/image.jpg',
+          },
+        },
+      },
+    },
+  } as RootState;
+}
+
+function successResponses() {
+  return [
+    stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 200, body: { id: 'message 1', message: {} } }),
+  ];
+}

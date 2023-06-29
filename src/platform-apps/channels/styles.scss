@@ -252,6 +252,8 @@ $scrollbar-width: 5px;
       overflow: hidden;
 
       &--owner {
+        flex-direction: row-reverse;
+
         .message__block-body {
           transition: background-color 0.3s ease-out;
           position: relative;
@@ -293,6 +295,7 @@ $scrollbar-width: 5px;
 
       &--sender-avatar {
         display: flex;
+        gap: 8px;
 
         .message__block {
           flex: 1;
@@ -430,8 +433,8 @@ $scrollbar-width: 5px;
       }
 
       &__left {
-        margin-right: 8px;
         width: 32px;
+        align-self: flex-end;
       }
 
       &__author-avatar {
@@ -452,7 +455,7 @@ $scrollbar-width: 5px;
         color: theme.$color-greyscale-12;
       }
 
-      &.messages__message--first-in-group {
+      &.messages__message--last-in-group {
         .message__author-avatar {
           display: block;
         }

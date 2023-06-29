@@ -138,10 +138,11 @@ export class ChatView extends React.Component<Properties, State> {
           if (message.isAdmin) {
             return <AdminMessageContainer key={message.id} message={message} />;
           } else {
-            const isFirstFromUser =
-              index === 0 ||
-              allMessages[index - 1].isAdmin ||
-              message.sender.userId !== allMessages[index - 1].sender.userId;
+            const isLastFromUser =
+              index === allMessages.length - 1 ||
+              allMessages[index + 1].isAdmin ||
+              message.sender.userId !== allMessages[index + 1].sender.userId;
+
             const isUserOwnerOfTheMessage =
               // eslint-disable-next-line eqeqeq
               this.props.user && message.sender && this.props.user.id == message.sender.userId;
@@ -150,7 +151,7 @@ export class ChatView extends React.Component<Properties, State> {
               <div key={message.id} className='messages__message-row'>
                 <Message
                   className={classNames('messages__message', {
-                    'messages__message--first-in-group': isFirstFromUser && this.props.showSenderAvatar,
+                    'messages__message--last-in-group': isLastFromUser && this.props.showSenderAvatar,
                   })}
                   onImageClick={this.openLightbox}
                   messageId={message.id}

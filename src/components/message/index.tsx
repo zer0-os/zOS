@@ -15,6 +15,9 @@ import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
 import { ContentHighlighter } from '../content-highlighter';
+import { bemClassName } from '../../lib/bem';
+
+const cn = bemClassName('message');
 
 interface Properties extends MessageModel {
   className: string;
@@ -49,7 +52,7 @@ export class Message extends React.Component<Properties, State> {
 
   renderAttachment(attachment) {
     return (
-      <div className='message__attachment' onClick={this.openAttachment.bind(this, attachment)}>
+      <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
         <AttachmentCards attachments={[attachment]} onAttachmentClicked={this.openAttachment.bind(this, attachment)} />
       </div>
     );
@@ -71,13 +74,13 @@ export class Message extends React.Component<Properties, State> {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
       return (
-        <div className='message__block-image' onClick={this.onImageClick(media)}>
+        <div {...cn('block-image')} onClick={this.onImageClick(media)}>
           <img src={url} alt={name} />
         </div>
       );
     } else if (MediaType.Video === type) {
       return (
-        <div className='message__block-video'>
+        <div {...cn('block-video')}>
           <video controls>
             <source src={url} />
           </video>
@@ -87,7 +90,7 @@ export class Message extends React.Component<Properties, State> {
       return this.renderAttachment({ url, name, type });
     } else if (MediaType.Audio === type) {
       return (
-        <div className='message__block-audio'>
+        <div {...cn('block-audio')}>
           <audio controls>
             <source src={url} type='audio/mpeg' />
           </audio>
@@ -100,7 +103,7 @@ export class Message extends React.Component<Properties, State> {
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
 
-    return <div className='message__time'>{createdTime}</div>;
+    return <div {...cn('time')}>{createdTime}</div>;
   }
 
   canDeleteMessage = (): boolean => {
@@ -144,9 +147,9 @@ export class Message extends React.Component<Properties, State> {
 
   renderMenu(): React.ReactElement {
     return (
-      <div className='message__menu'>
+      <div {...cn('menu')}>
         <MessageMenu
-          className='message__menu-item'
+          {...cn('menu-item')}
           canEdit={this.canDeleteMessage()}
           canReply={!this.props.parentMessageText}
           onDelete={this.deleteMessage}
@@ -170,25 +173,25 @@ export class Message extends React.Component<Properties, State> {
         })}
       >
         {this.props.showSenderAvatar && (
-          <div className='message__left'>
+          <div {...cn('left')}>
             <div
               style={{ backgroundImage: `url(${getProvider().getSourceUrl(sender.profileImage)})` }}
-              className='message__author-avatar'
+              {...cn('author-avatar')}
             />
           </div>
         )}
-        <div className='message__block'>
+        <div {...cn('block')}>
           {(message || media || preview) && (
             <>
-              <div className='message__author-name'>
+              <div {...cn('author-name')}>
                 {sender.firstName} {sender.lastName}
               </div>
               {!this.state.isEditing && (
-                <div className={classNames('message__block-body')}>
+                <div {...cn('block-body')}>
                   {media && this.renderMedia(media)}
                   {this.props.parentMessageText && (
-                    <div className='message__block-reply'>
-                      <span className='message__block-reply-text'>
+                    <div {...cn('block-reply')}>
+                      <span {...cn('block-reply-text')}>
                         <ContentHighlighter
                           message={this.props.parentMessageText}
                           mentionedUserIds={this.props.mentionedUserIds}
@@ -198,7 +201,7 @@ export class Message extends React.Component<Properties, State> {
                   )}
                   {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
                   {preview && !hidePreview && (
-                    <div className='message__block-preview'>
+                    <div {...cn('block-preview')}>
                       <LinkPreview url={preview.url} {...preview} />
                       {isOwner && (
                         <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
@@ -207,12 +210,10 @@ export class Message extends React.Component<Properties, State> {
                   )}
                 </div>
               )}
-              {!!this.props.updatedAt && !this.state.isEditing && (
-                <span className='message__block-edited'>(edited)</span>
-              )}
+              {!!this.props.updatedAt && !this.state.isEditing && <span {...cn('block-edited')}>(edited)</span>}
               {this.state.isEditing && this.props.message && (
                 <MessageInput
-                  className='message__block-body'
+                  {...cn('block-body')}
                   initialValue={this.props.message}
                   onSubmit={this.editMessage}
                   getUsersForMentions={this.props.getUsersForMentions}
@@ -221,7 +222,7 @@ export class Message extends React.Component<Properties, State> {
               )}
             </>
           )}
-          <div className='message__footer'>{this.renderTime(createdAt)}</div>
+          <div {...cn('footer')}>{this.renderTime(createdAt)}</div>
         </div>
         {this.renderMenu()}
       </div>

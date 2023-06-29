@@ -1,6 +1,10 @@
 import Decimal from 'decimal.js';
 import millify from 'millify';
 
+/**
+ * Format a number to a string with commas and max 2 decimal places
+ * @param num number to format
+ */
 export function formatCryptoAmount(num: string): string {
   const numAsDecimal = new Decimal(num).toDecimalPlaces(2);
 

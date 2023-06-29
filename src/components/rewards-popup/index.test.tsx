@@ -28,7 +28,7 @@ describe('RewardsPopup', () => {
   it('renders your rewards count in ZERO', function () {
     const wrapper = subject({ zero: '838' });
 
-    expect(wrapper.find('.rewards-popup__rewards-zero').text()).toEqual('838 ZERO');
+    expect(wrapper.find('.rewards-popup__rewards-zero').text()).toEqual('838 $ZERO');
   });
 
   it('sets the skeleton loading attribute', function () {

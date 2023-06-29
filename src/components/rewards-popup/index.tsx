@@ -7,6 +7,7 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import classnames from 'classnames';
+
 const c = bem('rewards-popup');
 
 export interface Properties {
@@ -75,7 +76,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
                 }}
               />
             </div>
-            <div className={c('rewards-zero')}>{this.props.zero} ZERO</div>
+            <div className={c('rewards-zero')}>{this.props.zero} $ZERO</div>
             <div className={c('info-card')}>
               <div className={c('info-card__icon')}>
                 <IconGift1 />
@@ -89,7 +90,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
                 <IconTrendUp1 />
               </div>
               <div className={c('info-card__text')}>
-                (Coming soon) Redeem your tokens for cash or vote on what you want to see in Zero.
+                (Coming soon) Redeem your tokens for cash or vote on what you want to see in ZERO.
               </div>
             </div>
             <Button className={c('button')} isDisabled={true}>
@@ -97,7 +98,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
             </Button>
 
             <div className={c('rewards-faq-text')} onClick={this.openRewardsFAQModal}>
-              Learn more about Zero rewards
+              Learn more about ZERO rewards
             </div>
           </div>
         </div>

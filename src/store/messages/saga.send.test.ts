@@ -3,7 +3,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
-import { rootReducer } from '../reducer';
+import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 
 describe(send, () => {
@@ -13,11 +13,9 @@ describe(send, () => {
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
 
-    const initialState = defaultState();
-
     await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .provide(successResponses())
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer, defaultState())
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
   });
@@ -27,8 +25,6 @@ describe(send, () => {
     const message = 'www.google.com';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
     const parentMessage = null;
-
-    const initialState = defaultState();
 
     const {
       storeState: {
@@ -51,7 +47,7 @@ describe(send, () => {
         ],
         ...successResponses(),
       ])
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer, defaultState() as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
 
@@ -65,15 +61,13 @@ describe(send, () => {
     const mentionedUserIds = [];
     const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
 
-    const initialState = defaultState();
-
     const {
       storeState: {
         normalized: { channels },
       },
     } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .provide(successResponses())
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer, defaultState() as any)
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
     expect(channels[channelId].messageIdsCache).not.toStrictEqual([]);
@@ -107,7 +101,7 @@ describe(send, () => {
         normalized: { channels },
       },
     } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer, initialState)
       .provide([stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 400, body: {} })])
       .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
       .run();
@@ -122,7 +116,7 @@ function defaultState() {
     authentication: {
       user: {
         data: {
-          id: 1,
+          id: '1',
           profileId: '2',
           profileSummary: {
             firstName: 'Johnn',
@@ -132,7 +126,7 @@ function defaultState() {
         },
       },
     },
-  };
+  } as RootState;
 }
 
 function successResponses() {

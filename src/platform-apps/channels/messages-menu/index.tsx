@@ -1,4 +1,4 @@
-import { IconDotsVertical } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal } from '@zero-tech/zui/icons';
 import { ModalConfirmation } from '@zero-tech/zui/components';
 import React from 'react';
 import { IconButton } from '../../../components/icon-button';
@@ -104,7 +104,13 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        <IconButton onClick={this.open} Icon={IconDotsVertical} size={20} />
+        <IconButton
+          className='portal-menu-button-icon'
+          onClick={this.open}
+          Icon={IconDotsHorizontal}
+          size={24}
+          isFilled
+        />
         <PortalMenu className='portal-menu' onClose={this.close} isOpen={this.state.isOpen}>
           {menuItems}
         </PortalMenu>

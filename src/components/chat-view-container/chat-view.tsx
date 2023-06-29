@@ -148,7 +148,12 @@ export class ChatView extends React.Component<Properties, State> {
               this.props.user && message.sender && this.props.user.id == message.sender.userId;
 
             return (
-              <div key={message.id} className='messages__message-row'>
+              <div
+                key={message.id}
+                className={classNames('messages__message-row', {
+                  'messages__message-row--owner': isUserOwnerOfTheMessage,
+                })}
+              >
                 <Message
                   className={classNames('messages__message', {
                     'messages__message--last-in-group': isLastFromUser && this.props.showSenderAvatar,

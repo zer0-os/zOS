@@ -243,12 +243,20 @@ $scrollbar-width: 5px;
     }
 
     &__message-row {
+      display: flex;
       clear: both;
       margin: 8px 16px;
+
+      &--owner {
+        justify-content: flex-end;
+      }
     }
 
     .message {
+      display: flex;
+      justify-content: flex-end;
       margin: 8px 0px;
+      gap: 8px;
       overflow: hidden;
 
       &--owner {
@@ -273,10 +281,6 @@ $scrollbar-width: 5px;
           border-color: theme.$color-secondary-5;
         }
 
-        .message__menu-item {
-          background: linear-gradient(270.5deg, theme.$color-secondary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
-        }
-
         .message__block {
           background-color: theme.$color-secondary-3;
           border-radius: 8px 8px 0px 8px;
@@ -284,6 +288,10 @@ $scrollbar-width: 5px;
           .message__author-name {
             display: none;
           }
+        }
+
+        .message__menu {
+          transform: translateX(100%);
         }
       }
 
@@ -294,11 +302,9 @@ $scrollbar-width: 5px;
       }
 
       &--sender-avatar {
-        display: flex;
-        gap: 8px;
-
         .message__block {
           flex: 1;
+          z-index: 1;
         }
       }
 
@@ -309,6 +315,7 @@ $scrollbar-width: 5px;
         padding: 8px;
         color: themeDeprecated.$card-text-color;
         overflow: hidden;
+        z-index: 1;
 
         &-body {
           display: block;
@@ -415,21 +422,10 @@ $scrollbar-width: 5px;
       }
 
       &__menu {
-        position: absolute;
-        height: 100%;
-        top: 0px;
-        right: -48px;
-        transition: right 0.1s ease-in-out;
-
-        &-item {
-          color: themeDeprecated.$font-color-time;
-          background: linear-gradient(270.5deg, theme.$color-primary-3 44.79%, rgba(20, 19, 22, 0) 99.52%);
-          border-radius: 8px;
-          width: 48px;
-          height: 100%;
-          text-align: right;
-          margin: 8px;
-        }
+        align-self: center;
+        transition: opacity 0s ease-in-out, transform 0.1s ease-in-out;
+        transform: translateX(-100%);
+        opacity: 0;
       }
 
       &__left {
@@ -487,9 +483,11 @@ $scrollbar-width: 5px;
   }
 }
 
-.messages__container .messages .messages__message:hover {
+.messages__container .messages .messages__message-row:hover {
   .message__menu {
-    right: 0px;
+    transform: translateX(0);
+    transition: transform 0.1s ease-in-out, opacity 0s ease-in-out;
+    opacity: 1;
   }
 }
 
@@ -497,12 +495,7 @@ $scrollbar-width: 5px;
 .direct-message-chat--full-screen {
   .messages__message {
     box-sizing: border-box;
-    float: left;
     max-width: 100%;
-  }
-
-  .messages__message.message--owner {
-    float: right;
   }
 
   .messages__message {

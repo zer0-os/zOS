@@ -12,24 +12,21 @@ describe(send, () => {
     const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
 
-    await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
       .provide(successResponses())
       .withReducer(rootReducer, defaultState())
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, undefined)
       .run();
   });
 
   it('send message with link preview', async () => {
     const channelId = 'channel-id';
     const message = 'www.google.com';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const parentMessage = null;
 
     const linkPreview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0' };
 
-    const { storeState } = await expectSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    const { storeState } = await expectSaga(send, { payload: { channelId, message } })
       .provide([
         stubResponse(matchers.call.fn(getLinkPreviews), linkPreview),
         ...successResponses(),

@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import millify from 'millify';
 
-export function formatNumber(num: string): string {
+export function formatCryptoAmount(num: string): string {
   const numAsDecimal = new Decimal(num).toDecimalPlaces(2);
 
   if (numAsDecimal.abs().greaterThanOrEqualTo(1000000)) {

@@ -4,8 +4,51 @@
 @import '../../layout';
 
 .rewards-popup {
+  $padding-x: 32px;
+  $padding-y: 40px;
+
   position: absolute;
   z-index: 10;
+
+  &__arrow {
+    $size: 16px;
+
+    position: relative;
+    height: 0;
+    width: 100%;
+
+    z-index: -1;
+
+    &[data-position='top'] {
+      &::after {
+        $height: $size / 2;
+        $width: $size;
+        top: -$padding-y - $height;
+        left: calc(100% - $width / 2);
+        height: 8px;
+        width: 16px;
+        clip-path: polygon(0 100%, 50% 0, 100% 100%); // make a triangle
+      }
+    }
+
+    &[data-position='left'] {
+      &::after {
+        $height: $size;
+        $width: $size / 2;
+        top: -$padding-y + 16px;
+        left: -$padding-x - $width;
+        height: 16px;
+        width: 8px;
+        clip-path: polygon(100% 0, 0 50%, 100% 100%); /* rotated triangle */
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      background: theme.$color-primary-2;
+    }
+  }
 
   &__content {
     box-sizing: border-box;
@@ -27,7 +70,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 32px;
+    padding: $padding-y $padding-x;
   }
 
   &--full-screen {

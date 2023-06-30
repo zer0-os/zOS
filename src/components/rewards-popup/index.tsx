@@ -60,7 +60,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
               Icon={IconXClose}
               className={c('close-button')}
               variant='tertiary'
-              color='greyscale'
+              size={32}
               onClick={this.abort}
             />
             <ZeroSymbol height={32} width={32} />

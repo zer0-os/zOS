@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { ModalConfirmation, DropdownMenu } from '@zero-tech/zui/components';
 import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
 
+import classNames from 'classnames';
 import './styles.scss';
 
 interface Properties {
@@ -11,29 +12,23 @@ interface Properties {
   canEdit: boolean;
   canReply?: boolean;
   isMediaMessage?: boolean;
+  isMenuOpen?: boolean;
 
+  onOpenChange?: (isOpen: boolean) => void;
+  closeMenu?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
   onReply?: () => void;
 }
 
 export interface State {
-  isOpen: boolean;
   deleteDialogIsOpen: boolean;
 }
 
 export class MessageMenu extends React.Component<Properties, State> {
   ref = createRef();
 
-  state = { isOpen: false, deleteDialogIsOpen: false };
-
-  handleOpenChange = (isOpen: boolean) => {
-    this.setState({ isOpen });
-  };
-
-  closeMenu = () => {
-    this.setState({ isOpen: false });
-  };
+  state = { deleteDialogIsOpen: false };
 
   renderMenuOption(icon, label) {
     return (
@@ -111,17 +106,21 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        {this.state.isOpen &&
-          createPortal(<div className='dropdown-menu__underlay' onClick={this.closeMenu} />, document.body)}
+        {this.props.isMenuOpen &&
+          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.closeMenu} />, document.body)}
 
         <DropdownMenu
-          menuClassName='dropdown-menu'
+          menuClassName={'dropdown-menu'}
           items={menuItems}
           side='bottom'
           alignMenu='center'
-          onOpenChange={this.handleOpenChange}
+          onOpenChange={this.props.onOpenChange}
           trigger={
-            <div className='dropdown-menu-trigger'>
+            <div
+              className={classNames('dropdown-menu-trigger', {
+                'dropdown-menu-trigger--open': this.props.isMenuOpen,
+              })}
+            >
               <IconDotsHorizontal size={24} isFilled />
             </div>
           }

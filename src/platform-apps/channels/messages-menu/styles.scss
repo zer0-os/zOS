@@ -14,6 +14,10 @@
   }
 }
 
+.dropdown-menu-trigger--open {
+  background-color: theme.$color-greyscale-transparency-3;
+}
+
 .zui-dropdown-trigger {
   padding: 0;
 }

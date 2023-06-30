@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { createRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import { ModalConfirmation, DropdownMenu } from '@zero-tech/zui/components';
 import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
@@ -22,10 +23,16 @@ export interface State {
 }
 
 export class MessageMenu extends React.Component<Properties, State> {
+  ref = createRef();
+
   state = { isOpen: false, deleteDialogIsOpen: false };
 
   handleOpenChange = (isOpen: boolean) => {
     this.setState({ isOpen });
+  };
+
+  closeMenu = () => {
+    this.setState({ isOpen: false });
   };
 
   renderMenuOption(icon, label) {
@@ -104,6 +111,9 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
+        {this.state.isOpen &&
+          createPortal(<div className='dropdown-menu__underlay' onClick={this.closeMenu} />, document.body)}
+
         <DropdownMenu
           menuClassName='dropdown-menu'
           items={menuItems}

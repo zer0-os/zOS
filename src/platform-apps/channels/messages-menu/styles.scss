@@ -1,127 +1,32 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 
-.portal-menu-button-icon {
+.dropdown-menu-trigger {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: theme.$color-greyscale-12;
-  width: 32px;
   height: 32px;
-}
+  width: 32px;
+  border-radius: 50%;
+  margin: 4px 0;
 
-.portal-menu {
-  position: absolute;
-  z-index: 1000;
-
-  &__underlay {
-    z-index: 100;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    background-color: themeDeprecated.$underlay-tooltip-background;
-    display: block;
-    animation: partial-fadein 0.3s ease-out normal forwards;
-  }
-
-  &__content {
-    position: relative;
-    background: themeDeprecated.$background-color-tertiary;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 200;
-    ul {
-      padding: 10px 0;
-      margin: 0;
-      .menu-button {
-        height: 30px;
-        align-items: center;
-        display: flex;
-        overflow: hidden;
-        padding: 0 20px;
-        cursor: pointer;
-        color: themeDeprecated.$actionable-inactive-color;
-        &:hover {
-          background-color: themeDeprecated.$actionable-hover-background-tooltip;
-          color: themeDeprecated.$actionable-color;
-        }
-        span {
-          font-family: Inter Regular;
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 16px;
-          position: relative;
-          top: 1px;
-        }
-      }
-    }
+  &:hover {
+    background-color: theme.$color-greyscale-transparency-3;
   }
 }
 
-.confirm-delete {
-  background: var(--dialog-background-color);
-  border-radius: var(--box-radius);
-  overflow: hidden;
-
-  hr {
-    margin: 0 33px;
-  }
-
-  &__header {
-    width: 100%;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: center;
-
-    h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: themeDeprecated.$actionable-color;
-    }
-  }
-
-  &__body {
-    text-align: center;
-  }
-
-  &__footer {
-    font-size: 14px;
-    padding: 15px 34px;
-    display: flex;
-    line-height: 22px;
-    flex-direction: row-reverse;
-
-    &-button {
-      color: themeDeprecated.$actionable-color;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-left: 30px;
-      background: none;
-      border: none;
-      outline: none;
-      font-weight: 600;
-    }
-  }
+.zui-dropdown-trigger {
+  padding: 0;
 }
 
-.edit-message {
-  &__actions {
-    position: relative;
-    margin-top: 10px;
-    display: flex;
+.dropdown-menu {
+  width: 240px;
+  padding: 8px;
+}
 
-    .icon-button {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--font-color-primary);
-      background-color: transparent;
-      transition: color 0.3s ease-out, background-color 0.3s ease-out;
-      cursor: pointer;
-      border-radius: 50%;
-    }
-  }
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  line-height: 24px;
 }

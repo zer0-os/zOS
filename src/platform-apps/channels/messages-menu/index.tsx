@@ -1,8 +1,7 @@
-import { IconDotsHorizontal } from '@zero-tech/zui/icons';
-import { ModalConfirmation } from '@zero-tech/zui/components';
 import React from 'react';
-import { IconButton } from '../../../components/icon-button';
-import PortalMenu from './portal-menu';
+
+import { ModalConfirmation, DropdownMenu } from '@zero-tech/zui/components';
+import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 
@@ -25,39 +24,44 @@ export interface State {
 export class MessageMenu extends React.Component<Properties, State> {
   state = { isOpen: false, deleteDialogIsOpen: false };
 
-  open = (): void => {
-    this.setState({ isOpen: true });
+  handleOpenChange = (isOpen: boolean) => {
+    this.setState({ isOpen });
   };
+
+  renderMenuOption(icon, label) {
+    return (
+      <div className={'option'}>
+        {label} {icon}
+      </div>
+    );
+  }
 
   renderItems = () => {
     const menuItems = [];
-
+    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
+      menuItems.push({
+        id: 'edit',
+        label: this.renderMenuOption(<IconEdit5 />, 'Edit'),
+        onSelect: this.props.onEdit,
+      });
+    }
     if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
-      menuItems.push(
-        <li className='menu-button reply-item' key='reply' onClick={this.props.onReply}>
-          <span>Reply</span>
-        </li>
-      );
+      menuItems.push({
+        id: 'reply',
+        label: this.renderMenuOption(<IconFlipBackward />, 'Reply'),
+        onSelect: this.props.onReply,
+      });
     }
     if (this.props.onDelete && this.props.canEdit) {
-      menuItems.push(
-        <li className='menu-button delete-item' key='delete' onClick={this.toggleDeleteDialog}>
-          <span>Delete</span>
-        </li>
-      );
-    }
-    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
-      menuItems.push(
-        <li className='menu-button edit-item' key='edit' onClick={this.props.onEdit}>
-          <span>Edit</span>
-        </li>
-      );
+      menuItems.push({
+        id: 'delete',
+        label: this.renderMenuOption(<IconTrash4 />, 'Delete'),
+        onSelect: this.toggleDeleteDialog,
+      });
     }
 
     return menuItems;
   };
-
-  close = () => this.setState({ isOpen: false });
 
   delete = () => {
     this.setState({
@@ -76,21 +80,17 @@ export class MessageMenu extends React.Component<Properties, State> {
     return this.state.deleteDialogIsOpen;
   }
 
-  get showEditInput(): boolean {
-    return this.state.deleteDialogIsOpen;
-  }
-
   renderDeleteModal() {
     return (
       <ModalConfirmation
         open
         onCancel={this.toggleDeleteDialog}
         onConfirm={this.delete}
-        title='Delete Message'
+        title='Delete message'
         cancelLabel='Cancel'
-        confirmationLabel='ok'
+        confirmationLabel='Delete message'
       >
-        Are you sure you want to delete this message?
+        Are you sure you want to delete this message? This cannot be undone.
       </ModalConfirmation>
     );
   }
@@ -104,20 +104,21 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        <IconButton
-          className='portal-menu-button-icon'
-          onClick={this.open}
-          Icon={IconDotsHorizontal}
-          size={24}
-          isFilled
+        <DropdownMenu
+          menuClassName='dropdown-menu'
+          items={menuItems}
+          side='bottom'
+          alignMenu='center'
+          onOpenChange={this.handleOpenChange}
+          trigger={
+            <div className='dropdown-menu-trigger'>
+              <IconDotsHorizontal size={24} isFilled />
+            </div>
+          }
         />
-        <PortalMenu className='portal-menu' onClose={this.close} isOpen={this.state.isOpen}>
-          {menuItems}
-        </PortalMenu>
+
         {this.showDeleteModal && this.renderDeleteModal()}
       </div>
     );
   }
 }
-
-export default MessageMenu;

@@ -3,9 +3,39 @@
 @import '../../animation';
 @import '../../layout';
 
+$content-padding-x: 32px;
+$content-padding-y: 40px;
+
+@mixin arrow($position) {
+  $is-top: $position == 'top';
+  $arrow-size: 16px;
+
+  .rewards-popup__arrow {
+    position: relative;
+    height: 0;
+    width: 100%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      background: theme.$color-primary-2;
+
+      $height: if($is-top, $arrow-size / 2, $arrow-size);
+      $width: if($is-top, $arrow-size, $arrow-size / 2);
+      height: $height;
+      width: $width;
+      top: if($is-top, -$content-padding-y - $height, -$content-padding-y + 16px);
+      left: if($is-top, calc(100% - $width / 2), -$content-padding-x - $width);
+      clip-path: if($is-top, polygon(0 100%, 50% 0, 100% 100%), polygon(100% 0, 0 50%, 100% 100%));
+    }
+  }
+}
+
 .rewards-popup {
   position: absolute;
   z-index: 10;
+
+  @include arrow('top');
 
   &__content {
     box-sizing: border-box;
@@ -27,7 +57,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 32px;
+    padding: $content-padding-y $content-padding-x;
   }
 
   &--full-screen {
@@ -35,6 +65,8 @@
       top: 2px;
       left: $width-sidekick + $width-world-navigation + 2px;
     }
+
+    @include arrow('left');
   }
 
   &--full-screen.rewards-popup--with-title {

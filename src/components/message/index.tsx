@@ -40,12 +40,12 @@ interface Properties extends MessageModel {
 
 export interface State {
   isEditing: boolean;
-  isMenuOpen: boolean;
+  isMessageMenuOpen: boolean;
 }
 export class Message extends React.Component<Properties, State> {
   state = {
     isEditing: false,
-    isMenuOpen: false,
+    isMessageMenuOpen: false,
   } as State;
 
   openAttachment = async (attachment): Promise<void> => {
@@ -147,12 +147,12 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
-  handleOpenMenu = (isMenuOpen: boolean) => {
-    this.setState({ isMenuOpen });
+  handleOpenMenu = (isMessageMenuOpen: boolean) => {
+    this.setState({ isMessageMenuOpen });
   };
 
   handleCloseMenu = () => {
-    this.setState({ isMenuOpen: false });
+    this.setState({ isMessageMenuOpen: false });
   };
 
   renderMenu(): React.ReactElement {
@@ -160,7 +160,7 @@ export class Message extends React.Component<Properties, State> {
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMenuOpen,
+            'menu--open': this.state.isMessageMenuOpen,
           })
         )}
       >
@@ -172,9 +172,9 @@ export class Message extends React.Component<Properties, State> {
           onEdit={this.toggleEdit}
           onReply={this.onReply}
           isMediaMessage={this.isMediaMessage()}
-          isMenuOpen={this.state.isMenuOpen}
+          isMenuOpen={this.state.isMessageMenuOpen}
           onOpenChange={this.handleOpenMenu}
-          closeMenu={this.handleCloseMenu}
+          onCloseMenu={this.handleCloseMenu}
         />
       </div>
     );

@@ -15,7 +15,7 @@ interface Properties {
   isMenuOpen?: boolean;
 
   onOpenChange?: (isOpen: boolean) => void;
-  closeMenu?: () => void;
+  onCloseMenu?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
   onReply?: () => void;
@@ -107,7 +107,7 @@ export class MessageMenu extends React.Component<Properties, State> {
     return (
       <div className={this.props.className}>
         {this.props.isMenuOpen &&
-          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.closeMenu} />, document.body)}
+          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body)}
 
         <DropdownMenu
           menuClassName={'dropdown-menu'}

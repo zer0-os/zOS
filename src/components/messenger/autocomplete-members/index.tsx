@@ -47,7 +47,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           autoFocus
           type='search'
           size={'small'}
-          placeholder='Search for a person'
+          placeholder='Search'
           onChange={this.searchChanged}
           value={this.state.searchString}
           wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}

@@ -90,6 +90,7 @@ export class MessageInput extends React.Component<Properties, State> {
       'text/*': [],
       'video/*': [],
       'application/pdf': [],
+      'application/zip': [],
       'application/msword': [],
     };
   }

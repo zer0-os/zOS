@@ -1,10 +1,11 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select } from 'redux-saga/effects';
+import { takeLatest, put, call, select, take, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
 
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { conversationsChannel } from '../channels-list/channels';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
@@ -62,9 +63,20 @@ export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
 }
 
+function* listenForChannelLoadedEvent() {
+  const channel = yield call(conversationsChannel);
+  while (true) {
+    const { channelId = undefined } = yield take(channel, '*');
+    const loadedChannel = yield select(rawChannelSelector(channelId));
+    if (loadedChannel && loadedChannel.unreadCount > 0) {
+      yield call(markAllMessagesAsReadInChannel, { payload: { channelId, userId: loadedChannel.userId } });
+    }
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForChannelLoadedEvent);
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
-  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markAllMessagesAsReadInChannel);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

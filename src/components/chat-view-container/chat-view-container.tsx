@@ -23,7 +23,7 @@ import {
   SendPayload as PayloadSendMessage,
   MediaPayload,
 } from '../../store/messages/saga';
-import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
+import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
@@ -99,7 +99,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId, channel, user } = this.props;
+    const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);

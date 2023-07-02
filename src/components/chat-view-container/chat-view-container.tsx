@@ -14,7 +14,7 @@ import {
   stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import { Channel, denormalize, joinChannel, markAllMessagesAsReadInChannel } from '../../store/channels';
+import { Channel, denormalize, joinChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -37,7 +37,6 @@ export interface Properties extends PublicProperties {
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
@@ -86,7 +85,6 @@ export class Container extends React.Component<Properties, State> {
       stopSyncChannels,
       deleteMessage,
       joinChannel,
-      markAllMessagesAsReadInChannel,
       editMessage,
     };
   }
@@ -129,10 +127,6 @@ export class Container extends React.Component<Properties, State> {
       channel.countNewMessages > 0
     ) {
       this.setState({ countNewMessages: channel.countNewMessages });
-    }
-
-    if (channel && channel.unreadCount > 0 && user.data) {
-      this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
 
     if (this.textareaRef && channel && Boolean(channel.messages)) {

@@ -43,12 +43,10 @@ export interface Channel {
 
 export enum SagaActionTypes {
   JoinChannel = 'channels/saga/joinChannel',
-  MarkAllMessagesAsReadInChannel = 'channels/saga/markAllMessagesAsReadInChannel',
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
 }
 
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
-const markAllMessagesAsReadInChannel = createAction<Payload>(SagaActionTypes.MarkAllMessagesAsReadInChannel);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 
 const slice = createNormalizedSlice({
@@ -61,4 +59,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated, removeAll };
+export { joinChannel, unreadCountUpdated, removeAll };

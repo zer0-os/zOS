@@ -137,6 +137,7 @@ describe('MessageInput', () => {
       'text/*': [],
       'video/*': [],
       'application/pdf': [],
+      'application/zip': [],
       'application/msword': [],
     };
 

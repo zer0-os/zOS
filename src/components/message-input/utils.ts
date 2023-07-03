@@ -31,7 +31,7 @@ export const dropzoneToMedia = (files: any[]) => {
     if (fileType.startsWith('audio/')) {
       mediaType = MediaType.Audio;
     }
-    if (fileType.startsWith('text/') || fileType.startsWith('application/pdf')) {
+    if (fileType.startsWith('text/') || fileType.startsWith('application/')) {
       mediaType = MediaType.File;
     }
 

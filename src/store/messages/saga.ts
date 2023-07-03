@@ -21,7 +21,7 @@ import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { conversationsChannel } from '../channels-list/channels';
+import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 
 export interface Payload {
   channelId: string;
@@ -115,7 +115,7 @@ export function* fetch(action) {
 
   // Publish a system message across the channel
   const channel = yield call(conversationsChannel);
-  yield put(channel, { channelId });
+  yield put(channel, { type: ChannelEvents.MessagesLoadedForChannel, channelId });
 }
 
 export function* send(action) {

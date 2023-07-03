@@ -5,7 +5,7 @@ import { SagaActionTypes, receive, schema, removeAll } from '.';
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { conversationsChannel } from '../channels-list/channels';
+import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
@@ -66,7 +66,7 @@ export function* clearChannels() {
 function* listenForChannelLoadedEvent() {
   const channel = yield call(conversationsChannel);
   while (true) {
-    const { channelId = undefined } = yield take(channel, '*');
+    const { channelId = undefined } = yield take(channel, ChannelEvents.MessagesLoadedForChannel);
     const loadedChannel = yield select(rawChannelSelector(channelId));
     if (loadedChannel && loadedChannel.unreadCount > 0) {
       yield call(markAllMessagesAsReadInChannel, { payload: { channelId, userId: loadedChannel.userId } });

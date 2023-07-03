@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { receive } from '../channels';
 import { rawChannelSelector } from '../channels/saga';
@@ -150,12 +150,17 @@ export function* send(action) {
     yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
   } catch (e) {
     // Race condition here. What if we received a new message in the mean time?
+    // We don't currently denormalize the lastMessage in the channel so we have to set
+    // the full message and not just the id.
+    const previousLastMessage = yield select((state) =>
+      denormalize(existingMessages[existingMessages.length - 1], state)
+    );
     yield put(
       receive({
         id: channelId,
         messages: [...existingMessages],
-        lastMessage: existingMessages[existingMessages.length - 1],
-        lastMessageCreatedAt: existingMessages[existingMessages.length - 1].createdAt,
+        lastMessage: previousLastMessage,
+        lastMessageCreatedAt: previousLastMessage.createdAt,
       })
     );
   }

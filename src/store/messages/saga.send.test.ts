@@ -5,7 +5,7 @@ import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
-import { denormalize as denormalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 
 describe(send, () => {
@@ -119,7 +119,7 @@ describe(send, () => {
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toStrictEqual(existingMessages[0]);
+    expect(channel.lastMessage).toEqual(expect.objectContaining(existingMessages[0]));
     expect(channel.lastMessageCreatedAt).toStrictEqual(existingMessages[0].createdAt);
   });
 });
@@ -143,11 +143,10 @@ function defaultState() {
 }
 
 function existingChannelState(channel) {
+  const normalized = normalizeChannel(channel);
   return {
     normalized: {
-      channels: {
-        [channel.id]: channel,
-      },
+      ...normalized.entities,
     },
   };
 }

@@ -21,15 +21,31 @@
 // I want to be able to specify which words are used.
 // Instead of "Fizz" and "Buzz" allow me to set "Zig" and "Zag" or whatever other two strings I want.
 
+// FEATURE REQUEST 3
+// Allow me to define the logic that determines if the first/second word
+// should be printed.
+
+//Some examples: In all cases, if both conditions are true then print FizzBuzz
+// Print Fizz if the number is between 10 and 20 (inclusive), and Buzz if the number is divisible by 5.
+// Print Fizz if the number has a 3 in it (eg: 3, 13, 23, 30, etc), and Buzz if the number is divisible by 5.
+// Print Fizz if the number is divisible by 3, and Buzz if the number is divisible by 5 OR has a 5 in it.
+// Print Fizz for number divisible by X and Buzz for number divisible by Y. This example is the original fizzbuzz logic.
+
 export const Fizzbuzz = (
   inputNumber: number,
   fizzNumber: number = 3,
   buzzNumber: number = 5,
   fizzWord: string = 'Fizz',
-  buzzWord: string = 'Buzz'
+  buzzWord: string = 'Buzz',
+  newLogic: boolean = false
 ) => {
-  const isFizz = inputNumber % fizzNumber === 0;
+  let isFizz = inputNumber % fizzNumber === 0;
   const isBuzz = inputNumber % buzzNumber === 0;
+  const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
+
+  if (newLogic) {
+    isFizz = isInbetween10or20;
+  }
 
   if (isFizz && isBuzz) {
     return `${fizzWord}${buzzWord}`;
@@ -84,6 +100,24 @@ describe('Fizzbuzz', () => {
     it('should return both words if number is a multiple of fizzNumber and buzzNumber', function () {
       expect(Fizzbuzz(15, 3, 5, 'Zig', 'Zag')).toEqual('ZigZag');
       expect(Fizzbuzz(15, 3, 5, 'Hello', 'World')).toEqual('HelloWorld');
+    });
+  });
+
+  describe('Feature 3', () => {
+    it('should print Fizz if the number is between 10 and 20', function () {
+      expect(Fizzbuzz(17, 3, 5, 'Fizz', 'Buzz', true)).toEqual('Fizz');
+    });
+
+    it('should print "9" if the number is not between 10 and 20', function () {
+      expect(Fizzbuzz(9, 3, 5, 'Fizz', 'Buzz', true)).toEqual('9');
+    });
+
+    it('should print Fizz if the number is between 10 and 20, and Buzz if the number is divisible by 5', function () {
+      expect(Fizzbuzz(30, 3, 5, 'Fizz', 'Buzz', true)).toEqual('Buzz');
+    });
+
+    it('should print FizzBuzz if inputNumber is divisible by 5 and between 10 and 20', function () {
+      expect(Fizzbuzz(15, 3, 5, 'Fizz', 'Buzz', true)).toEqual('FizzBuzz');
     });
   });
 });

@@ -88,6 +88,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               onChange={this.searchChanged}
               size={'small'}
               type={'search'}
+              placeholder='Search'
               value={this.state.filter}
             />
             <Tooltip placement='left' overlay='Create Zero Message'>

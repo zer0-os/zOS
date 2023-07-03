@@ -254,10 +254,11 @@ $scrollbar-width: 5px;
 
     .message {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       margin: 8px 0px;
       gap: 8px;
       overflow: hidden;
+      width: 100%;
 
       &--owner {
         flex-direction: row-reverse;
@@ -378,10 +379,29 @@ $scrollbar-width: 5px;
           }
         }
 
+        &--fill {
+          width: 100%;
+          opacity: 0.5;
+
+          .message__block-image {
+            // 5:4 aspect ratio
+            overflow: hidden;
+            height: 0;
+            padding-bottom: 125%;
+
+            img {
+              position: absolute;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+
         &-image {
           position: relative;
           display: inline-block;
           cursor: pointer;
+          width: 100%;
 
           img {
             width: 100%;

@@ -40,10 +40,13 @@ interface Properties extends MessageModel {
 
 export interface State {
   isEditing: boolean;
+  isFullWidth: boolean;
 }
+
 export class Message extends React.Component<Properties, State> {
   state = {
     isEditing: false,
+    isFullWidth: false,
   } as State;
 
   openAttachment = async (attachment): Promise<void> => {
@@ -70,12 +73,22 @@ export class Message extends React.Component<Properties, State> {
     this.props.onImageClick(media);
   };
 
+  handleMediaAspectRatio = (width: number, height: number) => {
+    const aspectRatio = width / height;
+    this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
+  };
+
+  handleImageLoad = (event) => {
+    const { naturalWidth: width, naturalHeight: height } = event.target;
+    this.handleMediaAspectRatio(width, height);
+  };
+
   renderMedia(media) {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
       return (
         <div {...cn('block-image')} onClick={this.onImageClick(media)}>
-          <img src={url} alt={name} />
+          <img src={url} alt={this.props.media.name} onLoad={this.handleImageLoad} />
         </div>
       );
     } else if (MediaType.Video === type) {
@@ -180,7 +193,7 @@ export class Message extends React.Component<Properties, State> {
             />
           </div>
         )}
-        <div {...cn('block')}>
+        <div {...cn('block', this.state.isFullWidth && 'fill')}>
           {(message || media || preview) && (
             <>
               <div {...cn('author-name')}>

@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { formatCryptoAmount } from '../../lib/number';
-
 import { IconGift1, IconTrendUp1, IconXClose } from '@zero-tech/zui/icons';
 import { Button, IconButton, SkeletonText } from '@zero-tech/zui/components';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
@@ -72,7 +70,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
               <SkeletonText
                 asyncText={{
                   isLoading: this.props.isLoading,
-                  text: formatCryptoAmount(this.props.usd),
+                  text: this.props.usd,
                 }}
                 skeletonOptions={{
                   width: 50,

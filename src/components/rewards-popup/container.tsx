@@ -33,6 +33,7 @@ export class Container extends React.Component<Properties> {
       isFullScreen: layout.value.isMessengerFullScreen,
     };
   }
+
   static mapActions() {
     return {};
   }

@@ -7,6 +7,7 @@ import { RewardsPopupContainer } from '../rewards-popup/container';
 import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
 import { SettingsMenu } from '../settings-menu';
 import { bem } from '../../lib/bem';
+import { formatWeiAmount } from '../../lib/number';
 
 import './styles.scss';
 
@@ -47,14 +48,6 @@ export class RewardsBar extends React.Component<Properties, State> {
     super(props);
     this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
     this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
-  }
-
-  stringifyZero(zero: string) {
-    const stringValue = zero.padStart(19, '0');
-    const whole = stringValue.slice(0, -18);
-    const decimal = stringValue.slice(-18).slice(0, 4).replace(/0+$/, '');
-    const decimalString = decimal.length > 0 ? `.${decimal}` : '';
-    return `${whole}${decimalString}`;
   }
 
   openRewards = () => {
@@ -114,7 +107,7 @@ export class RewardsBar extends React.Component<Properties, State> {
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'
             side='left'
-            content={`You’ve earned ${this.stringifyZero(this.props.zeroPreviousDay)} ZERO today`}
+            content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}
             onClose={this.closeRewardsTooltip}
           >
             {this.renderRewardsBar()}
@@ -127,7 +120,7 @@ export class RewardsBar extends React.Component<Properties, State> {
           <RewardsPopupContainer
             onClose={this.closeRewards}
             openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
-            zero={this.stringifyZero(this.props.zero)}
+            zero={formatWeiAmount(this.props.zero)}
             isLoading={this.props.isRewardsLoading}
           />
         )}

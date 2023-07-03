@@ -129,6 +129,8 @@ export function* send(action) {
   }
 
   // add cache message id to prevent having double messages when we receive the message from sendbird.
+  // We should set a reference id and post that to the server to be able to match the message when it
+  // comes back around. Set the metadata on the message.
   cachedMessageIds.push(temporaryMessage.id);
 
   yield put(
@@ -138,26 +140,22 @@ export function* send(action) {
         ...existingMessages,
         temporaryMessage,
       ],
-      shouldSyncChannels: true,
-      countNewMessages: 0,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
       lastMessage: temporaryMessage,
+      lastMessageCreatedAt: temporaryMessage.createdAt,
       messageIdsCache: cachedMessageIds,
     })
   );
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  const isMessageSent = messagesResponse.status === 200;
 
-  if (!isMessageSent) {
+  try {
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+  } catch (e) {
+    // Race condition here. What if we received a new message in the mean time?
     yield put(
       receive({
         id: channelId,
         messages: [...existingMessages],
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessage: messagesResponse.body,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
-        messageIdsCache: cachedMessageIds,
+        lastMessage: existingMessages[existingMessages.length - 1],
+        lastMessageCreatedAt: existingMessages[existingMessages.length - 1].createdAt,
       })
     );
   }

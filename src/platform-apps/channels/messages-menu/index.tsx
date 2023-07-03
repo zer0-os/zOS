@@ -125,7 +125,6 @@ export class MessageMenu extends React.Component<Properties, State> {
             </div>
           }
         />
-
         {this.showDeleteModal && this.renderDeleteModal()}
       </div>
     );

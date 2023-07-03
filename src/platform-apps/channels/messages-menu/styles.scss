@@ -45,3 +45,38 @@
   font-size: 16px;
   line-height: 24px;
 }
+
+.delete-message-modal {
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  min-width: unset;
+
+  h2 {
+    margin: 0 0 24px 0;
+  }
+
+  &__text-content {
+    max-width: 528px;
+    line-height: 24px;
+  }
+
+  .zui-iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    width: 40px;
+    height: 40px;
+
+    div {
+      width: 32px !important;
+      height: 32px !important;
+
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+}

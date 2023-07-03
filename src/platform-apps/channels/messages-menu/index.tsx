@@ -85,6 +85,7 @@ export class MessageMenu extends React.Component<Properties, State> {
   renderDeleteModal() {
     return (
       <ModalConfirmation
+        className='delete-message-modal'
         open
         onCancel={this.toggleDeleteDialog}
         onConfirm={this.delete}
@@ -92,7 +93,9 @@ export class MessageMenu extends React.Component<Properties, State> {
         cancelLabel='Cancel'
         confirmationLabel='Delete message'
       >
-        Are you sure you want to delete this message? This cannot be undone.
+        <div className='delete-message-modal__text-content'>
+          Are you sure you want to delete this message? This cannot be undone.
+        </div>
       </ModalConfirmation>
     );
   }

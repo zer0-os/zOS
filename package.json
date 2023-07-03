@@ -36,7 +36,6 @@
     "@zero-tech/zui": "^0.25.1",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
-    "decimal.js": "^10.4.3",
     "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",

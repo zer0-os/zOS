@@ -24,11 +24,10 @@ export function* joinChannel(action) {
   );
 }
 
-/**
- * Marks all messages as "read" in a channel for a specific user (queries zero-api & sendbird).
- */
-export function* markAllMessagesAsReadInChannel(action) {
-  const { channelId, userId } = action.payload;
+export function* markAllMessagesAsRead(channelId, userId) {
+  if (!channelId || !userId) {
+    return;
+  } // in case of an admin message userId can be undefined
 
   const status = yield call(markAllMessagesAsReadAPI, channelId, userId);
 
@@ -40,6 +39,34 @@ export function* markAllMessagesAsReadInChannel(action) {
       })
     );
   }
+}
+
+// mark all messages as read in current active channel (only if you're not in full screen mode)
+function* markAllMessagesAsReadInCurrentChannel(userId) {
+  const isMessengerFullScreen = yield select((state) => state.layout.value.isMessengerFullScreen);
+  const activeChannelId = yield select((state) => state.chat.activeChannelId);
+  const activeChannelInfo = activeChannelId ? yield select(rawChannelSelector(activeChannelId)) : null;
+
+  // just ensure first that you're not in full screen mode before marking all messages as read in a "channel"
+  if (!isMessengerFullScreen && activeChannelId && activeChannelInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, activeChannelId, userId);
+  }
+}
+
+// mark all messages in read in current active conversation
+function* markAllMessagesAsReadInCurrentConversation(userId) {
+  const activeConversationId = yield select((state) => state.chat.activeConversationId);
+  const activeConversationInfo = activeConversationId ? yield select(rawChannelSelector(activeConversationId)) : null;
+
+  if (activeConversationId && activeConversationInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, activeConversationId, userId);
+  }
+}
+
+export function* markAllAsRead() {
+  const userId = yield select((state) => state.authentication.user.data.id);
+  yield call(markAllMessagesAsReadInCurrentChannel, userId);
+  yield call(markAllMessagesAsReadInCurrentConversation, userId);
 }
 
 export function* unreadCountUpdated(action) {
@@ -67,9 +94,8 @@ function* listenForChannelLoadedEvent() {
   const channel = yield call(conversationsChannel);
   while (true) {
     const { channelId = undefined } = yield take(channel, ChannelEvents.MessagesLoadedForChannel);
-    const loadedChannel = yield select(rawChannelSelector(channelId));
-    if (loadedChannel && loadedChannel.unreadCount > 0) {
-      yield call(markAllMessagesAsReadInChannel, { payload: { channelId, userId: loadedChannel.userId } });
+    if (channelId) {
+      yield call(markAllAsRead);
     }
   }
 }

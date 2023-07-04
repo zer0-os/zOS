@@ -9,8 +9,8 @@ import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
-import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
-import MessageMenu from '../../platform-apps/channels/messages-menu';
+import EditMessageActions from './edit-message-actions';
+import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
@@ -40,10 +40,12 @@ interface Properties extends MessageModel {
 
 export interface State {
   isEditing: boolean;
+  isMessageMenuOpen: boolean;
 }
 export class Message extends React.Component<Properties, State> {
   state = {
     isEditing: false,
+    isMessageMenuOpen: false,
   } as State;
 
   openAttachment = async (attachment): Promise<void> => {
@@ -145,9 +147,23 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
+  handleOpenMenu = (isMessageMenuOpen: boolean) => {
+    this.setState({ isMessageMenuOpen });
+  };
+
+  handleCloseMenu = () => {
+    this.setState({ isMessageMenuOpen: false });
+  };
+
   renderMenu(): React.ReactElement {
     return (
-      <div {...cn('menu')}>
+      <div
+        {...cn(
+          classNames('menu', {
+            'menu--open': this.state.isMessageMenuOpen,
+          })
+        )}
+      >
         <MessageMenu
           {...cn('menu-item')}
           canEdit={this.canDeleteMessage()}
@@ -156,6 +172,9 @@ export class Message extends React.Component<Properties, State> {
           onEdit={this.toggleEdit}
           onReply={this.onReply}
           isMediaMessage={this.isMediaMessage()}
+          isMenuOpen={this.state.isMessageMenuOpen}
+          onOpenChange={this.handleOpenMenu}
+          onCloseMenu={this.handleCloseMenu}
         />
       </div>
     );

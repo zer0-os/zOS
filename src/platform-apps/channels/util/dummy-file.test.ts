@@ -31,34 +31,59 @@
 // Print Fizz if the number is divisible by 3, and Buzz if the number is divisible by 5 OR has a 5 in it.
 // Print Fizz for number divisible by X and Buzz for number divisible by Y. This example is the original fizzbuzz logic.
 
+// data - clump
+
 export const Fizzbuzz = (
   inputNumber: number,
+
   fizzNumber: number = 3,
   buzzNumber: number = 5,
+
   fizzWord: string = 'Fizz',
   buzzWord: string = 'Buzz',
-  newLogic: boolean = false,
-  newLogicBuzz: boolean = false
+
+  fizzLogic: boolean = false,
+  buzzLogic: boolean = false
 ) => {
-  let isFizz = inputNumber % fizzNumber === 0;
+  const fizz = { word: fizzWord, factor: fizzNumber, logic: fizzLogic };
+
+  return FizzbuzzNew(inputNumber, buzzNumber, buzzWord, buzzLogic, fizz);
+};
+
+///
+
+export const FizzbuzzNew = (
+  inputNumber: number,
+
+  // fizz: {number: number, word: string, logic: boolean },
+  // buzz: {number: number, word: string, logic: boolean },
+
+  buzzNumber: number = 5,
+  buzzWord: string = 'Buzz',
+  buzzLogic: boolean = false,
+
+  fizz: { word: string; factor: number; logic: boolean }
+) => {
+  let isFizz = inputNumber % fizz.factor === 0;
   let isBuzz = inputNumber % buzzNumber === 0;
+
   const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
   const isInbetween18or28 = inputNumber > 18 && inputNumber < 28;
 
-  if (newLogic) {
+  if (fizz.logic) {
     isFizz = isInbetween10or20;
   }
 
-  if (newLogicBuzz) {
+  if (buzzLogic) {
     isBuzz = isInbetween18or28;
   }
 
   if (isFizz && isBuzz) {
-    return `${fizzWord}${buzzWord}`;
+    return `${fizz.word}${buzzWord}`;
   } else if (isBuzz) {
     return buzzWord;
   } else if (isFizz) {
-    return fizzWord;
+    return fizz.word;
   }
 
   return inputNumber.toString();

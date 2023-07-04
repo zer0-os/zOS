@@ -5,13 +5,25 @@ import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import { send } from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
-import { denormalize as denormalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe(send, () => {
-  it('send message', async () => {
+  it('sends a basic text message', async () => {
     const channelId = 'channel-id';
     const message = 'hello';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+
+    await expectSaga(send, { payload: { channelId, message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, defaultState())
+      .call(sendMessagesByChannelId, channelId, message, undefined, undefined)
+      .run();
+  });
+
+  it('sends a basic text message with mentioned users', async () => {
+    const channelId = 'channel-id';
+    const message = 'hello';
+    const mentionedUserIds = ['user-id'];
 
     await expectSaga(send, { payload: { channelId, message, mentionedUserIds } })
       .provide(successResponses())
@@ -20,7 +32,35 @@ describe(send, () => {
       .run();
   });
 
-  it('send message with link preview', async () => {
+  it('sends a message that is a reply', async () => {
+    const channelId = 'channel-id';
+    const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
+
+    await expectSaga(send, { payload: { channelId, parentMessage } })
+      .provide(successResponses())
+      .withReducer(rootReducer, defaultState() as any)
+      .call(sendMessagesByChannelId, channelId, undefined, undefined, parentMessage)
+      .run();
+  });
+
+  it('creates an optimistic message', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+
+    const { storeState } = await expectSaga(send, { payload: { channelId, message } })
+      .provide([
+        ...successResponses(),
+      ])
+      .withReducer(rootReducer, defaultState())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].message).toEqual(message);
+    expect(channel.messages[0].id).not.toBeNull();
+    expect(channel.messages[0].sender).not.toBeNull();
+  });
+
+  it('adds a link preview to the optimistic message', async () => {
     const channelId = 'channel-id';
     const message = 'www.google.com';
 
@@ -38,44 +78,49 @@ describe(send, () => {
     expect(channel.messages[0].preview).toEqual(linkPreview);
   });
 
-  it('reply message', async () => {
-    const channelId = 'channel-id';
-    const parentMessage = { message: 'hello', messageId: '98765650', userId: '12YT67565J' };
-
-    await expectSaga(send, { payload: { channelId, message: '', mentionedUserIds: [], parentMessage } })
-      .provide(successResponses())
-      .withReducer(rootReducer, defaultState() as any)
-      .call(sendMessagesByChannelId, channelId, '', [], parentMessage)
-      .run();
-  });
-
-  it('send message return a 400 status', async () => {
+  it('resets the existing messages if the send call fails', async () => {
     const channelId = 'channel-id';
     const existingMessages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
     ];
 
     const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            messages: existingMessages,
-          },
-        },
-      },
+      ...existingChannelState({ id: channelId, messages: existingMessages }),
       ...defaultState(),
     };
 
     const { storeState } = await expectSaga(send, { payload: { channelId, message: 'failed message' } })
       .withReducer(rootReducer, initialState)
-      .provide([stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 400, body: {} })])
+      .provide([
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('api call failed'))),
+      ])
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages).toStrictEqual(existingMessages);
-    // Is this what we really want? Just leave the optimistic message hanging around?
-    expect(channel.messageIdsCache.length).toEqual(1);
+  });
+
+  it('resets the lastMessage information if the send call fails', async () => {
+    const channelId = 'channel-id';
+    const existingMessages = [
+      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
+    ];
+
+    const initialState = {
+      ...existingChannelState({ id: channelId, messages: existingMessages }),
+      ...defaultState(),
+    };
+
+    const { storeState } = await expectSaga(send, { payload: { channelId, message: 'failed message' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('api call failed'))),
+      ])
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.lastMessage).toEqual(expect.objectContaining(existingMessages[0]));
+    expect(channel.lastMessageCreatedAt).toStrictEqual(existingMessages[0].createdAt);
   });
 });
 
@@ -95,6 +140,15 @@ function defaultState() {
       },
     },
   } as RootState;
+}
+
+function existingChannelState(channel) {
+  const normalized = normalizeChannel(channel);
+  return {
+    normalized: {
+      ...normalized.entities,
+    },
+  };
 }
 
 function successResponses() {

@@ -37,14 +37,20 @@ export const Fizzbuzz = (
   buzzNumber: number = 5,
   fizzWord: string = 'Fizz',
   buzzWord: string = 'Buzz',
-  newLogic: boolean = false
+  newLogic: boolean = false,
+  newLogicBuzz: boolean = false
 ) => {
   let isFizz = inputNumber % fizzNumber === 0;
-  const isBuzz = inputNumber % buzzNumber === 0;
+  let isBuzz = inputNumber % buzzNumber === 0;
   const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
+  const isInbetween18or28 = inputNumber > 18 && inputNumber < 28;
 
   if (newLogic) {
     isFizz = isInbetween10or20;
+  }
+
+  if (newLogicBuzz) {
+    isBuzz = isInbetween18or28;
   }
 
   if (isFizz && isBuzz) {
@@ -118,6 +124,15 @@ describe('Fizzbuzz', () => {
 
     it('should print FizzBuzz if inputNumber is divisible by 5 and between 10 and 20', function () {
       expect(Fizzbuzz(15, 3, 5, 'Fizz', 'Buzz', true)).toEqual('FizzBuzz');
+    });
+
+    it('should print Buzz if the number is between 18 and 28', function () {
+      expect(Fizzbuzz(26, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('Buzz');
+      expect(Fizzbuzz(5, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('5');
+    });
+
+    it('should print FizzBuzz if inputNumber is between 18 and 20', function () {
+      expect(Fizzbuzz(19, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('FizzBuzz');
     });
   });
 });

@@ -65,7 +65,7 @@ export class MessageMenu extends React.Component<Properties, State> {
     return menuItems;
   };
 
-  delete = () => {
+  handleDeleteMessage = () => {
     this.setState({
       deleteDialogIsOpen: false,
     });
@@ -88,7 +88,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         className='delete-message-modal'
         open
         onCancel={this.toggleDeleteDialog}
-        onConfirm={this.delete}
+        onConfirm={this.handleDeleteMessage}
         title='Delete message'
         cancelLabel='Cancel'
         confirmationLabel='Delete message'

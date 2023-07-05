@@ -1,7 +1,7 @@
 import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { ModalConfirmation, DropdownMenu, Modal, IconButton, Button } from '@zero-tech/zui/components';
+import { DropdownMenu, Modal, IconButton, Button } from '@zero-tech/zui/components';
 import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
@@ -84,24 +84,15 @@ export class MessageMenu extends React.Component<Properties, State> {
 
   renderDeleteModal() {
     return (
-      // <ModalConfirmation
-      //   className='delete-message-modal'
-      //   open
-      //   onCancel={this.toggleDeleteDialog}
-      //   onConfirm={this.handleDeleteMessage}
-      //   title='Delete message'
-      //   cancelLabel='Cancel'
-      //   confirmationLabel='Delete message'
-      // >
-      //   <div className='delete-message-modal__text-content'>
-      //     Are you sure you want to delete this message? This cannot be undone.
-      //   </div>
-      // </ModalConfirmation>
-
       <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
         <div className='delete-message-modal__header'>
           <h2>Delete message</h2>
-          <IconButton Icon={IconXClose} size={32} onClick={this.toggleDeleteDialog} />
+          <IconButton
+            className='delete-message-modal__icon-button'
+            Icon={IconXClose}
+            size={32}
+            onClick={this.toggleDeleteDialog}
+          />
         </div>
         <div className='delete-message-text-content'>
           Are you sure you want to delete this message? This cannot be undone.

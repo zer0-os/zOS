@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { receive } from '../channels';
 import { rawChannelSelector } from '../channels/saga';
@@ -129,6 +129,8 @@ export function* send(action) {
   }
 
   // add cache message id to prevent having double messages when we receive the message from sendbird.
+  // We should set a reference id and post that to the server to be able to match the message when it
+  // comes back around. Set the metadata on the message.
   cachedMessageIds.push(temporaryMessage.id);
 
   yield put(
@@ -138,26 +140,27 @@ export function* send(action) {
         ...existingMessages,
         temporaryMessage,
       ],
-      shouldSyncChannels: true,
-      countNewMessages: 0,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
       lastMessage: temporaryMessage,
+      lastMessageCreatedAt: temporaryMessage.createdAt,
       messageIdsCache: cachedMessageIds,
     })
   );
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  const isMessageSent = messagesResponse.status === 200;
 
-  if (!isMessageSent) {
+  try {
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+  } catch (e) {
+    // Race condition here. What if we received a new message in the mean time?
+    // We don't currently denormalize the lastMessage in the channel so we have to set
+    // the full message and not just the id.
+    const previousLastMessage = yield select((state) =>
+      denormalize(existingMessages[existingMessages.length - 1], state)
+    );
     yield put(
       receive({
         id: channelId,
         messages: [...existingMessages],
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessage: messagesResponse.body,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
-        messageIdsCache: cachedMessageIds,
+        lastMessage: previousLastMessage,
+        lastMessageCreatedAt: previousLastMessage.createdAt,
       })
     );
   }

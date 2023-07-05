@@ -1,96 +1,111 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import { MessageMenu } from '.';
 
 describe('Message Menu', () => {
   const subject = (props: any = {}) => {
-    const allProps = {
+    const defaultProps = {
       className: '',
+      canEdit: false,
+      canReply: false,
+      isMediaMessage: false,
+      isMenuOpen: false,
       onDelete: undefined,
       onEdit: undefined,
       onReply: undefined,
-      canEdit: false,
-      canReply: false,
+      onOpenChange: undefined,
+      onCloseMenu: undefined,
       ...props,
     };
 
-    return shallow(<MessageMenu {...allProps} />);
+    return shallow(<MessageMenu {...defaultProps} />);
   };
 
-  it('adds className', () => {
-    const onDelete = jest.fn();
-    const wrapper = subject({ className: 'message-menu', onDelete, canEdit: true });
+  describe('ClassName', () => {
+    it('adds className', () => {
+      const onDelete = jest.fn();
+      const wrapper = subject({ className: 'message-menu', onDelete, canEdit: true });
 
-    expect(wrapper.hasClass('message-menu')).toBe(true);
+      expect(wrapper.hasClass('message-menu')).toBe(true);
+    });
   });
 
-  it('it should renders delete button when icon menu is clicked', () => {
-    const onDelete = jest.fn();
-    const wrapper = subject({ onDelete, canEdit: true });
+  describe('Delete Button', () => {
+    it('should render when canEdit is true and onDelete is provided', () => {
+      const onDelete = jest.fn();
+      const wrapper = subject({ canEdit: true, onDelete }) as ShallowWrapper;
 
-    wrapper.find('IconButton').simulate('click');
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const deleteItem = items.find((item) => item.id === 'delete');
 
-    expect(wrapper.find('.delete-item').exists()).toBe(true);
+      expect(deleteItem).toBeDefined();
+    });
+
+    it('should open delete modal when delete button is clicked', () => {
+      const onDelete = jest.fn();
+      const wrapper = subject({ canEdit: true, onDelete });
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const deleteItem = items.find((item) => item.id === 'delete');
+
+      deleteItem.onSelect();
+
+      const state = wrapper.state() as { deleteDialogIsOpen: boolean };
+      expect(state.deleteDialogIsOpen).toBe(true);
+    });
   });
 
-  it('it should show delete modal when delete is clicked', () => {
-    const onDelete = jest.fn();
-    const wrapper = subject({ onDelete, canEdit: true });
+  describe('Edit Button', () => {
+    it('should render when canEdit is true and isMediaMessage is false', () => {
+      const onEdit = jest.fn();
+      const wrapper = subject({ canEdit: true, onEdit }) as ShallowWrapper;
 
-    wrapper.find('.delete-item').simulate('click');
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const editItem = items.find((item) => item.id === 'edit');
 
-    expect(wrapper.find('ModalConfirmation').exists()).toBe(true);
+      expect(editItem).toBeDefined();
+    });
+
+    it('should call edit message when clicked', () => {
+      const onEdit = jest.fn();
+      const wrapper = subject({ canEdit: true, onEdit }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const editItem = items.find((item) => item.id === 'edit');
+
+      editItem.onSelect();
+
+      expect(onEdit).toHaveBeenCalled();
+    });
   });
 
-  it('it should call delete message when confirm button is clicked', () => {
-    const onDelete = jest.fn();
-    const wrapper = subject({ onDelete, canEdit: true });
+  describe('Reply Button', () => {
+    it('should render when canReply is true and isMediaMessage is false', () => {
+      const onReply = jest.fn();
+      const wrapper = subject({ canReply: true, onReply }) as ShallowWrapper;
 
-    wrapper.find('.delete-item').simulate('click');
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const replyItem = items.find((item) => item.id === 'reply');
 
-    (wrapper.find('ModalConfirmation').prop('onConfirm') as any)();
+      expect(replyItem).toBeDefined();
+    });
 
-    expect(onDelete).toHaveBeenCalled();
-  });
+    it('should call reply message when clicked', () => {
+      const onReply = jest.fn();
+      const wrapper = subject({ canReply: true, onReply }) as ShallowWrapper;
 
-  it('it should renders edit button when icon menu is clicked', () => {
-    const onEdit = jest.fn();
-    const wrapper = subject({ onEdit, canEdit: true });
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const replyItem = items.find((item) => item.id === 'reply');
 
-    wrapper.find('IconButton').simulate('click');
+      replyItem.onSelect();
 
-    expect(wrapper.find('.edit-item').exists()).toBe(true);
-  });
-
-  it('it should call edit message when edit button is clicked', () => {
-    const onEdit = jest.fn();
-    const wrapper = subject({ onEdit, canEdit: true });
-
-    wrapper.find('.edit-item').simulate('click');
-
-    expect(onEdit).toHaveBeenCalled();
-  });
-
-  it('it should render reply button', () => {
-    const onReply = jest.fn();
-    const wrapper = subject({ onReply, canReply: true });
-
-    expect(wrapper.find('.reply-item').exists()).toBe(true);
-  });
-
-  it('it should not render reply button if canReply is false', () => {
-    const onReply = jest.fn();
-    const wrapper = subject({ onReply });
-
-    expect(wrapper.find('.reply-item').exists()).toBe(false);
-  });
-
-  it('it should call reply message when reply button is clicked', () => {
-    const onReply = jest.fn();
-    const wrapper = subject({ onReply, canReply: true });
-
-    wrapper.find('.reply-item').simulate('click');
-
-    expect(onReply).toHaveBeenCalled();
+      expect(onReply).toHaveBeenCalled();
+    });
   });
 });

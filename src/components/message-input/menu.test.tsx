@@ -26,6 +26,7 @@ describe('Menu', () => {
       'image/*': [],
       'text/*': [],
       'application/pdf': [],
+      'application/zip': [],
       'application/msword': [],
     };
 

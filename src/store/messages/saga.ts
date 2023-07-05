@@ -124,12 +124,7 @@ export function* send(action) {
   );
 
   yield call(createOptimisticPreview, channelId, optimisticMessage);
-
-  try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  } catch (e) {
-    yield call(messageSendFailed, channelId, existingMessages);
-  }
+  yield call(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -167,6 +162,14 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 
   if (preview) {
     yield put(receiveMessage({ id: optimisticMessage.id, preview }));
+  }
+}
+
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages) {
+  try {
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+  } catch (e) {
+    yield call(messageSendFailed, channelId, existingMessages);
   }
 }
 

@@ -3,10 +3,11 @@ import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
-import { createOptimisticMessage, createOptimisticPreview, messageSendFailed, send } from './saga';
+import { createOptimisticMessage, createOptimisticPreview, messageSendFailed, performSend, send } from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe(send, () => {
   it('creates optimistic message, fetches preview, then sends the message', async () => {
@@ -21,27 +22,10 @@ describe(send, () => {
     testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .next()
       .call(createOptimisticMessage, channelId, message, parentMessage)
-      .next({ existingMessages: [], optimisticMessage: { id: 'optimistic-message-id' } })
+      .next({ existingMessages: [{ id: 'existing-id' }], optimisticMessage: { id: 'optimistic-message-id' } })
       .call(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
-      .next()
-      .isDone();
-  });
-
-  it('handles message send failure', async () => {
-    const channelId = 'channel-id';
-    const existingMessages = ['message1'];
-
-    testSaga(send, { payload: { channelId } })
-      .next()
-      // .call(createOptimisticMessage, ignore call)
-      .next({ existingMessages })
-      // .call(createOptimisticPreview, ignore call)
-      .next()
-      // .call(sendMessagesByChannelId, ignore call)
-      .throw(new Error('simulated api call failed'))
-      .call(messageSendFailed, channelId, existingMessages)
+      .call(performSend, channelId, message, mentionedUserIds, parentMessage, [{ id: 'existing-id' }])
       .next()
       .isDone();
   });
@@ -53,7 +37,6 @@ describe(createOptimisticMessage, () => {
     const message = 'test message';
 
     const { returnValue, storeState } = await expectSaga(createOptimisticMessage, channelId, message, undefined)
-      .provide([...successResponses()])
       .withReducer(rootReducer, defaultState())
       .run();
 
@@ -76,7 +59,6 @@ describe(createOptimisticMessage, () => {
     };
 
     const { returnValue } = await expectSaga(createOptimisticMessage, channelId, 'failed message', undefined)
-      .provide([...successResponses()])
       .withReducer(rootReducer, initialState)
       .run();
 
@@ -99,6 +81,37 @@ describe(createOptimisticPreview, () => {
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].preview).toEqual(linkPreview);
+  });
+});
+
+describe(performSend, () => {
+  it('sends the message via the api', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { id: 'parent' };
+    const existingMessages = [{ id: 'existing' }];
+
+    await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages)
+      .provide(successResponses())
+      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .run();
+  });
+
+  it('sends the message via the api', async () => {
+    const channelId = 'channel-id';
+    const existingMessages = [{ id: 'existing' }];
+
+    await expectSaga(performSend, channelId, '', [], {}, existingMessages)
+      .provide([
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('simulated error'))),
+        stubResponse(matchers.call.fn(messageSendFailed), null),
+      ])
+      .call(messageSendFailed, channelId, existingMessages)
+      .run();
   });
 });
 

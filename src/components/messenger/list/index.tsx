@@ -87,7 +87,7 @@ export class Container extends React.Component<Properties, State> {
       layout,
       rewards,
     } = state;
-    const hasWallet = user?.data?.wallets.length > 0;
+    const hasWallet = user?.data?.wallets?.length > 0;
 
     const conversations = denormalizeConversations(state)
       .sort((a, b) =>

@@ -115,6 +115,17 @@ export function* fetch(action) {
 
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
+
+  const { existingMessages } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+
+  try {
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+  } catch (e) {
+    yield call(messageSendFailed, channelId, existingMessages);
+  }
+}
+
+export function* createOptimisticMessage(channelId, message, parentMessage) {
   // cloning the array to be able to push new cache id
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
 
@@ -146,24 +157,24 @@ export function* send(action) {
     })
   );
 
-  try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  } catch (e) {
-    // Race condition here. What if we received a new message in the mean time?
-    // We don't currently denormalize the lastMessage in the channel so we have to set
-    // the full message and not just the id.
-    const previousLastMessage = yield select((state) =>
-      denormalize(existingMessages[existingMessages.length - 1], state)
-    );
-    yield put(
-      receive({
-        id: channelId,
-        messages: [...existingMessages],
-        lastMessage: previousLastMessage,
-        lastMessageCreatedAt: previousLastMessage.createdAt,
-      })
-    );
-  }
+  return { existingMessages };
+}
+
+export function* messageSendFailed(channelId, existingMessages) {
+  // Race condition here. What if we received a new message in the mean time?
+  // We don't currently denormalize the lastMessage in the channel so we have to set
+  // the full message and not just the id.
+  const previousLastMessage = yield select((state) =>
+    denormalize(existingMessages[existingMessages.length - 1], state)
+  );
+  yield put(
+    receive({
+      id: channelId,
+      messages: [...existingMessages],
+      lastMessage: previousLastMessage,
+      lastMessageCreatedAt: previousLastMessage.createdAt,
+    })
+  );
 }
 
 export function* fetchNewMessages(action) {

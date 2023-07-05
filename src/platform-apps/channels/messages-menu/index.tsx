@@ -115,6 +115,7 @@ export class MessageMenu extends React.Component<Properties, State> {
           side='bottom'
           alignMenu='center'
           onOpenChange={this.props.onOpenChange}
+          showArrow
           trigger={
             <div
               className={classNames('dropdown-menu-trigger', {

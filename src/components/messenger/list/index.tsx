@@ -87,6 +87,8 @@ export class Container extends React.Component<Properties, State> {
       layout,
       rewards,
     } = state;
+    const hasWallet = user?.data?.wallets.length > 0;
+
     const conversations = denormalizeConversations(state)
       .sort((a, b) =>
         compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
@@ -113,7 +115,7 @@ export class Container extends React.Component<Properties, State> {
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
       isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
-      userHandle: user?.data?.handle || '',
+      userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
       zero: rewards.zero,

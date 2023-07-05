@@ -45,7 +45,6 @@ export class SettingsMenu extends React.Component<Properties, State> {
 
   renderSettingsHeader() {
     const c = bem('header');
-
     return (
       <div className={c('')}>
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />

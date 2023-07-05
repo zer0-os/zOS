@@ -5,6 +5,7 @@ export interface AuthorizationResponse {
 
 interface Wallet {
   id: string;
+  publicAddress: string;
 }
 
 interface ProfileSummary {
@@ -14,6 +15,7 @@ interface ProfileSummary {
   lastName: string;
   profileImage: string;
   ssbPublicKey: string;
+  primaryEmail: string;
 }
 
 export interface UserPayload {

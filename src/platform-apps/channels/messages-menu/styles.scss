@@ -45,3 +45,45 @@
   font-size: 16px;
   line-height: 24px;
 }
+
+.delete-message-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 528px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    h2 {
+      margin: 0;
+      line-height: 29px;
+    }
+  }
+
+  &__icon-button {
+    outline: none;
+  }
+
+  &__text-content {
+    line-height: 24px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__text-button {
+    div {
+      color: theme.$color-greyscale-12;
+    }
+
+    &:hover {
+      color: theme.$color-secondary-1;
+    }
+  }
+}

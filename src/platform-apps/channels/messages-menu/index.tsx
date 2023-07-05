@@ -1,8 +1,8 @@
 import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { ModalConfirmation, DropdownMenu } from '@zero-tech/zui/components';
-import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
+import { DropdownMenu, Modal, IconButton, Button } from '@zero-tech/zui/components';
+import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -84,16 +84,29 @@ export class MessageMenu extends React.Component<Properties, State> {
 
   renderDeleteModal() {
     return (
-      <ModalConfirmation
-        open
-        onCancel={this.toggleDeleteDialog}
-        onConfirm={this.handleDeleteMessage}
-        title='Delete message'
-        cancelLabel='Cancel'
-        confirmationLabel='Delete message'
-      >
-        Are you sure you want to delete this message? This cannot be undone.
-      </ModalConfirmation>
+      <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
+        <div className='delete-message-modal__header'>
+          <h2>Delete message</h2>
+          <IconButton
+            className='delete-message-modal__icon-button'
+            Icon={IconXClose}
+            size={32}
+            onClick={this.toggleDeleteDialog}
+          />
+        </div>
+        <div className='delete-message-text-content'>
+          Are you sure you want to delete this message? This cannot be undone.
+        </div>
+        <div className='delete-message-modal__footer'>
+          <Button className='delete-message-modal__text-button' variant='text' onPress={this.toggleDeleteDialog}>
+            Cancel
+          </Button>
+
+          <Button variant='negative' onPress={this.handleDeleteMessage}>
+            Delete message
+          </Button>
+        </div>
+      </Modal>
     );
   }
 
@@ -126,7 +139,7 @@ export class MessageMenu extends React.Component<Properties, State> {
             </div>
           }
         />
-        {this.showDeleteModal && this.renderDeleteModal()}
+        {this.renderDeleteModal()}
       </div>
     );
   }

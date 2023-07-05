@@ -33,7 +33,7 @@
     "@zero-tech/zapp-daos": "latest",
     "@zero-tech/zapp-nfts": "latest",
     "@zero-tech/zapp-staking": "latest",
-    "@zero-tech/zui": "^0.25.0",
+    "@zero-tech/zui": "^0.25.1",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

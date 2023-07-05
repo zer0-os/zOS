@@ -97,16 +97,17 @@ export class MessageMenu extends React.Component<Properties, State> {
       //     Are you sure you want to delete this message? This cannot be undone.
       //   </div>
       // </ModalConfirmation>
+
       <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
         <div className='delete-message-modal__header'>
-          Delete message
-          <IconButton Icon={IconXClose} onClick={this.toggleDeleteDialog} />
+          <h2>Delete message</h2>
+          <IconButton Icon={IconXClose} size={32} onClick={this.toggleDeleteDialog} />
         </div>
-
-        <div>Text Content</div>
-
+        <div className='delete-message-text-content'>
+          Are you sure you want to delete this message? This cannot be undone.
+        </div>
         <div className='delete-message-modal__footer'>
-          <Button variant='secondary' onPress={this.toggleDeleteDialog}>
+          <Button className='delete-message-modal__text-button' variant='text' onPress={this.toggleDeleteDialog}>
             Cancel
           </Button>
 

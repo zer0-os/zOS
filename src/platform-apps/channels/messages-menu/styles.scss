@@ -49,34 +49,38 @@
 .delete-message-modal {
   display: flex;
   flex-direction: column;
-  padding: 40px;
-  min-width: unset;
+  gap: 40px;
+  width: 528px;
+  overflow: hidden;
 
-  h2 {
-    margin: 0 0 24px 0;
+  &__header {
+    display: flex;
+    // flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    h2 {
+      margin: 0;
+      line-height: 29px;
+    }
   }
 
   &__text-content {
-    max-width: 528px;
     line-height: 24px;
   }
 
-  .zui-iconButton {
+  &__footer {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    width: 40px;
-    height: 40px;
+    justify-content: space-between;
+  }
 
+  &__text-button {
     div {
-      width: 32px !important;
-      height: 32px !important;
+      color: theme.$color-greyscale-12;
+    }
 
-      svg {
-        width: 32px;
-        height: 32px;
-      }
+    &:hover {
+      color: theme.$color-secondary-1;
     }
   }
 }

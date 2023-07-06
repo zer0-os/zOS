@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Message } from './index';
 import { User } from './../authentication/types';
 import * as linkifyjs from 'linkifyjs';
@@ -16,7 +18,7 @@ export function messageFactory(messageText: string, user: User, parentMessage: P
   return {
     createdAt: Date.now(),
     hidePreview: false,
-    id: Date.now(),
+    id: uuidv4(),
     mentionedUserIds: [],
     message: messageText,
     isAdmin: false,

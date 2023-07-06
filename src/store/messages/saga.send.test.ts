@@ -10,7 +10,7 @@ import { denormalize as denormalizeChannel, normalize as normalizeChannel } from
 import { throwError } from 'redux-saga-test-plan/providers';
 
 describe(send, () => {
-  it('creates optimistic message, fetches preview, then sends the message', async () => {
+  it('creates optimistic message then fetches preview and sends the message in parallel', async () => {
     const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = [
@@ -23,9 +23,9 @@ describe(send, () => {
       .next()
       .call(createOptimisticMessage, channelId, message, parentMessage)
       .next({ existingMessages: [{ id: 'existing-id' }], optimisticMessage: { id: 'optimistic-message-id' } })
-      .call(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
+      .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .call(performSend, channelId, message, mentionedUserIds, parentMessage, [{ id: 'existing-id' }])
+      .spawn(performSend, channelId, message, mentionedUserIds, parentMessage, [{ id: 'existing-id' }])
       .next()
       .isDone();
   });

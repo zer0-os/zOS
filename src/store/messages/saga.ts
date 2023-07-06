@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, all, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { receive } from '../channels';
@@ -123,8 +123,8 @@ export function* send(action) {
     parentMessage
   );
 
-  yield call(createOptimisticPreview, channelId, optimisticMessage);
-  yield call(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
+  yield spawn(createOptimisticPreview, channelId, optimisticMessage);
+  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {

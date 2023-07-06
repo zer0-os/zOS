@@ -109,7 +109,7 @@ describe('MessageInput', () => {
 
     expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
 
-    wrapper.find('.message-input__record-voice-icon').simulate('click');
+    wrapper.find('.message-input__end-action-icon').simulate('click');
 
     dropzone.setProps({});
 

@@ -245,17 +245,26 @@ $scrollbar-width: 5px;
     &__message-row {
       display: flex;
       clear: both;
-      margin: 8px 16px;
+      margin: 16px;
 
       &--owner {
         justify-content: flex-end;
+      }
+
+      &--start,
+      &--middle {
+        margin-bottom: 0;
+      }
+
+      &--middle,
+      &--end {
+        margin-top: 4px;
       }
     }
 
     .message {
       display: flex;
       justify-content: flex-end;
-      margin: 8px 0px;
       gap: 8px;
       overflow: hidden;
 
@@ -265,8 +274,6 @@ $scrollbar-width: 5px;
         .message__block-body {
           transition: background-color 0.3s ease-out;
           position: relative;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
 
           &.chat-message__input-wrapper {
             background: none;
@@ -283,7 +290,6 @@ $scrollbar-width: 5px;
 
         .message__block {
           background-color: theme.$color-secondary-3;
-          border-radius: 8px 8px 0px 8px;
 
           .message__author-name {
             display: none;
@@ -310,7 +316,6 @@ $scrollbar-width: 5px;
 
       &__block {
         background-color: theme.$color-primary-3;
-        border-radius: 8px 8px 8px 0px;
         position: relative;
         padding: 8px;
         color: themeDeprecated.$card-text-color;
@@ -505,5 +510,32 @@ $scrollbar-width: 5px;
 
   .messages__message {
     max-width: 560px;
+  }
+}
+
+// Message group rounding
+.messages__message--owner {
+  .message__block {
+    border-radius: 8px 2px 2px 8px;
+  }
+}
+
+.messages__message--owner.messages__message--start,
+.messages__message--owner.messages__message--single {
+  .message__block {
+    border-top-right-radius: 8px;
+  }
+}
+
+.messages__message:not(.messages__message--owner) {
+  .message__block {
+    border-radius: 2px 8px 8px 2px;
+  }
+}
+
+.messages__message--start:not(.messages__message--owner),
+.messages__message--single:not(.messages__message--owner) {
+  .message__block {
+    border-top-left-radius: 8px;
   }
 }

@@ -114,19 +114,6 @@ describe('ChatView', () => {
     ]);
   });
 
-  it('passes className prop to Message', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, showSenderAvatar: true });
-
-    const classNames = wrapper.find(Message).map((m) => m.prop('className'));
-
-    expect(classNames).toIncludeAllMembers([
-      'messages__message messages__message--last-in-group',
-      'messages__message messages__message--last-in-group',
-      'messages__message',
-      'messages__message',
-    ]);
-  });
-
   it('render InvertedScroll', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 

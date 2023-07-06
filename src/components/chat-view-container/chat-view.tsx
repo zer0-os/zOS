@@ -20,8 +20,9 @@ import { AdminMessageContainer } from '../admin-message/container';
 
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
+import { groupMessages } from './utils';
 
-interface ChatMessageGroups {
+export interface ChatMessageGroups {
   [date: string]: MessageModel[];
 }
 
@@ -54,6 +55,17 @@ export interface Properties {
   isMessengerFullScreen: boolean;
 }
 
+interface ChatMessage extends MessageModel {
+  groupPosition?: MessageGroupPosition;
+}
+
+export enum MessageGroupPosition {
+  Start,
+  Middle,
+  End,
+  Single,
+}
+
 export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
@@ -62,10 +74,12 @@ export interface State {
 
 export class ChatView extends React.Component<Properties, State> {
   bottomRef;
+
   constructor(props) {
     super(props);
     this.bottomRef = React.createRef();
   }
+
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   getMessagesByDay() {
@@ -127,7 +141,7 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
-    const allMessages = messagesByDay[day];
+    const allMessages = groupMessages(messagesByDay[day]);
 
     return (
       <div className='messages' key={day}>
@@ -136,7 +150,7 @@ export class ChatView extends React.Component<Properties, State> {
         </div>
         {allMessages.map((message, index) => {
           if (message.isAdmin) {
-            return <AdminMessageContainer key={message.id} message={message} />;
+            return <AdminMessageContainer key={message.id} message={message as MessageModel} />;
           } else {
             const isLastFromUser =
               index === allMessages.length - 1 ||
@@ -150,14 +164,23 @@ export class ChatView extends React.Component<Properties, State> {
             return (
               <div
                 key={message.id}
-                className={classNames('messages__message-row', {
-                  'messages__message-row--owner': isUserOwnerOfTheMessage,
-                })}
+                className={classNames(
+                  'messages__message-row',
+                  `messages__message-row--${MessageGroupPosition[message.groupPosition].toLowerCase()}`,
+                  {
+                    'messages__message-row--owner': isUserOwnerOfTheMessage,
+                  }
+                )}
               >
                 <Message
-                  className={classNames('messages__message', {
-                    'messages__message--last-in-group': isLastFromUser && this.props.showSenderAvatar,
-                  })}
+                  className={classNames(
+                    'messages__message',
+                    `messages__message--${MessageGroupPosition[message.groupPosition].toLowerCase()}`,
+                    {
+                      'messages__message--last-in-group': isLastFromUser && this.props.showSenderAvatar,
+                      'messages__message--owner': isUserOwnerOfTheMessage,
+                    }
+                  )}
                   onImageClick={this.openLightbox}
                   messageId={message.id}
                   updatedAt={message.updatedAt}
@@ -168,7 +191,11 @@ export class ChatView extends React.Component<Properties, State> {
                   parentMessageText={message.parentMessageText}
                   getUsersForMentions={this.searchMentionableUsers}
                   showSenderAvatar={this.props.showSenderAvatar}
-                  {...message}
+                  isTimestampVisible={
+                    message.groupPosition === MessageGroupPosition.End ||
+                    message.groupPosition === MessageGroupPosition.Single
+                  }
+                  {...(message as ChatMessage)}
                 />
               </div>
             );

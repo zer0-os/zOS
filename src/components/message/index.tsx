@@ -36,13 +36,19 @@ interface Properties extends MessageModel {
   parentMessageText?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
+  isTimestampVisible?: boolean;
 }
 
 export interface State {
   isEditing: boolean;
   isMessageMenuOpen: boolean;
 }
+
 export class Message extends React.Component<Properties, State> {
+  static defaultProps = {
+    isTimestampVisible: true,
+  };
+
   state = {
     isEditing: false,
     isMessageMenuOpen: false,
@@ -104,7 +110,6 @@ export class Message extends React.Component<Properties, State> {
 
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
-
     return <div {...cn('time')}>{createdTime}</div>;
   }
 
@@ -241,7 +246,7 @@ export class Message extends React.Component<Properties, State> {
               )}
             </>
           )}
-          <div {...cn('footer')}>{this.renderTime(createdAt)}</div>
+          <div {...cn('footer')}>{this.props.isTimestampVisible && this.renderTime(createdAt)}</div>
         </div>
         {this.renderMenu()}
       </div>

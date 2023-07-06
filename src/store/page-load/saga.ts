@@ -1,3 +1,5 @@
+import { put } from 'redux-saga/effects';
+import { setLoadPage } from '.';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
@@ -19,9 +21,12 @@ export function* saga() {
       history.replace({
         pathname: '/',
       });
+      window.location.reload(); // the page doesn't show active data (eg. trade) if we don't reload :/
     }
     return;
   }
+
+  yield put(setLoadPage(true));
 
   if (anonymousPaths.includes(history.location.pathname)) {
     return;

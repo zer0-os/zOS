@@ -15,7 +15,7 @@ import {
   getLinkPreviews,
   uploadAttachment,
 } from './api';
-import { FileType, extractLink, getFileType, linkifyType, messageFactory } from './utils';
+import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -134,7 +134,7 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = messageFactory(message, currentUser, parentMessage);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage);
 
   // add cache message id to prevent having double messages when we receive the message from sendbird.
   // We should set a reference id and post that to the server to be able to match the message when it

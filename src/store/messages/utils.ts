@@ -14,7 +14,11 @@ export interface linkifyType {
   end: number;
 }
 
-export function messageFactory(messageText: string, user: User, parentMessage: ParentMessage = null): Message {
+export function createOptimisticMessageObject(
+  messageText: string,
+  user: User,
+  parentMessage: ParentMessage = null
+): Message {
   return {
     createdAt: Date.now(),
     hidePreview: false,

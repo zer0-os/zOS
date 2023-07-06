@@ -4,7 +4,11 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
-import { rawChannelSelector } from '../channels/saga';
+import {
+  markAllMessagesAsReadInCurrentChannel,
+  markAllMessagesAsReadInCurrentConversation,
+  rawChannelSelector,
+} from '../channels/saga';
 
 import {
   deleteMessageApi,
@@ -83,6 +87,9 @@ const getCachedMessageIds = (channelId) => (state) => {
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
+export const rawIsChannel = (channelId) => (state) =>
+  getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
+
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
@@ -115,7 +122,11 @@ export function* fetch(action) {
 
   // Publish a system message across the channel
   const channel = yield call(conversationsChannel);
-  yield put(channel, { type: ChannelEvents.MessagesLoadedForChannel, channelId });
+  const isChannel = yield select(rawIsChannel(channelId));
+  yield put(channel, {
+    type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
+    channelId,
+  });
 }
 
 export function* send(action) {
@@ -391,6 +402,14 @@ export function* receiveNewMessage(action) {
 
   yield put(receive(updatedChannel));
   yield spawn(sendBrowserNotification, channelId, message);
+
+  const isChannel = yield select(rawIsChannel(channelId));
+  const markAllAsReadAction = isChannel
+    ? markAllMessagesAsReadInCurrentChannel
+    : markAllMessagesAsReadInCurrentConversation;
+
+  yield call(markAllAsReadAction);
+
 }
 
 export function* receiveUpdateMessage(action) {

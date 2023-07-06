@@ -46,4 +46,11 @@ describe('Login Container', () => {
     wrapper.find(LoginComponent).prop('onToggleLoginOption')();
     expect(mockToggle).toHaveBeenCalledWith(LoginStage.EmailLogin);
   });
+
+  test('should not render login page if loadpage prop is false', () => {
+    const wrapper = subject({
+      shouldRender: false,
+    });
+    expect(wrapper.find(LoginComponent).exists()).toBeFalse();
+  });
 });

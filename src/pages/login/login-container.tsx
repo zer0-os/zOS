@@ -7,6 +7,8 @@ import { LoginStage, switchLoginStage } from '../../store/login';
 import { LoginComponent } from './login-component';
 
 export interface LoginContainerProperties {
+  shouldRender: boolean;
+
   isLoggingIn: boolean;
   stage: LoginStage;
   switchLoginStage: (stage: LoginStage) => void;
@@ -14,10 +16,11 @@ export interface LoginContainerProperties {
 
 export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapState(state: RootState): Partial<LoginContainerProperties> {
-    const { login } = state;
+    const { login, pageload } = state;
     return {
       stage: login.stage,
       isLoggingIn: login.loading,
+      shouldRender: pageload.loadPage,
     };
   }
 
@@ -34,6 +37,10 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
 
   render() {
     const { isLoggingIn } = this.props;
+
+    if (!this.props.shouldRender) {
+      return null;
+    }
 
     return (
       <LoginComponent

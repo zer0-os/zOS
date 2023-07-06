@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 
+import { reducer as pageload } from './page-load';
 import { reducer as layout } from './layout';
 import { reducer as channelsList } from './channels-list';
 import { reducer as web3 } from './web3';
@@ -17,6 +18,7 @@ import { reducer as login } from './login';
 import { reducer as rewards } from './rewards';
 
 export const rootReducer = combineReducers({
+  pageload,
   layout,
   channelsList,
   web3,

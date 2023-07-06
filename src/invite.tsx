@@ -15,13 +15,15 @@ import { CreateWalletAccountContainer } from './authentication/create-wallet-acc
 
 export interface Properties {
   stage: RegistrationStage;
+  shouldRender: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { registration } = state;
+    const { registration, pageload } = state;
     return {
       stage: registration.stage,
+      shouldRender: pageload.loadPage,
     };
   }
 
@@ -30,6 +32,10 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
+    if (!this.props.shouldRender) {
+      return null;
+    }
+
     return (
       <>
         <ThemeEngine theme={Themes.Dark} />

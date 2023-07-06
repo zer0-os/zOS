@@ -7,6 +7,7 @@ import './styles.scss';
 import '../list/styles.scss';
 
 import { itemToOption } from '../lib/utils';
+import classNames from 'classnames';
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
@@ -55,7 +56,9 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
         />
 
         {this.state.results?.length === 0 && this.state.results !== '' && (
-          <div className='messages-list__empty'>{`No results for '${this.state.searchString}' `}</div>
+          <div className={classNames('messages-list__empty', 'messages-list__empty-top-padding')}>
+            {`No results for '${this.state.searchString}' `}
+          </div>
         )}
 
         {this.props.children}

@@ -13,6 +13,7 @@ describe('ChannelViewContainer', () => {
       channelId: '',
       fetchMessages: () => undefined,
       joinChannel: () => undefined,
+      setActiveChannelId: () => undefined,
       user: {
         isLoading: false,
         data: null,

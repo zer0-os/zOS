@@ -8,6 +8,7 @@ import { LoginStage } from '../../store/login';
 describe('Login Container', () => {
   const subject = (props: any = {}) => {
     const allProps = {
+      shouldRender: true,
       isLoggingIn: false,
       stage: LoginStage.EmailLogin,
       switchLoginStage: jest.fn(),

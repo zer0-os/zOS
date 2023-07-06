@@ -22,7 +22,6 @@ describe('ChannelViewContainer', () => {
       uploadFileMessage: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
-      markAllMessagesAsReadInChannel: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
       setActiveChannelId: () => undefined,

@@ -73,6 +73,10 @@ $side-padding: 16px;
       line-height: 17px;
       word-break: break-word;
       text-align: center;
+
+      &-top-padding {
+        padding-top: 32px;
+      }
     }
   }
 }

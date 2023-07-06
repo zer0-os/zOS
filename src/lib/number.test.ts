@@ -13,7 +13,7 @@ describe('formatWeiAmount', () => {
     expect(formatWeiAmount(get('12345.6'))).toEqual('12,345.6');
   });
 
-  it('should format numbers greater than or equal to 100,000 with suffix M', () => {
+  it('should format numbers greater than or equal to 100,000 with suffix K', () => {
     expect(formatWeiAmount(get('123456'))).toEqual('123.46K');
   });
 

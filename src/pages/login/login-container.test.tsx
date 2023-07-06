@@ -8,6 +8,7 @@ import { LoginStage } from '../../store/login';
 describe('Login Container', () => {
   const subject = (props: any = {}) => {
     const allProps = {
+      shouldRender: true,
       isLoggingIn: false,
       stage: LoginStage.EmailLogin,
       switchLoginStage: jest.fn(),
@@ -44,5 +45,12 @@ describe('Login Container', () => {
     });
     wrapper.find(LoginComponent).prop('onToggleLoginOption')();
     expect(mockToggle).toHaveBeenCalledWith(LoginStage.EmailLogin);
+  });
+
+  test('should not render login page if loadpage prop is false', () => {
+    const wrapper = subject({
+      shouldRender: false,
+    });
+    expect(wrapper.find(LoginComponent).exists()).toBeFalse();
   });
 });

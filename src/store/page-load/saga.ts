@@ -4,6 +4,7 @@ import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { initializePublicLayout } from '../layout/saga';
+import { config } from '../../config';
 
 const anonymousPaths = [
   '/get-access',
@@ -19,9 +20,8 @@ export function* saga() {
     // we should redirect to index page in that case
     if (anonymousPaths.includes(history.location.pathname)) {
       history.replace({
-        pathname: '/',
+        pathname: `/0.${config.defaultZnsRoute}/${config.defaultApp}`,
       });
-      window.location.reload(); // the page doesn't show active data (eg. trade) if we don't reload :/
     }
     return;
   }

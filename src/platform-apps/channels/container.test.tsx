@@ -25,6 +25,7 @@ describe('ChannelsContainer', () => {
       store: getStore(),
       fetchChannels: () => undefined,
       stopSyncChannels: () => undefined,
+      setActiveChannelId: () => undefined,
       channelId: '',
       match: { url: '' },
       user: {

@@ -23,7 +23,7 @@ export class Container extends React.Component<Properties> {
     const { registration, pageload } = state;
     return {
       stage: registration.stage,
-      shouldRender: pageload.loadPage,
+      shouldRender: pageload.isComplete,
     };
   }
 

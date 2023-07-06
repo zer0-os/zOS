@@ -1,5 +1,5 @@
 import { put } from 'redux-saga/effects';
-import { setLoadPage } from '.';
+import { setIsComplete } from '.';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
@@ -26,7 +26,7 @@ export function* saga() {
     return;
   }
 
-  yield put(setLoadPage(true));
+  yield put(setIsComplete(true));
 
   if (anonymousPaths.includes(history.location.pathname)) {
     return;

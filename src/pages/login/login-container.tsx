@@ -20,7 +20,7 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
     return {
       stage: login.stage,
       isLoggingIn: login.loading,
-      shouldRender: pageload.loadPage,
+      shouldRender: pageload.isComplete,
     };
   }
 

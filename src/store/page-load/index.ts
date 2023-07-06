@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type PageloadState = {
-  loadPage: boolean;
+  isComplete: boolean;
 };
 
 export const initialState = {
-  loadPage: false,
+  isComplete: false,
 };
 
 const slice = createSlice({
   name: 'pageload',
   initialState,
   reducers: {
-    setLoadPage: (state, action: PayloadAction<PageloadState['loadPage']>) => {
-      state.loadPage = action.payload;
+    setIsComplete: (state, action: PayloadAction<PageloadState['isComplete']>) => {
+      state.isComplete = action.payload;
     },
   },
 });
 
-export const { setLoadPage } = slice.actions;
+export const { setIsComplete } = slice.actions;
 export const { reducer } = slice;

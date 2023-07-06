@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, all, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { receive } from '../channels';
@@ -116,13 +116,15 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
 
-  const { existingMessages } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+  const { existingMessages, optimisticMessage } = yield call(
+    createOptimisticMessage,
+    channelId,
+    message,
+    parentMessage
+  );
 
-  try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  } catch (e) {
-    yield call(messageSendFailed, channelId, existingMessages);
-  }
+  yield spawn(createOptimisticPreview, channelId, optimisticMessage);
+  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -132,12 +134,7 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  let temporaryMessage = messageFactory(message, currentUser, parentMessage);
-  const preview = yield getPreview(message);
-
-  if (preview) {
-    temporaryMessage = { ...temporaryMessage, preview };
-  }
+  const temporaryMessage = messageFactory(message, currentUser, parentMessage);
 
   // add cache message id to prevent having double messages when we receive the message from sendbird.
   // We should set a reference id and post that to the server to be able to match the message when it
@@ -157,7 +154,23 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
     })
   );
 
-  return { existingMessages };
+  return { existingMessages, optimisticMessage: temporaryMessage };
+}
+
+export function* createOptimisticPreview(channelId: string, optimisticMessage) {
+  const preview = yield getPreview(optimisticMessage.message);
+
+  if (preview) {
+    yield put(receiveMessage({ id: optimisticMessage.id, preview }));
+  }
+}
+
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages) {
+  try {
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+  } catch (e) {
+    yield call(messageSendFailed, channelId, existingMessages);
+  }
 }
 
 export function* messageSendFailed(channelId, existingMessages) {

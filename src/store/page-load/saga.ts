@@ -10,12 +10,20 @@ const anonymousPaths = [
 
 export function* saga() {
   const history = getHistory();
-  if (anonymousPaths.includes(history.location.pathname)) {
-    return;
-  }
 
   const success = yield getCurrentUserWithChatAccessToken();
   if (success) {
+    // if you have a current user but they still hit login/sign-up,
+    // we should redirect to index page in that case
+    if (anonymousPaths.includes(history.location.pathname)) {
+      history.replace({
+        pathname: '/',
+      });
+    }
+    return;
+  }
+
+  if (anonymousPaths.includes(history.location.pathname)) {
     return;
   }
 

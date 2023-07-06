@@ -194,12 +194,16 @@
     width: 32px;
   }
 
-  &__record-voice-icon {
+  &__end-action-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 32px;
     width: 32px;
+
+    &--send {
+      color: theme.$color-secondary-11;
+    }
   }
 
   &__emoji-picker {

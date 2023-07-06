@@ -9,7 +9,7 @@ import Menu from './menu';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
-import { IconFaceSmile, IconStickerCircle } from '@zero-tech/zui/icons';
+import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { EmojiPicker } from './emoji-picker';
@@ -290,6 +290,8 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   renderInput() {
+    const hasInputValue = this.state.value?.length > 0;
+
     return (
       <div className='message-input chat-message__new-message'>
         <div className='message-input__icons'>
@@ -357,10 +359,12 @@ export class MessageInput extends React.Component<Properties, State> {
         </div>
         <div className='message-input__icons'>
           <IconButton
+            className={classNames('message-input__end-action-icon', {
+              'message-input__end-action-icon--send': hasInputValue,
+            })}
             onClick={this.startMic}
-            Icon={IconMicrophone2}
+            Icon={hasInputValue ? IconSend3 : IconMicrophone2}
             size={24}
-            className='message-input__record-voice-icon'
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ import { RootState, rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
+import { markConversationAsReadIfActive } from '../channels/saga';
 
 describe(receiveNewMessage, () => {
   it('adds the message to the channel', async () => {
@@ -184,6 +185,7 @@ function successResponses() {
   return [
     stubResponse(matchers.call.fn(getLinkPreviews), null),
     stubResponse(matchers.spawn.fn(sendBrowserNotification), undefined),
+    stubResponse(matchers.call.fn(markConversationAsReadIfActive), undefined),
   ] as any;
 }
 

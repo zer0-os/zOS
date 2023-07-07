@@ -5,7 +5,7 @@ import {
   joinChannel as joinChannelAPI,
   markAllMessagesAsReadInChannel as markAllMessagesAsReadInChannelAPI,
 } from './api';
-import { joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated } from './saga';
+import { joinChannel, markAllMessagesAsRead, unreadCountUpdated } from './saga';
 
 import { rootReducer } from '../reducer';
 
@@ -46,7 +46,7 @@ describe('channels list saga', () => {
     const channelId = '236844224_56299bcd523ac9084181f2422d0d0cfe9df72db4';
     const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
 
-    await expectSaga(markAllMessagesAsReadInChannel, { payload: { channelId, userId } })
+    await expectSaga(markAllMessagesAsRead, channelId, userId)
       .provide([
         [
           matchers.call.fn(markAllMessagesAsReadInChannelAPI),

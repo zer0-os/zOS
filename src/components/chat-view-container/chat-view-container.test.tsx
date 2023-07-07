@@ -22,9 +22,9 @@ describe('ChannelViewContainer', () => {
       uploadFileMessage: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
-      markAllMessagesAsReadInChannel: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
+      setActiveChannelId: () => undefined,
       context: {
         isAuthenticated: false,
       },
@@ -79,28 +79,6 @@ describe('ChannelViewContainer', () => {
     const wrapper = subject({ channel: {}, isDirectMessage: true });
 
     expect(wrapper.find(ChatView).prop('isDirectMessage')).toStrictEqual(true);
-  });
-
-  it('should mark all messages as read when unReadCount > 0', () => {
-    const markAllMessagesAsReadInChannel = jest.fn();
-    const messages = [
-      { id: 'the-second-message-id', message: 'the second message', createdAt: 1659016677502 },
-      { id: 'the-first-message-id', message: 'the first message', createdAt: 1658776625730 },
-      { id: 'the-third-message-id', message: 'the third message', createdAt: 1659016677502 },
-    ] as unknown as Message[];
-
-    const wrapper = subject({
-      markAllMessagesAsReadInChannel,
-      channelId: 'the-channel-id',
-      user: {
-        isLoading: false,
-        data: { id: 'user-id' },
-      },
-      channel: { name: 'the channel', unreadCount: 3, messages },
-    });
-
-    wrapper.setProps({}); // trigger didUpdate
-    expect(markAllMessagesAsReadInChannel).toHaveBeenCalledWith({ channelId: 'the-channel-id', userId: 'user-id' });
   });
 
   it('fetches messages on mount', () => {

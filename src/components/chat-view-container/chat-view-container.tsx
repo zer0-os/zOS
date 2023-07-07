@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
+import { setActiveChannelId } from '../../store/chat';
 import {
   fetch as fetchMessages,
   send as sendMessage,
@@ -14,7 +15,7 @@ import {
   stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import { Channel, denormalize, joinChannel, markAllMessagesAsReadInChannel } from '../../store/channels';
+import { Channel, denormalize, joinChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -23,13 +24,14 @@ import {
   SendPayload as PayloadSendMessage,
   MediaPayload,
 } from '../../store/messages/saga';
-import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
+import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
+  setActiveChannelId: (channelId: string) => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
@@ -37,7 +39,6 @@ export interface Properties extends PublicProperties {
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
   startMessageSync: (payload: PayloadFetchMessages) => void;
   stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
@@ -86,8 +87,8 @@ export class Container extends React.Component<Properties, State> {
       stopSyncChannels,
       deleteMessage,
       joinChannel,
-      markAllMessagesAsReadInChannel,
       editMessage,
+      setActiveChannelId,
     };
   }
 
@@ -96,20 +97,27 @@ export class Container extends React.Component<Properties, State> {
   componentDidMount() {
     const { channelId } = this.props;
     if (channelId) {
+      // only set the active channel ID if it's not a direct message conversation
+      if (!this.props.activeConversationId) {
+        this.props.setActiveChannelId(channelId);
+      }
       this.props.fetchMessages({ channelId });
     }
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId, channel, user } = this.props;
+    const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.stopSyncChannels(prevProps);
+
+      this.props.setActiveChannelId(channelId);
       this.props.fetchMessages({ channelId });
       this.setState({ reply: null });
     }
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
+      this.props.setActiveChannelId(channelId);
       this.props.fetchMessages({ channelId });
     }
 
@@ -129,10 +137,6 @@ export class Container extends React.Component<Properties, State> {
       channel.countNewMessages > 0
     ) {
       this.setState({ countNewMessages: channel.countNewMessages });
-    }
-
-    if (channel && channel.unreadCount > 0 && user.data) {
-      this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
 
     if (this.textareaRef && channel && Boolean(channel.messages)) {

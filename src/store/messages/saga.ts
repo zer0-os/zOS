@@ -4,7 +4,7 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
-import { rawChannelSelector } from '../channels/saga';
+import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import {
   deleteMessageApi,
@@ -21,6 +21,7 @@ import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 
 export interface Payload {
   channelId: string;
@@ -82,6 +83,9 @@ const getCachedMessageIds = (channelId) => (state) => {
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
+export const _isChannel = (channelId) => (state) =>
+  getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
+
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
@@ -111,6 +115,14 @@ export function* fetch(action) {
       hasLoadedMessages: true,
     })
   );
+
+  // Publish a system message across the channel
+  const channel = yield call(conversationsChannel);
+  const isChannel = yield select(_isChannel(channelId));
+  yield put(channel, {
+    type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
+    channelId,
+  });
 }
 
 export function* send(action) {
@@ -386,6 +398,11 @@ export function* receiveNewMessage(action) {
 
   yield put(receive(updatedChannel));
   yield spawn(sendBrowserNotification, channelId, message);
+
+  const isChannel = yield select(_isChannel(channelId));
+  const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
+
+  yield call(markAllAsReadAction, channelId);
 }
 
 export function* receiveUpdateMessage(action) {

@@ -296,8 +296,6 @@ export class MessageInput extends React.Component<Properties, State> {
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
 
-    console.log(this.props.isMessengerFullScreen);
-
     return (
       <div className='message-input__container'>
         <div className='message-input__icon-outer'>

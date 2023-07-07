@@ -4,11 +4,7 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
-import {
-  markAllMessagesAsReadInCurrentChannel,
-  markAllMessagesAsReadInCurrentConversation,
-  rawChannelSelector,
-} from '../channels/saga';
+import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import {
   deleteMessageApi,
@@ -404,11 +400,9 @@ export function* receiveNewMessage(action) {
   yield spawn(sendBrowserNotification, channelId, message);
 
   const isChannel = yield select(_isChannel(channelId));
-  const markAllAsReadAction = isChannel
-    ? markAllMessagesAsReadInCurrentChannel
-    : markAllMessagesAsReadInCurrentConversation;
+  const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
 
-  yield call(markAllAsReadAction);
+  yield call(markAllAsReadAction, channelId);
 }
 
 export function* receiveUpdateMessage(action) {

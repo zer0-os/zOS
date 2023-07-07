@@ -24,7 +24,6 @@ import {
 import { RootState, rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
-import { markAllMessagesAsReadInCurrentConversation } from '../channels/saga';
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {

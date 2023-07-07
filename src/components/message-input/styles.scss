@@ -143,14 +143,11 @@
     }
 
     textarea {
-      display: flex;
-      flex-direction: column;
-      flex: 1 0 0;
       color: theme.$color-greyscale-12;
-      font-size: 14px !important;
-      line-height: 24px !important;
       word-break: break-word;
-      font-size: 14px;
+      font-size: 14px !important;
+      line-height: 17px;
+      font-weight: 500;
       outline: none;
       border: none;
     }

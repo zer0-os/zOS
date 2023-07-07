@@ -4,11 +4,15 @@
   width: 500px;
   position: absolute;
   bottom: 65px;
-  right: 65px;
+  right: 74px;
   background-color: themeDeprecated.$background-color-tertiary;
   padding: 5px;
   border-radius: 5px;
   border: 1px solid themeDeprecated.$input-arrow-color;
+
+  &--fullscreen {
+    right: 65px;
+  }
 
   &-grid {
     height: 440px;

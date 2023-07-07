@@ -199,9 +199,13 @@
 
   &__emoji-picker-container {
     position: absolute;
-    right: 65px;
+    right: 74px;
     bottom: 65px;
     z-index: 12;
     color: theme.$color-greyscale-11;
+
+    &--fullscreen {
+      right: 65px;
+    }
   }
 }

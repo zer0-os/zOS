@@ -28,6 +28,7 @@ export interface PublicProperties extends PublicPropertiesContainer {}
 
 export interface Properties extends PublicPropertiesContainer {
   viewMode: ViewModes;
+  isMessengerFullScreen?: boolean;
   placeholder?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -43,6 +44,7 @@ interface State {
   isEmojisActive: boolean;
   isGiphyActive: boolean;
   isMicActive: boolean;
+  isMessengerFullScreen?: boolean;
 }
 
 export class MessageInput extends React.Component<Properties, State> {
@@ -54,6 +56,7 @@ export class MessageInput extends React.Component<Properties, State> {
     isMicActive: false,
     isEmojisActive: false,
     isGiphyActive: false,
+    isMessengerFullScreen: false,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -293,6 +296,8 @@ export class MessageInput extends React.Component<Properties, State> {
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
 
+    console.log(this.props.isMessengerFullScreen);
+
     return (
       <div className='message-input__container'>
         <div className='message-input__icon-outer'>
@@ -327,7 +332,11 @@ export class MessageInput extends React.Component<Properties, State> {
                   <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
                   {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
 
-                  <div className='message-input__emoji-picker-container'>
+                  <div
+                    className={classNames('message-input__emoji-picker-container', {
+                      'message-input__emoji-picker-container--fullscreen': this.props.isMessengerFullScreen,
+                    })}
+                  >
                     <EmojiPicker
                       textareaRef={this.textareaRef}
                       isOpen={this.state.isEmojisActive}
@@ -338,7 +347,13 @@ export class MessageInput extends React.Component<Properties, State> {
                       onSelect={this.onInsertEmoji}
                     />
                   </div>
-                  {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
+                  {this.state.isGiphyActive && (
+                    <Giphy
+                      onClickGif={this.onInsertGiphy}
+                      onClose={this.closeGiphy}
+                      isMessengerFullScreen={this.props.isMessengerFullScreen}
+                    />
+                  )}
                   {this.state.isMicActive && (
                     <div>
                       <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />

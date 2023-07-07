@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
-import { setActiveChannelId } from '../../store/chat';
 import {
   fetch as fetchMessages,
   send as sendMessage,
@@ -31,7 +30,6 @@ import { ParentMessage } from '../../lib/chat/types';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
-  setActiveChannelId: (channelId: string) => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
@@ -90,7 +88,6 @@ export class Container extends React.Component<Properties, State> {
       joinChannel,
       markAllMessagesAsReadInChannel,
       editMessage,
-      setActiveChannelId,
     };
   }
 
@@ -113,7 +110,6 @@ export class Container extends React.Component<Properties, State> {
     }
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
-      this.props.setActiveChannelId(channelId);
       this.props.fetchMessages({ channelId });
     }
 

@@ -44,7 +44,6 @@ interface State {
   isEmojisActive: boolean;
   isGiphyActive: boolean;
   isMicActive: boolean;
-  isMessengerFullScreen?: boolean;
 }
 
 export class MessageInput extends React.Component<Properties, State> {
@@ -56,7 +55,6 @@ export class MessageInput extends React.Component<Properties, State> {
     isMicActive: false,
     isEmojisActive: false,
     isGiphyActive: false,
-    isMessengerFullScreen: false,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;

@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, all, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
 import { receive } from '../channels';
@@ -357,10 +357,6 @@ export function* receiveNewMessage(action) {
       ...currentMessages,
     ];
 
-    // What is going on here? We set messages above but then we loop around
-    // all the cached message ids... and map messages to something that might be a message or
-    // might be a messageId... but only the last one in the list would ever impact
-    // the messages array because...we keep overwriting it?
     cachedMessageIds.forEach((id, index, object) => {
       messages = messages.map((messageId) => {
         if (messageId === id && message.message && !message.image) {
@@ -379,17 +375,16 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  yield all([
-    put(
-      receive({
-        id: channelId,
-        messages,
-        messageIdsCache: cachedMessageIds,
-        lastMessage: message,
-      })
-    ),
-    call(sendBrowserNotification, channelId, message),
-  ]);
+  yield put(
+    receive({
+      id: channelId,
+      messages,
+      messageIdsCache: cachedMessageIds,
+      lastMessage: message,
+      lastMessageCreatedAt: message.createdAt,
+    })
+  );
+  yield spawn(sendBrowserNotification, channelId, message);
 }
 
 export function* receiveUpdateMessage(action) {

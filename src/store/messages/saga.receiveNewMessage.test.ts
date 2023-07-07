@@ -35,39 +35,41 @@ describe(receiveNewMessage, () => {
         stubResponse(call(getPreview, 'www.google.com'), stubPreview),
         ...successResponses(),
       ])
-      .withReducer(rootReducer)
+      .withReducer(rootReducer, existingChannelState({ id: channelId }))
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].preview).toEqual(stubPreview);
   });
 
-  it('replaces the existing message if we already have it', async () => {
-    // Note: This is probably the wrong behaviour. Why would we do anything if we already have it?
-    const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'different message text' };
-    const existingMessages = [
-      { id: 'new-message', message: 'message_0001' },
-      { id: 'other-message', message: 'message_0001' },
-    ];
+  it('does nothing if the channel does not exist', async () => {
+    const channelId = 'non-existing-channel-id';
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
-      .withReducer(rootReducer, existingChannelState({ id: channelId, messages: existingMessages }))
+    await expectSaga(receiveNewMessage, { payload: { channelId, message: {} } })
+      .withReducer(rootReducer, existingChannelState({ id: 'other-channel' }))
+      .not.put.like({ action: { type: 'normalized/receive' } })
       .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('other-message');
-    expect(channel.messages[1].id).toEqual('new-message');
-    expect(channel.messages[1].message).toEqual('different message text');
   });
 
-  it('sets the lastMessage and lastMessageCreatedAt', async () => {
-    // Note: This is probably the wrong behaviour. What if we have a newer message already in the store?
+  it('does nothing if we already have the messsage', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'message text', createdAt: 10000001 };
+    const message = { id: 'new-message', message: 'message_0001' };
     const existingMessages = [
-      { id: 'other-message', message: 'message_0001', createdAt: 10000005 },
+      { id: 'new-message', message: 'message_0001' },
+      { id: 'other-message', message: 'message_0002' },
+    ];
+
+    await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+      .withReducer(rootReducer, existingChannelState({ id: channelId, messages: existingMessages }))
+      .not.put.like({ action: { type: 'normalized/receive' } })
+      .run();
+  });
+
+  it('sets the lastMessage and lastMessageCreatedAt if it is now the most recent message', async () => {
+    const channelId = 'channel-id';
+    const message = { id: 'new-message', message: '', createdAt: 10000007 };
+    const existingMessages = [
+      { id: 'other-message', message: '', createdAt: 10000005 },
     ];
 
     const initialState = existingChannelState({
@@ -87,11 +89,36 @@ describe(receiveNewMessage, () => {
     expect(channel.lastMessageCreatedAt).toEqual(message.createdAt);
   });
 
+  it('does not set the lastMessage and lastMessageAt if the received message is earlier than the latest', async () => {
+    const channelId = 'channel-id';
+    const message = { id: 'new-message', message: 'message text', createdAt: 10000001 };
+    const existingMessages = [
+      { id: 'other-message', message: 'message_0001', createdAt: 10000005 },
+    ];
+
+    const initialState = existingChannelState({
+      id: channelId,
+      messages: existingMessages,
+      lastMessage: existingMessages[0],
+      lastMessageCreatedAt: existingMessages[0].createdAt,
+    });
+
+    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.lastMessage).toEqual(existingMessages[0]);
+    expect(channel.lastMessageCreatedAt).toEqual(existingMessages[0].createdAt);
+  });
+
   it('sends a browser notification', async () => {
     const message = { id: 'message-id', message: '' };
 
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
+      .withReducer(rootReducer, existingChannelState({ id: 'channel-id' }))
       .spawn(sendBrowserNotification, 'channel-id', message)
       .run();
   });

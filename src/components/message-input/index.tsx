@@ -296,8 +296,6 @@ export class MessageInput extends React.Component<Properties, State> {
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
 
-    console.log(this.props.isMessengerFullScreen);
-
     return (
       <div className='message-input__container'>
         <div className='message-input__icon-outer'>
@@ -317,81 +315,84 @@ export class MessageInput extends React.Component<Properties, State> {
         </div>
 
         <div className='message-input__chat-container'>
-          <div className='message-input__text-and-emoji-wrapper'>
-            <Dropzone
-              onDrop={this.imagesSelected}
-              noClick
-              accept={this.mimeTypes}
-              maxSize={config.cloudinary.max_file_size}
-            >
-              {({ getRootProps }) => (
-                <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>
-                  <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
-                  <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
-                  <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
-                  <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
-                  {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
+          <div className='message-input__scroll-container'>
+            <div className='message-input__text-and-emoji-wrapper'>
+              <Dropzone
+                onDrop={this.imagesSelected}
+                noClick
+                accept={this.mimeTypes}
+                maxSize={config.cloudinary.max_file_size}
+              >
+                {({ getRootProps }) => (
+                  <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>
+                    <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
+                    <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
+                    <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
+                    <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
+                    {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
 
-                  <div
-                    className={classNames('message-input__emoji-picker-container', {
-                      'message-input__emoji-picker-container--fullscreen': this.props.isMessengerFullScreen,
-                    })}
-                  >
-                    <EmojiPicker
-                      textareaRef={this.textareaRef}
-                      isOpen={this.state.isEmojisActive}
-                      onOpen={this.openEmojis}
-                      onClose={this.closeEmojis}
-                      value={this.state.value}
-                      viewMode={this.props.viewMode}
-                      onSelect={this.onInsertEmoji}
-                    />
-                  </div>
-                  {this.state.isGiphyActive && (
-                    <Giphy
-                      onClickGif={this.onInsertGiphy}
-                      onClose={this.closeGiphy}
-                      isMessengerFullScreen={this.props.isMessengerFullScreen}
-                    />
-                  )}
-                  {this.state.isMicActive && (
-                    <div>
-                      <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
+                    <div
+                      className={classNames('message-input__emoji-picker-container', {
+                        'message-input__emoji-picker-container--fullscreen': this.props.isMessengerFullScreen,
+                      })}
+                    >
+                      <EmojiPicker
+                        textareaRef={this.textareaRef}
+                        isOpen={this.state.isEmojisActive}
+                        onOpen={this.openEmojis}
+                        onClose={this.closeEmojis}
+                        value={this.state.value}
+                        viewMode={this.props.viewMode}
+                        onSelect={this.onInsertEmoji}
+                      />
                     </div>
-                  )}
+                    {this.state.isGiphyActive && (
+                      <Giphy
+                        onClickGif={this.onInsertGiphy}
+                        onClose={this.closeGiphy}
+                        isMessengerFullScreen={this.props.isMessengerFullScreen}
+                      />
+                    )}
+                    {this.state.isMicActive && (
+                      <div>
+                        <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
+                      </div>
+                    )}
 
-                  <MentionsInput
-                    inputRef={this.textareaRef}
-                    className='message-input__mentions-text-area-wrap'
-                    id={this.props.id}
-                    placeholder={this.props.placeholder}
-                    onKeyDown={this.onSend}
-                    onChange={this.contentChanged}
-                    onBlur={this._handleBlur}
-                    value={this.state.value}
-                    allowSuggestionsAboveCursor
-                    suggestionsPortalHost={document.body}
-                  >
-                    {this.renderMentionTypes()}
-                  </MentionsInput>
+                    <MentionsInput
+                      inputRef={this.textareaRef}
+                      className='message-input__mentions-text-area-wrap'
+                      id={this.props.id}
+                      placeholder={this.props.placeholder}
+                      onKeyDown={this.onSend}
+                      onChange={this.contentChanged}
+                      onBlur={this._handleBlur}
+                      value={this.state.value}
+                      allowSuggestionsAboveCursor
+                      suggestionsPortalHost={document.body}
+                    >
+                      {this.renderMentionTypes()}
+                    </MentionsInput>
 
-                  {this.props.renderAfterInput &&
-                    this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
+                    {this.props.renderAfterInput &&
+                      this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
+                  </div>
+                )}
+              </Dropzone>
+              <div className='message-input__emoji-icon-outer'>
+                <div className='message-input__icon-wrapper'>
+                  <IconButton
+                    className={classNames('message-input__icon', ' message-input__icon--emoji')}
+                    onClick={this.openEmojis}
+                    Icon={IconFaceSmile}
+                    size={24}
+                  />
                 </div>
-              )}
-            </Dropzone>
-            <div className='message-input__emoji-icon-outer'>
-              <div className='message-input__icon-wrapper'>
-                <IconButton
-                  className={classNames('message-input__icon', ' message-input__icon--emoji')}
-                  onClick={this.openEmojis}
-                  Icon={IconFaceSmile}
-                  size={24}
-                />
               </div>
             </div>
           </div>
         </div>
+
         <div className='message-input__icon-outer'>
           <div className='message-input__icon-wrapper'>
             <IconButton

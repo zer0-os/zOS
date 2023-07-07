@@ -339,12 +339,15 @@ export function* stopSyncChannels(action) {
   );
 }
 
-// this also "recieves" the message which I had just "sent". is that ideal or should we handle it?
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
+  if (currentMessages.includes(message.id)) {
+    return;
+  }
+
+  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const preview = yield call(getPreview, message.message);
 
   if (preview) {
@@ -368,9 +371,8 @@ export function* receiveNewMessage(action) {
       });
     });
   } else {
-    const filteredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
     messages = [
-      ...filteredCurrentMessages,
+      ...currentMessages,
       message,
     ];
   }
@@ -431,6 +433,7 @@ export function isOwner(currentUser, entityUserId) {
 }
 
 export function* sendBrowserNotification(channelId, message: Message) {
+  // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
   const channel = yield select(rawChannelSelector(channelId));
 
   if (channel?.isChannel) return;

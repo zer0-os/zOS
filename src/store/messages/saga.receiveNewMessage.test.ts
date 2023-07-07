@@ -42,24 +42,18 @@ describe(receiveNewMessage, () => {
     expect(channel.messages[0].preview).toEqual(stubPreview);
   });
 
-  it('replaces the existing message if we already have it', async () => {
-    // Note: This is probably the wrong behaviour. Why would we do anything if we already have it?
+  it('does nothing if we already have the messsage', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'different message text' };
+    const message = { id: 'new-message', message: 'message_0001' };
     const existingMessages = [
       { id: 'new-message', message: 'message_0001' },
-      { id: 'other-message', message: 'message_0001' },
+      { id: 'other-message', message: 'message_0002' },
     ];
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
+    await expectSaga(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, existingChannelState({ id: channelId, messages: existingMessages }))
+      .not.put.like({ action: { type: 'normalized/receive' } })
       .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('other-message');
-    expect(channel.messages[1].id).toEqual('new-message');
-    expect(channel.messages[1].message).toEqual('different message text');
   });
 
   it('sets the lastMessage and lastMessageCreatedAt', async () => {

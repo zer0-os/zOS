@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getDeepProperty from 'lodash.get';
+import { setActiveChannelId } from '../../store/chat';
 
 import { RootState } from '../../store/reducer';
 import { Store } from 'redux';
@@ -28,6 +29,8 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
+  setActiveChannelId: (channelId: string) => void;
+
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
@@ -52,7 +55,14 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
+      setActiveChannelId,
     };
+  }
+
+  setActiveChannelId() {
+    if (this.props.channelId) {
+      this.props.setActiveChannelId(this.props.channelId);
+    }
   }
 
   componentDidMount() {
@@ -60,7 +70,12 @@ export class Container extends React.Component<Properties> {
 
     if (domainId) {
       this.props.fetchChannels(domainId);
+      this.setActiveChannelId();
     }
+  }
+
+  componentWillUnmount(): void {
+    this.props.setActiveChannelId(null);
   }
 
   componentDidUpdate(prevProps: Properties) {
@@ -72,6 +87,12 @@ export class Container extends React.Component<Properties> {
 
     if (prevProps.user.data !== user.data || prevProps.domainId !== domainId) {
       this.props.fetchChannels(domainId);
+    }
+
+    // to handle the case when you switch between apps (eg.Chat -> Trade -> Chat)
+    // or when you're switching between channels (channel1 -> channel2)
+    if (prevProps.channelId !== this.props.channelId) {
+      this.setActiveChannelId();
     }
   }
 

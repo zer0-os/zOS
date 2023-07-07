@@ -345,7 +345,7 @@ export function* receiveNewMessage(action) {
 
   const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const currentMessages = yield select(rawMessagesSelector(channelId));
-  const preview = yield getPreview(message?.message);
+  const preview = yield call(getPreview, message.message);
 
   if (preview) {
     message = { ...message, preview };

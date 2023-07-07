@@ -1,88 +1,46 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { call } from 'redux-saga/effects';
 
 import { getLinkPreviews } from './api';
-import { receiveNewMessage } from './saga';
+import { getPreview, receiveNewMessage } from './saga';
 import { rootReducer } from '../reducer';
 
 import { mapMessage, send as sendBrowserNotification } from '../../lib/browser';
+import { denormalize as denormalizeChannel } from '../channels';
+import { stubResponse } from '../../test/saga';
 
 describe(receiveNewMessage, () => {
-  it('receive new message with link preview', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const message = {
-      id: 8667728016,
-      message: 'www.google.com',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 0,
-    };
+  it('adds the link previews to the message', async () => {
+    const channelId = 'channel-id';
+    const message = { id: 'message-id', message: 'www.google.com' };
+    const stubPreview = { id: 'simulated-preview' };
 
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels, messages },
-      },
-    } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
       .provide([
-        [
-          matchers.call.fn(getLinkPreviews),
-          {
-            id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0',
-            url: 'http://www.google.com',
-            type: 'link',
-            title: 'Google',
-            description: 'Search the world information, including webpages.',
-          },
-        ],
-        [
-          matchers.call.fn(sendBrowserNotification),
-          undefined,
-        ],
+        stubResponse(call(getPreview, 'www.google.com'), stubPreview),
+        ...successResponses(),
       ])
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer)
       .run();
 
-    const messageId = channels[channelId]['messages'][0];
-    expect(messages[messageId].preview).not.toBeNull();
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].preview).toEqual(stubPreview);
   });
 
-  it('verify sendBrowserMessage on receive new message', async () => {
-    const message = {
-      id: 8667728016,
-      message: 'Hello world!',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 0,
-    };
+  it('sends a browser notification', async () => {
+    const message = { id: 'message-id', message: '' };
 
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide([
-        [
-          matchers.call.fn(getLinkPreviews),
-          undefined,
-        ],
-        [
-          matchers.call.fn(sendBrowserNotification),
-          undefined,
-        ],
-      ])
+      .provide(successResponses())
       .call(sendBrowserNotification, mapMessage(message as any))
       .run();
   });
 });
+
+function successResponses() {
+  return [
+    stubResponse(matchers.call.fn(getLinkPreviews), null),
+    stubResponse(matchers.call.fn(sendBrowserNotification), undefined),
+  ] as any;
+}

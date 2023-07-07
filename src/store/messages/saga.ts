@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
 import { receive as receiveMessage } from './';
-import { receive } from '../channels';
+import { Channel, receive } from '../channels';
 import { rawChannelSelector } from '../channels/saga';
 
 import {
@@ -342,8 +342,9 @@ export function* stopSyncChannels(action) {
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 
-  const currentMessages = yield select(rawMessagesSelector(channelId));
-  if (currentMessages.includes(message.id)) {
+  const channel = yield select(rawChannelSelector(channelId));
+  const currentMessages = channel?.messages || [];
+  if (!channel || currentMessages.includes(message.id)) {
     return;
   }
 
@@ -377,15 +378,13 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-      messageIdsCache: cachedMessageIds,
-      lastMessage: message,
-      lastMessageCreatedAt: message.createdAt,
-    })
-  );
+  const updatedChannel: Partial<Channel> = { id: channelId, messages, messageIdsCache: cachedMessageIds };
+  if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
+    updatedChannel.lastMessage = message;
+    updatedChannel.lastMessageCreatedAt = message.createdAt;
+  }
+
+  yield put(receive(updatedChannel));
   yield spawn(sendBrowserNotification, channelId, message);
 }
 

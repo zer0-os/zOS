@@ -77,6 +77,24 @@ describe('ChannelsContainer', () => {
     expect(setActiveChannelId).toHaveBeenCalledWith(null);
   });
 
+  it('updates the "current" active channel ID if channel is changed', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const currentChannel = '31029_140322eaa6b07f4a94d5fa3c6ced27cde50b6ebd';
+    const nextChannel = '31029_219f6599b591e5d3a8a059d91e0074ef8ad086e0';
+    const setActiveChannelId = jest.fn();
+
+    const wrapper = subject({
+      domainId,
+      channelId: currentChannel,
+      setActiveChannelId,
+      channels: [],
+    });
+    expect(setActiveChannelId).toHaveBeenCalledWith(currentChannel);
+
+    wrapper.setProps({ channelId: nextChannel }); // change to next channel
+    expect(setActiveChannelId).toHaveBeenCalledWith(nextChannel);
+  });
+
   it('wraps ChannelList in AppContextPanel', () => {
     const wrapper = subject();
 

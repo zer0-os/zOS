@@ -1,27 +1,28 @@
 import React, { RefObject } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import Dropzone from 'react-dropzone';
-import classNames from 'classnames';
-import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
-import { Key } from '../../lib/keyboard-search';
-import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
-import Menu from './menu';
-import ImageCards from '../../platform-apps/channels/image-cards';
-import { config } from '../../config';
-import ReplyCard from '../reply-card/reply-card';
-import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
-import { ViewModes } from '../../shared-components/theme-engine';
-import { PublicProperties as PublicPropertiesContainer } from './container';
-import { EmojiPicker } from './emoji-picker';
-import { IconButton } from '../icon-button';
-import { IconMicrophone2 } from '@zero-tech/zui/icons';
-import AudioCards from '../../platform-apps/channels/audio-cards';
-import MessageAudioRecorder from '../message-audio-recorder';
-import { Giphy, Properties as GiphyProperties } from './giphy';
 
-import './styles.scss';
+import { config } from '../../config';
+import { Key } from '../../lib/keyboard-search';
 import { MediaType } from '../../store/messages';
+import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
+import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
+
+import Menu from './menu/menu';
+import { IconButton } from '../icon-button';
+import { EmojiPicker } from './emoji-picker/emoji-picker';
+import ReplyCard from '../reply-card/reply-card';
+import MessageAudioRecorder from '../message-audio-recorder';
+import { Giphy, Properties as GiphyProperties } from './giphy/giphy';
+import { ViewModes } from '../../shared-components/theme-engine';
+import AudioCards from '../../platform-apps/channels/audio-cards';
+import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
+import { PublicProperties as PublicPropertiesContainer } from './container';
+import { IconFaceSmile, IconSend3, IconMicrophone2, IconStickerCircle } from '@zero-tech/zui/icons';
+
+import classNames from 'classnames';
+import './styles.scss';
 
 export interface PublicProperties extends PublicPropertiesContainer {}
 
@@ -293,79 +294,100 @@ export class MessageInput extends React.Component<Properties, State> {
     const hasInputValue = this.state.value?.length > 0;
 
     return (
-      <div className='message-input chat-message__new-message'>
-        <div className='message-input__icons'>
-          <IconButton
-            onClick={this.openGiphy}
-            Icon={IconStickerCircle}
-            size={24}
-            className='message-input__giphy-icon'
-          />
-
-          <Menu onSelected={this.mediaSelected} mimeTypes={this.mimeTypes} maxSize={config.cloudinary.max_file_size} />
-        </div>
-
-        <div className='message-input__input-wrapper'>
-          <Dropzone
-            onDrop={this.imagesSelected}
-            noClick
-            accept={this.mimeTypes}
-            maxSize={config.cloudinary.max_file_size}
-          >
-            {({ getRootProps }) => (
-              <div {...getRootProps({ className: 'mentions-text-area' })}>
-                <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
-                <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
-                <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
-                <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
-                {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
-                <div className='message-input__emoji-picker'>
-                  <EmojiPicker
-                    textareaRef={this.textareaRef}
-                    isOpen={this.state.isEmojisActive}
-                    onOpen={this.openEmojis}
-                    onClose={this.closeEmojis}
-                    value={this.state.value}
-                    viewMode={this.props.viewMode}
-                    onSelect={this.onInsertEmoji}
-                  />
-                </div>
-                {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
-                {this.state.isMicActive && (
-                  <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
-                )}
-                <MentionsInput
-                  inputRef={this.textareaRef}
-                  className='mentions-text-area__wrap'
-                  id={this.props.id}
-                  placeholder={this.props.placeholder}
-                  onKeyDown={this.onSend}
-                  onChange={this.contentChanged}
-                  onBlur={this._handleBlur}
-                  value={this.state.value}
-                  allowSuggestionsAboveCursor
-                  suggestionsPortalHost={document.body}
-                >
-                  {this.renderMentionTypes()}
-                </MentionsInput>
-                {this.props.renderAfterInput &&
-                  this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
-              </div>
-            )}
-          </Dropzone>
-          <div className='message-input__icons-action'>
-            <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={24} />
+      <div className='message-input__container'>
+        <div className='message-input__icon-outer'>
+          <div className='message-input__icon-wrapper'>
+            <IconButton
+              className={classNames('message-input__icon', 'message-input__icon--giphy')}
+              onClick={this.openGiphy}
+              Icon={IconStickerCircle}
+              size={24}
+            />
+            <Menu
+              onSelected={this.mediaSelected}
+              mimeTypes={this.mimeTypes}
+              maxSize={config.cloudinary.max_file_size}
+            />
           </div>
         </div>
-        <div className='message-input__icons'>
-          <IconButton
-            className={classNames('message-input__end-action-icon', {
-              'message-input__end-action-icon--send': hasInputValue,
-            })}
-            onClick={this.startMic}
-            Icon={hasInputValue ? IconSend3 : IconMicrophone2}
-            size={24}
-          />
+
+        <div className='message-input__chat-container'>
+          <div className='message-input__text-and-emoji-wrapper'>
+            <Dropzone
+              onDrop={this.imagesSelected}
+              noClick
+              accept={this.mimeTypes}
+              maxSize={config.cloudinary.max_file_size}
+            >
+              {({ getRootProps }) => (
+                <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>
+                  <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
+                  <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
+                  <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
+                  <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
+                  {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
+
+                  <div className='message-input__emoji-picker-container'>
+                    <EmojiPicker
+                      textareaRef={this.textareaRef}
+                      isOpen={this.state.isEmojisActive}
+                      onOpen={this.openEmojis}
+                      onClose={this.closeEmojis}
+                      value={this.state.value}
+                      viewMode={this.props.viewMode}
+                      onSelect={this.onInsertEmoji}
+                    />
+                  </div>
+                  {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
+                  {this.state.isMicActive && (
+                    <div>
+                      <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
+                    </div>
+                  )}
+
+                  <MentionsInput
+                    inputRef={this.textareaRef}
+                    className='message-input__mentions-text-area-wrap'
+                    id={this.props.id}
+                    placeholder={this.props.placeholder}
+                    onKeyDown={this.onSend}
+                    onChange={this.contentChanged}
+                    onBlur={this._handleBlur}
+                    value={this.state.value}
+                    allowSuggestionsAboveCursor
+                    suggestionsPortalHost={document.body}
+                  >
+                    {this.renderMentionTypes()}
+                  </MentionsInput>
+
+                  {this.props.renderAfterInput &&
+                    this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
+                </div>
+              )}
+            </Dropzone>
+            <div className='message-input__emoji-icon-outer'>
+              <div className='message-input__icon-wrapper'>
+                <IconButton
+                  className={classNames('message-input__icon', ' message-input__icon--emoji')}
+                  onClick={this.openEmojis}
+                  Icon={IconFaceSmile}
+                  size={24}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='message-input__icon-outer'>
+          <div className='message-input__icon-wrapper'>
+            <IconButton
+              className={classNames('message-input__icon', 'message-input__icon--end-action', {
+                'message-input__icon--send': hasInputValue,
+              })}
+              onClick={this.startMic}
+              Icon={hasInputValue ? IconSend3 : IconMicrophone2}
+              size={24}
+            />
+          </div>
         </div>
       </div>
     );
@@ -390,6 +412,6 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   render() {
-    return <div className={classNames('chat-message__input-wrapper', this.props.className)}>{this.renderInput()}</div>;
+    return <div className={classNames('message-input', this.props.className)}>{this.renderInput()}</div>;
   }
 }

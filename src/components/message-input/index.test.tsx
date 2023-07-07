@@ -9,9 +9,9 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { EmojiPicker } from './emoji-picker';
+import { EmojiPicker } from './emoji-picker/emoji-picker';
 import MessageAudioRecorder from '../message-audio-recorder';
-import { Giphy } from './giphy';
+import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
 
 describe('MessageInput', () => {
@@ -109,7 +109,7 @@ describe('MessageInput', () => {
 
     expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
 
-    wrapper.find('.message-input__end-action-icon').simulate('click');
+    wrapper.find('.message-input__icon--end-action').simulate('click');
 
     dropzone.setProps({});
 
@@ -201,7 +201,7 @@ describe('MessageInput', () => {
 
       expect(dropzone.find(Giphy).exists()).toBe(false);
 
-      wrapper.find('.message-input__giphy-icon').simulate('click');
+      wrapper.find('.message-input__icon--giphy').simulate('click');
 
       dropzone.setProps({});
 
@@ -212,7 +212,7 @@ describe('MessageInput', () => {
       const wrapper = subject({});
       const dropzone = wrapper.find(Dropzone).shallow();
 
-      wrapper.find('.message-input__giphy-icon').simulate('click');
+      wrapper.find('.message-input__icon--giphy').simulate('click');
 
       dropzone.setProps({});
 

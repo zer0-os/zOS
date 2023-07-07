@@ -1,8 +1,10 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import { dropzoneToMedia, Media } from './utils';
+import { dropzoneToMedia, Media } from '../utils';
 import { IconPaperclip } from '@zero-tech/zui/icons';
-import { IconButton } from '../icon-button';
+import { IconButton } from '../../icon-button';
+
+import './styles.scss';
 
 export interface Properties {
   onSelected: (images: Media[]) => void;

@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { Grid, SearchBar, SearchContext, SearchContextManager } from '@giphy/react-components';
-import { config } from '../../config';
+import { config } from '../../../config';
+
+import './styles.scss';
 
 export interface ComponentProperties {
   onClickGif: Grid['props']['onGifClick'];

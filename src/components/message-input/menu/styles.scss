@@ -1,0 +1,10 @@
+.image-send {
+  &__icon {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+  }
+}

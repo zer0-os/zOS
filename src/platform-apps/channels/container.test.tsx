@@ -58,6 +58,25 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
+  it('sets the active channel ID on mount', () => {
+    const domainId = '0x000000000000000000000000000000000000000A';
+    const channelId = '31029_140322eaa6b07f4a94d5fa3c6ced27cde50b6ebd';
+    const setActiveChannelId = jest.fn();
+
+    subject({ domainId, channelId, setActiveChannelId, channels: [] });
+
+    expect(setActiveChannelId).toHaveBeenCalledWith(channelId);
+  });
+
+  it('sets the active channel ID to null on unmount', () => {
+    const setActiveChannelId = jest.fn();
+
+    const wrapper = subject({ setActiveChannelId });
+    (wrapper.instance() as any).componentWillUnmount();
+
+    expect(setActiveChannelId).toHaveBeenCalledWith(null);
+  });
+
   it('wraps ChannelList in AppContextPanel', () => {
     const wrapper = subject();
 

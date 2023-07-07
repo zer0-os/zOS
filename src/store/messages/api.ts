@@ -22,9 +22,10 @@ export async function sendMessagesByChannelId(
   message: string,
   mentionedUserIds: string[],
   parentMessage?: ParentMessage,
-  file?: FileUploadResult
+  file?: FileUploadResult,
+  optimisticId?: string
 ): Promise<any> {
-  const data: SendPayload = { message, mentionedUserIds };
+  const data: SendPayload = { message, mentionedUserIds, optimisticId };
 
   if (parentMessage) {
     data.parentMessageId = parentMessage.messageId;

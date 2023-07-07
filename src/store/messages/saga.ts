@@ -57,6 +57,7 @@ export interface SendPayload {
   parentMessageId?: number;
   parentMessageUserId?: string;
   file?: FileUploadResult;
+  optimisticId?: string;
 }
 
 export interface MediaPayload {
@@ -124,7 +125,7 @@ export function* send(action) {
   );
 
   yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
+  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticMessage.id);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -165,9 +166,9 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
   }
 }
 
-export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages) {
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticId) {
   try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
   } catch (e) {
     yield call(messageSendFailed, channelId, existingMessages);
   }

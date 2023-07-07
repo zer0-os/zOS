@@ -25,7 +25,15 @@ describe(send, () => {
       .next({ existingMessages: [{ id: 'existing-id' }], optimisticMessage: { id: 'optimistic-message-id' } })
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .spawn(performSend, channelId, message, mentionedUserIds, parentMessage, [{ id: 'existing-id' }])
+      .spawn(
+        performSend,
+        channelId,
+        message,
+        mentionedUserIds,
+        parentMessage,
+        [{ id: 'existing-id' }],
+        'optimistic-message-id'
+      )
       .next()
       .isDone();
   });
@@ -95,17 +103,35 @@ describe(performSend, () => {
     const parentMessage = { id: 'parent' };
     const existingMessages = [{ id: 'existing' }];
 
-    await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages)
+    await expectSaga(
+      performSend,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      existingMessages,
+      'optimistic-id'
+    )
       .provide(successResponses())
-      .call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage)
+      .call.like({
+        fn: sendMessagesByChannelId,
+        args: [
+          channelId,
+          message,
+          mentionedUserIds,
+          parentMessage,
+          null,
+          'optimistic-id',
+        ],
+      })
       .run();
   });
 
-  it('sends the message via the api', async () => {
+  it('handles send failure', async () => {
     const channelId = 'channel-id';
     const existingMessages = [{ id: 'existing' }];
 
-    await expectSaga(performSend, channelId, '', [], {}, existingMessages)
+    await expectSaga(performSend, channelId, '', [], {}, existingMessages, '')
       .provide([
         stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('simulated error'))),
         stubResponse(matchers.call.fn(messageSendFailed), null),

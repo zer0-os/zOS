@@ -70,7 +70,7 @@ const rawMessagesSelector = (channelId) => (state) => {
 };
 
 const messageSelector = (messageId) => (state) => {
-  return getDeepProperty(state, `normalized.messages[${messageId}]`, []);
+  return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
 const rawLastMessageSelector = (channelId) => (state) => {
@@ -356,27 +356,17 @@ export function* receiveNewMessage(action) {
     message = { ...message, preview };
   }
 
-  let messages = [];
-  if (cachedMessageIds.length) {
-    messages = [
-      ...currentMessages,
-    ];
-
-    cachedMessageIds.forEach((id, index, object) => {
-      messages = messages.map((messageId) => {
-        if (messageId === id && message.message && !message.image) {
-          object.splice(index, 1);
-          return message;
-        } else {
-          return messageId;
-        }
-      });
-    });
-  } else {
-    messages = [
-      ...currentMessages,
-      message,
-    ];
+  let messages = [
+    ...currentMessages,
+    message,
+  ];
+  if (message.optimisticId) {
+    const optimisticMessage = yield select(messageSelector(message.optimisticId));
+    const messageIndex = messages.findIndex((id) => id === message.optimisticId);
+    if (messageIndex >= 0 && optimisticMessage) {
+      messages[messageIndex] = message;
+      messages.pop(); // Remove the previously added message
+    }
   }
 
   const updatedChannel: Partial<Channel> = { id: channelId, messages, messageIdsCache: cachedMessageIds };

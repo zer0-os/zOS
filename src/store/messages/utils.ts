@@ -19,10 +19,12 @@ export function createOptimisticMessageObject(
   user: User,
   parentMessage: ParentMessage = null
 ): Message {
+  const id = uuidv4();
   return {
     createdAt: Date.now(),
     hidePreview: false,
-    id: uuidv4(),
+    id,
+    optimisticId: id,
     mentionedUserIds: [],
     message: messageText,
     isAdmin: false,

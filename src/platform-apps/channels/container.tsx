@@ -70,9 +70,8 @@ export class Container extends React.Component<Properties> {
 
     if (domainId) {
       this.props.fetchChannels(domainId);
+      this.setActiveChannelId();
     }
-
-    this.setActiveChannelId();
   }
 
   componentWillUnmount(): void {

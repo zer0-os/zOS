@@ -90,6 +90,7 @@ export class Container extends React.Component<Properties> {
     }
 
     // to handle the case when you switch between apps (eg.Chat -> Trade -> Chat)
+    // or when you're switching between channels (channel1 -> channel2)
     if (prevProps.channelId !== this.props.channelId) {
       this.setActiveChannelId();
     }

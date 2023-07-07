@@ -390,6 +390,7 @@ export class MessageInput extends React.Component<Properties, State> {
             </div>
           </div>
         </div>
+
         <div className='message-input__icon-outer'>
           <div className='message-input__icon-wrapper'>
             <IconButton

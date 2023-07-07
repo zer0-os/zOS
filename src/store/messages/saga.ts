@@ -87,7 +87,7 @@ const getCachedMessageIds = (channelId) => (state) => {
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
-export const rawIsChannel = (channelId) => (state) =>
+export const _isChannel = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
@@ -122,7 +122,7 @@ export function* fetch(action) {
 
   // Publish a system message across the channel
   const channel = yield call(conversationsChannel);
-  const isChannel = yield select(rawIsChannel(channelId));
+  const isChannel = yield select(_isChannel(channelId));
   yield put(channel, {
     type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
     channelId,
@@ -403,13 +403,12 @@ export function* receiveNewMessage(action) {
   yield put(receive(updatedChannel));
   yield spawn(sendBrowserNotification, channelId, message);
 
-  const isChannel = yield select(rawIsChannel(channelId));
+  const isChannel = yield select(_isChannel(channelId));
   const markAllAsReadAction = isChannel
     ? markAllMessagesAsReadInCurrentChannel
     : markAllMessagesAsReadInCurrentConversation;
 
   yield call(markAllAsReadAction);
-
 }
 
 export function* receiveUpdateMessage(action) {

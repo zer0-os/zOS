@@ -26,6 +26,10 @@ export function* joinChannel(action) {
 }
 
 export function* markAllMessagesAsRead(channelId, userId) {
+  if (!userId) {
+    return;
+  }
+
   const status = yield call(markAllMessagesAsReadAPI, channelId, userId);
 
   if (status === 200) {

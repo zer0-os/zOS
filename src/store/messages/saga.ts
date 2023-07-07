@@ -76,10 +76,6 @@ const messageSelector = (messageId) => (state) => {
 const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
-const getCachedMessageIds = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdsCache`, []);
-};
-
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
@@ -129,18 +125,10 @@ export function* send(action) {
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
-  // cloning the array to be able to push new cache id
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
-
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
   const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage);
-
-  // add cache message id to prevent having double messages when we receive the message from sendbird.
-  // We should set a reference id and post that to the server to be able to match the message when it
-  // comes back around. Set the metadata on the message.
-  cachedMessageIds.push(temporaryMessage.id);
 
   yield put(
     receive({
@@ -151,7 +139,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
       ],
       lastMessage: temporaryMessage,
       lastMessageCreatedAt: temporaryMessage.createdAt,
-      messageIdsCache: cachedMessageIds,
     })
   );
 
@@ -349,7 +336,6 @@ export function* receiveNewMessage(action) {
     return;
   }
 
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const preview = yield call(getPreview, message.message);
 
   if (preview) {
@@ -369,7 +355,7 @@ export function* receiveNewMessage(action) {
     }
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages, messageIdsCache: cachedMessageIds };
+  const updatedChannel: Partial<Channel> = { id: channelId, messages };
   if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
     updatedChannel.lastMessage = message;
     updatedChannel.lastMessageCreatedAt = message.createdAt;

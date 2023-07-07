@@ -36,7 +36,6 @@ export interface Channel {
   hasJoined?: boolean;
   groupChannelType: GroupChannelType;
   icon?: string;
-  messageIdsCache?: string[];
   isChannel: boolean;
   hasLoadedMessages: boolean;
 }

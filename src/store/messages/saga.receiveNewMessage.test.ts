@@ -8,7 +8,7 @@ import { RootState, rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
-import { markConversationAsReadIfActive } from '../channels/saga';
+import { markChannelAsReadIfActive, markConversationAsReadIfActive } from '../channels/saga';
 
 describe(receiveNewMessage, () => {
   it('adds the message to the channel', async () => {
@@ -121,6 +121,24 @@ describe(receiveNewMessage, () => {
       .provide(successResponses())
       .withReducer(rootReducer, existingChannelState({ id: 'channel-id' }))
       .spawn(sendBrowserNotification, 'channel-id', message)
+      .run();
+  });
+
+  it('calls markAsReadAction when new message is received', async () => {
+    const message = { id: 'message-id', message: '' };
+
+    // channel
+    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, existingChannelState({ id: 'channel-id', isChannel: true }))
+      .call(markChannelAsReadIfActive, 'channel-id')
+      .run();
+
+    // conversation
+    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, existingChannelState({ id: 'channel-id', isChannel: false }))
+      .call(markConversationAsReadIfActive, 'channel-id')
       .run();
   });
 

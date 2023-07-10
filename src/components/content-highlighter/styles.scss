@@ -1,3 +1,4 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
 @use '../../shared-components/theme-engine/theme' as themeDeprecated;
 
 .content-highlighter {
@@ -9,5 +10,13 @@
     margin-bottom: 0.8px;
     margin-top: 0.8px;
     display: inline-block;
+
+    &[data-variant='negative'] {
+      background-color: unset;
+      color: theme.$color-greyscale-11;
+      padding: 0;
+      border-radius: unset;
+      margin: 0;
+    }
   }
 }

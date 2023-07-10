@@ -33,7 +33,7 @@ export function* saga() {
   }
 
   if (featureFlags.allowPublicZOS) {
-    yield initializePublicLayout();
+    yield call(initializePublicLayout);
     return;
   }
 

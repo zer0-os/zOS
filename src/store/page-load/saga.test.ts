@@ -13,10 +13,9 @@ jest.mock('../../config', () => ({
   },
 }));
 
+const featureFlags = { allowPublicZOS: false };
 jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: {
-    allowPublicZOS: false,
-  },
+  featureFlags: featureFlags,
 }));
 
 class StubHistory {
@@ -89,6 +88,23 @@ describe('page-load saga', () => {
 
     expect(storeState.pageload.isComplete).toBe(true);
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/login' });
+  });
+
+  it('initializes public layout if user is not present but feature flag is enabled', async () => {
+    const initialState = {
+      pageload: { isComplete: false },
+    };
+
+    const history = new StubHistory('/0.wilder/nfts');
+    featureFlags.allowPublicZOS = true;
+    const { storeState } = await expectSaga(saga)
+      .provide(stubResponses(history, false))
+      .withReducer(rootReducer, initialState as any)
+      .call(initializePublicLayout)
+      .run();
+
+    expect(storeState.pageload.isComplete).toBe(true);
+    expect(history.replace).not.toHaveBeenCalledWith({ pathname: '/login' });
   });
 });
 

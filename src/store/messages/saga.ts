@@ -125,15 +125,10 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
 
-  const { existingMessages, optimisticMessage } = yield call(
-    createOptimisticMessage,
-    channelId,
-    message,
-    parentMessage
-  );
+  const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
 
   yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticMessage.id);
+  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -154,7 +149,7 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
     })
   );
 
-  return { existingMessages, optimisticMessage: temporaryMessage };
+  return { optimisticMessage: temporaryMessage };
 }
 
 export function* createOptimisticPreview(channelId: string, optimisticMessage) {
@@ -165,27 +160,27 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
   }
 }
 
-export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticId) {
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
     yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
   } catch (e) {
-    yield call(messageSendFailed, channelId, existingMessages);
+    yield call(messageSendFailed, channelId, optimisticId);
   }
 }
 
-export function* messageSendFailed(channelId, existingMessages) {
-  // Race condition here. What if we received a new message in the mean time?
-  // We don't currently denormalize the lastMessage in the channel so we have to set
-  // the full message and not just the id.
-  const previousLastMessage = yield select((state) =>
-    denormalize(existingMessages[existingMessages.length - 1], state)
+export function* messageSendFailed(channelId, optimisticId) {
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  const messagesWithoutFailed = existingMessageIds.filter((id) => id !== optimisticId);
+  const lastMessage = yield select((state) =>
+    denormalize(messagesWithoutFailed[messagesWithoutFailed.length - 1], state)
   );
+
   yield put(
     receive({
       id: channelId,
-      messages: [...existingMessages],
-      lastMessage: previousLastMessage,
-      lastMessageCreatedAt: previousLastMessage.createdAt,
+      messages: messagesWithoutFailed,
+      lastMessage: lastMessage,
+      lastMessageCreatedAt: lastMessage.createdAt,
     })
   );
 }

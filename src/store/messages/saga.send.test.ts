@@ -22,18 +22,10 @@ describe(send, () => {
     testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .next()
       .call(createOptimisticMessage, channelId, message, parentMessage)
-      .next({ existingMessages: [{ id: 'existing-id' }], optimisticMessage: { id: 'optimistic-message-id' } })
+      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .spawn(
-        performSend,
-        channelId,
-        message,
-        mentionedUserIds,
-        parentMessage,
-        [{ id: 'existing-id' }],
-        'optimistic-message-id'
-      )
+      .spawn(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
       .next()
       .isDone();
   });
@@ -53,24 +45,6 @@ describe(createOptimisticMessage, () => {
     expect(channel.messages[0].id).not.toBeNull();
     expect(channel.messages[0].sender).not.toBeNull();
     expect(returnValue.optimisticMessage).toEqual(expect.objectContaining({ message: 'test message' }));
-  });
-
-  it('returns the initial set of messages', async () => {
-    const channelId = 'channel-id';
-    const existingMessages = [
-      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-    ];
-
-    const initialState = {
-      ...existingChannelState({ id: channelId, messages: existingMessages }),
-      ...defaultState(),
-    };
-
-    const { returnValue } = await expectSaga(createOptimisticMessage, channelId, 'failed message', undefined)
-      .withReducer(rootReducer, initialState)
-      .run();
-
-    expect(returnValue.existingMessages).toEqual(existingMessages.map((m) => m.id));
   });
 });
 
@@ -101,17 +75,8 @@ describe(performSend, () => {
       'user-id2',
     ];
     const parentMessage = { id: 'parent' };
-    const existingMessages = [{ id: 'existing' }];
 
-    await expectSaga(
-      performSend,
-      channelId,
-      message,
-      mentionedUserIds,
-      parentMessage,
-      existingMessages,
-      'optimistic-id'
-    )
+    await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-id')
       .provide(successResponses())
       .call.like({
         fn: sendMessagesByChannelId,
@@ -129,20 +94,20 @@ describe(performSend, () => {
 
   it('handles send failure', async () => {
     const channelId = 'channel-id';
-    const existingMessages = [{ id: 'existing' }];
+    const optimisticId = 'optimistic-id';
 
-    await expectSaga(performSend, channelId, '', [], {}, existingMessages, '')
+    await expectSaga(performSend, channelId, '', [], {}, optimisticId)
       .provide([
         stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('simulated error'))),
         stubResponse(matchers.call.fn(messageSendFailed), null),
       ])
-      .call(messageSendFailed, channelId, existingMessages)
+      .call(messageSendFailed, channelId, optimisticId)
       .run();
   });
 });
 
 describe(messageSendFailed, () => {
-  it('resets the existing messages if the send call fails', async () => {
+  it('resets the existing messages', async () => {
     const channelId = 'channel-id';
     const existingMessages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
@@ -157,7 +122,7 @@ describe(messageSendFailed, () => {
       ...defaultState(),
     };
 
-    const { storeState } = await expectSaga(messageSendFailed, channelId, existingMessages)
+    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
       .withReducer(rootReducer, initialState)
       .run();
 
@@ -165,13 +130,15 @@ describe(messageSendFailed, () => {
     expect(channel.messages).toStrictEqual(existingMessages);
   });
 
-  it('resets the lastMessage information if the send call fails', async () => {
+  it('resets the lastMessage information if the optimistic message was latest', async () => {
     const channelId = 'channel-id';
-    const existingMessages = [
-      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-    ];
+    const message1 = { id: 'message 1', message: 'message_0001', createdAt: 10000000007 };
     const optimisticChannel = {
       id: channelId,
+      messages: [
+        message1,
+        { id: 'optimistic' },
+      ],
       lastMessage: { id: 'optimistic' },
       lastMessageCreatedAt: 10000000010,
     };
@@ -181,13 +148,40 @@ describe(messageSendFailed, () => {
       ...defaultState(),
     };
 
-    const { storeState } = await expectSaga(messageSendFailed, channelId, existingMessages)
+    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toEqual(expect.objectContaining(existingMessages[0]));
-    expect(channel.lastMessageCreatedAt).toStrictEqual(existingMessages[0].createdAt);
+    expect(channel.lastMessage).toEqual(expect.objectContaining(message1));
+    expect(channel.lastMessageCreatedAt).toStrictEqual(message1.createdAt);
+  });
+
+  it('does not reset the lastMessage information if another message came after', async () => {
+    const channelId = 'channel-id';
+    const messageLater = { id: 'message after', message: 'message_0001', createdAt: 10000000015 };
+    const optimisticChannel = {
+      id: channelId,
+      messages: [
+        { id: 'optimistic', createdAt: 10000000010 },
+        messageLater,
+      ],
+      lastMessage: messageLater,
+      lastMessageCreatedAt: messageLater.createdAt,
+    };
+
+    const initialState = {
+      ...existingChannelState(optimisticChannel),
+      ...defaultState(),
+    };
+
+    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.lastMessage).toEqual(expect.objectContaining(messageLater));
+    expect(channel.lastMessageCreatedAt).toStrictEqual(messageLater.createdAt);
   });
 });
 

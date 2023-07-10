@@ -90,6 +90,7 @@ function extractMessageData(jsonData, isMediaMessage) {
   let hidePreview = false;
   let media;
   let admin;
+  let optimisticId = '';
 
   try {
     const data = jsonData ? JSON.parse(jsonData) : {};
@@ -101,9 +102,17 @@ function extractMessageData(jsonData, isMediaMessage) {
     mentionedUsers = data.mentionedUsers || [];
     hidePreview = data.hidePreview || false;
     admin = data.admin || {};
+    optimisticId = data.optimisticId || '';
   } catch (e) {}
 
-  return { mentionedUsers, hidePreview, media, image: media?.type === 'image' ? media : undefined, admin };
+  return {
+    mentionedUsers,
+    hidePreview,
+    media,
+    image: media?.type === 'image' ? media : undefined,
+    admin,
+    optimisticId,
+  };
 }
 
 export function map(sendbirdMessage) {

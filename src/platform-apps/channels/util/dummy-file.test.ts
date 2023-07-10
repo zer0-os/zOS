@@ -52,14 +52,15 @@ export const Fizzbuzz = (
 };
 
 ///
+const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
 
 export const FizzbuzzNew = (
   inputNumber: number,
   fizz: { word: string; factor: number; logic: boolean },
   buzz: { word: string; factor: number; logic: boolean }
 ) => {
-  let isFizz = inputNumber % fizz.factor === 0;
-  let isBuzz = inputNumber % buzz.factor === 0;
+  let isFizz = isDivisibleBy(inputNumber, fizz.factor);
+  let isBuzz = isDivisibleBy(inputNumber, buzz.factor);
 
   const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
   const isInbetween18or28 = inputNumber > 18 && inputNumber < 28;

@@ -135,15 +135,69 @@ describe('ConversationItem', () => {
   });
 
   it('renders the message preview', function () {
+    const messagePreview = 'I said something here';
+
     const wrapper = subject({
+      myUserId: 'id',
       conversation: {
-        messagePreview: 'I said something here',
+        messagePreview,
         otherMembers: [],
-        lastMessage: { sender: { userId: 'id' } },
+        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' } },
       } as any,
     });
 
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('I said something here');
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(`You: ${messagePreview}`);
+  });
+
+  it('displays "You" when the last message sender is the user', function () {
+    const conversation: any = {
+      messagePreview: 'Hello there',
+      lastMessage: { sender: { userId: 'my-user-id', firstName: 'John' } },
+      otherMembers: [],
+    };
+
+    const wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Hello there');
+  });
+
+  it('displays the senders name when the last message sender is not the user', function () {
+    const conversation: any = {
+      messagePreview: 'Hello there',
+      lastMessage: { sender: { userId: 'other-user-id', firstName: 'Steve' } },
+      otherMembers: [],
+    };
+
+    const wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: Hello there');
+  });
+
+  it('displays only messagePreview when lastMessage.admin has data', function () {
+    const conversation: any = {
+      messagePreview: 'Admin Message',
+      lastMessage: {
+        admin: {
+          type: 'AdminMessageType',
+          inviterId: 'some-id',
+        },
+        sender: { userId: 'other-user-id', firstName: 'Steve' },
+      },
+      otherMembers: [],
+    };
+
+    const wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Admin Message');
   });
 
   it('renders a text if i sent/received a media message', function () {

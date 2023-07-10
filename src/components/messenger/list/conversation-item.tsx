@@ -107,7 +107,13 @@ export class ConversationItem extends React.Component<Properties> {
 
     const { messagePreview, lastMessage } = this.props.conversation;
     if (messagePreview) {
-      return messagePreview;
+      const isAdminMessage = lastMessage?.admin && Object.keys(lastMessage.admin).length > 0;
+      if (isAdminMessage) return messagePreview;
+
+      const isUserLastMessageSender = lastMessage?.sender?.userId === this.props.myUserId;
+      const lastSenderDisplayName = isUserLastMessageSender ? 'You' : lastMessage.sender.firstName;
+
+      return `${lastSenderDisplayName}: ${messagePreview}`;
     }
 
     const str = this.isLastMessageSentOrReceived(this.props.conversation.lastMessage);

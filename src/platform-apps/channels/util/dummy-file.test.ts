@@ -46,26 +46,20 @@ export const Fizzbuzz = (
   buzzLogic: boolean = false
 ) => {
   const fizz = { word: fizzWord, factor: fizzNumber, logic: fizzLogic };
+  const buzz = { word: buzzWord, factor: buzzNumber, logic: buzzLogic };
 
-  return FizzbuzzNew(inputNumber, buzzNumber, buzzWord, buzzLogic, fizz);
+  return FizzbuzzNew(inputNumber, fizz, buzz);
 };
 
 ///
 
 export const FizzbuzzNew = (
   inputNumber: number,
-
-  // fizz: {number: number, word: string, logic: boolean },
-  // buzz: {number: number, word: string, logic: boolean },
-
-  buzzNumber: number = 5,
-  buzzWord: string = 'Buzz',
-  buzzLogic: boolean = false,
-
-  fizz: { word: string; factor: number; logic: boolean }
+  fizz: { word: string; factor: number; logic: boolean },
+  buzz: { word: string; factor: number; logic: boolean }
 ) => {
   let isFizz = inputNumber % fizz.factor === 0;
-  let isBuzz = inputNumber % buzzNumber === 0;
+  let isBuzz = inputNumber % buzz.factor === 0;
 
   const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
   const isInbetween18or28 = inputNumber > 18 && inputNumber < 28;
@@ -74,14 +68,14 @@ export const FizzbuzzNew = (
     isFizz = isInbetween10or20;
   }
 
-  if (buzzLogic) {
+  if (buzz.logic) {
     isBuzz = isInbetween18or28;
   }
 
   if (isFizz && isBuzz) {
-    return `${fizz.word}${buzzWord}`;
+    return `${fizz.word}${buzz.word}`;
   } else if (isBuzz) {
-    return buzzWord;
+    return buzz.word;
   } else if (isFizz) {
     return fizz.word;
   }

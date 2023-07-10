@@ -1,4 +1,4 @@
-import { put } from 'redux-saga/effects';
+import { call, put } from 'redux-saga/effects';
 import { setIsComplete } from '.';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
@@ -12,9 +12,9 @@ const anonymousPaths = [
 ];
 
 export function* saga() {
-  const history = getHistory();
+  const history = yield call(getHistory);
 
-  const success = yield getCurrentUserWithChatAccessToken();
+  const success = yield call(getCurrentUserWithChatAccessToken);
   if (success) {
     // if you have a current user but they still hit login/sign-up,
     // we should redirect to index page in that case

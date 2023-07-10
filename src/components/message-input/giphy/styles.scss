@@ -9,6 +9,7 @@
   padding: 5px;
   border-radius: 5px;
   border: 1px solid themeDeprecated.$input-arrow-color;
+  z-index: 12;
 
   &--fullscreen {
     right: 65px;

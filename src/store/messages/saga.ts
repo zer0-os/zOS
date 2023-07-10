@@ -15,7 +15,7 @@ import {
   getLinkPreviews,
   uploadAttachment,
 } from './api';
-import { FileType, extractLink, getFileType, linkifyType, messageFactory } from './utils';
+import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -58,6 +58,7 @@ export interface SendPayload {
   parentMessageId?: number;
   parentMessageUserId?: string;
   file?: FileUploadResult;
+  optimisticId?: string;
 }
 
 export interface MediaPayload {
@@ -70,16 +71,12 @@ const rawMessagesSelector = (channelId) => (state) => {
 };
 
 const messageSelector = (messageId) => (state) => {
-  return getDeepProperty(state, `normalized.messages[${messageId}]`, []);
+  return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
 const rawLastMessageSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
 };
-const getCachedMessageIds = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdsCache`, []);
-};
-
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
@@ -136,22 +133,14 @@ export function* send(action) {
   );
 
   yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages);
+  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticMessage.id);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
-  // cloning the array to be able to push new cache id
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
-
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = messageFactory(message, currentUser, parentMessage);
-
-  // add cache message id to prevent having double messages when we receive the message from sendbird.
-  // We should set a reference id and post that to the server to be able to match the message when it
-  // comes back around. Set the metadata on the message.
-  cachedMessageIds.push(temporaryMessage.id);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage);
 
   yield put(
     receive({
@@ -162,7 +151,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
       ],
       lastMessage: temporaryMessage,
       lastMessageCreatedAt: temporaryMessage.createdAt,
-      messageIdsCache: cachedMessageIds,
     })
   );
 
@@ -177,9 +165,9 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
   }
 }
 
-export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages) {
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticId) {
   try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
+    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
   } catch (e) {
     yield call(messageSendFailed, channelId, existingMessages);
   }
@@ -360,37 +348,26 @@ export function* receiveNewMessage(action) {
     return;
   }
 
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
   const preview = yield call(getPreview, message.message);
 
   if (preview) {
     message = { ...message, preview };
   }
 
-  let messages = [];
-  if (cachedMessageIds.length) {
-    messages = [
-      ...currentMessages,
-    ];
-
-    cachedMessageIds.forEach((id, index, object) => {
-      messages = messages.map((messageId) => {
-        if (messageId === id && message.message && !message.image) {
-          object.splice(index, 1);
-          return message;
-        } else {
-          return messageId;
-        }
-      });
-    });
-  } else {
-    messages = [
-      ...currentMessages,
-      message,
-    ];
+  let messages = [
+    ...currentMessages,
+    message,
+  ];
+  if (message.optimisticId) {
+    const optimisticMessage = yield select(messageSelector(message.optimisticId));
+    const messageIndex = messages.findIndex((id) => id === message.optimisticId);
+    if (messageIndex >= 0 && optimisticMessage) {
+      messages[messageIndex] = message;
+      messages.pop(); // Remove the previously added message
+    }
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages, messageIdsCache: cachedMessageIds };
+  const updatedChannel: Partial<Channel> = { id: channelId, messages };
   if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
     updatedChannel.lastMessage = message;
     updatedChannel.lastMessageCreatedAt = message.createdAt;

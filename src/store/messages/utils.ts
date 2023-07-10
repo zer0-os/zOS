@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Message } from './index';
 import { User } from './../authentication/types';
 import * as linkifyjs from 'linkifyjs';
@@ -12,11 +14,17 @@ export interface linkifyType {
   end: number;
 }
 
-export function messageFactory(messageText: string, user: User, parentMessage: ParentMessage = null): Message {
+export function createOptimisticMessageObject(
+  messageText: string,
+  user: User,
+  parentMessage: ParentMessage = null
+): Message {
+  const id = uuidv4();
   return {
     createdAt: Date.now(),
     hidePreview: false,
-    id: Date.now(),
+    id,
+    optimisticId: id,
     mentionedUserIds: [],
     message: messageText,
     isAdmin: false,

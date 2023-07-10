@@ -121,27 +121,29 @@ describe('sendbird events', () => {
 
       const mappedMessage = mapMessage(rawSendbirdResponse);
 
-      expect(mappedMessage).toStrictEqual({
-        id: 8728123760,
-        message: 'test mention @[0xE883...5870 ](user:9bf99cf6-559e-46e8-ba73-07faed8747ac) with image',
-        parentMessageText: 'hi @[0xE883...5870 ](user:9bf99cf6-559e-46e8-ba73-07faed8747ac) ',
-        createdAt: 1680691559605,
-        updatedAt: 0,
-        sender: {
-          userId: '1bc08a9b-6f5b-497f-9d0b-3cf47abe426a',
-          firstName: '0x03D3...d161',
-          lastName: '',
-          profileImage:
-            'https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021589/zero-assets/avatars/pfp-16.jpg',
-          profileId: 'b52d1815-97db-45a7-8477-5b976e9eedde',
-        },
-        mentionedUsers: [],
-        hidePreview: false,
-        image: undefined,
-        media: undefined,
-        isAdmin: false,
-        admin: {},
-      });
+      expect(mappedMessage).toEqual(
+        expect.objectContaining({
+          id: 8728123760,
+          message: 'test mention @[0xE883...5870 ](user:9bf99cf6-559e-46e8-ba73-07faed8747ac) with image',
+          parentMessageText: 'hi @[0xE883...5870 ](user:9bf99cf6-559e-46e8-ba73-07faed8747ac) ',
+          createdAt: 1680691559605,
+          updatedAt: 0,
+          sender: {
+            userId: '1bc08a9b-6f5b-497f-9d0b-3cf47abe426a',
+            firstName: '0x03D3...d161',
+            lastName: '',
+            profileImage:
+              'https://res.cloudinary.com/fact0ry-dev/image/upload/v1623021589/zero-assets/avatars/pfp-16.jpg',
+            profileId: 'b52d1815-97db-45a7-8477-5b976e9eedde',
+          },
+          mentionedUsers: [],
+          hidePreview: false,
+          image: undefined,
+          media: undefined,
+          isAdmin: false,
+          admin: {},
+        })
+      );
     });
 
     it('maps an admin message', () => {

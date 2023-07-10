@@ -13,7 +13,7 @@ import { markConversationAsReadIfActive } from '../channels/saga';
 describe(receiveNewMessage, () => {
   it('adds the message to the channel', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'a new message' };
+    const message = { id: 'new-message', message: 'a new message', optimisticId: 'other-front-end-id' };
     const existingMessages = [{ id: 'message-1', message: 'message_0001' }];
 
     const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
@@ -126,16 +126,19 @@ describe(receiveNewMessage, () => {
 
   it('replaces optimistically rendered message', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'system-provided-id', message: 'true message for asserting. normally would not change.' };
+    const message = {
+      id: 'system-provided-id',
+      message: 'test message for asserting. normally would not change.',
+      optimisticId: 'optimistic-id',
+    };
     const existingMessages = [
-      { id: 'optimistic-id', message: 'optimistic' },
+      { id: 'optimistic-id', message: 'optimistic', optimisticId: 'optimistic-id' },
       { id: 'standard-id', message: 'message_0001' },
     ];
 
     const initialState = existingChannelState({
       id: channelId,
       messages: existingMessages,
-      messageIdsCache: ['optimistic-id'],
     });
 
     const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
@@ -145,29 +148,22 @@ describe(receiveNewMessage, () => {
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].id).toEqual('system-provided-id');
-    expect(channel.messages[0].message).toEqual('true message for asserting. normally would not change.');
+    expect(channel.messages[0].message).toEqual('test message for asserting. normally would not change.');
     expect(channel.messages[1].id).toEqual('standard-id');
-    expect(channel.messageIdsCache).toEqual([]);
   });
 
-  it('replaces first found optimistically rendered message even if more messages have been sent', async () => {
-    // Note: This is a bug. We should replace exactly the message we rendered optimistically.
-    // For now, this tests current behavior. Fixes to come.
+  it('replaces the correct optimistic message if multiple have been sent', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'system-provided-id', message: 'true message for asserting. normally would not change.' };
+    const message = { id: 'system-provided-id', optimisticId: 'optimistic-id-2' };
     const existingMessages = [
-      { id: 'optimistic-id-1', message: 'optimistic1' },
-      { id: 'optimistic-id-2', message: 'optimistic2' },
+      { id: 'optimistic-id-1', message: 'optimistic1', optimisticId: 'optimistic-id-1' },
+      { id: 'optimistic-id-2', message: 'optimistic2', optimisticId: 'optimistic-id-2' },
       { id: 'standard-id', message: 'message_0001' },
     ];
 
     const initialState = existingChannelState({
       id: channelId,
       messages: existingMessages,
-      messageIdsCache: [
-        'optimistic-id-1',
-        'optimistic-id-2',
-      ],
     });
 
     const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
@@ -176,8 +172,8 @@ describe(receiveNewMessage, () => {
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('system-provided-id');
-    expect(channel.messageIdsCache).toEqual(['optimistic-id-2']);
+    expect(channel.messages[0].id).toEqual('optimistic-id-1');
+    expect(channel.messages[1].id).toEqual('system-provided-id');
   });
 });
 

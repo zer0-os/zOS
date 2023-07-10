@@ -8,6 +8,7 @@ import * as linkifyjs from 'linkifyjs';
 export interface Properties {
   message: string;
   mentionedUserIds?: any[];
+  variant?: 'primary' | 'negative';
 }
 
 export class ContentHighlighter extends React.Component<Properties> {
@@ -40,7 +41,11 @@ export class ContentHighlighter extends React.Component<Properties> {
           props.id = profileId;
         }
 
-        return <span {...props}>{mention}</span>;
+        return (
+          <span data-variant={this.props.variant} {...props}>
+            {mention}
+          </span>
+        );
       }
 
       return part;

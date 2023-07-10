@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { ViewModes } from '../../shared-components/theme-engine';
+import { ViewModes } from '../../../shared-components/theme-engine';
 import { EmojiPicker, Properties } from './emoji-picker';
 import { Picker } from 'emoji-mart';
 

@@ -1,8 +1,8 @@
 import React, { RefObject } from 'react';
-import { mentionsConfigs } from './mentions-config';
+import { mentionsConfigs } from '../mentions-config';
 import { Picker } from 'emoji-mart';
-import { ViewModes } from '../../shared-components/theme-engine';
-import { mapPlainTextIndex } from './react-mentions-utils';
+import { ViewModes } from '../../../shared-components/theme-engine';
+import { mapPlainTextIndex } from '../react-mentions-utils';
 
 import 'emoji-mart/css/emoji-mart.css';
 

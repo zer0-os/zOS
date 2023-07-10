@@ -8,6 +8,7 @@ describe('Giphy', () => {
     const allProps: Properties = {
       onClose: jest.fn(),
       onClickGif: jest.fn(),
+      isMessengerFullScreen: false,
       ...props,
     };
 

@@ -1,0 +1,54 @@
+@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
+
+.giphy__container {
+  width: 500px;
+  position: absolute;
+  bottom: 65px;
+  right: 74px;
+  background-color: themeDeprecated.$background-color-tertiary;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid themeDeprecated.$input-arrow-color;
+
+  &--fullscreen {
+    right: 65px;
+  }
+
+  &-grid {
+    height: 440px;
+    overflow-y: overlay;
+    margin-top: 5px;
+    .loader {
+      margin-top: 40px;
+      opacity: 1 !important;
+    }
+
+    .giphy-gif {
+      cursor: pointer;
+    }
+  }
+
+  &-search {
+    background-color: themeDeprecated.$input-background-primary-color !important;
+    border: 1px solid themeDeprecated.$input-arrow-color !important;
+    box-sizing: content-box;
+    padding-left: 5px;
+    border-radius: 5px !important;
+    height: 30px !important;
+
+    > div {
+      height: 32px !important;
+      width: 32px !important;
+      border-radius: 5px !important;
+      margin: -1px -1px 0 0 !important;
+    }
+
+    input {
+      font-size: 14px !important;
+      color: themeDeprecated.$font-color-primary !important;
+      line-height: 1.15 !important;
+      padding: 5px 25px 6px 10px !important;
+      background: none;
+    }
+  }
+}

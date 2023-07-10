@@ -1,15 +1,24 @@
 import React, { useContext } from 'react';
 import { Grid, SearchBar, SearchContext, SearchContextManager } from '@giphy/react-components';
-import { config } from '../../config';
+import { config } from '../../../config';
+
+import classNames from 'classnames';
+
+import './styles.scss';
 
 export interface ComponentProperties {
   onClickGif: Grid['props']['onGifClick'];
+  isMessengerFullScreen: boolean;
 }
 
-export const GiphyComponents = ({ onClickGif }: Properties) => {
+export const GiphyComponents = ({ onClickGif, isMessengerFullScreen }: Properties) => {
   const { fetchGifs, searchKey } = useContext(SearchContext);
   return (
-    <div className='giphy__container'>
+    <div
+      className={classNames('giphy__container', {
+        'giphy__container--fullscreen': isMessengerFullScreen,
+      })}
+    >
       <SearchBar className='giphy__container-search' autoFocus />
       <div className='giphy__container-grid'>
         <Grid

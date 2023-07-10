@@ -67,7 +67,7 @@ $scrollbar-width: 5px;
   flex-direction: column;
   height: 100vh;
 
-  .chat-message__input-wrapper {
+  .message-input {
     margin-right: calc(var(--layout-app-content-right-padding) + $scrollbar-width);
   }
 }

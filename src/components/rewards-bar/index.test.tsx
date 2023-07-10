@@ -46,13 +46,13 @@ describe('rewards-bar', () => {
   it('parses token number to renderable string', function () {
     const wrapper = subject({ zero: '9123456789111315168' });
     wrapper.find('.rewards-bar__rewards-button').simulate('click');
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.1234');
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.12');
 
     wrapper.setProps({ zero: '9123000000000000000' });
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.123');
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.12');
 
     wrapper.setProps({ zero: '23456789111315168' });
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0.0234');
+    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0.02');
 
     wrapper.setProps({ zero: '0' });
     expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0');

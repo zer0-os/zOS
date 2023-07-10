@@ -43,7 +43,7 @@ describe('page-load saga', () => {
       .run();
 
     // redirected from /login to /0.wilder.nfts
-    expect(history.replace).toHaveBeenCalledWith({ pathname: `/0.wilder/nfts` });
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
     expect(loginStoreState.pageload.isComplete).toBe(false);
 
     // signup
@@ -54,7 +54,7 @@ describe('page-load saga', () => {
       .run();
 
     // redirected from /get-access to /0.wilder.nfts
-    expect(history.replace).toHaveBeenCalledWith({ pathname: `/0.wilder/nfts` });
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
     expect(getAccessStoreState.pageload.isComplete).toBe(false);
   });
 

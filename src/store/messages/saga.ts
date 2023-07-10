@@ -162,7 +162,20 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
+    const result = yield call(
+      sendMessagesByChannelId,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      null,
+      optimisticId
+    );
+    const existingMessageIds = yield select(rawMessagesSelector(channelId));
+    const messages = yield call(replaceOptimisticMessage, existingMessageIds, result.body);
+    if (messages) {
+      yield put(receive({ id: channelId, messages: messages }));
+    }
   } catch (e) {
     yield call(messageSendFailed, channelId, optimisticId);
   }
@@ -349,20 +362,15 @@ export function* receiveNewMessage(action) {
     message = { ...message, preview };
   }
 
-  let messages = [
-    ...currentMessages,
-    message,
-  ];
-  if (message.optimisticId) {
-    const optimisticMessage = yield select(messageSelector(message.optimisticId));
-    const messageIndex = messages.findIndex((id) => id === message.optimisticId);
-    if (messageIndex >= 0 && optimisticMessage) {
-      messages[messageIndex] = message;
-      messages.pop(); // Remove the previously added message
-    }
+  let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+  if (!newMessages) {
+    newMessages = [
+      ...currentMessages,
+      message,
+    ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages };
+  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
   if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
     updatedChannel.lastMessage = message;
     updatedChannel.lastMessageCreatedAt = message.createdAt;
@@ -375,6 +383,25 @@ export function* receiveNewMessage(action) {
   const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
 
   yield call(markAllAsReadAction, channelId);
+}
+
+export function* replaceOptimisticMessage(currentMessages, message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+  const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+  if (messageIndex < 0) {
+    return null;
+  }
+
+  const optimisticMessage = yield select(messageSelector(message.optimisticId));
+  if (optimisticMessage) {
+    const messages = [...currentMessages];
+    messages[messageIndex] = message;
+    return messages;
+  }
+
+  return null;
 }
 
 export function* receiveUpdateMessage(action) {

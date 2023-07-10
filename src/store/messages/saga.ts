@@ -22,7 +22,6 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
-import { options } from 'linkifyjs';
 
 export interface Payload {
   channelId: string;
@@ -163,9 +162,20 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
-    // XXX: I am here next - just fix the data right here rather than wait for the real time event.
-    // XXX: then... I think.... we can pull the file sending into the send saga out of the component finally!
+    const result = yield call(
+      sendMessagesByChannelId,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      null,
+      optimisticId
+    );
+    const existingMessageIds = yield select(rawMessagesSelector(channelId));
+    const messages = yield call(replaceOptimisticMessage, existingMessageIds, result.body);
+    if (messages) {
+      yield put(receive({ id: channelId, messages: messages }));
+    }
   } catch (e) {
     yield call(messageSendFailed, channelId, optimisticId);
   }

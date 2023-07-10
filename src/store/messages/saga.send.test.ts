@@ -92,6 +92,37 @@ describe(performSend, () => {
       .run();
   });
 
+  it('replaces the optimistic message', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+
+    const initialState = {
+      ...existingChannelState({
+        id: channelId,
+        messages: [
+          { id: 'message-1' },
+          { id: 'optimistic-id' },
+        ],
+      }),
+    };
+
+    const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
+      .provide([
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), {
+          body: { id: 'new-id', optimisticId: 'optimistic-id' },
+        }),
+        ...successResponses(),
+      ])
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toEqual([
+      { id: 'message-1' },
+      { id: 'new-id', optimisticId: 'optimistic-id' },
+    ]);
+  });
+
   it('handles send failure', async () => {
     const channelId = 'channel-id';
     const optimisticId = 'optimistic-id';

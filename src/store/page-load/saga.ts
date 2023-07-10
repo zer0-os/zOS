@@ -23,6 +23,7 @@ export function* saga() {
         pathname: `/0.${config.defaultZnsRoute}/${config.defaultApp}`,
       });
     }
+    yield put(setIsComplete(true));
     return;
   }
 

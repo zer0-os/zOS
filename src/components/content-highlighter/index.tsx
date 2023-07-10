@@ -8,7 +8,7 @@ import * as linkifyjs from 'linkifyjs';
 export interface Properties {
   message: string;
   mentionedUserIds?: any[];
-  variant?: 'primary' | 'negative';
+  variant?: 'negative';
 }
 
 export class ContentHighlighter extends React.Component<Properties> {

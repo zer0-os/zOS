@@ -13,7 +13,6 @@ describe('ContentHighlighter', () => {
     const defaultProps: Properties = {
       message: '',
       mentionedUserIds: [],
-      variant: 'primary',
       ...props,
     };
     return shallow(<ContentHighlighter {...defaultProps} />);

@@ -22,6 +22,7 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
+import { options } from 'linkifyjs';
 
 export interface Payload {
   channelId: string;
@@ -163,6 +164,8 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
     yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
+    // XXX: I am here next - just fix the data right here rather than wait for the real time event.
+    // XXX: then... I think.... we can pull the file sending into the send saga out of the component finally!
   } catch (e) {
     yield call(messageSendFailed, channelId, optimisticId);
   }
@@ -349,20 +352,15 @@ export function* receiveNewMessage(action) {
     message = { ...message, preview };
   }
 
-  let messages = [
-    ...currentMessages,
-    message,
-  ];
-  if (message.optimisticId) {
-    const optimisticMessage = yield select(messageSelector(message.optimisticId));
-    const messageIndex = messages.findIndex((id) => id === message.optimisticId);
-    if (messageIndex >= 0 && optimisticMessage) {
-      messages[messageIndex] = message;
-      messages.pop(); // Remove the previously added message
-    }
+  let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+  if (!newMessages) {
+    newMessages = [
+      ...currentMessages,
+      message,
+    ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages };
+  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
   if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
     updatedChannel.lastMessage = message;
     updatedChannel.lastMessageCreatedAt = message.createdAt;
@@ -375,6 +373,25 @@ export function* receiveNewMessage(action) {
   const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
 
   yield call(markAllAsReadAction, channelId);
+}
+
+export function* replaceOptimisticMessage(currentMessages, message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+  const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+  if (messageIndex < 0) {
+    return null;
+  }
+
+  const optimisticMessage = yield select(messageSelector(message.optimisticId));
+  if (optimisticMessage) {
+    const messages = [...currentMessages];
+    messages[messageIndex] = message;
+    return messages;
+  }
+
+  return null;
 }
 
 export function* receiveUpdateMessage(action) {

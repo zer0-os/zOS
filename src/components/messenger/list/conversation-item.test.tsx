@@ -179,6 +179,27 @@ describe('ConversationItem', () => {
     expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: Hello there');
   });
 
+  it('displays only messagePreview when lastMessage.admin has data', function () {
+    const conversation: any = {
+      messagePreview: 'Admin Message',
+      lastMessage: {
+        admin: {
+          type: 'AdminMessageType',
+          inviterId: 'some-id',
+        },
+        sender: { userId: 'other-user-id', firstName: 'Steve' },
+      },
+      otherMembers: [],
+    };
+
+    const wrapper = subject({
+      conversation,
+      myUserId: 'my-user-id',
+    });
+
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Admin Message');
+  });
+
   it('renders a text if i sent/received a media message', function () {
     const conversation: any = {
       messagePreview: '',

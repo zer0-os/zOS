@@ -17,6 +17,10 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
   return response.body;
 }
 
+export async function sendFileMessage(channelId: string, file: FileUploadResult, optimisticId?: string): Promise<any> {
+  return sendMessagesByChannelId(channelId, null, null, null, file, optimisticId);
+}
+
 export async function sendMessagesByChannelId(
   channelId: string,
   message: string,

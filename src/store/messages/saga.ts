@@ -14,6 +14,7 @@ import {
   uploadFileMessage as uploadFileMessageApi,
   getLinkPreviews,
   uploadAttachment,
+  sendFileMessage,
 } from './api';
 import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
@@ -281,7 +282,7 @@ export function* uploadFileMessage(action) {
       messages.push(messagesResponse);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      const messagesResponse = yield call(sendMessagesByChannelId, channelId, null, null, null, uploadResponse);
+      const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
       messages.push(messagesResponse.body);
     }
   }
@@ -289,7 +290,7 @@ export function* uploadFileMessage(action) {
   for (const file of media.filter((i) => i.giphy)) {
     const original = file.giphy.images.original;
     const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messageResponse = yield call(sendMessagesByChannelId, channelId, null, null, null, giphyFile);
+    const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
     messages.push(messageResponse.body);
   }
 

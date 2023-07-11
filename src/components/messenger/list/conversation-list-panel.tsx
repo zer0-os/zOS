@@ -91,11 +91,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               placeholder='Search'
               value={this.state.filter}
             />
-            <Tooltip placement='left' overlay='Create Zero Message'>
-              <div className='messages-list__items-conversations-new'>
-                <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={24} />
-              </div>
-            </Tooltip>
+            <div className='messages-list__items-conversations-new'>
+              <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={24} />
+            </div>
           </div>
 
           <ScrollbarContainer variant='on-hover'>

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageGroupPosition } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
@@ -118,6 +118,13 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderTime(time): React.ReactElement {
+    if (
+      this.props.positionInGroup === MessageGroupPosition.Top ||
+      this.props.positionInGroup === MessageGroupPosition.Middle
+    ) {
+      return null;
+    }
+
     const createdTime = moment(time).format('h:mm A');
 
     return <div {...cn('time')}>{createdTime}</div>;
@@ -195,14 +202,32 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
+  // only render the name in the top message of a group
+  renderAuthorName = () => {
+    if (
+      this.props.positionInGroup === MessageGroupPosition.Middle ||
+      this.props.positionInGroup === MessageGroupPosition.Bottom
+    ) {
+      return null;
+    }
+
+    const { sender } = this.props;
+    return (
+      <div {...cn('author-name')}>
+        {sender.firstName} {sender.lastName}
+      </div>
+    );
+  };
+
   render() {
     const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
-
+    const positionInGroup = this.props.positionInGroup ?? '';
     return (
       <div
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
         })}
+        position-in-group={positionInGroup}
       >
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>
@@ -212,12 +237,10 @@ export class Message extends React.Component<Properties, State> {
             />
           </div>
         )}
-        <div {...cn('block', this.state.isFullWidth && 'fill')}>
+        <div {...cn('block', this.state.isFullWidth && 'fill')} position-in-group={positionInGroup}>
           {(message || media || preview) && (
             <>
-              <div {...cn('author-name')}>
-                {sender.firstName} {sender.lastName}
-              </div>
+              {this.renderAuthorName()}
               {!this.state.isEditing && (
                 <div {...cn('block-body')}>
                   {media && this.renderMedia(media)}

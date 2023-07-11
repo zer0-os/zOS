@@ -180,7 +180,11 @@ export class Container extends React.Component<Properties, State> {
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
     const { channelId } = this.props;
-    if (channelId && this.isNotEmpty(message)) {
+    if (!channelId) {
+      return;
+    }
+
+    if (this.isNotEmpty(message)) {
       let payloadSendMessage: PayloadSendMessage = { channelId, message, mentionedUserIds };
       if (this.state.reply) {
         payloadSendMessage.parentMessage = this.state.reply;
@@ -190,7 +194,7 @@ export class Container extends React.Component<Properties, State> {
       this.removeReply();
     }
 
-    if (channelId && media.length) {
+    if (media.length) {
       this.props.uploadFileMessage({ channelId, media });
     }
   };

@@ -143,7 +143,18 @@ describe('ChannelViewContainer', () => {
     });
   });
 
-  it('should call sendMessage when textearea is clicked', () => {
+  it('should not send message if there is no channel id', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+
+    const wrapper = subject({ sendMessage, channel: {} });
+
+    wrapper.find(ChatView).first().prop('sendMessage')(message, [], []);
+
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('should call sendMessage when chat view publishes message', () => {
     const sendMessage = jest.fn();
     const message = 'test message';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];

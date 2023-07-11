@@ -2,7 +2,7 @@ import React, { RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageGroupPosition } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
@@ -20,6 +20,7 @@ import { AdminMessageContainer } from '../admin-message/container';
 
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
+import { groupMessages } from './utils';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -126,8 +127,13 @@ export class ChatView extends React.Component<Properties, State> {
     return false;
   };
 
+  isUserOwnerOfMessage(message: MessageModel) {
+    // eslint-disable-next-line eqeqeq
+    return this.props.user && message.sender && this.props.user.id == message.sender.userId;
+  }
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
-    const allMessages = messagesByDay[day];
+    const allMessages = groupMessages(messagesByDay[day]);
 
     return (
       <div className='messages' key={day}>
@@ -141,17 +147,14 @@ export class ChatView extends React.Component<Properties, State> {
             const isLastFromUser =
               index === allMessages.length - 1 ||
               allMessages[index + 1].isAdmin ||
-              message.sender.userId !== allMessages[index + 1].sender.userId;
-
-            const isUserOwnerOfTheMessage =
-              // eslint-disable-next-line eqeqeq
-              this.props.user && message.sender && this.props.user.id == message.sender.userId;
+              message.sender.userId !== allMessages[index + 1].sender.userId ||
+              message.positionInGroup === MessageGroupPosition.Bottom;
 
             return (
               <div
                 key={message.id}
                 className={classNames('messages__message-row', {
-                  'messages__message-row--owner': isUserOwnerOfTheMessage,
+                  'messages__message-row--owner': this.isUserOwnerOfMessage(message),
                 })}
               >
                 <Message
@@ -161,7 +164,7 @@ export class ChatView extends React.Component<Properties, State> {
                   onImageClick={this.openLightbox}
                   messageId={message.id}
                   updatedAt={message.updatedAt}
-                  isOwner={isUserOwnerOfTheMessage}
+                  isOwner={this.isUserOwnerOfMessage(message)}
                   onDelete={this.props.deleteMessage}
                   onEdit={this.props.editMessage}
                   onReply={this.props.onReply}

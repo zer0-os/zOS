@@ -64,16 +64,24 @@ describe('ChatView', () => {
     expect(text).toStrictEqual('Welcome to #first channel');
   });
 
-  it('render a message for each message', () => {
+  it('render a message for each message with their positions', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
+    const positions = wrapper.find(Message).map((m) => m.prop('positionInGroup'));
 
     expect(ids).toIncludeAllMembers([
       1111,
       2222,
       3333,
       4444,
+    ]);
+
+    expect(positions).toStrictEqual([
+      undefined,
+      'top',
+      'middle',
+      'bottom',
     ]);
   });
 

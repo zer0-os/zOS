@@ -126,7 +126,6 @@ export class Message extends React.Component<Properties, State> {
     }
 
     const createdTime = moment(time).format('h:mm A');
-
     return <div {...cn('time')}>{createdTime}</div>;
   }
 

@@ -59,6 +59,7 @@ export interface SendPayload {
   parentMessageUserId?: string;
   file?: FileUploadResult;
   optimisticId?: string;
+  files?: MediaInfo[];
 }
 
 interface MediaInfo {
@@ -129,15 +130,18 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
-  if (message.trim() === '') {
-    return;
+  const { channelId, message, mentionedUserIds, parentMessage, files } = action.payload;
+
+  if (message?.trim()) {
+    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+
+    yield spawn(createOptimisticPreview, channelId, optimisticMessage);
+    yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
   }
 
-  const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
-
-  yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
+  if (files?.length) {
+    yield call(uploadFileMessage, { payload: { channelId, media: files } });
+  }
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -468,7 +472,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

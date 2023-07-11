@@ -81,7 +81,6 @@ export enum SagaActionTypes {
   EditMessage = 'messages/saga/editMessage',
   startMessageSync = 'messages/saga/startMessageSync',
   stopSyncChannels = 'messages/saga/stopSyncChannels',
-  uploadFileMessage = 'messages/saga/uploadFileMessage',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
@@ -90,7 +89,6 @@ const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
 const startMessageSync = createAction<Payload>(SagaActionTypes.startMessageSync);
 const stopSyncChannels = createAction<Payload>(SagaActionTypes.stopSyncChannels);
-const uploadFileMessage = createAction<MediaPayload>(SagaActionTypes.uploadFileMessage);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -98,4 +96,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, startMessageSync, stopSyncChannels, deleteMessage, editMessage, uploadFileMessage, removeAll };
+export { fetch, send, startMessageSync, stopSyncChannels, deleteMessage, editMessage, removeAll };

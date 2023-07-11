@@ -9,7 +9,6 @@ import { Main } from './Main';
 import { Apps } from './lib/apps';
 import { Create as CreateAccount } from './components/account/create';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
-import { ChatConnect } from './components/chat-connect/chat-connect';
 
 export interface Properties {
   setRoute: (routeApp: { route: string; hasAppChanged: boolean }) => void;
@@ -97,7 +96,6 @@ export class Container extends React.Component<Properties> {
       <>
         <CreateAccount />
         <AuthenticationContextProvider value={this.authenticationContext}>
-          <ChatConnect />
           <Main />
         </AuthenticationContextProvider>
       </>

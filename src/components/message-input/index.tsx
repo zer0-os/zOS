@@ -34,6 +34,7 @@ export interface Properties extends PublicPropertiesContainer {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
+  dropzoneToMedia?: (files: any[]) => Media[];
 }
 
 interface State {
@@ -121,7 +122,7 @@ export class MessageInput extends React.Component<Properties, State> {
 
   onSend = (): void => {
     const { mentionedUserIds, value, media } = this.state;
-    if (value) {
+    if (value || media.length) {
       this.props.onSubmit(value, mentionedUserIds, media);
       this.setState({ value: '', mentionedUserIds: [], media: [] });
     }
@@ -226,7 +227,9 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   imagesSelected = (acceptedFiles): void => {
-    const newImages: Media[] = dropzoneToMedia(acceptedFiles);
+    const newImages: Media[] = this.props.dropzoneToMedia
+      ? this.props.dropzoneToMedia(acceptedFiles)
+      : dropzoneToMedia(acceptedFiles);
     if (newImages.length) {
       this.mediaSelected(newImages);
     }

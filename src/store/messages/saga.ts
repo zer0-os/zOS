@@ -17,7 +17,6 @@ import {
   sendFileMessage,
 } from './api';
 import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
-import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -62,9 +61,15 @@ export interface SendPayload {
   optimisticId?: string;
 }
 
+interface MediaInfo {
+  nativeFile?: File;
+  giphy?: any;
+  name: string;
+}
+
 export interface MediaPayload {
   channelId?: string;
-  media: MediaUtils[];
+  media: MediaInfo[];
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -273,7 +278,8 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessage(action) {
-  const { channelId, media } = action.payload;
+  const { channelId, media: payloadMedia } = action.payload;
+  const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
 
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {

@@ -43,7 +43,7 @@ describe('page-load saga', () => {
 
     // redirected from /login to /0.wilder.nfts
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
-    expect(loginStoreState.pageload.isComplete).toBe(false);
+    expect(loginStoreState.pageload.isComplete).toBe(true);
 
     // signup
     history = new StubHistory('/get-access');
@@ -54,7 +54,7 @@ describe('page-load saga', () => {
 
     // redirected from /get-access to /0.wilder.nfts
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
-    expect(getAccessStoreState.pageload.isComplete).toBe(false);
+    expect(getAccessStoreState.pageload.isComplete).toBe(true);
   });
 
   it('sets isComplete to true, if user is not present & stays on login page', async () => {

@@ -185,10 +185,12 @@ export class Container extends React.Component<Properties, State> {
     }
 
     if (this.isNotEmpty(message)) {
-      let payloadSendMessage: PayloadSendMessage = { channelId, message, mentionedUserIds };
-      if (this.state.reply) {
-        payloadSendMessage.parentMessage = this.state.reply;
-      }
+      let payloadSendMessage = {
+        channelId,
+        message,
+        mentionedUserIds,
+        parentMessage: this.state.reply,
+      };
 
       this.props.sendMessage(payloadSendMessage);
       this.removeReply();

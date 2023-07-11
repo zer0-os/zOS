@@ -87,6 +87,20 @@ describe('MessageInput', () => {
     expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
   });
 
+  it('submits message when Enter is pressed and files have been added', () => {
+    const onSubmit = jest.fn();
+    const dropzoneToMedia = (files) => files;
+    const wrapper = subject({ onSubmit, dropzoneToMedia });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    wrapper.find(Dropzone).simulate('drop', [{ name: 'file1' }]);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('', [], [{ name: 'file1' }]);
+  });
+
   it('submits message when send icon is clicked', () => {
     const onSubmit = jest.fn();
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });

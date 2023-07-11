@@ -119,13 +119,18 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   }
 
-  onSend = (event): void => {
+  onSend = (): void => {
     const { mentionedUserIds, value, media } = this.state;
-    if (!event.shiftKey && event.key === Key.Enter && value) {
-      event.preventDefault();
-
+    if (value) {
       this.props.onSubmit(value, mentionedUserIds, media);
       this.setState({ value: '', mentionedUserIds: [], media: [] });
+    }
+  };
+
+  onKeyDown = (event): void => {
+    if (!event.shiftKey && event.key === Key.Enter) {
+      event.preventDefault();
+      this.onSend();
     }
   };
 
@@ -362,7 +367,7 @@ export class MessageInput extends React.Component<Properties, State> {
                       className='message-input__mentions-text-area-wrap'
                       id={this.props.id}
                       placeholder={this.props.placeholder}
-                      onKeyDown={this.onSend}
+                      onKeyDown={this.onKeyDown}
                       onChange={this.contentChanged}
                       onBlur={this._handleBlur}
                       value={this.state.value}
@@ -397,7 +402,7 @@ export class MessageInput extends React.Component<Properties, State> {
               className={classNames('message-input__icon', 'message-input__icon--end-action', {
                 'message-input__icon--send': hasInputValue,
               })}
-              onClick={this.startMic}
+              onClick={hasInputValue ? this.onSend : this.startMic}
               Icon={hasInputValue ? IconSend3 : IconMicrophone2}
               size={24}
             />

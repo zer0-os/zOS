@@ -63,6 +63,69 @@ describe('MessageInput', () => {
     expect(renderAfterInput).toHaveBeenCalled();
   });
 
+  it('does not submit message when message state is empty', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, ctrlKey: true });
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('submits message when Enter is pressed', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('submits message when send icon is clicked', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+
+    wrapper.update();
+
+    const sendIcon = wrapper.find('.message-input__icon--send');
+    sendIcon.simulate('click');
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('shows send icon when input has value', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+
+    wrapper.update();
+
+    const sendIcon = wrapper.find('.message-input__icon--send');
+
+    expect(sendIcon.exists()).toBe(true);
+  });
+
+  it('renders end action icon', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+
+    const endActionIcon = wrapper.find('.message-input__icon--end-action');
+
+    expect(endActionIcon.exists()).toBe(true);
+  });
+
   it('submit message when click on textarea', () => {
     const onSubmit = jest.fn();
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });

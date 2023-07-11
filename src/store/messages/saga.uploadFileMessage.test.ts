@@ -1,89 +1,100 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import * as matchers from 'redux-saga-test-plan/matchers';
+import { call } from 'redux-saga/effects';
 
-import { uploadFileMessage } from './saga';
+import { FileUploadResult, uploadFileMessage } from './saga';
 
-import { sendMessagesByChannelId, uploadFileMessage as uploadFileMessageApi } from './api';
-import { rootReducer } from '../reducer';
+import { sendMessagesByChannelId, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
+import { RootState, rootReducer } from '../reducer';
+import { stubResponse } from '../../test/saga';
+import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 
 describe(uploadFileMessage, () => {
-  it('upload file message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const media = [
-      {
-        id: 'id image 1',
-        url: 'url media',
-        name: 'image 1',
-        nativeFile: { path: 'Screen Shot 2022-12-07 at 18.39.01.png', type: 'image/png' },
-        mediaType: 'image',
-      },
-    ];
-
-    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
-      .provide([
-        [
-          matchers.call.fn(uploadFileMessageApi),
-          {
-            id: 'id image 1',
-            url: 'url media',
-            name: 'image 1',
-            type: 'image',
-          },
-        ],
-      ])
-      .withReducer(rootReducer)
-      .call(uploadFileMessageApi, channelId, media[0].nativeFile)
+  it('does nothing if there are no files', async () => {
+    await expectSaga(uploadFileMessage, { payload: { channelId: 'id', media: [] } })
+      .not.call.fn(uploadFileMessageApi)
+      .not.call.fn(uploadAttachment)
+      .not.call.fn(sendMessagesByChannelId)
       .run();
+  });
+
+  it('uploads media file', async () => {
+    const channelId = 'channel-id';
+    const imageFile = { nativeFile: { type: 'image/png' } } as any;
+    const imageCreationResponse = { id: 'image-message-id', image: {} };
+
+    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
+
+    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [imageFile] } })
+      .provide([stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile), imageCreationResponse)])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].id).toEqual('existing-message');
+    expect(channel.messages[1]).toEqual(imageCreationResponse);
+  });
+
+  it('uploads non-media (attachment)', async () => {
+    const channelId = 'channel-id';
+    const pdfFile = { nativeFile: { type: 'application/pdf' } } as any;
+    const fileUploadResult = {
+      name: 'filename',
+      key: 'file-key',
+      url: 'file-url',
+      type: 'file',
+    } as FileUploadResult;
+    const messageSendResponse = { body: { id: 'new-id' } };
+
+    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
+
+    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [pdfFile] } })
+      .provide([
+        stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
+        stubResponse(
+          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, fileUploadResult),
+          messageSendResponse
+        ),
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].id).toEqual('existing-message');
+    expect(channel.messages[1]).toEqual({ id: 'new-id' });
   });
 
   it('send Giphy message', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const media = [
-      {
-        id: 'id image 1',
-        name: 'image 1',
-        giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
-        mediaType: 'image',
-      },
-    ];
-
-    const initialState = {
-      authentication: {
-        user: {
-          data: {
-            id: 1,
-            profileId: '2',
-            profileSummary: {
-              firstName: 'Johnn',
-              lastName: 'Doe',
-              profileImage: '/image.jpg',
-            },
-          },
-        },
-      },
+    const channelId = 'channel-id';
+    const giphy = {
+      name: 'giphy-file',
+      giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
     };
+    const expectedFileToSend = { url: 'url_giphy', name: 'giphy-file', type: 'gif' };
+    const messageSendResponse = { body: { id: 'new-id' } };
 
-    await expectSaga(uploadFileMessage, { payload: { channelId, media } })
+    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
+
+    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [giphy] } })
       .provide([
-        [
-          matchers.call.fn(sendMessagesByChannelId),
-          {
-            status: 200,
-            body: {
-              id: 'id image 1',
-              url: 'url_giphy',
-              name: 'image 1',
-              type: 'gif',
-            },
-          },
-        ],
+        stubResponse(
+          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, expectedFileToSend as any),
+          messageSendResponse
+        ),
       ])
       .withReducer(rootReducer, initialState as any)
-      .call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, {
-        url: media[0].giphy.images.original.url,
-        name: media[0].name,
-        type: media[0].giphy.type,
-      })
       .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].id).toEqual('existing-message');
+    expect(channel.messages[1]).toEqual({ id: 'new-id' });
   });
 });
+
+function existingChannelState(channel) {
+  const normalized = normalizeChannel(channel);
+  return {
+    normalized: {
+      ...normalized.entities,
+    },
+  } as RootState;
+}

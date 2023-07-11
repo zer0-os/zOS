@@ -303,12 +303,8 @@ export function* uploadFileMessage(action) {
   for (const file of media.filter((i) => i.giphy)) {
     const original = file.giphy.images.original;
     const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messagesResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
-    const message = messagesResponse.body;
-
-    if (messagesResponse.status !== 200) return;
-
-    messages.push(message);
+    const messageResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
+    messages.push(messageResponse.body);
   }
 
   yield put(

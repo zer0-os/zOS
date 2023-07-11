@@ -274,11 +274,7 @@ export function* editMessage(action) {
 export function* uploadFileMessage(action) {
   const { channelId, media } = action.payload;
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
-
-  if (!media.length) return;
-
-  let messages = [...existingMessages];
+  let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
     if (!file.nativeFile) continue;
 
@@ -307,10 +303,18 @@ export function* uploadFileMessage(action) {
     messages.push(messageResponse.body);
   }
 
+  if (!messages.length) {
+    return;
+  }
+
+  const existingMessages = yield select(rawMessagesSelector(channelId));
   yield put(
     receive({
       id: channelId,
-      messages,
+      messages: [
+        ...existingMessages,
+        ...messages,
+      ],
     })
   );
 }

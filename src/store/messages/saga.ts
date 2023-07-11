@@ -276,8 +276,7 @@ export function* uploadFileMessage(action) {
 
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
-    const type = getFileType(file.nativeFile);
-    if (type === FileType.Media) {
+    if (getFileType(file.nativeFile) === FileType.Media) {
       const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
       messages.push(messagesResponse);
     } else {

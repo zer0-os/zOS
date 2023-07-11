@@ -130,6 +130,9 @@ export function* fetch(action) {
 
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
+  if (message.trim() === '') {
+    return;
+  }
 
   const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
 

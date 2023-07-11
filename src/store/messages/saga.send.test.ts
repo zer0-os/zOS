@@ -29,6 +29,13 @@ describe(send, () => {
       .next()
       .isDone();
   });
+
+  it('ignores empty messages', async () => {
+    const channelId = 'channel-id';
+    const message = '   ';
+
+    testSaga(send, { payload: { channelId, message } }).next().isDone();
+  });
 });
 
 describe(createOptimisticMessage, () => {

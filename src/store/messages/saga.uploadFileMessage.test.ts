@@ -50,10 +50,7 @@ describe(uploadFileMessage, () => {
     const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [pdfFile] } })
       .provide([
         stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
-        stubResponse(
-          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, fileUploadResult),
-          messageSendResponse
-        ),
+        stubResponse(call(sendMessagesByChannelId, channelId, null, null, null, fileUploadResult), messageSendResponse),
       ])
       .withReducer(rootReducer, initialState as any)
       .run();
@@ -77,7 +74,7 @@ describe(uploadFileMessage, () => {
     const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [giphy] } })
       .provide([
         stubResponse(
-          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, expectedFileToSend as any),
+          call(sendMessagesByChannelId, channelId, null, null, null, expectedFileToSend as any),
           messageSendResponse
         ),
       ])

@@ -298,12 +298,15 @@ export function* uploadFileMessage(action) {
     return;
   }
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  // Remove messages already received from the real time events
+  // This should simplify when we implement optimistic rendering
+  messages = messages.filter((m) => !existingMessageIds.includes(m.id));
   yield put(
     receive({
       id: channelId,
       messages: [
-        ...existingMessages,
+        ...existingMessageIds,
         ...messages,
       ],
     })

@@ -14,6 +14,7 @@ import {
   uploadFileMessage as uploadFileMessageApi,
   getLinkPreviews,
   uploadAttachment,
+  sendFileMessage,
 } from './api';
 import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
 import { Media as MediaUtils } from '../../components/message-input/utils';
@@ -276,22 +277,12 @@ export function* uploadFileMessage(action) {
 
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
-    if (!file.nativeFile) continue;
-
-    const type = getFileType(file.nativeFile);
-    if (type === FileType.Media) {
+    if (getFileType(file.nativeFile) === FileType.Media) {
       const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
       messages.push(messagesResponse);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      const messagesResponse = yield call(
-        sendMessagesByChannelId,
-        channelId,
-        undefined,
-        undefined,
-        undefined,
-        uploadResponse
-      );
+      const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
       messages.push(messagesResponse.body);
     }
   }
@@ -299,7 +290,7 @@ export function* uploadFileMessage(action) {
   for (const file of media.filter((i) => i.giphy)) {
     const original = file.giphy.images.original;
     const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messageResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
+    const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
     messages.push(messageResponse.body);
   }
 

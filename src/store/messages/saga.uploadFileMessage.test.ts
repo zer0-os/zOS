@@ -3,7 +3,7 @@ import { call } from 'redux-saga/effects';
 
 import { FileUploadResult, uploadFileMessage } from './saga';
 
-import { sendMessagesByChannelId, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
+import { sendFileMessage, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
@@ -13,7 +13,7 @@ describe(uploadFileMessage, () => {
     await expectSaga(uploadFileMessage, { payload: { channelId: 'id', media: [] } })
       .not.call.fn(uploadFileMessageApi)
       .not.call.fn(uploadAttachment)
-      .not.call.fn(sendMessagesByChannelId)
+      .not.call.fn(sendFileMessage)
       .run();
   });
 
@@ -50,10 +50,7 @@ describe(uploadFileMessage, () => {
     const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [pdfFile] } })
       .provide([
         stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
-        stubResponse(
-          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, fileUploadResult),
-          messageSendResponse
-        ),
+        stubResponse(call(sendFileMessage, channelId, fileUploadResult), messageSendResponse),
       ])
       .withReducer(rootReducer, initialState as any)
       .run();
@@ -76,10 +73,7 @@ describe(uploadFileMessage, () => {
 
     const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [giphy] } })
       .provide([
-        stubResponse(
-          call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, expectedFileToSend as any),
-          messageSendResponse
-        ),
+        stubResponse(call(sendFileMessage, channelId, expectedFileToSend as any), messageSendResponse),
       ])
       .withReducer(rootReducer, initialState as any)
       .run();

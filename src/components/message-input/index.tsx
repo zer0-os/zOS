@@ -20,6 +20,7 @@ import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconMicrophone2, IconStickerCircle } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -34,6 +35,7 @@ export interface Properties extends PublicPropertiesContainer {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
+  userAvatarUrl: string;
 }
 
 interface State {
@@ -188,6 +190,12 @@ export class MessageInput extends React.Component<Properties, State> {
         appendSpaceOnAdd
         markup={userMentionsConfig.markup}
         displayTransform={userMentionsConfig.displayTransform}
+        renderSuggestion={(suggestion) => (
+          <>
+            <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+            {suggestion.display}
+          </>
+        )}
       />,
       <Mention
         trigger=':'

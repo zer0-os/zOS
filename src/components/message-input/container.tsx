@@ -16,6 +16,7 @@ export interface PublicProperties {
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   id?: string;
   reply?: null | ParentMessage;
+  userAvatarUrl: string;
   onRemoveReply?: () => void;
 }
 
@@ -57,6 +58,7 @@ export class Container extends React.Component<Properties> {
         viewMode={this.props.viewMode}
         reply={this.props.reply}
         isMessengerFullScreen={this.props.isFullScreen}
+        userAvatarUrl={this.props.userAvatarUrl}
       />
     );
   }

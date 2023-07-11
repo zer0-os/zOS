@@ -36,6 +36,7 @@ interface Properties extends MessageModel {
   parentMessageText?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
+  userAvatarUrl: string;
 }
 
 export interface State {
@@ -250,6 +251,7 @@ export class Message extends React.Component<Properties, State> {
                   onSubmit={this.editMessage}
                   getUsersForMentions={this.props.getUsersForMentions}
                   renderAfterInput={this.editActions}
+                  userAvatarUrl={this.props.userAvatarUrl}
                 />
               )}
             </>

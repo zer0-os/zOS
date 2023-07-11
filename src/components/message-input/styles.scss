@@ -184,19 +184,35 @@
     &__suggestions {
       background: none !important;
       z-index: 1000 !important;
+
       animation: fadein animation.$animation-duration-double ease-in-out;
+
       &__list {
-        border: 2px solid #464646;
-        background-color: themeDeprecated.$background-color-primary-selected;
+        border-radius: 8px;
+        background-color: theme.$color-primary-2;
+        box-shadow: 4px 4px 10px 0px #040304;
+        padding: 8px !important;
       }
+
       &__item {
-        padding: 5px 10px;
+        display: flex;
+        padding: 8px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+
         &--focused {
-          background-color: #141414;
+          background-color: theme.$color-primary-4;
         }
+
+        &:hover {
+          background-color: theme.$color-primary-4;
+        }
+
         &__display {
           color: #cccccc;
         }
+
         &__highlight {
           font-weight: bold;
           color: white;

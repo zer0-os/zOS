@@ -68,11 +68,6 @@ interface MediaInfo {
   name: string;
 }
 
-export interface MediaPayload {
-  channelId?: string;
-  media: MediaInfo[];
-}
-
 const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };

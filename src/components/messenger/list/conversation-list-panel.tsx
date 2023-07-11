@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import Tooltip from '../../tooltip';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { Channel } from '../../../store/channels';
 import { IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';

@@ -91,6 +91,7 @@ function extractMessageData(jsonData, isMediaMessage) {
   let media;
   let admin;
   let optimisticId = '';
+  let rootMessageId = '';
 
   try {
     const data = jsonData ? JSON.parse(jsonData) : {};
@@ -103,6 +104,7 @@ function extractMessageData(jsonData, isMediaMessage) {
     hidePreview = data.hidePreview || false;
     admin = data.admin || {};
     optimisticId = data.optimisticId || '';
+    rootMessageId = data.rootMessageId || '';
   } catch (e) {}
 
   return {
@@ -112,6 +114,7 @@ function extractMessageData(jsonData, isMediaMessage) {
     image: media?.type === 'image' ? media : undefined,
     admin,
     optimisticId,
+    rootMessageId,
   };
 }
 

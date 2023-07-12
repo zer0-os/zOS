@@ -1,5 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { FileUploadResult, uploadFileMessage } from './saga';
 
@@ -25,13 +26,32 @@ describe(uploadFileMessage, () => {
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 
     const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [imageFile] } })
-      .provide([stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile), imageCreationResponse)])
+      .provide([stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile, ''), imageCreationResponse)])
       .withReducer(rootReducer, initialState as any)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].id).toEqual('existing-message');
     expect(channel.messages[1]).toEqual(imageCreationResponse);
+  });
+
+  it('first media file sets its rootMessageId', async () => {
+    const channelId = 'channel-id';
+    const rootMessageId = 'root-message-id';
+    const imageFile1 = { nativeFile: { type: 'image/png', name: 'file1' } } as any;
+    const imageFile2 = { nativeFile: { type: 'image/png', name: 'file2' } } as any;
+
+    const media = [
+      imageFile1,
+      imageFile2,
+    ];
+    await expectSaga(uploadFileMessage, { payload: { channelId, media, rootMessageId } })
+      .provide([
+        stubResponse(matchers.call.fn(uploadFileMessageApi), {}),
+      ])
+      .call(uploadFileMessageApi, channelId, imageFile1.nativeFile, rootMessageId)
+      .call(uploadFileMessageApi, channelId, imageFile2.nativeFile, '')
+      .run();
   });
 
   it('uploads non-media (attachment)', async () => {

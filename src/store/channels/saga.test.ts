@@ -12,6 +12,7 @@ import {
   markConversationAsReadIfActive,
   unreadCountUpdated,
 } from './saga';
+import { fetch as fetchMessages } from '../messages/saga';
 
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
@@ -177,7 +178,7 @@ describe('channels list saga', () => {
 });
 
 describe(unreadCountUpdated, () => {
-  it('handle unread count update', async () => {
+  it('updates the unread count for the channel', async () => {
     const channelId = 'channel-id';
     const updatedUnreadCount = 4;
 
@@ -185,11 +186,40 @@ describe(unreadCountUpdated, () => {
     const { storeState } = await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: updatedUnreadCount },
     })
+      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.unreadCount).toEqual(updatedUnreadCount);
+  });
+
+  it('fetches messages for channel if they have not been fetched previously', async () => {
+    const channelId = 'channel-id';
+
+    const initialState = existingChannelState({ id: channelId, hasLoadedMessages: false });
+
+    await expectSaga(unreadCountUpdated, {
+      payload: { channelId, unreadCount: 2 },
+    })
+      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
+      .withReducer(rootReducer, initialState)
+      .spawn(fetchMessages, { payload: { channelId } })
+      .run();
+  });
+
+  it('does not fetch messages if the channel has already loaded once', async () => {
+    const channelId = 'channel-id';
+
+    const initialState = existingChannelState({ id: channelId, hasLoadedMessages: true });
+
+    await expectSaga(unreadCountUpdated, {
+      payload: { channelId, unreadCount: 2 },
+    })
+      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
+      .withReducer(rootReducer, initialState)
+      .not.spawn.fn(fetchMessages)
+      .run();
   });
 });
 

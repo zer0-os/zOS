@@ -67,6 +67,7 @@ export interface Message {
     inviteeId?: string;
   };
   optimisticId?: string;
+  rootMessageId?: string;
 }
 
 export interface EditMessageOptions {

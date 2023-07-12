@@ -32,8 +32,8 @@ describe(send, () => {
       .next({ optimisticMessage: { id: 'optimistic-message-id' } })
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .spawn(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
-      .next()
+      .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
+      .next({ id: 'message-id' })
       .isDone();
   });
 
@@ -51,7 +51,22 @@ describe(send, () => {
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(uploadFileMessage, { payload: { channelId, media: files } })
+      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: '' } })
+      .next()
+      .isDone();
+  });
+
+  it('sends files with a rootMessageId if text is included', async () => {
+    const channelId = 'channel-id';
+    const files = [{ id: 'file-id' }];
+    const message = 'hello';
+
+    testSaga(send, { payload: { channelId, message, files } })
+      .next()
+      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
+      .next()
+      .next({ id: 'root-id' })
+      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: 'root-id' } })
       .next()
       .isDone();
   });
@@ -116,6 +131,16 @@ describe(performSend, () => {
         ],
       })
       .run();
+  });
+
+  it('returns the new message information', async () => {
+    const { returnValue } = await expectSaga(performSend, 'channel-id', '', null, null, '')
+      .provide([
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), { body: { id: 'new-id' } }),
+      ])
+      .run();
+
+    expect(returnValue).toEqual({ id: 'new-id' });
   });
 
   it('replaces the optimistic message', async () => {

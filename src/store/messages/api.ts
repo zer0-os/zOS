@@ -65,8 +65,10 @@ export async function editMessageApi(
   return response.status;
 }
 
-export async function uploadFileMessage(channelId: string, media: File): Promise<Media> {
-  const response = await post<any>(`/upload/chatChannels/${channelId}/message`).attach('file', media);
+export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = ''): Promise<Media> {
+  const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
+    .field('rootMessageId', rootMessageId)
+    .attach('file', media);
 
   return response.body;
 }

@@ -17,6 +17,8 @@ import { IconButton } from '../icon-button';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 
+import './styles.scss';
+
 const cn = bemClassName('message');
 
 interface Properties extends MessageModel {

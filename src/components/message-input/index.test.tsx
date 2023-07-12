@@ -63,6 +63,83 @@ describe('MessageInput', () => {
     expect(renderAfterInput).toHaveBeenCalled();
   });
 
+  it('does not submit message when message state is empty', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, ctrlKey: true });
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('submits message when Enter is pressed', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('submits message when Enter is pressed and files have been added', () => {
+    const onSubmit = jest.fn();
+    const dropzoneToMedia = (files) => files;
+    const wrapper = subject({ onSubmit, dropzoneToMedia });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    wrapper.find(Dropzone).simulate('drop', [{ name: 'file1' }]);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('', [], [{ name: 'file1' }]);
+  });
+
+  it('submits message when send icon is clicked', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+
+    wrapper.update();
+
+    const sendIcon = wrapper.find('.message-input__icon--send');
+    sendIcon.simulate('click');
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('shows send icon when input has value', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+
+    wrapper.update();
+
+    const sendIcon = wrapper.find('.message-input__icon--send');
+
+    expect(sendIcon.exists()).toBe(true);
+  });
+
+  it('renders end action icon', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+
+    const endActionIcon = wrapper.find('.message-input__icon--end-action');
+
+    expect(endActionIcon.exists()).toBe(true);
+  });
+
   it('submit message when click on textarea', () => {
     const onSubmit = jest.fn();
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
@@ -167,18 +244,18 @@ describe('MessageInput', () => {
   it('sorts by search string index', async function () {
     const getUsersForMentions = async (_searchString) =>
       Promise.resolve([
-        { id: 'd-2', display: '2-dale', profileImage: 'http://example-2.com' },
-        { id: 'd-3', display: '3--dale', profileImage: 'http://example-3.com' },
-        { id: 'd-1', display: 'dale', profileImage: 'http://example-1.com' },
+        { id: 'd-2', display: '2-dale', profileImage: 'http://example.com/2' },
+        { id: 'd-3', display: '3--dale', profileImage: 'http://example.com/3' },
+        { id: 'd-1', display: 'dale', profileImage: 'http://example.com/' },
       ]);
     const wrapper = subject({ getUsersForMentions });
 
     const searchResults = await userSearch(wrapper, 'da');
 
     expect(searchResults).toEqual([
-      { display: 'dale', id: 'd-1', profileImage: 'http://example-1.com' },
-      { display: '2-dale', id: 'd-2', profileImage: 'http://example-2.com' },
-      { display: '3--dale', id: 'd-3', profileImage: 'http://example-3.com' },
+      { display: 'dale', id: 'd-1', profileImage: 'http://example.com/' },
+      { display: '2-dale', id: 'd-2', profileImage: 'http://example.com/2' },
+      { display: '3--dale', id: 'd-3', profileImage: 'http://example.com/3' },
     ]);
   });
 

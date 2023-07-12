@@ -14,9 +14,9 @@ import {
   uploadFileMessage as uploadFileMessageApi,
   getLinkPreviews,
   uploadAttachment,
+  sendFileMessage,
 } from './api';
 import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
-import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -59,11 +59,13 @@ export interface SendPayload {
   parentMessageUserId?: string;
   file?: FileUploadResult;
   optimisticId?: string;
+  files?: MediaInfo[];
 }
 
-export interface MediaPayload {
-  channelId?: string;
-  media: MediaUtils[];
+interface MediaInfo {
+  nativeFile?: File;
+  giphy?: any;
+  name: string;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -123,17 +125,18 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
+  const { channelId, message, mentionedUserIds, parentMessage, files } = action.payload;
 
-  const { existingMessages, optimisticMessage } = yield call(
-    createOptimisticMessage,
-    channelId,
-    message,
-    parentMessage
-  );
+  if (message?.trim()) {
+    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
 
-  yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticMessage.id);
+    yield spawn(createOptimisticPreview, channelId, optimisticMessage);
+    yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
+  }
+
+  if (files?.length) {
+    yield call(uploadFileMessage, { payload: { channelId, media: files } });
+  }
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -154,7 +157,7 @@ export function* createOptimisticMessage(channelId, message, parentMessage) {
     })
   );
 
-  return { existingMessages, optimisticMessage: temporaryMessage };
+  return { optimisticMessage: temporaryMessage };
 }
 
 export function* createOptimisticPreview(channelId: string, optimisticMessage) {
@@ -165,27 +168,40 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
   }
 }
 
-export function* performSend(channelId, message, mentionedUserIds, parentMessage, existingMessages, optimisticId) {
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
-    yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage, null, optimisticId);
+    const result = yield call(
+      sendMessagesByChannelId,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      null,
+      optimisticId
+    );
+    const existingMessageIds = yield select(rawMessagesSelector(channelId));
+    const messages = yield call(replaceOptimisticMessage, existingMessageIds, result.body);
+    if (messages) {
+      yield put(receive({ id: channelId, messages: messages }));
+    }
   } catch (e) {
-    yield call(messageSendFailed, channelId, existingMessages);
+    yield call(messageSendFailed, channelId, optimisticId);
   }
 }
 
-export function* messageSendFailed(channelId, existingMessages) {
-  // Race condition here. What if we received a new message in the mean time?
-  // We don't currently denormalize the lastMessage in the channel so we have to set
-  // the full message and not just the id.
-  const previousLastMessage = yield select((state) =>
-    denormalize(existingMessages[existingMessages.length - 1], state)
+export function* messageSendFailed(channelId, optimisticId) {
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  const messagesWithoutFailed = existingMessageIds.filter((id) => id !== optimisticId);
+  const lastMessage = yield select((state) =>
+    denormalize(messagesWithoutFailed[messagesWithoutFailed.length - 1], state)
   );
+
   yield put(
     receive({
       id: channelId,
-      messages: [...existingMessages],
-      lastMessage: previousLastMessage,
-      lastMessageCreatedAt: previousLastMessage.createdAt,
+      messages: messagesWithoutFailed,
+      lastMessage: lastMessage,
+      lastMessageCreatedAt: lastMessage.createdAt,
     })
   );
 }
@@ -264,30 +280,17 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessage(action) {
-  const { channelId, media } = action.payload;
+  const { channelId, media: payloadMedia } = action.payload;
+  const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
-
-  if (!media.length) return;
-
-  let messages = [...existingMessages];
+  let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
-    if (!file.nativeFile) continue;
-
-    const type = getFileType(file.nativeFile);
-    if (type === FileType.Media) {
+    if (getFileType(file.nativeFile) === FileType.Media) {
       const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
       messages.push(messagesResponse);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      const messagesResponse = yield call(
-        sendMessagesByChannelId,
-        channelId,
-        undefined,
-        undefined,
-        undefined,
-        uploadResponse
-      );
+      const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
       messages.push(messagesResponse.body);
     }
   }
@@ -295,18 +298,25 @@ export function* uploadFileMessage(action) {
   for (const file of media.filter((i) => i.giphy)) {
     const original = file.giphy.images.original;
     const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messagesResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
-    const message = messagesResponse.body;
-
-    if (messagesResponse.status !== 200) return;
-
-    messages.push(message);
+    const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
+    messages.push(messageResponse.body);
   }
 
+  if (!messages.length) {
+    return;
+  }
+
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  // Remove messages already received from the real time events
+  // This should simplify when we implement optimistic rendering
+  messages = messages.filter((m) => !existingMessageIds.includes(m.id));
   yield put(
     receive({
       id: channelId,
-      messages,
+      messages: [
+        ...existingMessageIds,
+        ...messages,
+      ],
     })
   );
 }
@@ -354,20 +364,15 @@ export function* receiveNewMessage(action) {
     message = { ...message, preview };
   }
 
-  let messages = [
-    ...currentMessages,
-    message,
-  ];
-  if (message.optimisticId) {
-    const optimisticMessage = yield select(messageSelector(message.optimisticId));
-    const messageIndex = messages.findIndex((id) => id === message.optimisticId);
-    if (messageIndex >= 0 && optimisticMessage) {
-      messages[messageIndex] = message;
-      messages.pop(); // Remove the previously added message
-    }
+  let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+  if (!newMessages) {
+    newMessages = [
+      ...currentMessages,
+      message,
+    ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages };
+  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
   if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
     updatedChannel.lastMessage = message;
     updatedChannel.lastMessageCreatedAt = message.createdAt;
@@ -380,6 +385,25 @@ export function* receiveNewMessage(action) {
   const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
 
   yield call(markAllAsReadAction, channelId);
+}
+
+export function* replaceOptimisticMessage(currentMessages, message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+  const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+  if (messageIndex < 0) {
+    return null;
+  }
+
+  const optimisticMessage = yield select(messageSelector(message.optimisticId));
+  if (optimisticMessage) {
+    const messages = [...currentMessages];
+    messages[messageIndex] = message;
+    return messages;
+  }
+
+  return null;
 }
 
 export function* receiveUpdateMessage(action) {
@@ -443,7 +467,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

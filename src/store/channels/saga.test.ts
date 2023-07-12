@@ -13,8 +13,9 @@ import {
   unreadCountUpdated,
 } from './saga';
 
-import { rootReducer } from '../reducer';
+import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
+import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 
 const channelId = 'channel-id';
 const userId = 'user-id';
@@ -60,33 +61,6 @@ describe('channels list saga', () => {
       .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
       .call(markAllMessagesAsReadInChannelAPI, channelId, userId)
       .run();
-  });
-
-  it('handle unread count update', async () => {
-    const channelId = 'channel-id';
-    const updatedUnreadCount = 4;
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            unreadCount: 3,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(unreadCountUpdated, { payload: { channelId, unreadCount: updatedUnreadCount } })
-      .withReducer(rootReducer, initialState as any)
-
-      .run();
-
-    expect(channels[channelId].unreadCount).toEqual(updatedUnreadCount);
   });
 
   describe('markChannelAsReadIfActive', () => {
@@ -202,6 +176,23 @@ describe('channels list saga', () => {
   });
 });
 
+describe(unreadCountUpdated, () => {
+  it('handle unread count update', async () => {
+    const channelId = 'channel-id';
+    const updatedUnreadCount = 4;
+
+    const initialState = existingChannelState({ id: channelId, unreadCount: 3 });
+    const { storeState } = await expectSaga(unreadCountUpdated, {
+      payload: { channelId, unreadCount: updatedUnreadCount },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.unreadCount).toEqual(updatedUnreadCount);
+  });
+});
+
 function initialState(
   channelId = 'channel-id',
   userId = 'user-id',
@@ -209,14 +200,7 @@ function initialState(
   { isMessengerFullScreen = false, activeChannelId = '', activeConversationId = '' }
 ) {
   const initialState = {
-    normalized: {
-      channels: {
-        [channelId]: {
-          id: channelId,
-          ...channel,
-        },
-      },
-    },
+    ...existingChannelState({ id: channelId, ...channel }),
     authentication: {
       user: { data: { id: userId } },
     },
@@ -232,4 +216,13 @@ function initialState(
   };
 
   return initialState as any;
+}
+
+function existingChannelState(channel) {
+  const normalized = normalizeChannel(channel);
+  return {
+    normalized: {
+      ...normalized.entities,
+    },
+  } as RootState;
 }

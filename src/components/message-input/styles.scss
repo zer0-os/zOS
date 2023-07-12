@@ -182,24 +182,35 @@
     }
 
     &__suggestions {
-      background: none !important;
       z-index: 1000 !important;
+      background-color: theme.$color-primary-2 !important;
+
       animation: fadein animation.$animation-duration-double ease-in-out;
+
+      border-radius: 8px;
+      box-shadow: 4px 4px 10px 0px #040304;
+      padding: 4px;
+
       &__list {
-        border: 2px solid #464646;
-        background-color: themeDeprecated.$background-color-primary-selected;
+        padding: 4px 8px 4px 4px !important;
+        max-height: 200px;
+        overflow-y: auto;
       }
+
       &__item {
-        padding: 5px 10px;
+        display: flex;
+        padding: 8px;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+        line-height: 24px;
+
         &--focused {
-          background-color: #141414;
+          background-color: theme.$color-primary-4;
         }
-        &__display {
-          color: #cccccc;
-        }
-        &__highlight {
-          font-weight: bold;
-          color: white;
+
+        &:hover {
+          background-color: theme.$color-primary-4;
         }
       }
     }

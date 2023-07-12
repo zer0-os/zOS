@@ -12,6 +12,7 @@ export interface Media {
 export interface UserForMention {
   display: string;
   id: User['userId'];
+  profileImage: User['profileImage'];
 }
 
 export interface Image {

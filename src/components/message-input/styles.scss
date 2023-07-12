@@ -192,6 +192,8 @@
         background-color: theme.$color-primary-2;
         box-shadow: 4px 4px 10px 0px #040304;
         padding: 8px !important;
+        max-height: 200px;
+        overflow: auto;
       }
 
       &__item {

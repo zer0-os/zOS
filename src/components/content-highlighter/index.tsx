@@ -43,6 +43,7 @@ export class ContentHighlighter extends React.Component<Properties> {
 
         return (
           <span data-variant={this.props.variant} {...props}>
+            {this.props.variant && '@'}
             {mention}
           </span>
         );

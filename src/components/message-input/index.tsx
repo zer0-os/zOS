@@ -35,7 +35,6 @@ export interface Properties extends PublicPropertiesContainer {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
-  userAvatarUrl: string;
 }
 
 interface State {
@@ -192,7 +191,7 @@ export class MessageInput extends React.Component<Properties, State> {
         displayTransform={userMentionsConfig.displayTransform}
         renderSuggestion={(suggestion) => (
           <>
-            <Avatar size={'small'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+            <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             {suggestion.display}
           </>
         )}

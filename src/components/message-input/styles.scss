@@ -182,18 +182,19 @@
     }
 
     &__suggestions {
-      background: none !important;
       z-index: 1000 !important;
+      background-color: theme.$color-primary-2 !important;
 
       animation: fadein animation.$animation-duration-double ease-in-out;
 
+      border-radius: 8px;
+      box-shadow: 4px 4px 10px 0px #040304;
+      padding: 4px;
+
       &__list {
-        border-radius: 8px;
-        background-color: theme.$color-primary-2;
-        box-shadow: 4px 4px 10px 0px #040304;
         padding: 8px !important;
         max-height: 200px;
-        overflow: auto;
+        overflow-y: auto;
       }
 
       &__item {
@@ -202,6 +203,7 @@
         align-items: center;
         gap: 10px;
         border-radius: 8px;
+        line-height: 24px;
 
         &--focused {
           background-color: theme.$color-primary-4;

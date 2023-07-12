@@ -15,6 +15,7 @@ export async function markAllMessagesAsReadInChannel(channelId: string, userId: 
 export type MentionableUser = {
   id: string;
   name: string;
+  profileImage: string;
 };
 
 export async function searchMentionableUsers(channelId: string, search: string): Promise<MentionableUser[]> {

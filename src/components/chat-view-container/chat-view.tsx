@@ -168,7 +168,6 @@ export class ChatView extends React.Component<Properties, State> {
                   parentMessageText={message.parentMessageText}
                   getUsersForMentions={this.searchMentionableUsers}
                   showSenderAvatar={this.props.showSenderAvatar}
-                  userAvatarUrl={this.props.user.profileSummary.profileImage}
                   {...message}
                 />
               </div>
@@ -244,7 +243,6 @@ export class ChatView extends React.Component<Properties, State> {
               getUsersForMentions={this.searchMentionableUsers}
               reply={this.props.reply}
               onRemoveReply={this.props.onRemove}
-              userAvatarUrl={this.props.user.profileSummary.profileImage}
             />
           )}
           {!isMemberOfChannel && this.renderJoinButton()}

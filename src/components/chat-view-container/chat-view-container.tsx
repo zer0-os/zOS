@@ -7,7 +7,6 @@ import { setActiveChannelId } from '../../store/chat';
 import {
   fetch as fetchMessages,
   send as sendMessage,
-  uploadFileMessage,
   deleteMessage,
   editMessage,
   Message,
@@ -22,7 +21,6 @@ import {
   EditPayload,
   Payload as PayloadFetchMessages,
   SendPayload as PayloadSendMessage,
-  MediaPayload,
 } from '../../store/messages/saga';
 import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
@@ -35,7 +33,6 @@ export interface Properties extends PublicProperties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
-  uploadFileMessage: (payload: MediaPayload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
@@ -82,7 +79,6 @@ export class Container extends React.Component<Properties, State> {
     return {
       fetchMessages,
       sendMessage,
-      uploadFileMessage,
       startMessageSync,
       stopSyncChannels,
       deleteMessage,
@@ -180,18 +176,22 @@ export class Container extends React.Component<Properties, State> {
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
     const { channelId } = this.props;
-    if (channelId && this.isNotEmpty(message)) {
-      let payloadSendMessage: PayloadSendMessage = { channelId, message, mentionedUserIds };
-      if (this.state.reply) {
-        payloadSendMessage.parentMessage = this.state.reply;
-      }
-
-      this.props.sendMessage(payloadSendMessage);
-      this.removeReply();
+    if (!channelId) {
+      return;
     }
 
-    if (channelId && media.length) {
-      this.props.uploadFileMessage({ channelId, media });
+    let payloadSendMessage = {
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage: this.state.reply,
+      files: media,
+    };
+
+    this.props.sendMessage(payloadSendMessage);
+
+    if (this.isNotEmpty(message)) {
+      this.removeReply();
     }
   };
 

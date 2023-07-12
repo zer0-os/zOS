@@ -17,7 +17,6 @@ import {
   sendFileMessage,
 } from './api';
 import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
-import { Media as MediaUtils } from '../../components/message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -60,11 +59,13 @@ export interface SendPayload {
   parentMessageUserId?: string;
   file?: FileUploadResult;
   optimisticId?: string;
+  files?: MediaInfo[];
 }
 
-export interface MediaPayload {
-  channelId?: string;
-  media: MediaUtils[];
+interface MediaInfo {
+  nativeFile?: File;
+  giphy?: any;
+  name: string;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -124,12 +125,18 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
+  const { channelId, message, mentionedUserIds, parentMessage, files } = action.payload;
 
-  const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+  if (message?.trim()) {
+    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
 
-  yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-  yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
+    yield spawn(createOptimisticPreview, channelId, optimisticMessage);
+    yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
+  }
+
+  if (files?.length) {
+    yield call(uploadFileMessage, { payload: { channelId, media: files } });
+  }
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage) {
@@ -273,7 +280,8 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessage(action) {
-  const { channelId, media } = action.payload;
+  const { channelId, media: payloadMedia } = action.payload;
+  const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
 
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
@@ -459,7 +467,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
   yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

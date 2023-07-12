@@ -3,7 +3,14 @@ import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
-import { createOptimisticMessage, createOptimisticPreview, messageSendFailed, performSend, send } from './saga';
+import {
+  createOptimisticMessage,
+  createOptimisticPreview,
+  messageSendFailed,
+  performSend,
+  send,
+  uploadFileMessage,
+} from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
@@ -26,6 +33,25 @@ describe(send, () => {
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
       .spawn(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
+      .next()
+      .isDone();
+  });
+
+  it('ignores messages with no text or files', async () => {
+    const channelId = 'channel-id';
+    const message = '   ';
+    const files = [];
+
+    testSaga(send, { payload: { channelId, message, files } }).next().isDone();
+  });
+
+  it('sends files', async () => {
+    const channelId = 'channel-id';
+    const files = [{ id: 'file-id' }];
+
+    testSaga(send, { payload: { channelId, files } })
+      .next()
+      .call(uploadFileMessage, { payload: { channelId, media: files } })
       .next()
       .isDone();
   });

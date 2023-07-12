@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 import { Container } from './chat-view-container';
 import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
+import { Media } from '../message-input/utils';
 
 describe('ChannelViewContainer', () => {
   const subject = (props: any = {}) => {
@@ -143,41 +144,53 @@ describe('ChannelViewContainer', () => {
     });
   });
 
-  it('should call sendMessage when textearea is clicked', () => {
+  it('should not send message if there is no channel id', () => {
+    const sendMessage = jest.fn();
+    const message = 'test message';
+
+    const wrapper = subject({ sendMessage, channel: {} });
+
+    wrapper.find(ChatView).first().prop('sendMessage')(message, [], []);
+
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('calls sendMessage when chat view publishes message', () => {
     const sendMessage = jest.fn();
     const message = 'test message';
     const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+    const channelId = 'the-channel-id';
 
-    const wrapper = subject({
-      sendMessage,
-      channelId: 'the-channel-id',
-      channel: { hasMore: true, name: 'first channel' },
-    });
+    const wrapper = subject({ sendMessage, channelId, channel: {} });
 
     wrapper.find(ChatView).first().prop('sendMessage')(message, mentionedUserIds, []);
 
-    expect(sendMessage).toHaveBeenCalledOnce();
+    expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, message, mentionedUserIds }));
   });
 
-  it('should call uploadFileMessage when media is uploaded', () => {
-    const uploadFileMessage = jest.fn();
-    const media = [
-      {
-        id: 'id image 1',
-        url: 'url media',
-        name: 'image 1',
-      },
-    ];
+  it('calls sendMessage with parent message a reply is included', () => {
+    const sendMessage = jest.fn();
+    const channelId = 'the-channel-id';
 
-    const wrapper = subject({
-      uploadFileMessage,
-      channelId: 'the-channel-id',
-      channel: { hasMore: true, name: 'first channel' },
-    });
+    const wrapper = subject({ sendMessage, channelId, channel: {} });
 
-    wrapper.find(ChatView).first().prop('sendMessage')('', [], media);
+    wrapper.find(ChatView).simulate('reply', { id: 'parent' });
+    wrapper.find(ChatView).first().prop('sendMessage')('message', [], []);
 
-    expect(uploadFileMessage).toHaveBeenCalledOnce();
+    expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, parentMessage: { id: 'parent' } }));
+  });
+
+  it('calls sendMessage with files', () => {
+    const sendMessage = jest.fn();
+    const channelId = 'the-channel-id';
+
+    const wrapper = subject({ sendMessage, channelId, channel: {} });
+
+    wrapper.find(ChatView).first().prop('sendMessage')('', [], [{ id: 'file-id', name: 'file-name' } as Media]);
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ channelId, files: [{ id: 'file-id', name: 'file-name' }] })
+    );
   });
 
   it('should call joinChannel when join button is clicked', () => {

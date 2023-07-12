@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select } from 'redux-saga/effects';
+import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
 
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
@@ -7,6 +7,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { currentUserSelector } from '../authentication/saga';
+import { fetch as fetchMessages } from '../messages/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
@@ -79,7 +80,7 @@ export function* unreadCountUpdated(action) {
 
   const channel = yield select(rawChannelSelector(channelId));
 
-  if (!channel || channel.unreadCount === unreadCount) {
+  if (!channel) {
     return;
   }
 
@@ -89,6 +90,10 @@ export function* unreadCountUpdated(action) {
       unreadCount: unreadCount,
     })
   );
+
+  if (!channel.hasLoadedMessages && unreadCount > 0) {
+    yield spawn(fetchMessages, { payload: { channelId } });
+  }
 }
 
 export function* clearChannels() {

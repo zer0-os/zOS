@@ -194,6 +194,7 @@
       &__list {
         padding: 4px 8px 4px 4px !important;
         max-height: 200px;
+        max-width: 350px;
         overflow-y: auto;
       }
 
@@ -212,6 +213,12 @@
         &:hover {
           background-color: theme.$color-primary-4;
         }
+      }
+
+      &__item-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }

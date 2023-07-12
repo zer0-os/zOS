@@ -127,15 +127,24 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage, files } = action.payload;
 
+  let rootMessageId = '';
   if (message?.trim()) {
     const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
 
     yield spawn(createOptimisticPreview, channelId, optimisticMessage);
-    yield spawn(performSend, channelId, message, mentionedUserIds, parentMessage, optimisticMessage.id);
+    const textMessage = yield call(
+      performSend,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      optimisticMessage.id
+    );
+    rootMessageId = textMessage.id;
   }
 
   if (files?.length) {
-    yield call(uploadFileMessage, { payload: { channelId, media: files } });
+    yield call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId } });
   }
 }
 
@@ -180,10 +189,12 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
       optimisticId
     );
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
-    const messages = yield call(replaceOptimisticMessage, existingMessageIds, result.body);
+    const createdMessage = result.body;
+    const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {
       yield put(receive({ id: channelId, messages: messages }));
     }
+    return createdMessage;
   } catch (e) {
     yield call(messageSendFailed, channelId, optimisticId);
   }
@@ -280,13 +291,15 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessage(action) {
-  const { channelId, media: payloadMedia } = action.payload;
+  const { channelId, media: payloadMedia, rootMessageId = '' } = action.payload;
   const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
 
+  let root = rootMessageId;
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {
     if (getFileType(file.nativeFile) === FileType.Media) {
-      const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
+      const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile, root);
+      root = ''; // only the first media file should connect to the root message for now.
       messages.push(messagesResponse);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);

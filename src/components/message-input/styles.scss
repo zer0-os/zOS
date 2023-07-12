@@ -158,9 +158,9 @@
       word-break: break-word;
       font-size: 14px !important;
       line-height: 17px;
-      font-weight: 500;
+      font-weight: 400;
       outline: none;
-      border: none;
+      border: 1px solid transparent;
     }
 
     &__input {
@@ -192,7 +192,7 @@
       padding: 4px;
 
       &__list {
-        padding: 4px 8px 4px 4px !important;
+        padding: 4px !important;
         max-height: 200px;
         max-width: 350px;
         overflow-y: auto;

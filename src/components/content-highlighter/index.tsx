@@ -31,7 +31,7 @@ export class ContentHighlighter extends React.Component<Properties> {
 
       if (match[2] === 'user') {
         const profileId = this.getProfileId(match[3]);
-        const mention = `@${match[1]}`;
+        const mention = `${match[1]}`.trim();
         const props: { className: string; key: string; id?: string } = {
           className: 'content-highlighter__user-mention',
           key: match[3] + index,
@@ -43,6 +43,7 @@ export class ContentHighlighter extends React.Component<Properties> {
 
         return (
           <span data-variant={this.props.variant} {...props}>
+            {this.props.variant && '@'}
             {mention}
           </span>
         );
@@ -70,7 +71,7 @@ export class ContentHighlighter extends React.Component<Properties> {
         </Linkify>
       );
     } else {
-      return <div>{this.renderContent(this.props.message)}</div>;
+      return <div className='content-highlighter'>{this.renderContent(this.props.message)}</div>;
     }
   }
 

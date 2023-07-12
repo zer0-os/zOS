@@ -38,7 +38,7 @@ describe('ContentHighlighter', () => {
       message: 'Hello, @[John Doe](user:123)!',
       mentionedUserIds: [{ id: '123', profileId: 'john_doe' }],
     });
-    expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('@John Doe');
+    expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('John Doe');
   });
 
   it('renders content with a user mention without a profileId', () => {
@@ -46,7 +46,7 @@ describe('ContentHighlighter', () => {
       message: 'Hello, @[John Doe](user:123)!',
       mentionedUserIds: [{ id: '123' }],
     });
-    expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('@John Doe');
+    expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('John Doe');
     expect(wrapper.find('.content-highlighter__user-mention').prop('id')).toBeUndefined();
   });
 

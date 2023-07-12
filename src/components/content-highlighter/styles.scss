@@ -1,22 +1,25 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../shared-components/theme-engine/theme' as themeDeprecated;
 
 .content-highlighter {
   &__user-mention {
-    background-color: themeDeprecated.$accent-color;
-    color: black;
-    padding: 3px;
-    border-radius: 5px;
-    margin-bottom: 0.8px;
-    margin-top: 0.8px;
     display: inline-block;
+    padding: 4px 8px;
+
+    font-size: 12px;
+    line-height: 14px;
+
+    border-radius: 8px;
+    border: 1px solid theme.$color-primary-5;
+    background-color: theme.$color-primary-3;
+    color: theme.$color-text-primary-9;
 
     &[data-variant='negative'] {
+      padding: 0;
+      margin: 0;
+      border-radius: unset;
+      border: unset;
       background-color: unset;
       color: theme.$color-greyscale-11;
-      padding: 0;
-      border-radius: unset;
-      margin: 0;
     }
   }
 }

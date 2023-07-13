@@ -241,6 +241,27 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  get messages() {
+    const messagesById = {};
+    const messages = [];
+    // Assumption is that messages are already ordered by date and that
+    // the "child" message will always come after the "parent" message.
+    (this.channel?.messages || []).forEach((m) => {
+      if (m.rootMessageId) {
+        // Add the media piece of the "child" message to the "parent" message.
+        if (messagesById[m.rootMessageId]) {
+          messagesById[m.rootMessageId].media = m.media;
+        }
+      } else {
+        // Hmm... not sure how we ended up with integers as our message ids. For now, just cast to a string.
+        messagesById[m.id.toString()] = m;
+        messages.push(m);
+      }
+    });
+
+    return messages;
+  }
+
   render() {
     if (!this.props.channel) return null;
 
@@ -251,7 +272,7 @@ export class Container extends React.Component<Properties, State> {
           id={this.channel.id}
           name={this.channel.name}
           isMessengerFullScreen={this.props.isMessengerFullScreen}
-          messages={this.channel.messages || []}
+          messages={this.messages}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
           user={this.props.user.data}

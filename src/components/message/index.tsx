@@ -245,7 +245,6 @@ export class Message extends React.Component<Properties, State> {
               {!!this.props.updatedAt && !this.state.isEditing && <span {...cn('block-edited')}>(edited)</span>}
               {this.state.isEditing && this.props.message && (
                 <MessageInput
-                  {...cn('block-body')}
                   initialValue={this.props.message}
                   onSubmit={this.editMessage}
                   getUsersForMentions={this.props.getUsersForMentions}

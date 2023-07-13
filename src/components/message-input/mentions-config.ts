@@ -15,7 +15,7 @@ export const userMentionsConfig: MentionsConfig = {
   //eslint-disable-next-line
   regexGlobal: /@\[(.+?)\]\(user:([A-Za-z0-9_\-]+)\)/gi,
   displayTransform: (_, display) => {
-    return `${display}`;
+    return `${display.trim()}`;
   },
 };
 

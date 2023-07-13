@@ -147,6 +147,8 @@
 
       &__substring {
         visibility: hidden;
+        overflow-wrap: break-word;
+        word-break: break-word;
       }
 
       @include tag-highlight;

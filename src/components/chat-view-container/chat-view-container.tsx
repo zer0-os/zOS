@@ -244,6 +244,8 @@ export class Container extends React.Component<Properties, State> {
   get messages() {
     const messagesById = {};
     const messages = [];
+    // Assumption is that messages are already ordered by date and that
+    // the "child" message will always come after the "parent" message.
     (this.channel?.messages || []).forEach((m) => {
       if (m.rootMessageId) {
         // Add the media piece of the "child" message to the "parent" message.

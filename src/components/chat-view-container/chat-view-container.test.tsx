@@ -58,6 +58,21 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([]);
   });
 
+  it('groups message media with rootId onto parent message', () => {
+    const messages = [
+      { id: 'message-root', message: 'what', rootMessageId: '' },
+      { id: 'message-two', message: 'hello', rootMessageId: '' },
+      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
+    ];
+
+    const wrapper = subject({ channel: { messages } });
+
+    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
+      { id: 'message-root', message: 'what', rootMessageId: '', media: { some: 'media' } },
+      { id: 'message-two', message: 'hello', rootMessageId: '' },
+    ]);
+  });
+
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 

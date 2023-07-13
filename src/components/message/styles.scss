@@ -9,6 +9,23 @@
   overflow: hidden;
   width: 100%;
 
+  &[position-in-group='top'] {
+    margin: 8px 0px 0px 0px;
+  }
+
+  &[position-in-group='middle'] {
+    margin: 0px 0px 0px 0px;
+  }
+
+  &[position-in-group='bottom'] {
+    margin: 0px 0px 8px 0px;
+  }
+
+  &[position-in-group=''] {
+    // default for a single message which isn't part of group
+    margin: 8px 0px;
+  }
+
   &--owner {
     flex-direction: row-reverse;
 
@@ -34,7 +51,24 @@
 
     .message__block {
       background-color: theme.$color-secondary-3;
-      border-radius: 8px 8px 0px 8px;
+
+      // for messages sent by owner
+      &[position-in-group='top'] {
+        border-radius: 8px 8px 2px 8px;
+      }
+
+      &[position-in-group='middle'] {
+        border-radius: 8px 2px 2px 8px;
+      }
+
+      &[position-in-group='bottom'] {
+        border-radius: 8px 2px 0px 8px;
+      }
+
+      &[position-in-group=''] {
+        // default
+        border-radius: 8px 8px 0px 8px;
+      }
 
       .message__author-name {
         display: none;
@@ -48,12 +82,28 @@
 
   &__block {
     background-color: theme.$color-primary-3;
-    border-radius: 8px 8px 8px 0px;
     position: relative;
     padding: 8px;
     color: themeDeprecated.$card-text-color;
     overflow: hidden;
     z-index: 1;
+
+    // for messages received by others
+    &[position-in-group='top'] {
+      border-radius: 8px 8px 8px 2px;
+    }
+
+    &[position-in-group='middle'] {
+      border-radius: 2px 8px 8px 2px;
+    }
+
+    &[position-in-group='bottom'] {
+      border-radius: 2px 8px 8px 0px;
+    }
+
+    &[position-in-group=''] {
+      border-radius: 8px 8px 8px 0px;
+    }
 
     &--fill {
       width: 100%;

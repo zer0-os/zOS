@@ -17,8 +17,9 @@
 @mixin tag-highlight() {
   mark,
   strong {
+    background-color: theme.$color-primary-9 !important;
     animation: fade-background-in 200ms ease-in forwards;
-    color: themeDeprecated.$text-on-accent;
+    border-radius: 4px;
   }
   mark {
     padding: 3px;

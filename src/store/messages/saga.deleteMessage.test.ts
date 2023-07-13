@@ -1,0 +1,41 @@
+import { expectSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
+
+import { deleteMessage } from './saga';
+import { rootReducer } from '../reducer';
+import { deleteMessageApi } from './api';
+import { existingChannelState } from './test/helpers';
+import { denormalize as denormalizeChannel } from '../channels';
+import { stubResponse } from '../../test/saga';
+
+describe(deleteMessage, () => {
+  it('delete message', async () => {
+    const channelId = '280251425_833da2e2748a78a747786a9de295dd0c339a2d95';
+    const messages = [
+      { id: 1, message: 'This is my first message' },
+      { id: 2, message: 'I will delete this message' },
+      { id: 3, message: 'This is my third message' },
+    ];
+
+    const messageIdToDelete = messages[1].id;
+
+    const initialState = existingChannelState({ id: channelId, messages });
+
+    const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: messageIdToDelete } })
+      .withReducer(rootReducer, initialState)
+      .provide(successResponses())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toEqual([
+      messages[0],
+      messages[2],
+    ]);
+  });
+});
+
+function successResponses() {
+  return [
+    stubResponse(matchers.call.fn(deleteMessageApi), 200),
+  ];
+}

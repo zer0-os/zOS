@@ -203,7 +203,6 @@ export class Message extends React.Component<Properties, State> {
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
           'message--media': Boolean(media),
-          'message--sender-avatar': this.props.showSenderAvatar,
         })}
       >
         {this.props.showSenderAvatar && (

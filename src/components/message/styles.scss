@@ -124,14 +124,6 @@
     vertical-align: baseline;
     position: relative;
     max-width: 85%;
-
-    .text-message {
-      display: inline-block;
-      background-color: themeDeprecated.$card-background-color;
-      padding: 5px 15px;
-      margin-top: 10px;
-      border-radius: 12px;
-    }
   }
 
   &__block-image {

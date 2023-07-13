@@ -68,67 +68,6 @@
     overflow: hidden;
     z-index: 1;
 
-    &-body {
-      display: block;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 17px;
-      color: theme.$color-greyscale-12;
-      margin: 8px 0px;
-    }
-
-    &-reply {
-      display: flex;
-      align-items: center;
-      margin: 5px 0;
-
-      &-text {
-        padding-left: 8px;
-        border-left: 2px solid theme.$color-primary-5;
-        flex-grow: 1;
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 15px;
-      }
-    }
-
-    &-edited {
-      padding-left: 7px;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 14px;
-      color: themeDeprecated.$actionable-inactive-color;
-    }
-
-    &-preview {
-      display: flex;
-      flex-direction: row;
-      align-items: self-start;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-size: 13.5px;
-      font-weight: 500;
-      vertical-align: baseline;
-      position: relative;
-      max-width: 85%;
-
-      .text-message {
-        display: inline-block;
-        background-color: themeDeprecated.$card-background-color;
-        padding: 5px 15px;
-        margin-top: 10px;
-        border-radius: 12px;
-      }
-    }
-
-    .text-message {
-      &__link {
-        text-decoration: underline;
-      }
-    }
-
     &--fill {
       width: 100%;
 
@@ -145,31 +84,86 @@
         }
       }
     }
+  }
 
-    &-image {
-      position: relative;
+  &__block-body {
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    margin: 8px 0px;
+  }
+
+  &__block-reply {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+  }
+
+  &__block-reply-text {
+    padding-left: 8px;
+    border-left: 2px solid theme.$color-primary-5;
+    flex-grow: 1;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  &__block-edited {
+    padding-left: 7px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+    color: themeDeprecated.$actionable-inactive-color;
+  }
+
+  &__block-preview {
+    display: flex;
+    flex-direction: row;
+    align-items: self-start;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13.5px;
+    font-weight: 500;
+    vertical-align: baseline;
+    position: relative;
+    max-width: 85%;
+
+    .text-message {
       display: inline-block;
-      cursor: pointer;
+      background-color: themeDeprecated.$card-background-color;
+      padding: 5px 15px;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+  }
+
+  &__block-image {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+
+    img {
       width: 100%;
-
-      img {
-        width: 100%;
-        border-radius: 8px;
-      }
+      border-radius: 8px;
     }
+  }
 
-    &-video {
-      video {
-        min-height: 186px;
-        width: 100%;
-        border-radius: 8px;
-      }
+  &__block-audio {
+    audio {
+      width: 100%;
     }
+  }
 
-    &-audio {
-      audio {
-        width: 100%;
-      }
+  &__block-video {
+    video {
+      min-height: 186px;
+      width: 100%;
+      border-radius: 8px;
     }
   }
 

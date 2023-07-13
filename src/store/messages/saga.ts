@@ -244,16 +244,24 @@ export function* fetchNewMessages(action) {
 export function* deleteMessage(action) {
   const { channelId, messageId } = action.payload;
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
+
+  const messageIdsToDelete = fullMessages
+    .filter((m) => m.rootMessageId === messageId.toString()) // toString() because message ids are currently a number
+    .map((m) => m.id);
+  messageIdsToDelete.unshift(messageId);
 
   yield put(
     receive({
       id: channelId,
-      messages: existingMessages.filter((id) => id !== messageId),
+      messages: existingMessageIds.filter((id) => !messageIdsToDelete.includes(id)),
     })
   );
 
-  yield call(deleteMessageApi, channelId, messageId);
+  for (let id of messageIdsToDelete) {
+    yield call(deleteMessageApi, channelId, id);
+  }
 }
 
 export function* editMessage(action) {

@@ -32,6 +32,51 @@ describe(deleteMessage, () => {
       messages[2],
     ]);
   });
+
+  it('deletes all the messages associated with the rootMessageId', async () => {
+    const channelId = 'channel-id';
+    const messages = [
+      { id: 'message-1' },
+      { id: 'root-message', message: 'To be deleted. Root Message.' },
+      { id: 'message-2' },
+      { id: 'child-message-1', rootMessageId: 'root-message' },
+      { id: 'child-message-2', rootMessageId: 'root-message' },
+    ];
+
+    const initialState = existingChannelState({ id: channelId, messages });
+
+    await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
+      .withReducer(rootReducer, initialState)
+      .provide(successResponses())
+      .call(deleteMessageApi, channelId, 'root-message')
+      .call(deleteMessageApi, channelId, 'child-message-1')
+      .call(deleteMessageApi, channelId, 'child-message-2')
+      .run();
+  });
+
+  it('deletes all the associated messages from the store', async () => {
+    const channelId = 'channel-id';
+    const messages = [
+      { id: 'message-1' },
+      { id: 'root-message', message: 'To be deleted. Root Message.' },
+      { id: 'message-2' },
+      { id: 'child-message-1', rootMessageId: 'root-message' },
+      { id: 'child-message-2', rootMessageId: 'root-message' },
+    ];
+
+    const initialState = existingChannelState({ id: channelId, messages });
+
+    const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
+      .withReducer(rootReducer, initialState)
+      .provide(successResponses())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toEqual([
+      messages[0],
+      messages[2],
+    ]);
+  });
 });
 
 function successResponses() {

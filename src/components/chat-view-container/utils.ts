@@ -1,38 +1,24 @@
 import moment from 'moment/moment';
-import { MessageGroupPosition, Message as MessageModel } from '../../store/messages';
+import { Message as MessageModel } from '../../store/messages';
 
-/**
- * Group messages by sender and time
- * @param messages
- */
-export function groupMessages(messages: MessageModel[]): MessageModel[] {
-  const groupedMessages = [];
-  for (let i = 0; i < messages.length; ++i) {
-    // first And last message will be either top or bottom respectively
-    if (i === 0 && isRelated(messages[i], messages[i + 1])) {
-      messages[i].positionInGroup = MessageGroupPosition.Top;
-    } else if (i === messages.length - 1 && isRelated(messages[i], messages[i - 1])) {
-      messages[i].positionInGroup = MessageGroupPosition.Bottom;
-    }
-
-    // for the middle messages, check if they are related to the previous and/or next message
-    // and set the position accordingly
-    const previousMessage = messages[i - 1];
-    const nextMessage = messages[i + 1];
-    if (!isRelated(previousMessage, messages[i]) && isRelated(messages[i], nextMessage)) {
-      messages[i].positionInGroup = MessageGroupPosition.Top;
-    }
-    if (isRelated(previousMessage, messages[i]) && isRelated(messages[i], nextMessage)) {
-      messages[i].positionInGroup = MessageGroupPosition.Middle;
-    }
-    if (isRelated(previousMessage, messages[i]) && !isRelated(messages[i], nextMessage)) {
-      messages[i].positionInGroup = MessageGroupPosition.Bottom;
-    }
-
-    groupedMessages.push(messages[i]);
+export function createMessageGroups(messages: MessageModel[]) {
+  if (!messages.length) {
+    return [];
   }
 
-  return groupedMessages;
+  const messageGroups = [];
+  let groupIndex = 0;
+  messageGroups[0] = [messages[0]];
+
+  for (let i = 1; i < messages.length; ++i) {
+    if (isRelated(messages[i - 1], messages[i])) {
+      messageGroups[groupIndex].push(messages[i]);
+    } else {
+      messageGroups[++groupIndex] = [messages[i]];
+    }
+  }
+
+  return messageGroups;
 }
 
 function isRelated(message1, message2) {

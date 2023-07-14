@@ -168,10 +168,7 @@ describe(performSend, () => {
 
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), {
-          id: 'new-id',
-          optimisticId: 'optimistic-id',
-        }),
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id', optimisticId: 'optimistic-id' }),
         ...successResponses(),
       ])
       .withReducer(rootReducer, initialState)

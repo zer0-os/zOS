@@ -177,16 +177,21 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+  const messageCall = call(
+    sendMessagesByChannelId,
+    channelId,
+    message,
+    mentionedUserIds,
+    parentMessage,
+    null,
+    optimisticId
+  );
+  return yield sendMessage(messageCall, channelId, optimisticId);
+}
+
+export function* sendMessage(apiCall, channelId, optimisticId) {
   try {
-    const createdMessage = yield call(
-      sendMessagesByChannelId,
-      channelId,
-      message,
-      mentionedUserIds,
-      parentMessage,
-      null,
-      optimisticId
-    );
+    const createdMessage = yield apiCall;
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {

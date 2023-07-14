@@ -73,6 +73,22 @@ describe('ChannelViewContainer', () => {
     ]);
   });
 
+  it('messages with rootMessageId but no parent found are still included', () => {
+    const messages = [
+      { id: 'message-one', message: 'what', rootMessageId: '' },
+      { id: 'message-two', message: 'hello', rootMessageId: '' },
+      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
+    ];
+
+    const wrapper = subject({ channel: { messages } });
+
+    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
+      { id: 'message-one', message: 'what', rootMessageId: '' },
+      { id: 'message-two', message: 'hello', rootMessageId: '' },
+      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
+    ]);
+  });
+
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 

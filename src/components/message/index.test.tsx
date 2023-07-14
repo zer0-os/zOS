@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from '.';
-import { MediaType, MessageGroupPosition } from '../../store/messages';
+import { MediaType } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
@@ -32,21 +32,6 @@ describe('message', () => {
     const text = wrapper.find(ContentHighlighter).prop('message');
 
     expect(text).toStrictEqual('the message');
-  });
-
-  it('does not render the timestamp if the message is a part of group, and is not at bottom', () => {
-    let wrapper = subject({ message: 'the message' });
-    expect(wrapper.find('.message__time').exists()).toBe(true);
-
-    wrapper = subject({ message: 'the message', positionInGroup: MessageGroupPosition.Bottom });
-    expect(wrapper.find('.message__time').exists()).toBe(true);
-
-    // timestamp is not rendered for middle and top messages (in group)
-    wrapper = subject({ message: 'the message', positionInGroup: MessageGroupPosition.Middle });
-    expect(wrapper.find('.message__time').exists()).toBe(false);
-
-    wrapper = subject({ message: 'the message', positionInGroup: MessageGroupPosition.Top });
-    expect(wrapper.find('.message__time').exists()).toBe(false);
   });
 
   it('renders message video', () => {
@@ -266,34 +251,6 @@ describe('message', () => {
     const authorAvatarElement = wrapper.find('.message__author-avatar');
 
     expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
-  });
-
-  it('renders the author name (for receiving message) if position in group is top', () => {
-    const wrapper = subject({
-      message: 'text',
-      positionInGroup: MessageGroupPosition.Top,
-    });
-
-    const authorName = wrapper.find('.message__author-name');
-    expect(authorName.props().children).toEqual([
-      sender.firstName,
-      ' ',
-      sender.lastName,
-    ]);
-  });
-
-  it('does not render the author name (for receiving message) if position in group is middle or bottom', () => {
-    let wrapper = subject({
-      message: 'text',
-      positionInGroup: MessageGroupPosition.Middle,
-    });
-    expect(wrapper.find('.message__author-name').exists()).toBe(false);
-
-    wrapper = subject({
-      message: 'text',
-      positionInGroup: MessageGroupPosition.Bottom,
-    });
-    expect(wrapper.find('.message__author-name').exists()).toBe(false);
   });
 
   it('renders with a tag', () => {

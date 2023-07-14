@@ -2,7 +2,7 @@ import React, { RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, MessageGroupPosition } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
@@ -20,7 +20,7 @@ import { AdminMessageContainer } from '../admin-message/container';
 
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
-import { groupMessages } from './utils';
+import { createMessageGroups } from './utils';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -132,50 +132,54 @@ export class ChatView extends React.Component<Properties, State> {
     return this.props.user && message.sender && this.props.user.id == message.sender.userId;
   }
 
+  renderMessageGroup(allMessages) {
+    return allMessages.map((message, index) => {
+      if (message.isAdmin) {
+        return <AdminMessageContainer key={message.id} message={message} />;
+      } else {
+        return (
+          <div
+            key={message.id}
+            className={classNames('messages__message-row', {
+              'messages__message-row--owner': this.isUserOwnerOfMessage(message),
+            })}
+          >
+            <Message
+              className={classNames('messages__message', {
+                'messages__message--last-in-group': this.props.showSenderAvatar && index === allMessages.length - 1,
+              })}
+              onImageClick={this.openLightbox}
+              messageId={message.id}
+              updatedAt={message.updatedAt}
+              isOwner={this.isUserOwnerOfMessage(message)}
+              onDelete={this.props.deleteMessage}
+              onEdit={this.props.editMessage}
+              onReply={this.props.onReply}
+              parentMessageText={message.parentMessageText}
+              getUsersForMentions={this.searchMentionableUsers}
+              showSenderAvatar={this.props.showSenderAvatar}
+              {...message}
+            />
+          </div>
+        );
+      }
+    });
+  }
+
   renderDay(day: string, messagesByDay: ChatMessageGroups) {
-    const allMessages = groupMessages(messagesByDay[day]);
+    const groups = createMessageGroups(messagesByDay[day]);
 
     return (
       <div className='messages' key={day}>
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {allMessages.map((message, index) => {
-          if (message.isAdmin) {
-            return <AdminMessageContainer key={message.id} message={message} />;
-          } else {
-            const isLastFromUser =
-              index === allMessages.length - 1 ||
-              allMessages[index + 1].isAdmin ||
-              message.sender.userId !== allMessages[index + 1].sender.userId ||
-              message.positionInGroup === MessageGroupPosition.Bottom;
-
-            return (
-              <div
-                key={message.id}
-                className={classNames('messages__message-row', {
-                  'messages__message-row--owner': this.isUserOwnerOfMessage(message),
-                })}
-              >
-                <Message
-                  className={classNames('messages__message', {
-                    'messages__message--last-in-group': isLastFromUser && this.props.showSenderAvatar,
-                  })}
-                  onImageClick={this.openLightbox}
-                  messageId={message.id}
-                  updatedAt={message.updatedAt}
-                  isOwner={this.isUserOwnerOfMessage(message)}
-                  onDelete={this.props.deleteMessage}
-                  onEdit={this.props.editMessage}
-                  onReply={this.props.onReply}
-                  parentMessageText={message.parentMessageText}
-                  getUsersForMentions={this.searchMentionableUsers}
-                  showSenderAvatar={this.props.showSenderAvatar}
-                  {...message}
-                />
-              </div>
-            );
-          }
+        {groups.map((group, index) => {
+          return (
+            <div key={index} className='message__group'>
+              {this.renderMessageGroup(group)}
+            </div>
+          );
         })}
       </div>
     );

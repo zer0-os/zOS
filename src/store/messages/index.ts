@@ -68,13 +68,6 @@ export interface Message {
   };
   optimisticId?: string;
   rootMessageId?: string;
-  positionInGroup?: MessageGroupPosition;
-}
-
-export enum MessageGroupPosition {
-  Top = 'top',
-  Middle = 'middle',
-  Bottom = 'bottom',
 }
 
 export interface EditMessageOptions {

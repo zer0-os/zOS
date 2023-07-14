@@ -184,7 +184,7 @@
   }
 
   &__author-avatar {
-    display: none;
+    visibility: hidden;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -204,7 +204,7 @@
 
   &.messages__message--last-in-group {
     .message__author-avatar {
-      display: block;
+      visibility: visible;
     }
   }
 

@@ -259,6 +259,10 @@ export function* deleteMessage(action) {
     })
   );
 
+  // In the future we'd prefer that the api did this so that the front-ends
+  // could treat these as independent messages. However, given that we have
+  // multiple front ends and they don't all support treating these messages
+  // as a single entity yet, this is how we'll do it for now.
   for (let id of messageIdsToDelete) {
     yield call(deleteMessageApi, channelId, id);
   }

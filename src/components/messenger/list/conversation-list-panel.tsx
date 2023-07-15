@@ -11,7 +11,7 @@ import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
 import { itemToOption } from '../lib/utils';
 import { ScrollbarContainer } from '../../scrollbar-container';
-import { escapeRegExp } from './utils';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 export interface Properties {
   conversations: Channel[];

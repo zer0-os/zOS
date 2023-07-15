@@ -11,6 +11,7 @@ import { Item, Option } from '../lib/types';
 import { UserSearchResults } from './user-search-results';
 import { itemToOption } from '../lib/utils';
 import { ScrollbarContainer } from '../../scrollbar-container';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 export interface Properties {
   conversations: Channel[];
@@ -55,7 +56,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       return this.props.conversations;
     }
 
-    const searchRegEx = new RegExp(this.state.filter, 'i');
+    const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
     return this.props.conversations.filter((conversation) =>
       searchRegEx.test(otherMembersToString(conversation.otherMembers))
     );

@@ -6,7 +6,7 @@ import { Avatar, Input } from '@zero-tech/zui/components';
 import './styles.scss';
 import '../list/styles.scss';
 
-import { itemToOption } from '../lib/utils';
+import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
 
 export interface Properties {
@@ -68,7 +68,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
               {this.state.results.map((r) => (
                 <div key={r.value} data-id={r.value} onClick={this.itemClicked}>
                   <Avatar size='regular' type='circle' imageURL={r.image} />
-                  <div>{r.label}</div>
+                  <div>{highlightFilter(r.label, this.state.searchString)}</div>
                 </div>
               ))}
             </div>

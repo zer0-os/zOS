@@ -308,20 +308,18 @@ export function* uploadFileMessages(
 ) {
   let messages = [];
   for (const file of media) {
-    let newMessage;
+    let upload;
     if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-      newMessage = yield call(uploadFileMessageApi, channelId, file.nativeFile, rootMessageId);
+      upload = uploadMediaAttachment;
     } else if (file.giphy) {
-      const original = file.giphy.images.original;
-      const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-      newMessage = yield call(sendFileMessage, channelId, giphyFile);
+      upload = uploadGiphyAttachment;
     } else {
-      const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      newMessage = yield call(sendFileMessage, channelId, uploadResponse);
+      upload = uploadFileAttachment;
     }
 
-    rootMessageId = ''; // only the first file should connect to the root message for now.
+    const newMessage = yield upload(channelId, file, rootMessageId);
     messages.push(newMessage);
+    rootMessageId = ''; // only the first file should connect to the root message for now.
   }
 
   if (!messages.length) {
@@ -341,6 +339,21 @@ export function* uploadFileMessages(
       ],
     })
   );
+}
+
+function* uploadMediaAttachment(channelId, file, rootMessageId) {
+  return yield call(uploadFileMessageApi, channelId, file.nativeFile, rootMessageId);
+}
+
+function* uploadGiphyAttachment(channelId, file, _rootMessageId) {
+  const original = file.giphy.images.original;
+  const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
+  return yield call(sendFileMessage, channelId, giphyFile);
+}
+
+function* uploadFileAttachment(channelId, file, _rootMessageId) {
+  const uploadResponse = yield call(uploadAttachment, file.nativeFile);
+  return yield call(sendFileMessage, channelId, uploadResponse);
 }
 
 export function* receiveDelete(action) {

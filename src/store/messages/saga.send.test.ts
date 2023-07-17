@@ -16,6 +16,11 @@ import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 
+const mockCreateUploadableFile = jest.fn();
+jest.mock('./uploadable', () => ({
+  createUploadableFile: (file) => mockCreateUploadableFile(file),
+}));
+
 describe(send, () => {
   it('creates optimistic message then fetches preview and sends the message in parallel', async () => {
     const channelId = 'channel-id';
@@ -47,11 +52,13 @@ describe(send, () => {
 
   it('sends files', async () => {
     const channelId = 'channel-id';
+    const uploadableFile = { nativeFile: {} };
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
     const files = [{ id: 'file-id' }];
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(uploadFileMessages, channelId, files, '')
+      .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
       .isDone();
   });
@@ -59,6 +66,8 @@ describe(send, () => {
   it('sends files with a rootMessageId if text is included', async () => {
     const channelId = 'channel-id';
     const files = [{ id: 'file-id' }];
+    const uploadableFile = { nativeFile: {} };
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
     const message = 'hello';
 
     testSaga(send, { payload: { channelId, message, files } })
@@ -66,7 +75,7 @@ describe(send, () => {
       .next({ optimisticMessage: { id: 'optimistic-message-id' } })
       .next()
       .next({ id: 'root-id' })
-      .call(uploadFileMessages, channelId, files, 'root-id')
+      .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
       .next()
       .isDone();
   });

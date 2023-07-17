@@ -11,17 +11,15 @@ import {
   fetchMessagesByChannelId,
   sendMessagesByChannelId,
   editMessageApi,
-  uploadFileMessage as uploadFileMessageApi,
   getLinkPreviews,
-  uploadAttachment,
-  sendFileMessage,
 } from './api';
-import { FileType, extractLink, getFileType, linkifyType, createOptimisticMessageObject } from './utils';
+import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
+import { Uploadable, createUploadableFile } from './uploadable';
 
 export interface Payload {
   channelId: string;
@@ -144,7 +142,8 @@ export function* send(action) {
   }
 
   if (files?.length) {
-    yield call(uploadFileMessages, channelId, files, rootMessageId);
+    const uploadableFiles = files.map(createUploadableFile);
+    yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   }
 }
 
@@ -301,13 +300,7 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessages(
-  channelId = null,
-  media: { nativeFile?: any; giphy: any; name: any }[] = null,
-  rootMessageId = ''
-) {
-  const uploadableFiles = media.map(createUploadableFile);
-
+export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
   let messages = [];
   for (const uploadableFile of uploadableFiles) {
     messages.push(yield uploadableFile.upload(channelId, rootMessageId));
@@ -331,40 +324,6 @@ export function* uploadFileMessages(
       ],
     })
   );
-}
-
-const createUploadableFile = (file) => {
-  if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-    return new UploadableMedia(file);
-  } else if (file.giphy) {
-    return new UploadableGiphy(file);
-  } else {
-    return new UploadableAttachment(file);
-  }
-};
-
-class UploadableMedia {
-  constructor(private file) {}
-  *upload(channelId, rootMessageId) {
-    return yield call(uploadFileMessageApi, channelId, this.file.nativeFile, rootMessageId);
-  }
-}
-
-class UploadableGiphy {
-  constructor(private file) {}
-  *upload(channelId, _rootMessageId) {
-    const original = this.file.giphy.images.original;
-    const giphyFile = { url: original.url, name: this.file.name, type: this.file.giphy.type };
-    return yield call(sendFileMessage, channelId, giphyFile);
-  }
-}
-
-class UploadableAttachment {
-  constructor(private file) {}
-  *upload(channelId, _rootMessageId) {
-    const uploadResponse = yield call(uploadAttachment, this.file.nativeFile);
-    return yield call(sendFileMessage, channelId, uploadResponse);
-  }
 }
 
 export function* receiveDelete(action) {

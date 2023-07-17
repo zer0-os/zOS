@@ -311,7 +311,7 @@ export function* uploadFileMessages(
 
   let messages = [];
   for (const uploadableFile of uploadableFiles) {
-    messages.push(yield uploadableFile.upload(channelId, null, rootMessageId));
+    messages.push(yield uploadableFile.upload(channelId, rootMessageId));
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
 
@@ -346,14 +346,14 @@ const createUploadableFile = (file) => {
 
 class UploadableMedia {
   constructor(private file) {}
-  *upload(channelId, _file, rootMessageId) {
+  *upload(channelId, rootMessageId) {
     return yield call(uploadFileMessageApi, channelId, this.file.nativeFile, rootMessageId);
   }
 }
 
 class UploadableGiphy {
   constructor(private file) {}
-  *upload(channelId, _file, _rootMessageId) {
+  *upload(channelId, _rootMessageId) {
     const original = this.file.giphy.images.original;
     const giphyFile = { url: original.url, name: this.file.name, type: this.file.giphy.type };
     return yield call(sendFileMessage, channelId, giphyFile);
@@ -362,7 +362,7 @@ class UploadableGiphy {
 
 class UploadableAttachment {
   constructor(private file) {}
-  *upload(channelId, _file, _rootMessageId) {
+  *upload(channelId, _rootMessageId) {
     const uploadResponse = yield call(uploadAttachment, this.file.nativeFile);
     return yield call(sendFileMessage, channelId, uploadResponse);
   }

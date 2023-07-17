@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize, MediaType } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
@@ -64,6 +64,8 @@ interface MediaInfo {
   nativeFile?: File;
   giphy?: any;
   name: string;
+  url: string;
+  mediaType: MediaType;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -141,17 +143,25 @@ export function* send(action) {
     rootMessageId = textMessage.id;
   }
 
+  const optimisticFiles = [];
   if (files?.length) {
+    for (const file of files) {
+      const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file);
+      optimisticFiles.push({ optimisticMessage, file });
+    }
+  }
+
+  if (optimisticFiles?.length) {
     const uploadableFiles = files.map(createUploadableFile);
     yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   }
 }
 
-export function* createOptimisticMessage(channelId, message, parentMessage) {
+export function* createOptimisticMessage(channelId, message, parentMessage, file?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file);
 
   yield put(
     receive({

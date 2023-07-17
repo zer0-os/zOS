@@ -65,9 +65,10 @@ export async function editMessageApi(
   return response.status;
 }
 
-export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '') {
+export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
   const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
     .field('rootMessageId', rootMessageId)
+    .field('optimisticId', optimisticId)
     .attach('file', media);
 
   return response.body;

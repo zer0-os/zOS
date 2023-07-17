@@ -42,7 +42,7 @@ export async function sendMessagesByChannelId(
 
   const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
 
-  return response;
+  return response.body;
 }
 
 export async function deleteMessageApi(channelId: string, messageId: number): Promise<number> {

@@ -2,16 +2,16 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { FileUploadResult, uploadFileMessage } from './saga';
+import { FileUploadResult, uploadFileMessages } from './saga';
 
 import { sendFileMessage, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 
-describe(uploadFileMessage, () => {
+describe(uploadFileMessages, () => {
   it('does nothing if there are no files', async () => {
-    await expectSaga(uploadFileMessage, { payload: { channelId: 'id', media: [] } })
+    await expectSaga(uploadFileMessages, 'id', [])
       .not.call.fn(uploadFileMessageApi)
       .not.call.fn(uploadAttachment)
       .not.call.fn(sendFileMessage)
@@ -25,7 +25,7 @@ describe(uploadFileMessage, () => {
 
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 
-    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [imageFile] } })
+    const { storeState } = await expectSaga(uploadFileMessages, channelId, [imageFile])
       .provide([stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile, ''), imageCreationResponse)])
       .withReducer(rootReducer, initialState as any)
       .run();
@@ -45,7 +45,7 @@ describe(uploadFileMessage, () => {
       imageFile1,
       imageFile2,
     ];
-    await expectSaga(uploadFileMessage, { payload: { channelId, media, rootMessageId } })
+    await expectSaga(uploadFileMessages, channelId, media, rootMessageId)
       .provide([
         stubResponse(matchers.call.fn(uploadFileMessageApi), {}),
       ])
@@ -63,11 +63,11 @@ describe(uploadFileMessage, () => {
       url: 'file-url',
       type: 'file',
     } as FileUploadResult;
-    const messageSendResponse = { body: { id: 'new-id' } };
+    const messageSendResponse = { id: 'new-id' };
 
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 
-    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [pdfFile] } })
+    const { storeState } = await expectSaga(uploadFileMessages, channelId, [pdfFile])
       .provide([
         stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
         stubResponse(call(sendFileMessage, channelId, fileUploadResult), messageSendResponse),
@@ -87,11 +87,11 @@ describe(uploadFileMessage, () => {
       giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
     };
     const expectedFileToSend = { url: 'url_giphy', name: 'giphy-file', type: 'gif' };
-    const messageSendResponse = { body: { id: 'new-id' } };
+    const messageSendResponse = { id: 'new-id' };
 
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 
-    const { storeState } = await expectSaga(uploadFileMessage, { payload: { channelId, media: [giphy] } })
+    const { storeState } = await expectSaga(uploadFileMessages, channelId, [giphy])
       .provide([
         stubResponse(call(sendFileMessage, channelId, expectedFileToSend as any), messageSendResponse),
       ])

@@ -9,7 +9,7 @@ import {
   messageSendFailed,
   performSend,
   send,
-  uploadFileMessage,
+  uploadFileMessages,
 } from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
@@ -51,7 +51,7 @@ describe(send, () => {
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: '' } })
+      .call(uploadFileMessages, channelId, files, '')
       .next()
       .isDone();
   });
@@ -66,7 +66,7 @@ describe(send, () => {
       .next({ optimisticMessage: { id: 'optimistic-message-id' } })
       .next()
       .next({ id: 'root-id' })
-      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: 'root-id' } })
+      .call(uploadFileMessages, channelId, files, 'root-id')
       .next()
       .isDone();
   });
@@ -136,7 +136,7 @@ describe(performSend, () => {
   it('returns the new message information', async () => {
     const { returnValue } = await expectSaga(performSend, 'channel-id', '', null, null, '')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), { body: { id: 'new-id' } }),
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id' }),
       ])
       .run();
 
@@ -160,7 +160,8 @@ describe(performSend, () => {
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
         stubResponse(matchers.call.fn(sendMessagesByChannelId), {
-          body: { id: 'new-id', optimisticId: 'optimistic-id' },
+          id: 'new-id',
+          optimisticId: 'optimistic-id',
         }),
         ...successResponses(),
       ])
@@ -296,6 +297,6 @@ function existingChannelState(channel) {
 
 function successResponses() {
   return [
-    stubResponse(matchers.call.fn(sendMessagesByChannelId), { status: 200, body: { id: 'message 1', message: {} } }),
+    stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'message 1', message: {} }),
   ];
 }

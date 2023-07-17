@@ -144,7 +144,7 @@ export function* send(action) {
   }
 
   if (files?.length) {
-    yield call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId } });
+    yield call(uploadFileMessages, channelId, files, rootMessageId);
   }
 }
 
@@ -179,7 +179,7 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
-    const result = yield call(
+    const createdMessage = yield call(
       sendMessagesByChannelId,
       channelId,
       message,
@@ -189,7 +189,6 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
       optimisticId
     );
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
-    const createdMessage = result.body;
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {
       yield put(receive({ id: channelId, messages: messages }));
@@ -302,29 +301,17 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessage(action) {
-  const { channelId, media: payloadMedia, rootMessageId = '' } = action.payload;
-  const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
+export function* uploadFileMessages(
+  channelId = null,
+  media: { nativeFile?: any; giphy: any; name: any }[] = null,
+  rootMessageId = ''
+) {
+  const uploadableFiles = media.map(createUploadableFile);
 
-  let root = rootMessageId;
   let messages = [];
-  for (const file of media.filter((i) => i.nativeFile)) {
-    if (getFileType(file.nativeFile) === FileType.Media) {
-      const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile, root);
-      root = ''; // only the first media file should connect to the root message for now.
-      messages.push(messagesResponse);
-    } else {
-      const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
-      messages.push(messagesResponse.body);
-    }
-  }
-
-  for (const file of media.filter((i) => i.giphy)) {
-    const original = file.giphy.images.original;
-    const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
-    messages.push(messageResponse.body);
+  for (const uploadableFile of uploadableFiles) {
+    messages.push(yield uploadableFile.upload(channelId, rootMessageId));
+    rootMessageId = ''; // only the first file should connect to the root message for now.
   }
 
   if (!messages.length) {
@@ -344,6 +331,40 @@ export function* uploadFileMessage(action) {
       ],
     })
   );
+}
+
+const createUploadableFile = (file) => {
+  if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
+    return new UploadableMedia(file);
+  } else if (file.giphy) {
+    return new UploadableGiphy(file);
+  } else {
+    return new UploadableAttachment(file);
+  }
+};
+
+class UploadableMedia {
+  constructor(private file) {}
+  *upload(channelId, rootMessageId) {
+    return yield call(uploadFileMessageApi, channelId, this.file.nativeFile, rootMessageId);
+  }
+}
+
+class UploadableGiphy {
+  constructor(private file) {}
+  *upload(channelId, _rootMessageId) {
+    const original = this.file.giphy.images.original;
+    const giphyFile = { url: original.url, name: this.file.name, type: this.file.giphy.type };
+    return yield call(sendFileMessage, channelId, giphyFile);
+  }
+}
+
+class UploadableAttachment {
+  constructor(private file) {}
+  *upload(channelId, _rootMessageId) {
+    const uploadResponse = yield call(uploadAttachment, this.file.nativeFile);
+    return yield call(sendFileMessage, channelId, uploadResponse);
+  }
 }
 
 export function* receiveDelete(action) {

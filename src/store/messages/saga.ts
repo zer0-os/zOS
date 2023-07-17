@@ -308,20 +308,20 @@ export function* uploadFileMessages(
 ) {
   let messages = [];
   for (const file of media) {
+    let newMessage;
     if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-      const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile, rootMessageId);
-      rootMessageId = ''; // only the first media file should connect to the root message for now.
-      messages.push(messagesResponse);
+      newMessage = yield call(uploadFileMessageApi, channelId, file.nativeFile, rootMessageId);
     } else if (file.giphy) {
       const original = file.giphy.images.original;
       const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-      const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
-      messages.push(messageResponse);
+      newMessage = yield call(sendFileMessage, channelId, giphyFile);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-      const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
-      messages.push(messagesResponse);
+      newMessage = yield call(sendFileMessage, channelId, uploadResponse);
     }
+
+    rootMessageId = ''; // only the first file should connect to the root message for now.
+    messages.push(newMessage);
   }
 
   if (!messages.length) {

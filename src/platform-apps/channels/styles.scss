@@ -244,11 +244,42 @@ $scrollbar-width: 5px;
     &__message-row {
       display: flex;
       clear: both;
-      margin: 8px 16px;
+      margin: 4px 16px;
+      --message-footer-display: none;
+      --message-author-name-display: none;
+      --border-radius: 2px 8px 8px 2px;
 
       &--owner {
         justify-content: flex-end;
+        --border-owner-radius: 8px 2px 2px 8px;
       }
+
+      &--owner:first-child {
+        --border-owner-radius: 8px 8px 2px 8px;
+      }
+
+      &--owner:last-child {
+        --border-owner-radius: 8px 2px 0px 8px;
+      }
+
+      &--owner:only-child {
+        --border-owner-radius: 8px 8px 2px 8px;
+      }
+    }
+
+    &__message-row:first-child {
+      --message-author-name-display: flex;
+      --border-radius: 8px 8px 8px 2px;
+    }
+
+    &__message-row:last-child {
+      margin-bottom: 16px;
+      --message-footer-display: flex;
+      --border-radius: 2px 8px 8px 0px;
+    }
+
+    &__message-row:only-child {
+      --border-radius: 8px 8px 8px 0px;
     }
   }
 }

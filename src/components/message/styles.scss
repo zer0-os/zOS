@@ -4,7 +4,7 @@
 .message {
   display: flex;
   justify-content: flex-start;
-  margin: 8px 0px;
+  margin: 0px 0px;
   gap: 8px;
   overflow: hidden;
   width: 100%;
@@ -34,7 +34,7 @@
 
     .message__block {
       background-color: theme.$color-secondary-3;
-      border-radius: 8px 8px 0px 8px;
+      border-radius: var(--border-owner-radius); // set in message__message-row
 
       .message__author-name {
         display: none;
@@ -48,12 +48,13 @@
 
   &__block {
     background-color: theme.$color-primary-3;
-    border-radius: 8px 8px 8px 0px;
     position: relative;
     padding: 8px;
     color: themeDeprecated.$card-text-color;
     overflow: hidden;
     z-index: 1;
+
+    border-radius: var(--border-radius); // set in message__message-row
 
     &--fill {
       .message__block-image {
@@ -140,7 +141,7 @@
   }
 
   &__footer {
-    display: flex;
+    display: var(--message-footer-display);
     justify-content: flex-end;
     margin: 0px;
   }
@@ -185,7 +186,8 @@
   }
 
   &__author-name {
-    font-weight: 500;
+    display: var(--message-author-name-display);
+    font-weight: 700;
     font-size: 12px;
     line-height: 15px;
     color: theme.$color-greyscale-12;

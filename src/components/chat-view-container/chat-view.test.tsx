@@ -68,7 +68,6 @@ describe('ChatView', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
-
     expect(ids).toIncludeAllMembers([
       1111,
       2222,

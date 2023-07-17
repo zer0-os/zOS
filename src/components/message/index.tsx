@@ -119,7 +119,6 @@ export class Message extends React.Component<Properties, State> {
 
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
-
     return <div {...cn('time')}>{createdTime}</div>;
   }
 
@@ -197,7 +196,6 @@ export class Message extends React.Component<Properties, State> {
 
   render() {
     const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
-
     return (
       <div
         className={classNames('message', this.props.className, {

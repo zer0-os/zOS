@@ -2,7 +2,7 @@ import { AttachmentResponse } from '../../lib/api/attachment';
 import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { AttachmentUploadResult, EditMessageOptions, Media, MessagesResponse } from './index';
+import { AttachmentUploadResult, EditMessageOptions, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 import axios from 'axios';
 
@@ -65,7 +65,7 @@ export async function editMessageApi(
   return response.status;
 }
 
-export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = ''): Promise<Media> {
+export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '') {
   const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
     .field('rootMessageId', rootMessageId)
     .attach('file', media);

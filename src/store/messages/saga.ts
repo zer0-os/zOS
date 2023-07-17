@@ -19,7 +19,7 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
-import { createUploadableFile } from './uploadable';
+import { Uploadable, createUploadableFile } from './uploadable';
 
 export interface Payload {
   channelId: string;
@@ -142,7 +142,8 @@ export function* send(action) {
   }
 
   if (files?.length) {
-    yield call(uploadFileMessages, channelId, files, rootMessageId);
+    const uploadableFiles = files.map(createUploadableFile);
+    yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   }
 }
 
@@ -299,13 +300,7 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessages(
-  channelId = null,
-  media: { nativeFile?: any; giphy: any; name: any }[] = null,
-  rootMessageId = ''
-) {
-  const uploadableFiles = media.map(createUploadableFile);
-
+export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
   let messages = [];
   for (const uploadableFile of uploadableFiles) {
     messages.push(yield uploadableFile.upload(channelId, rootMessageId));

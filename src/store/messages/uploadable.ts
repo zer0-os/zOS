@@ -14,7 +14,7 @@ export const createUploadableFile = (file) => {
   }
 };
 
-interface Uploadable {
+export interface Uploadable {
   upload: (channelId, rootMessageId) => Generator<CallEffect<Message>>;
 }
 

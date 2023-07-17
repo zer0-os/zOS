@@ -9,7 +9,7 @@ import {
   messageSendFailed,
   performSend,
   send,
-  uploadFileMessage,
+  uploadFileMessages,
 } from './saga';
 import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
@@ -51,7 +51,7 @@ describe(send, () => {
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: '' } })
+      .call(uploadFileMessages, channelId, files, '')
       .next()
       .isDone();
   });
@@ -66,7 +66,7 @@ describe(send, () => {
       .next({ optimisticMessage: { id: 'optimistic-message-id' } })
       .next()
       .next({ id: 'root-id' })
-      .call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId: 'root-id' } })
+      .call(uploadFileMessages, channelId, files, 'root-id')
       .next()
       .isDone();
   });

@@ -144,7 +144,7 @@ export function* send(action) {
   }
 
   if (files?.length) {
-    yield call(uploadFileMessage, { payload: { channelId, media: files, rootMessageId } });
+    yield call(uploadFileMessages, channelId, files, rootMessageId);
   }
 }
 
@@ -302,10 +302,11 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessage(action) {
-  const { channelId, media: payloadMedia, rootMessageId = '' } = action.payload;
-  const media: { nativeFile: any; giphy: any; name: any }[] = payloadMedia;
-
+export function* uploadFileMessages(
+  channelId = null,
+  media: { nativeFile?: any; giphy: any; name: any }[] = null,
+  rootMessageId = ''
+) {
   let root = rootMessageId;
   let messages = [];
   for (const file of media.filter((i) => i.nativeFile)) {

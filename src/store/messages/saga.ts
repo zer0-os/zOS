@@ -22,6 +22,7 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
+import { create } from 'lodash';
 
 export interface Payload {
   channelId: string;
@@ -306,20 +307,11 @@ export function* uploadFileMessages(
   media: { nativeFile?: any; giphy: any; name: any }[] = null,
   rootMessageId = ''
 ) {
-  let messages = [];
-  const uploadableFiles = media.map((file) => {
-    if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-      return new UploadableMedia(file);
-    } else if (file.giphy) {
-      return new UploadableGiphy(file);
-    } else {
-      return new UploadableAttachment(file);
-    }
-  });
+  const uploadableFiles = media.map(createUploadableFile);
 
+  let messages = [];
   for (const uploadableFile of uploadableFiles) {
-    const newMessage = yield uploadableFile.upload(channelId, null, rootMessageId);
-    messages.push(newMessage);
+    messages.push(yield uploadableFile.upload(channelId, null, rootMessageId));
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
 
@@ -341,6 +333,16 @@ export function* uploadFileMessages(
     })
   );
 }
+
+const createUploadableFile = (file) => {
+  if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
+    return new UploadableMedia(file);
+  } else if (file.giphy) {
+    return new UploadableGiphy(file);
+  } else {
+    return new UploadableAttachment(file);
+  }
+};
 
 class UploadableMedia {
   constructor(private file) {}

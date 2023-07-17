@@ -194,16 +194,6 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  // only render the name in the top message of a group
-  renderAuthorName = () => {
-    const { sender } = this.props;
-    return (
-      <div {...cn('author-name')}>
-        {sender.firstName} {sender.lastName}
-      </div>
-    );
-  };
-
   render() {
     const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
     return (
@@ -223,7 +213,9 @@ export class Message extends React.Component<Properties, State> {
         <div {...cn('block', this.state.isFullWidth && 'fill')}>
           {(message || media || preview) && (
             <>
-              {this.renderAuthorName()}
+              <div {...cn('author-name')}>
+                {sender.firstName} {sender.lastName}
+              </div>
               {!this.state.isEditing && (
                 <div {...cn('block-body')}>
                   {media && this.renderMedia(media)}

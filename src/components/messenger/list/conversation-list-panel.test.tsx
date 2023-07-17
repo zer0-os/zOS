@@ -62,6 +62,55 @@ describe('ConversationListPanel', () => {
     ]);
   });
 
+  it('renders conversation group names as well in the filtered conversation list', function () {
+    const conversations = [
+      { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
+      {
+        id: 'convo-id-3',
+        name: 'Test Group',
+        otherMembers: [
+          { firstName: 'name-1' },
+          { firstName: 'name-2' },
+        ],
+      },
+      {
+        id: 'convo-id-4',
+        name: 'My Awesome group',
+        otherMembers: [
+          { firstName: 'name-1' },
+          { firstName: 'name-2' },
+        ],
+      },
+    ];
+
+    const wrapper = subject({ conversations: conversations as any });
+
+    let displayChatNames = renderedConversations(wrapper).map((c) => c.id);
+    expect(displayChatNames).toStrictEqual([
+      'convo-id-1',
+      'convo-id-2',
+      'convo-id-3',
+      'convo-id-4',
+    ]);
+
+    // change to -> 'test'
+    wrapper.find('Input').simulate('change', 'test');
+    displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual([
+      '', // convo-id-1 chat (one-2-one)
+      'Test Group',
+    ]);
+
+    // change to -> 'Group'
+    wrapper.find('Input').simulate('change', 'Group');
+    displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual([
+      'Test Group',
+      'My Awesome group',
+    ]);
+  });
+
   it('renders user search results', async function () {
     const search = jest.fn();
     search.mockResolvedValue([

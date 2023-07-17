@@ -57,8 +57,11 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
-    return this.props.conversations.filter((conversation) =>
-      searchRegEx.test(otherMembersToString(conversation.otherMembers))
+    return this.props.conversations.filter(
+      (conversation) =>
+        conversation.otherMembers.length === 1
+          ? searchRegEx.test(otherMembersToString(conversation.otherMembers)) // for one-to-one
+          : searchRegEx.test(conversation.name ?? '') // for group
     );
   }
 

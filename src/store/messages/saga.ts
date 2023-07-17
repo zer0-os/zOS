@@ -307,17 +307,18 @@ export function* uploadFileMessages(
   rootMessageId = ''
 ) {
   let messages = [];
-  for (const file of media) {
-    let upload;
+  const uploadableFiles = media.map((file) => {
     if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-      upload = uploadMediaAttachment;
+      return new UploadableMedia(file);
     } else if (file.giphy) {
-      upload = uploadGiphyAttachment;
+      return new UploadableGiphy(file);
     } else {
-      upload = uploadFileAttachment;
+      return new UploadableAttachment(file);
     }
+  });
 
-    const newMessage = yield upload(channelId, file, rootMessageId);
+  for (const uploadableFile of uploadableFiles) {
+    const newMessage = yield uploadableFile.upload(channelId, null, rootMessageId);
     messages.push(newMessage);
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
@@ -341,19 +342,28 @@ export function* uploadFileMessages(
   );
 }
 
-function* uploadMediaAttachment(channelId, file, rootMessageId) {
-  return yield call(uploadFileMessageApi, channelId, file.nativeFile, rootMessageId);
+class UploadableMedia {
+  constructor(private file) {}
+  *upload(channelId, _file, rootMessageId) {
+    return yield call(uploadFileMessageApi, channelId, this.file.nativeFile, rootMessageId);
+  }
 }
 
-function* uploadGiphyAttachment(channelId, file, _rootMessageId) {
-  const original = file.giphy.images.original;
-  const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-  return yield call(sendFileMessage, channelId, giphyFile);
+class UploadableGiphy {
+  constructor(private file) {}
+  *upload(channelId, _file, _rootMessageId) {
+    const original = this.file.giphy.images.original;
+    const giphyFile = { url: original.url, name: this.file.name, type: this.file.giphy.type };
+    return yield call(sendFileMessage, channelId, giphyFile);
+  }
 }
 
-function* uploadFileAttachment(channelId, file, _rootMessageId) {
-  const uploadResponse = yield call(uploadAttachment, file.nativeFile);
-  return yield call(sendFileMessage, channelId, uploadResponse);
+class UploadableAttachment {
+  constructor(private file) {}
+  *upload(channelId, _file, _rootMessageId) {
+    const uploadResponse = yield call(uploadAttachment, this.file.nativeFile);
+    return yield call(sendFileMessage, channelId, uploadResponse);
+  }
 }
 
 export function* receiveDelete(action) {

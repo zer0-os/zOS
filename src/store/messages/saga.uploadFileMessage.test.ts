@@ -63,7 +63,7 @@ describe(uploadFileMessages, () => {
       url: 'file-url',
       type: 'file',
     } as FileUploadResult;
-    const messageSendResponse = { body: { id: 'new-id' } };
+    const messageSendResponse = { id: 'new-id' };
 
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 
@@ -87,7 +87,7 @@ describe(uploadFileMessages, () => {
       giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
     };
     const expectedFileToSend = { url: 'url_giphy', name: 'giphy-file', type: 'gif' };
-    const messageSendResponse = { body: { id: 'new-id' } };
+    const messageSendResponse = { id: 'new-id' };
 
     const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
 

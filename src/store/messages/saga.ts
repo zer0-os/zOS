@@ -179,7 +179,7 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
   try {
-    const result = yield call(
+    const createdMessage = yield call(
       sendMessagesByChannelId,
       channelId,
       message,
@@ -189,7 +189,6 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
       optimisticId
     );
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
-    const createdMessage = result.body;
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {
       yield put(receive({ id: channelId, messages: messages }));
@@ -317,11 +316,11 @@ export function* uploadFileMessages(
       const original = file.giphy.images.original;
       const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
       const messageResponse = yield call(sendFileMessage, channelId, giphyFile);
-      messages.push(messageResponse.body);
+      messages.push(messageResponse);
     } else {
       const uploadResponse = yield call(uploadAttachment, file.nativeFile);
       const messagesResponse = yield call(sendFileMessage, channelId, uploadResponse);
-      messages.push(messagesResponse.body);
+      messages.push(messagesResponse);
     }
   }
 

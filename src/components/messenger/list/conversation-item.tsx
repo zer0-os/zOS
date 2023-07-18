@@ -66,6 +66,7 @@ export class ConversationItem extends React.Component<Properties> {
     if (this.props.conversation.otherMembers.length === 1) {
       return (
         <Avatar
+          tabIndex={-1}
           size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.otherMembers[0].profileImage}
@@ -75,6 +76,7 @@ export class ConversationItem extends React.Component<Properties> {
     } else if (this.isCustomIcon(this.props.conversation.icon)) {
       return (
         <Avatar
+          tabIndex={-1}
           size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.icon}

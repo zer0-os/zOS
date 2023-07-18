@@ -94,9 +94,23 @@ export class ConversationItem extends React.Component<Properties> {
   }
 
   get displayDate() {
-    if (this.props.conversation?.lastMessage?.createdAt) {
-      return moment(this.props.conversation.lastMessage.createdAt).format('MMM D');
+    const { lastMessage } = this.props.conversation;
+
+    if (lastMessage?.createdAt) {
+      const messageDate = moment(lastMessage.createdAt);
+      const currentDate = moment();
+
+      if (messageDate.isSame(currentDate, 'day')) {
+        return messageDate.format('h:mm A');
+      } else if (messageDate.isAfter(currentDate.clone().subtract(7, 'days'), 'day')) {
+        return messageDate.format('ddd');
+      } else if (messageDate.year() === currentDate.year()) {
+        return messageDate.format('MMM D');
+      } else {
+        return messageDate.format('MMM D, YYYY');
+      }
     }
+
     return '';
   }
 

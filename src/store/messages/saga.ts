@@ -146,10 +146,12 @@ export function* send(action) {
   const uploadableFiles: Uploadable[] = [];
   if (files?.length) {
     files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
+    let rootId = rootMessageId;
     for (const index in uploadableFiles) {
       const file = uploadableFiles[index].file;
-      const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file);
+      const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file, rootId);
       uploadableFiles[index].optimisticMessage = optimisticMessage;
+      rootId = ''; // only the first file should connect to the root message for now.
     }
   }
 
@@ -158,11 +160,11 @@ export function* send(action) {
   }
 }
 
-export function* createOptimisticMessage(channelId, message, parentMessage, file?) {
+export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
 
   yield put(
     receive({

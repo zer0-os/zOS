@@ -18,7 +18,8 @@ export function createOptimisticMessageObject(
   messageText: string,
   user: User,
   parentMessage: ParentMessage = null,
-  file?: { name: string; url: string; mediaType: MediaType }
+  file?: { name: string; url: string; mediaType: MediaType },
+  rootMessageId?: string
 ): Message {
   const id = uuidv4();
   let media;
@@ -40,6 +41,7 @@ export function createOptimisticMessageObject(
     hidePreview: false,
     id,
     optimisticId: id,
+    rootMessageId,
     mentionedUserIds: [],
     message: messageText,
     isAdmin: false,

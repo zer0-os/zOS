@@ -9,6 +9,7 @@ export interface Properties {
   message: string;
   mentionedUserIds?: any[];
   variant?: 'negative';
+  tabIndex?: number;
 }
 
 export class ContentHighlighter extends React.Component<Properties> {
@@ -64,6 +65,7 @@ export class ContentHighlighter extends React.Component<Properties> {
             attributes: {
               target: '_blank',
               class: 'text-message__link',
+              tabIndex: this.props.tabIndex || 0,
             },
           }}
         >

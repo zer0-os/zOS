@@ -29,6 +29,12 @@ export class ConversationItem extends React.Component<Properties> {
     this.props.onClick(this.props.conversation.id);
   };
 
+  handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      this.props.onClick(this.props.conversation.id);
+    }
+  };
+
   tooltipContent(conversation: Channel) {
     if (conversation.otherMembers && conversation.otherMembers.length === 1) {
       return lastSeenText(conversation.otherMembers[0]);
@@ -64,6 +70,7 @@ export class ConversationItem extends React.Component<Properties> {
           type={'circle'}
           imageURL={this.props.conversation.otherMembers[0].profileImage}
           statusType={this.conversationStatus}
+          tabIndex={-1}
         />
       );
     } else if (this.isCustomIcon(this.props.conversation.icon)) {
@@ -73,6 +80,7 @@ export class ConversationItem extends React.Component<Properties> {
           type={'circle'}
           imageURL={this.props.conversation.icon}
           statusType={this.conversationStatus}
+          tabIndex={-1}
         />
       );
     }
@@ -148,7 +156,14 @@ export class ConversationItem extends React.Component<Properties> {
           ],
         }}
       >
-        <div className={c('')} onClick={this.handleMemberClick} is-active={isActive}>
+        <div
+          className={c('')}
+          onClick={this.handleMemberClick}
+          onKeyDown={this.handleKeyDown}
+          tabIndex={0}
+          role='button'
+          is-active={isActive}
+        >
           {this.renderAvatar()}
           <div className={c('summary')}>
             <div className={c('header')}>
@@ -159,7 +174,7 @@ export class ConversationItem extends React.Component<Properties> {
             </div>
             <div className={c('content')}>
               <div className={c('message')} is-unread={isUnread}>
-                <ContentHighlighter message={this.message} variant='negative' />
+                <ContentHighlighter message={this.message} variant='negative' tabIndex={-1} />
               </div>
               {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>

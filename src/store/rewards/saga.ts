@@ -3,6 +3,8 @@ import getDeepProperty from 'lodash.get';
 
 import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroPreviousDay } from '.';
 import { RewardsResp, fetchRewards } from './api';
+import { takeEveryFromBus } from '../../lib/saga';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
 
@@ -57,7 +59,15 @@ export function* rewardsPopupClosed() {
   }
 }
 
+function* clearOnLogout() {
+  yield put(setLoading(false));
+  yield put(setZero('0'));
+  yield put(setZeroPreviousDay('0'));
+  yield put(setShowNewRewards(false));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, syncFetchRewards);
   yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

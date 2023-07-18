@@ -66,21 +66,21 @@ export class ConversationItem extends React.Component<Properties> {
     if (this.props.conversation.otherMembers.length === 1) {
       return (
         <Avatar
-          tabIndex={-1}
           size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.otherMembers[0].profileImage}
           statusType={this.conversationStatus}
+          tabIndex={-1}
         />
       );
     } else if (this.isCustomIcon(this.props.conversation.icon)) {
       return (
         <Avatar
-          tabIndex={-1}
           size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.icon}
           statusType={this.conversationStatus}
+          tabIndex={-1}
         />
       );
     }
@@ -174,7 +174,7 @@ export class ConversationItem extends React.Component<Properties> {
             </div>
             <div className={c('content')}>
               <div className={c('message')} is-unread={isUnread}>
-                <ContentHighlighter message={this.message} variant='negative' />
+                <ContentHighlighter message={this.message} variant='negative' tabIndex={-1} />
               </div>
               {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
             </div>

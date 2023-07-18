@@ -35,10 +35,6 @@ function* connectOnLogin() {
   const userId = yield select((state) => getDeepProperty(state, 'authentication.user.data.id', null));
   const chatAccessToken = yield select((state) => getDeepProperty(state, 'chat.chatAccessToken.value', null));
 
-  if (!userId || !chatAccessToken) {
-    yield spawn(connectOnLogin); // Wait again
-  }
-
   yield initChat(userId, chatAccessToken);
 }
 

@@ -372,9 +372,11 @@ $side-padding: 16px;
   color: theme.$color-greyscale-12;
 
   &:hover,
+  &:focus,
   &[is-active='true'] {
     background-color: theme.$color-primary-3;
     border-radius: 8px;
+    outline: none;
   }
 
   & > * {

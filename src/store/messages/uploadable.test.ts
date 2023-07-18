@@ -11,9 +11,14 @@ describe(UploadableMedia, () => {
     const channelId = 'channel-id';
     const imageFile = { nativeFile: { type: 'image/png' } } as any;
     const uploadable = new UploadableMedia(imageFile);
+    uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, 'root-id'))
-      .provide([stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile, 'root-id'), { id: 'new-id' })])
+      .provide([
+        stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile, 'root-id', 'optimistic-id'), {
+          id: 'new-id',
+        }),
+      ])
       .run();
 
     expect(returnValue).toEqual({ id: 'new-id' });
@@ -32,11 +37,12 @@ describe(UploadableAttachment, () => {
     } as FileUploadResult;
     const messageSendResponse = { id: 'new-id' };
     const uploadable = new UploadableAttachment(pdfFile);
+    uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, ''))
       .provide([
         stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
-        stubResponse(call(sendFileMessage, channelId, fileUploadResult), messageSendResponse),
+        stubResponse(call(sendFileMessage, channelId, fileUploadResult, 'optimistic-id'), messageSendResponse),
       ])
       .run();
 
@@ -53,10 +59,11 @@ describe(UploadableGiphy, () => {
     };
     const expectedFileToSend = { url: 'url_giphy', name: 'giphy-file', type: 'gif' };
     const uploadable = new UploadableGiphy(giphy);
+    uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, ''))
       .provide([
-        stubResponse(call(sendFileMessage, channelId, expectedFileToSend as any), { id: 'new-id' }),
+        stubResponse(call(sendFileMessage, channelId, expectedFileToSend as any, 'optimistic-id'), { id: 'new-id' }),
       ])
       .run();
 

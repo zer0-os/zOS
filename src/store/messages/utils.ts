@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Message } from './index';
+import { MediaType, Message } from './index';
 import { User } from './../authentication/types';
 import * as linkifyjs from 'linkifyjs';
 import { ParentMessage } from '../../lib/chat/types';
@@ -17,14 +17,31 @@ export interface linkifyType {
 export function createOptimisticMessageObject(
   messageText: string,
   user: User,
-  parentMessage: ParentMessage = null
+  parentMessage: ParentMessage = null,
+  file?: { name: string; url: string; mediaType: MediaType },
+  rootMessageId?: string
 ): Message {
   const id = uuidv4();
+  let media;
+  if (file) {
+    media = {
+      type: file.mediaType,
+      url: file.url,
+      name: file.name,
+      // Not sure why these are in our types as I don't think we use them at all
+      // I'm guessing this is for rendering a loaded message when the image hasn't downloaded yet
+      // but we're not doing that yet.
+      height: 0,
+      width: 0,
+    };
+  }
+
   return {
     createdAt: Date.now(),
     hidePreview: false,
     id,
     optimisticId: id,
+    rootMessageId,
     mentionedUserIds: [],
     message: messageText,
     isAdmin: false,
@@ -38,6 +55,7 @@ export function createOptimisticMessageObject(
     },
     updatedAt: 0,
     preview: null,
+    media,
   };
 }
 

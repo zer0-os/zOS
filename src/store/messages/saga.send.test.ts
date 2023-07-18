@@ -29,7 +29,7 @@ describe(send, () => {
       'user-id1',
       'user-id2',
     ];
-    const parentMessage = { id: 'parent-id' };
+    const parentMessage = { messageId: 999, userId: 'user' };
 
     testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .next()
@@ -50,15 +50,18 @@ describe(send, () => {
     testSaga(send, { payload: { channelId, message, files } }).next().isDone();
   });
 
-  it('sends files', async () => {
+  it('creates optimistic file messages then sends files', async () => {
     const channelId = 'channel-id';
-    const uploadableFile = { nativeFile: {} };
+    const uploadableFile = { file: { nativeFile: {} } };
     mockCreateUploadableFile.mockReturnValue(uploadableFile);
     const files = [{ id: 'file-id' }];
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(uploadFileMessages, channelId, '', [uploadableFile])
+      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
+      .call(uploadFileMessages, channelId, '', [
+        { ...uploadableFile, optimisticMessage: { id: 'optimistic-message-id' } },
+      ])
       .next()
       .isDone();
   });
@@ -72,10 +75,13 @@ describe(send, () => {
 
     testSaga(send, { payload: { channelId, message, files } })
       .next()
-      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
+      .next({ optimisticMessage: { id: 'root-optimistic-message-id' } })
       .next()
       .next({ id: 'root-id' })
-      .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
+      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
+      .call(uploadFileMessages, channelId, 'root-id', [
+        { ...uploadableFile, optimisticMessage: { id: 'optimistic-message-id' } },
+      ])
       .next()
       .isDone();
   });
@@ -168,10 +174,7 @@ describe(performSend, () => {
 
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), {
-          id: 'new-id',
-          optimisticId: 'optimistic-id',
-        }),
+        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id', optimisticId: 'optimistic-id' }),
         ...successResponses(),
       ])
       .withReducer(rootReducer, initialState)

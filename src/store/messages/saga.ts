@@ -1,7 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize } from '.';
+import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize, MediaType } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
@@ -64,6 +64,8 @@ interface MediaInfo {
   nativeFile?: File;
   giphy?: any;
   name: string;
+  url: string;
+  mediaType: MediaType;
 }
 
 const rawMessagesSelector = (channelId) => (state) => {
@@ -141,17 +143,28 @@ export function* send(action) {
     rootMessageId = textMessage.id;
   }
 
+  const uploadableFiles: Uploadable[] = [];
   if (files?.length) {
-    const uploadableFiles = files.map(createUploadableFile);
+    files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
+    let rootId = rootMessageId;
+    for (const index in uploadableFiles) {
+      const file = uploadableFiles[index].file;
+      const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file, rootId);
+      uploadableFiles[index].optimisticMessage = optimisticMessage;
+      rootId = ''; // only the first file should connect to the root message for now.
+    }
+  }
+
+  if (uploadableFiles?.length) {
     yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   }
 }
 
-export function* createOptimisticMessage(channelId, message, parentMessage) {
+export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
 
   yield put(
     receive({
@@ -177,16 +190,21 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+  const messageCall = call(
+    sendMessagesByChannelId,
+    channelId,
+    message,
+    mentionedUserIds,
+    parentMessage,
+    null,
+    optimisticId
+  );
+  return yield sendMessage(messageCall, channelId, optimisticId);
+}
+
+export function* sendMessage(apiCall, channelId, optimisticId) {
   try {
-    const createdMessage = yield call(
-      sendMessagesByChannelId,
-      channelId,
-      message,
-      mentionedUserIds,
-      parentMessage,
-      null,
-      optimisticId
-    );
+    const createdMessage = yield apiCall;
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {
@@ -301,29 +319,19 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
-  let messages = [];
+  // Opportunities for parallelization here.
   for (const uploadableFile of uploadableFiles) {
-    messages.push(yield uploadableFile.upload(channelId, rootMessageId));
+    const upload = call(
+      [
+        uploadableFile,
+        'upload',
+      ],
+      channelId,
+      rootMessageId
+    );
+    yield sendMessage(upload, channelId, uploadableFile.optimisticMessage.id);
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
-
-  if (!messages.length) {
-    return;
-  }
-
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  // Remove messages already received from the real time events
-  // This should simplify when we implement optimistic rendering
-  messages = messages.filter((m) => !existingMessageIds.includes(m.id));
-  yield put(
-    receive({
-      id: channelId,
-      messages: [
-        ...existingMessageIds,
-        ...messages,
-      ],
-    })
-  );
 }
 
 export function* receiveDelete(action) {

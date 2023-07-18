@@ -6,7 +6,7 @@ export interface Media {
   url: string;
   name: string;
   nativeFile?: File;
-  mediaType?: MediaType;
+  mediaType: MediaType;
   giphy?: any;
 }
 export interface UserForMention {

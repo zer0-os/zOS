@@ -7,28 +7,28 @@ import { denormalize as denormalizeChannel, normalize as normalizeChannel } from
 
 describe(uploadFileMessages, () => {
   it('uploads an uploadable file', async () => {
-    const imageCreationResponse = { id: 'image-message-id' };
+    const imageCreationResponse = { id: 'image-message-id', optimisticId: 'optimistic-id' };
     const upload = jest.fn().mockReturnValue(imageCreationResponse);
-    const uploadable = { upload };
+    const uploadable = { upload, optimisticMessage: { id: 'optimistic-id' } } as any;
     const channelId = 'channel-id';
 
-    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'existing-message' }] });
+    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'optimistic-id' }] });
 
     const { storeState } = await expectSaga(uploadFileMessages, channelId, '', [uploadable])
       .withReducer(rootReducer, initialState as any)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('existing-message');
-    expect(channel.messages[1]).toEqual(imageCreationResponse);
+    expect(channel.messages).toHaveLength(1);
+    expect(channel.messages[0].id).toEqual('image-message-id');
   });
 
   it('first media file sets its rootMessageId', async () => {
     const imageCreationResponse = { id: 'image-message-id' };
     const upload1 = jest.fn().mockReturnValue(imageCreationResponse);
     const upload2 = jest.fn().mockReturnValue(imageCreationResponse);
-    const uploadable1 = { upload: upload1 };
-    const uploadable2 = { upload: upload2 };
+    const uploadable1 = { upload: upload1, optimisticMessage: { id: 'id-1' } } as any;
+    const uploadable2 = { upload: upload2, optimisticMessage: { id: 'id-2' } } as any;
     const channelId = 'channel-id';
     const rootMessageId = 'root-message-id';
 

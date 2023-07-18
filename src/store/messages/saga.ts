@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn, apply } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize, MediaType } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
@@ -143,16 +143,17 @@ export function* send(action) {
     rootMessageId = textMessage.id;
   }
 
-  const optimisticFiles = [];
+  const uploadableFiles: Uploadable[] = [];
   if (files?.length) {
-    for (const file of files) {
+    files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
+    for (const index in uploadableFiles) {
+      const file = uploadableFiles[index].file;
       const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file);
-      optimisticFiles.push({ optimisticMessage, file });
+      uploadableFiles[index].optimisticMessage = optimisticMessage;
     }
   }
 
-  if (optimisticFiles?.length) {
-    const uploadableFiles = files.map(createUploadableFile);
+  if (uploadableFiles?.length) {
     yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   }
 }
@@ -316,29 +317,19 @@ export function* editMessage(action) {
 }
 
 export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
-  let messages = [];
+  // Opportunities for parallelization here.
   for (const uploadableFile of uploadableFiles) {
-    messages.push(yield uploadableFile.upload(channelId, rootMessageId));
+    const upload = call(
+      [
+        uploadableFile,
+        'upload',
+      ],
+      channelId,
+      rootMessageId
+    );
+    yield sendMessage(upload, channelId, uploadableFile.optimisticMessage.id);
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
-
-  if (!messages.length) {
-    return;
-  }
-
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  // Remove messages already received from the real time events
-  // This should simplify when we implement optimistic rendering
-  messages = messages.filter((m) => !existingMessageIds.includes(m.id));
-  yield put(
-    receive({
-      id: channelId,
-      messages: [
-        ...existingMessageIds,
-        ...messages,
-      ],
-    })
-  );
 }
 
 export function* receiveDelete(action) {

@@ -5,6 +5,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { getLinkPreviews, sendMessagesByChannelId } from './api';
 import {
   createOptimisticMessage,
+  createOptimisticMessages,
   createOptimisticPreview,
   messageSendFailed,
   performSend,
@@ -22,7 +23,7 @@ jest.mock('./uploadable', () => ({
 }));
 
 describe(send, () => {
-  it('creates optimistic message then fetches preview and sends the message in parallel', async () => {
+  it('creates optimistic messages then fetches preview and sends the message in parallel', async () => {
     const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = [
@@ -33,57 +34,82 @@ describe(send, () => {
 
     testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
       .next()
-      .call(createOptimisticMessage, channelId, message, parentMessage)
-      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
+      .call(createOptimisticMessages, channelId, message, parentMessage, [])
+      .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
       .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
       .next({ id: 'message-id' })
+      .next()
       .isDone();
-  });
-
-  it('ignores messages with no text or files', async () => {
-    const channelId = 'channel-id';
-    const message = '   ';
-    const files = [];
-
-    testSaga(send, { payload: { channelId, message, files } }).next().isDone();
   });
 
   it('creates optimistic file messages then sends files', async () => {
     const channelId = 'channel-id';
     const uploadableFile = { file: { nativeFile: {} } };
-    mockCreateUploadableFile.mockReturnValue(uploadableFile);
     const files = [{ id: 'file-id' }];
 
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
-      .call(uploadFileMessages, channelId, '', [
-        { ...uploadableFile, optimisticMessage: { id: 'optimistic-message-id' } },
-      ])
+      .call(createOptimisticMessages, channelId, undefined, undefined, files)
+      .next({ uploadableFiles: [uploadableFile] })
+      .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
       .isDone();
   });
 
   it('sends files with a rootMessageId if text is included', async () => {
     const channelId = 'channel-id';
-    const files = [{ id: 'file-id' }];
     const uploadableFile = { nativeFile: {} };
-    mockCreateUploadableFile.mockReturnValue(uploadableFile);
-    const message = 'hello';
+    const files = [{ id: 'file-id' }];
 
-    testSaga(send, { payload: { channelId, message, files } })
+    testSaga(send, { payload: { channelId, files } })
       .next()
-      .next({ optimisticMessage: { id: 'root-optimistic-message-id' } })
+      .next({ optimisticRootMessage: { id: 'root-id' }, uploadableFiles: [uploadableFile] })
       .next()
       .next({ id: 'root-id' })
-      .next({ optimisticMessage: { id: 'optimistic-message-id' } })
-      .call(uploadFileMessages, channelId, 'root-id', [
-        { ...uploadableFile, optimisticMessage: { id: 'optimistic-message-id' } },
-      ])
+      .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
       .next()
       .isDone();
+  });
+});
+
+describe(createOptimisticMessages, () => {
+  it('creates the root message', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+
+    const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [])
+      .withReducer(rootReducer, defaultState())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].message).toEqual(message);
+    expect(channel.messages[0].id).not.toBeNull();
+    expect(channel.messages[0].sender).not.toBeNull();
+    expect(returnValue.optimisticRootMessage).toEqual(expect.objectContaining({ message: 'test message' }));
+  });
+
+  it('creates the uploadable files with optimistic message', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+    const file = { nativeFile: {} };
+    const uploadableFile = { file: { name: 'media-file' } };
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
+
+    const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [
+      file,
+    ])
+      .withReducer(rootReducer, defaultState())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].message).toEqual(message);
+    expect(channel.messages[0].id).not.toBeNull();
+    expect(channel.messages[0].sender).not.toBeNull();
+    expect(returnValue.uploadableFiles[0].optimisticMessage.media).toEqual(
+      expect.objectContaining({ name: 'media-file' })
+    );
   });
 });
 

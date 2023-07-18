@@ -252,6 +252,9 @@ export class Container extends React.Component<Properties, State> {
       } else {
         // Hmm... not sure how we ended up with integers as our message ids. For now, just cast to a string.
         messagesById[m.id.toString()] = m;
+        if (m.id.toString() !== m.optimisticId) {
+          messagesById[m.optimisticId] = m;
+        }
         messages.push(m);
       }
     });

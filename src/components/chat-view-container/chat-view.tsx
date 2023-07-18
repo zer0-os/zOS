@@ -142,7 +142,7 @@ export class ChatView extends React.Component<Properties, State> {
       } else {
         return (
           <div
-            key={message.id}
+            key={message.optimisticId || message.id}
             className={classNames('messages__message-row', {
               'messages__message-row--owner': this.isUserOwnerOfMessage(message),
             })}

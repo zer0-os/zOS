@@ -2,7 +2,7 @@ import { put, select, call, take, takeEvery, spawn } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 import getDeepProperty from 'lodash.get';
 
-import { setReconnecting } from '.';
+import { setActiveChannelId, setReconnecting, setactiveConversationId } from '.';
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -48,8 +48,14 @@ function* closeConnectionOnLogout(chatConnection) {
   yield spawn(connectOnLogin);
 }
 
+function* clearOnLogout() {
+  yield put(setActiveChannelId(null));
+  yield put(setactiveConversationId(null));
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);

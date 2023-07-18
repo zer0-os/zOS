@@ -99,15 +99,18 @@ export class ChatView extends React.Component<Properties, State> {
 
   formatDayHeader(dateString: string): string {
     const date = moment(dateString);
+    const today = moment().startOf('day');
+    const yesterday = moment().subtract(1, 'day').startOf('day');
 
-    return date.calendar(null, {
-      sameDay: '[Today]',
-      nextDay: '[Tomorrow]',
-      nextWeek: '[Next] dddd',
-      lastDay: '[Yesterday]',
-      lastWeek: 'dddd',
-      sameElse: 'MMM D, YYYY',
-    });
+    if (date.isSame(today, 'day')) {
+      return 'Today';
+    } else if (date.isSame(yesterday, 'day')) {
+      return 'Yesterday';
+    } else if (date.year() === today.year()) {
+      return date.format('ddd, MMM D');
+    } else {
+      return date.format('MMM D, YYYY');
+    }
   }
 
   closeIndicator = () => {

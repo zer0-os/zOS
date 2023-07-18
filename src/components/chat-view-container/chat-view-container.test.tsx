@@ -60,16 +60,31 @@ describe('ChannelViewContainer', () => {
 
   it('groups message media with rootId onto parent message', () => {
     const messages = [
-      { id: 'message-root', message: 'what', rootMessageId: '' },
-      { id: 'message-two', message: 'hello', rootMessageId: '' },
-      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
+      { id: 'message-root', rootMessageId: '' },
+      { id: 'message-two', rootMessageId: '' },
+      { id: 'message-child', rootMessageId: 'message-root', media: { some: 'media' } },
     ];
 
     const wrapper = subject({ channel: { messages } });
 
     expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { id: 'message-root', message: 'what', rootMessageId: '', media: { some: 'media' } },
-      { id: 'message-two', message: 'hello', rootMessageId: '' },
+      { ...messages[0], media: { some: 'media' } },
+      messages[1],
+    ]);
+  });
+
+  it('groups message media with optimistic rootId onto parent message', () => {
+    const messages = [
+      { id: 'message-root', optimisticId: 'optimistic-message-root', rootMessageId: '' },
+      { id: 'message-two', rootMessageId: '' },
+      { id: 'message-child', rootMessageId: 'optimistic-message-root', media: { some: 'media' } },
+    ];
+
+    const wrapper = subject({ channel: { messages } });
+
+    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
+      { ...messages[0], media: { some: 'media' } },
+      messages[1],
     ]);
   });
 

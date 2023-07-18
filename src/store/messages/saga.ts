@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn, apply } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize, MediaType } from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';

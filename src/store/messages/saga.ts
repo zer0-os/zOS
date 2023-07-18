@@ -155,9 +155,7 @@ export function* send(action) {
     }
   }
 
-  if (uploadableFiles?.length) {
-    yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
-  }
+  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
 }
 
 export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {

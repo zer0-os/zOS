@@ -39,6 +39,7 @@ describe(send, () => {
       .next()
       .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
       .next({ id: 'message-id' })
+      .next()
       .isDone();
   });
 
@@ -47,7 +48,7 @@ describe(send, () => {
     const message = '   ';
     const files = [];
 
-    testSaga(send, { payload: { channelId, message, files } }).next().isDone();
+    testSaga(send, { payload: { channelId, message, files } }).next().next().isDone();
   });
 
   it('creates optimistic file messages then sends files', async () => {

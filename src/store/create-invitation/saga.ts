@@ -2,6 +2,8 @@ import { put, call, takeLeading } from 'redux-saga/effects';
 import { SagaActionTypes, reset, setInvite } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
+import { takeEveryFromBus } from '../../lib/saga';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 export function* fetchInvite() {
   // reset before fetching
@@ -25,6 +27,11 @@ export function* fetchInvite() {
   }
 }
 
+function* clearOnLogout() {
+  yield put(reset());
+}
+
 export function* saga() {
   yield takeLeading(SagaActionTypes.GetCode, fetchInvite);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

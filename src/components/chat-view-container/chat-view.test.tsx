@@ -12,6 +12,7 @@ import { Button as ConnectButton } from '../authentication/button';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
 import { User } from '../../store/authentication/types';
+import moment from 'moment';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../platform-apps/channels/util/api', () => {
@@ -274,5 +275,49 @@ describe('ChatView', () => {
     await input.prop('getUsersForMentions')('bob');
 
     expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob');
+  });
+
+  describe('formatDayHeader', () => {
+    it('returns "Today" for the current day', () => {
+      const today = moment().startOf('day');
+      const messages = [
+        { id: 111, message: 'what', createdAt: today.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find('.message__header-date').text()).toEqual('Today');
+    });
+
+    it('returns "Yesterday" for the previous day', () => {
+      const yesterday = moment().subtract(1, 'day').startOf('day');
+      const messages = [
+        { id: 111, message: 'what', createdAt: yesterday.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find('.message__header-date').text()).toEqual('Yesterday');
+    });
+
+    it('returns the formatted date for the same year', () => {
+      const currentYearDate = moment('2023-06-11'); // Example date within the same year
+      const messages = [
+        { id: 111, message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+      expect(wrapper.find('.message__header-date').text()).toEqual('Sun, Jun 11');
+    });
+
+    it('returns the formatted date for previous years', () => {
+      const previousYearDate = moment('2022-07-16'); // Example date from a previous year
+      const messages = [
+        { id: 111, message: 'what', createdAt: previousYearDate.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+      expect(wrapper.find('.message__header-date').text()).toEqual('Jul 16, 2022');
+    });
   });
 });

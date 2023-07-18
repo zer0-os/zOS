@@ -20,10 +20,15 @@ describe('Tooltip', () => {
     );
   };
 
-  it('render', function () {
+  it('renders with overlay', function () {
     const wrapper = subject({});
-
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+  });
+
+  it('renders without overlay', function () {
+    const wrapper = subject({ overlay: '' });
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+    expect(wrapper.text()).toBe(CHILDREN_TEST);
   });
 
   it('renders all props', function () {

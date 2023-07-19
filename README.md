@@ -52,31 +52,6 @@ Our BEM utility functions are defined in the `src/lib/bem.ts file`. This contain
 
 `bem` and `bemClassName` are high-level functions that allow you to generate BEM-compliant class names based on the block, element, and modifier that you provide. `fullBem` is a helper function used by `bem` and `bemClassName` to build the full BEM class name.
 
-```
-// src/lib/bem.ts
-export function bem(block: string) {
-  return (element, modifier = '') => fullBem(block, element, modifier);
-}
-
-export function bemClassName(block: string) {
-  return (element = '', modifier = '') => {
-    return { className: fullBem(block, element, modifier) };
-  };
-}
-
-function fullBem(block: string, element = '', modifier = '') {
-  let result = block;
-  if (element) {
-    result += `__${element}`;
-  }
-  if (modifier) {
-    result += ` ${result}--${modifier}`;
-  }
-
-  return result;
-}
-```
-
 #### Component and Styling Example
 
 Block Class Naming: The primary class name for a component is derived from its filename. For example, a file named `create-wallet-account` has a primary class named `create-wallet-account`.

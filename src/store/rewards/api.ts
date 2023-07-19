@@ -16,3 +16,11 @@ export async function fetchRewards(_obj: any): Promise<RewardsResp> {
     response: response.body,
   };
 }
+
+export async function fetchCurrentZeroPriceInUSD() {
+  const response = await get('/api/tokens/zero');
+  return {
+    success: true,
+    response: response.body,
+  };
+}

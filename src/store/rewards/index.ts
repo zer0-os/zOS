@@ -8,6 +8,7 @@ export enum SagaActionTypes {
 export type RewardsState = {
   loading: boolean;
   zero: string;
+  zeroInUSD: number;
   zeroPreviousDay: string;
   showNewRewards: boolean;
 };
@@ -15,6 +16,7 @@ export type RewardsState = {
 export const initialState: RewardsState = {
   loading: false,
   zero: '0',
+  zeroInUSD: 0.0,
   zeroPreviousDay: '0',
   showNewRewards: false,
 };
@@ -32,6 +34,9 @@ const slice = createSlice({
     setZero: (state, action: PayloadAction<RewardsState['zero']>) => {
       state.zero = action.payload;
     },
+    setZeroInUSD: (state, action: PayloadAction<RewardsState['zeroInUSD']>) => {
+      state.zeroInUSD = action.payload;
+    },
     setZeroPreviousDay: (state, action: PayloadAction<RewardsState['zeroPreviousDay']>) => {
       state.zeroPreviousDay = action.payload;
     },
@@ -41,5 +46,5 @@ const slice = createSlice({
   },
 });
 
-export const { setLoading, setZero, setZeroPreviousDay, setShowNewRewards } = slice.actions;
+export const { setLoading, setZero, setZeroPreviousDay, setShowNewRewards, setZeroInUSD } = slice.actions;
 export const { reducer } = slice;

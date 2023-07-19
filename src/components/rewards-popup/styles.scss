@@ -97,7 +97,7 @@ $content-padding-y: 40px;
     text-transform: uppercase;
   }
 
-  &__rewards-usd {
+  &__rewards-zero {
     font-family: 'Roboto Mono';
     font-weight: 700;
     font-size: 48px;
@@ -107,7 +107,7 @@ $content-padding-y: 40px;
     color: theme.$color-greyscale-12;
   }
 
-  &__rewards-zero {
+  &__rewards-usd {
     font-family: 'Roboto Mono';
     font-weight: 400;
     font-size: 14px;

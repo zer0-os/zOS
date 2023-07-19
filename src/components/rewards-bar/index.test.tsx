@@ -13,7 +13,6 @@ describe('rewards-bar', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
       showNewRewards: false,
@@ -41,21 +40,6 @@ describe('rewards-bar', () => {
     const wrapper = subject({ isFirstTimeLogin: true });
 
     expect(wrapper).toHaveElement(RewardsPopupContainer);
-  });
-
-  it('parses token number to renderable string', function () {
-    const wrapper = subject({ zero: '9123456789111315168' });
-    wrapper.find('.rewards-bar__rewards-button').simulate('click');
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.12');
-
-    wrapper.setProps({ zero: '9123000000000000000' });
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('9.12');
-
-    wrapper.setProps({ zero: '23456789111315168' });
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0.02');
-
-    wrapper.setProps({ zero: '0' });
-    expect(wrapper.find(RewardsPopupContainer).prop('zero')).toEqual('0');
   });
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {
@@ -97,7 +81,6 @@ describe('rewards-bar', () => {
 
   it('closes rewards tooltip popup if clicked on close icon', async function () {
     const wrapper = subject({
-      zero: '9000000000000000000',
       zeroPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
       showNewRewards: true,

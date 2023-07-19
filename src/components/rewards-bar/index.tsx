@@ -22,7 +22,6 @@ export interface Properties {
   userHandle: string;
   userAvatarUrl: string;
 
-  zero: string;
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
   showNewRewards: boolean;
@@ -120,7 +119,6 @@ export class RewardsBar extends React.Component<Properties, State> {
           <RewardsPopupContainer
             onClose={this.closeRewards}
             openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
-            zero={formatWeiAmount(this.props.zero)}
             isLoading={this.props.isRewardsLoading}
           />
         )}

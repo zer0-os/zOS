@@ -1,14 +1,24 @@
-import { call, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, takeEvery, takeLatest } from 'redux-saga/effects';
 import getDeepProperty from 'lodash.get';
 
-import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroPreviousDay } from '.';
-import { RewardsResp, fetchRewards } from './api';
+import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroInUSD, setZeroPreviousDay } from '.';
+import { RewardsResp, fetchCurrentZeroPriceInUSD as fetchCurrentZeroPriceInUSDAPI, fetchRewards } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
+const SYNC_ZERO_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
 
 const lastViewedRewardsKey = 'last_viewed_rewards';
+
+export function* fetchCurrentZeroPriceInUSD() {
+  try {
+    const result = yield call(fetchCurrentZeroPriceInUSDAPI);
+    if (result.success) {
+      yield put(setZeroInUSD(result.response.price));
+    }
+  } catch (e) {}
+}
 
 export function* fetch(_action) {
   yield put(setLoading(true));
@@ -33,6 +43,19 @@ export function* syncFetchRewards() {
 
     yield delay(FETCH_REWARDS_INTERVAL);
   }
+}
+
+export function* syncZEROPrice() {
+  while (true) {
+    yield call(fetchCurrentZeroPriceInUSD);
+
+    yield delay(SYNC_ZERO_TOKEN_PRICE_INTERVAL);
+  }
+}
+
+export function* syncRewardsAndTokenPrice() {
+  yield spawn(syncFetchRewards);
+  yield spawn(syncZEROPrice);
 }
 
 export function* checkNewRewardsLoaded() {
@@ -63,11 +86,12 @@ function* clearOnLogout() {
   yield put(setLoading(false));
   yield put(setZero('0'));
   yield put(setZeroPreviousDay('0'));
+  yield put(setZeroInUSD(0.0));
   yield put(setShowNewRewards(false));
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Fetch, syncFetchRewards);
+  yield takeLatest(SagaActionTypes.Fetch, syncRewardsAndTokenPrice);
   yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

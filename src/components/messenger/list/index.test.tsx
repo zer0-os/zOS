@@ -38,7 +38,6 @@ describe('messenger-list', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
       isInviteNotificationOpen: false,
@@ -399,12 +398,6 @@ describe('messenger-list', () => {
       const state = subject([], {}, undefined, undefined, { loading: true });
 
       expect(state.isRewardsLoading).toEqual(true);
-    });
-
-    test('zero', () => {
-      const state = subject([], {}, undefined, undefined, { zero: '17' });
-
-      expect(state.zero).toEqual('17');
     });
 
     test('activeConversationId', () => {

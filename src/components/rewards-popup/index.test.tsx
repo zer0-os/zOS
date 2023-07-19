@@ -19,19 +19,26 @@ describe('RewardsPopup', () => {
   };
 
   it('renders your rewards count in ZERO', function () {
-    const wrapper = subject({ zero: '838' });
+    const wrapper = subject({ zero: '360.12K' });
 
-    expect(wrapper.find('.rewards-popup__rewards-zero').text()).toEqual('838 $ZERO');
+    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
+    expect((skeleton.prop('asyncText') as any).text).toEqual('360.12K');
+  });
+
+  it('renders your rewards in USD', function () {
+    const wrapper = subject({ usd: '$5,055.00 USD' });
+
+    expect(wrapper.find('.rewards-popup__rewards-usd').text()).toEqual('$5,055.00 USD');
   });
 
   it('sets the skeleton loading attribute', function () {
     const wrapper = subject({ isLoading: true });
 
-    let skeleton = wrapper.find('.rewards-popup__rewards-usd SkeletonText');
+    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(true);
 
     wrapper.setProps({ isLoading: false });
-    skeleton = wrapper.find('.rewards-popup__rewards-usd SkeletonText');
+    skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(false);
   });
 

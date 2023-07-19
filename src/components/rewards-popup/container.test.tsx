@@ -13,6 +13,7 @@ describe('Container', () => {
       return {
         ...authState(),
         ...layoutState(),
+        ...rewardState(),
       } as RootState;
     }
 
@@ -30,6 +31,22 @@ describe('Container', () => {
 
       state = Container.mapState({ ...baseState(), ...layoutState({ isMessengerFullScreen: true }) } as RootState);
       expect(state.isFullScreen).toEqual(true);
+    });
+
+    test('zero', async () => {
+      let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
+      expect(state.zero).toEqual('');
+
+      state = Container.mapState({ ...baseState(), ...rewardState({ zero: '99999999' }) } as RootState);
+      expect(state.zero).toEqual('99999999');
+    });
+
+    test('zeroInUSD', async () => {
+      let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
+      expect(state.zeroInUSD).toEqual(0);
+
+      state = Container.mapState({ ...baseState(), ...rewardState({ zeroInUSD: 0.0454243368 }) } as RootState);
+      expect(state.zeroInUSD).toEqual(0.0454243368);
     });
   });
 });
@@ -54,6 +71,16 @@ function layoutState(layout = {}) {
       value: {
         ...layout,
       },
+    },
+  };
+}
+
+function rewardState(reward = {}) {
+  return {
+    rewards: {
+      zero: '',
+      zeroInUSD: 0,
+      ...reward,
     },
   };
 }

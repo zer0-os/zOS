@@ -58,7 +58,7 @@ Block Class Naming: The primary class name for a component is derived from its f
 
 BEM Naming Conventions: The classes follow the naming convention of the BEM methodology. For instance, a parent block `.create-wallet-account` has elements like `__heading`, `__sub-heading`, etc. The naming convention makes it clear which elements belong to which block.
 
-Nested Elements: The BEM convention enables developers to nest elements. This is evident in our `src/authentication/create-wallet-account/index.tsx` file where we've declared nested elements under the parent block `.create-wallet-account`. This helps maintain style encapsulation and makes the stylesheet easy to navigate.
+Nested Elements: In our `src/authentication/create-wallet-account/index.tsx` file where we've declared nested elements under the parent block `.create-wallet-account`. This helps maintain style encapsulation and makes the stylesheet easy to navigate.
 
 ```
 const c = bem('create-wallet-account');

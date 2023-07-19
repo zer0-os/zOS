@@ -60,6 +60,22 @@ describe('autocomplete-members', () => {
 
     expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
   });
+
+  it('fires onSelect when enter is pressed on a result', async () => {
+    const search = jest.fn();
+    when(search).mockResolvedValue([
+      { name: 'Result 1', id: 'result-1' },
+    ]);
+    const onSelect = jest.fn();
+    const wrapper = subject({ search, onSelect });
+    await searchFor(wrapper, 'name');
+
+    wrapper
+      .find('.autocomplete-members__search-results > div')
+      .simulate('keydown', { key: 'Enter', currentTarget: { dataset: { id: 'result-1' } } });
+
+    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
+  });
 });
 
 async function searchFor(wrapper, searchString) {

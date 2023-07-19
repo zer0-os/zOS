@@ -50,4 +50,16 @@ describe('UserSearchResults', () => {
 
     expect(handleCreate).toHaveBeenCalledWith(userResults[0].value);
   });
+
+  it('triggers onCreate when enter key is pressed', function () {
+    const handleCreate = jest.fn();
+    const userResults = [
+      { value: 'user-1', label: 'jack', image: 'image-1' },
+    ];
+    const wrapper = subject({ results: userResults, onCreate: handleCreate });
+
+    wrapper.find('.user-search-results__item').simulate('keydown', { key: 'Enter' });
+
+    expect(handleCreate).toHaveBeenCalledWith(userResults[0].value);
+  });
 });

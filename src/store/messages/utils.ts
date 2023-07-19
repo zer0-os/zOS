@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { MediaType, Message } from './index';
+import { MediaType, Message, MessageSendStatus } from './index';
 import { User } from './../authentication/types';
 import * as linkifyjs from 'linkifyjs';
 import { ParentMessage } from '../../lib/chat/types';
@@ -56,6 +56,7 @@ export function createOptimisticMessageObject(
     updatedAt: 0,
     preview: null,
     media,
+    sendStatus: MessageSendStatus.IN_PROGRESS,
   };
 }
 

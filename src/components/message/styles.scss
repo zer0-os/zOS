@@ -140,21 +140,26 @@
   }
 
   &__footer {
-    display: var(--message-footer-display);
+    display: flex;
     justify-content: flex-end;
     margin: 0px;
-  }
-
-  &__time {
-    display: block;
+    color: theme.$color-greyscale-11;
     font-size: 12px;
-    color: themeDeprecated.$font-color-time;
-    text-align: right;
     font-weight: 400;
     font-size: 12px;
     line-height: 15px;
-    margin: 0px;
+  }
+
+  &__time {
+    display: var(--message-timestamp-display);
     padding-top: 4px;
+  }
+
+  &__failure-message {
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+    color: theme.$color-failure-11;
   }
 
   &__menu {

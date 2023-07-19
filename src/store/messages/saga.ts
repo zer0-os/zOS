@@ -1,7 +1,16 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll, denormalize, MediaType } from '.';
+import {
+  EditMessageOptions,
+  Message,
+  SagaActionTypes,
+  schema,
+  removeAll,
+  denormalize,
+  MediaType,
+  MessageSendStatus,
+} from '.';
 import { receive as receiveMessage } from './';
 import { Channel, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
@@ -229,20 +238,23 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
 }
 
 export function* messageSendFailed(channelId, optimisticId) {
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  const messagesWithoutFailed = existingMessageIds.filter((id) => id !== optimisticId);
-  const lastMessage = yield select((state) =>
-    denormalize(messagesWithoutFailed[messagesWithoutFailed.length - 1], state)
-  );
-
   yield put(
-    receive({
-      id: channelId,
-      messages: messagesWithoutFailed,
-      lastMessage: lastMessage,
-      lastMessageCreatedAt: lastMessage.createdAt,
+    receiveMessage({
+      id: optimisticId,
+      sendStatus: MessageSendStatus.FAILED,
     })
   );
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  // This wouldn't have to happen if we normalized the lastMessage attribute
+  if (existingMessageIds[existingMessageIds.length - 1] === optimisticId) {
+    const channel = yield select(rawChannelSelector(channelId));
+    yield put(
+      receive({
+        id: channelId,
+        lastMessage: { ...channel.lastMessage, sendStatus: MessageSendStatus.FAILED },
+      })
+    );
+  }
 }
 
 export function* fetchNewMessages(action) {
@@ -424,7 +436,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   const optimisticMessage = yield select(messageSelector(message.optimisticId));
   if (optimisticMessage) {
     const messages = [...currentMessages];
-    messages[messageIndex] = message;
+    messages[messageIndex] = { ...message, sendStatus: MessageSendStatus.SUCCESS };
     return messages;
   }
 

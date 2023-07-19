@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from '.';
-import { MediaType } from '../../store/messages';
+import { MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
@@ -70,13 +70,25 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
-  it('renders time', () => {
+  it('renders time if status not failed', () => {
     const wrapper = subject({
       message: 'the message',
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
     });
 
     expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
+    expect(wrapper).not.toHaveElement('.message__failure-message');
+  });
+
+  it('renders failure message instead of time if status is failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      sendStatus: MessageSendStatus.FAILED,
+    });
+
+    expect(wrapper).not.toHaveElement('.message__time');
+    expect(wrapper).toHaveElement('.message__failure-message');
   });
 
   it('renders message menu of items', () => {

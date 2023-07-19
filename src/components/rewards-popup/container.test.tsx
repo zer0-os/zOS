@@ -1,5 +1,8 @@
+import { shallow } from 'enzyme';
+import { Properties } from './container';
 import { RootState } from '../../store/reducer';
 import { Container } from './container';
+import { RewardsPopup } from '.';
 
 jest.mock('react-dom', () => ({
   createPortal: (node, _portalLocation) => {
@@ -8,6 +11,36 @@ jest.mock('react-dom', () => ({
 }));
 
 describe('Container', () => {
+  const subject = (props: Partial<Properties> = {}) => {
+    const allProps: Properties = {
+      isLoading: false,
+      isFullScreen: false,
+      withTitleBar: true,
+      zero: '',
+      zeroInUSD: 0,
+      fetchRewards: () => {},
+      onClose: () => {},
+      openRewardsFAQModal: () => {},
+      ...props,
+    };
+
+    return shallow(<Container {...allProps} />);
+  };
+
+  it('parses token number to renderable string', function () {
+    const wrapper = subject({ zero: '9123456789111315168' });
+    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('9.12');
+
+    wrapper.setProps({ zero: '9123000000000000000' });
+    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('9.12');
+
+    wrapper.setProps({ zero: '23456789111315168' });
+    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('0.02');
+
+    wrapper.setProps({ zero: '0' });
+    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('0');
+  });
+
   describe('mapState', () => {
     function baseState() {
       return {

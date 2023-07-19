@@ -34,7 +34,6 @@
     .message__block {
       background-color: theme.$color-secondary-3;
       border-radius: var(--border-owner-radius); // set in message__message-row
-      // border: 1px solid red;
 
       .message__author-name {
         display: none;

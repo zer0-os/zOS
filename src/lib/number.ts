@@ -1,10 +1,5 @@
 import millify from 'millify';
 
-export interface TokenAmountWithPrice {
-  formattedTokenAmount: string;
-  totalPriceInUSD: string;
-}
-
 /**
  * Splits the given number string into its whole and decimal parts, accounting for the
  * fixed decimal precision of 18.

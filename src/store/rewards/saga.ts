@@ -86,6 +86,7 @@ function* clearOnLogout() {
   yield put(setLoading(false));
   yield put(setZero('0'));
   yield put(setZeroPreviousDay('0'));
+  yield put(setZeroInUSD(0.0));
   yield put(setShowNewRewards(false));
 }
 

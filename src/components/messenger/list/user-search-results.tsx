@@ -20,6 +20,12 @@ export class UserSearchResults extends React.Component<Properties> {
     this.props.onCreate(id);
   };
 
+  handleKeyDown = (id: string) => (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      this.props.onCreate(id);
+    }
+  };
+
   render() {
     const { filter, results } = this.props;
 
@@ -27,8 +33,15 @@ export class UserSearchResults extends React.Component<Properties> {
       <div {...cn()}>
         <div {...cn('title')}>Start a new conversation:</div>
         {results.map((userResult) => (
-          <div {...cn('item')} onClick={() => this.handleUserClick(userResult.value)} key={userResult.value}>
-            <Avatar size='regular' type='circle' imageURL={userResult.image} />
+          <div
+            {...cn('item')}
+            tabIndex={0}
+            role='button'
+            onKeyDown={this.handleKeyDown(userResult.value)}
+            onClick={() => this.handleUserClick(userResult.value)}
+            key={userResult.value}
+          >
+            <Avatar size='regular' type='circle' imageURL={userResult.image} tabIndex={-1} />
             <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>
           </div>
         ))}

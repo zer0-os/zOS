@@ -51,7 +51,6 @@ export interface Properties extends PublicProperties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
-  zero: string;
   zeroPreviousDay: string;
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
@@ -118,7 +117,6 @@ export class Container extends React.Component<Properties, State> {
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
-      zero: rewards.zero,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
       showNewRewards: rewards.showNewRewards,
@@ -225,7 +223,6 @@ export class Container extends React.Component<Properties, State> {
         {this.props.includeTitleBar && this.renderTitleBar()}
 
         <RewardsBar
-          zero={this.props.zero}
           zeroPreviousDay={this.props.zeroPreviousDay}
           isRewardsLoading={this.props.isRewardsLoading}
           isMessengerFullScreen={this.props.isMessengerFullScreen}

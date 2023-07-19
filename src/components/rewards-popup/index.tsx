@@ -65,19 +65,19 @@ export class RewardsPopup extends React.Component<Properties, State> {
               onClick={this.abort}
             />
             <ZeroSymbol height={32} width={32} />
-            <span className={c('heading')}>My Rewards</span>
-            <div className={c('rewards-usd')}>
+            <span className={c('heading')}>$ZERO</span>
+            <div className={c('rewards-zero')}>
               <SkeletonText
                 asyncText={{
                   isLoading: this.props.isLoading,
-                  text: this.props.usd,
+                  text: this.props.zero,
                 }}
                 skeletonOptions={{
                   width: 50,
                 }}
               />
             </div>
-            <div className={c('rewards-zero')}>{this.props.zero} $ZERO</div>
+            <div className={c('rewards-usd')}>{this.props.usd}</div>
             <div className={c('info-card')}>
               <div className={c('info-card__icon')}>
                 <IconGift1 />

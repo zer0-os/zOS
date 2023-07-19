@@ -1,4 +1,4 @@
-import { AdminMessageType, Message } from '../../store/messages';
+import { AdminMessageType, Message, MessageSendStatus } from '../../store/messages';
 import { RootState } from '../../store/reducer';
 import { ChatMember } from './types';
 import { denormalize as denormalizeUser } from '../../store/users';
@@ -130,6 +130,7 @@ export function map(sendbirdMessage) {
     sender: getSender(sender),
     ...extractMessageData(data, messageType.toLowerCase() === 'file'),
     isAdmin: messageType.toLowerCase() === 'admin',
+    sendStatus: MessageSendStatus.SUCCESS,
   } as unknown as Message;
 }
 

@@ -16,6 +16,7 @@ import { RootState, rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { MessageSendStatus } from '.';
 
 const mockCreateUploadableFile = jest.fn();
 jest.mock('./uploadable', () => ({
@@ -209,7 +210,7 @@ describe(performSend, () => {
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages).toEqual([
       { id: 'message-1' },
-      { id: 'new-id', optimisticId: 'optimistic-id' },
+      { id: 'new-id', optimisticId: 'optimistic-id', sendStatus: MessageSendStatus.SUCCESS },
     ]);
   });
 
@@ -228,7 +229,7 @@ describe(performSend, () => {
 });
 
 describe(messageSendFailed, () => {
-  it('resets the existing messages', async () => {
+  it('marks the optimistic message as failed', async () => {
     const channelId = 'channel-id';
     const existingMessages = [
       { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
@@ -248,10 +249,10 @@ describe(messageSendFailed, () => {
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages).toStrictEqual(existingMessages);
+    expect(channel.messages[1].sendStatus).toEqual(MessageSendStatus.FAILED);
   });
 
-  it('resets the lastMessage information if the optimistic message was latest', async () => {
+  it('updates the lastMessage status if the optimistic message was latest', async () => {
     const channelId = 'channel-id';
     const message1 = { id: 'message 1', message: 'message_0001', createdAt: 10000000007 };
     const optimisticChannel = {
@@ -274,8 +275,8 @@ describe(messageSendFailed, () => {
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toEqual(expect.objectContaining(message1));
-    expect(channel.lastMessageCreatedAt).toStrictEqual(message1.createdAt);
+    expect(channel.lastMessage.id).toStrictEqual('optimistic');
+    expect(channel.lastMessage.sendStatus).toStrictEqual(MessageSendStatus.FAILED);
   });
 
   it('does not reset the lastMessage information if another message came after', async () => {

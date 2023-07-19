@@ -48,6 +48,12 @@ export enum AdminMessageType {
   JOINED_ZERO = 'JOINED_ZERO',
 }
 
+export enum MessageSendStatus {
+  SUCCESS,
+  IN_PROGRESS,
+  FAILED,
+}
+
 export interface Message {
   id: number;
   message?: string;
@@ -68,6 +74,7 @@ export interface Message {
   };
   optimisticId?: string;
   rootMessageId?: string;
+  sendStatus: MessageSendStatus;
 }
 
 export interface EditMessageOptions {

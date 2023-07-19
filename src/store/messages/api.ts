@@ -5,16 +5,43 @@ import { LinkPreview } from '../../lib/link-preview';
 import { AttachmentUploadResult, EditMessageOptions, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 import axios from 'axios';
+import * as matrix from 'matrix-js-sdk';
 
 export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
-  const filter: any = {};
+  const client = matrix.createClient({
+    baseUrl: 'http://localhost:8008',
+    accessToken: 'syt_am9lbA_USeTBaCEnBhMozlfozzz_1dtSKr',
+    userId: '@joel:zos-dev.zer0.io',
+  });
 
-  if (lastCreatedAt) {
-    filter.lastCreatedAt = lastCreatedAt;
-  }
+  const { chunk } = await client.createMessagesRequest(channelId, null, 30, matrix.Direction.Forward);
 
-  const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
-  return response.body;
+  const messages = chunk
+    .filter((m) => m.type === 'm.room.message')
+    .map((m) => ({
+      id: m.event_id,
+      message: m.content.body,
+      parentMessageText: '',
+      parentMessageId: null,
+      createdAt: m.origin_server_ts,
+      updatedAt: m.origin_server_ts,
+      sender: {},
+      isAdmin: false,
+      ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
+    }));
+
+  console.log('got messages: ', messages);
+
+  return { messages: messages as any, hasMore: false };
+
+  // const filter: any = {};
+
+  // if (lastCreatedAt) {
+  //   filter.lastCreatedAt = lastCreatedAt;
+  // }
+
+  // const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
+  // return response.body;
 }
 
 export async function sendFileMessage(channelId: string, file: FileUploadResult, optimisticId?: string): Promise<any> {

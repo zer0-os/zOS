@@ -12,7 +12,7 @@ import {
   uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { channelMapper, filterChannelsList } from './utils';
+import { matrixChannelMapper, channelMapper, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
@@ -35,7 +35,7 @@ export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
   const channels = yield call(fetchChannelsApi, action.payload);
-  const channelsList = channels.map((currentChannel) => channelMapper(currentChannel));
+  const channelsList = channels.map((currentChannel) => matrixChannelMapper(currentChannel));
 
   const conversationsList = yield select(rawConversationsList());
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
@@ -12,7 +12,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '../icon-button';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
@@ -117,6 +117,21 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
+  renderFooter() {
+    return (
+      <>
+        <div {...cn('footer')}>
+          {this.props.sendStatus !== MessageSendStatus.FAILED && this.renderTime(this.props.createdAt)}
+          {this.props.sendStatus === MessageSendStatus.FAILED && (
+            <div {...cn('failure-message')}>
+              Failed to send&nbsp;
+              <IconAlertCircle size={16} />
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
     return <div {...cn('time')}>{createdTime}</div>;
@@ -195,7 +210,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   render() {
-    const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
+    const { message, media, preview, sender, isOwner, hidePreview } = this.props;
     return (
       <div
         className={classNames('message', this.props.className, {
@@ -251,7 +266,7 @@ export class Message extends React.Component<Properties, State> {
               )}
             </>
           )}
-          <div {...cn('footer')}>{this.renderTime(createdAt)}</div>
+          {this.renderFooter()}
         </div>
         {this.renderMenu()}
       </div>

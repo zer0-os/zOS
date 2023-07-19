@@ -24,6 +24,14 @@ export class FeatureFlags {
   set allowPublicZOS(value: boolean) {
     this._setBoolean('allowPublicZOS', value);
   }
+
+  get enableDevPanel() {
+    return this._getBoolean('enableDevPanel');
+  }
+
+  set enableDevPanel(value: boolean) {
+    this._setBoolean('enableDevPanel', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -1,0 +1,35 @@
+.dev-panel {
+  pointer-events: auto; // The platform layer sets this and it's inherited so restore to default
+  box-sizing: border-box;
+  height: 100vh;
+  width: 300px;
+  overflow-y: auto;
+
+  background-color: grey;
+
+  padding: 12px;
+
+  &__toggle {
+    z-index: 5000;
+    position: absolute;
+    pointer-events: auto; // The platform layer sets this and it's inherited so restore to default
+    top: 0px;
+    right: 300px;
+    height: 30px;
+    width: 25px;
+    background-color: green;
+    cursor: pointer;
+
+    &--closed {
+      right: 0px;
+    }
+  }
+
+  &__message {
+    margin-bottom: 12px;
+  }
+
+  &--closed {
+    display: none;
+  }
+}

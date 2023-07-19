@@ -66,13 +66,13 @@ We use redux-saga instead of thunks, as they are much more appropriate for manag
 
 While there are tradeoffs to depending heavily on global state, the benefits to a large application are numerous. Because of this, we choose to handle most business logic at the level of global state. Because of its ability to interact closely with global state, as well as its built-in ability to handle complex concurrency scenarios, we try to keep or trigger most business logic in sagas.
 
-### Styling Conventions and Structure
+## Styling Conventions and Structure
 
-#### Overview
+### Overview
 
 We are using SCSS as our CSS preprocessor because of the additional power it provides, such as variables, mixins, nesting and inheritance. We also utilize BEM (Block, Element, Modifier) methodology to structure our CSS class names to ensure that they are understandable, scalable and maintainable.
 
-#### BEM (Block Element Modifier)
+### BEM (Block Element Modifier)
 
 BEM stands for "Block", "Element", and "Modifier". It's a naming methodology that provides a way to create reusable components and code sharing in CSS.
 
@@ -84,7 +84,7 @@ Our BEM utility functions are defined in the `src/lib/bem.ts file`. This contain
 
 `bem` and `bemClassName` are high-level functions that allow you to generate BEM-compliant class names based on the block, element, and modifier that you provide. `fullBem` is a helper function used by `bem` and `bemClassName` to build the full BEM class name.
 
-#### Component and Styling Example
+### Component and Styling Example
 
 Block Class Naming: The primary class name for a component is derived from its filename. For example, a file named `create-wallet-account` has a primary class named `create-wallet-account`.
 
@@ -152,7 +152,7 @@ The SCSS file uses the SCSS `@use` rule to import variables from a theme file. I
 
 The `&` symbol is a parent selector in SCSS, which allows us to nest our CSS selectors in a way that follows the same visual hierarchy.
 
-#### SCSS Conventions
+### SCSS Conventions
 
 We aim to follow best practices in SCSS, which include:
 
@@ -161,7 +161,7 @@ Organizing the SCSS file in a way that mirrors the structure of the HTML documen
 Using nested rules to write less code and improve readability.
 Adding comments where needed to clarify the purpose of certain styles.
 
-##### Importing Styles and Variables
+#### Importing Styles and Variables
 
 The project leverages a set of pre-defined styles, animations, layout settings, variables and utility functions to ensure a consistent and easily maintainable codebase. At the start of our SCSS stylesheets, you will often see these common imports:
 
@@ -176,7 +176,7 @@ The `@use` rule imports the theme from the `zUI` library, allowing us to maintai
 
 Meanwhile, `@import` is used to include local SCSS partials that define key functions, animations, and layout styles. These partials provide a set of reusable SCSS utilities that can be used throughout the application. By separating these utilities into different files, we promote a clean and organized code structure.
 
-##### Using Variables and Mixins
+#### Using Variables and Mixins
 
 Our stylesheets make use of SCSS variables and mixins to promote DRY (Don't Repeat Yourself) principles and maintainability. For instance:
 

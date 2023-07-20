@@ -137,6 +137,16 @@ describe('message', () => {
     expect(props.canDelete).toBe(true);
   });
 
+  it('displays the menu when message send failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.FAILED,
+    });
+
+    expect(wrapper).toHaveElement('.menu--force-visible');
+  });
+
   it('renders edited indicator', () => {
     const wrapper = subject({
       message: 'the message',

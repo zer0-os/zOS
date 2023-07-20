@@ -14,11 +14,25 @@ jobs:
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+
+      - name: Get node version
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+
+      - name: Get node_modules cache
+        uses: actions/cache@v3.0.2
+        id: node_modules
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - run: npm install
       - run: npm run lint
       - run: npx tsc
@@ -51,11 +65,25 @@ jobs:
       REACT_APP_MESSENGER_INVITE_PATH: ${{vars.MESSENGER_INVITE_PATH}}
       REACT_APP_ASSETS_PATH: ${{vars.ASSETS_PATH}}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+
+      - name: Get node version
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+
+      - name: Get node_modules cache
+        uses: actions/cache@v3.0.2
+        id: node_modules
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - run: npm install
       - name: get-npm-version
         id: package-version

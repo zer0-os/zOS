@@ -18,14 +18,15 @@ import {
   delay,
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
+  userLeftChannel,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
-import { rootReducer } from '../reducer';
+import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
-import { denormalize } from '../channels';
+import { denormalize, normalize as normalizeChannel } from '../channels';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -350,3 +351,100 @@ describe('channels list saga', () => {
     expect(channelsListResult).toEqual({ value: [] });
   });
 });
+
+describe(userLeftChannel, () => {
+  it('Channel is removed from list when the current user has left a channel', async () => {
+    const channelId = 'channel-id';
+    const userId = 'current-user-id';
+
+    const initialState = {
+      channelsList: {
+        value: [
+          'one-channel',
+          channelId,
+          'other-channel',
+        ],
+      },
+      ...currentUserState({ id: userId }),
+    } as RootState;
+
+    const { storeState } = await expectSaga(userLeftChannel, channelId, userId)
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(storeState.channelsList.value).toHaveLength(2);
+    expect(storeState.channelsList.value).not.toContain(channelId);
+  });
+
+  it('does not remove channel if user is not the current user', async () => {
+    const channelId = 'channel-id';
+    const userId = 'current-user-id';
+
+    const initialState = {
+      channelsList: { value: [channelId] },
+      ...currentUserState({ id: userId }),
+    } as RootState;
+
+    const { storeState } = await expectSaga(userLeftChannel, channelId, 'other-user-id')
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(storeState.channelsList.value).toHaveLength(1);
+    expect(storeState.channelsList.value).toContain(channelId);
+  });
+
+  it('changes active conversation if user leaves (is removed from) the currently active one', async () => {
+    const channelId = 'conversation-id';
+    const userId = 'user-id';
+
+    const initialState = {
+      ...currentUserState({ id: userId }),
+      ...existingConversationState(
+        { id: 'conversation-1', lastMessageCreatedAt: 10000000 },
+        { id: channelId },
+        { id: 'conversation-2', lastMessageCreatedAt: 10000001 }
+      ),
+      chat: { activeConversationId: channelId },
+      channelsList: {
+        value: [
+          'conversation-1',
+          channelId,
+          'conversation-2',
+        ],
+      },
+    } as RootState;
+
+    const { storeState } = await expectSaga(userLeftChannel, channelId, userId)
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(storeState.chat.activeConversationId).toEqual('conversation-2');
+  });
+});
+
+function existingConversationState(...args) {
+  const conversations = args.map((c) => ({ isChannel: false, ...c }));
+  const normalized = normalizeChannel(conversations);
+  return {
+    normalized: {
+      ...normalized.entities,
+    },
+  } as RootState;
+}
+
+function currentUserState(user) {
+  const fullUser = {
+    id: 'default-stub-user-id',
+    profileId: 'default-stub-profile-id',
+    profileSummary: {
+      firstName: 'DefaultStubFirstName',
+      lastName: 'DefaultStubLastName',
+      profileImage: '/default-stub-image.jpg',
+    },
+    ...user,
+  };
+
+  return {
+    authentication: { user: { data: fullUser } },
+  } as RootState;
+}

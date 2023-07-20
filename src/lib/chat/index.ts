@@ -14,6 +14,7 @@ interface RealtimeChatEvents {
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   onUserReceivedInvitation: (channel) => void;
   invalidChatAccessToken: () => void;
+  onUserLeft: (channelId: string, userId: string) => void;
 }
 
 export class Chat {
@@ -112,6 +113,9 @@ export class Chat {
       },
       onUserReceivedInvitation: (channel) => {
         events.onUserReceivedInvitation(this.getChannelId(channel));
+      },
+      onUserLeft: (channel, user) => {
+        events.onUserLeft(this.getChannelId(channel), user.userId);
       },
     });
 

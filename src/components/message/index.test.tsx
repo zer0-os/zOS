@@ -120,6 +120,7 @@ describe('message', () => {
 
     expect(props.canEdit).toBe(false);
     expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(false);
   });
 
   it('renders edited indicator', () => {

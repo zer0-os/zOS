@@ -120,6 +120,21 @@ describe('message', () => {
 
     expect(props.canEdit).toBe(false);
     expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(false);
+  });
+
+  it('allows only delete when message send failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.FAILED,
+    });
+
+    const props = wrapper.find(MessageMenu).props();
+
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(true);
   });
 
   it('renders edited indicator', () => {

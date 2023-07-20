@@ -7,9 +7,10 @@ import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose
 import classNames from 'classnames';
 import './styles.scss';
 
-interface Properties {
+export interface Properties {
   className: string;
   canEdit: boolean;
+  canDelete: boolean;
   canReply?: boolean;
   isMediaMessage?: boolean;
   isMenuOpen?: boolean;
@@ -54,7 +55,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         onSelect: this.props.onReply,
       });
     }
-    if (this.props.onDelete && this.props.canEdit) {
+    if (this.props.onDelete && this.props.canDelete) {
       menuItems.push({
         id: 'delete',
         label: this.renderMenuOption(<IconTrash4 />, 'Delete'),

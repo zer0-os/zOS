@@ -137,6 +137,14 @@ export class Message extends React.Component<Properties, State> {
     return <div {...cn('time')}>{createdTime}</div>;
   }
 
+  canEditMessage = (): boolean => {
+    return (
+      this.props.isOwner &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
+  };
+
   canDeleteMessage = (): boolean => {
     return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
   };
@@ -185,7 +193,11 @@ export class Message extends React.Component<Properties, State> {
   };
 
   canReply = () => {
-    return !this.props.parentMessageText && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
+    return (
+      !this.props.parentMessageText &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
   };
 
   renderMenu(): React.ReactElement {
@@ -199,7 +211,8 @@ export class Message extends React.Component<Properties, State> {
       >
         <MessageMenu
           {...cn('menu-item')}
-          canEdit={this.canDeleteMessage()}
+          canEdit={this.canEditMessage()}
+          canDelete={this.canDeleteMessage()}
           canReply={this.canReply()}
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}

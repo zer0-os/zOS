@@ -1,12 +1,13 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { MessageMenu } from '.';
+import { MessageMenu, Properties } from '.';
 
 describe('Message Menu', () => {
-  const subject = (props: any = {}) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const defaultProps = {
       className: '',
       canEdit: false,
+      canDelete: false,
       canReply: false,
       isMediaMessage: false,
       isMenuOpen: false,
@@ -24,16 +25,16 @@ describe('Message Menu', () => {
   describe('ClassName', () => {
     it('adds className', () => {
       const onDelete = jest.fn();
-      const wrapper = subject({ className: 'message-menu', onDelete, canEdit: true });
+      const wrapper = subject({ className: 'message-menu', onDelete, canDelete: true });
 
       expect(wrapper.hasClass('message-menu')).toBe(true);
     });
   });
 
   describe('Delete Button', () => {
-    it('should render when canEdit is true and onDelete is provided', () => {
+    it('should render when canDelete is true and onDelete is provided', () => {
       const onDelete = jest.fn();
-      const wrapper = subject({ canEdit: true, onDelete }) as ShallowWrapper;
+      const wrapper = subject({ canDelete: true, onDelete }) as ShallowWrapper;
 
       const dropdownMenu = wrapper.find('DropdownMenu');
       const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
@@ -44,7 +45,7 @@ describe('Message Menu', () => {
 
     it('should open delete modal when delete button is clicked', () => {
       const onDelete = jest.fn();
-      const wrapper = subject({ canEdit: true, onDelete });
+      const wrapper = subject({ canDelete: true, onDelete });
 
       const dropdownMenu = wrapper.find('DropdownMenu');
       const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];

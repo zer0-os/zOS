@@ -175,6 +175,10 @@ export function* currentUserAddedToChannel(_action) {
   yield fetchConversations();
 }
 
+export function* userLeftChannel(_channelId, _userId) {
+  yield console.log('userLeftChannel');
+}
+
 export function* saga() {
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
@@ -186,4 +190,7 @@ export function* saga() {
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);
+  yield takeEveryFromBus(chatBus, ChatEvents.UserLeftChannel, ({ payload }) =>
+    userLeftChannel(payload.channelId, payload.userId)
+  );
 }

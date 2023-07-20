@@ -1,8 +1,4 @@
 name: Common Setup
-inputs:
-  os:
-    type: string
-    required: true
 
 on:
   workflow_run:

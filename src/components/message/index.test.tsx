@@ -109,6 +109,19 @@ describe('message', () => {
     expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
+  it('disables all menu abilities when in progress', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.IN_PROGRESS,
+    });
+
+    const props = wrapper.find(MessageMenu).props();
+
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+  });
+
   it('renders edited indicator', () => {
     const wrapper = subject({
       message: 'the message',

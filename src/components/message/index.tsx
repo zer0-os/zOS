@@ -138,7 +138,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   canDeleteMessage = (): boolean => {
-    return this.props.isOwner;
+    return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
   };
 
   isMediaMessage = (): boolean => {
@@ -184,6 +184,10 @@ export class Message extends React.Component<Properties, State> {
     this.setState({ isMessageMenuOpen: false });
   };
 
+  canReply = () => {
+    return !this.props.parentMessageText && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
+  };
+
   renderMenu(): React.ReactElement {
     return (
       <div
@@ -196,7 +200,7 @@ export class Message extends React.Component<Properties, State> {
         <MessageMenu
           {...cn('menu-item')}
           canEdit={this.canDeleteMessage()}
-          canReply={!this.props.parentMessageText}
+          canReply={this.canReply()}
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
           onReply={this.onReply}

@@ -200,12 +200,17 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
+  isMenuTriggerAlwaysVisible = () => {
+    return this.props.sendStatus === MessageSendStatus.FAILED;
+  };
+
   renderMenu(): React.ReactElement {
     return (
       <div
         {...cn(
           classNames('menu', {
             'menu--open': this.state.isMessageMenuOpen,
+            'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
           })
         )}
       >

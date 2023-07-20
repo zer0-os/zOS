@@ -174,6 +174,11 @@
     opacity: 1;
   }
 
+  .menu--force-visible {
+    transform: unset;
+    opacity: 1;
+  }
+
   &__left {
     width: 32px;
     align-self: flex-end;

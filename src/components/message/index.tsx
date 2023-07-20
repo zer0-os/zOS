@@ -138,7 +138,11 @@ export class Message extends React.Component<Properties, State> {
   }
 
   canEditMessage = (): boolean => {
-    return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
+    return (
+      this.props.isOwner &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
   };
 
   canDeleteMessage = (): boolean => {
@@ -189,7 +193,11 @@ export class Message extends React.Component<Properties, State> {
   };
 
   canReply = () => {
-    return !this.props.parentMessageText && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
+    return (
+      !this.props.parentMessageText &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
   };
 
   renderMenu(): React.ReactElement {

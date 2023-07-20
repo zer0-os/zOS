@@ -155,7 +155,13 @@ export function* send(action) {
       parentMessage,
       optimisticRootMessage.id
     );
-    rootMessageId = textMessage.id;
+
+    if (textMessage) {
+      rootMessageId = textMessage.id;
+    } else {
+      // If the text message failed, we'll leave the first file as unsent
+      uploadableFiles.shift();
+    }
   }
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
@@ -234,6 +240,7 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     return createdMessage;
   } catch (e) {
     yield call(messageSendFailed, channelId, optimisticId);
+    return null;
   }
 }
 

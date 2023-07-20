@@ -73,6 +73,28 @@ describe(send, () => {
       .next()
       .isDone();
   });
+
+  it('sends all but the first file if the text root message fails', async () => {
+    const channelId = 'channel-id';
+    const uploadableFile1 = { nativeFile: {} };
+    const uploadableFile2 = { nativeFile: {} };
+    const files = [{ id: 'file-id' }];
+
+    testSaga(send, { payload: { channelId, files } })
+      .next()
+      .next({
+        optimisticRootMessage: { id: 'root-id' },
+        uploadableFiles: [
+          uploadableFile1,
+          uploadableFile2,
+        ],
+      })
+      .next()
+      .next(null) // Fail
+      .call(uploadFileMessages, channelId, '', [uploadableFile2])
+      .next()
+      .isDone();
+  });
 });
 
 describe(createOptimisticMessages, () => {

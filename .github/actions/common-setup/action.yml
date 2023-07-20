@@ -33,4 +33,4 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ inputs.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+          key: ${{ github.event.inputs.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}

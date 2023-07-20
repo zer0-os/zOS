@@ -12,7 +12,7 @@ import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../lib/bem';
 import moment from 'moment';
 import { ContentHighlighter } from '../../content-highlighter';
-import { MediaType } from '../../../store/messages';
+import { MediaType, MessageSendStatus } from '../../../store/messages';
 const c = bem('conversation-item');
 
 export interface Properties {
@@ -128,6 +128,11 @@ export class ConversationItem extends React.Component<Properties> {
     }
 
     const { messagePreview, lastMessage } = this.props.conversation;
+
+    if (lastMessage.sendStatus === MessageSendStatus.FAILED) {
+      return 'You: Failed to send';
+    }
+
     if (messagePreview) {
       const isAdminMessage = lastMessage?.admin && Object.keys(lastMessage.admin).length > 0;
       if (isAdminMessage) return messagePreview;

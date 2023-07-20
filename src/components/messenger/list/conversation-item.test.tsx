@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { ConversationItem, Properties } from './conversation-item';
 import moment from 'moment';
 import { ContentHighlighter } from '../../content-highlighter';
-import { MediaType } from '../../../store/messages';
+import { MediaType, MessageSendStatus } from '../../../store/messages';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -206,6 +206,21 @@ describe('ConversationItem', () => {
       myUserId: 'my-user-id',
     });
     expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: received an image');
+  });
+
+  it('renders failed to send message if the last message failed', function () {
+    const messagePreview = 'I said something here';
+
+    const wrapper = subject({
+      myUserId: 'id',
+      conversation: {
+        messagePreview,
+        otherMembers: [],
+        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' }, sendStatus: MessageSendStatus.FAILED },
+      } as any,
+    });
+
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Failed to send');
   });
 
   describe('status', () => {

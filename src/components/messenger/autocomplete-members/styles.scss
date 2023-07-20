@@ -39,8 +39,11 @@
       overflow: hidden;
       cursor: pointer;
 
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: theme.$color-primary-3;
+        border-radius: 8px;
+        outline: none;
       }
     }
   }

@@ -33,11 +33,21 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     this.setState({ results: items.map(itemToOption) });
   };
 
-  itemClicked = (event: any) => {
+  itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const clickedId = event.currentTarget.dataset.id;
     const selectedUser = this.state.results.find((r) => r.value === clickedId);
     if (selectedUser) {
       this.props.onSelect(selectedUser);
+    }
+  };
+
+  handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      const clickedId = event.currentTarget.dataset.id;
+      const selectedUser = this.state.results.find((r) => r.value === clickedId);
+      if (selectedUser) {
+        this.props.onSelect(selectedUser);
+      }
     }
   };
 
@@ -66,8 +76,15 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           {this.state.results && this.state.results.length > 0 && (
             <div className='autocomplete-members__search-results'>
               {this.state.results.map((r) => (
-                <div key={r.value} data-id={r.value} onClick={this.itemClicked}>
-                  <Avatar size='regular' type='circle' imageURL={r.image} />
+                <div
+                  key={r.value}
+                  data-id={r.value}
+                  tabIndex={0}
+                  role='button'
+                  onKeyDown={this.handleKeyDown}
+                  onClick={this.itemClicked}
+                >
+                  <Avatar size='regular' type='circle' imageURL={r.image} tabIndex={-1} />
                   <div>{highlightFilter(r.label, this.state.searchString)}</div>
                 </div>
               ))}

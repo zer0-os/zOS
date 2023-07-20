@@ -13,7 +13,7 @@ jobs:
   run-typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/common/setup.yml
+      - uses: ./common/setup.yml
 
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install

@@ -14,7 +14,7 @@ jobs:
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
-      - uses: ./.github/workflows/common/setup.yml
+      - uses: ./common/setup.yml
 
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install

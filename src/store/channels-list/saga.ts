@@ -47,14 +47,31 @@ export function* fetchChannels(action) {
 
 export function* fetchConversations() {
   const conversations = yield call(fetchConversationsMessagesApi);
-  const channelsList = yield select(rawChannelsList());
-
   const conversationsList = conversations.map((currentChannel) => channelMapper(currentChannel));
 
+  const existingConversationList = yield select(denormalizeConversations);
+  const newConversationList = conversationsList.map((conversation) => {
+    const existingConversation = existingConversationList.find((existing) => existing.id === conversation.id);
+    if (
+      !existingConversation ||
+      !existingConversation.lastMessageCreatedAt ||
+      (conversation.lastMessageCreatedAt ?? 0) > existingConversation.lastMessageCreatedAt
+    ) {
+      return conversation;
+    }
+
+    return {
+      ...conversation,
+      lastMessage: existingConversation.lastMessage,
+      lastMessageCreatedAt: existingConversation.lastMessageCreatedAt,
+    };
+  });
+
+  const channelsList = yield select(rawChannelsList());
   yield put(
     receive([
       ...channelsList,
-      ...conversationsList,
+      ...newConversationList,
     ])
   );
 

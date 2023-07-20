@@ -26,7 +26,8 @@ import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
-import { denormalize, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { stubResponse } from '../../test/saga';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -61,38 +62,6 @@ describe('channels list saga', () => {
       .run();
   });
 
-  describe('fetchConversations', () => {
-    it('fetches direct messages', async () => {
-      await expectSaga(fetchConversations)
-        .provide([
-          [
-            matchers.call.fn(fetchConversationsApi),
-            MOCK_CHANNELS,
-          ],
-        ])
-        .call(fetchConversationsApi)
-        .run();
-    });
-
-    it('announces conversations loaded', async () => {
-      const conversationsChannelStub = multicastChannel();
-
-      await expectSaga(fetchConversations)
-        .provide([
-          [
-            matchers.call.fn(fetchConversationsApi),
-            MOCK_CHANNELS,
-          ],
-          [
-            matchers.call.fn(conversationsChannel),
-            conversationsChannelStub,
-          ],
-        ])
-        .put(conversationsChannelStub, { loaded: true })
-        .run();
-    });
-  });
-
   describe('createConversation', () => {
     it('creates conversation', async () => {
       const name = 'group';
@@ -121,7 +90,7 @@ describe('channels list saga', () => {
         .withReducer(rootReducer)
         .run();
 
-      expect(denormalize('new-convo', storeState).hasLoadedMessages).toBe(true);
+      expect(denormalizeChannel('new-convo', storeState).hasLoadedMessages).toBe(true);
     });
 
     it('handle existing conversation creation', async () => {
@@ -419,6 +388,62 @@ describe(userLeftChannel, () => {
       .run();
 
     expect(storeState.chat.activeConversationId).toEqual('conversation-2');
+  });
+});
+
+describe('fetchConversations', () => {
+  it('fetches direct messages', async () => {
+    await expectSaga(fetchConversations)
+      .provide([
+        [
+          matchers.call.fn(fetchConversationsApi),
+          MOCK_CHANNELS,
+        ],
+      ])
+      .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+      .call(fetchConversationsApi)
+      .run();
+  });
+
+  it('announces conversations loaded', async () => {
+    const conversationsChannelStub = multicastChannel();
+
+    await expectSaga(fetchConversations)
+      .provide([
+        [
+          matchers.call.fn(fetchConversationsApi),
+          MOCK_CHANNELS,
+        ],
+        [
+          matchers.call.fn(conversationsChannel),
+          conversationsChannelStub,
+        ],
+      ])
+      .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+      .put(conversationsChannelStub, { loaded: true })
+      .run();
+  });
+
+  it('maintains lastMessage information if a local message is newer', async () => {
+    const optimisticMessage = { id: 'message-id' };
+    const channelWithOptimisticMessage = {
+      id: 'conversation-id',
+      lastMessage: optimisticMessage,
+      lastMessageCreatedAt: 10000001,
+    };
+    const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
+
+    const intialState = {
+      channelsList: { value: ['conversation-id'] },
+      ...existingConversationState(channelWithOptimisticMessage),
+    };
+
+    const { storeState } = await expectSaga(fetchConversations)
+      .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])
+      .withReducer(rootReducer, intialState)
+      .run();
+
+    expect(denormalizeChannel('conversation-id', storeState).lastMessage).toBe(optimisticMessage);
   });
 });
 

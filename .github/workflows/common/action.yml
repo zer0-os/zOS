@@ -6,6 +6,10 @@ on:
     types:
       - requested
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   common-setup:
     runs-on: ubuntu-latest

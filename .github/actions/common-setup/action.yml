@@ -1,4 +1,8 @@
 name: Common Setup
+inputs:
+  os:
+    type: string
+    required: true
 
 on:
   workflow_run:
@@ -29,4 +33,4 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+          key: ${{ inputs.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}

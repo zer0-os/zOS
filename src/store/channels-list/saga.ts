@@ -2,7 +2,7 @@ import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, receive } from '.';
+import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
 
 import {
   fetchChannels as fetchChannelsApi,
@@ -18,6 +18,7 @@ import { conversationsChannel } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { currentUserSelector } from '../authentication/saga';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -175,8 +176,31 @@ export function* currentUserAddedToChannel(_action) {
   yield fetchConversations();
 }
 
-export function* userLeftChannel(_channelId, _userId) {
-  yield console.log('userLeftChannel');
+export function* userLeftChannel(channelId, userId) {
+  const currentUser = yield select(currentUserSelector());
+
+  if (userId === currentUser.id) {
+    yield call(currentUserLeftChannel, channelId);
+  }
+}
+
+function* currentUserLeftChannel(channelId) {
+  const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
+  const newList = channelIdList.filter((id) => id !== channelId);
+  yield put(receive(newList));
+
+  const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
+  if (activeConversationId === channelId) {
+    const conversations = yield select(denormalizeConversations);
+
+    if (conversations.length > 0) {
+      const sorted = conversations.sort((a, b) => (b.lastMessageCreatedAt || 0) - (a.lastMessageCreatedAt || 0));
+      yield put(setactiveConversationId(sorted[0].id));
+    } else {
+      // Probably not possible but handled just in case
+      yield put(setactiveConversationId(null));
+    }
+  }
 }
 
 export function* saga() {

@@ -117,9 +117,6 @@ export class Chat {
       onUserLeft: (channel, user) => {
         events.onUserLeft(this.getChannelId(channel), user.userId);
       },
-      onUserBanned: (channel, user) => {
-        console.log('onUserBanned', channel, user);
-      },
     });
 
     this.sendbird.groupChannel.addGroupChannelHandler('chatHandler', channelHandler);

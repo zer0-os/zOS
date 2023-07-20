@@ -1,6 +1,9 @@
 name: run-lint
 on:
   pull_request: {}
+  push:
+    branches:
+      - fix-ci-cd
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}

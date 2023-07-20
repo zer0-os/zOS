@@ -306,11 +306,16 @@ export function* deleteMessage(action) {
     })
   );
 
+  const nonOptimisticMessagesIds = fullMessages
+    .filter((m) => messageIdsToDelete.includes(m.id))
+    .filter((m) => m.id !== m.optimisticId)
+    .map((m) => m.id);
+
   // In the future we'd prefer that the api did this so that the front-ends
   // could treat these as independent messages. However, given that we have
   // multiple front ends and they don't all support treating these messages
   // as a single entity yet, this is how we'll do it for now.
-  for (let id of messageIdsToDelete) {
+  for (let id of nonOptimisticMessagesIds) {
     yield call(deleteMessageApi, channelId, id);
   }
 }

@@ -77,6 +77,30 @@ describe(deleteMessage, () => {
       messages[2],
     ]);
   });
+
+  it('deletes optimistic message from store but does not make api call', async () => {
+    const channelId = 'channel-id';
+    const messages = [
+      { id: 'message-1' },
+      { id: 'optimistic-root', message: 'To be deleted. Root Message.', optimisticId: 'optimistic-root' },
+      { id: 'message-2' },
+      { id: 'optimistic-child', rootMessageId: 'optimistic-root', optimisticId: 'optimistic-child' },
+    ];
+
+    const initialState = existingChannelState({ id: channelId, messages });
+
+    const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'optimistic-root' } })
+      .withReducer(rootReducer, initialState)
+      .provide(successResponses())
+      .not.call.like({ fn: deleteMessageApi })
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages).toEqual([
+      messages[0],
+      messages[2],
+    ]);
+  });
 });
 
 function successResponses() {

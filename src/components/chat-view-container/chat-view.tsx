@@ -246,23 +246,25 @@ export class ChatView extends React.Component<Properties, State> {
             {this.props.messagesFetchStatus === MessagesFetchState.IN_PROGRESS && (
               <ChatSkeleton conversationId={this.props.id} />
             )}
-            {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
-              <div className='channel-view__failure-message'>
-                Failed to load your conversation with xxx.&nbsp;
-                <div
-                  className='channel-view__try-reload'
-                  onClick={() => {
-                    this.props.fetchMessages({ channelId: this.props.id });
-                  }}
-                >
-                  Try Reload
-                </div>
-              </div>
-            )}
 
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>
+
+        {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
+          <div className='channel-view__failure-message'>
+            Failed to load your conversation with xxx.&nbsp;
+            <div
+              className='channel-view__try-reload'
+              onClick={() => {
+                this.props.fetchMessages({ channelId: this.props.id });
+              }}
+            >
+              Try Reload
+            </div>
+          </div>
+        )}
+
         <IfAuthenticated showChildren>
           {isMemberOfChannel && (
             <MessageInput

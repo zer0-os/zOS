@@ -145,13 +145,11 @@ $scrollbar-width: 5px;
     &__failure-message {
       display: flex;
       flex-direction: row;
-      left: 50%;
-      //align-items: center;
+      justify-content: center;
       color: theme.$color-failure-11;
       font-weight: 400;
       font-size: 12px;
-      // position: fixed;
-      // bottom: 70px;
+      margin-bottom: 16px;
     }
 
     &__try-reload {

@@ -9,7 +9,7 @@ import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
-import EditMessageActions from './edit-message-actions';
+import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';

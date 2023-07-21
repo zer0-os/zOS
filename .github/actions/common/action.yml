@@ -15,6 +15,7 @@ runs:
 
     - name: Get node version
       id: node
+      shell: bash
       run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
 
     # rebuild the cache if OS, package-lock.json or node version changes

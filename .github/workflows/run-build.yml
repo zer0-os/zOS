@@ -1,9 +1,6 @@
 name: run-build
 on:
   pull_request: {}
-  push:
-    branches:
-      - fix-ci-cd
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -16,6 +13,7 @@ jobs:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
       - uses: actions/checkout@v2
+
       - name: Common Setup
         uses: ./.github/actions/common
 

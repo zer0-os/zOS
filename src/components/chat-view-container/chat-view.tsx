@@ -253,7 +253,7 @@ export class ChatView extends React.Component<Properties, State> {
 
         {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
           <div className='channel-view__failure-message'>
-            Failed to load your conversation with xxx.&nbsp;
+            Failed to load messages.&nbsp;
             <div
               className='channel-view__try-reload'
               onClick={() => {

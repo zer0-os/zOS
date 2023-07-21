@@ -223,13 +223,29 @@ describe('ChatView', () => {
     expect(wrapper.find(`.${className}`).exists()).toBe(true);
   });
 
-  it('renders skeleton if messages have not been loaded yet', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasLoadedMessages: false });
+  it('renders skeleton if messages are being loaded', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, messagesFetchStatus: MessagesFetchState.IN_PROGRESS });
 
     expect(wrapper).toHaveElement('ChatSkeleton');
 
-    wrapper.setProps({ hasLoadedMessages: true });
+    wrapper.setProps({ messagesFetchStatus: MessagesFetchState.SUCCESS });
     expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('renders failure message if message load failed, and fetches messages on reload', () => {
+    const fetchMessages = jest.fn();
+
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      fetchMessages,
+      id: 'channel-id',
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load messages. Try Reload');
+
+    wrapper.find('.channel-view__try-reload').simulate('click');
+    expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });
   });
 
   describe('Lightbox', () => {

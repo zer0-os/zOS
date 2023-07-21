@@ -292,7 +292,7 @@ export class Message extends React.Component<Properties, State> {
               )}
             </>
           )}
-          {this.props.sendStatus !== MessageSendStatus.FAILED && this.renderFooter()}
+          {this.renderFooter()}
         </div>
         {this.renderMenu()}
       </div>

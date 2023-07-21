@@ -13,6 +13,7 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
 import { User } from '../../store/authentication/types';
 import moment from 'moment';
+import { MessagesFetchState } from '../../store/channels';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../platform-apps/channels/util/api', () => {
@@ -51,6 +52,8 @@ describe('ChatView', () => {
       isDirectMessage: true,
       isMessengerFullScreen: false,
       hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+      fetchMessages: () => null,
       ...props,
     };
 

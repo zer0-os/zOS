@@ -17,10 +17,11 @@ import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
 import { AdminMessageContainer } from '../admin-message/container';
-
+import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups } from './utils';
+import { MessagesFetchState } from '../../store/channels';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -31,7 +32,9 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   hasLoadedMessages: boolean;
+  messagesFetchStatus: MessagesFetchState;
   onFetchMore: () => void;
+  fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
   hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
@@ -240,7 +243,23 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            {!this.props.hasLoadedMessages && <ChatSkeleton conversationId={this.props.id} />}
+            {this.props.messagesFetchStatus === MessagesFetchState.IN_PROGRESS && (
+              <ChatSkeleton conversationId={this.props.id} />
+            )}
+            {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
+              <div className='channel-view__failure-message'>
+                Failed to load your conversation with xxx.&nbsp;
+                <div
+                  className='channel-view__try-reload'
+                  onClick={() => {
+                    this.props.fetchMessages({ channelId: this.props.id });
+                  }}
+                >
+                  Try Reload
+                </div>
+              </div>
+            )}
+
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>

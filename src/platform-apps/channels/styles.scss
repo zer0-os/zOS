@@ -142,6 +142,26 @@ $scrollbar-width: 5px;
       }
     }
 
+    &__failure-message {
+      display: flex;
+      flex-direction: row;
+      left: 50%;
+      //align-items: center;
+      color: theme.$color-failure-11;
+      font-weight: 400;
+      font-size: 12px;
+      // position: fixed;
+      // bottom: 70px;
+    }
+
+    &__try-reload {
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
     &__join-wrapper {
       display: flex;
       justify-content: center;

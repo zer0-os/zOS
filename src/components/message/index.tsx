@@ -124,7 +124,7 @@ export class Message extends React.Component<Properties, State> {
       <>
         <div {...cn('footer')}>
           {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
-            <span {...cn('edited')}>(Edited)</span>
+            <span {...cn('edited-flag')}>(Edited)</span>
           )}
           {!isSendStatusFailed && this.renderTime(this.props.createdAt)}
           {isSendStatusFailed && (

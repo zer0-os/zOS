@@ -153,7 +153,7 @@ describe('message', () => {
       updatedAt: 86276372,
     });
 
-    expect(wrapper.find('.message__edited').exists()).toBe(true);
+    expect(wrapper.find('.message__edited-flag').exists()).toBe(true);
   });
 
   it('renders reply message', () => {

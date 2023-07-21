@@ -31,3 +31,10 @@ function isRelated(message1, message2) {
     Math.abs(moment(message1.createdAt).diff(moment(message2.createdAt), 'minutes')) < 5
   );
 }
+
+export function getMessageRenderProps(index, groupLength) {
+  const lastIndex = groupLength - 1;
+  return {
+    showTimestamp: index === lastIndex,
+  };
+}

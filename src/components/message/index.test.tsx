@@ -70,10 +70,29 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
+  it('renders time if specified', () => {
+    const wrapper = subject({
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: true,
+    });
+
+    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
+  });
+
+  it('does not render time if not specified', () => {
+    const wrapper = subject({
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: false,
+    });
+
+    expect(wrapper).not.toHaveElement('.message__time');
+  });
+
   it('renders time if status not failed', () => {
     const wrapper = subject({
       message: 'the message',
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: true,
     });
 
     expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
@@ -85,6 +104,7 @@ describe('message', () => {
       message: 'the message',
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
       sendStatus: MessageSendStatus.FAILED,
+      showTimestamp: true,
     });
 
     expect(wrapper).not.toHaveElement('.message__time');

@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { Message as MessageModel } from '../../store/messages';
-import { createMessageGroups } from './utils';
+import { createMessageGroups, getMessageRenderProps } from './utils';
 
 describe(createMessageGroups, () => {
   it('returns an empty group list when input is empty', () => {
@@ -65,6 +65,28 @@ describe(createMessageGroups, () => {
       ],
       [third],
     ]);
+  });
+});
+
+describe(getMessageRenderProps, () => {
+  describe('showTimestamp', () => {
+    it('is true if the message is the last in the group', () => {
+      const index = 4;
+      const groupLength = 5;
+
+      const props = getMessageRenderProps(index, groupLength);
+
+      expect(props.showTimestamp).toEqual(true);
+    });
+
+    it('is false if the message is _not_ the last in the group', () => {
+      const index = 2;
+      const groupLength = 5;
+
+      const props = getMessageRenderProps(index, groupLength);
+
+      expect(props.showTimestamp).toEqual(false);
+    });
   });
 });
 

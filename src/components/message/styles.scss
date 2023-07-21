@@ -152,7 +152,7 @@
   }
 
   &__time {
-    display: var(--message-timestamp-display);
+    display: flex;
     padding-top: 4px;
   }
 

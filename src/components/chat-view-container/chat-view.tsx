@@ -21,7 +21,7 @@ import { AdminMessageContainer } from '../admin-message/container';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
-import { createMessageGroups } from './utils';
+import { createMessageGroups, getMessageRenderProps } from './utils';
 import { MessagesFetchState } from '../../store/channels';
 
 interface ChatMessageGroups {
@@ -140,11 +140,12 @@ export class ChatView extends React.Component<Properties, State> {
     return this.props.user && message.sender && this.props.user.id == message.sender.userId;
   }
 
-  renderMessageGroup(allMessages) {
-    return allMessages.map((message, index) => {
+  renderMessageGroup(groupMessages) {
+    return groupMessages.map((message, index) => {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.id} message={message} />;
       } else {
+        const messageRenderProps = getMessageRenderProps(index, groupMessages.length);
         return (
           <div
             key={message.optimisticId || message.id}
@@ -154,7 +155,7 @@ export class ChatView extends React.Component<Properties, State> {
           >
             <Message
               className={classNames('messages__message', {
-                'messages__message--last-in-group': this.props.showSenderAvatar && index === allMessages.length - 1,
+                'messages__message--last-in-group': this.props.showSenderAvatar && index === groupMessages.length - 1,
               })}
               onImageClick={this.openLightbox}
               messageId={message.id}
@@ -166,6 +167,7 @@ export class ChatView extends React.Component<Properties, State> {
               parentMessageText={message.parentMessageText}
               getUsersForMentions={this.searchMentionableUsers}
               showSenderAvatar={this.props.showSenderAvatar}
+              showTimestamp={messageRenderProps.showTimestamp}
               {...message}
             />
           </div>

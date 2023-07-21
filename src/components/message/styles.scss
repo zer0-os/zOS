@@ -55,6 +55,10 @@
 
     border-radius: var(--border-radius); // set in message__message-row
 
+    &--edit {
+      width: 100%;
+    }
+
     &--fill {
       .message__block-image {
         img {
@@ -148,14 +152,14 @@
     padding-top: 4px;
   }
 
-  &__edited-flag {
-    padding-top: 4px;
-  }
-
   &__failure-message {
     display: flex;
     align-items: center;
     color: theme.$color-failure-11;
+    padding-top: 4px;
+  }
+
+  &__edited {
     padding-top: 4px;
   }
 

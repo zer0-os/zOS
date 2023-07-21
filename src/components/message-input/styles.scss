@@ -36,11 +36,21 @@
   gap: 8px;
   border-top: 1px solid theme.$color-greyscale-transparency-6;
 
+  &--editing {
+    border-top: none;
+    padding: 0;
+    margin-right: none;
+  }
+
   &__container {
     display: flex;
     align-items: flex-end;
     gap: 16px;
     width: 100%;
+
+    &--editing {
+      gap: 8px;
+    }
   }
 
   &__icon-outer {

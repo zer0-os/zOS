@@ -118,11 +118,14 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderFooter() {
+    const isSendStatusFailed = this.props.sendStatus === MessageSendStatus.FAILED;
+
     return (
       <>
         <div {...cn('footer')}>
-          {this.props.sendStatus !== MessageSendStatus.FAILED && this.renderTime(this.props.createdAt)}
-          {this.props.sendStatus === MessageSendStatus.FAILED && (
+          {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && <span>(Edited)</span>}
+          {!isSendStatusFailed && this.renderTime(this.props.createdAt)}
+          {isSendStatusFailed && (
             <div {...cn('failure-message')}>
               Failed to send&nbsp;
               <IconAlertCircle size={16} />
@@ -277,7 +280,7 @@ export class Message extends React.Component<Properties, State> {
                   )}
                 </div>
               )}
-              {!!this.props.updatedAt && !this.state.isEditing && <span {...cn('block-edited')}>(edited)</span>}
+
               {this.state.isEditing && this.props.message && (
                 <MessageInput
                   initialValue={this.props.message}

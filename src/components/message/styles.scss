@@ -90,14 +90,6 @@
     line-height: 15px;
   }
 
-  &__block-edited {
-    padding-left: 7px;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 14px;
-    color: themeDeprecated.$actionable-inactive-color;
-  }
-
   &__block-preview {
     display: flex;
     flex-direction: row;
@@ -141,24 +133,24 @@
 
   &__footer {
     display: flex;
+    flex-direction: row;
     justify-content: flex-end;
-    margin: 0px;
+    align-items: flex-end;
+    gap: 4px;
+    padding-top: 4px;
     color: theme.$color-greyscale-11;
     font-size: 12px;
     font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
+    line-height: 14px;
   }
 
   &__time {
     display: var(--message-timestamp-display);
-    padding-top: 4px;
   }
 
   &__failure-message {
     display: flex;
     align-items: center;
-    padding-top: 4px;
     color: theme.$color-failure-11;
   }
 

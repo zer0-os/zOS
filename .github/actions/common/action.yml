@@ -1,0 +1,28 @@
+name: 'Common Setup'
+
+description: 'Setup nodejs and cache'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Get node version
+      id: node
+      shell: bash
+      run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+    # rebuild the cache if OS, package-lock.json or node version changes
+    - name: Get node_modules cache
+      uses: actions/cache@v3.0.2
+      id: node_modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}

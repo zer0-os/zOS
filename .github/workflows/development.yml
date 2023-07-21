@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - 'hotfix/**'
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
@@ -14,9 +15,9 @@ jobs:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      - name: Common Setup
+        uses: ./.github/actions/common
+
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
       - run: npm install
       - run: npm run lint
@@ -51,10 +52,11 @@ jobs:
       REACT_APP_ASSETS_PATH: ${{vars.ASSETS_PATH}}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      - name: Common Setup
+        uses: ./.github/actions/common
+
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+
       - run: npm install
       - name: get-npm-version
         id: package-version

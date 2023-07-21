@@ -137,7 +137,6 @@
     justify-content: flex-end;
     align-items: flex-end;
     gap: 4px;
-    padding-top: 4px;
     color: theme.$color-greyscale-11;
     font-size: 12px;
     font-weight: 400;
@@ -146,12 +145,14 @@
 
   &__time {
     display: var(--message-timestamp-display);
+    padding-top: 4px;
   }
 
   &__failure-message {
     display: flex;
     align-items: center;
     color: theme.$color-failure-11;
+    padding-top: 4px;
   }
 
   &__menu {

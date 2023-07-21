@@ -243,7 +243,7 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            {this.props.messagesFetchStatus === MessagesFetchState.IN_PROGRESS && (
+            {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
               <ChatSkeleton conversationId={this.props.id} />
             )}
 

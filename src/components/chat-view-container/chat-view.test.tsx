@@ -223,12 +223,22 @@ describe('ChatView', () => {
     expect(wrapper.find(`.${className}`).exists()).toBe(true);
   });
 
-  it('renders skeleton if messages are being loaded', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, messagesFetchStatus: MessagesFetchState.IN_PROGRESS });
+  it('renders skeleton if messages have not been loaded yet', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, hasLoadedMessages: false });
 
     expect(wrapper).toHaveElement('ChatSkeleton');
 
-    wrapper.setProps({ messagesFetchStatus: MessagesFetchState.SUCCESS });
+    wrapper.setProps({ hasLoadedMessages: true });
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('does not render skeleton if messages have not been loaded yet AND the fetch has failed', () => {
+    const wrapper = subject({
+      messages: MESSAGES_TEST,
+      hasLoadedMessages: false,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+    });
+
     expect(wrapper).not.toHaveElement('ChatSkeleton');
   });
 

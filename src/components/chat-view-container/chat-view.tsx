@@ -58,6 +58,7 @@ export interface Properties {
   isDirectMessage: boolean;
   showSenderAvatar?: boolean;
   isMessengerFullScreen: boolean;
+  isOneOnOne: boolean;
 }
 
 export interface State {
@@ -145,7 +146,7 @@ export class ChatView extends React.Component<Properties, State> {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.id} message={message} />;
       } else {
-        const messageRenderProps = getMessageRenderProps(index, groupMessages.length);
+        const messageRenderProps = getMessageRenderProps(index, groupMessages.length, this.props.isOneOnOne);
         return (
           <div
             key={message.optimisticId || message.id}

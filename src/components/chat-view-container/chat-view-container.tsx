@@ -265,6 +265,8 @@ export class Container extends React.Component<Properties, State> {
   render() {
     if (!this.props.channel) return null;
 
+    const isOneOnOne = this.props.channel?.otherMembers?.length === 1;
+
     return (
       <>
         <ChatView
@@ -289,6 +291,7 @@ export class Container extends React.Component<Properties, State> {
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}
+          isOneOnOne={isOneOnOne}
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}

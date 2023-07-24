@@ -74,7 +74,7 @@ describe(getMessageRenderProps, () => {
       const index = 4;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength);
+      const props = getMessageRenderProps(index, groupLength, false);
 
       expect(props.showTimestamp).toEqual(true);
     });
@@ -83,7 +83,7 @@ describe(getMessageRenderProps, () => {
       const index = 2;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength);
+      const props = getMessageRenderProps(index, groupLength, false);
 
       expect(props.showTimestamp).toEqual(false);
     });
@@ -94,7 +94,7 @@ describe(getMessageRenderProps, () => {
       const index = 0;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength);
+      const props = getMessageRenderProps(index, groupLength, false);
 
       expect(props.showAuthorName).toEqual(true);
     });
@@ -103,7 +103,16 @@ describe(getMessageRenderProps, () => {
       const index = 2;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength);
+      const props = getMessageRenderProps(index, groupLength, false);
+
+      expect(props.showAuthorName).toEqual(false);
+    });
+
+    it('is false if the message is in a one on one chat', () => {
+      const index = 0;
+      const groupLength = 5;
+
+      const props = getMessageRenderProps(index, groupLength, true);
 
       expect(props.showAuthorName).toEqual(false);
     });

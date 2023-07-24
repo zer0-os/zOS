@@ -126,7 +126,7 @@ export class Message extends React.Component<Properties, State> {
           <span {...cn('edited-flag')}>(Edited)</span>
         )}
         {!isSendStatusFailed && !this.state.isEditing && this.renderTime(this.props.createdAt)}
-        {isSendStatusFailed && (
+        {isSendStatusFailed && !this.state.isEditing && (
           <div {...cn('failure-message')}>
             Failed to send&nbsp;
             <IconAlertCircle size={16} />

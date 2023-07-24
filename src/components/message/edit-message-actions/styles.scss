@@ -2,8 +2,7 @@
 
 .edit-message-actions {
   display: flex;
-  align-items: center;
-  align-self: center;
+  justify-content: flex-end;
   gap: 8px;
 
   &__icon {

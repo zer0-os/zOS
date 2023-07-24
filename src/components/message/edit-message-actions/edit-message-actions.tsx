@@ -3,7 +3,7 @@ import React from 'react';
 import { bemClassName } from '../../../lib/bem';
 
 import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '@zero-tech/zui/components';
+import { IconButton, Tooltip } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
@@ -19,8 +19,12 @@ export default class EditMessageActions extends React.Component<Properties> {
   render() {
     return (
       <div {...cn()}>
-        <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size={24} />
-        <IconButton {...cn('icon')} onClick={this.props.onEdit} Icon={IconCheck} isFilled size={24} />
+        <Tooltip content='Discard Changes'>
+          <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size={24} />
+        </Tooltip>
+        <Tooltip content='Save Changes'>
+          <IconButton {...cn('icon')} onClick={this.props.onEdit} Icon={IconCheck} isFilled size={24} />
+        </Tooltip>
       </div>
     );
   }

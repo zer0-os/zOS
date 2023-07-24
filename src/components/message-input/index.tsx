@@ -399,26 +399,15 @@ export class MessageInput extends React.Component<Properties, State> {
 
                 <div className='message-input__emoji-icon-outer'>
                   <div className='message-input__icon-wrapper'>
-                    <IconButton
-                      className={classNames('message-input__icon', ' message-input__icon--emoji')}
-                      onClick={this.openEmojis}
-                      Icon={IconFaceSmile}
-                      size={24}
-                    />
+                    {!this.props.isEditing && (
+                      <IconButton
+                        className={classNames('message-input__icon', ' message-input__icon--emoji')}
+                        onClick={this.openEmojis}
+                        Icon={IconFaceSmile}
+                        size={24}
+                      />
+                    )}
                   </div>
-                )}
-              </Dropzone>
-
-              <div className='message-input__emoji-icon-outer'>
-                <div className='message-input__icon-wrapper'>
-                  {!this.props.isEditing && (
-                    <IconButton
-                      className={classNames('message-input__icon', ' message-input__icon--emoji')}
-                      onClick={this.openEmojis}
-                      Icon={IconFaceSmile}
-                      size={24}
-                    />
-                  )}
                 </div>
               </div>
             </div>

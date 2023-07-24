@@ -146,7 +146,12 @@ export class ChatView extends React.Component<Properties, State> {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.id} message={message} />;
       } else {
-        const messageRenderProps = getMessageRenderProps(index, groupMessages.length, this.props.isOneOnOne);
+        const messageRenderProps = getMessageRenderProps(
+          index,
+          groupMessages.length,
+          this.props.isOneOnOne,
+          this.isUserOwnerOfMessage(message)
+        );
         return (
           <div
             key={message.optimisticId || message.id}

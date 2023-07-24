@@ -74,7 +74,7 @@ describe(getMessageRenderProps, () => {
       const index = 4;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength, false);
+      const props = getProps({ index, groupLength });
 
       expect(props.showTimestamp).toEqual(true);
     });
@@ -83,7 +83,7 @@ describe(getMessageRenderProps, () => {
       const index = 2;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength, false);
+      const props = getProps({ index, groupLength });
 
       expect(props.showTimestamp).toEqual(false);
     });
@@ -94,7 +94,7 @@ describe(getMessageRenderProps, () => {
       const index = 0;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength, false);
+      const props = getProps({ index, groupLength });
 
       expect(props.showAuthorName).toEqual(true);
     });
@@ -103,7 +103,7 @@ describe(getMessageRenderProps, () => {
       const index = 2;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength, false);
+      const props = getProps({ index, groupLength });
 
       expect(props.showAuthorName).toEqual(false);
     });
@@ -112,11 +112,34 @@ describe(getMessageRenderProps, () => {
       const index = 0;
       const groupLength = 5;
 
-      const props = getMessageRenderProps(index, groupLength, true);
+      const props = getProps({ index, groupLength, isOneOnOne: true });
+
+      expect(props.showAuthorName).toEqual(false);
+    });
+
+    it('is false if the current owner is the sender', () => {
+      const index = 0;
+      const groupLength = 5;
+
+      const props = getProps({ index, groupLength, isOwner: true });
 
       expect(props.showAuthorName).toEqual(false);
     });
   });
+
+  function getProps({
+    index,
+    groupLength,
+    isOneOnOne = false,
+    isOwner = false,
+  }: {
+    index: number;
+    groupLength: number;
+    isOneOnOne?: boolean;
+    isOwner?: boolean;
+  }) {
+    return getMessageRenderProps(index, groupLength, isOneOnOne, isOwner);
+  }
 });
 
 function stubMessage(attrs: Partial<MessageModel> = {}) {

@@ -32,11 +32,11 @@ function isRelated(message1, message2) {
   );
 }
 
-export function getMessageRenderProps(index: number, groupLength: number, isOneOnOne: boolean) {
+export function getMessageRenderProps(index: number, groupLength: number, isOneOnOne: boolean, isOwner: boolean) {
   const lastIndex = groupLength - 1;
 
   return {
-    showAuthorName: index === 0 && !isOneOnOne,
+    showAuthorName: index === 0 && !isOwner && !isOneOnOne,
     showTimestamp: index === lastIndex,
   };
 }

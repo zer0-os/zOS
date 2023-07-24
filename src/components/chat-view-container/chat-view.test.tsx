@@ -53,6 +53,7 @@ describe('ChatView', () => {
       isMessengerFullScreen: false,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
+      otherMembers: [],
       fetchMessages: () => null,
       ...props,
     };

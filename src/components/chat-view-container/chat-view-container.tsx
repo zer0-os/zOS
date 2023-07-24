@@ -274,6 +274,7 @@ export class Container extends React.Component<Properties, State> {
           isMessengerFullScreen={this.props.isMessengerFullScreen}
           messages={this.messages}
           messagesFetchStatus={this.channel.messagesFetchStatus}
+          otherMembers={this.channel.otherMembers}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
           fetchMessages={this.props.fetchMessages}

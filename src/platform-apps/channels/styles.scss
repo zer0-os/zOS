@@ -146,10 +146,11 @@ $scrollbar-width: 5px;
       display: flex;
       flex-direction: row;
       justify-content: center;
-      color: theme.$color-failure-11;
+      color: theme.$color-warning-11;
       font-weight: 400;
       font-size: 12px;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
+      padding: 8px 0px;
     }
 
     &__try-reload {

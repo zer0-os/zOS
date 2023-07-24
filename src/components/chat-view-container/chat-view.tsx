@@ -8,6 +8,7 @@ import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
+import { User as ChannelMember } from '../../store/channels';
 import { MessageInput } from '../message-input/container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../authentication/button';
@@ -33,6 +34,7 @@ export interface Properties {
   messages: MessageModel[];
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
+  otherMembers: ChannelMember[];
   onFetchMore: () => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
@@ -212,6 +214,19 @@ export class ChatView extends React.Component<Properties, State> {
     return await searchMentionableUsersForChannel(this.props.id, search);
   };
 
+  get failureMessage() {
+    if (this.props.hasLoadedMessages) {
+      return 'Failed to load new messages.';
+    }
+
+    if (this.props.name) {
+      return `Failed to load conversation with ${this.props.name}.`;
+    } else {
+      const otherMemberName = this.props.otherMembers[0]?.firstName;
+      return `Failed to load your conversation with ${otherMemberName}.`;
+    }
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
     const { hasJoined: isMemberOfChannel } = this.props;
@@ -253,7 +268,7 @@ export class ChatView extends React.Component<Properties, State> {
 
         {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
           <div className='channel-view__failure-message'>
-            Failed to load messages.&nbsp;
+            {this.failureMessage}&nbsp;
             <div
               className='channel-view__try-reload'
               onClick={() => {

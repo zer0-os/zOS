@@ -38,6 +38,8 @@ interface Properties extends MessageModel {
   parentMessageText?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
+  showTimestamp: boolean;
+  showAuthorName: boolean;
 }
 
 export interface State {
@@ -125,7 +127,10 @@ export class Message extends React.Component<Properties, State> {
         {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
           <span {...cn('edited-flag')}>(Edited)</span>
         )}
-        {!isSendStatusFailed && !this.state.isEditing && this.renderTime(this.props.createdAt)}
+        {!isSendStatusFailed &&
+          !this.state.isEditing &&
+          this.props.showTimestamp &&
+          this.renderTime(this.props.createdAt)}
         {isSendStatusFailed && !this.state.isEditing && (
           <div {...cn('failure-message')}>
             Failed to send&nbsp;
@@ -138,6 +143,14 @@ export class Message extends React.Component<Properties, State> {
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
     return <div {...cn('time')}>{createdTime}</div>;
+  }
+
+  renderAuthorName(): React.ReactElement {
+    return (
+      <div {...cn('author-name')}>
+        {this.props.sender.firstName} {this.props.sender.lastName}
+      </div>
+    );
   }
 
   canEditMessage = (): boolean => {
@@ -253,9 +266,7 @@ export class Message extends React.Component<Properties, State> {
         <div {...cn('block', (this.state.isFullWidth && 'fill', this.state.isEditing && 'edit'))}>
           {(message || media || preview) && (
             <>
-              <div {...cn('author-name')}>
-                {sender.firstName} {sender.lastName}
-              </div>
+              {this.props.showAuthorName && this.renderAuthorName()}
               {!this.state.isEditing && (
                 <div {...cn('block-body')}>
                   {media && this.renderMedia(media)}

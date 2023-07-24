@@ -55,6 +55,7 @@ describe('ChatView', () => {
       messagesFetchStatus: MessagesFetchState.SUCCESS,
       otherMembers: [],
       fetchMessages: () => null,
+      isOneOnOne: false,
       ...props,
     };
 

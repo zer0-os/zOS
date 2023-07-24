@@ -38,10 +38,6 @@
       &--edit {
         border-radius: 8px 2px 0px 8px;
       }
-
-      .message__author-name {
-        display: none;
-      }
     }
 
     .message__menu {
@@ -152,7 +148,7 @@
   }
 
   &__time {
-    display: var(--message-timestamp-display);
+    display: flex;
     padding-top: 4px;
   }
 
@@ -205,7 +201,7 @@
   }
 
   &__author-name {
-    display: var(--message-author-name-display);
+    display: flex;
     font-weight: 700;
     font-size: 12px;
     line-height: 15px;

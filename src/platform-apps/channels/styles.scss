@@ -268,8 +268,6 @@ $scrollbar-width: 5px;
       display: flex;
       clear: both;
       margin: 4px 16px;
-      --message-timestamp-display: none;
-      --message-author-name-display: none;
       --border-radius: 2px 8px 8px 2px;
 
       &--owner {
@@ -291,13 +289,11 @@ $scrollbar-width: 5px;
     }
 
     &__message-row:first-child {
-      --message-author-name-display: flex;
       --border-radius: 8px 8px 8px 2px;
     }
 
     &__message-row:last-child {
       margin-bottom: 16px;
-      --message-timestamp-display: flex;
       --border-radius: 2px 8px 8px 0px;
     }
 

@@ -19,8 +19,8 @@ export default class EditMessageActions extends React.Component<Properties> {
   render() {
     return (
       <div {...cn()}>
-        <IconButton {...cn('icon')} onClick={this.props.onEdit} Icon={IconCheck} size={24} />
-        <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} size={24} />
+        <IconButton {...cn('icon')} onClick={this.props.onEdit} Icon={IconCheck} isFilled size={24} />
+        <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size={24} />
       </div>
     );
   }

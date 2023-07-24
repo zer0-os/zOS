@@ -121,20 +121,18 @@ export class Message extends React.Component<Properties, State> {
     const isSendStatusFailed = this.props.sendStatus === MessageSendStatus.FAILED;
 
     return (
-      <>
-        <div {...cn('footer')}>
-          {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
-            <span {...cn('edited-flag')}>(Edited)</span>
-          )}
-          {!isSendStatusFailed && this.renderTime(this.props.createdAt)}
-          {isSendStatusFailed && (
-            <div {...cn('failure-message')}>
-              Failed to send&nbsp;
-              <IconAlertCircle size={16} />
-            </div>
-          )}
-        </div>
-      </>
+      <div {...cn('footer')}>
+        {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
+          <span {...cn('edited-flag')}>(Edited)</span>
+        )}
+        {!isSendStatusFailed && this.renderTime(this.props.createdAt)}
+        {isSendStatusFailed && (
+          <div {...cn('failure-message')}>
+            Failed to send&nbsp;
+            <IconAlertCircle size={16} />
+          </div>
+        )}
+      </div>
     );
   }
   renderTime(time): React.ReactElement {
@@ -252,7 +250,7 @@ export class Message extends React.Component<Properties, State> {
             />
           </div>
         )}
-        <div {...cn('block', this.state.isFullWidth && 'fill')}>
+        <div {...cn('block', (this.state.isFullWidth && 'fill', this.state.isEditing && 'edit'))}>
           {(message || media || preview) && (
             <>
               <div {...cn('author-name')}>
@@ -288,6 +286,7 @@ export class Message extends React.Component<Properties, State> {
                   initialValue={this.props.message}
                   onSubmit={this.editMessage}
                   getUsersForMentions={this.props.getUsersForMentions}
+                  isEditing={this.state.isEditing}
                   renderAfterInput={this.editActions}
                 />
               )}

@@ -68,6 +68,10 @@ $scrollbar-width: 5px;
 
   .message-input {
     margin-right: calc(var(--layout-app-content-right-padding) + $scrollbar-width);
+
+    &--editing {
+      margin-right: 0;
+    }
   }
 }
 

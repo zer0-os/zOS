@@ -310,22 +310,28 @@ export class MessageInput extends React.Component<Properties, State> {
     const hasInputValue = this.state.value?.length > 0;
 
     return (
-      <div className='message-input__container'>
-        <div className='message-input__icon-outer'>
-          <div className='message-input__icon-wrapper'>
-            <IconButton
-              className={classNames('message-input__icon', 'message-input__icon--giphy')}
-              onClick={this.openGiphy}
-              Icon={IconStickerCircle}
-              size={24}
-            />
-            <Menu
-              onSelected={this.mediaSelected}
-              mimeTypes={this.mimeTypes}
-              maxSize={config.cloudinary.max_file_size}
-            />
+      <div
+        className={classNames('message-input__container', this.props.className, {
+          'message-input__container--editing': this.props.isEditing,
+        })}
+      >
+        {!this.props.isEditing && (
+          <div className='message-input__icon-outer'>
+            <div className='message-input__icon-wrapper'>
+              <IconButton
+                className={classNames('message-input__icon', 'message-input__icon--giphy')}
+                onClick={this.openGiphy}
+                Icon={IconStickerCircle}
+                size={24}
+              />
+              <Menu
+                onSelected={this.mediaSelected}
+                mimeTypes={this.mimeTypes}
+                maxSize={config.cloudinary.max_file_size}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className='message-input__chat-container'>
           <div className='message-input__scroll-container'>
@@ -386,12 +392,10 @@ export class MessageInput extends React.Component<Properties, State> {
                     >
                       {this.renderMentionTypes()}
                     </MentionsInput>
-
-                    {this.props.renderAfterInput &&
-                      this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
                   </div>
                 )}
               </Dropzone>
+
               <div className='message-input__emoji-icon-outer'>
                 <div className='message-input__icon-wrapper'>
                   <IconButton
@@ -406,18 +410,22 @@ export class MessageInput extends React.Component<Properties, State> {
           </div>
         </div>
 
-        <div className='message-input__icon-outer'>
-          <div className='message-input__icon-wrapper'>
-            <IconButton
-              className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                'message-input__icon--send': hasInputValue,
-              })}
-              onClick={hasInputValue ? this.onSend : this.startMic}
-              Icon={hasInputValue ? IconSend3 : IconMicrophone2}
-              size={24}
-            />
+        {!this.props.isEditing && (
+          <div className='message-input__icon-outer'>
+            <div className='message-input__icon-wrapper'>
+              <IconButton
+                className={classNames('message-input__icon', 'message-input__icon--end-action', {
+                  'message-input__icon--send': hasInputValue,
+                })}
+                onClick={hasInputValue ? this.onSend : this.startMic}
+                Icon={hasInputValue ? IconSend3 : IconMicrophone2}
+                size={24}
+              />
+            </div>
           </div>
-        </div>
+        )}
+
+        {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
       </div>
     );
   }
@@ -441,6 +449,14 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   render() {
-    return <div className={classNames('message-input', this.props.className)}>{this.renderInput()}</div>;
+    return (
+      <div
+        className={classNames('message-input', this.props.className, {
+          'message-input--editing': this.props.isEditing,
+        })}
+      >
+        {this.renderInput()}
+      </div>
+    );
   }
 }

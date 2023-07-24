@@ -8,6 +8,7 @@ import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
+import { User as ChannelMember } from '../../store/channels';
 import { MessageInput } from '../message-input/container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../authentication/button';
@@ -17,10 +18,11 @@ import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
 import { AdminMessageContainer } from '../admin-message/container';
-
+import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups } from './utils';
+import { MessagesFetchState } from '../../store/channels';
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -31,7 +33,10 @@ export interface Properties {
   name: string;
   messages: MessageModel[];
   hasLoadedMessages: boolean;
+  messagesFetchStatus: MessagesFetchState;
+  otherMembers: ChannelMember[];
   onFetchMore: () => void;
+  fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
   hasJoined: boolean;
   sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
@@ -209,6 +214,19 @@ export class ChatView extends React.Component<Properties, State> {
     return await searchMentionableUsersForChannel(this.props.id, search);
   };
 
+  get failureMessage() {
+    if (this.props.hasLoadedMessages) {
+      return 'Failed to load new messages.';
+    }
+
+    if (this.props.name) {
+      return `Failed to load conversation with ${this.props.name}.`;
+    } else {
+      const otherMemberName = this.props.otherMembers[0]?.firstName;
+      return `Failed to load your conversation with ${otherMemberName}.`;
+    }
+  }
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
     const { hasJoined: isMemberOfChannel } = this.props;
@@ -240,10 +258,28 @@ export class ChatView extends React.Component<Properties, State> {
             )}
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
-            {!this.props.hasLoadedMessages && <ChatSkeleton conversationId={this.props.id} />}
+            {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
+              <ChatSkeleton conversationId={this.props.id} />
+            )}
+
             <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>
+
+        {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
+          <div className='channel-view__failure-message'>
+            {this.failureMessage}&nbsp;
+            <div
+              className='channel-view__try-reload'
+              onClick={() => {
+                this.props.fetchMessages({ channelId: this.props.id });
+              }}
+            >
+              Try Reload
+            </div>
+          </div>
+        )}
+
         <IfAuthenticated showChildren>
           {isMemberOfChannel && (
             <MessageInput

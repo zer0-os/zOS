@@ -20,6 +20,13 @@ export enum GroupChannelType {
   Private = 'private',
 }
 
+// similar to "message send status" enum
+export enum MessagesFetchState {
+  SUCCESS,
+  IN_PROGRESS,
+  FAILED,
+}
+
 export interface Channel {
   id: string;
   name: string;
@@ -38,6 +45,7 @@ export interface Channel {
   icon?: string;
   isChannel: boolean;
   hasLoadedMessages: boolean;
+  messagesFetchStatus: MessagesFetchState;
 }
 
 export enum SagaActionTypes {

@@ -19,6 +19,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
+import { MessagesFetchState } from '../channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -106,6 +107,7 @@ export function* createConversation(action) {
 
     if (!hasExistingConversation) {
       conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
+      conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
       // add new chat to the list
       yield put(
         receive([

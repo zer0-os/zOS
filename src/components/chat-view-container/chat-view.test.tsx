@@ -13,6 +13,7 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
 import { User } from '../../store/authentication/types';
 import moment from 'moment';
+import { MessagesFetchState } from '../../store/channels';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../platform-apps/channels/util/api', () => {
@@ -51,6 +52,9 @@ describe('ChatView', () => {
       isDirectMessage: true,
       isMessengerFullScreen: false,
       hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+      otherMembers: [],
+      fetchMessages: () => null,
       ...props,
     };
 
@@ -227,6 +231,61 @@ describe('ChatView', () => {
 
     wrapper.setProps({ hasLoadedMessages: true });
     expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('does not render skeleton if messages have not been loaded yet AND the fetch has failed', () => {
+    const wrapper = subject({
+      messages: MESSAGES_TEST,
+      hasLoadedMessages: false,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+    });
+
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('renders failure message if message load failed', () => {
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: true,
+    });
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load new messages. Try Reload');
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: 'channel-name',
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load conversation with channel-name. Try Reload'
+    );
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: '',
+      otherMembers: [{ firstName: 'ratik', lastName: 'jindal' } as any],
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load your conversation with ratik. Try Reload'
+    );
+  });
+
+  it('renders failure message if message load failed, and fetches messages on reload', () => {
+    const fetchMessages = jest.fn();
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      fetchMessages,
+      id: 'channel-id',
+    });
+
+    wrapper.find('.channel-view__try-reload').simulate('click');
+    expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });
   });
 
   describe('Lightbox', () => {

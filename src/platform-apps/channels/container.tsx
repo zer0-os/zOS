@@ -19,6 +19,7 @@ import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
 import { ScrollbarContainer } from '../../components/scrollbar-container';
+import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -118,12 +119,14 @@ export class Container extends React.Component<Properties> {
     return (
       <Provider store={this.props.store}>
         <AppLayout className='channels'>
-          <AppContextPanel>
-            <ScrollbarContainer variant='on-hover'>
-              <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
-            </ScrollbarContainer>
-          </AppContextPanel>
-          <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
+          <ZUIProvider>
+            <AppContextPanel>
+              <ScrollbarContainer variant='on-hover'>
+                <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
+              </ScrollbarContainer>
+            </AppContextPanel>
+            <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
+          </ZUIProvider>
         </AppLayout>
       </Provider>
     );

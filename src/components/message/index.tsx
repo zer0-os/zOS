@@ -120,23 +120,37 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderFooter() {
+    if (this.state.isEditing) {
+      return;
+    }
+
     const isSendStatusFailed = this.props.sendStatus === MessageSendStatus.FAILED;
+    const footerElements = [];
+
+    if (!!this.props.updatedAt && !isSendStatusFailed) {
+      footerElements.push(<span {...cn('edited-flag')}>(Edited)</span>);
+    }
+    if (!isSendStatusFailed && this.props.showTimestamp) {
+      footerElements.push(this.renderTime(this.props.createdAt));
+    }
+    if (isSendStatusFailed) {
+      footerElements.push(
+        <div {...cn('failure-message')}>
+          Failed to send&nbsp;
+          <IconAlertCircle size={16} />
+        </div>
+      );
+    }
+
+    if (footerElements.length === 0) {
+      return;
+    }
 
     return (
       <div {...cn('footer')}>
-        {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
-          <span {...cn('edited-flag')}>(Edited)</span>
-        )}
-        {!isSendStatusFailed &&
-          !this.state.isEditing &&
-          this.props.showTimestamp &&
-          this.renderTime(this.props.createdAt)}
-        {isSendStatusFailed && !this.state.isEditing && (
-          <div {...cn('failure-message')}>
-            Failed to send&nbsp;
-            <IconAlertCircle size={16} />
-          </div>
-        )}
+        {footerElements[0]}
+        {footerElements[1]}
+        {footerElements[2]}
       </div>
     );
   }

@@ -243,17 +243,46 @@ describe('ChatView', () => {
     expect(wrapper).not.toHaveElement('ChatSkeleton');
   });
 
+  it('renders failure message if message load failed', () => {
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: true,
+    });
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load new messages. Try Reload');
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: 'channel-name',
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load conversation with channel-name. Try Reload'
+    );
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: '',
+      otherMembers: [{ firstName: 'ratik', lastName: 'jindal' } as any],
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load your conversation with ratik. Try Reload'
+    );
+  });
+
   it('renders failure message if message load failed, and fetches messages on reload', () => {
     const fetchMessages = jest.fn();
-
     let wrapper = subject({
       messages: MESSAGES_TEST,
       messagesFetchStatus: MessagesFetchState.FAILED,
       fetchMessages,
       id: 'channel-id',
     });
-
-    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load messages. Try Reload');
 
     wrapper.find('.channel-view__try-reload').simulate('click');
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });

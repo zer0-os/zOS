@@ -125,7 +125,7 @@ export class Message extends React.Component<Properties, State> {
         {!!this.props.updatedAt && !this.state.isEditing && !isSendStatusFailed && (
           <span {...cn('edited-flag')}>(Edited)</span>
         )}
-        {!isSendStatusFailed && this.renderTime(this.props.createdAt)}
+        {!isSendStatusFailed && !this.state.isEditing && this.renderTime(this.props.createdAt)}
         {isSendStatusFailed && (
           <div {...cn('failure-message')}>
             Failed to send&nbsp;

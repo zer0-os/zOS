@@ -39,6 +39,7 @@ interface Properties extends MessageModel {
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
+  showAuthorName: boolean;
 }
 
 export interface State {
@@ -139,6 +140,14 @@ export class Message extends React.Component<Properties, State> {
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
     return <div {...cn('time')}>{createdTime}</div>;
+  }
+
+  renderAuthorName(): React.ReactElement {
+    return (
+      <div {...cn('author-name')}>
+        {this.props.sender.firstName} {this.props.sender.lastName}
+      </div>
+    );
   }
 
   canEditMessage = (): boolean => {
@@ -254,9 +263,7 @@ export class Message extends React.Component<Properties, State> {
         <div {...cn('block', (this.state.isFullWidth && 'fill', this.state.isEditing && 'edit'))}>
           {(message || media || preview) && (
             <>
-              <div {...cn('author-name')}>
-                {sender.firstName} {sender.lastName}
-              </div>
+              {this.props.showAuthorName && this.renderAuthorName()}
               {!this.state.isEditing && (
                 <div {...cn('block-body')}>
                   {media && this.renderMedia(media)}

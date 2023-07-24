@@ -168,6 +168,7 @@ export class ChatView extends React.Component<Properties, State> {
               getUsersForMentions={this.searchMentionableUsers}
               showSenderAvatar={this.props.showSenderAvatar}
               showTimestamp={messageRenderProps.showTimestamp}
+              showAuthorName={messageRenderProps.showAuthorName}
               {...message}
             />
           </div>

@@ -205,7 +205,7 @@
   }
 
   &__author-name {
-    display: var(--message-author-name-display);
+    display: flex;
     font-weight: 700;
     font-size: 12px;
     line-height: 15px;

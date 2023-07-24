@@ -35,6 +35,7 @@ function isRelated(message1, message2) {
 export function getMessageRenderProps(index, groupLength) {
   const lastIndex = groupLength - 1;
   return {
+    showAuthorName: index === 0,
     showTimestamp: index === lastIndex,
   };
 }

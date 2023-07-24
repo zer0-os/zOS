@@ -88,6 +88,26 @@ describe('message', () => {
     expect(wrapper).not.toHaveElement('.message__time');
   });
 
+  it('renders author name if specified', () => {
+    const wrapper = subject({
+      sender: { firstName: 'first', lastName: 'last' },
+      showAuthorName: true,
+      message: 'the message',
+    });
+
+    expect(wrapper.find('.message__author-name').text()).toStrictEqual('first last');
+  });
+
+  it('does not render author name if not specified', () => {
+    const wrapper = subject({
+      sender: { firstName: 'first', lastName: 'last' },
+      showAuthorName: false,
+      message: 'the message',
+    });
+
+    expect(wrapper).not.toHaveElement('.message__author-name');
+  });
+
   it('renders time if status not failed', () => {
     const wrapper = subject({
       message: 'the message',

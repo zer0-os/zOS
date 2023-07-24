@@ -88,6 +88,26 @@ describe(getMessageRenderProps, () => {
       expect(props.showTimestamp).toEqual(false);
     });
   });
+
+  describe('showAuthorName', () => {
+    it('is true if the message is the first in the group', () => {
+      const index = 0;
+      const groupLength = 5;
+
+      const props = getMessageRenderProps(index, groupLength);
+
+      expect(props.showAuthorName).toEqual(true);
+    });
+
+    it('is false if the message is _not_ the first in the group', () => {
+      const index = 2;
+      const groupLength = 5;
+
+      const props = getMessageRenderProps(index, groupLength);
+
+      expect(props.showAuthorName).toEqual(false);
+    });
+  });
 });
 
 function stubMessage(attrs: Partial<MessageModel> = {}) {

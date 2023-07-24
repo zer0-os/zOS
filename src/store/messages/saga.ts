@@ -12,7 +12,7 @@ import {
   MessageSendStatus,
 } from '.';
 import { receive as receiveMessage } from './';
-import { Channel, receive } from '../channels';
+import { Channel, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import {
@@ -102,35 +102,42 @@ export function* fetch(action) {
   let messagesResponse: any;
   let messages: any[];
 
-  if (referenceTimestamp) {
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
-    messages = [
-      ...messagesResponse.messages,
-      ...existingMessages,
-    ];
-  } else {
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId);
-    messages = messagesResponse.messages;
+  yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
+
+  try {
+    if (referenceTimestamp) {
+      const existingMessages = yield select(rawMessagesSelector(channelId));
+      messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
+      messages = [
+        ...messagesResponse.messages,
+        ...existingMessages,
+      ];
+    } else {
+      messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+      messages = messagesResponse.messages;
+    }
+
+    yield put(
+      receive({
+        id: channelId,
+        messages,
+        hasMore: messagesResponse.hasMore,
+        shouldSyncChannels: true,
+        hasLoadedMessages: true,
+        messagesFetchStatus: MessagesFetchState.SUCCESS,
+      })
+    );
+
+    // Publish a system message across the channel
+    const channel = yield call(conversationsChannel);
+    const isChannel = yield select(_isChannel(channelId));
+    yield put(channel, {
+      type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
+      channelId,
+    });
+  } catch (error) {
+    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
   }
-
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-      hasMore: messagesResponse.hasMore,
-      shouldSyncChannels: true,
-      hasLoadedMessages: true,
-    })
-  );
-
-  // Publish a system message across the channel
-  const channel = yield call(conversationsChannel);
-  const isChannel = yield select(_isChannel(channelId));
-  yield put(channel, {
-    type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
-    channelId,
-  });
 }
 
 export function* send(action) {
@@ -268,24 +275,31 @@ export function* fetchNewMessages(action) {
   const { channelId } = action.payload;
   let countNewMessages: number = 0;
 
-  const messagesResponse = yield call(fetchMessagesByChannelId, channelId);
-  const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-  if (lastMessageCreatedAt > 0) {
-    countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
+  yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
+
+  try {
+    const messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+    const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
+    if (lastMessageCreatedAt > 0) {
+      countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
+    }
+
+    const lastMessage = filteredLastMessage(messagesResponse.messages);
+
+    yield put(
+      receive({
+        id: channelId,
+        messages: messagesResponse.messages,
+        hasMore: messagesResponse.hasMore,
+        countNewMessages,
+        lastMessageCreatedAt:
+          lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
+        messagesFetchStatus: MessagesFetchState.SUCCESS,
+      })
+    );
+  } catch (e) {
+    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
   }
-
-  const lastMessage = filteredLastMessage(messagesResponse.messages);
-
-  yield put(
-    receive({
-      id: channelId,
-      messages: messagesResponse.messages,
-      hasMore: messagesResponse.hasMore,
-      countNewMessages,
-      lastMessageCreatedAt:
-        lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
-    })
-  );
 }
 
 export function* deleteMessage(action) {

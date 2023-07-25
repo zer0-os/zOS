@@ -191,6 +191,9 @@ export class Message extends React.Component<Properties, State> {
   editActions = (value: string, mentionedUserIds: string[]) => {
     return (
       <EditMessageActions
+        value={value}
+        primaryTooltipText='Save Changes'
+        secondaryTooltipText='Discard Changes'
         onEdit={this.editMessage.bind(this, value, mentionedUserIds, {
           hidePreview: this.props.hidePreview,
           mentionedUsers: this.props.mentionedUserIds,

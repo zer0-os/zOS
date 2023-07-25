@@ -33,6 +33,11 @@
 
 // data - clump
 
+// Where we are declaring the helper functions
+const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
+const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
+  inputNumber > startNumber && inputNumber < endNumber;
+
 export const Fizzbuzz = (
   inputNumber: number,
 
@@ -45,38 +50,45 @@ export const Fizzbuzz = (
   fizzLogic: boolean = false,
   buzzLogic: boolean = false
 ) => {
-  const fizz = { word: fizzWord, factor: fizzNumber, logic: fizzLogic ? 'is-inbetween' : 'divisible-by' };
-  const buzz = { word: buzzWord, factor: buzzNumber, logic: buzzLogic ? 'is-inbetween' : 'divisible-by' };
+  const fizz = {
+    word: fizzWord,
+    fn: fizzLogic ? isInbetween : isDivisibleBy,
+    params: fizzLogic
+      ? [
+          10,
+          20,
+        ]
+      : [fizzNumber],
+  };
+  const buzz = {
+    word: buzzWord,
+    fn: buzzLogic ? isInbetween : isDivisibleBy,
+    params: buzzLogic
+      ? [
+          18,
+          28,
+        ]
+      : [buzzNumber],
+  };
 
   return FizzbuzzNew(inputNumber, fizz, buzz);
 };
 
-///
-
-// Where we are declaring the helper functions
-const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
-const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
-  inputNumber > startNumber && inputNumber < endNumber;
-
 export const FizzbuzzNew = (
   inputNumber: number,
-  fizz: { word: string; factor: number; logic: 'divisible-by' | 'is-inbetween' },
-  buzz: { word: string; factor: number; logic: 'divisible-by' | 'is-inbetween' }
+  fizz: {
+    word: string;
+    fn: (inputNumber: number, ...params: any[]) => boolean;
+    params: any[];
+  },
+  buzz: {
+    word: string;
+    fn: (inputNumber: number, ...params: any[]) => boolean;
+    params: any[];
+  }
 ) => {
-  let isFizz;
-  let isBuzz;
-
-  if (fizz.logic === 'is-inbetween') {
-    isFizz = isInbetween(inputNumber, 10, 20);
-  } else {
-    isFizz = isDivisibleBy(inputNumber, fizz.factor);
-  }
-
-  if (buzz.logic === 'is-inbetween') {
-    isBuzz = isInbetween(inputNumber, 18, 28);
-  } else {
-    isBuzz = isDivisibleBy(inputNumber, buzz.factor);
-  }
+  const isFizz = fizz.fn(inputNumber, ...fizz.params);
+  const isBuzz = buzz.fn(inputNumber, ...buzz.params);
 
   if (isFizz && isBuzz) {
     return `${fizz.word}${buzz.word}`;

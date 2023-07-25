@@ -323,13 +323,17 @@ export class Message extends React.Component<Properties, State> {
               )}
 
               {this.state.isEditing && this.props.message && (
-                <MessageInput
-                  initialValue={this.props.message}
-                  onSubmit={this.editMessage}
-                  getUsersForMentions={this.props.getUsersForMentions}
-                  isEditing={this.state.isEditing}
-                  renderAfterInput={this.editActions}
-                />
+                <>
+                  <div {...cn('block-edit')}>
+                    <MessageInput
+                      initialValue={this.props.message}
+                      onSubmit={this.editMessage}
+                      getUsersForMentions={this.props.getUsersForMentions}
+                      isEditing={this.state.isEditing}
+                      renderAfterInput={this.editActions}
+                    />
+                  </div>
+                </>
               )}
             </>
           )}

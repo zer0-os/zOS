@@ -89,6 +89,8 @@ export class Message extends React.Component<Properties, State> {
     this.handleMediaAspectRatio(width, height);
   };
 
+  isMediaOnly() {}
+
   renderMedia(media) {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
@@ -128,7 +130,7 @@ export class Message extends React.Component<Properties, State> {
     const footerElements = [];
 
     if (!!this.props.updatedAt && !isSendStatusFailed) {
-      footerElements.push(<span {...cn('edited-flag')}>(Edited)</span>);
+      footerElements.push(<span>(Edited)</span>);
     }
     if (!isSendStatusFailed && this.props.showTimestamp) {
       footerElements.push(this.renderTime(this.props.createdAt));
@@ -264,8 +266,38 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
+  renderBody() {
+    const { message, preview, isOwner, hidePreview } = this.props;
+
+    return (
+      <div {...cn('block-body')}>
+        {this.props.showAuthorName && this.renderAuthorName()}
+        {this.props.parentMessageText && (
+          <div {...cn('block-reply')}>
+            <span {...cn('block-reply-text')}>
+              <ContentHighlighter
+                message={this.props.parentMessageText}
+                mentionedUserIds={this.props.mentionedUserIds}
+              />
+            </span>
+          </div>
+        )}
+        {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
+        {preview && !hidePreview && (
+          <div {...cn('block-preview')}>
+            <LinkPreview url={preview.url} {...preview} />
+            {isOwner && (
+              <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
+            )}
+          </div>
+        )}
+        {this.renderFooter()}
+      </div>
+    );
+  }
+
   render() {
-    const { message, media, preview, sender, isOwner, hidePreview } = this.props;
+    const { message, media, preview, sender, isOwner } = this.props;
     return (
       <div
         className={classNames('message', this.props.className, {
@@ -283,30 +315,11 @@ export class Message extends React.Component<Properties, State> {
         <div {...cn('block', (this.state.isFullWidth && 'fill', this.state.isEditing && 'edit'))}>
           {(message || media || preview) && (
             <>
-              {this.props.showAuthorName && this.renderAuthorName()}
               {!this.state.isEditing && (
-                <div {...cn('block-body')}>
+                <>
                   {media && this.renderMedia(media)}
-                  {this.props.parentMessageText && (
-                    <div {...cn('block-reply')}>
-                      <span {...cn('block-reply-text')}>
-                        <ContentHighlighter
-                          message={this.props.parentMessageText}
-                          mentionedUserIds={this.props.mentionedUserIds}
-                        />
-                      </span>
-                    </div>
-                  )}
-                  {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
-                  {preview && !hidePreview && (
-                    <div {...cn('block-preview')}>
-                      <LinkPreview url={preview.url} {...preview} />
-                      {isOwner && (
-                        <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
-                      )}
-                    </div>
-                  )}
-                </div>
+                  {this.renderBody()}
+                </>
               )}
 
               {this.state.isEditing && this.props.message && (
@@ -320,7 +333,6 @@ export class Message extends React.Component<Properties, State> {
               )}
             </>
           )}
-          {this.renderFooter()}
         </div>
         {this.renderMenu()}
       </div>

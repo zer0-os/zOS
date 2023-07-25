@@ -74,6 +74,7 @@ describe('message', () => {
     const wrapper = subject({
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
       showTimestamp: true,
+      message: 'message',
     });
 
     expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');

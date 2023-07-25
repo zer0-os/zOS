@@ -52,7 +52,11 @@ export const Fizzbuzz = (
 };
 
 ///
+
+// Where we are declaring the helper functions
 const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
+const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
+  inputNumber > startNumber && inputNumber < endNumber;
 
 export const FizzbuzzNew = (
   inputNumber: number,
@@ -62,15 +66,12 @@ export const FizzbuzzNew = (
   let isFizz = isDivisibleBy(inputNumber, fizz.factor);
   let isBuzz = isDivisibleBy(inputNumber, buzz.factor);
 
-  const isInbetween10or20 = inputNumber > 10 && inputNumber < 20;
-  const isInbetween18or28 = inputNumber > 18 && inputNumber < 28;
-
   if (fizz.logic) {
-    isFizz = isInbetween10or20;
+    isFizz = isInbetween(inputNumber, 10, 20);
   }
 
   if (buzz.logic) {
-    isBuzz = isInbetween18or28;
+    isBuzz = isInbetween(inputNumber, 18, 28);
   }
 
   if (isFizz && isBuzz) {

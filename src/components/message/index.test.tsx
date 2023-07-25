@@ -194,7 +194,7 @@ describe('message', () => {
       updatedAt: 86276372,
     });
 
-    expect(wrapper.find('.message__edited-flag').exists()).toBe(true);
+    expect(wrapper.find('.message__footer').text()).toEqual('(Edited)');
   });
 
   it('renders reply message', () => {

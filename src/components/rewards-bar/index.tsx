@@ -98,7 +98,7 @@ export class RewardsBar extends React.Component<Properties, State> {
               })}
             >
               <IconCurrencyDollar size={16} />
-              {this.props.showNewRewards && this.props.isMessengerFullScreen && (
+              {!this.state.isRewardsPopupOpen && this.props.showNewRewards && this.props.isMessengerFullScreen && (
                 <Status type='idle' className={c('rewards-icon__status')} />
               )}
             </div>

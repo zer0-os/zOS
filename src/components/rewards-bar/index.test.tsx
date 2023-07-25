@@ -92,6 +92,28 @@ describe('rewards-bar', () => {
     expect(wrapper.find(TooltipPopup).prop('open')).toBeFalse();
   });
 
+  it('displays rewards icon status when conditions are met', function () {
+    const wrapper = subject({
+      showNewRewards: true,
+      isMessengerFullScreen: true,
+    });
+
+    wrapper.setState({ isRewardsPopupOpen: false });
+
+    expect(wrapper.find('.rewards-bar__rewards-icon__status')).toHaveLength(1);
+  });
+
+  it('does not display rewards icon status when rewards pop up is open', function () {
+    const wrapper = subject({
+      showNewRewards: false,
+      isMessengerFullScreen: true,
+    });
+
+    wrapper.setState({ isRewardsPopupOpen: true });
+
+    expect(wrapper.find('.rewards-bar__rewards-icon__status')).toHaveLength(0);
+  });
+
   it('renders the SettingsMenu as necessary', function () {
     let wrapper = subject({ includeRewardsAvatar: true });
     expect(wrapper).toHaveElement('SettingsMenu');

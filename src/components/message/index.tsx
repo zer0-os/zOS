@@ -89,8 +89,6 @@ export class Message extends React.Component<Properties, State> {
     this.handleMediaAspectRatio(width, height);
   };
 
-  isMediaOnly() {}
-
   renderMedia(media) {
     const { type, url, name } = media;
     if (MediaType.Image === type) {

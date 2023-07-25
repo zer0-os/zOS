@@ -48,7 +48,7 @@
   &__block {
     background-color: theme.$color-primary-3;
     position: relative;
-    padding: 8px;
+    padding: 0px;
     color: themeDeprecated.$card-text-color;
     overflow: hidden;
     z-index: 1;
@@ -69,14 +69,23 @@
   }
 
   &__block-body {
-    display: block;
-    white-space: pre-wrap;
-    word-break: break-word;
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
     color: theme.$color-greyscale-12;
-    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    margin: 8px 0 0px 0;
+    padding: 0px 8px 8px 8px;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    &:empty {
+      display: none;
+    }
   }
 
   &__block-reply {
@@ -109,7 +118,6 @@
 
   &__block-image {
     position: relative;
-    display: inline-block;
     cursor: pointer;
     width: 100%;
 
@@ -117,7 +125,6 @@
       display: block;
       margin: auto;
       max-width: 100%;
-      border-radius: 8px;
     }
   }
 
@@ -135,6 +142,10 @@
     }
   }
 
+  &__block-edit {
+    padding: 8px;
+  }
+
   &__footer {
     display: flex;
     flex-direction: row;
@@ -149,22 +160,12 @@
 
   &__time {
     display: flex;
-    padding-top: 4px;
-  }
-
-  &__edited-flag {
-    padding-top: 4px;
   }
 
   &__failure-message {
     display: flex;
     align-items: center;
     color: theme.$color-failure-11;
-    padding-top: 4px;
-  }
-
-  &__edited {
-    padding-top: 4px;
   }
 
   &__menu {
@@ -206,7 +207,8 @@
     font-size: 12px;
     line-height: 15px;
     color: theme.$color-greyscale-12;
-    padding-bottom: 8px;
+    margin: 0 0 8px 0;
+    padding: 8px 8px 0px 8px;
   }
 
   &.messages__message--last-in-group {

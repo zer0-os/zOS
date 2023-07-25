@@ -24,7 +24,7 @@ $content-padding-y: 40px;
       $width: if($is-top, $arrow-size, $arrow-size / 2);
       height: $height;
       width: $width;
-      top: if($is-top, -$content-padding-y - $height, -$content-padding-y + 16px);
+      top: if($is-top, -$content-padding-y - $height, -$content-padding-y + 24px);
       left: if($is-top, calc(100% - $width / 2), -$content-padding-x - $width);
       clip-path: if($is-top, polygon(0 100%, 50% 0, 100% 100%), polygon(100% 0, 0 50%, 100% 100%));
     }
@@ -62,8 +62,8 @@ $content-padding-y: 40px;
 
   &--full-screen {
     .rewards-popup__content {
-      top: 2px;
-      left: $width-sidekick + $width-world-navigation + 2px;
+      top: 0;
+      left: $width-sidekick - 4px;
     }
 
     @include arrow('left');
@@ -71,7 +71,7 @@ $content-padding-y: 40px;
 
   &--full-screen.rewards-popup--with-title {
     .rewards-popup__content {
-      top: 40px;
+      top: 0;
     }
   }
 

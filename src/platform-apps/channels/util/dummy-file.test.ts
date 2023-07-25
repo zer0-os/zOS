@@ -147,29 +147,61 @@ describe('Fizzbuzz', () => {
   });
 
   describe('Feature 3', () => {
+    const fizzConfig = {
+      word: 'Fizz',
+      fn: isInbetween,
+      params: [
+        10,
+        20,
+      ],
+    };
+
+    const buzzConfig = {
+      word: 'Buzz',
+      fn: isDivisibleBy,
+      params: [5],
+    };
+
     it('should print Fizz if the number is between 10 and 20', function () {
-      expect(Fizzbuzz(17, 3, 5, 'Fizz', 'Buzz', true)).toEqual('Fizz');
+      expect(FizzbuzzNew(17, fizzConfig, buzzConfig)).toEqual('Fizz');
     });
 
     it('should print "9" if the number is not between 10 and 20', function () {
-      expect(Fizzbuzz(9, 3, 5, 'Fizz', 'Buzz', true)).toEqual('9');
+      expect(FizzbuzzNew(9, fizzConfig, buzzConfig)).toEqual('9');
     });
 
     it('should print Fizz if the number is between 10 and 20, and Buzz if the number is divisible by 5', function () {
-      expect(Fizzbuzz(30, 3, 5, 'Fizz', 'Buzz', true)).toEqual('Buzz');
+      expect(FizzbuzzNew(30, fizzConfig, buzzConfig)).toEqual('Buzz');
     });
 
     it('should print FizzBuzz if inputNumber is divisible by 5 and between 10 and 20', function () {
-      expect(Fizzbuzz(15, 3, 5, 'Fizz', 'Buzz', true)).toEqual('FizzBuzz');
+      expect(FizzbuzzNew(15, fizzConfig, buzzConfig)).toEqual('FizzBuzz');
     });
 
     it('should print Buzz if the number is between 18 and 28', function () {
-      expect(Fizzbuzz(26, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('Buzz');
-      expect(Fizzbuzz(5, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('5');
+      const buzzConfig = {
+        word: 'Buzz',
+        fn: isInbetween,
+        params: [
+          18,
+          28,
+        ],
+      };
+      expect(FizzbuzzNew(26, fizzConfig, buzzConfig)).toEqual('Buzz');
+      expect(FizzbuzzNew(5, fizzConfig, buzzConfig)).toEqual('5');
     });
 
     it('should print FizzBuzz if inputNumber is between 18 and 20', function () {
-      expect(Fizzbuzz(19, 3, 5, 'Fizz', 'Buzz', true, true)).toEqual('FizzBuzz');
+      const buzzConfig = {
+        word: 'Buzz',
+        fn: isInbetween,
+        params: [
+          18,
+          28,
+        ],
+      };
+
+      expect(FizzbuzzNew(19, fizzConfig, buzzConfig)).toEqual('FizzBuzz');
     });
   });
 });

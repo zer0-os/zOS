@@ -112,10 +112,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                 />
               ))}
 
-              {this.filteredConversations?.length === 0 && this.state.filter !== '' && (
-                <div className='messages-list__empty'>{`No results for '${this.state.filter}' `}</div>
-              )}
-
               {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
                 <UserSearchResults
                   results={this.state.userSearchResults}

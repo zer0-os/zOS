@@ -65,19 +65,6 @@ $side-padding: 16px;
       height: 1px;
       padding: 0px $side-padding;
     }
-
-    &__empty {
-      padding: 8px;
-      color: theme.$color-greyscale-11;
-      font-size: $font-size-medium;
-      line-height: 17px;
-      word-break: break-word;
-      text-align: center;
-
-      &-top-padding {
-        padding-top: 32px;
-      }
-    }
   }
 }
 

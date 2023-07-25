@@ -20,8 +20,7 @@
   &__rewards-button-container {
     padding: 8px;
 
-    &:hover,
-    &--open {
+    &:hover {
       border-radius: 64px;
       background-color: theme.$color-primary-4;
     }

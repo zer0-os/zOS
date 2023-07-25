@@ -80,11 +80,7 @@ export class RewardsBar extends React.Component<Properties, State> {
             userAvatarUrl={this.props.userAvatarUrl}
           />
         )}
-        <div
-          className={classnames(c('rewards-button-container'), {
-            [c('rewards-button-container', 'open')]: this.state.isRewardsPopupOpen,
-          })}
-        >
+        <div className={c('rewards-button-container')}>
           <button
             onClick={this.openRewards}
             className={classnames(c('rewards-button'), {

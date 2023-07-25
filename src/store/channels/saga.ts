@@ -10,7 +10,7 @@ import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}]`, null);
+  return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
 };
 
 export function* joinChannel(action) {

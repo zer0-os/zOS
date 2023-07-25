@@ -74,19 +74,13 @@ export const Fizzbuzz = (
   return FizzbuzzNew(inputNumber, fizz, buzz);
 };
 
-export const FizzbuzzNew = (
-  inputNumber: number,
-  fizz: {
-    word: string;
-    fn: (inputNumber: number, ...params: any[]) => boolean;
-    params: any[];
-  },
-  buzz: {
-    word: string;
-    fn: (inputNumber: number, ...params: any[]) => boolean;
-    params: any[];
-  }
-) => {
+interface FizzBuzzConfig {
+  word: string;
+  fn: (inputNumber: number, ...params: any[]) => boolean;
+  params: any[];
+}
+
+export const FizzbuzzNew = (inputNumber: number, fizz: FizzBuzzConfig, buzz: FizzBuzzConfig) => {
   const isFizz = fizz.fn(inputNumber, ...fizz.params);
   const isBuzz = buzz.fn(inputNumber, ...buzz.params);
 

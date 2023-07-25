@@ -73,11 +73,12 @@
     font-size: 14px;
     line-height: 17px;
     color: theme.$color-greyscale-12;
-    margin: 0;
-    padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+
+    margin: 8px 0 0px 0;
+    padding: 0px 8px 8px 8px;
 
     &:empty {
       display: none;
@@ -199,6 +200,8 @@
     font-size: 12px;
     line-height: 15px;
     color: theme.$color-greyscale-12;
+    margin: 0 0 8px 0;
+    padding: 8px 8px 0px 8px;
   }
 
   &.messages__message--last-in-group {

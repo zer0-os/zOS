@@ -271,7 +271,6 @@ export class Message extends React.Component<Properties, State> {
 
     return (
       <div {...cn('block-body')}>
-        {this.props.showAuthorName && this.renderAuthorName()}
         {this.props.parentMessageText && (
           <div {...cn('block-reply')}>
             <span {...cn('block-reply-text')}>
@@ -317,6 +316,7 @@ export class Message extends React.Component<Properties, State> {
             <>
               {!this.state.isEditing && (
                 <>
+                  {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
                   {this.renderBody()}
                 </>

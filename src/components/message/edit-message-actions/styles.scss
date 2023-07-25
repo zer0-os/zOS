@@ -12,5 +12,14 @@
     height: 32px;
     width: 32px;
     color: theme.$color-greyscale-12;
+
+    &--disabled {
+      color: theme.$color-greyscale-9;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: unset;
+      }
+    }
   }
 }

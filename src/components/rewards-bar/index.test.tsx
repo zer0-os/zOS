@@ -98,18 +98,19 @@ describe('rewards-bar', () => {
       isMessengerFullScreen: true,
     });
 
-    wrapper.setState({ isRewardsPopupOpen: false });
+    wrapper.find('.rewards-bar__rewards-button').simulate('click');
+    wrapper.find(RewardsPopupContainer).simulate('close');
 
     expect(wrapper.find('.rewards-bar__rewards-icon__status')).toHaveLength(1);
   });
 
   it('does not display rewards icon status when rewards pop up is open', function () {
     const wrapper = subject({
-      showNewRewards: false,
+      showNewRewards: true,
       isMessengerFullScreen: true,
     });
 
-    wrapper.setState({ isRewardsPopupOpen: true });
+    wrapper.find('.rewards-bar__rewards-button').simulate('click');
 
     expect(wrapper.find('.rewards-bar__rewards-icon__status')).toHaveLength(0);
   });

@@ -118,16 +118,16 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <AppLayout className='channels'>
-          <ZUIProvider>
+        <ZUIProvider>
+          <AppLayout className='channels'>
             <AppContextPanel>
               <ScrollbarContainer variant='on-hover'>
                 <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
               </ScrollbarContainer>
             </AppContextPanel>
             <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
-          </ZUIProvider>
-        </AppLayout>
+          </AppLayout>
+        </ZUIProvider>
       </Provider>
     );
   }

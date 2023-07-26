@@ -80,20 +80,26 @@ export class RewardsBar extends React.Component<Properties, State> {
             userAvatarUrl={this.props.userAvatarUrl}
           />
         )}
-        <button
-          onClick={this.openRewards}
-          className={classnames(c('rewards-button'), {
-            [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
-          })}
-        >
-          <div>Rewards</div>
-          <div className={c('rewards-icon')}>
-            <IconCurrencyDollar size={16} />
-            {this.props.showNewRewards && this.props.isMessengerFullScreen && (
-              <Status type='idle' className={c('rewards-icon__status')} />
-            )}
-          </div>
-        </button>
+        <div className={c('rewards-button-container')}>
+          <button
+            onClick={this.openRewards}
+            className={classnames(c('rewards-button'), {
+              [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
+            })}
+          >
+            <div>Rewards</div>
+            <div
+              className={classnames(c('rewards-icon'), {
+                [c('rewards-icon', 'open')]: this.state.isRewardsPopupOpen,
+              })}
+            >
+              <IconCurrencyDollar size={16} />
+              {!this.state.isRewardsPopupOpen && this.props.showNewRewards && this.props.isMessengerFullScreen && (
+                <Status type='idle' className={c('rewards-icon__status')} />
+              )}
+            </div>
+          </button>
+        </div>
       </div>
     );
   }

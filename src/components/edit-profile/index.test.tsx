@@ -15,6 +15,7 @@ describe('EditProfile', () => {
       currentProfileImage: 'profile.jpg',
       changesSaved: false,
       onEdit: () => null,
+      onClose: () => null,
       ...props,
     };
 
@@ -26,6 +27,14 @@ describe('EditProfile', () => {
     expect(wrapper.find('.edit-profile__header').length).toEqual(1);
     expect(wrapper.find('.edit-profile__title').text()).toEqual('Edit Profile');
     expect(wrapper.find(IconButton).props().Icon).toEqual(IconXClose);
+  });
+
+  it('calls onClose when close button is clicked', () => {
+    const onCloseMock = jest.fn();
+    const wrapper = subject({ onClose: onCloseMock });
+
+    wrapper.find(IconButton).simulate('click');
+    expect(onCloseMock).toHaveBeenCalled();
   });
 
   it('renders body with ImageUpload and Input', () => {
@@ -74,7 +83,7 @@ describe('EditProfile', () => {
 
     const formData = {
       name: 'Jane Smith',
-      image: 'new-image.jpg', // note: this is actually supposed to be a js FILE object
+      image: 'new-image.jpg', // note: this is actually supposed to be a nodejs FILE object
     };
 
     wrapper.find(Input).simulate('change', formData.name);

@@ -20,12 +20,14 @@ const MAX_INVITE_CODE_LENGTH = 14;
 interface State {
   inviteCode: string;
   renderAlert: boolean;
+  lastSubmittedInviteCode: string;
 }
 
 export class Invite extends React.Component<Properties, State> {
   state: State = {
     inviteCode: '',
     renderAlert: false,
+    lastSubmittedInviteCode: '',
   };
 
   onInviteCodeChanged = (code: string) => {
@@ -34,16 +36,9 @@ export class Invite extends React.Component<Properties, State> {
 
   submitForm = async (e) => {
     e.preventDefault();
-    this.setState({ renderAlert: true });
+    this.setState({ renderAlert: true, lastSubmittedInviteCode: this.state.inviteCode });
     this.props.validateInvite({ code: this.state.inviteCode });
   };
-
-  componentDidUpdate(_prevProps: Readonly<Properties>, prevState: Readonly<State>): void {
-    // Hide alert when invite code is changed
-    if (prevState.inviteCode !== this.state.inviteCode && this.state.renderAlert) {
-      this.setState({ renderAlert: false });
-    }
-  }
 
   renderAlert = (status: string) => {
     let errorMessage: string;
@@ -103,7 +98,7 @@ export class Invite extends React.Component<Properties, State> {
             isDisabled={
               !this.state.inviteCode.length ||
               this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||
-              this.state.renderAlert
+              this.state.inviteCode === this.state.lastSubmittedInviteCode
             }
             isLoading={this.props.isLoading}
             isSubmit

@@ -10,6 +10,7 @@ describe('settings-menu', () => {
       userHandle: '',
       userAvatarUrl: '',
       onLogout: () => {},
+
       ...props,
     };
 
@@ -23,12 +24,22 @@ describe('settings-menu', () => {
   });
 
   it('calls onLogout prop when logout item is selected', function () {
+    const wrapper = subject({});
+    const dropdownMenu = wrapper.find(DropdownMenu);
+    expect(wrapper.state('editProfileDialogOpen')).toBe(false);
+
+    const editProfileItem = dropdownMenu.prop('items').find((item) => item.id === 'edit_profile');
+    editProfileItem.onSelect();
+    expect(wrapper.state('editProfileDialogOpen')).toBe(true);
+  });
+
+  it('calls onLogout prop when logout item is selected', function () {
     const mockOnLogout = jest.fn();
     const wrapper = subject({ onLogout: mockOnLogout });
     const dropdownMenu = wrapper.find(DropdownMenu);
 
-    dropdownMenu.prop('items')[2].onSelect();
-
+    const logoutItem = dropdownMenu.prop('items').find((item) => item.id === 'logout');
+    logoutItem.onSelect();
     expect(mockOnLogout).toHaveBeenCalled();
   });
 });

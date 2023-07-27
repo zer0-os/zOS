@@ -81,12 +81,11 @@ export function* fetchConversations() {
   yield put(channel, { loaded: true });
 }
 
-export function* createConversation(action) {
-  const { name, userIds, image } = action.payload;
-  return yield call(performCreateConversation, userIds, name, image);
+export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+  return yield call(internalCreateConversation, userIds, name, image);
 }
 
-export function* performCreateConversation(userIds: string[], name: string = null, image: File = null) {
+export function* internalCreateConversation(userIds: string[], name: string = null, image: File = null) {
   let coverUrl = '';
   if (image) {
     try {

@@ -19,7 +19,7 @@ import {
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
-  performCreateConversation,
+  internalCreateConversation,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -65,34 +65,30 @@ describe('channels list saga', () => {
 
   describe(createConversation, () => {
     it('creates the conversation', async () => {
-      testSaga(createConversation, {
-        payload: {
-          userIds: [
-            'user-1',
-            'user-2',
-          ],
-        },
-      })
+      testSaga(createConversation, [
+        'user-1',
+        'user-2',
+      ])
         .next()
         .call(
-          performCreateConversation,
+          internalCreateConversation,
           [
             'user-1',
             'user-2',
           ],
-          undefined,
-          undefined
+          null,
+          null
         )
         .next()
         .isDone();
     });
   });
 
-  describe(performCreateConversation, () => {
+  describe(internalCreateConversation, () => {
     it('creates conversation', async () => {
       const name = 'group';
       const userIds = ['7867766_7876Z2'];
-      await expectSaga(performCreateConversation, userIds, name)
+      await expectSaga(internalCreateConversation, userIds, name)
         .provide([
           [
             matchers.call.fn(createConversationApi),
@@ -106,7 +102,7 @@ describe('channels list saga', () => {
 
     it('sets hasLoadedMessages to true', async () => {
       const userIds = ['7867766_7876Z2'];
-      const { storeState } = await expectSaga(performCreateConversation, userIds)
+      const { storeState } = await expectSaga(internalCreateConversation, userIds)
         .provide([
           [
             matchers.call.fn(createConversationApi),
@@ -124,7 +120,7 @@ describe('channels list saga', () => {
       const userIds = ['7867766_7876Z2'];
       const {
         storeState: { channelsList, chat },
-      } = await expectSaga(performCreateConversation, userIds, name)
+      } = await expectSaga(internalCreateConversation, userIds, name)
         .withReducer(rootReducer)
         .provide([
           [
@@ -144,7 +140,7 @@ describe('channels list saga', () => {
       const name = 'group';
       const userIds = ['user'];
       const image = { name: 'file' } as File;
-      await expectSaga(performCreateConversation, userIds, name, image)
+      await expectSaga(internalCreateConversation, userIds, name, image)
         .provide([
           [
             matchers.call.fn(uploadImageApi),

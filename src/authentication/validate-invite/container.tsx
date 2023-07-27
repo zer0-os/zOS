@@ -2,14 +2,14 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { Invite } from '.';
-import { validateInvite } from '../../store/registration';
+import { resetInviteStatus, validateInvite } from '../../store/registration';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   isLoading: boolean;
   inviteCodeStatus: string;
-
+  resetInviteStatus: () => void;
   validateInvite: (data: { code: string }) => void;
 }
 
@@ -24,7 +24,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { validateInvite };
+    return { validateInvite, resetInviteStatus };
   }
 
   render() {
@@ -33,6 +33,7 @@ export class Container extends React.Component<Properties> {
         inviteCodeStatus={this.props.inviteCodeStatus}
         validateInvite={this.props.validateInvite}
         isLoading={this.props.isLoading}
+        resetInviteStatus={this.props.resetInviteStatus}
       />
     );
   }

@@ -79,6 +79,9 @@ const slice = createSlice({
   name: 'registration',
   initialState,
   reducers: {
+    resetInviteStatus: (state) => {
+      state.inviteCodeStatus = InviteCodeStatus.VALID;
+    },
     setInviteStatus: (state, action: PayloadAction<RegistrationState['inviteCodeStatus']>) => {
       state.inviteCodeStatus = action.payload;
     },
@@ -113,6 +116,7 @@ const slice = createSlice({
 });
 
 export const {
+  resetInviteStatus,
   setInviteStatus,
   setLoading,
   setStage,

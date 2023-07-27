@@ -8,6 +8,7 @@ describe('Container', () => {
     const allProps: Properties = {
       isLoading: false,
       inviteCodeStatus: '',
+      resetInviteStatus: () => null,
       validateInvite: () => null,
       ...props,
     };

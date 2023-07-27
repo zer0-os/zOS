@@ -11,6 +11,7 @@ export interface Properties {
   inviteCodeStatus: string;
   isLoading: boolean;
 
+  resetInviteStatus: () => void;
   validateInvite: (data: { code: string }) => void;
 }
 
@@ -30,6 +31,7 @@ export class Invite extends React.Component<Properties, State> {
 
   onInviteCodeChanged = (code: string) => {
     this.setState({ inviteCode: code });
+    this.props.resetInviteStatus();
   };
 
   submitForm = async (e) => {
@@ -76,6 +78,8 @@ export class Invite extends React.Component<Properties, State> {
   };
 
   render() {
+    const isInviteCodeValid = this.props.inviteCodeStatus === InviteCodeStatus.VALID;
+
     return (
       <div className={c('')}>
         <div className={c('heading-container')}>
@@ -89,7 +93,7 @@ export class Invite extends React.Component<Properties, State> {
               placeholder='e.g 123456'
               value={this.state.inviteCode}
               type='text'
-              error={this.state.renderAlert}
+              error={!isInviteCodeValid && this.state.renderAlert}
             />
 
             {this.state.renderAlert &&
@@ -103,7 +107,7 @@ export class Invite extends React.Component<Properties, State> {
             isDisabled={
               !this.state.inviteCode.length ||
               this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||
-              this.state.renderAlert
+              (!isInviteCodeValid && this.state.renderAlert)
             }
             isLoading={this.props.isLoading}
             isSubmit

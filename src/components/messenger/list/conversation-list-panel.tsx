@@ -81,6 +81,16 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     );
   };
 
+  openExistingConversation = (id: string) => {
+    this.props.onConversationClick(id);
+    this.setState({ filter: '' });
+  };
+
+  createNewConversation = (userId: string) => {
+    this.props.onCreateConversation(userId);
+    this.setState({ filter: '' });
+  };
+
   render() {
     return (
       <>
@@ -106,7 +116,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                   key={c.id}
                   conversation={c}
                   filter={this.state.filter}
-                  onClick={this.props.onConversationClick}
+                  onClick={this.openExistingConversation}
                   myUserId={this.props.myUserId}
                   activeConversationId={this.props.activeConversationId}
                 />
@@ -116,7 +126,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                 <UserSearchResults
                   results={this.state.userSearchResults}
                   filter={this.state.filter}
-                  onCreate={this.props.onCreateConversation}
+                  onCreate={this.createNewConversation}
                 />
               )}
             </div>

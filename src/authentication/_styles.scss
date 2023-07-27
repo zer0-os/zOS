@@ -13,41 +13,54 @@
   a:active {
     color: theme.$color-greyscale-12;
     text-decoration: underline;
-    text-underline-offset: 4px;
+    text-underline-offset: 3px;
   }
 }
 
 @mixin heading {
   color: theme.$color-greyscale-12;
   text-align: center;
-  font-weight: 400;
-  font-size: 36px;
-  line-height: 44px;
-  text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
-  margin-top: 80px;
-  margin-bottom: 0px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  margin: 0;
 }
 
 @mixin sub-heading {
-  color: theme.$color-greyscale-10;
+  color: theme.$color-greyscale-11;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 @mixin form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-
-  & > * {
-    width: 280px;
-  }
+  gap: 32px;
 
   // Button should be the last element of the form.
   // Once button component has the ability to select the large option this should
   // no longer be needed.
   > *:last-child {
     height: 40px;
+    padding: 16px;
+
+    div {
+      text-transform: none;
+      margin: 0;
+    }
   }
+}
+
+@mixin input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 280px;
+}
+
+@mixin alert {
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 17px;
 }

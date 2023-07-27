@@ -11,6 +11,7 @@ describe('Invite', () => {
     const allProps: Properties = {
       isLoading: false,
       inviteCodeStatus: '',
+      resetInviteStatus: () => null,
       validateInvite: () => null,
       ...props,
     };

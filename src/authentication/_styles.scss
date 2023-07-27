@@ -64,3 +64,14 @@
   font-size: 14px;
   line-height: 17px;
 }
+
+@mixin footer {
+  @include base();
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  font-size: 14px;
+}

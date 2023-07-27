@@ -61,6 +61,22 @@ describe('Invite', () => {
     expect(validateInvite).toHaveBeenCalledWith({ code });
   });
 
+  it('calls resetInviteStatus prop after changing code', function () {
+    const resetInviteStatus = jest.fn();
+    const code = '456721';
+    const codeChange = '456722';
+    const wrapper = subject({ resetInviteStatus });
+
+    wrapper.find('Input').simulate('change', code);
+    wrapper.find('form').simulate('submit', inputEvent());
+
+    wrapper.setProps({ isLoading: false });
+
+    wrapper.find('Input').simulate('change', codeChange);
+
+    expect(resetInviteStatus).toHaveBeenCalledWith();
+  });
+
   it('shows alert if invite is not valid', function () {
     const wrapper = subject({});
 

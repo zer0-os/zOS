@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, all } from 'redux-saga/effects';
+import { takeLatest, put, call, all, spawn, take, select } from 'redux-saga/effects';
 import { SagaActionTypes, setUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -22,6 +22,7 @@ import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { completePendingUserProfile } from '../registration/saga';
+import cloneDeep from 'lodash/cloneDeep';
 
 export interface Payload {
   signedWeb3Token: string;
@@ -125,7 +126,22 @@ export function* clearUserState() {
   ]);
 }
 
+function* listenForUserProfileUpdates() {
+  const authChannel = yield call(getAuthChannel);
+  while (true) {
+    const { payload } = yield take(authChannel, Events.UserProfileUpdated);
+    let currentUser = cloneDeep(yield select(currentUserSelector()));
+    currentUser.profileSummary = {
+      ...currentUser.profileSummary,
+      firstName: payload.name,
+      profileImage: payload.profileImage || currentUser.profileSummary.profileImage,
+    };
+    yield put(setUser({ data: currentUser }));
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForUserProfileUpdates);
   yield takeLatest(SagaActionTypes.Logout, logout);
   yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }

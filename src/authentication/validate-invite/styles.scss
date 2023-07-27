@@ -4,6 +4,14 @@
 .validate-invite {
   @include base();
 
+  &__heading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 24px;
+    gap: 8px;
+  }
+
   &__heading {
     @include heading();
   }
@@ -16,12 +24,11 @@
     @include form();
   }
 
-  &__other-options {
-    text-align: center;
-    padding-top: 32px;
+  &__input-container {
+    @include input-container();
+  }
 
-    > * {
-      margin-top: 16px;
-    }
+  &__alert {
+    @include alert();
   }
 }

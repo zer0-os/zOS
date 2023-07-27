@@ -111,6 +111,36 @@ describe('ConversationListPanel', () => {
     ]);
   });
 
+  it('selecting an existing conversation announces click event', async function () {
+    const onConversationClick = jest.fn();
+    const conversations = [
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
+    ] as any;
+    const wrapper = subject({ conversations, onConversationClick });
+
+    await searchFor(wrapper, 'bob');
+    const filteredConversations = wrapper.find('ConversationItem');
+    filteredConversations.at(0).simulate('click', 'convo-id-2');
+
+    expect(onConversationClick).toHaveBeenCalledWith('convo-id-2');
+  });
+
+  it('selecting an existing conversation clears the filtered state', async function () {
+    const onConversationClick = jest.fn();
+    const conversations = [
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'jack' }] },
+    ] as any;
+    const wrapper = subject({ conversations, onConversationClick });
+
+    await searchFor(wrapper, 'bob');
+    const filteredConversations = wrapper.find('ConversationItem');
+    filteredConversations.at(0).simulate('click', 'convo-id-2');
+
+    const resultingConversatons = wrapper.find('ConversationItem');
+    expect(resultingConversatons.length).toEqual(2);
+  });
+
   it('renders user search results', async function () {
     const search = jest.fn();
     search.mockResolvedValue([
@@ -129,6 +159,36 @@ describe('ConversationListPanel', () => {
       { value: 'user-3', label: 'jacklyn', image: 'image-3' },
     ]);
   });
+
+  it('selecting a new user announces create conversation event', async function () {
+    const onCreateConversation = jest.fn();
+    const search = jest.fn();
+    search.mockResolvedValue([
+      { name: 'jack', id: 'user-1', image: 'image-1' },
+      { name: 'jacklyn', id: 'user-3', image: 'image-3' },
+    ]);
+    const wrapper = subject({ onCreateConversation, search });
+
+    await searchFor(wrapper, 'ja');
+    wrapper.find('UserSearchResults').simulate('create', 'user-1');
+
+    expect(onCreateConversation).toHaveBeenCalledWith('user-1');
+  });
+
+  it('selecting a new user clears the filtered state', async function () {
+    const onCreateConversation = jest.fn();
+    const search = jest.fn();
+    search.mockResolvedValue([
+      { name: 'jack', id: 'user-1', image: 'image-1' },
+      { name: 'jacklyn', id: 'user-3', image: 'image-3' },
+    ]);
+    const wrapper = subject({ onCreateConversation, search });
+
+    await searchFor(wrapper, 'ja');
+    wrapper.find('UserSearchResults').simulate('create', 'user-1');
+
+    expect(wrapper).not.toHaveElement('UserSearchResults');
+  });
 });
 
 function renderedUserSearchResults(wrapper) {
@@ -138,7 +198,7 @@ function renderedUserSearchResults(wrapper) {
 async function searchFor(wrapper, searchString) {
   const searchInput = wrapper.find('Input');
   const onChange = searchInput.prop('onChange');
-  await onChange({ target: { value: searchString } });
+  await onChange(searchString);
 }
 
 function renderedConversations(wrapper) {

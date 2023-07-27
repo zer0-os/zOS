@@ -16,6 +16,7 @@ import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
 import { reducer as login } from './login';
 import { reducer as rewards } from './rewards';
+import { reducer as editProfile } from './edit-profile';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -34,6 +35,7 @@ export const rootReducer = combineReducers({
   registration,
   login,
   rewards,
+  editProfile,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

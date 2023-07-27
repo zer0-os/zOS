@@ -19,7 +19,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { MessagesFetchState } from '../channels';
+import { GroupChannelType, MessagesFetchState } from '../channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -82,7 +82,43 @@ export function* fetchConversations() {
 }
 
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+  const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
+  yield put(setactiveConversationId(optimisticConversation.id));
   return yield call(internalCreateConversation, userIds, name, image);
+}
+
+export function* createOptimisticConversation(userIds: string[], name: string = null, image: File = null) {
+  const defaultConversationProperties = {
+    hasMore: false,
+    countNewMessages: 0,
+    isChannel: false,
+    unreadCount: 0,
+    hasLoadedMessages: true,
+    messagesFetchStatus: MessagesFetchState.SUCCESS,
+    groupChannelType: GroupChannelType.Private,
+    shouldSyncChannels: false,
+  };
+  const conversation = {
+    ...defaultConversationProperties,
+    id: Date.now(),
+    name,
+    otherMembers: userIds.map((id) => ({ userId: id })),
+    messages: [],
+    createdAt: Date.now(),
+  };
+
+  const existingConversationsList = yield select(rawConversationsList());
+  const existingChannelsList = yield select(rawChannelsList());
+
+  yield put(
+    receive([
+      ...existingConversationsList,
+      ...existingChannelsList,
+      conversation,
+    ])
+  );
+
+  return conversation;
 }
 
 export function* internalCreateConversation(userIds: string[], name: string = null, image: File = null) {

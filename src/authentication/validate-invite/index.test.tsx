@@ -78,4 +78,24 @@ describe('Invite', () => {
       'This invite has been used too many times. Please use a new invite code.'
     );
   });
+
+  it('disables the button after error until code is edited', function () {
+    const validateInvite = jest.fn();
+    const code = '123456';
+    const wrapper = subject({ validateInvite });
+
+    wrapper.find('Input').simulate('change', code);
+    wrapper.find('form').simulate('submit', inputEvent());
+
+    wrapper.setProps({ inviteCodeStatus: InviteCodeStatus.INVITE_CODE_USED });
+    expect(wrapper.find('Alert').prop('children')).toEqual(
+      'This invite code has already been redeemed. If you cannot get another invite you can join the waitlist below.'
+    );
+
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+
+    wrapper.find('Input').simulate('change', '123457');
+
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
+  });
 });

@@ -100,7 +100,11 @@ export class Invite extends React.Component<Properties, State> {
           <Button
             className={c('submit-button')}
             variant='primary'
-            isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
+            isDisabled={
+              !this.state.inviteCode.length ||
+              this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||
+              this.state.renderAlert
+            }
             isLoading={this.props.isLoading}
             isSubmit
           >

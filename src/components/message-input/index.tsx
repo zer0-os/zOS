@@ -24,6 +24,7 @@ import { Avatar } from '@zero-tech/zui/components';
 
 import classNames from 'classnames';
 import './styles.scss';
+import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 
 export interface PublicProperties extends PublicPropertiesContainer {}
 
@@ -159,10 +160,11 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   contentChanged = (event): void => {
-    const {
+    let {
       target: { value },
     } = event;
 
+    value = textToPlainEmojis(value);
     const mentionedUserIds = this.extractUserIds(value);
     this.setState({ value, mentionedUserIds });
   };

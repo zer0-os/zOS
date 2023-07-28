@@ -9,7 +9,6 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { EmojiPicker } from './emoji-picker/emoji-picker';
 import MessageAudioRecorder from '../message-audio-recorder';
 import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
@@ -260,15 +259,16 @@ describe('MessageInput', () => {
   });
 
   describe('Emojis', () => {
-    const getEmojiPicker = () => {
-      const wrapper = subject({});
-      return wrapper.find(Dropzone).shallow().find(EmojiPicker);
-    };
+    it('translates typed colon emojis to unicode emojis', () => {
+      const onSubmit = jest.fn();
+      const wrapper = subject({ onSubmit });
+      const dropzone = wrapper.find(Dropzone).shallow();
 
-    it('renders', function () {
-      const emojiPicker = getEmojiPicker();
+      const message = 'Message with :smile:';
+      dropzone.find(MentionsInput).simulate('change', { target: { value: message } });
+      wrapper.find('.message-input__icon--send').simulate('click');
 
-      expect(emojiPicker.exists()).toBe(true);
+      expect(onSubmit).toHaveBeenCalledWith('Message with 😄', [], []);
     });
   });
 

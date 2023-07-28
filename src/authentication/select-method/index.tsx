@@ -48,6 +48,7 @@ export class SelectMethod extends React.PureComponent<Properties, { selectedMeth
         <ToggleGroup
           {...cn('toggle-group')}
           options={options}
+          // variant deprecated but required
           variant='default'
           onSelectionChange={this.handleSelectionChange}
           selection={this.state.selectedMethod}

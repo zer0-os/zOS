@@ -2,24 +2,14 @@ import * as Request from 'superagent';
 import { Channel } from './../channels/index';
 import { get, post } from '../../lib/api/rest';
 import { DirectMessage } from './types';
-import * as matrix from 'matrix-js-sdk';
 
-export async function fetchChannels(_id: string) {
-  console.log('MATRIX: ', matrix);
-
-  const client = matrix.createClient({ baseUrl: 'http://localhost:8008' });
-
-  const publicRooms = await client.publicRooms();
-
-  console.log('publicRooms: ', publicRooms);
-
-  // try {
-  //   const channels = await get<any>(`/api/networks/${id}/chatChannels`);
-  //   return await channels.body;
-  // } catch (error: any) {
-  //   console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
-  return publicRooms.chunk || [];
-  // }
+export async function fetchChannels(id: string) {
+  try {
+    const channels = await get<any>(`/api/networks/${id}/chatChannels`);
+    return await channels.body;
+  } catch (error: any) {
+    console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
+  }
 }
 
 export async function fetchConversations(): Promise<Channel[]> {

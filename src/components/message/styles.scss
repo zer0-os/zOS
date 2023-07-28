@@ -173,6 +173,8 @@
     transition: opacity 0s ease-in-out, transform 0.1s ease-in-out;
     transform: translateX(-100%);
     opacity: 0;
+    // Sometimes we render an empty menu. This ensures consistency of width of the message bubble.
+    min-width: 32px;
   }
 
   .menu--open {

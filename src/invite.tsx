@@ -8,9 +8,7 @@ import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
 import { SelectMethodContainer } from './authentication/select-method/container';
-import { CreateEmailAccountContainer } from './authentication/create-email-account/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
-import { CreateWalletAccountContainer } from './authentication/create-wallet-account/container';
 import { Footer } from './authentication/footer/footer';
 
 import { bemClassName } from './lib/bem';
@@ -48,13 +46,16 @@ export class Container extends React.Component<Properties> {
           <ZeroLogo />
 
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
-          {this.props.stage === RegistrationStage.SelectMethod && <SelectMethodContainer />}
-          {this.props.stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
-          {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
+
+          {(this.props.stage === RegistrationStage.EmailAccountCreation ||
+            this.props.stage === RegistrationStage.WalletAccountCreation) && (
+            <SelectMethodContainer stage={this.props.stage} />
+          )}
+
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
 
-          <Footer />
+          <Footer stage={this.props.stage} />
         </div>
       </>
     );

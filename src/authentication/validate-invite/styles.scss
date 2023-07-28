@@ -2,6 +2,8 @@
 @import '../styles';
 
 .validate-invite {
+  margin: auto 0;
+
   @include base();
 
   &__heading-container {
@@ -30,5 +32,15 @@
 
   &__alert {
     @include alert();
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+
+    div {
+      text-transform: none;
+      margin: 0;
+    }
   }
 }

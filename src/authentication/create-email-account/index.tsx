@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
@@ -7,6 +6,7 @@ import './styles.scss';
 import { bem } from '../../lib/bem';
 import { PasswordStrength } from '../../components/password-strength';
 import { Strength, passwordStrength } from '../../lib/password';
+
 const c = bem('create-email-account');
 
 export interface Properties {
@@ -78,10 +78,9 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
-        <div className={c('sub-heading')}>Step 1 of 2: Enter your details</div>
         <form className={c('form')} onSubmit={this.publishOnNext}>
           <Input
+            className={c('input')}
             label='Email Address'
             name='email'
             value={this.state.email}
@@ -90,6 +89,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             alert={this.emailError}
           />
           <PasswordInput
+            className={c('input')}
             label='Password'
             name='password'
             value={this.state.password}
@@ -104,12 +104,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             Next
           </Button>
         </form>
-        <div className={c('other-options')}>
-          <div>
-            <span>Already on ZERO? </span>
-            <Link to='/login'>Log in</Link>
-          </div>
-        </div>
       </div>
     );
   }

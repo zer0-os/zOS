@@ -2,18 +2,23 @@
 @import '../styles';
 
 .create-email-account {
+  margin: 0 0 auto;
+
+  width: 280px;
+
   @include base();
 
   &__heading {
     @include heading();
   }
 
-  &__sub-heading {
-    @include sub-heading();
-  }
-
   &__form {
     @include form();
+  }
+
+  &__input {
+    gap: 4px;
+    width: 100%;
   }
 
   &__error-list {
@@ -23,10 +28,5 @@
       margin-left: -30px;
       list-style-type: none;
     }
-  }
-
-  &__other-options {
-    text-align: center;
-    padding-top: 64px;
   }
 }

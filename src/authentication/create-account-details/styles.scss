@@ -2,6 +2,8 @@
 @import '../styles';
 
 .create-account-details {
+  margin: 76px 0 auto 0;
+
   @include base();
 
   &__heading {

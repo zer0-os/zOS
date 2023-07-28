@@ -1,31 +1,54 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
-import { Button } from '@zero-tech/zui/components';
+import { ToggleGroup } from '@zero-tech/zui/components';
+
+import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { bem } from '../../lib/bem';
-const c = bem('select-method');
-const cn = (m?, s?) => ({ className: c(m, s) });
+
+const cn = bemClassName('select-method');
 
 export interface Properties {
   onEmailSelected: () => void;
   onWalletSelected: () => void;
 }
 
-export class SelectMethod extends React.PureComponent<Properties> {
+export class SelectMethod extends React.PureComponent<Properties, { selectedMethod: string }> {
+  constructor(props: Properties) {
+    super(props);
+    this.state = {
+      selectedMethod: 'web3',
+    };
+  }
+
+  handleSelectionChange = (selection: string) => {
+    this.setState({ selectedMethod: selection });
+
+    if (selection === 'email') {
+      this.props.onEmailSelected();
+    } else if (selection === 'web3') {
+      this.props.onWalletSelected();
+    }
+  };
+
   render() {
+    const options = [
+      { key: 'web3', label: 'Web3' },
+      { key: 'email', label: 'Email' },
+    ];
+
     return (
       <div {...cn()}>
-        <h3 {...cn('heading')}>How do you want to create an account?</h3>
-        <form {...cn('form')}>
-          <Button onPress={this.props.onEmailSelected}>Create account with email</Button>
-          <Button onPress={this.props.onWalletSelected}>Create account with wallet</Button>
-          <div {...cn('other-options')}>
-            <span>Already on ZERO? </span>
-            <Link to='/login'>Log in</Link>
-          </div>
-        </form>
+        <h3 {...cn('heading')}>Create Account</h3>
+        <ToggleGroup
+          {...cn('toggle-group')}
+          options={options}
+          variant='default'
+          onSelectionChange={this.handleSelectionChange}
+          selection={this.state.selectedMethod}
+          selectionType='single'
+          isRequired
+        />
       </div>
     );
   }

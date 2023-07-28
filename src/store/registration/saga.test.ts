@@ -58,7 +58,7 @@ describe('validate invite', () => {
     expect(registration.inviteCode).toEqual(code);
   });
 
-  it('moves to the method selection stage when invite code is valid', async () => {
+  it('moves to the wallet account creation stage when invite code is valid', async () => {
     const code = '123456';
 
     const {
@@ -73,7 +73,7 @@ describe('validate invite', () => {
       .withReducer(rootReducer, initialState())
       .run();
 
-    expect(registration.stage).toEqual(RegistrationStage.SelectMethod);
+    expect(registration.stage).toEqual(RegistrationStage.WalletAccountCreation);
   });
 
   it('validates invite code, returns false if NOT VALID and stays on invite stage', async () => {

@@ -102,9 +102,11 @@ const slice = createSlice({
     },
     registerWithEmail: (state, _action: PayloadAction<null>) => {
       state.stage = RegistrationStage.EmailAccountCreation;
+      state.errors = [];
     },
     registerWithWallet: (state, _action: PayloadAction<null>) => {
       state.stage = RegistrationStage.WalletAccountCreation;
+      state.errors = [];
     },
     setInviteToastOpen: (state, action: PayloadAction<RegistrationState['isInviteToastOpen']>) => {
       state.isInviteToastOpen = action.payload;

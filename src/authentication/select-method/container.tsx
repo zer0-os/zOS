@@ -2,9 +2,13 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { SelectMethod } from '.';
-import { registerWithEmail, registerWithWallet } from '../../store/registration';
+import { CreateEmailAccountContainer } from '../create-email-account/container';
+import { CreateWalletAccountContainer } from '../create-wallet-account/container';
+import { RegistrationStage, registerWithEmail, registerWithWallet } from '../../store/registration';
 
-export interface PublicProperties {}
+export interface PublicProperties {
+  stage: RegistrationStage;
+}
 
 export interface Properties extends PublicProperties {
   registerWithEmail: () => void;
@@ -20,9 +24,23 @@ export class Container extends React.Component<Properties> {
     return { registerWithEmail, registerWithWallet };
   }
 
+  renderCreateMethod = () => {
+    switch (this.props.stage) {
+      case RegistrationStage.EmailAccountCreation:
+        return <CreateEmailAccountContainer />;
+      case RegistrationStage.WalletAccountCreation:
+        return <CreateWalletAccountContainer />;
+      default:
+        return null;
+    }
+  };
+
   render() {
     return (
-      <SelectMethod onEmailSelected={this.props.registerWithEmail} onWalletSelected={this.props.registerWithWallet} />
+      <>
+        <SelectMethod onEmailSelected={this.props.registerWithEmail} onWalletSelected={this.props.registerWithWallet} />
+        {this.renderCreateMethod()}
+      </>
     );
   }
 }

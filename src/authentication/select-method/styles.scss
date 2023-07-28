@@ -2,21 +2,23 @@
 @import '../styles';
 
 .select-method {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 76px;
+
   @include base();
 
   &__heading {
     @include heading();
   }
 
-  &__form {
-    @include form();
-
-    padding-top: 32px;
-    gap: 32px;
-  }
-
-  &__other-options {
-    text-align: center;
-    padding-top: 64px;
+  &__toggle-group {
+    display: flex;
+    width: 280px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 32px;
   }
 }

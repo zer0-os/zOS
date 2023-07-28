@@ -26,16 +26,17 @@
     @include form();
   }
 
-  &__footer {
-    @include footer();
-  }
-
   &__input-container {
-    @include input-container();
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 280px;
   }
 
   &__alert {
-    @include alert();
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
   }
 
   &__submit-button {

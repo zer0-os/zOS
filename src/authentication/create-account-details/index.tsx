@@ -59,8 +59,10 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
-        <div className={c('sub-heading')}>Step 2 of 2: What should we call you?</div>
+        <div className={c('heading-container')}>
+          <h3 className={c('heading')}>Create Account</h3>
+          <div className={c('sub-heading')}>Enter your details</div>
+        </div>
         <form className={c('form')} onSubmit={this.publishOnCreate}>
           <div className={c('image-upload')}>
             <ImageUpload

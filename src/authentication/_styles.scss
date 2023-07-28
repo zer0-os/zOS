@@ -40,3 +40,8 @@
   width: 280px;
   margin: 0 auto;
 }
+
+@mixin input {
+  gap: 4px;
+  width: 100%;
+}

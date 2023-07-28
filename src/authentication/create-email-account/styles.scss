@@ -15,8 +15,7 @@
   }
 
   &__input {
-    gap: 4px;
-    width: 100%;
+    @include input();
   }
 
   &__error-list {

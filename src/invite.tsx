@@ -53,7 +53,7 @@ export class Container extends React.Component<Properties> {
 
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
 
-          <Footer stage={this.props.stage} />
+          {this.props.stage !== RegistrationStage.ProfileDetails && <Footer stage={this.props.stage} />}
         </div>
       </>
     );

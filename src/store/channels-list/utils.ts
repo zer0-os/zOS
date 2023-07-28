@@ -18,10 +18,9 @@ export function filterChannelsList(state, filter: ChannelType) {
 
 export const matrixChannelMapper = (currentChannel): Partial<Channel> => {
   return {
-    id: currentChannel.room_id,
+    id: currentChannel.roomId,
     name: currentChannel.name,
-    icon: currentChannel.avatar_url,
-
+    icon: currentChannel.getAvatarUrl(),
     isChannel: true,
     otherMembers: [],
     lastMessage: null,
@@ -31,16 +30,6 @@ export const matrixChannelMapper = (currentChannel): Partial<Channel> => {
     unreadCount: 0,
     hasJoined: true,
     createdAt: 0,
-
-    // category: currentChannel.category,
-    // unreadCount: currentChannel.unreadCount,
-    // hasJoined: currentChannel.hasJoined,
-    // createdAt: currentChannel.createdAt,
-    // otherMembers: currentChannel.otherMembers || [],
-    // lastMessage: currentChannel.lastMessage || null,
-    // lastMessageCreatedAt: currentChannel.lastMessage?.createdAt || null,
-    // isChannel: currentChannel.isChannel === undefined ? true : currentChannel.isChannel,
-    // groupChannelType: currentChannel.groupChannelType || '',
   };
 };
 

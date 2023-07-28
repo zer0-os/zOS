@@ -4,15 +4,15 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
+import { chat as chatClient } from '../../lib/chat';
 
 import {
-  fetchChannels as fetchChannelsApi,
   fetchConversations as fetchConversationsMessagesApi,
   createConversation as createConversationMessageApi,
   uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { matrixChannelMapper, channelMapper, filterChannelsList } from './utils';
+import { channelMapper, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
@@ -34,8 +34,13 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
-  const channels = yield call(fetchChannelsApi, action.payload);
-  const channelsList = channels.map((currentChannel) => matrixChannelMapper(currentChannel));
+  const channelsList = yield call(
+    [
+      chatClient,
+      chatClient.getChannels,
+    ],
+    action.payload
+  );
 
   const conversationsList = yield select(rawConversationsList());
 

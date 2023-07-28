@@ -4,6 +4,8 @@ import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
 import { AttachmentUploadResult, EditMessageOptions, MessagesResponse } from './index';
 import { FileUploadResult, SendPayload } from './saga';
+import { mapMatrixMessage } from '../../lib/chat/chat-message';
+
 import axios from 'axios';
 import * as matrix from 'matrix-js-sdk';
 
@@ -16,21 +18,7 @@ export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?
 
   const { chunk } = await client.createMessagesRequest(channelId, null, 30, matrix.Direction.Forward);
 
-  const messages = chunk
-    .filter((m) => m.type === 'm.room.message')
-    .map((m) => ({
-      id: m.event_id,
-      message: m.content.body,
-      parentMessageText: '',
-      parentMessageId: null,
-      createdAt: m.origin_server_ts,
-      updatedAt: m.origin_server_ts,
-      sender: {},
-      isAdmin: false,
-      ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
-    }));
-
-  console.log('got messages: ', messages);
+  const messages = chunk.filter((m) => m.type === 'm.room.message').map(mapMatrixMessage);
 
   return { messages: messages as any, hasMore: false };
 

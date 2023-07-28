@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
-import { SelectMethodContainer } from './authentication/select-method/container';
+import { SelectMethod } from './authentication/select-method';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
 import { Footer } from './authentication/footer/footer';
 
@@ -47,12 +47,10 @@ export class Container extends React.Component<Properties> {
 
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
 
-          {(this.props.stage === RegistrationStage.EmailAccountCreation ||
-            this.props.stage === RegistrationStage.WalletAccountCreation) && (
-            <SelectMethodContainer stage={this.props.stage} />
-          )}
+          {this.props.stage === RegistrationStage.SelectMethod && <SelectMethod />}
 
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
+
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
 
           <Footer stage={this.props.stage} />

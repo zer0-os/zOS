@@ -1,17 +1,15 @@
 import * as React from 'react';
 
 import { ToggleGroup } from '@zero-tech/zui/components';
-
+import { CreateEmailAccountContainer } from '../create-email-account/container';
+import { CreateWalletAccountContainer } from '../create-wallet-account/container';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 
 const cn = bemClassName('select-method');
 
-export interface Properties {
-  onEmailSelected: () => void;
-  onWalletSelected: () => void;
-}
+export interface Properties {}
 
 export class SelectMethod extends React.PureComponent<Properties, { selectedMethod: string }> {
   constructor(props: Properties) {
@@ -23,13 +21,20 @@ export class SelectMethod extends React.PureComponent<Properties, { selectedMeth
 
   handleSelectionChange = (selection: string) => {
     this.setState({ selectedMethod: selection });
-
-    if (selection === 'email') {
-      this.props.onEmailSelected();
-    } else if (selection === 'web3') {
-      this.props.onWalletSelected();
-    }
   };
+
+  renderAccountCreation() {
+    const { selectedMethod } = this.state;
+
+    switch (selectedMethod) {
+      case 'email':
+        return <CreateEmailAccountContainer />;
+      case 'web3':
+        return <CreateWalletAccountContainer />;
+      default:
+        return null;
+    }
+  }
 
   render() {
     const options = [
@@ -49,6 +54,8 @@ export class SelectMethod extends React.PureComponent<Properties, { selectedMeth
           selectionType='single'
           isRequired
         />
+
+        {this.renderAccountCreation()}
       </div>
     );
   }

@@ -26,6 +26,10 @@
     @include form();
   }
 
+  &__footer {
+    @include footer();
+  }
+
   &__input-container {
     @include input-container();
   }

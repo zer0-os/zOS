@@ -5,7 +5,8 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  margin-top: 76px;
+  margin: 76px 0 auto 0;
+  width: 280px;
 
   @include base();
 
@@ -15,10 +16,9 @@
 
   &__toggle-group {
     display: flex;
-    width: 280px;
+
     height: 40px;
     justify-content: center;
     align-items: center;
-    margin-bottom: 32px;
   }
 }

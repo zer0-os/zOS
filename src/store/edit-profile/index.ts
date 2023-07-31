@@ -4,16 +4,21 @@ export enum SagaActionTypes {
   EditProfile = 'profile/edit',
 }
 
+export enum State {
+  NONE,
+  INPROGRESS,
+  SUCCESS,
+  LOADED,
+}
+
 export type EditProfileState = {
-  loading: boolean;
   errors: string[];
-  changesSaved: boolean;
+  state: State;
 };
 
 export const initialState: EditProfileState = {
-  loading: false,
   errors: [],
-  changesSaved: false,
+  state: State.NONE,
 };
 
 export const editProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.EditProfile);
@@ -22,22 +27,18 @@ const slice = createSlice({
   name: 'edit-profile',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<EditProfileState['loading']>) => {
-      state.loading = action.payload;
-    },
-    setChangesSaved: (state, action: PayloadAction<EditProfileState['changesSaved']>) => {
-      state.changesSaved = action.payload;
-    },
     startProfileEdit: (state, _action: PayloadAction) => {
-      state.loading = false;
       state.errors = [];
-      state.changesSaved = false;
+      state.state = State.NONE;
     },
     setErrors: (state, action: PayloadAction<EditProfileState['errors']>) => {
       state.errors = action.payload;
     },
+    setState: (state, action: PayloadAction<EditProfileState['state']>) => {
+      state.state = action.payload;
+    },
   },
 });
 
-export const { setLoading, setErrors, setChangesSaved, startProfileEdit } = slice.actions;
+export const { setErrors, startProfileEdit, setState } = slice.actions;
 export const { reducer } = slice;

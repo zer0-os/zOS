@@ -1,5 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
-import { SagaActionTypes, setChangesSaved, setErrors, setLoading } from '.';
+import { SagaActionTypes, State, setErrors, setState } from '.';
 import { editUserProfile as apiEditUserProfile } from './api';
 import { ProfileDetailsErrors } from '../registration';
 import { uploadImage } from '../registration/api';
@@ -8,8 +8,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 export function* editProfile(action) {
   const { name, image } = action.payload;
 
-  yield put(setLoading(true));
-  yield put(setChangesSaved(false));
+  yield put(setState(State.INPROGRESS));
   try {
     let profileImage = '';
     if (image) {
@@ -30,14 +29,14 @@ export function* editProfile(action) {
     });
     if (response.success) {
       yield call(publishUserProfileEdited, { name, profileImage });
-      yield put(setChangesSaved(true));
+      yield put(setState(State.SUCCESS));
       return;
     }
   } catch (e) {
     yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
-  } finally {
-    yield put(setLoading(false));
   }
+
+  yield put(setState(State.LOADED));
   return;
 }
 

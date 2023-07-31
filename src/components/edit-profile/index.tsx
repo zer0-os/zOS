@@ -6,11 +6,12 @@ import './styles.scss';
 import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2, IconXClose } from '@zero-tech/zui/icons';
+import { State as EditProfileState } from '../../store/edit-profile';
 
 const c = bem('edit-profile');
 
 export interface Properties {
-  isLoading: boolean;
+  editProfileState: EditProfileState;
   errors: {
     image?: string;
     name?: string;
@@ -18,7 +19,6 @@ export interface Properties {
   };
   currentDisplayName: string;
   currentProfileImage: string;
-  changesSaved: boolean;
   onEdit: (data: { name: string; image: File }) => void;
   onClose?: () => void;
 }
@@ -57,10 +57,18 @@ export class EditProfile extends React.Component<Properties, State> {
     return this.props.errors.image;
   }
 
+  get isLoading() {
+    return this.props.editProfileState === EditProfileState.INPROGRESS;
+  }
+
+  get changesSaved() {
+    return this.props.editProfileState === EditProfileState.SUCCESS;
+  }
+
   get isDisabled() {
     return (
       !!this.nameError ||
-      this.props.isLoading ||
+      this.isLoading ||
       (this.state.name === this.props.currentDisplayName && this.state.image === null)
     );
   }
@@ -105,7 +113,7 @@ export class EditProfile extends React.Component<Properties, State> {
             {this.generalError}
           </Alert>
         )}
-        {this.props.changesSaved && (
+        {this.changesSaved && (
           <Alert className={c('alert-large')} variant='success'>
             Your changes have been saved
           </Alert>
@@ -113,7 +121,7 @@ export class EditProfile extends React.Component<Properties, State> {
         <div className={c('footer')}>
           <Button
             className={c('zui-button-large')}
-            isLoading={this.props.isLoading}
+            isLoading={this.isLoading}
             isSubmit
             isDisabled={this.isDisabled}
             onPress={this.handleEdit}

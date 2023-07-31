@@ -125,23 +125,21 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
 
 export function* receiveCreatedConversation(conversation, optimisticConversation) {
   const existingConversationsList = yield select(rawConversationsList());
+  const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
 
-  const hasExistingConversation =
-    Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
-
-  if (!hasExistingConversation) {
-    const channelsList = yield select(rawChannelsList());
+  if (!existingConversationsList.includes(conversation.id)) {
     conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
     conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
-    // add new chat to the list
-    yield put(
-      receive([
-        ...channelsList,
-        ...existingConversationsList,
-        conversation,
-      ])
-    );
+    listWithoutOptimistic.push(conversation);
   }
+
+  const channelsList = yield select(rawChannelsList());
+  yield put(
+    receive([
+      ...channelsList,
+      ...listWithoutOptimistic,
+    ])
+  );
 
   yield put(setactiveConversationId(conversation.id));
 }

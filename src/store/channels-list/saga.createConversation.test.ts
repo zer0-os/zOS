@@ -180,16 +180,16 @@ describe('channels list saga', () => {
   });
 
   describe(receiveCreatedConversation, () => {
-    it.skip('replaces the optimistic message', async () => {
-      const initialState = existingConversationState({ id: 'optimistic-id' });
+    it('replaces the optimistic message', async () => {
+      const optimistic = { id: 'optimistic-id' };
 
-      const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, {})
+      const initialState = existingConversationState(optimistic);
+
+      const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, optimistic)
         .withReducer(rootReducer, initialState)
         .run();
 
-      const newConversation = denormalizeChannel('new-convo', storeState);
-      expect(newConversation.hasLoadedMessages).toBe(true);
-      expect(newConversation.messagesFetchStatus).toBe(MessagesFetchState.SUCCESS);
+      expect(storeState.channelsList.value).toStrictEqual(['new-convo']);
     });
 
     it('sets hasLoadedMessages to true and fetch status to success', async () => {

@@ -98,7 +98,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
               className: 'edit_profile',
               id: 'edit_profile',
               label: this.renderSettingsOption(<IconUser1 />, 'Edit Profile'),
-              onSelect: () => this.openEditProfileDialog(),
+              onSelect: this.openEditProfileDialog,
             },
             {
               className: 'divider',

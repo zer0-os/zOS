@@ -10,7 +10,6 @@ export enum SagaActionTypes {
 
 export enum RegistrationStage {
   ValidateInvite = 'invite',
-  SelectMethod = 'select-method',
   EmailAccountCreation = 'email-creation',
   WalletAccountCreation = 'wallet-creation',
   ProfileDetails = 'details',

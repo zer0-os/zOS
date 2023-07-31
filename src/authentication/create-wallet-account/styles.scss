@@ -6,20 +6,10 @@
 
   @include base();
 
-  &__heading {
-    margin-bottom: 32px !important;
-
-    @include heading();
-  }
-
-  &__sub-heading {
-    @include sub-heading();
-  }
-
   &__main {
     box-sizing: border-box;
     width: 280px;
-    margin: auto;
+    margin-bottom: 8px;
   }
 
   &__select-wallet {

@@ -78,8 +78,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   render() {
     return (
       <div {...cn('')}>
-        <h3 {...cn('heading')}>Create Account</h3>
-
         <form {...cn('form')} onSubmit={this.publishOnNext}>
           <Input
             {...cn('input')}

@@ -85,7 +85,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div>
+      <>
         <DropdownMenu
           menuClassName={'settings-menu'}
           items={[
@@ -126,7 +126,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
           }
         />
         {this.renderEditProfileDialog()}
-      </div>
+      </>
     );
   }
 }

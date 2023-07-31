@@ -28,11 +28,16 @@ const slice = createSlice({
     setChangesSaved: (state, action: PayloadAction<EditProfileState['changesSaved']>) => {
       state.changesSaved = action.payload;
     },
+    startProfileEdit: (state, _action: PayloadAction) => {
+      state.loading = false;
+      state.errors = [];
+      state.changesSaved = false;
+    },
     setErrors: (state, action: PayloadAction<EditProfileState['errors']>) => {
       state.errors = action.payload;
     },
   },
 });
 
-export const { setLoading, setErrors, setChangesSaved } = slice.actions;
+export const { setLoading, setErrors, setChangesSaved, startProfileEdit } = slice.actions;
 export const { reducer } = slice;

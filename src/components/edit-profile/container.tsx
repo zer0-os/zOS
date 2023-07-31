@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { EditProfile } from '.';
-import { editProfile, setChangesSaved } from '../../store/edit-profile';
+import { editProfile, startProfileEdit } from '../../store/edit-profile';
 import { Container as RegistrationContainer } from '../../authentication/create-account-details/container';
 export interface PublicProperties {
   onClose?: () => void;
@@ -19,7 +19,7 @@ export interface Properties extends PublicProperties {
   currentDisplayName: string;
   currentProfileImage: string;
   editProfile: (data: { name: string; image: File }) => void;
-  setChangesSaved: (value: boolean) => void;
+  startProfileEdit: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,11 +38,11 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { editProfile, setChangesSaved };
+    return { editProfile, startProfileEdit };
   }
 
-  componentWillUnmount(): void {
-    this.props.setChangesSaved(false);
+  componentDidMount(): void {
+    this.props.startProfileEdit();
   }
 
   render() {

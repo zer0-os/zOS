@@ -30,14 +30,12 @@ export function* editProfile(action) {
     });
     if (response.success) {
       yield call(publishUserProfileEdited, { name, profileImage });
+      yield put(setChangesSaved(true));
       return;
-    } else {
-      yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
     }
   } catch (e) {
     yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
   } finally {
-    yield put(setChangesSaved(true));
     yield put(setLoading(false));
   }
   return;

@@ -71,6 +71,8 @@ export class Invite extends React.Component<Properties, State> {
   };
 
   render() {
+    const isError = this.state.renderAlert && this.props.inviteCodeStatus !== InviteCodeStatus.VALID;
+
     return (
       <div className={c('')}>
         <div className={c('heading-container')}>
@@ -84,12 +86,10 @@ export class Invite extends React.Component<Properties, State> {
               placeholder='e.g 123456'
               value={this.state.inviteCode}
               type='text'
-              error={this.state.renderAlert}
+              error={isError}
             />
 
-            {this.state.renderAlert &&
-              this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
-              this.renderAlert(this.props.inviteCodeStatus)}
+            {isError && this.renderAlert(this.props.inviteCodeStatus)}
           </div>
 
           <Button

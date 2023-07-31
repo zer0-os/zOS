@@ -1,9 +1,8 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat as chatClient } from '../../lib/chat';
-import { channelMapper } from './utils';
 import { fetchConversations as fetchConversationsApi } from './api';
+import { chat } from '../../lib/chat';
 
 import {
   fetchChannels,
@@ -30,14 +29,18 @@ const MOCK_CHANNELS = [
   { name: 'channel 3', id: 'channel_0003', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
 ];
 
+const chatClient = {
+  getChannels: () => MOCK_CHANNELS,
+};
+
 describe('channels list saga', () => {
   it('sets status to fetching', async () => {
     await expectSaga(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
       .put(setStatus(AsyncListStatus.Fetching))
       .provide([
         [
-          matchers.call.fn(chatClient.getChannels),
-          MOCK_CHANNELS,
+          matchers.call.fn(chat.get),
+          chatClient,
         ],
       ])
       .run();
@@ -49,8 +52,8 @@ describe('channels list saga', () => {
     await expectSaga(fetchChannels, { payload: id })
       .provide([
         [
-          matchers.call.fn(chatClient.getChannels),
-          MOCK_CHANNELS,
+          matchers.call.fn(chat.get),
+          chatClient,
         ],
       ])
       .call(
@@ -72,8 +75,8 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(chatClient.getChannels),
-          MOCK_CHANNELS,
+          matchers.call.fn(chat.get),
+          chatClient,
         ],
       ])
       .run();
@@ -93,8 +96,8 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .provide([
         [
-          matchers.call.fn(chatClient.getChannels),
-          MOCK_CHANNELS,
+          matchers.call.fn(chat.get),
+          chatClient,
         ],
       ])
       .run();
@@ -116,8 +119,12 @@ describe('channels list saga', () => {
     } = await expectSaga(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
       .provide([
         [
+          matchers.call.fn(chat.get),
+          chatClient,
+        ],
+        [
           matchers.call.fn(chatClient.getChannels),
-          [channelMapper({ id, name, icon, category, unreadCount, hasJoined, isChannel })],
+          [{ id, name, icon, category, unreadCount, hasJoined, isChannel }],
         ],
       ])
       .withReducer(rootReducer)
@@ -132,11 +139,6 @@ describe('channels list saga', () => {
         unreadCount,
         hasJoined,
         isChannel,
-        otherMembers: [],
-        createdAt: undefined,
-        groupChannelType: '',
-        lastMessage: null,
-        lastMessageCreatedAt: null,
       })
     );
   });
@@ -176,6 +178,10 @@ describe('channels list saga', () => {
 
     const { storeState } = await expectSaga(fetchChannelsAndConversations)
       .provide([
+        [
+          matchers.call(chat.get),
+          chatClient,
+        ],
         [
           matchers.call(
             [

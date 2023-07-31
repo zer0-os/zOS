@@ -33,8 +33,8 @@ export class Chat {
     await this.client.connect(userId, accessToken);
   }
 
-  getChannels(id: string) {
-    this.client.getChannels(id);
+  async getChannels(id: string) {
+    return this.client.getChannels(id);
   }
 
   initChat(events: RealtimeChatEvents): void {
@@ -50,4 +50,13 @@ export class Chat {
   }
 }
 
-export const chat = new Chat();
+let chatClient: Chat;
+export const chat = {
+  get() {
+    if (!chatClient) {
+      chatClient = new Chat(new MatrixClient());
+    }
+
+    return chatClient;
+  },
+};

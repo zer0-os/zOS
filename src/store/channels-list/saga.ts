@@ -4,7 +4,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
-import { chat as chatClient } from '../../lib/chat';
+import { chat } from '../../lib/chat';
 
 import {
   fetchConversations as fetchConversationsMessagesApi,
@@ -34,6 +34,7 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
+  const chatClient = yield call(chat.get);
   const channelsList = yield call(
     [
       chatClient,

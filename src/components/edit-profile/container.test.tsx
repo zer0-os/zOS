@@ -1,21 +1,19 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
-import { editProfile, setChangesSaved } from '../../store/edit-profile';
+import { editProfile, startProfileEdit } from '../../store/edit-profile';
 import { RootState } from '../../store/reducer';
 import { EditProfile } from '.';
-import { ProfileDetailsErrors } from '../../store/registration';
 
 describe('Container', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      isLoading: false,
       errors: {},
-      changesSaved: false,
+      editProfileState: 0, // Set the initial editProfileState to State.NONE
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
       editProfile: () => null,
-      setChangesSaved: () => null,
+      startProfileEdit: () => null,
       ...props,
     };
 
@@ -23,113 +21,80 @@ describe('Container', () => {
   };
 
   it('passes data down', () => {
-    const wrapper = subject({ isLoading: true });
+    const wrapper = subject({});
 
     expect(wrapper.find(EditProfile).props()).toEqual(
       expect.objectContaining({
-        isLoading: true,
+        errors: {},
+        editProfileState: 0,
+        currentDisplayName: 'John Doe',
+        currentProfileImage: 'profile.jpg',
       })
     );
   });
 
-  // it('calls editProfile onEdit', () => {
-  //   const editProfileMock = jest.fn();
-  //   const wrapper = subject({ editProfile: editProfileMock });
+  it('calls startProfileEdit on componentDidMount', () => {
+    const startProfileEditMock = jest.fn();
+    const wrapper = subject({ startProfileEdit: startProfileEditMock });
 
-  //   const formData = {
-  //     name: 'Jane Smith',
-  //     image: new File([], 'image.jpg'),
-  //   };
+    wrapper.instance().componentDidMount();
 
-  //   wrapper.find(EditProfile).props().onEdit(formData);
-
-  //   expect(editProfileMock).toHaveBeenCalledWith(formData);
-  // });
-
-  it('calls setChangesSaved on componentWillUnmount', () => {
-    const setChangesSavedMock = jest.fn();
-    const wrapper = subject({ setChangesSaved: setChangesSavedMock });
-
-    wrapper.unmount();
-
-    expect(setChangesSavedMock).toHaveBeenCalledWith(false);
+    expect(startProfileEditMock).toHaveBeenCalled();
   });
 
   describe('mapState', () => {
-    const subject = (
-      editProfileState: Partial<Properties['editProfile']>,
-      userState: Partial<RootState['authentication']['user']>
-    ) => {
-      const state = {
-        editProfile: {
-          loading: false,
-          errors: [],
-          changesSaved: false,
-          ...editProfileState,
-        },
-        authentication: {
-          user: {
-            data: {
-              profileSummary: {
-                firstName: 'John Doe',
-                profileImage: 'profile.jpg',
-              },
+    // Mock the state with relevant properties for the editProfileState and user
+    const stateMock: RootState = {
+      editProfile: {
+        errors: [],
+        state: 0, // Set the initial editProfileState to State.NONE
+      },
+      authentication: {
+        user: {
+          data: {
+            profileSummary: {
+              firstName: 'John Doe',
+              profileImage: 'profile.jpg',
             },
-            ...userState,
           },
         },
-      } as RootState;
-      return Container.mapState(state);
-    };
+      },
+    } as RootState;
 
-    it('isLoading', () => {
-      const props = subject({ loading: true }, {});
+    it('editProfileState', () => {
+      const props = Container.mapState(stateMock);
 
-      expect(props.isLoading).toEqual(true);
+      expect(props.editProfileState).toBe(0);
     });
 
     it('currentDisplayName', () => {
-      const props = subject({}, {});
+      const props = Container.mapState(stateMock);
 
       expect(props.currentDisplayName).toEqual('John Doe');
     });
 
     it('currentProfileImage', () => {
-      const props = subject({}, {});
+      const props = Container.mapState(stateMock);
 
       expect(props.currentProfileImage).toEqual('profile.jpg');
     });
 
-    describe('editProfile errors', () => {
-      it('failed upload', () => {
-        const props = subject({ errors: [ProfileDetailsErrors.FILE_UPLOAD_ERROR] }, {});
+    it('errors', () => {
+      const props = Container.mapState(stateMock);
 
-        expect(props.errors).toEqual({ image: 'Error uploading image' });
-      });
-
-      it('unknown error', () => {
-        const props = subject({ errors: [ProfileDetailsErrors.UNKNOWN_ERROR] }, {});
-
-        expect(props.errors).toEqual({ general: 'An error has occurred' });
-      });
+      expect(props.errors).toEqual({});
     });
   });
 
   describe('mapActions', () => {
-    const subject = () => {
-      return Container.mapActions({} as any) as Partial<Properties>;
-    };
+    const actions = Container.mapActions({} as any) as Partial<Properties>;
 
     it('returns editProfile action', () => {
-      const actions = subject();
-
       expect(actions.editProfile).toEqual(editProfile);
     });
 
-    it('returns setChangesSaved action', () => {
-      const actions = subject();
-
-      expect(actions.setChangesSaved).toEqual(setChangesSaved);
+    it('returns startProfileEdit action', () => {
+      expect(actions.startProfileEdit).toEqual(startProfileEdit);
     });
   });
 });

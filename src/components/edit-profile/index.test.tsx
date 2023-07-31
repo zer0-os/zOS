@@ -3,17 +3,16 @@ import { shallow } from 'enzyme';
 import { EditProfile, Properties } from './index';
 import { IconButton, Alert, Button, Input } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
-import { inputEvent } from '../../test/utils';
-import { ImageUpload } from '../image-upload';
+import { ImageUpload } from '../../components/image-upload';
+import { State as EditProfileState } from '../../store/edit-profile';
 
 describe('EditProfile', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      isLoading: false,
+      editProfileState: EditProfileState.NONE, // Set the initial editProfileState to State.NONE
       errors: {},
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
-      changesSaved: false,
       onEdit: () => null,
       onClose: () => null,
       ...props,
@@ -48,7 +47,7 @@ describe('EditProfile', () => {
     const onEditMock = jest.fn();
     const wrapper = subject({ onEdit: onEditMock });
 
-    wrapper.find('Button').simulate('press');
+    wrapper.find(Button).simulate('press');
     expect(onEditMock).toHaveBeenCalledWith({ name: 'John Doe', image: null });
   });
 
@@ -58,8 +57,8 @@ describe('EditProfile', () => {
     expect(wrapper.find(Button).prop('isDisabled')).toEqual(true);
   });
 
-  it('disables Save Changes button when loading', () => {
-    const wrapper = subject({ isLoading: true });
+  it('disables Save Changes button when editProfileState is INPROGRESS', () => {
+    const wrapper = subject({ editProfileState: EditProfileState.INPROGRESS });
 
     expect(wrapper.find(Button).prop('isDisabled')).toEqual(true);
   });
@@ -88,7 +87,7 @@ describe('EditProfile', () => {
 
     wrapper.find(Input).simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
-    wrapper.find(Button).simulate('press', inputEvent());
+    wrapper.find(Button).simulate('press');
 
     expect(onEditMock).toHaveBeenCalledWith(formData);
   });
@@ -96,7 +95,7 @@ describe('EditProfile', () => {
   it('renders image errors', () => {
     const wrapper = subject({ errors: { image: 'error uploading image' } });
 
-    expect(wrapper.find('Alert').prop('children')).toEqual('error uploading image');
+    expect(wrapper.find(Alert).prop('children')).toEqual('error uploading image');
   });
 
   it('renders name error when name is empty', () => {
@@ -117,14 +116,14 @@ describe('EditProfile', () => {
     expect(wrapper.find(Alert).prop('children')).toEqual('invalid');
   });
 
-  it('renders changesSaved message when changesSaved is true', () => {
-    const wrapper = subject({ changesSaved: true });
+  it('renders changesSaved message when editProfileState is SUCCESS', () => {
+    const wrapper = subject({ editProfileState: EditProfileState.SUCCESS });
 
     expect(wrapper.find(Alert).prop('children')).toEqual('Your changes have been saved');
   });
 
-  it('does not render changesSaved message when changesSaved is false', () => {
-    const wrapper = subject({ changesSaved: false });
+  it('does not render changesSaved message when editProfileState is not SUCCESS', () => {
+    const wrapper = subject({ editProfileState: EditProfileState.NONE });
 
     expect(wrapper.find(Alert).exists()).toBe(false);
   });

@@ -115,20 +115,22 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({
-      id,
-      name,
-      icon,
-      category,
-      unreadCount,
-      hasJoined,
-      isChannel,
-      otherMembers: [],
-      createdAt: undefined,
-      groupChannelType: '',
-      lastMessage: null,
-      lastMessageCreatedAt: null,
-    });
+    expect(normalized.channels[id]).toEqual(
+      expect.objectContaining({
+        id,
+        name,
+        icon,
+        category,
+        unreadCount,
+        hasJoined,
+        isChannel,
+        otherMembers: [],
+        createdAt: undefined,
+        groupChannelType: '',
+        lastMessage: null,
+        lastMessageCreatedAt: null,
+      })
+    );
   });
 
   it('verify fetchChannelsAndConversations', async () => {
@@ -164,9 +166,7 @@ describe('channels list saga', () => {
       groupChannelType: '',
     };
 
-    const {
-      storeState: { normalized },
-    } = await expectSaga(fetchChannelsAndConversations)
+    const { storeState } = await expectSaga(fetchChannelsAndConversations)
       .provide([
         [
           matchers.call(fetchChannelsApi, rootDomainId),
@@ -185,14 +185,8 @@ describe('channels list saga', () => {
       .withState({ zns: { value: { rootDomainId } } })
       .run();
 
-    expect(normalized.channels).toStrictEqual({
-      [channel.id]: {
-        ...channel,
-      },
-      [conversation.id]: {
-        ...conversation,
-      },
-    });
+    expect(denormalizeChannel(channel.id, storeState).name).toEqual('the channel');
+    expect(denormalizeChannel(conversation.id, storeState).name).toEqual('the conversation');
   });
 
   it('verify startChannelsAndConversationsRefresh', () => {

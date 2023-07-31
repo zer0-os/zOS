@@ -1,10 +1,14 @@
-import { MOCK_CREATE_DIRECT_MESSAGE_RESPONSE } from './fixtures';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { createConversation as createConversationApi, uploadImage as uploadImageApi } from './api';
 
-import { createConversation, internalCreateConversation, createOptimisticConversation } from './saga';
+import {
+  createConversation,
+  createOptimisticConversation,
+  sendCreateConversationRequest,
+  receiveCreatedConversation,
+} from './saga';
 
 import { RootState, rootReducer } from '../reducer';
 import {
@@ -39,14 +43,30 @@ describe('channels list saga', () => {
         .finish();
     });
 
-    it('creates the conversation', async () => {
+    it('sends the api requests', async () => {
       testSaga(createConversation, ['user-1'])
         .next()
         // .call(createOptimisticConversation)
         .next({ id: 'optimistic-id' })
         // .call(setactiveConversationId)
         .next()
-        .call(internalCreateConversation, ['user-1'], null, null)
+        .call(sendCreateConversationRequest, ['user-1'], null, null)
+        .next()
+        .finish();
+    });
+
+    it('handles the response', async () => {
+      const optimisticConversation = { id: 'optimistic-id' };
+      const receivedConversation = { id: 'new-convo-id' };
+      testSaga(createConversation, ['user-1'])
+        .next()
+        // .call(createOptimisticConversation)
+        .next(optimisticConversation)
+        // .call(setactiveConversationId)
+        .next()
+        // .call(sendCreateConversationRequest)
+        .next(receivedConversation)
+        .call(receiveCreatedConversation, receivedConversation, optimisticConversation)
         .next()
         .isDone();
     });
@@ -70,7 +90,7 @@ describe('channels list saga', () => {
         expect.objectContaining({
           id: newChannelId,
           name: 'New Conversation',
-          otherMembers: [{ userId: 'other-user-id' }],
+          otherMembers: [{ userId: 'other-user-id', firstName: 'New conversation' }],
           messages: [],
         })
       );
@@ -107,15 +127,15 @@ describe('channels list saga', () => {
     });
   });
 
-  describe(internalCreateConversation, () => {
+  describe(sendCreateConversationRequest, () => {
     it('creates conversation', async () => {
       const name = 'group';
       const userIds = ['7867766_7876Z2'];
-      await expectSaga(internalCreateConversation, userIds, name)
+      await expectSaga(sendCreateConversationRequest, userIds, name)
         .provide([
           [
             matchers.call.fn(createConversationApi),
-            MOCK_CHANNELS,
+            { id: 'new-convo-id' },
           ],
         ])
         .withReducer(rootReducer)
@@ -123,47 +143,25 @@ describe('channels list saga', () => {
         .run();
     });
 
-    it('sets hasLoadedMessages to true', async () => {
-      const userIds = ['7867766_7876Z2'];
-      const { storeState } = await expectSaga(internalCreateConversation, userIds)
+    it('returns the new conversation', async () => {
+      const { returnValue } = await expectSaga(sendCreateConversationRequest, [], 'group')
         .provide([
           [
             matchers.call.fn(createConversationApi),
-            { id: 'new-convo' },
+            { id: 'new-convo-id' },
           ],
         ])
         .withReducer(rootReducer)
         .run();
 
-      expect(denormalizeChannel('new-convo', storeState).hasLoadedMessages).toBe(true);
-    });
-
-    it('handle existing conversation creation', async () => {
-      const name = 'group';
-      const userIds = ['7867766_7876Z2'];
-      const {
-        storeState: { channelsList, chat },
-      } = await expectSaga(internalCreateConversation, userIds, name)
-        .withReducer(rootReducer)
-        .provide([
-          [
-            matchers.call.fn(createConversationApi),
-            MOCK_CREATE_DIRECT_MESSAGE_RESPONSE,
-          ],
-        ])
-        .withReducer(rootReducer)
-        .call(createConversationApi, userIds, name, '')
-        .run();
-
-      expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
-      expect(chat.activeConversationId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
+      expect(returnValue.id).toEqual('new-convo-id');
     });
 
     it('uploads image when creating conversation', async () => {
       const name = 'group';
       const userIds = ['user'];
       const image = { name: 'file' } as File;
-      await expectSaga(internalCreateConversation, userIds, name, image)
+      await expectSaga(sendCreateConversationRequest, userIds, name, image)
         .provide([
           [
             matchers.call.fn(uploadImageApi),
@@ -178,6 +176,53 @@ describe('channels list saga', () => {
         .call(uploadImageApi, image)
         .call(createConversationApi, userIds, name, 'image-url')
         .run();
+    });
+  });
+
+  describe(receiveCreatedConversation, () => {
+    it.skip('replaces the optimistic message', async () => {
+      const initialState = existingConversationState({ id: 'optimistic-id' });
+
+      const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, {})
+        .withReducer(rootReducer, initialState)
+        .run();
+
+      const newConversation = denormalizeChannel('new-convo', storeState);
+      expect(newConversation.hasLoadedMessages).toBe(true);
+      expect(newConversation.messagesFetchStatus).toBe(MessagesFetchState.SUCCESS);
+    });
+
+    it('sets hasLoadedMessages to true and fetch status to success', async () => {
+      const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, {})
+        .withReducer(rootReducer)
+        .run();
+
+      const newConversation = denormalizeChannel('new-convo', storeState);
+      expect(newConversation.hasLoadedMessages).toBe(true);
+      expect(newConversation.messagesFetchStatus).toBe(MessagesFetchState.SUCCESS);
+    });
+
+    it('sets the active conversation', async () => {
+      const {
+        storeState: { chat },
+      } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' }, {}).withReducer(rootReducer).run();
+
+      expect(chat.activeConversationId).toStrictEqual('existing-id');
+    });
+
+    it('sets the active conversation if the conversation already exists', async () => {
+      const conversation = { id: 'existing-id' };
+
+      const initialState = existingConversationState(conversation);
+
+      const {
+        storeState: { channelsList, chat },
+      } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' }, {})
+        .withReducer(rootReducer, initialState)
+        .run();
+
+      expect(channelsList.value).toStrictEqual(['existing-id']);
+      expect(chat.activeConversationId).toStrictEqual('existing-id');
     });
   });
 });

@@ -84,10 +84,12 @@ export function* fetchConversations() {
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
   const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
   yield put(setactiveConversationId(optimisticConversation.id));
-  return yield call(internalCreateConversation, userIds, name, image);
+  const conversation = yield call(sendCreateConversationRequest, userIds, name, image);
+  yield call(receiveCreatedConversation, conversation, optimisticConversation);
+  return conversation;
 }
 
-export function* createOptimisticConversation(userIds: string[], name: string = null, image: File = null) {
+export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
   const defaultConversationProperties = {
     hasMore: false,
     countNewMessages: 0,
@@ -102,7 +104,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     ...defaultConversationProperties,
     id: Date.now(),
     name,
-    otherMembers: userIds.map((id) => ({ userId: id })),
+    otherMembers: userIds.map((id) => ({ userId: id, firstName: 'New conversation' })),
     messages: [],
     createdAt: Date.now(),
   };
@@ -121,7 +123,30 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
   return conversation;
 }
 
-export function* internalCreateConversation(userIds: string[], name: string = null, image: File = null) {
+export function* receiveCreatedConversation(conversation, optimisticConversation) {
+  const existingConversationsList = yield select(rawConversationsList());
+
+  const hasExistingConversation =
+    Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
+
+  if (!hasExistingConversation) {
+    const channelsList = yield select(rawChannelsList());
+    conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
+    conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
+    // add new chat to the list
+    yield put(
+      receive([
+        ...channelsList,
+        ...existingConversationsList,
+        conversation,
+      ])
+    );
+  }
+
+  yield put(setactiveConversationId(conversation.id));
+}
+
+export function* sendCreateConversationRequest(userIds: string[], name: string = null, image: File = null) {
   let coverUrl = '';
   if (image) {
     try {
@@ -135,28 +160,7 @@ export function* internalCreateConversation(userIds: string[], name: string = nu
 
   const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
 
-  const conversation = channelMapper(response);
-  const existingConversationsList = yield select(rawConversationsList());
-  const channelsList = yield select(rawChannelsList());
-
-  if (conversation && conversation.id) {
-    const hasExistingConversation =
-      Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
-
-    if (!hasExistingConversation) {
-      conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
-      conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
-      // add new chat to the list
-      yield put(
-        receive([
-          ...channelsList,
-          ...existingConversationsList,
-          conversation,
-        ])
-      );
-    }
-    yield put(setactiveConversationId(conversation.id));
-  }
+  return channelMapper(response);
 }
 
 export function* clearChannelsAndConversations() {

@@ -2,7 +2,18 @@
 @import '../styles';
 
 .create-account-details {
+  margin: 60px 0 auto 0;
+
   @include base();
+
+  &__heading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 24px;
+    margin-bottom: 16px;
+    gap: 4px;
+  }
 
   &__heading {
     @include heading();
@@ -13,7 +24,13 @@
   }
 
   &__form {
+    gap: 32px !important;
+
     @include form();
+  }
+
+  &__input {
+    @include input();
   }
 
   &__image-upload {

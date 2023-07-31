@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { Alert, Button, Input } from '@zero-tech/zui/components';
-
-import './styles.scss';
-import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2 } from '@zero-tech/zui/icons';
+import { Alert, Button, Input } from '@zero-tech/zui/components';
 
-const c = bem('create-account-details');
+import { bemClassName } from '../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('create-account-details');
 
 export interface Properties {
   isLoading: boolean;
@@ -58,11 +58,13 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div className={c('')}>
-        <h3 className={c('heading')}>CREATE YOUR ACCOUNT</h3>
-        <div className={c('sub-heading')}>Step 2 of 2: What should we call you?</div>
-        <form className={c('form')} onSubmit={this.publishOnCreate}>
-          <div className={c('image-upload')}>
+      <div {...cn('')}>
+        <div {...cn('heading-container')}>
+          <h3 {...cn('heading')}>Create Account</h3>
+          <div {...cn('sub-heading')}>Enter your details</div>
+        </div>
+        <form {...cn('form')} onSubmit={this.publishOnCreate}>
+          <div {...cn('image-upload')}>
             <ImageUpload
               onChange={this.trackImage}
               icon={this.renderImageUploadIcon()}
@@ -73,6 +75,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           </div>
           {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
           <Input
+            {...cn('input')}
             label='What is your name?'
             helperText='This will be your name that is visible to others on Zero'
             name='name'

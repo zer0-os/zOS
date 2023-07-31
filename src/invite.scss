@@ -33,4 +33,12 @@
   > * {
     flex-shrink: 0;
   }
+
+  &__logo-container {
+    margin-bottom: 76px;
+
+    &--is-landing-page {
+      margin-bottom: 0;
+    }
+  }
 }

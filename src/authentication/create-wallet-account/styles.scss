@@ -2,9 +2,13 @@
 @import '../styles';
 
 .create-wallet-account {
+  margin: 0 0 auto;
+
   @include base();
 
   &__heading {
+    margin-bottom: 32px !important;
+
     @include heading();
   }
 
@@ -14,7 +18,7 @@
 
   &__main {
     box-sizing: border-box;
-    width: 256px;
+    width: 280px;
     margin: auto;
   }
 
@@ -23,11 +27,6 @@
     border: 1px solid theme.$color-primary-5;
     border-radius: 8px;
     padding: 16px 6px 24px;
-    margin-bottom: 16px;
-  }
-
-  &__other-options {
-    text-align: center;
-    padding-top: 64px;
+    margin-bottom: 8px;
   }
 }

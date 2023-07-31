@@ -2,6 +2,8 @@
 @import '../styles';
 
 .validate-invite {
+  margin: auto 0;
+
   @include base();
 
   &__heading-container {
@@ -21,14 +23,31 @@
   }
 
   &__form {
+    gap: 32px !important;
+
     @include form();
   }
 
   &__input-container {
-    @include input-container();
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 280px;
   }
 
   &__alert {
-    @include alert();
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+
+    div {
+      text-transform: none;
+      margin: 0;
+    }
   }
 }

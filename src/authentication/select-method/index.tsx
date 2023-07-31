@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { Button } from '@zero-tech/zui/components';
 
@@ -21,10 +20,6 @@ export class SelectMethod extends React.PureComponent<Properties> {
         <form {...cn('form')}>
           <Button onPress={this.props.onEmailSelected}>Create account with email</Button>
           <Button onPress={this.props.onWalletSelected}>Create account with wallet</Button>
-          <div {...cn('other-options')}>
-            <span>Already on ZERO? </span>
-            <Link to='/login'>Log in</Link>
-          </div>
         </form>
       </div>
     );

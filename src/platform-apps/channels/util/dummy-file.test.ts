@@ -61,121 +61,53 @@ export const Fizzbuzz = (inputNumber: number, fizz: FizzBuzzConfig, buzz: FizzBu
 
 describe('Fizzbuzz', () => {
   it('should return a number as a string when neither condition matches', function () {
-    const fizz = {
-      word: 'fizzWord',
-      fn: isDivisibleBy,
-      params: [3],
-    };
-
-    const buzz = {
-      word: 'buzzWord',
-      fn: isDivisibleBy,
-      params: [5],
-    };
-
-    expect(Fizzbuzz(1, fizz, buzz)).toEqual('1');
+    expect(Fizzbuzz(1, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('1');
   });
 
-  describe('Fizz Tests', () => {
-    it('should return "Fizz" if inputNumber is equal to fizzNumber', function () {
-      expect(Fizzbuzz(3, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
-      expect(Fizzbuzz(6, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
-      expect(Fizzbuzz(2, divisibleBy(2, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
-      expect(Fizzbuzz(4, divisibleBy(2, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
-    });
-
-    it('should return "Zig" if inputNumber is equal to fizzNumber', function () {
-      expect(Fizzbuzz(3, divisibleBy(3, 'Zig'), divisibleBy(5, 'Buzz'))).toEqual('Zig');
-      expect(Fizzbuzz(3, divisibleBy(3, 'Hello World'), divisibleBy(5, 'Buzz'))).toEqual('Hello World');
-    });
+  it('should return first word if inputNumber is equal to fizzNumber', function () {
+    expect(Fizzbuzz(3, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
+    expect(Fizzbuzz(3, divisibleBy(3, 'Zig'), divisibleBy(5, 'Buzz'))).toEqual('Zig');
   });
 
-  describe('Buzz Tests', () => {
-    it('should return "Buzz" if inputNumber is equal to buzzNumber', function () {
-      expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Buzz');
-      expect(Fizzbuzz(10, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Buzz');
-      expect(Fizzbuzz(7, divisibleBy(3, 'Fizz'), divisibleBy(7, 'Buzz'))).toEqual('Buzz');
-    });
-
-    it('should return "Zag" if inputNumber is equal to buzzNumber', function () {
-      expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Zag'))).toEqual('Zag');
-      expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Hello World'))).toEqual('Hello World');
-    });
+  it('should return second word if inputNumber is equal to buzzNumber', function () {
+    expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Buzz');
+    expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Zag'))).toEqual('Zag');
   });
 
-  describe('FizzBuzz Tests', () => {
-    it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
-      expect(Fizzbuzz(15, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('FizzBuzz');
-      expect(Fizzbuzz(14, divisibleBy(2, 'Fizz'), divisibleBy(7, 'Buzz'))).toEqual('FizzBuzz');
-      expect(Fizzbuzz(30, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('FizzBuzz');
-    });
-
-    it('should return both words if number is a multiple of fizzNumber and buzzNumber', function () {
-      expect(Fizzbuzz(15, divisibleBy(3, 'Zig'), divisibleBy(5, 'Zag'))).toEqual('ZigZag');
-      expect(Fizzbuzz(15, divisibleBy(3, 'Hello'), divisibleBy(5, 'World'))).toEqual('HelloWorld');
-    });
-  });
-
-  describe('Feature 3', () => {
-    const fizzConfig = {
-      word: 'Fizz',
-      fn: isInbetween,
-      params: [
-        10,
-        20,
-      ],
-    };
-
-    const buzzConfig = {
-      word: 'Buzz',
-      fn: isDivisibleBy,
-      params: [5],
-    };
-
-    it('should print Fizz if the number is between 10 and 20', function () {
-      expect(Fizzbuzz(17, fizzConfig, buzzConfig)).toEqual('Fizz');
-    });
-
-    it('should print "9" if the number is not between 10 and 20', function () {
-      expect(Fizzbuzz(9, fizzConfig, buzzConfig)).toEqual('9');
-    });
-
-    it('should print Fizz if the number is between 10 and 20, and Buzz if the number is divisible by 5', function () {
-      expect(Fizzbuzz(30, fizzConfig, buzzConfig)).toEqual('Buzz');
-    });
-
-    it('should print FizzBuzz if inputNumber is divisible by 5 and between 10 and 20', function () {
-      expect(Fizzbuzz(15, fizzConfig, buzzConfig)).toEqual('FizzBuzz');
-    });
-
-    it('should print Buzz if the number is between 18 and 28', function () {
-      const buzzConfig = {
-        word: 'Buzz',
-        fn: isInbetween,
-        params: [
-          18,
-          28,
-        ],
-      };
-      expect(Fizzbuzz(26, fizzConfig, buzzConfig)).toEqual('Buzz');
-      expect(Fizzbuzz(5, fizzConfig, buzzConfig)).toEqual('5');
-    });
-
-    it('should print FizzBuzz if inputNumber is between 18 and 20', function () {
-      const buzzConfig = {
-        word: 'Buzz',
-        fn: isInbetween,
-        params: [
-          18,
-          28,
-        ],
-      };
-
-      expect(Fizzbuzz(19, fizzConfig, buzzConfig)).toEqual('FizzBuzz');
-    });
+  it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
+    expect(Fizzbuzz(15, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('FizzBuzz');
+    expect(Fizzbuzz(15, divisibleBy(3, 'Zig'), divisibleBy(5, 'Zag'))).toEqual('ZigZag');
   });
 });
 
+describe('isDivisbleBy', () => {
+  it('should return true if inputNumber is divisble by factor', function () {
+    expect(isDivisibleBy(3, 3)).toEqual(true);
+    expect(isDivisibleBy(30, 3)).toEqual(true);
+  });
+
+  it('should return false if inputNumber is not divisble by factor', function () {
+    expect(isDivisibleBy(2, 3)).toEqual(false);
+    expect(isDivisibleBy(4, 3)).toEqual(false);
+  });
+});
+
+describe('isInbetween', () => {
+  it('should return true if inputNumber is inbetween startNumber and endNumber', function () {
+    expect(isInbetween(17, 10, 20)).toEqual(true);
+    expect(isInbetween(11, 10, 20)).toEqual(true);
+    expect(isInbetween(19, 10, 20)).toEqual(true);
+  });
+
+  it('should return false if inputNumber is not inbetween startNumber and endNumber', function () {
+    expect(isInbetween(8, 10, 20)).toEqual(false);
+    expect(isInbetween(10, 10, 20)).toEqual(false);
+    expect(isInbetween(20, 10, 20)).toEqual(false);
+    expect(isInbetween(25, 10, 20)).toEqual(false);
+  });
+});
+
+// Heplper
 const divisibleBy = (factor: number, word: string) => ({
   word,
   fn: isDivisibleBy,

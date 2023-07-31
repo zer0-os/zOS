@@ -2,6 +2,7 @@ import { createClient, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { GroupChannelType, Channel } from '../../store/channels';
+import { config as appConfig } from '../../config';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -9,15 +10,28 @@ enum ConnectionStatus {
   Disconnected = 'disconnected',
 }
 
+class MatrixConfig {
+  userId: string;
+  accessToken: string;
+}
+
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
 
+  private accessToken: string;
+  private userId: string;
+
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) {}
+  constructor(private sdk = { createClient }, config: MatrixConfig = appConfig.matrix) {
+    if (config.userId && config.accessToken) {
+      this.accessToken = config.accessToken;
+      this.userId = config.userId;
+    }
+  }
 
   init(events: RealtimeChatEvents) {
     this.events = events;
@@ -25,8 +39,7 @@ export class MatrixClient implements IChatClient {
 
   async connect(userId: string, accessToken: string) {
     this.setConnectionStatus(ConnectionStatus.Connecting);
-    // await this.initializeClient('@joel:zos-dev.zer0.io', 'syt_am9lbA_USeTBaCEnBhMozlfozzz_1dtSKr');
-    await this.initializeClient(userId, accessToken);
+    await this.initializeClient(this.userId || userId, this.accessToken || accessToken);
     await this.initializeEventHandlers();
 
     this.setConnectionStatus(ConnectionStatus.Connected);

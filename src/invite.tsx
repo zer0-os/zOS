@@ -31,6 +31,10 @@ export interface State {
 }
 
 export class Container extends React.Component<Properties> {
+  state: State = {
+    selectedOption: 'web3',
+  };
+
   static mapState(state: RootState): Partial<Properties> {
     const { registration, pageload } = state;
     return {
@@ -42,10 +46,6 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return { registerWithEmail: registerWithEmail, registerWithWallet: registerWithWallet };
   }
-
-  state: State = {
-    selectedOption: 'web3',
-  };
 
   handleSelectionChange = (selectedOption: string) => {
     this.setState({ selectedOption });

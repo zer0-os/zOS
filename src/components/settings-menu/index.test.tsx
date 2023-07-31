@@ -23,7 +23,7 @@ describe('settings-menu', () => {
     expect(wrapper).toHaveElement(DropdownMenu);
   });
 
-  it('calls onLogout prop when logout item is selected', function () {
+  it('opens profile dialog', function () {
     const wrapper = subject({});
     const dropdownMenu = wrapper.find(DropdownMenu);
     expect(wrapper.state('editProfileDialogOpen')).toBe(false);

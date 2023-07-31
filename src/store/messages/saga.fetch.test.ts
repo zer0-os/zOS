@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { fetchMessagesByChannelId } from './api';
 import { fetch } from './saga';
 import { rootReducer } from '../reducer';
-import { denormalize } from '../channels';
+import { ConversationStatus, denormalize } from '../channels';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { multicastChannel } from 'redux-saga';
 
@@ -14,7 +14,7 @@ describe(fetch, () => {
 
     await expectSaga(fetch, { payload: { channelId } })
       .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), {})])
-      .withReducer(rootReducer)
+      .withReducer(rootReducer, initialChannelState({ id: channelId }))
       .call(fetchMessagesByChannelId, channelId)
       .run();
   });
@@ -25,7 +25,7 @@ describe(fetch, () => {
 
     await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
       .provide([stubResponse(matchers.call.fn(fetchMessagesByChannelId), { messages: [] })])
-      .withReducer(rootReducer)
+      .withReducer(rootReducer, initialChannelState({ id: channelId }))
       .call(fetchMessagesByChannelId, channelId, 1658776625730)
       .run();
   });
@@ -138,6 +138,17 @@ describe(fetch, () => {
     ]);
   });
 
+  it('does not fetch messages if channel is not yet created', async () => {
+    const channelId = 'channel-id';
+
+    const initialState = initialChannelState({ id: channelId, conversationStatus: ConversationStatus.CREATING });
+
+    await expectSaga(fetch, { payload: { channelId } })
+      .withReducer(rootReducer, initialState)
+      .not.call(fetchMessagesByChannelId, channelId)
+      .run();
+  });
+
   function initialChannelState(channel) {
     const messages = {};
     (channel.messages || []).forEach((m) => (messages[m.id] = m));
@@ -145,7 +156,10 @@ describe(fetch, () => {
     return {
       normalized: {
         channels: {
-          [channel.id]: channel,
+          [channel.id]: {
+            conversationStatus: ConversationStatus.CREATED,
+            ...channel,
+          },
         },
         messages,
       },

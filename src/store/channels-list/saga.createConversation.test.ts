@@ -12,6 +12,7 @@ import {
 
 import { RootState, rootReducer } from '../reducer';
 import {
+  ConversationStatus,
   GroupChannelType,
   MessagesFetchState,
   denormalize as denormalizeChannel,
@@ -92,6 +93,7 @@ describe('channels list saga', () => {
           name: 'New Conversation',
           otherMembers: [{ userId: 'other-user-id', firstName: 'New conversation' }],
           messages: [],
+          conversationStatus: ConversationStatus.CREATING,
         })
       );
     });

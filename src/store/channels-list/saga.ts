@@ -19,7 +19,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { GroupChannelType, MessagesFetchState } from '../channels';
+import { ConversationStatus, GroupChannelType, MessagesFetchState } from '../channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -107,6 +107,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     otherMembers: userIds.map((id) => ({ userId: id, firstName: 'New conversation' })),
     messages: [],
     createdAt: Date.now(),
+    conversationStatus: ConversationStatus.CREATING,
   };
 
   const existingConversationsList = yield select(rawConversationsList());

@@ -20,11 +20,15 @@ export enum GroupChannelType {
   Private = 'private',
 }
 
-// similar to "message send status" enum
 export enum MessagesFetchState {
   SUCCESS,
   IN_PROGRESS,
   FAILED,
+}
+
+export enum ConversationStatus {
+  CREATING,
+  CREATED,
 }
 
 export interface Channel {
@@ -45,6 +49,7 @@ export interface Channel {
   icon?: string;
   isChannel: boolean;
   hasLoadedMessages: boolean;
+  conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
 }
 

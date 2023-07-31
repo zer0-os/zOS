@@ -41,18 +41,4 @@
       margin-bottom: 0;
     }
   }
-
-  &__heading {
-    color: theme.$color-greyscale-12;
-    text-align: center;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 22px;
-    margin: 0 0 32px 0;
-  }
-
-  &__toggle-group {
-    width: 280px;
-    margin-bottom: 32px;
-  }
 }

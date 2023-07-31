@@ -5,7 +5,9 @@ import { CreateWalletAccountContainer } from '../../authentication/create-wallet
 import { RegistrationStage } from '../../store/registration';
 import { bemClassName } from '../../lib/bem';
 
-const cn = bemClassName('invite-main');
+import './styles.scss';
+
+const cn = bemClassName('create-account-method');
 
 export interface CreateAccountMethodProps {
   stage: RegistrationStage;

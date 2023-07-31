@@ -22,7 +22,6 @@ export class CreateWalletAccount extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <h3 {...cn('heading')}>Create Account</h3>
         <div {...cn('main')}>
           <div {...cn('select-wallet')}>
             <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />

@@ -38,7 +38,7 @@ export function* validateInvite(action) {
     yield put(setInviteStatus(inviteCodeStatus));
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
-      yield put(setStage(RegistrationStage.SelectMethod));
+      yield put(setStage(RegistrationStage.WalletAccountCreation));
       yield put(setInviteCode(code));
       return true;
     }

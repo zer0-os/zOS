@@ -14,6 +14,10 @@ export interface Properties {
 
 export class Footer extends React.Component<Properties> {
   render() {
+    if (this.props.stage === RegistrationStage.ProfileDetails) {
+      return null;
+    }
+
     return (
       <div className={c('')}>
         <div>

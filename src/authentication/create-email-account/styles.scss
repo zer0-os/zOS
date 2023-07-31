@@ -6,12 +6,6 @@
 
   @include base();
 
-  &__heading {
-    margin-bottom: 32px !important;
-
-    @include heading();
-  }
-
   &__form {
     @include form();
   }

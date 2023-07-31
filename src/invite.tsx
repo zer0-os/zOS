@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnyAction } from 'redux';
+import { Action } from 'redux';
 import { Redirect } from 'react-router-dom';
 
 import { RootState } from './store/reducer';
@@ -22,8 +22,8 @@ export interface Properties {
   stage: RegistrationStage;
   shouldRender: boolean;
 
-  registerWithEmail: () => AnyAction;
-  registerWithWallet: () => AnyAction;
+  registerWithEmail: () => Action<string>;
+  registerWithWallet: () => Action<string>;
 }
 
 export interface State {

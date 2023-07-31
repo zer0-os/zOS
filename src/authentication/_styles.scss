@@ -36,43 +36,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
-
-  // Button should be the last element of the form.
-  // Once button component has the ability to select the large option this should
-  // no longer be needed.
-  > *:last-child {
-    height: 40px;
-    padding: 16px;
-
-    div {
-      text-transform: none;
-      margin: 0;
-    }
-  }
-}
-
-@mixin input-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 280px;
-}
-
-@mixin alert {
-  padding: 4px 8px;
-  font-size: 14px;
-  line-height: 17px;
-}
-
-@mixin footer {
-  @include base();
-
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
   gap: 16px;
+  width: 280px;
+  margin: 0 auto;
+}
 
-  font-size: 14px;
-  line-height: 17px;
+@mixin input {
+  gap: 4px;
+  width: 100%;
 }

@@ -3,3 +3,7 @@
 .email-login {
   @include form();
 }
+
+.input {
+  @include input();
+}

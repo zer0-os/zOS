@@ -45,16 +45,28 @@ export class Container extends React.Component<Properties> {
       <>
         <ThemeEngine theme={Themes.Dark} />
         <div {...cn('')}>
-          <ZeroLogo />
+          <div
+            {...cn(
+              'logo-container',
+              (this.props.stage === RegistrationStage.ValidateInvite ||
+                this.props.stage === RegistrationStage.SelectMethod ||
+                this.props.stage === RegistrationStage.ProfileDetails) &&
+                'is-landing-page'
+            )}
+          >
+            <ZeroLogo />
+          </div>
 
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
           {this.props.stage === RegistrationStage.SelectMethod && <SelectMethodContainer />}
+
           {this.props.stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
           {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
+
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}
 
-          <Footer />
+          {this.props.stage !== RegistrationStage.ProfileDetails && <Footer stage={this.props.stage} />}
         </div>
       </>
     );

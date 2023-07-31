@@ -53,6 +53,7 @@ export class EmailLogin extends React.Component<Properties, State> {
     return (
       <form className={'email-login'} onSubmit={this.publishOnSubmit}>
         <Input
+          className='input'
           label='Email Address'
           name='email'
           value={this.state.email}
@@ -61,6 +62,7 @@ export class EmailLogin extends React.Component<Properties, State> {
           alert={this.emailError}
         />
         <PasswordInput
+          className='input'
           label='Password'
           name='password'
           value={this.state.password}

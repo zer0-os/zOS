@@ -1,12 +1,18 @@
 import * as React from 'react';
+
 import { Link } from 'react-router-dom';
+import { RegistrationStage } from '../../store/registration';
 
 import { bem } from '../../lib/bem';
 import './styles.scss';
 
-const c = bem('invite-footer');
+const c = bem('authentication-footer');
 
-export class Footer extends React.Component {
+export interface Properties {
+  stage: RegistrationStage;
+}
+
+export class Footer extends React.Component<Properties> {
   render() {
     return (
       <div className={c('')}>
@@ -15,10 +21,12 @@ export class Footer extends React.Component {
           <Link to='/login'>Log in</Link>
         </div>
 
-        <div>
-          <span>Dont have an invite code? </span>
-          <a href='https://www.zine.live/#/portal/signup'>Subscribe for updates</a>
-        </div>
+        {this.props.stage === RegistrationStage.ValidateInvite && (
+          <div>
+            <span>Dont have an invite code? </span>
+            <a href='https://www.zine.live/#/portal/signup'>Subscribe for updates</a>
+          </div>
+        )}
       </div>
     );
   }

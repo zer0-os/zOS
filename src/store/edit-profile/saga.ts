@@ -42,7 +42,7 @@ export function* editProfile(action) {
   return;
 }
 
-function* updateUserProfile(payload) {
+export function* updateUserProfile(payload) {
   let currentUser = cloneDeep(yield select(currentUserSelector()));
   currentUser.profileSummary = {
     ...currentUser.profileSummary,

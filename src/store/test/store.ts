@@ -59,10 +59,7 @@ export class StoreBuilder {
   }
 
   build() {
-    const {
-      result: channelsList,
-      entities: { channels: normalizedChannels = {} },
-    } = normalizeChannel([
+    const { result: channelsList, entities: channelEntitities } = normalizeChannel([
       this.activeChannel,
       this.activeConversation,
       ...this.channelList,
@@ -75,7 +72,7 @@ export class StoreBuilder {
     return {
       channelsList: { value: channelsList },
       normalized: {
-        channels: normalizedChannels,
+        ...channelEntitities,
         users: normalizedUsers,
       } as any,
       chat: {

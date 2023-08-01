@@ -4,9 +4,9 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { deleteMessage } from './saga';
 import { rootReducer } from '../reducer';
 import { deleteMessageApi } from './api';
-import { existingChannelState } from './test/helpers';
 import { denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
+import { StoreBuilder } from '../test/store';
 
 describe(deleteMessage, () => {
   it('delete message', async () => {
@@ -15,14 +15,14 @@ describe(deleteMessage, () => {
       { id: 1, message: 'This is my first message' },
       { id: 2, message: 'I will delete this message' },
       { id: 3, message: 'This is my third message' },
-    ];
+    ] as any;
 
     const messageIdToDelete = messages[1].id;
 
-    const initialState = existingChannelState({ id: channelId, messages });
+    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: messageIdToDelete } })
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
       .run();
 
@@ -41,12 +41,12 @@ describe(deleteMessage, () => {
       { id: 'message-2' },
       { id: 'child-message-1', rootMessageId: 'root-message' },
       { id: 'child-message-2', rootMessageId: 'root-message' },
-    ];
+    ] as any;
 
-    const initialState = existingChannelState({ id: channelId, messages });
+    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
 
     await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
       .call(deleteMessageApi, channelId, 'root-message')
       .call(deleteMessageApi, channelId, 'child-message-1')
@@ -62,12 +62,12 @@ describe(deleteMessage, () => {
       { id: 'message-2' },
       { id: 'child-message-1', rootMessageId: 'root-message' },
       { id: 'child-message-2', rootMessageId: 'root-message' },
-    ];
+    ] as any;
 
-    const initialState = existingChannelState({ id: channelId, messages });
+    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
       .run();
 
@@ -85,12 +85,12 @@ describe(deleteMessage, () => {
       { id: 'optimistic-root', message: 'To be deleted. Root Message.', optimisticId: 'optimistic-root' },
       { id: 'message-2' },
       { id: 'optimistic-child', rootMessageId: 'optimistic-root', optimisticId: 'optimistic-child' },
-    ];
+    ] as any;
 
-    const initialState = existingChannelState({ id: channelId, messages });
+    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'optimistic-root' } })
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
       .not.call.like({ fn: deleteMessageApi })
       .run();

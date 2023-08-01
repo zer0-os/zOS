@@ -69,12 +69,15 @@ export class StoreBuilder {
   }
 
   build() {
-    const { result: channelsList, entities: channelEntitities } = normalizeChannel([
-      this.activeChannel,
-      this.activeConversation,
-      ...this.channelList,
-      ...this.conversationList,
-    ]);
+    const { result: channelsList, entities: channelEntitities } = normalizeChannel(
+      [
+        this.activeChannel,
+        this.activeConversation,
+        ...this.channelList,
+        ...this.conversationList,
+      ].filter((c) => !!c?.id)
+    );
+
     const {
       entities: { users: normalizedUsers = {} },
     } = normalizeUser(this.users);

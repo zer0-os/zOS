@@ -238,11 +238,9 @@ describe('channels list saga', () => {
 describe(userLeftChannel, () => {
   it('Channel is removed from list when the current user has left a channel', async () => {
     const channelId = 'channel-id';
-    const initialState = new StoreBuilder().withChannelList(
-      { id: 'one-channel' },
-      { id: channelId },
-      { id: 'other-channel' }
-    );
+    const initialState = new StoreBuilder()
+      .withCurrentUserId('current-user-id')
+      .withChannelList({ id: 'one-channel' }, { id: channelId }, { id: 'other-channel' });
 
     const { storeState } = await expectSaga(userLeftChannel, channelId, 'current-user-id')
       .withReducer(rootReducer, initialState.build())
@@ -329,7 +327,7 @@ describe('fetchConversations', () => {
     };
     const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
 
-    const initialState = new StoreBuilder().withChannelList(channelWithOptimisticMessage).build();
+    const initialState = new StoreBuilder().withConversationList(channelWithOptimisticMessage).build();
 
     const { storeState } = await expectSaga(fetchConversations)
       .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])

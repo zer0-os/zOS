@@ -12,7 +12,7 @@ export class StoreBuilder {
   activeChannel: Partial<Channel> = {};
   activeConversation: Partial<Channel> = {};
   isFullScreenMessenger: boolean = true;
-  currentUser: Partial<AuthenticatedUser>;
+  currentUser: Partial<AuthenticatedUser> = { ...DEFAULT_USER_ATTRS };
 
   withActiveChannel(channel: Partial<Channel>) {
     this.activeChannel = channel;
@@ -40,7 +40,7 @@ export class StoreBuilder {
   }
 
   withCurrentUser(user: Partial<AuthenticatedUser>) {
-    this.currentUser = user;
+    this.currentUser = { ...DEFAULT_USER_ATTRS, ...user };
     return this;
   }
 
@@ -93,3 +93,13 @@ export class StoreBuilder {
     } as RootState;
   }
 }
+
+const DEFAULT_USER_ATTRS = {
+  id: 'default-stub-user-id',
+  profileId: 'default-stub-profile-id',
+  profileSummary: {
+    firstName: 'DefaultStubFirstName',
+    lastName: 'DefaultStubLastName',
+    profileImage: '/default-stub-image.jpg',
+  } as any,
+};

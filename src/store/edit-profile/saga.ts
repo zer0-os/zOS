@@ -3,7 +3,9 @@ import { SagaActionTypes, State, setErrors, setState } from '.';
 import { editUserProfile as apiEditUserProfile } from './api';
 import { ProfileDetailsErrors } from '../registration';
 import { uploadImage } from '../registration/api';
-import { Events, getAuthChannel } from '../authentication/channels';
+import cloneDeep from 'lodash/cloneDeep';
+import { currentUserSelector } from '../authentication/saga';
+import { setUser } from '../authentication';
 
 export function* editProfile(action) {
   const { name, image } = action.payload;
@@ -28,7 +30,7 @@ export function* editProfile(action) {
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      yield call(publishUserProfileEdited, { name, profileImage });
+      yield call(updateUserProfile, { name, profileImage });
       yield put(setState(State.SUCCESS));
       return;
     }
@@ -40,9 +42,14 @@ export function* editProfile(action) {
   return;
 }
 
-export function* publishUserProfileEdited(payload) {
-  const channel = yield call(getAuthChannel);
-  yield put(channel, { type: Events.UserProfileUpdated, payload });
+export function* updateUserProfile(payload) {
+  let currentUser = cloneDeep(yield select(currentUserSelector()));
+  currentUser.profileSummary = {
+    ...currentUser.profileSummary,
+    firstName: payload.name,
+    profileImage: payload.profileImage || currentUser.profileSummary.profileImage,
+  };
+  yield put(setUser({ data: currentUser }));
 }
 
 export function* saga() {

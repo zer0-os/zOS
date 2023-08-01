@@ -32,7 +32,7 @@ export enum Web3LoginErrors {
 }
 
 export const initialState: LoginState = {
-  stage: LoginStage.EmailLogin,
+  stage: LoginStage.Web3Login,
   loading: false,
   errors: [],
 };

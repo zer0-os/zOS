@@ -1,18 +1,18 @@
 import React from 'react';
-
 import { Link, Redirect } from 'react-router-dom';
-import { LoginStage } from '../../store/login';
-import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
-import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 
-import { bem } from '../../lib/bem';
+import { LoginStage } from '../../store/login';
 import { Web3LoginContainer } from '../../authentication/web3-login/container';
 import { EmailLoginContainer } from '../../authentication/email-login/container';
-import { ToggleGroup } from '@zero-tech/zui/components';
 
+import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
+import { ToggleGroup } from '@zero-tech/zui/components';
+import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
+
+import { bemClassName } from '../../lib/bem';
 import './login.scss';
 
-const c = bem('login');
+const cn = bemClassName('login-main');
 
 interface LoginComponentProperties {
   isLoggingIn: boolean;
@@ -45,23 +45,29 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     return (
       <>
         <ThemeEngine theme={Themes.Dark} />
-        <div className={c('')}>
-          <main className={c('content')}>
-            <ZeroLogo />
-            <h3 className={c('header')}>Log in</h3>
-            {!isLoggingIn && (
+        <div {...cn('')}>
+          <main {...cn('content')}>
+            <div {...cn('logo-container')}>
+              <ZeroLogo />
+            </div>
+            <div>
+              <h3 {...cn('header')}>Log in</h3>
+
               <ToggleGroup
+                {...cn('toggle-group')}
                 options={options}
                 variant='default'
                 onSelectionChange={this.props.handleSelectionChange}
                 selection={selectedOption}
                 selectionType='single'
                 isRequired
+                isDisabled={isLoggingIn}
               />
-            )}
-            <div className={c('login')}>{this.loginOption}</div>
 
-            <div className={c('other')}>
+              <div {...cn('login-option')}>{this.loginOption}</div>
+            </div>
+
+            <div {...cn('other')}>
               <span>
                 New to ZERO? <Link to='/get-access'>Create an account</Link>
               </span>

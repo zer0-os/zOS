@@ -4,6 +4,16 @@ import { Channel, User, normalize as normalizeChannel } from '../channels';
 import { normalize as normalizeUser } from '../users';
 import { User as AuthenticatedUser } from '../authentication/types';
 
+const DEFAULT_USER_ATTRS = {
+  id: 'default-stub-user-id',
+  profileId: 'default-stub-profile-id',
+  profileSummary: {
+    firstName: 'DefaultStubFirstName',
+    lastName: 'DefaultStubLastName',
+    profileImage: '/default-stub-image.jpg',
+  } as any,
+};
+
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
   conversationList: Partial<Channel>[] = [];
@@ -90,13 +100,3 @@ export class StoreBuilder {
     } as RootState;
   }
 }
-
-const DEFAULT_USER_ATTRS = {
-  id: 'default-stub-user-id',
-  profileId: 'default-stub-profile-id',
-  profileSummary: {
-    firstName: 'DefaultStubFirstName',
-    lastName: 'DefaultStubLastName',
-    profileImage: '/default-stub-image.jpg',
-  } as any,
-};

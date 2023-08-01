@@ -2,8 +2,8 @@ import { expectSaga } from 'redux-saga-test-plan';
 
 import { uploadFileMessages } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { rootReducer } from '../reducer';
+import { denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 
 describe(uploadFileMessages, () => {
@@ -15,7 +15,7 @@ describe(uploadFileMessages, () => {
 
     const initialState = new StoreBuilder().withConversationList({
       id: channelId,
-      messages: [{ id: 'optimistic-id' }],
+      messages: [{ id: 'optimistic-id' } as any],
     });
 
     const { storeState } = await expectSaga(uploadFileMessages, channelId, '', [uploadable])

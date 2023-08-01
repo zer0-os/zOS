@@ -4,9 +4,9 @@ import { call } from 'redux-saga/effects';
 
 import { getLinkPreviews } from './api';
 import { getPreview, receiveNewMessage, sendBrowserNotification } from './saga';
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive } from '../channels/saga';
 import { StoreBuilder } from '../test/store';

@@ -12,9 +12,9 @@ import {
   send,
   uploadFileMessages,
 } from './saga';
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { MessageSendStatus } from '.';
 import { StoreBuilder } from '../test/store';

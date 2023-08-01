@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { clearUsers, receiveSearchResults } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
-import { denormalize, normalize } from '.';
+import { rootReducer } from '../reducer';
+import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
 
 describe(clearUsers, () => {

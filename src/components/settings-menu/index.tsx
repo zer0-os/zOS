@@ -1,11 +1,12 @@
 import * as React from 'react';
 
-import { IconLogOut3 } from '@zero-tech/zui/icons';
-import { Address, Avatar, DropdownMenu } from '@zero-tech/zui/components';
+import { IconLogOut3, IconUser1 } from '@zero-tech/zui/icons';
+import { Address, Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 
 import { bem } from '../../lib/bem';
 
 import './styles.scss';
+import { EditProfileContainer } from '../edit-profile/container';
 
 export interface Properties {
   userName: string;
@@ -17,6 +18,7 @@ export interface Properties {
 
 interface State {
   isDropdownOpen: boolean;
+  editProfileDialogOpen: boolean;
 }
 
 export class SettingsMenu extends React.Component<Properties, State> {
@@ -24,6 +26,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
     super(props);
     this.state = {
       isDropdownOpen: false,
+      editProfileDialogOpen: false,
     };
   }
 
@@ -56,6 +59,22 @@ export class SettingsMenu extends React.Component<Properties, State> {
     );
   }
 
+  openEditProfileDialog = (): void => {
+    this.setState({ editProfileDialogOpen: true });
+  };
+
+  closeEditProfileDialog = (): void => {
+    this.setState({ editProfileDialogOpen: false });
+  };
+
+  renderEditProfileDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.editProfileDialogOpen} onOpenChange={this.closeEditProfileDialog}>
+        <EditProfileContainer onClose={this.closeEditProfileDialog} />
+      </Modal>
+    );
+  };
+
   renderSettingsOption(icon, label) {
     return (
       <div className={'option'}>
@@ -66,39 +85,48 @@ export class SettingsMenu extends React.Component<Properties, State> {
 
   render() {
     return (
-      <DropdownMenu
-        menuClassName={'settings-menu'}
-        items={[
-          {
-            id: 'header',
-            label: this.renderSettingsHeader(),
-            onSelect: () => {},
-          },
-          {
-            className: 'divider',
-            id: 'divider',
-            label: <div />,
-            onSelect: () => {},
-          },
-          {
-            className: 'logout',
-            id: 'logout',
-            label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
-            onSelect: () => this.handleLogout(),
-          },
-        ]}
-        side='right'
-        alignMenu='start'
-        onOpenChange={this.handleOpenChange}
-        trigger={
-          <Avatar
-            isActive={this.state.isDropdownOpen}
-            size={'medium'}
-            type={'circle'}
-            imageURL={this.props.userAvatarUrl}
-          />
-        }
-      />
+      <>
+        <DropdownMenu
+          menuClassName={'settings-menu'}
+          items={[
+            {
+              id: 'header',
+              label: this.renderSettingsHeader(),
+              onSelect: () => {},
+            },
+            {
+              className: 'edit_profile',
+              id: 'edit_profile',
+              label: this.renderSettingsOption(<IconUser1 />, 'Edit Profile'),
+              onSelect: this.openEditProfileDialog,
+            },
+            {
+              className: 'divider',
+              id: 'divider',
+              label: <div />,
+              onSelect: () => {},
+            },
+            {
+              className: 'logout',
+              id: 'logout',
+              label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
+              onSelect: () => this.handleLogout(),
+            },
+          ]}
+          side='right'
+          alignMenu='start'
+          onOpenChange={this.handleOpenChange}
+          trigger={
+            <Avatar
+              isActive={this.state.isDropdownOpen}
+              size={'medium'}
+              type={'circle'}
+              imageURL={this.props.userAvatarUrl}
+            />
+          }
+        />
+        {this.renderEditProfileDialog()}
+      </>
     );
   }
 }

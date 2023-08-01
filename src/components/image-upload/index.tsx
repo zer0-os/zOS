@@ -14,6 +14,7 @@ export interface Properties {
   onChange: (file: File) => void;
   isError?: boolean;
   errorMessage?: string;
+  imageSrc?: string;
 }
 
 interface State {
@@ -51,9 +52,11 @@ export class ImageUpload extends Component<Properties, State> {
         <input {...inputProps} ref={this.fileInputRef} />
         <img
           className='image-upload__image'
-          src={URL.createObjectURL(file)}
+          src={file ? URL.createObjectURL(file) : this.props.imageSrc}
           onLoad={() => {
-            URL.revokeObjectURL(file.preview);
+            if (file) {
+              URL.revokeObjectURL(file);
+            }
           }}
           alt='Profile'
         />
@@ -91,7 +94,7 @@ export class ImageUpload extends Component<Properties, State> {
         {({ getRootProps, getInputProps }) => (
           <div className='image-upload-container'>
             <section className={classNames('image-upload', this.props.className)} data-variant={this.dataVariant}>
-              {this.state.files.length === 0
+              {this.state.files.length === 0 && !this.props.imageSrc
                 ? this.renderPlaceholder(getRootProps(), getInputProps())
                 : this.renderImage(getRootProps(), getInputProps())}
             </section>

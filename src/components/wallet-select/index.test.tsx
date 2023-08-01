@@ -31,6 +31,12 @@ describe('WalletSelect', () => {
     expect(wrapper.find('.zos-wallet-select__connecting-indicator').exists()).toBe(true);
   });
 
+  it('does not render footer when connecting', () => {
+    const wrapper = subject({ isConnecting: true, wallets: [WalletType.Metamask] });
+
+    expect(wrapper.find('.zos-wallet-select__footer').exists()).toBe(false);
+  });
+
   it('renders a single wallet', () => {
     const wrapper = subject({ wallets: [WalletType.Metamask] });
 

@@ -17,6 +17,7 @@ export interface LoginContainerProperties {
 export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapState(state: RootState): Partial<LoginContainerProperties> {
     const { login, pageload } = state;
+
     return {
       stage: login.stage,
       isLoggingIn: login.loading,
@@ -30,24 +31,20 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
     };
   }
 
-  get handleToggleLoginOption() {
-    const { switchLoginStage, stage } = this.props;
-    return () => switchLoginStage(stage === LoginStage.Web3Login ? LoginStage.EmailLogin : LoginStage.Web3Login);
-  }
+  handleSelectionChange = (selectedOption: string) => {
+    const { switchLoginStage } = this.props;
+    switchLoginStage(selectedOption === 'web3' ? LoginStage.Web3Login : LoginStage.EmailLogin);
+  };
 
   render() {
-    const { isLoggingIn } = this.props;
+    const { isLoggingIn, stage } = this.props;
 
     if (!this.props.shouldRender) {
       return null;
     }
 
     return (
-      <LoginComponent
-        isLoggingIn={isLoggingIn}
-        stage={this.props.stage}
-        onToggleLoginOption={this.handleToggleLoginOption}
-      />
+      <LoginComponent isLoggingIn={isLoggingIn} stage={stage} handleSelectionChange={this.handleSelectionChange} />
     );
   }
 }

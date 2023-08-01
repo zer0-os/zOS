@@ -4,7 +4,7 @@
 
 $login-gap: 32px;
 $login-width: 280px;
-$login-padding-top: 104px;
+$login-padding-top: 24px;
 $login-padding-bottom: 150px;
 
 @mixin flex($gap-size) {
@@ -38,9 +38,9 @@ $login-padding-bottom: 150px;
     box-sizing: border-box;
     margin: 0 auto;
 
-    > * {
-      width: 100%;
-    }
+    // > * {
+    //   width: 100%;
+    // }
 
     hr {
       border-top: 1px solid theme.$color-greyscale-transparency-7;
@@ -49,16 +49,31 @@ $login-padding-bottom: 150px;
   }
 
   &__header {
-    margin: (80px - $login-gap) 0 0 0;
-    padding: 0;
+    // margin: (80px - $login-gap) 0 0 0;
+    // padding: 0;
 
-    text-align: center;
-    font-size: 36px;
-    font-weight: normal;
+    // text-align: center;
+    // font-size: 36px;
+    // font-weight: normal;
+    // color: theme.$color-greyscale-12;
+    // text-transform: uppercase;
+
+    // text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
     color: theme.$color-greyscale-12;
-    text-transform: uppercase;
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    margin: 0 0 32px 0;
+  }
 
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  &__logo-container {
+    margin-bottom: 76px;
+  }
+
+  &__toggle-group {
+    width: 280px;
+    margin-bottom: 32px;
   }
 
   &__login {

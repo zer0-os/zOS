@@ -18,6 +18,7 @@ import {
   denormalize as denormalizeChannel,
   normalize as normalizeChannel,
 } from '../channels';
+import { normalize as normalizeUser } from '../users';
 import { setactiveConversationId } from '../chat';
 
 const MOCK_CHANNELS = [
@@ -78,7 +79,10 @@ describe('channels list saga', () => {
       const userIds = ['other-user-id'];
       const name = 'New Conversation';
 
-      const initialState = existingConversationState({ id: 'existing-channel' });
+      const initialState = {
+        ...existingConversationState({ id: 'existing-channel' }),
+      };
+      (initialState.normalized as any).users = (existingUserState({ userId: 'other-user-id' }).normalized as any).users;
 
       const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
         .withReducer(rootReducer, initialState)
@@ -91,7 +95,7 @@ describe('channels list saga', () => {
         expect.objectContaining({
           id: newChannelId,
           name: 'New Conversation',
-          otherMembers: [{ userId: 'other-user-id', firstName: 'New conversation' }],
+          otherMembers: [{ userId: 'other-user-id' }],
           messages: [],
           conversationStatus: ConversationStatus.CREATING,
         })
@@ -234,6 +238,15 @@ function existingConversationState(...args) {
   const normalized = normalizeChannel(conversations);
   return {
     channelsList: { value: args.map((c) => c.id) },
+    normalized: {
+      ...normalized.entities,
+    },
+  } as RootState;
+}
+
+function existingUserState(user) {
+  const normalized = normalizeUser(user);
+  return {
     normalized: {
       ...normalized.entities,
     },

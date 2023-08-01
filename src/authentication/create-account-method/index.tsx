@@ -1,8 +1,10 @@
-import React from 'react';
-import { ToggleGroup } from '@zero-tech/zui/components';
+import * as React from 'react';
+import { RegistrationStage } from '../../store/registration';
 import { CreateEmailAccountContainer } from '../../authentication/create-email-account/container';
 import { CreateWalletAccountContainer } from '../../authentication/create-wallet-account/container';
-import { RegistrationStage } from '../../store/registration';
+
+import { ToggleGroup } from '@zero-tech/zui/components';
+
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
@@ -11,34 +13,35 @@ const cn = bemClassName('create-account-method');
 
 export interface CreateAccountMethodProps {
   stage: RegistrationStage;
-  selectedOption: string;
-  handleSelectionChange: (selectedOption: string) => void;
+  isConnecting: boolean;
+  onSelectionChange: (selectedOption: string) => void;
 }
 
-export class CreateAccountMethod extends React.Component<CreateAccountMethodProps> {
-  render() {
-    const options = [
-      { key: 'web3', label: 'Web3' },
-      { key: 'email', label: 'Email' },
-    ];
+export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage, isConnecting, onSelectionChange }) => {
+  const options = [
+    { key: 'web3', label: 'Web3' },
+    { key: 'email', label: 'Email' },
+  ];
 
-    return (
-      <>
-        <h3 {...cn('heading')}>Create Account</h3>
+  const selectedOption = stage === RegistrationStage.WalletAccountCreation ? 'web3' : 'email';
 
+  return (
+    <div {...cn('')}>
+      <h3 {...cn('heading')}>Create Account</h3>
+
+      {!isConnecting && (
         <ToggleGroup
           {...cn('toggle-group')}
           options={options}
-          // variant deprecated but required
           variant='default'
-          onSelectionChange={this.props.handleSelectionChange}
-          selection={this.props.selectedOption}
+          onSelectionChange={onSelectionChange}
+          selection={selectedOption}
           selectionType='single'
           isRequired
         />
-        {this.props.stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
-        {this.props.stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
-      </>
-    );
-  }
-}
+      )}
+      {stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
+      {stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
+    </div>
+  );
+};

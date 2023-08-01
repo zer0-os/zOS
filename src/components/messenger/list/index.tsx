@@ -32,6 +32,7 @@ import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards, rewardsPopupClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
+import { receiveSearchResults } from '../../../store/users';
 
 export interface PublicProperties {
   onClose: () => void;
@@ -70,6 +71,7 @@ export interface Properties extends PublicProperties {
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
   logout: () => void;
+  receiveSearchResults: (data) => void;
 }
 
 interface State {
@@ -136,6 +138,7 @@ export class Container extends React.Component<Properties, State> {
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
       logout,
+      receiveSearchResults,
     };
   }
 
@@ -150,6 +153,7 @@ export class Container extends React.Component<Properties, State> {
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
+    this.props.receiveSearchResults(users);
 
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };

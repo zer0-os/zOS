@@ -54,6 +54,7 @@ describe('messenger-list', () => {
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
+      receiveSearchResults: () => null,
       logout: () => null,
       ...props,
     };

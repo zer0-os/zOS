@@ -18,6 +18,7 @@ import { saga as login } from './login/saga';
 import { saga as rewards } from './rewards/saga';
 import { saga as pageLoad } from './page-load/saga';
 import { saga as editProfile } from './edit-profile/saga';
+import { saga as users } from './users/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -39,6 +40,7 @@ export function* rootSaga() {
     login,
     rewards,
     editProfile,
+    users,
   };
 
   yield all(

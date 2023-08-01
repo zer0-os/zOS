@@ -104,7 +104,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     ...defaultConversationProperties,
     id: Date.now(),
     name,
-    otherMembers: userIds.map((id) => ({ userId: id, firstName: 'New conversation' })),
+    otherMembers: userIds,
     messages: [],
     createdAt: Date.now(),
     conversationStatus: ConversationStatus.CREATING,

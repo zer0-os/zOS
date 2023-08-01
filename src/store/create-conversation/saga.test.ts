@@ -181,7 +181,7 @@ describe('create conversation saga', () => {
   describe('createConversation', () => {
     it('manages the creating status while performing the actual create', async () => {
       const testPayload = {
-        userId: 'test',
+        userIds: ['test'],
         name: 'test name',
         image: {},
       };
@@ -190,7 +190,7 @@ describe('create conversation saga', () => {
         .next()
         .put(setGroupCreating(true))
         .next()
-        .call(performCreateConversation, { payload: testPayload })
+        .call(performCreateConversation, ['test'], 'test name', {})
         .next()
         .put(setGroupCreating(false));
     });

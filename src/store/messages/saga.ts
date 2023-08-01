@@ -12,7 +12,7 @@ import {
   MessageSendStatus,
 } from '.';
 import { receive as receiveMessage } from './';
-import { Channel, MessagesFetchState, receive } from '../channels';
+import { Channel, ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import {
@@ -98,6 +98,10 @@ const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
+  const channel = yield select(rawChannelSelector(channelId));
+  if (channel.conversationStatus !== ConversationStatus.CREATED) {
+    return;
+  }
 
   let messagesResponse: any;
   let messages: any[];

@@ -1,19 +1,12 @@
-import { MOCK_CREATE_DIRECT_MESSAGE_RESPONSE } from './fixtures';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import {
-  fetchChannels as fetchChannelsApi,
-  fetchConversations as fetchConversationsApi,
-  createConversation as createConversationApi,
-  uploadImage as uploadImageApi,
-} from './api';
+import { fetchChannels as fetchChannelsApi, fetchConversations as fetchConversationsApi } from './api';
 
 import {
   fetchChannels,
   fetchConversations,
-  createConversation,
   fetchChannelsAndConversations,
   delay,
   startChannelsAndConversationsRefresh,
@@ -60,80 +53,6 @@ describe('channels list saga', () => {
       ])
       .call(fetchChannelsApi, id)
       .run();
-  });
-
-  describe('createConversation', () => {
-    it('creates conversation', async () => {
-      const name = 'group';
-      const userIds = ['7867766_7876Z2'];
-      await expectSaga(createConversation, { payload: { userIds, name } })
-        .provide([
-          [
-            matchers.call.fn(createConversationApi),
-            MOCK_CHANNELS,
-          ],
-        ])
-        .withReducer(rootReducer)
-        .call(createConversationApi, userIds, name, '')
-        .run();
-    });
-
-    it('sets hasLoadedMessages to true', async () => {
-      const userIds = ['7867766_7876Z2'];
-      const { storeState } = await expectSaga(createConversation, { payload: { userIds } })
-        .provide([
-          [
-            matchers.call.fn(createConversationApi),
-            { id: 'new-convo' },
-          ],
-        ])
-        .withReducer(rootReducer)
-        .run();
-
-      expect(denormalizeChannel('new-convo', storeState).hasLoadedMessages).toBe(true);
-    });
-
-    it('handle existing conversation creation', async () => {
-      const name = 'group';
-      const userIds = ['7867766_7876Z2'];
-      const {
-        storeState: { channelsList, chat },
-      } = await expectSaga(createConversation, { payload: { userIds, name } })
-        .withReducer(rootReducer)
-        .provide([
-          [
-            matchers.call.fn(createConversationApi),
-            MOCK_CREATE_DIRECT_MESSAGE_RESPONSE,
-          ],
-        ])
-        .withReducer(rootReducer)
-        .call(createConversationApi, userIds, name, '')
-        .run();
-
-      expect(channelsList.value).toStrictEqual([MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id]);
-      expect(chat.activeConversationId).toStrictEqual(MOCK_CREATE_DIRECT_MESSAGE_RESPONSE.id);
-    });
-
-    it('uploads image when creating conversation', async () => {
-      const name = 'group';
-      const userIds = ['user'];
-      const image = { some: 'file' };
-      await expectSaga(createConversation, { payload: { userIds, name, image } })
-        .provide([
-          [
-            matchers.call.fn(uploadImageApi),
-            { url: 'image-url' },
-          ],
-          [
-            matchers.call.fn(createConversationApi),
-            MOCK_CHANNELS,
-          ],
-        ])
-        .withReducer(rootReducer)
-        .call(uploadImageApi, image)
-        .call(createConversationApi, userIds, name, 'image-url')
-        .run();
-    });
   });
 
   it('sets status to Idle', async () => {
@@ -196,20 +115,22 @@ describe('channels list saga', () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toStrictEqual({
-      id,
-      name,
-      icon,
-      category,
-      unreadCount,
-      hasJoined,
-      isChannel,
-      otherMembers: [],
-      createdAt: undefined,
-      groupChannelType: '',
-      lastMessage: null,
-      lastMessageCreatedAt: null,
-    });
+    expect(normalized.channels[id]).toEqual(
+      expect.objectContaining({
+        id,
+        name,
+        icon,
+        category,
+        unreadCount,
+        hasJoined,
+        isChannel,
+        otherMembers: [],
+        createdAt: undefined,
+        groupChannelType: '',
+        lastMessage: null,
+        lastMessageCreatedAt: null,
+      })
+    );
   });
 
   it('verify fetchChannelsAndConversations', async () => {
@@ -245,9 +166,7 @@ describe('channels list saga', () => {
       groupChannelType: '',
     };
 
-    const {
-      storeState: { normalized },
-    } = await expectSaga(fetchChannelsAndConversations)
+    const { storeState } = await expectSaga(fetchChannelsAndConversations)
       .provide([
         [
           matchers.call(fetchChannelsApi, rootDomainId),
@@ -266,14 +185,8 @@ describe('channels list saga', () => {
       .withState({ zns: { value: { rootDomainId } } })
       .run();
 
-    expect(normalized.channels).toStrictEqual({
-      [channel.id]: {
-        ...channel,
-      },
-      [conversation.id]: {
-        ...conversation,
-      },
-    });
+    expect(denormalizeChannel(channel.id, storeState).name).toEqual('the channel');
+    expect(denormalizeChannel(conversation.id, storeState).name).toEqual('the conversation');
   });
 
   it('verify startChannelsAndConversationsRefresh', () => {

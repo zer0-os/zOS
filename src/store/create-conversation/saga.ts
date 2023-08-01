@@ -46,9 +46,10 @@ export function* performGroupMembersSelected(action) {
 }
 
 export function* createConversation(action) {
+  const { userIds, name, image } = action.payload;
   try {
     yield put(setGroupCreating(true));
-    yield call(performCreateConversation, { payload: action.payload });
+    yield call(performCreateConversation, userIds, name, image);
   } finally {
     yield put(setGroupCreating(false));
   }

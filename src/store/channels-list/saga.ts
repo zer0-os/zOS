@@ -19,7 +19,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { MessagesFetchState } from '../channels';
+import { ConversationStatus, GroupChannelType, MessagesFetchState } from '../channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -81,9 +81,71 @@ export function* fetchConversations() {
   yield put(channel, { loaded: true });
 }
 
-export function* createConversation(action) {
-  const { name, userIds, image } = action.payload;
+export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+  const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
+  yield put(setactiveConversationId(optimisticConversation.id));
+  const conversation = yield call(sendCreateConversationRequest, userIds, name, image);
+  yield call(receiveCreatedConversation, conversation, optimisticConversation);
+  return conversation;
+}
 
+export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
+  const defaultConversationProperties = {
+    hasMore: false,
+    countNewMessages: 0,
+    isChannel: false,
+    unreadCount: 0,
+    hasLoadedMessages: true,
+    messagesFetchStatus: MessagesFetchState.SUCCESS,
+    groupChannelType: GroupChannelType.Private,
+    shouldSyncChannels: false,
+  };
+  const conversation = {
+    ...defaultConversationProperties,
+    id: Date.now(),
+    name,
+    otherMembers: userIds.map((id) => ({ userId: id, firstName: 'New conversation' })),
+    messages: [],
+    createdAt: Date.now(),
+    conversationStatus: ConversationStatus.CREATING,
+  };
+
+  const existingConversationsList = yield select(rawConversationsList());
+  const existingChannelsList = yield select(rawChannelsList());
+
+  yield put(
+    receive([
+      ...existingConversationsList,
+      ...existingChannelsList,
+      conversation,
+    ])
+  );
+
+  return conversation;
+}
+
+export function* receiveCreatedConversation(conversation, optimisticConversation) {
+  const existingConversationsList = yield select(rawConversationsList());
+  const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
+
+  if (!existingConversationsList.includes(conversation.id)) {
+    conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
+    conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
+    listWithoutOptimistic.push(conversation);
+  }
+
+  const channelsList = yield select(rawChannelsList());
+  yield put(
+    receive([
+      ...channelsList,
+      ...listWithoutOptimistic,
+    ])
+  );
+
+  yield put(setactiveConversationId(conversation.id));
+}
+
+export function* sendCreateConversationRequest(userIds: string[], name: string = null, image: File = null) {
   let coverUrl = '';
   if (image) {
     try {
@@ -97,28 +159,7 @@ export function* createConversation(action) {
 
   const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
 
-  const conversation = channelMapper(response);
-  const existingConversationsList = yield select(rawConversationsList());
-  const channelsList = yield select(rawChannelsList());
-
-  if (conversation && conversation.id) {
-    const hasExistingConversation =
-      Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
-
-    if (!hasExistingConversation) {
-      conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
-      conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
-      // add new chat to the list
-      yield put(
-        receive([
-          ...channelsList,
-          ...existingConversationsList,
-          conversation,
-        ])
-      );
-    }
-    yield put(setactiveConversationId(conversation.id));
-  }
+  return channelMapper(response);
 }
 
 export function* clearChannelsAndConversations() {

@@ -1,5 +1,5 @@
 import { ChannelType } from './types';
-import { Channel } from './../channels/index';
+import { Channel, ConversationStatus } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 
@@ -30,5 +30,6 @@ export const channelMapper = (currentChannel): Partial<Channel> => {
     lastMessageCreatedAt: currentChannel.lastMessage?.createdAt || null,
     isChannel: currentChannel.isChannel === undefined ? true : currentChannel.isChannel,
     groupChannelType: currentChannel.groupChannelType || '',
+    conversationStatus: ConversationStatus.CREATED,
   };
 };

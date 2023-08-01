@@ -10,16 +10,15 @@ import {
   receiveCreatedConversation,
 } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import {
   ConversationStatus,
   GroupChannelType,
   MessagesFetchState,
   denormalize as denormalizeChannel,
-  normalize as normalizeChannel,
 } from '../channels';
-import { normalize as normalizeUser } from '../users';
 import { setactiveConversationId } from '../chat';
+import { StoreBuilder } from '../test/store';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -79,10 +78,10 @@ describe('channels list saga', () => {
       const userIds = ['other-user-id'];
       const name = 'New Conversation';
 
-      const initialState = {
-        ...existingConversationState({ id: 'existing-channel' }),
-      };
-      (initialState.normalized as any).users = (existingUserState({ userId: 'other-user-id' }).normalized as any).users;
+      const initialState = new StoreBuilder()
+        .withConversationList({ id: 'existing-channel' })
+        .withUsers({ userId: 'other-user-id' })
+        .build();
 
       const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
         .withReducer(rootReducer, initialState)
@@ -189,7 +188,7 @@ describe('channels list saga', () => {
     it('replaces the optimistic message', async () => {
       const optimistic = { id: 'optimistic-id' };
 
-      const initialState = existingConversationState(optimistic);
+      const initialState = new StoreBuilder().withConversationList(optimistic).build();
 
       const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, optimistic)
         .withReducer(rootReducer, initialState)
@@ -219,7 +218,7 @@ describe('channels list saga', () => {
     it('sets the active conversation if the conversation already exists', async () => {
       const conversation = { id: 'existing-id' };
 
-      const initialState = existingConversationState(conversation);
+      const initialState = new StoreBuilder().withConversationList(conversation).build();
 
       const {
         storeState: { channelsList, chat },
@@ -232,23 +231,3 @@ describe('channels list saga', () => {
     });
   });
 });
-
-function existingConversationState(...args) {
-  const conversations = args.map((c) => ({ isChannel: false, ...c }));
-  const normalized = normalizeChannel(conversations);
-  return {
-    channelsList: { value: args.map((c) => c.id) },
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}
-
-function existingUserState(user) {
-  const normalized = normalizeUser(user);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}

@@ -34,7 +34,7 @@ describe('WalletSelect', () => {
   it('does not render footer when connecting', () => {
     const wrapper = subject({ isConnecting: true, wallets: [WalletType.Metamask] });
 
-    expect(wrapper.find('.zos-wallet-select__footer').exists()).toBe(false);
+    expect(wrapper).not.toHaveElement('.zos-wallet-select__footer');
   });
 
   it('renders a single wallet', () => {

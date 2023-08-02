@@ -56,6 +56,7 @@ describe('ChatView', () => {
       otherMembers: [],
       fetchMessages: () => null,
       isOneOnOne: false,
+      sendDisabledMessage: '',
       ...props,
     };
 

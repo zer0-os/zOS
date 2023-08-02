@@ -4,6 +4,7 @@ import { Message, MessageSendStatus } from '../../store/messages';
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
 import classNames from 'classnames';
+import { Messages } from './messages';
 
 const cn = bemClassName('dev-panel');
 
@@ -37,18 +38,7 @@ export class DevPanel extends React.Component<Properties> {
         ></div>
         <div className={classNames('dev-panel', { 'dev-panel--closed': !this.props.isOpen })}>
           <div {...cn('content')}>
-            {this.props.messages.map((message) => {
-              return (
-                <div {...cn('message')} key={message.id}>
-                  <div>{message.message}</div>
-                  <select value={message.sendStatus} onChange={(e) => this.statusChanged(e, message.id)}>
-                    {this.statusOption(MessageSendStatus.SUCCESS, 'Success')}
-                    {this.statusOption(MessageSendStatus.IN_PROGRESS, 'In progress')}
-                    {this.statusOption(MessageSendStatus.FAILED, 'Failed')}
-                  </select>
-                </div>
-              );
-            })}
+            <Messages messages={this.props.messages} onMessageStatusChanged={this.props.onMessageStatusChanged} />
           </div>
         </div>
       </>

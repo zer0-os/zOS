@@ -308,6 +308,10 @@ export class MessageInput extends React.Component<Properties, State> {
     this.focusInput();
   };
 
+  sendHighlighted = () => {
+    return this.state.value?.length > 0;
+  };
+
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
 
@@ -420,7 +424,7 @@ export class MessageInput extends React.Component<Properties, State> {
               <div className='message-input__icon-wrapper'>
                 <IconButton
                   className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                    'message-input__icon--send': hasInputValue,
+                    'message-input__icon--highlighted': this.sendHighlighted(),
                   })}
                   onClick={hasInputValue ? this.onSend : this.startMic}
                   Icon={hasInputValue ? IconSend3 : IconMicrophone2}

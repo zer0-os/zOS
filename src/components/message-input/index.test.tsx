@@ -12,6 +12,7 @@ import { ViewModes } from '../../shared-components/theme-engine';
 import MessageAudioRecorder from '../message-audio-recorder';
 import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
+import { IconSend3 } from '@zero-tech/zui/icons';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -109,7 +110,7 @@ describe('MessageInput', () => {
 
     wrapper.update();
 
-    const sendIcon = wrapper.find('.message-input__icon--send');
+    const sendIcon = wrapper.find('.message-input__icon--end-action');
     sendIcon.simulate('click');
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -125,9 +126,9 @@ describe('MessageInput', () => {
 
     wrapper.update();
 
-    const sendIcon = wrapper.find('.message-input__icon--send');
+    const sendIcon = wrapper.find('.message-input__icon--end-action');
 
-    expect(sendIcon.exists()).toBe(true);
+    expect(sendIcon.prop('Icon')).toEqual(IconSend3);
   });
 
   it('renders end action icon', () => {
@@ -266,7 +267,7 @@ describe('MessageInput', () => {
 
       const message = 'Message with :smile:';
       dropzone.find(MentionsInput).simulate('change', { target: { value: message } });
-      wrapper.find('.message-input__icon--send').simulate('click');
+      wrapper.find('.message-input__icon--end-action').simulate('click');
 
       expect(onSubmit).toHaveBeenCalledWith('Message with 😄', [], []);
     });

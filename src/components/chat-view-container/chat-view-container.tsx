@@ -266,13 +266,26 @@ export class Container extends React.Component<Properties, State> {
     if (this.props.channel.conversationStatus === ConversationStatus.CREATED) {
       return '';
     }
-    return "We're connecting you. Try again in a few seconds.";
+
+    let reference = ' with the group';
+    if (this.props.channel.name) {
+      reference = ` with ${this.props.channel.name}`;
+    } else if (this.isOneOnOne) {
+      const otherMember = this.props.channel.otherMembers[0];
+      reference = ` with ${otherMember.firstName} ${otherMember.lastName}`;
+    }
+
+    return `We're connecting you${reference}. Try again in a few seconds.`;
+  }
+
+  get isOneOnOne() {
+    return this.props.channel?.otherMembers?.length === 1;
   }
 
   render() {
     if (!this.props.channel) return null;
 
-    const isOneOnOne = this.props.channel?.otherMembers?.length === 1;
+    const isOneOnOne = this.isOneOnOne;
 
     return (
       <>

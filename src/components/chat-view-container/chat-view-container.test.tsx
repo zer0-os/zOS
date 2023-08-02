@@ -423,18 +423,41 @@ describe('ChannelViewContainer', () => {
     expect(textareaRef.current.focus).toHaveBeenCalled();
   });
 
-  it('has an empty disabled message if the channel is created', () => {
-    const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
+  describe('sendDisabledMessage', () => {
+    it('is empty if the channel is created', () => {
+      const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
 
-    expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual('');
-  });
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual('');
+    });
 
-  it('sets the disabled message if the channel is not yet created', () => {
-    const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATING } });
+    it('includes user name if one on one', () => {
+      const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
 
-    expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
-      "We're connecting you. Try again in a few seconds."
-    );
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with Jack Black. Try again in a few seconds."
+      );
+    });
+
+    it('includes conversation name if exists', () => {
+      const wrapper = subject({ channel: { name: 'NamedGroup', conversationStatus: ConversationStatus.CREATING } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with NamedGroup. Try again in a few seconds."
+      );
+    });
+
+    it('references group if more than one member', () => {
+      const otherMembers = [
+        { userId: '1' },
+        { userId: '2' },
+      ];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with the group. Try again in a few seconds."
+      );
+    });
   });
 
   describe('mapState', () => {

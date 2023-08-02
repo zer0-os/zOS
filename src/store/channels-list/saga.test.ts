@@ -19,8 +19,9 @@ import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
+import { StoreBuilder } from '../test/store';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -237,21 +238,12 @@ describe('channels list saga', () => {
 describe(userLeftChannel, () => {
   it('Channel is removed from list when the current user has left a channel', async () => {
     const channelId = 'channel-id';
-    const userId = 'current-user-id';
+    const initialState = new StoreBuilder()
+      .withCurrentUserId('current-user-id')
+      .withChannelList({ id: 'one-channel' }, { id: channelId }, { id: 'other-channel' });
 
-    const initialState = {
-      channelsList: {
-        value: [
-          'one-channel',
-          channelId,
-          'other-channel',
-        ],
-      },
-      ...currentUserState({ id: userId }),
-    } as RootState;
-
-    const { storeState } = await expectSaga(userLeftChannel, channelId, userId)
-      .withReducer(rootReducer, initialState)
+    const { storeState } = await expectSaga(userLeftChannel, channelId, 'current-user-id')
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.channelsList.value).toHaveLength(2);
@@ -261,14 +253,10 @@ describe(userLeftChannel, () => {
   it('does not remove channel if user is not the current user', async () => {
     const channelId = 'channel-id';
     const userId = 'current-user-id';
-
-    const initialState = {
-      channelsList: { value: [channelId] },
-      ...currentUserState({ id: userId }),
-    } as RootState;
+    const initialState = new StoreBuilder().withCurrentUserId(userId).withChannelList({ id: channelId });
 
     const { storeState } = await expectSaga(userLeftChannel, channelId, 'other-user-id')
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.channelsList.value).toHaveLength(1);
@@ -279,22 +267,15 @@ describe(userLeftChannel, () => {
     const channelId = 'conversation-id';
     const userId = 'user-id';
 
-    const initialState = {
-      ...currentUserState({ id: userId }),
-      ...existingConversationState(
+    const initialState = new StoreBuilder()
+      .withCurrentUserId(userId)
+      .withConversationList(
         { id: 'conversation-1', lastMessageCreatedAt: 10000000 },
         { id: channelId },
         { id: 'conversation-2', lastMessageCreatedAt: 10000001 }
-      ),
-      chat: { activeConversationId: channelId },
-      channelsList: {
-        value: [
-          'conversation-1',
-          channelId,
-          'conversation-2',
-        ],
-      },
-    } as RootState;
+      )
+      .withActiveConversation({ id: channelId })
+      .build();
 
     const { storeState } = await expectSaga(userLeftChannel, channelId, userId)
       .withReducer(rootReducer, initialState)
@@ -338,7 +319,7 @@ describe('fetchConversations', () => {
   });
 
   it('maintains lastMessage information if a local message is newer', async () => {
-    const optimisticMessage = { id: 'message-id' };
+    const optimisticMessage = { id: 'message-id' } as any;
     const channelWithOptimisticMessage = {
       id: 'conversation-id',
       lastMessage: optimisticMessage,
@@ -346,43 +327,13 @@ describe('fetchConversations', () => {
     };
     const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
 
-    const intialState = {
-      channelsList: { value: ['conversation-id'] },
-      ...existingConversationState(channelWithOptimisticMessage),
-    };
+    const initialState = new StoreBuilder().withConversationList(channelWithOptimisticMessage).build();
 
     const { storeState } = await expectSaga(fetchConversations)
       .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])
-      .withReducer(rootReducer, intialState)
+      .withReducer(rootReducer, initialState)
       .run();
 
     expect(denormalizeChannel('conversation-id', storeState).lastMessage).toBe(optimisticMessage);
   });
 });
-
-function existingConversationState(...args) {
-  const conversations = args.map((c) => ({ isChannel: false, ...c }));
-  const normalized = normalizeChannel(conversations);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}
-
-function currentUserState(user) {
-  const fullUser = {
-    id: 'default-stub-user-id',
-    profileId: 'default-stub-profile-id',
-    profileSummary: {
-      firstName: 'DefaultStubFirstName',
-      lastName: 'DefaultStubLastName',
-      profileImage: '/default-stub-image.jpg',
-    },
-    ...user,
-  };
-
-  return {
-    authentication: { user: { data: fullUser } },
-  } as RootState;
-}

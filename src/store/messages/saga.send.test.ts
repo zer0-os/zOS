@@ -12,11 +12,12 @@ import {
   send,
   uploadFileMessages,
 } from './saga';
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { MessageSendStatus } from '.';
+import { StoreBuilder } from '../test/store';
 
 const mockCreateUploadableFile = jest.fn();
 jest.mock('./uploadable', () => ({
@@ -103,7 +104,7 @@ describe(createOptimisticMessages, () => {
     const message = 'test message';
 
     const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [])
-      .withReducer(rootReducer, defaultState())
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -123,7 +124,7 @@ describe(createOptimisticMessages, () => {
     const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [
       file,
     ])
-      .withReducer(rootReducer, defaultState())
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -142,7 +143,7 @@ describe(createOptimisticMessage, () => {
     const message = 'test message';
 
     const { returnValue, storeState } = await expectSaga(createOptimisticMessage, channelId, message, undefined)
-      .withReducer(rootReducer, defaultState())
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -156,14 +157,14 @@ describe(createOptimisticMessage, () => {
 describe(createOptimisticPreview, () => {
   it('fetches the preview and adds it to the optimistic message', async () => {
     const channelId = 'channel-id';
-    const optimisticMessage = { id: 'optimistic-id', message: 'example.com' };
+    const optimisticMessage = { id: 'optimistic-id', message: 'example.com' } as any;
     const linkPreview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0' };
 
-    const initialState = { ...existingChannelState({ id: channelId, messages: [optimisticMessage] }) };
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
 
     const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
       .provide([stubResponse(call(getLinkPreviews, 'http://example.com'), linkPreview)])
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -211,22 +212,20 @@ describe(performSend, () => {
     const channelId = 'channel-id';
     const message = 'test message';
 
-    const initialState = {
-      ...existingChannelState({
-        id: channelId,
-        messages: [
-          { id: 'message-1' },
-          { id: 'optimistic-id' },
-        ],
-      }),
-    };
+    const initialState = new StoreBuilder().withConversationList({
+      id: channelId,
+      messages: [
+        { id: 'message-1' },
+        { id: 'optimistic-id' },
+      ] as any,
+    });
 
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
         stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id', optimisticId: 'optimistic-id' }),
         ...successResponses(),
       ])
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -259,15 +258,12 @@ describe(messageSendFailed, () => {
     const optimisticMessageList = [
       ...existingMessages,
       { id: 'optimistic' },
-    ];
+    ] as any;
 
-    const initialState = {
-      ...existingChannelState({ id: channelId, messages: optimisticMessageList }),
-      ...defaultState(),
-    };
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: optimisticMessageList });
 
     const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -285,15 +281,12 @@ describe(messageSendFailed, () => {
       ],
       lastMessage: { id: 'optimistic' },
       lastMessageCreatedAt: 10000000010,
-    };
+    } as any;
 
-    const initialState = {
-      ...existingChannelState(optimisticChannel),
-      ...defaultState(),
-    };
+    const initialState = new StoreBuilder().withConversationList(optimisticChannel);
 
     const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -312,15 +305,12 @@ describe(messageSendFailed, () => {
       ],
       lastMessage: messageLater,
       lastMessageCreatedAt: messageLater.createdAt,
-    };
+    } as any;
 
-    const initialState = {
-      ...existingChannelState(optimisticChannel),
-      ...defaultState(),
-    };
+    const initialState = new StoreBuilder().withConversationList(optimisticChannel);
 
     const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -328,33 +318,6 @@ describe(messageSendFailed, () => {
     expect(channel.lastMessageCreatedAt).toStrictEqual(messageLater.createdAt);
   });
 });
-
-function defaultState() {
-  return {
-    authentication: {
-      user: {
-        data: {
-          id: '1',
-          profileId: '2',
-          profileSummary: {
-            firstName: 'Johnn',
-            lastName: 'Doe',
-            profileImage: '/image.jpg',
-          },
-        },
-      },
-    },
-  } as RootState;
-}
-
-function existingChannelState(channel) {
-  const normalized = normalizeChannel(channel);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}
 
 function successResponses() {
   return [

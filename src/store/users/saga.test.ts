@@ -1,8 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { clearUsers, receiveSearchResults } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
-import { denormalize, normalize } from '.';
+import { rootReducer } from '../reducer';
+import { denormalize } from '.';
+import { StoreBuilder } from '../test/store';
 
 describe(clearUsers, () => {
   it('removes the users', async () => {
@@ -57,19 +58,12 @@ describe(receiveSearchResults, () => {
     const user1 = { id: 'user-1', name: 'Test User 1', profileImage: 'image-url-1' };
 
     const existingUser = { userId: 'user-1', firstName: 'Test', lastName: 'User 1', profileImage: 'image-url-2' };
-    const initialState = existingUserState(existingUser);
+    const initialState = new StoreBuilder().withUsers(existingUser);
 
-    const { storeState } = await expectSaga(receiveSearchResults, [user1]).withReducer(rootReducer, initialState).run();
+    const { storeState } = await expectSaga(receiveSearchResults, [user1])
+      .withReducer(rootReducer, initialState.build())
+      .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(expect.objectContaining(existingUser));
   });
 });
-
-function existingUserState(user) {
-  const normalized = normalize(user);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}

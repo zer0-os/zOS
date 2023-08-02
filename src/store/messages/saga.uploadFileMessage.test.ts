@@ -2,8 +2,9 @@ import { expectSaga } from 'redux-saga-test-plan';
 
 import { uploadFileMessages } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { rootReducer } from '../reducer';
+import { denormalize as denormalizeChannel } from '../channels';
+import { StoreBuilder } from '../test/store';
 
 describe(uploadFileMessages, () => {
   it('uploads an uploadable file', async () => {
@@ -12,10 +13,13 @@ describe(uploadFileMessages, () => {
     const uploadable = { upload, optimisticMessage: { id: 'optimistic-id' } } as any;
     const channelId = 'channel-id';
 
-    const initialState = existingChannelState({ id: channelId, messages: [{ id: 'optimistic-id' }] });
+    const initialState = new StoreBuilder().withConversationList({
+      id: channelId,
+      messages: [{ id: 'optimistic-id' } as any],
+    });
 
     const { storeState } = await expectSaga(uploadFileMessages, channelId, '', [uploadable])
-      .withReducer(rootReducer, initialState as any)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -41,12 +45,3 @@ describe(uploadFileMessages, () => {
     expect(upload2).toHaveBeenCalledWith(channelId, '');
   });
 });
-
-function existingChannelState(channel) {
-  const normalized = normalizeChannel(channel);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}

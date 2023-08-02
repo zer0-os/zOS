@@ -14,27 +14,18 @@ import {
 } from './saga';
 import { fetch as fetchMessages } from '../messages/saga';
 
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
-import { denormalize as denormalizeChannel, normalize as normalizeChannel } from '../channels';
+import { denormalize as denormalizeChannel } from '../channels';
+import { StoreBuilder } from '../test/store';
 
-const channelId = 'channel-id';
 const userId = 'user-id';
 
 describe('channels list saga', () => {
   it('join channel and add hasJoined to channel state', async () => {
     const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
 
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasJoined: false,
-          },
-        },
-      },
-    };
+    const initialState = new StoreBuilder().withChannelList({ id: channelId, hasJoined: false }).build();
 
     const {
       storeState: {
@@ -69,12 +60,11 @@ describe('channels list saga', () => {
       const channelId = '236844224_56299bcd523ac9084181f2422d0d0cfe9df72db4';
       const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
 
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 3 },
-        { isMessengerFullScreen: false, activeChannelId: channelId }
-      );
+      const state = new StoreBuilder()
+        .inWindowedMode()
+        .withCurrentUserId(userId)
+        .withActiveChannel({ id: channelId, unreadCount: 3 })
+        .build();
 
       await expectSaga(markChannelAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -84,12 +74,13 @@ describe('channels list saga', () => {
     });
 
     it('does not mark all messages as read if channelId is not equal to activeChannelId', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 3 },
-        { activeChannelId: 'some-other-channel-id', isMessengerFullScreen: false }
-      );
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .inWindowedMode()
+        .withCurrentUserId(userId)
+        .withChannelList({ id: channelId, unreadCount: 3 })
+        .withActiveChannel({ id: 'some-other-channel-id' })
+        .build();
 
       await expectSaga(markChannelAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -98,13 +89,13 @@ describe('channels list saga', () => {
         .run();
     });
 
-    it('does not mark all messages as read if messenger is not fullscreen', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 3 },
-        { activeChannelId: channelId, isMessengerFullScreen: true }
-      );
+    it('does not mark all messages as read if messenger is fullscreen', async () => {
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .inFullScreenMessenger()
+        .withCurrentUserId(userId)
+        .withActiveChannel({ id: channelId, unreadCount: 3 })
+        .build();
 
       await expectSaga(markChannelAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -114,12 +105,12 @@ describe('channels list saga', () => {
     });
 
     it('does not mark all messages as read if unreadCount is 0', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 0 },
-        { activeChannelId: channelId, isMessengerFullScreen: false }
-      );
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .inWindowedMode()
+        .withCurrentUserId(userId)
+        .withActiveChannel({ id: channelId, unreadCount: 0 })
+        .build();
 
       await expectSaga(markChannelAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -131,12 +122,11 @@ describe('channels list saga', () => {
 
   describe('markConversationAsReadIfActive', () => {
     it('mark all messages as read', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 3 },
-        { isMessengerFullScreen: true, activeConversationId: channelId }
-      );
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .withCurrentUserId(userId)
+        .withActiveConversation({ id: channelId, unreadCount: 3 })
+        .build();
 
       await expectSaga(markConversationAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -146,12 +136,12 @@ describe('channels list saga', () => {
     });
 
     it('does not mark all messages as read if channelId is not equal to activeConversationId', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 3 },
-        { activeConversationId: 'some-other-channel-id', isMessengerFullScreen: true }
-      );
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .withCurrentUserId(userId)
+        .withConversationList({ id: channelId, unreadCount: 3 })
+        .withActiveConversation({ id: 'some-other-channel-id' })
+        .build();
 
       await expectSaga(markConversationAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -161,12 +151,11 @@ describe('channels list saga', () => {
     });
 
     it('does not mark all messages as read if unreadCount is 0', async () => {
-      const state = initialState(
-        channelId,
-        userId,
-        { unreadCount: 0 },
-        { isMessengerFullScreen: true, activeConversationId: channelId }
-      );
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .withCurrentUserId(userId)
+        .withActiveConversation({ id: channelId, unreadCount: 0 })
+        .build();
 
       await expectSaga(markConversationAsReadIfActive, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
@@ -182,7 +171,7 @@ describe(unreadCountUpdated, () => {
     const channelId = 'channel-id';
     const updatedUnreadCount = 4;
 
-    const initialState = existingChannelState({ id: channelId, unreadCount: 3 });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, unreadCount: 3 }).build();
     const { storeState } = await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: updatedUnreadCount },
     })
@@ -197,7 +186,7 @@ describe(unreadCountUpdated, () => {
   it('fetches messages for channel if they have not been fetched previously', async () => {
     const channelId = 'channel-id';
 
-    const initialState = existingChannelState({ id: channelId, hasLoadedMessages: false });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: false }).build();
 
     await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: 2 },
@@ -211,7 +200,7 @@ describe(unreadCountUpdated, () => {
   it('does not fetch messages if the channel has already loaded once', async () => {
     const channelId = 'channel-id';
 
-    const initialState = existingChannelState({ id: channelId, hasLoadedMessages: true });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: true }).build();
 
     await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: 2 },
@@ -222,37 +211,3 @@ describe(unreadCountUpdated, () => {
       .run();
   });
 });
-
-function initialState(
-  channelId = 'channel-id',
-  userId = 'user-id',
-  channel = {},
-  { isMessengerFullScreen = false, activeChannelId = '', activeConversationId = '' }
-) {
-  const initialState = {
-    ...existingChannelState({ id: channelId, ...channel }),
-    authentication: {
-      user: { data: { id: userId } },
-    },
-    layout: {
-      value: {
-        isMessengerFullScreen,
-      },
-    },
-    chat: {
-      activeChannelId,
-      activeConversationId,
-    },
-  };
-
-  return initialState as any;
-}
-
-function existingChannelState(channel) {
-  const normalized = normalizeChannel(channel);
-  return {
-    normalized: {
-      ...normalized.entities,
-    },
-  } as RootState;
-}

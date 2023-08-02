@@ -5,17 +5,32 @@ import { bemClassName } from '../../lib/bem';
 import './styles.scss';
 import classNames from 'classnames';
 import { Messages } from './messages';
+import { Conversations } from './conversations';
+import { Channel, ConversationStatus } from '../../store/channels';
 
 const cn = bemClassName('dev-panel');
 
 export interface Properties {
   messages: Message[];
+  conversations: Channel[];
   isOpen: boolean;
   toggleState: () => void;
   onMessageStatusChanged: (messageId: string, status: MessageSendStatus) => void;
+  onConversationStatusChanged: (id: string, status: ConversationStatus) => void;
 }
 
-export class DevPanel extends React.Component<Properties> {
+enum Tab {
+  CONVERSATIONS,
+  MESSAGES,
+}
+
+interface State {
+  selectedTab: Tab;
+}
+
+export class DevPanel extends React.PureComponent<Properties, State> {
+  state = { selectedTab: Tab.CONVERSATIONS };
+
   toggleState = () => {
     this.props.toggleState();
   };
@@ -29,6 +44,9 @@ export class DevPanel extends React.Component<Properties> {
     return <option value={value}>{label}</option>;
   }
 
+  selectMessages = () => this.setState({ selectedTab: Tab.MESSAGES });
+  selectConversations = () => this.setState({ selectedTab: Tab.CONVERSATIONS });
+
   render() {
     return (
       <>
@@ -37,8 +55,29 @@ export class DevPanel extends React.Component<Properties> {
           onClick={this.toggleState}
         ></div>
         <div className={classNames('dev-panel', { 'dev-panel--closed': !this.props.isOpen })}>
-          <div {...cn('content')}>
-            <Messages messages={this.props.messages} onMessageStatusChanged={this.props.onMessageStatusChanged} />
+          <div>
+            <ul>
+              <li
+                onClick={this.selectConversations}
+                {...cn('tab', this.state.selectedTab === Tab.CONVERSATIONS && 'active')}
+              >
+                Conversations
+              </li>
+              <li onClick={this.selectMessages} {...cn('tab', this.state.selectedTab === Tab.MESSAGES && 'active')}>
+                Messages
+              </li>
+            </ul>
+            <div {...cn('content')}>
+              {this.state.selectedTab === Tab.CONVERSATIONS && (
+                <Conversations
+                  conversations={this.props.conversations}
+                  onConversationStatusChanged={this.props.onConversationStatusChanged}
+                />
+              )}
+              {this.state.selectedTab === Tab.MESSAGES && (
+                <Messages messages={this.props.messages} onMessageStatusChanged={this.props.onMessageStatusChanged} />
+              )}
+            </div>
           </div>
         </div>
       </>

@@ -28,4 +28,31 @@
   &--closed {
     display: none;
   }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__tab {
+    display: inline-block;
+    margin-right: 10px; /* Adjust spacing between tabs as needed */
+    background-color: lightblue;
+    padding: 8px;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+
+    &:hover {
+      background-color: blue;
+    }
+  }
+
+  &__tab--active {
+    background-color: darkblue;
+  }
+
+  &__content {
+    padding-top: 12px;
+  }
 }

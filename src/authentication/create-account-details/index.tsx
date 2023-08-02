@@ -75,8 +75,8 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
           <Input
             {...cn('input')}
-            label='What is your name?'
-            helperText='This will be your name that is visible to others on Zero'
+            label='Display Name'
+            helperText='This is the name that is visible to others on ZERO'
             name='name'
             value={this.state.name}
             onChange={this.trackName}

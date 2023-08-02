@@ -4,17 +4,17 @@
 
 $login-gap: 32px;
 $login-width: 280px;
-$login-padding-top: 104px;
-$login-padding-bottom: 150px;
+$login-padding-top: 24px;
+$login-padding-bottom: 24px;
 
 @mixin flex($gap-size) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $gap-size;
+  justify-content: center;
 }
 
-.login {
+.login-main {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
     radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%),
     radial-gradient(93.63% 93.63% at 100% 0%, #9d0097 0%, rgba(157, 0, 151, 0) 100%),
@@ -37,66 +37,41 @@ $login-padding-bottom: 150px;
     padding: $login-padding-top 0 $login-padding-bottom 0;
     box-sizing: border-box;
     margin: 0 auto;
-
-    > * {
-      width: 100%;
-    }
-
-    hr {
-      border-top: 1px solid theme.$color-greyscale-transparency-7;
-      margin: 0;
-    }
+    height: 100%;
   }
 
   &__header {
-    margin: (80px - $login-gap) 0 0 0;
-    padding: 0;
-
-    text-align: center;
-    font-size: 36px;
-    font-weight: normal;
     color: theme.$color-greyscale-12;
-    text-transform: uppercase;
-
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    margin: 0 0 32px 0;
   }
 
-  &__login {
+  &__logo-container {
+    margin-bottom: 76px;
+  }
+
+  &__toggle-group {
+    width: 280px;
+    margin-bottom: 32px;
+  }
+
+  &__login-option {
     display: flex;
     justify-content: center;
   }
 
-  &__options {
-    @include flex(16px);
-
-    span {
-      color: theme.$color-greyscale-11;
-    }
-
-    button {
-      padding: 16px;
-      width: 100%;
-
-      background: none;
-      border: 1px solid #b14eff40; // @note: didn't see a color variable in Figma
-      border-radius: 28px;
-      font-size: 16px;
-
-      cursor: pointer;
-
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-  }
-
   &__other {
+    margin: auto 0 0 0;
+
     @include flex(16px);
 
     > span {
       color: theme.$color-greyscale-11;
+      font-size: 14px;
+      line-height: 17px;
 
       > a {
         color: theme.$color-greyscale-12;

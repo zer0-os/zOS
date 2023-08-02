@@ -1,12 +1,11 @@
 import React from 'react';
-import { Action } from 'redux';
 import { Redirect } from 'react-router-dom';
 
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
-import { RegistrationStage, registerWithEmail, registerWithWallet } from './store/registration';
+import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
-import { CreateAccountMethod } from './authentication/create-account-method';
+import { CreateAccountMethodContainer } from './authentication/create-account-method/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
 import { Footer } from './authentication/footer/footer';
 
@@ -21,20 +20,9 @@ const cn = bemClassName('invite-main');
 export interface Properties {
   stage: RegistrationStage;
   shouldRender: boolean;
-
-  registerWithEmail: () => Action<string>;
-  registerWithWallet: () => Action<string>;
-}
-
-export interface State {
-  selectedOption: string;
 }
 
 export class Container extends React.Component<Properties> {
-  state: State = {
-    selectedOption: 'web3',
-  };
-
   static mapState(state: RootState): Partial<Properties> {
     const { registration, pageload } = state;
     return {
@@ -43,19 +31,9 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  static mapActions(_props: Properties): Partial<Properties> {
-    return { registerWithEmail: registerWithEmail, registerWithWallet: registerWithWallet };
+  static mapActions() {
+    return {};
   }
-
-  handleSelectionChange = (selectedOption: string) => {
-    this.setState({ selectedOption });
-
-    if (selectedOption === 'web3') {
-      this.props.registerWithWallet();
-    } else if (selectedOption === 'email') {
-      this.props.registerWithEmail();
-    }
-  };
 
   render() {
     if (!this.props.shouldRender) {
@@ -80,13 +58,7 @@ export class Container extends React.Component<Properties> {
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
 
           {(this.props.stage === RegistrationStage.EmailAccountCreation ||
-            this.props.stage === RegistrationStage.WalletAccountCreation) && (
-            <CreateAccountMethod
-              stage={this.props.stage}
-              selectedOption={this.state.selectedOption}
-              handleSelectionChange={this.handleSelectionChange}
-            />
-          )}
+            this.props.stage === RegistrationStage.WalletAccountCreation) && <CreateAccountMethodContainer />}
 
           {this.props.stage === RegistrationStage.ProfileDetails && <CreateAccountDetailsContainer />}
           {this.props.stage === RegistrationStage.Done && <Redirect to='/' />}

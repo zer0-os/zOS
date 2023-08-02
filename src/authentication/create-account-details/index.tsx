@@ -4,9 +4,10 @@ import { ImageUpload } from '../../components/image-upload';
 import { IconImagePlus } from '@zero-tech/zui/icons';
 import { Alert, Button, Input } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import './styles.scss';
 
+const c = bem('create-account-details');
 const cn = bemClassName('create-account-details');
 
 export interface Properties {
@@ -76,8 +77,8 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           <Input
             {...cn('input')}
             label='Display Name'
-            wrapperClassName='create-account-details__input-wrapper'
-            helperTextClassName='create-account-details__input-helper-text'
+            wrapperClassName={c('input-wrapper')}
+            helperTextClassName={c('input-helper-text')}
             helperText='This is the name that is visible to others on ZERO'
             placeholder='E.g John Smith'
             name='name'
@@ -87,7 +88,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             alert={this.nameError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isDisabled={!this.state.name} isSubmit>
+          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>
         </form>

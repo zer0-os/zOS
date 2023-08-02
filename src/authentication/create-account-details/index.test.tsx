@@ -63,18 +63,4 @@ describe('CreateAccountDetails', () => {
 
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
-
-  it('disables button when name is empty', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.state('name')).toEqual('');
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-  });
-
-  it('enables button when name is not empty', function () {
-    const wrapper = subject({});
-
-    wrapper.find('Input[name="name"]').simulate('change', inputEvent('Jack Black'));
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
-  });
 });

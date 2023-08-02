@@ -10,7 +10,7 @@ import classNames from 'classnames';
 export interface Properties {
   className?: string;
   icon: ReactElement;
-  uploadText: string;
+  uploadText?: string;
   onChange: (file: File) => void;
   isError?: boolean;
   errorMessage?: string;
@@ -77,7 +77,7 @@ export class ImageUpload extends Component<Properties, State> {
       <div {...rootProps} className='image-upload__dropzone'>
         <input {...inputProps} />
         {this.icon}
-        <p className='image-upload__text-content'>{this.textContent}</p>
+        {this.textContent && <p className='image-upload__text-content'>{this.textContent}</p>}
       </div>
     );
   };

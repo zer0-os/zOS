@@ -1,12 +1,13 @@
 import * as React from 'react';
 
 import { ImageUpload } from '../../components/image-upload';
-import { IconUpload2 } from '@zero-tech/zui/icons';
+import { IconImagePlus } from '@zero-tech/zui/icons';
 import { Alert, Button, Input } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import './styles.scss';
 
+const c = bem('create-account-details');
 const cn = bemClassName('create-account-details');
 
 export interface Properties {
@@ -54,7 +55,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
     return this.props.errors.image;
   }
 
-  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled />;
+  renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
   render() {
     return (
@@ -68,7 +69,6 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             <ImageUpload
               onChange={this.trackImage}
               icon={this.renderImageUploadIcon()}
-              uploadText='Select or drag and drop'
               isError={Boolean(this.props.errors.image)}
               errorMessage={this.props.errors.image}
             />
@@ -76,8 +76,11 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
           <Input
             {...cn('input')}
-            label='What is your name?'
-            helperText='This will be your name that is visible to others on Zero'
+            label='Display Name'
+            wrapperClassName={c('input-wrapper')}
+            helperTextClassName={c('input-helper-text')}
+            helperText='This is the name that is visible to others on ZERO'
+            placeholder='E.g John Smith'
             name='name'
             value={this.state.name}
             onChange={this.trackName}
@@ -85,7 +88,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             alert={this.nameError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button isLoading={this.props.isLoading} isSubmit>
+          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>
         </form>

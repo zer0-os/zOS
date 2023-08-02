@@ -4,12 +4,11 @@ import classNames from 'classnames';
 import { wallets, WalletType } from './wallets';
 
 import './styles.scss';
-import { bem } from '../../lib/bem';
+import { bemClassName } from '../../lib/bem';
 import { Button } from '@zero-tech/zui/components';
 import { IconLinkExternal1 } from '@zero-tech/zui/icons';
 
-// Temporarily use different base class name to avoid conflicts with zos-component-library
-const c = bem('zos-wallet-select');
+const cn = bemClassName('zos-wallet-select');
 
 export interface Properties {
   isConnecting: boolean;
@@ -44,9 +43,9 @@ export class WalletSelect extends React.Component<Properties> {
   renderContent() {
     if (this.props.isConnecting) {
       return (
-        <div className={c('connecting-indicator')}>
-          <div className={c('connecting-wallet-name')}>{this.state.selectedWalletName}</div>
-          <Button className={c('connecting-wallet-button-spinner')} isLoading={this.props.isConnecting} variant='text'>
+        <div {...cn('connecting-indicator')}>
+          <div {...cn('connecting-wallet-name')}>{this.state.selectedWalletName}</div>
+          <Button {...cn('connecting-wallet-button-spinner')} isLoading={this.props.isConnecting} variant='text'>
             {}
           </Button>
         </div>
@@ -61,10 +60,10 @@ export class WalletSelect extends React.Component<Properties> {
       const { type, name, imageSource } = wallets[walletType];
 
       return (
-        <li key={type} className={c('wallet-provider')} onClick={this.getClickHandler(type)}>
-          <span className={c('wallet-name')}>{name}</span>
+        <li key={type} {...cn('wallet-provider')} onClick={this.getClickHandler(type)}>
+          <span {...cn('wallet-name')}>{name}</span>
           <div>
-            <div className={c('wallet-provider-logo')}>
+            <div {...cn('wallet-provider-logo')}>
               <img src={imageSource} alt={name} />
             </div>
           </div>
@@ -75,19 +74,19 @@ export class WalletSelect extends React.Component<Properties> {
 
   render() {
     return (
-      <div className={classNames(c(''), this.props.className)}>
+      <div {...cn(classNames('', this.props.className))}>
         {!this.props.isConnecting && (
-          <div className={c('title-bar')}>
-            <h3 className={c('title')}>Connect To A Wallet</h3>
+          <div {...cn('title-bar')}>
+            <h3 {...cn('title')}>Connect To A Wallet</h3>
           </div>
         )}
         {this.renderContent()}
         {!this.props.isConnecting && (
-          <div className={c('footer')}>
+          <div {...cn('footer')}>
             New to Ethereum?
-            <div className={c('footer-link')}>
+            <div {...cn('footer-link')}>
               <a href='https://ethereum.org/en/wallets/' target='_blank' rel='noreferrer'>
-                Learn more about wallets <IconLinkExternal1 className={c('external-icon')} size={12} />
+                Learn more about wallets <IconLinkExternal1 {...cn('external-icon')} size={12} />
               </a>
             </div>
           </div>

@@ -20,15 +20,20 @@ import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconMicrophone2, IconStickerCircle } from '@zero-tech/zui/icons';
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar, Tooltip } from '@zero-tech/zui/components';
 
 import classNames from 'classnames';
 import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
+import { bemClassName } from '../../lib/bem';
 
-export interface PublicProperties extends PublicPropertiesContainer {}
+const cn = bemClassName('message-input');
 
-export interface Properties extends PublicPropertiesContainer {
+export interface PublicProperties extends PublicPropertiesContainer {
+  sendDisabledMessage?: string;
+}
+
+export interface Properties extends PublicProperties {
   viewMode: ViewModes;
   isMessengerFullScreen?: boolean;
   placeholder?: string;
@@ -47,6 +52,7 @@ interface State {
   isEmojisActive: boolean;
   isGiphyActive: boolean;
   isMicActive: boolean;
+  isSendTooltipOpen: boolean;
 }
 
 export class MessageInput extends React.Component<Properties, State> {
@@ -58,6 +64,7 @@ export class MessageInput extends React.Component<Properties, State> {
     isMicActive: false,
     isEmojisActive: false,
     isGiphyActive: false,
+    isSendTooltipOpen: false,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -82,6 +89,9 @@ export class MessageInput extends React.Component<Properties, State> {
   componentDidUpdate() {
     if (this.props.onMessageInputRendered) {
       this.props.onMessageInputRendered(this.textareaRef);
+    }
+    if (this.state.isSendTooltipOpen && this.isSendingEnabled) {
+      this.setState({ isSendTooltipOpen: false });
     }
   }
 
@@ -122,7 +132,19 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   }
 
+  get isSendingDisabled() {
+    return !this.isSendingEnabled;
+  }
+
+  get isSendingEnabled() {
+    return !this.props.sendDisabledMessage?.trim();
+  }
+
   onSend = (): void => {
+    if (this.isSendingDisabled) {
+      return this.setState({ isSendTooltipOpen: true });
+    }
+
     const { mentionedUserIds, value, media } = this.state;
     if (value || media.length) {
       this.props.onSubmit(value, mentionedUserIds, media);
@@ -308,6 +330,14 @@ export class MessageInput extends React.Component<Properties, State> {
     this.focusInput();
   };
 
+  sendHighlighted = () => {
+    return this.state.value?.length > 0 && this.isSendingEnabled;
+  };
+
+  get sendDisabledTooltipContent() {
+    return <div {...cn('disabled-tooltip')}>{this.props.sendDisabledMessage}</div>;
+  }
+
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
 
@@ -418,14 +448,16 @@ export class MessageInput extends React.Component<Properties, State> {
           {!this.props.isEditing && (
             <div className='message-input__icon-outer'>
               <div className='message-input__icon-wrapper'>
-                <IconButton
-                  className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                    'message-input__icon--send': hasInputValue,
-                  })}
-                  onClick={hasInputValue ? this.onSend : this.startMic}
-                  Icon={hasInputValue ? IconSend3 : IconMicrophone2}
-                  size={24}
-                />
+                <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
+                  <IconButton
+                    className={classNames('message-input__icon', 'message-input__icon--end-action', {
+                      'message-input__icon--highlighted': this.sendHighlighted(),
+                    })}
+                    onClick={hasInputValue ? this.onSend : this.startMic}
+                    Icon={hasInputValue ? IconSend3 : IconMicrophone2}
+                    size={24}
+                  />
+                </Tooltip>
               </div>
             </div>
           )}

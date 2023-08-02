@@ -18,6 +18,7 @@ export interface PublicProperties {
   reply?: null | ParentMessage;
   onRemoveReply?: () => void;
   isEditing?: boolean;
+  sendDisabledMessage?: string;
 }
 
 export interface Properties extends PublicProperties {
@@ -59,6 +60,7 @@ export class Container extends React.Component<Properties> {
         reply={this.props.reply}
         isMessengerFullScreen={this.props.isFullScreen}
         isEditing={this.props.isEditing}
+        sendDisabledMessage={this.props.sendDisabledMessage}
       />
     );
   }

@@ -14,7 +14,7 @@ import {
   stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import { Channel, denormalize, joinChannel } from '../../store/channels';
+import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -262,10 +262,30 @@ export class Container extends React.Component<Properties, State> {
     return messages;
   }
 
+  get sendDisabledMessage() {
+    if (this.props.channel.conversationStatus === ConversationStatus.CREATED) {
+      return '';
+    }
+
+    let reference = ' with the group';
+    if (this.props.channel.name) {
+      reference = ` with ${this.props.channel.name}`;
+    } else if (this.isOneOnOne) {
+      const otherMember = this.props.channel.otherMembers[0];
+      reference = ` with ${otherMember.firstName} ${otherMember.lastName}`;
+    }
+
+    return `We're connecting you${reference}. Try again in a few seconds.`;
+  }
+
+  get isOneOnOne() {
+    return this.props.channel?.otherMembers?.length === 1;
+  }
+
   render() {
     if (!this.props.channel) return null;
 
-    const isOneOnOne = this.props.channel?.otherMembers?.length === 1;
+    const isOneOnOne = this.isOneOnOne;
 
     return (
       <>
@@ -295,6 +315,7 @@ export class Container extends React.Component<Properties, State> {
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}
+          sendDisabledMessage={this.sendDisabledMessage}
         />
       </>
     );

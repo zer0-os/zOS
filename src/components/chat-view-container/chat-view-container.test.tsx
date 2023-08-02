@@ -6,6 +6,7 @@ import { Container } from './chat-view-container';
 import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
 import { Media } from '../message-input/utils';
+import { ConversationStatus } from '../../store/channels';
 
 describe('ChannelViewContainer', () => {
   const subject = (props: any = {}) => {
@@ -420,6 +421,43 @@ describe('ChannelViewContainer', () => {
     (wrapper.instance() as any).onMessageInputRendered(textareaRef);
 
     expect(textareaRef.current.focus).toHaveBeenCalled();
+  });
+
+  describe('sendDisabledMessage', () => {
+    it('is empty if the channel is created', () => {
+      const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual('');
+    });
+
+    it('includes user name if one on one', () => {
+      const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with Jack Black. Try again in a few seconds."
+      );
+    });
+
+    it('includes conversation name if exists', () => {
+      const wrapper = subject({ channel: { name: 'NamedGroup', conversationStatus: ConversationStatus.CREATING } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with NamedGroup. Try again in a few seconds."
+      );
+    });
+
+    it('references group if more than one member', () => {
+      const otherMembers = [
+        { userId: '1' },
+        { userId: '2' },
+      ];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
+
+      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+        "We're connecting you with the group. Try again in a few seconds."
+      );
+    });
   });
 
   describe('mapState', () => {

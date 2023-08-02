@@ -59,6 +59,7 @@ export interface Properties {
   showSenderAvatar?: boolean;
   isMessengerFullScreen: boolean;
   isOneOnOne: boolean;
+  sendDisabledMessage: string;
 }
 
 export interface State {
@@ -298,6 +299,7 @@ export class ChatView extends React.Component<Properties, State> {
               getUsersForMentions={this.searchMentionableUsers}
               reply={this.props.reply}
               onRemoveReply={this.props.onRemove}
+              sendDisabledMessage={this.props.sendDisabledMessage}
             />
           )}
           {!isMemberOfChannel && this.renderJoinButton()}

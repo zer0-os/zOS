@@ -246,4 +246,11 @@
       right: 65px;
     }
   }
+
+  &__disabled-tooltip {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: theme.$color-warning-11;
+  }
 }

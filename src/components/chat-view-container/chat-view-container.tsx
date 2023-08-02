@@ -14,7 +14,7 @@ import {
   stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import { Channel, denormalize, joinChannel } from '../../store/channels';
+import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
@@ -262,6 +262,13 @@ export class Container extends React.Component<Properties, State> {
     return messages;
   }
 
+  get sendDisabledMessage() {
+    if (this.props.channel.conversationStatus === ConversationStatus.CREATED) {
+      return '';
+    }
+    return "We're connecting you. Try again in a few seconds.";
+  }
+
   render() {
     if (!this.props.channel) return null;
 
@@ -295,6 +302,7 @@ export class Container extends React.Component<Properties, State> {
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}
+          sendDisabledMessage={this.sendDisabledMessage}
         />
       </>
     );

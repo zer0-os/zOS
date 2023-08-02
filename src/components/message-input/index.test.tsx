@@ -103,12 +103,8 @@ describe('MessageInput', () => {
 
   it('submits message when send icon is clicked', () => {
     const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
-    const dropzone = wrapper.find(Dropzone).shallow();
-    const input = dropzone.find(MentionsInput);
-    input.simulate('change', { target: { value: 'Hello' } });
-
-    wrapper.update();
+    const wrapper = subject({ onSubmit });
+    setInput(wrapper, 'Hello');
 
     const sendIcon = wrapper.find('.message-input__icon--end-action');
     sendIcon.simulate('click');
@@ -118,26 +114,32 @@ describe('MessageInput', () => {
   });
 
   it('shows send icon when input has value', () => {
-    const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
-    const dropzone = wrapper.find(Dropzone).shallow();
-    const input = dropzone.find(MentionsInput);
-    input.simulate('change', { target: { value: 'Hello' } });
-
-    wrapper.update();
+    const wrapper = subject({});
+    setInput(wrapper, 'Hello');
 
     const sendIcon = wrapper.find('.message-input__icon--end-action');
 
     expect(sendIcon.prop('Icon')).toEqual(IconSend3);
   });
 
-  it('renders end action icon', () => {
-    const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+  it('send icon is highlighted when input has a value and there is no disabled message', () => {
+    const wrapper = subject({ sendDisabledMessage: '' });
+    setInput(wrapper, 'Hello');
 
-    const endActionIcon = wrapper.find('.message-input__icon--end-action');
+    expect(wrapper).toHaveElement('.message-input__icon--highlighted');
+  });
 
-    expect(endActionIcon.exists()).toBe(true);
+  it('send icon is not highlighted if there is no input', () => {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement('.message-input__icon--highlighted');
+  });
+
+  it('send icon is not highlighted if there is a disabled message', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    expect(wrapper).not.toHaveElement('.message-input__icon--highlighted');
   });
 
   it('submit message when click on textarea', () => {
@@ -150,6 +152,25 @@ describe('MessageInput', () => {
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
     expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('opens tooltip if disable message is set and user tries to submit', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    wrapper.find('.message-input__icon--end-action').simulate('click');
+
+    expect(wrapper.find('Tooltip').prop('open')).toBe(true);
+  });
+
+  it('closes tooltip if disable message clears', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    wrapper.find('.message-input__icon--end-action').simulate('click');
+    wrapper.setProps({ sendDisabledMessage: '' });
+
+    expect(wrapper.find('Tooltip').prop('open')).toBe(false);
   });
 
   it('call after render', () => {
@@ -327,3 +348,8 @@ describe('MessageInput', () => {
     return searchResults;
   }
 });
+
+function setInput(wrapper, input) {
+  const dropzone = wrapper.find(Dropzone).shallow();
+  dropzone.find(MentionsInput).simulate('change', { target: { value: input } });
+}

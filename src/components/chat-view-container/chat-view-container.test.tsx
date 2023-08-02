@@ -6,6 +6,8 @@ import { Container } from './chat-view-container';
 import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
 import { Media } from '../message-input/utils';
+import { ConnectionState } from '@sendbird/chat';
+import { ConversationStatus } from '../../store/channels';
 
 describe('ChannelViewContainer', () => {
   const subject = (props: any = {}) => {
@@ -420,6 +422,20 @@ describe('ChannelViewContainer', () => {
     (wrapper.instance() as any).onMessageInputRendered(textareaRef);
 
     expect(textareaRef.current.focus).toHaveBeenCalled();
+  });
+
+  it('has an empty disabled message if the channel is created', () => {
+    const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
+
+    expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual('');
+  });
+
+  it('sets the disabled message if the channel is not yet created', () => {
+    const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATING } });
+
+    expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
+      "We're connecting you. Try again in a few seconds."
+    );
   });
 
   describe('mapState', () => {

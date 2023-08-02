@@ -75,11 +75,6 @@ export class WalletSelect extends React.Component<Properties> {
   render() {
     return (
       <div {...cn(classNames('', this.props.className))}>
-        {!this.props.isConnecting && (
-          <div {...cn('title-bar')}>
-            <h3 {...cn('title')}>Connect To A Wallet</h3>
-          </div>
-        )}
         {this.renderContent()}
         {!this.props.isConnecting && (
           <div {...cn('footer')}>

@@ -73,8 +73,11 @@ export class WalletSelect extends React.Component<Properties> {
   }
 
   render() {
+    const baseClass = cn('');
+    const combinedClassNames = classNames(baseClass.className, this.props.className);
+
     return (
-      <div {...cn(classNames('', this.props.className))}>
+      <div className={combinedClassNames}>
         {this.renderContent()}
         {!this.props.isConnecting && (
           <div {...cn('footer')}>

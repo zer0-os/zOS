@@ -55,7 +55,7 @@ export class Container extends React.Component<Properties> {
             <ZeroLogo />
           </div>
 
-          {this.props.stage === RegistrationStage.ValidateInvite && <CreateAccountDetailsContainer />}
+          {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
 
           {(this.props.stage === RegistrationStage.EmailAccountCreation ||
             this.props.stage === RegistrationStage.WalletAccountCreation) && <CreateAccountMethodContainer />}

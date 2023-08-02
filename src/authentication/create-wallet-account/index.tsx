@@ -26,7 +26,13 @@ export class CreateWalletAccount extends React.Component<Properties> {
           <div {...cn('select-wallet')}>
             <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />
           </div>
-          {this.showError && <Alert variant='error'>{this.props.error}</Alert>}
+          {this.showError && (
+            <div {...cn('error-container')}>
+              <Alert {...cn('error')} variant='error'>
+                {this.props.error}
+              </Alert>
+            </div>
+          )}
         </div>
       </div>
     );

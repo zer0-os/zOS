@@ -34,7 +34,7 @@ export class Container extends React.Component<Properties> {
     }
     const error = errors[0];
     if (error === AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS) {
-      return 'This address has already been registered';
+      return 'The wallet you connected is already associated with a ZERO account. Please try a different wallet or log in instead.';
     }
     return error;
   }

@@ -15,4 +15,14 @@
   &__select-wallet {
     margin-bottom: 8px;
   }
+
+  &__error-container {
+    padding-top: 4px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
+  }
 }

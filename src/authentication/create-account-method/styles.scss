@@ -1,6 +1,10 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .create-account-method {
+  &--is-connecting {
+    margin: auto;
+  }
+
   &__heading {
     color: theme.$color-greyscale-12;
     text-align: center;

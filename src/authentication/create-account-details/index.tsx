@@ -76,6 +76,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           <Input
             {...cn('input')}
             label='Display Name'
+            wrapperClassName='create-account-details__input-wrapper'
             helperTextClassName='create-account-details__input-helper-text'
             helperText='This is the name that is visible to others on ZERO'
             placeholder='E.g John Smith'

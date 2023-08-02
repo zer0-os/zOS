@@ -78,6 +78,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             label='Display Name'
             helperTextClassName='create-account-details__input-helper-text'
             helperText='This is the name that is visible to others on ZERO'
+            placeholder='E.g John Smith'
             name='name'
             value={this.state.name}
             onChange={this.trackName}
@@ -85,7 +86,7 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             alert={this.nameError}
           />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
-          <Button isLoading={this.props.isLoading} isSubmit>
+          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>
         </form>

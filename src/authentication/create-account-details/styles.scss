@@ -41,4 +41,13 @@
     display: flex;
     justify-content: center;
   }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+
+    div {
+      margin: 0;
+    }
+  }
 }

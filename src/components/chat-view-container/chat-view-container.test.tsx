@@ -6,7 +6,6 @@ import { Container } from './chat-view-container';
 import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
 import { Media } from '../message-input/utils';
-import { ConnectionState } from '@sendbird/chat';
 import { ConversationStatus } from '../../store/channels';
 
 describe('ChannelViewContainer', () => {

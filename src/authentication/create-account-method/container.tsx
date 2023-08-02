@@ -29,8 +29,6 @@ export class Container extends React.Component<CreateAccountMethodProps> {
   }
 
   handleSelectionChange = (selectedOption: string) => {
-    this.setState({ selectedOption });
-
     if (selectedOption === 'web3') {
       this.props.registerWithWallet();
     } else if (selectedOption === 'email') {

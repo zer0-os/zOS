@@ -33,6 +33,10 @@
     @include input();
   }
 
+  &__input-helper-text {
+    padding-bottom: 4px;
+  }
+
   &__image-upload {
     display: flex;
     justify-content: center;

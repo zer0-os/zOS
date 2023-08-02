@@ -32,13 +32,13 @@ describe('CreateAccountMethod', () => {
 
   it('renders CreateEmailAccountContainer when stage is EmailAccountCreation', () => {
     const wrapper = subject({ stage: RegistrationStage.EmailAccountCreation });
-    expect(wrapper.find(CreateEmailAccountContainer)).toHaveLength(1);
-    expect(wrapper.find(CreateWalletAccountContainer)).toHaveLength(0);
+    expect(wrapper).toHaveElement(CreateEmailAccountContainer);
+    expect(wrapper).not.toHaveElement(CreateWalletAccountContainer);
   });
 
   it('renders CreateWalletAccountContainer when stage is WalletAccountCreation', () => {
     const wrapper = subject({ stage: RegistrationStage.WalletAccountCreation });
-    expect(wrapper.find(CreateEmailAccountContainer)).toHaveLength(0);
-    expect(wrapper.find(CreateWalletAccountContainer)).toHaveLength(1);
+    expect(wrapper).not.toHaveElement(CreateEmailAccountContainer);
+    expect(wrapper).toHaveElement(CreateWalletAccountContainer);
   });
 });

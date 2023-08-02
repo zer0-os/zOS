@@ -123,7 +123,7 @@ export class Container extends React.Component<Properties, State> {
       return 'Wallet request already pending. You may have another window already open.';
     }
 
-    return 'Error connecting';
+    return 'Wallet connection failed. Please try again.';
   }
 
   syncGlobalsForConnectedStatus() {

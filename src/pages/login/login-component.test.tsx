@@ -69,15 +69,13 @@ describe('Login Component', () => {
     expect(link.prop('to')).toBe('/get-access');
   });
 
-  it('passes isLoggingIn to ToggleGroup as isDisabled', () => {
+  it('does not render ToggleGroup when isLoggingIn is true', () => {
     const wrapper = subject({ isLoggingIn: true });
-    const toggleGroup = wrapper.find(ToggleGroup);
-    expect(toggleGroup.prop('isDisabled')).toBe(true);
+    expect(wrapper).not.toHaveElement(ToggleGroup);
   });
 
-  it('does not disable ToggleGroup when isLoggingIn is false', () => {
+  it('renders ToggleGroup when isLoggingIn is false', () => {
     const wrapper = subject({ isLoggingIn: false });
-    const toggleGroup = wrapper.find(ToggleGroup);
-    expect(toggleGroup.prop('isDisabled')).toBe(false);
+    expect(wrapper).toHaveElement(ToggleGroup);
   });
 });

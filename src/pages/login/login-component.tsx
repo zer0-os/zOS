@@ -63,7 +63,6 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
                   selection={selectedOption}
                   selectionType='single'
                   isRequired
-                  isDisabled={isLoggingIn}
                 />
               )}
 

@@ -24,9 +24,10 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
   ];
 
   const selectedOption = stage === RegistrationStage.WalletAccountCreation ? 'web3' : 'email';
+  const isWalletAccountCreationStage = stage === RegistrationStage.WalletAccountCreation;
 
   return (
-    <div {...cn('')}>
+    <div {...cn('', isConnecting && isWalletAccountCreationStage && 'is-connecting')}>
       <h3 {...cn('heading')}>Create Account</h3>
 
       {!isConnecting && (
@@ -40,8 +41,7 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
           isRequired
         />
       )}
-      {stage === RegistrationStage.EmailAccountCreation && <CreateEmailAccountContainer />}
-      {stage === RegistrationStage.WalletAccountCreation && <CreateWalletAccountContainer />}
+      {isWalletAccountCreationStage ? <CreateWalletAccountContainer /> : <CreateEmailAccountContainer />}
     </div>
   );
 };

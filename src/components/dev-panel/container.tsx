@@ -3,17 +3,25 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { DevPanel } from '.';
-import { denormalize as denormalizeChannel } from '../../store/channels';
+import {
+  Channel,
+  ConversationStatus,
+  denormalize as denormalizeChannel,
+  receive as receiveChannel,
+} from '../../store/channels';
 import { Message, MessageSendStatus, receive } from '../../store/messages';
+import { denormalizeConversations } from '../../store/channels-list';
+import { compareDatesDesc } from '../../lib/date';
 
 interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   messages: Message[];
-  activeConversationId: string;
+  conversations: Channel[];
 
   toggleState(): void;
   updateMessage(message: Partial<Message>): void;
+  updateConversation: (conversation: Partial<Channel>) => void;
 }
 
 interface State {
@@ -28,21 +36,26 @@ export class Container extends React.Component<Properties, State> {
       chat: { activeConversationId },
     } = state;
 
-    if (!activeConversationId) {
-      return { messages: [] };
+    let messages = [];
+    if (activeConversationId) {
+      const channel = denormalizeChannel(activeConversationId, state) || null;
+      messages = channel.messages || [];
     }
 
-    const channel = denormalizeChannel(activeConversationId, state) || null;
+    const conversations = (denormalizeConversations(state) ?? []).sort((a, b) =>
+      compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
+    );
 
     return {
-      messages: channel?.messages || [],
-      activeConversationId,
+      messages,
+      conversations,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       updateMessage: receive,
+      updateConversation: receiveChannel,
     };
   }
 
@@ -58,12 +71,18 @@ export class Container extends React.Component<Properties, State> {
     this.props.updateMessage({ id, sendStatus });
   };
 
+  updateConversationStatus = (id, conversationStatus: ConversationStatus) => {
+    this.props.updateConversation({ id, conversationStatus });
+  };
+
   render() {
     return (
       <DevPanel
         messages={this.props.messages}
+        conversations={this.props.conversations}
         isOpen={this.isOpen}
         onMessageStatusChanged={this.updateMessageStatus}
+        onConversationStatusChanged={this.updateConversationStatus}
         toggleState={this.toggleState}
       />
     );

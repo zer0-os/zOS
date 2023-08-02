@@ -12,6 +12,7 @@ const cn = bemClassName('zos-wallet-select');
 
 export interface Properties {
   isConnecting: boolean;
+  walletSelectTitle?: string;
   className?: string;
   wallets?: WalletType[];
 
@@ -78,6 +79,11 @@ export class WalletSelect extends React.Component<Properties> {
 
     return (
       <div className={combinedClassNames}>
+        {!this.props.isConnecting && this.props.walletSelectTitle && (
+          <div {...cn('title-bar')}>
+            <h3 {...cn('title')}>{this.props.walletSelectTitle}</h3>
+          </div>
+        )}
         {this.renderContent()}
         {!this.props.isConnecting && (
           <div {...cn('footer')}>

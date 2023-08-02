@@ -31,6 +31,19 @@ describe('WalletSelect', () => {
     expect(wrapper.find('.zos-wallet-select__connecting-indicator').exists()).toBe(true);
   });
 
+  it('does not render walletSelectTitle by default', () => {
+    const wrapper = subject();
+
+    expect(wrapper).not.toHaveElement('.zos-wallet-select__title');
+  });
+
+  it('renders title when walletSelectTitle is provided', () => {
+    const title = 'Connect To A Wallet';
+    const wrapper = subject({ walletSelectTitle: title });
+
+    expect(wrapper.find('.zos-wallet-select__title').text()).toBe(title);
+  });
+
   it('does not render footer when connecting', () => {
     const wrapper = subject({ isConnecting: true, wallets: [WalletType.Metamask] });
 

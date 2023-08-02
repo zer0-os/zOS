@@ -15,7 +15,18 @@
   }
 
   &__toggle-group {
+    height: 40px;
+    background: theme.$color-primary-transparency-1;
     width: 280px;
     margin-bottom: 32px;
+
+    > * {
+      border-left: none !important;
+    }
+
+    [data-state='on'] {
+      font-weight: 700;
+      background: theme.$color-primary-transparency-2 !important;
+    }
   }
 }

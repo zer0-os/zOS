@@ -35,7 +35,8 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   render() {
     const { isLoggingIn, stage } = this.props;
 
-    const selectedOption = stage === LoginStage.Web3Login ? 'web3' : 'email';
+    const isWeb3LoginStage = stage === LoginStage.Web3Login;
+    const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
 
     const options = [
       { key: 'web3', label: 'Web3' },
@@ -50,19 +51,20 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             <div {...cn('logo-container')}>
               <ZeroLogo />
             </div>
-            <div>
-              <h3 {...cn('header')}>Log in</h3>
+            <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
+              <h3 {...cn('header')}>Log In</h3>
 
-              <ToggleGroup
-                {...cn('toggle-group')}
-                options={options}
-                variant='default'
-                onSelectionChange={this.props.handleSelectionChange}
-                selection={selectedOption}
-                selectionType='single'
-                isRequired
-                isDisabled={isLoggingIn}
-              />
+              {!isLoggingIn && (
+                <ToggleGroup
+                  {...cn('toggle-group')}
+                  options={options}
+                  variant='default'
+                  onSelectionChange={this.props.handleSelectionChange}
+                  selection={selectedOption}
+                  selectionType='single'
+                  isRequired
+                />
+              )}
 
               <div {...cn('login-option')}>{this.loginOption}</div>
             </div>

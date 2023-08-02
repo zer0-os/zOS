@@ -15,20 +15,17 @@
     @include flex();
   }
 
-  &__connecting {
-    @include flex();
-
-    button {
-      text-transform: unset;
-      border: 1px solid theme.$color-greyscale-11;
-    }
-  }
-
-  &__spinner {
-    animation: spin 2s linear infinite;
-  }
-
   &__select-wallet {
     margin-bottom: 8px;
+  }
+
+  &__error-container {
+    padding-top: 4px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
   }
 }

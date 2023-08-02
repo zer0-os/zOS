@@ -53,6 +53,12 @@ $login-padding-bottom: 24px;
     margin-bottom: 76px;
   }
 
+  &__inner-content-wrapper {
+    &--is-logging-in {
+      margin: auto;
+    }
+  }
+
   &__toggle-group {
     width: 280px;
     margin-bottom: 32px;

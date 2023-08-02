@@ -16,11 +16,7 @@
   }
 
   &__select-wallet {
-    background-color: theme.$color-primary-2;
-    border: 1px solid theme.$color-primary-5;
-    border-radius: 8px;
-    padding: 16px 6px 24px;
-    box-sizing: border-box;
+    margin-bottom: 8px;
   }
 
   &__error-container {

@@ -11,7 +11,7 @@
     flex-direction: column;
     align-items: center;
     padding: 0 24px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     gap: 4px;
   }
 
@@ -33,8 +33,26 @@
     @include input();
   }
 
+  &__input-helper-text {
+    padding-bottom: 4px;
+  }
+
+  &__input-wrapper {
+    height: unset !important;
+    padding: 8px 6px !important;
+  }
+
   &__image-upload {
     display: flex;
     justify-content: center;
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+
+    div {
+      margin: 0;
+    }
   }
 }

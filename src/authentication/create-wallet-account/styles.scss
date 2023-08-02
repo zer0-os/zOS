@@ -13,10 +13,16 @@
   }
 
   &__select-wallet {
-    background-color: theme.$color-primary-2;
-    border: 1px solid theme.$color-primary-5;
-    border-radius: 8px;
-    padding: 16px;
     margin-bottom: 8px;
+  }
+
+  &__error-container {
+    padding-top: 4px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
   }
 }

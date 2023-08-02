@@ -7,7 +7,10 @@ $left-padding: 12px;
 }
 
 .zos-wallet-select {
+  padding: 8px;
+  border-radius: 8px;
   color: theme.$color-greyscale-12;
+  background-color: theme.$color-primary-2;
 
   &__title-bar {
     border-bottom: 1px solid theme.$color-primary-4;
@@ -64,8 +67,7 @@ $left-padding: 12px;
 
   &__footer {
     border-top: 1px solid theme.$color-primary-4;
-    padding-top: 16px;
-    padding-left: $left-padding;
+    padding: 24px 16px 16px;
 
     color: theme.$color-greyscale-11;
     font-weight: 400;

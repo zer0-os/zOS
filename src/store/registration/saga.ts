@@ -24,7 +24,7 @@ import {
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
-import { passwordStrength } from '../../lib/password';
+import { isPasswordStrong } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
@@ -135,7 +135,7 @@ export function validateAccountInfo({ email, password }) {
 
   if (!password.trim()) {
     validationErrors.push(AccountCreationErrors.PASSWORD_REQUIRED);
-  } else if (passwordStrength(password) < 2) {
+  } else if (!isPasswordStrong(password)) {
     validationErrors.push(AccountCreationErrors.PASSWORD_TOO_WEAK);
   }
 

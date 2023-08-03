@@ -1,54 +1,37 @@
-import { Strength, passwordStrength } from './password';
+import { isPasswordStrong } from './password';
 
-describe('passwordStrength', () => {
-  it('should return None a blank password', () => {
-    expect(passwordStrength('')).toBe(Strength.None);
+describe('isPasswordStrong', () => {
+  it('should return false for a blank password', () => {
+    expect(isPasswordStrong('')).toBe(false);
   });
 
-  it('should return Weak for any password less than 8 characters', () => {
-    expect(passwordStrength('1')).toBe(Strength.Weak);
-    expect(passwordStrength('1234567')).toBe(Strength.Weak);
-    expect(passwordStrength('aA1!aaa')).toBe(Strength.Weak);
-  });
-
-  it('requires 1 lowercase letter', () => {
-    expect(passwordStrength('AA1!AAAA')).toBe(Strength.Weak);
-    expect(passwordStrength('aA1!AAAA')).toBe(Strength.Acceptable);
+  it('should return false for any password less than 8 characters', () => {
+    expect(isPasswordStrong('1')).toBe(false);
+    expect(isPasswordStrong('1234567')).toBe(false);
+    expect(isPasswordStrong('aA1!aaa')).toBe(false);
   });
 
   it('requires 1 uppercase letter', () => {
-    expect(passwordStrength('aa1!aaaa')).toBe(Strength.Weak);
-    expect(passwordStrength('aA1!aaaa')).toBe(Strength.Acceptable);
+    expect(isPasswordStrong('aa1!aaaa')).toBe(false);
+    expect(isPasswordStrong('aA1!aaaa')).toBe(true);
   });
 
   it('requires 1 number', () => {
-    expect(passwordStrength('aAa!aaaa')).toBe(Strength.Weak);
-    expect(passwordStrength('aA1!aaaa')).toBe(Strength.Acceptable);
+    expect(isPasswordStrong('aAa!aaaa')).toBe(false);
+    expect(isPasswordStrong('aA1!aaaa')).toBe(true);
   });
 
-  it('requires 1 special character', () => {
-    expect(passwordStrength('aA1abbcc')).toBe(Strength.Weak);
-    expect(passwordStrength('aA1!bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1@bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1#bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1$bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1%bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1^bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1&bbcc')).toBe(Strength.Acceptable);
-    expect(passwordStrength('aA1*bbcc')).toBe(Strength.Acceptable);
-  });
-
-  it('returns Acceptable for any password with more than 2 identical characters in a row', () => {
+  it('returns true for any password with more than 2 identical characters in a row', () => {
     // lll at end of string
-    expect(passwordStrength('aA1!bbccddeeffgghhiijjkklll')).toBe(Strength.Acceptable);
+    expect(isPasswordStrong('aA1!bbccddeeffgghhiijjkklll')).toBe(true);
   });
 
-  it('returns Good when all restrictions met and length is greater than 19 characters', () => {
-    expect(passwordStrength('aA1!bbccdd')).toBe(Strength.Good);
+  it('returns true when all restrictions met and length is greater than 19 characters', () => {
+    expect(isPasswordStrong('aA1!bbccddeeffg12345')).toBe(true);
   });
 
-  it('returns Strong when all restrictions met and length is greater than 15 characters', () => {
-    expect(passwordStrength('aA1!bbccddeeffg')).toBe(Strength.Good);
-    expect(passwordStrength('aA1!bbccddeeffgg')).toBe(Strength.Strong);
+  it('returns true when all restrictions met and length is greater than 15 characters', () => {
+    expect(isPasswordStrong('aA1!bbccddeeffg')).toBe(true);
+    expect(isPasswordStrong('aA1!bbccddeeffgg')).toBe(true);
   });
 });

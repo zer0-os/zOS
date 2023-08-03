@@ -128,7 +128,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
               {...cn('input')}
               alertClassName={c('input-alert')}
               label='Confirm Password'
-              name='confirm password'
+              name='confirmPassword'
               value={this.state.confirmPassword}
               onChange={this.trackConfirmPassword}
               error={this.confirmPasswordAlert?.variant === 'error' || false}

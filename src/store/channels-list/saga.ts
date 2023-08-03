@@ -116,6 +116,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
   const conversation = {
     ...defaultConversationProperties,
     id: Date.now(),
+    optimisticId: Date.now(),
     name,
     otherMembers: userIds,
     messages: [],
@@ -144,6 +145,7 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
   if (!existingConversationsList.includes(conversation.id)) {
     conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
     conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
+    conversation.optimisticId = optimisticConversation.optimisticId;
     listWithoutOptimistic.push(conversation);
   }
 

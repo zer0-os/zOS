@@ -34,6 +34,7 @@ export enum ConversationStatus {
 
 export interface Channel {
   id: string;
+  optimisticId?: string;
   name: string;
   messages: Message[];
   otherMembers: User[];

@@ -136,7 +136,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   render() {
-    if (!this.props.activeConversationId) {
+    if (!this.props.activeConversationId || !this.props.directMessage) {
       return null;
     }
 
@@ -189,7 +189,7 @@ export class Container extends React.Component<Properties, State> {
           </div>
 
           <ChatViewContainer
-            key={this.props.activeConversationId} // Render new component for a new chat
+            key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
             channelId={this.props.activeConversationId}
             className='direct-message-chat__channel'
             isDirectMessage

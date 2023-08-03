@@ -8,6 +8,7 @@ import {
   createOptimisticConversation,
   sendCreateConversationRequest,
   receiveCreatedConversation,
+  handleCreateConversationError,
 } from './saga';
 
 import { rootReducer } from '../reducer';
@@ -28,46 +29,43 @@ const MOCK_CHANNELS = [
 
 describe('channels list saga', () => {
   describe(createConversation, () => {
-    it('creates an optimistic conversation', async () => {
-      testSaga(createConversation, ['user-1'], 'name', { name: 'file' } as File)
+    it('creates the conversation - full success flow', async () => {
+      const otherUserIds = ['user-1'];
+      const name = 'name';
+      const image = { name: 'file' } as File;
+
+      const stubOptimisticConversation = { id: 'optimistic-id' };
+      const stubReceivedConversation = { id: 'new-convo-id' };
+
+      testSaga(createConversation, otherUserIds, name, image)
         .next()
-        .call(createOptimisticConversation, ['user-1'], 'name', { name: 'file' } as File)
-        .finish();
+        .call(createOptimisticConversation, otherUserIds, name, image)
+        .next(stubOptimisticConversation)
+        .put(setactiveConversationId(stubOptimisticConversation.id))
+        .next()
+        .call(sendCreateConversationRequest, otherUserIds, name, image)
+        .next(stubReceivedConversation)
+        .call(receiveCreatedConversation, stubReceivedConversation, stubOptimisticConversation)
+        .next()
+        .isDone();
     });
 
-    it('sets the optimistic conversation to the active one', async () => {
-      testSaga(createConversation, ['user-1'], 'name', { name: 'file' } as File)
-        .next()
-        // .call(createOptimisticConversation)
-        .next({ id: 'optimistic-id' })
-        .put(setactiveConversationId('optimistic-id'))
-        .finish();
-    });
+    it('handles creation error', async () => {
+      const otherUserIds = ['user-1'];
+      const name = 'name';
+      const image = { name: 'file' } as File;
 
-    it('sends the api requests', async () => {
-      testSaga(createConversation, ['user-1'])
-        .next()
-        // .call(createOptimisticConversation)
-        .next({ id: 'optimistic-id' })
-        // .call(setactiveConversationId)
-        .next()
-        .call(sendCreateConversationRequest, ['user-1'], null, null)
-        .next()
-        .finish();
-    });
+      const stubOptimisticConversation = { id: 'optimistic-id' };
 
-    it('handles the response', async () => {
-      const optimisticConversation = { id: 'optimistic-id' };
-      const receivedConversation = { id: 'new-convo-id' };
-      testSaga(createConversation, ['user-1'])
+      testSaga(createConversation, otherUserIds, name, image)
         .next()
         // .call(createOptimisticConversation)
-        .next(optimisticConversation)
-        // .call(setactiveConversationId)
+        .next(stubOptimisticConversation)
+        // .put(setactiveConversationId)
         .next()
         // .call(sendCreateConversationRequest)
-        .next(receivedConversation)
-        .call(receiveCreatedConversation, receivedConversation, optimisticConversation)
+        .throw(new Error('simulated error'))
+        .call(handleCreateConversationError, stubOptimisticConversation)
         .next()
         .isDone();
     });

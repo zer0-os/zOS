@@ -84,10 +84,16 @@ export function* fetchConversations() {
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
   const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
   yield put(setactiveConversationId(optimisticConversation.id));
-  const conversation = yield call(sendCreateConversationRequest, userIds, name, image);
-  yield call(receiveCreatedConversation, conversation, optimisticConversation);
-  return conversation;
+  try {
+    const conversation = yield call(sendCreateConversationRequest, userIds, name, image);
+    yield call(receiveCreatedConversation, conversation, optimisticConversation);
+    return conversation;
+  } catch {
+    yield call(handleCreateConversationError, optimisticConversation);
+  }
 }
+
+export function* handleCreateConversationError(optimisticConversation) {}
 
 export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
   const defaultConversationProperties = {

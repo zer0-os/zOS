@@ -225,3 +225,17 @@ describe(receiveCreatedConversation, () => {
     expect(chat.activeConversationId).toStrictEqual('existing-id');
   });
 });
+
+describe(handleCreateConversationError, () => {
+  it('sets status to error', async () => {
+    const optimistic = { id: 'optimistic-id', conversationStatus: ConversationStatus.CREATING };
+
+    const initialState = new StoreBuilder().withConversationList(optimistic).build();
+
+    const { storeState } = await expectSaga(handleCreateConversationError, optimistic)
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(denormalizeChannel(optimistic.id, storeState).conversationStatus).toEqual(ConversationStatus.ERROR);
+  });
+});

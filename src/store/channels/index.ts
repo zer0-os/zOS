@@ -29,6 +29,7 @@ export enum MessagesFetchState {
 export enum ConversationStatus {
   CREATING,
   CREATED,
+  ERROR,
 }
 
 export interface Channel {

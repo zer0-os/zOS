@@ -19,7 +19,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { ConversationStatus, GroupChannelType, MessagesFetchState } from '../channels';
+import { ConversationStatus, GroupChannelType, MessagesFetchState, receive as receiveChannel } from '../channels';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -93,7 +93,9 @@ export function* createConversation(userIds: string[], name: string = null, imag
   }
 }
 
-export function* handleCreateConversationError(optimisticConversation) {}
+export function* handleCreateConversationError(optimisticConversation) {
+  yield put(receiveChannel({ id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR }));
+}
 
 export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
   const defaultConversationProperties = {

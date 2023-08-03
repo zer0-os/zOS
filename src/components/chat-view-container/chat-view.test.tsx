@@ -57,6 +57,7 @@ describe('ChatView', () => {
       fetchMessages: () => null,
       isOneOnOne: false,
       sendDisabledMessage: '',
+      conversationErrorMessage: '',
       ...props,
     };
 

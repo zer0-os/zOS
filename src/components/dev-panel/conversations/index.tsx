@@ -35,6 +35,7 @@ export class Conversations extends React.PureComponent<Properties> {
               <select value={conversation.conversationStatus} onChange={(e) => this.statusChanged(e, conversation.id)}>
                 {this.statusOption(ConversationStatus.CREATED, 'Created')}
                 {this.statusOption(ConversationStatus.CREATING, 'Creating')}
+                {this.statusOption(ConversationStatus.ERROR, 'Error')}
               </select>
             </div>
           );

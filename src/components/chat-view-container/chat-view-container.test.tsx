@@ -460,6 +460,43 @@ describe('ChannelViewContainer', () => {
     });
   });
 
+  describe('conversationErrorMessage', () => {
+    it('is empty if the channel is not in error state', () => {
+      const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
+
+      expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual('');
+    });
+
+    it('includes user name if one on one', () => {
+      const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.ERROR } });
+
+      expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual(
+        "Sorry! We couldn't connect you with Jack Black. Please refresh and try again."
+      );
+    });
+
+    it('includes conversation name if exists', () => {
+      const wrapper = subject({ channel: { name: 'NamedGroup', conversationStatus: ConversationStatus.ERROR } });
+
+      expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual(
+        "Sorry! We couldn't connect you with NamedGroup. Please refresh and try again."
+      );
+    });
+
+    it('references group if more than one member', () => {
+      const otherMembers = [
+        { userId: '1' },
+        { userId: '2' },
+      ];
+      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.ERROR } });
+
+      expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual(
+        "Sorry! We couldn't connect you with the group. Please refresh and try again."
+      );
+    });
+  });
+
   describe('mapState', () => {
     const getState = (state: any) =>
       ({

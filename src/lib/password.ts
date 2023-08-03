@@ -7,11 +7,7 @@ export enum Strength {
 }
 
 export function passwordRulesDescription() {
-  return [
-    'Password must:',
-    'be at least 8 characters',
-    'contain 1 lowercase, 1 uppercase, 1 number, 1 special character (!@#$%^&*)',
-  ];
+  return 'Must include at least 8 characters, 1 number and 1 uppercase letter';
 }
 
 export function passwordStrength(password: string): any {
@@ -23,12 +19,8 @@ export function passwordStrength(password: string): any {
     return Strength.Weak;
   }
 
-  if (
-    !password.match(/[a-z]/) ||
-    !password.match(/[A-Z]/) ||
-    !password.match(/[!@#$%^&*]/) ||
-    !password.match(/[0-9]/)
-  ) {
+  // check for 1 uppercase, 1 number
+  if (!password.match(/[A-Z]/) || !password.match(/[0-9]/)) {
     return Strength.Weak;
   }
 

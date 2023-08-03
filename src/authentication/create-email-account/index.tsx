@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Strength, passwordStrength } from '../../lib/password';
+import { Strength, passwordRulesDescription, passwordStrength } from '../../lib/password';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../lib/bem';
@@ -22,21 +22,19 @@ export interface Properties {
 interface State {
   email: string;
   password: string;
+  confirmPassword: string;
+  isPasswordInputFocused: boolean;
   strength: Strength;
 }
 
-function unorderedList(arr) {
-  return (
-    <ul {...cn('error-list')}>
-      {arr.map((item, index) => (
-        <li key={index}>{item}</li>
-      ))}
-    </ul>
-  );
-}
-
 export class CreateEmailAccount extends React.Component<Properties, State> {
-  state = { email: '', password: '', strength: 0 };
+  state = {
+    email: '',
+    password: '',
+    confirmPassword: '',
+    isPasswordInputFocused: false,
+    strength: 0,
+  };
 
   publishOnNext = (e) => {
     e.preventDefault();
@@ -49,9 +47,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     this.setState({ password: value, strength });
   };
 
-  get isValid() {
-    return this.state.email.trim().length > 0 && this.state.password.trim().length > 0;
-  }
+  trackConfirmPassword = (value) => this.setState({ confirmPassword: value });
 
   get emailError() {
     if (this.props.errors.email) {
@@ -60,19 +56,50 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     return null;
   }
 
-  get passwordError() {
-    if (!this.props.errors.password) {
+  get passwordAlert() {
+    if (this.props.errors.password) {
+      return { variant: 'error', text: this.props.errors.password } as any;
+    }
+
+    if (this.state.isPasswordInputFocused) {
+      return { variant: 'info', text: passwordRulesDescription() } as any;
+    }
+
+    return null;
+  }
+
+  get confirmPasswordAlert() {
+    if (this.state.confirmPassword.trim().length === 0) {
       return null;
     }
-    if (Array.isArray(this.props.errors.password)) {
-      return { variant: 'error', text: unorderedList(this.props.errors.password) } as any;
+
+    if (this.state.password === this.state.confirmPassword) {
+      return { variant: 'success', text: 'Passwords match' };
     }
-    return { variant: 'error', text: this.props.errors.password } as any;
+
+    return { variant: 'error', text: 'Passwords do not match' } as any;
   }
 
   get generalError() {
     return this.props.errors.general;
   }
+
+  get isNextDisabled() {
+    return (
+      this.props.isLoading ||
+      this.state.password !== this.state.confirmPassword ||
+      this.state.password.length === 0 ||
+      this.state.email.length === 0
+    );
+  }
+
+  handleFocus = () => {
+    this.setState({ isPasswordInputFocused: true });
+  };
+
+  handleBlur = () => {
+    this.setState({ isPasswordInputFocused: false });
+  };
 
   render() {
     return (
@@ -93,12 +120,25 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             name='password'
             value={this.state.password}
             onChange={this.trackPassword}
-            error={!!this.passwordError}
-            alert={this.passwordError}
+            error={this.passwordAlert?.variant === 'error' || false}
+            alert={this.passwordAlert}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
           />
+          <PasswordInput
+            {...cn('input')}
+            label='Confirm Password'
+            name='confirm password'
+            value={this.state.confirmPassword}
+            onChange={this.trackConfirmPassword}
+            error={this.confirmPasswordAlert?.variant === 'error' || false}
+            success={this.confirmPasswordAlert?.variant === 'success' || false}
+            alert={this.confirmPasswordAlert}
+          />
+
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
-          <Button isLoading={this.props.isLoading} isSubmit>
+          <Button isLoading={this.props.isLoading} isSubmit isDisabled={this.isNextDisabled}>
             Next
           </Button>
         </form>

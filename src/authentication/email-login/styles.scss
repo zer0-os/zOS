@@ -1,9 +1,55 @@
 @import '../styles';
 
 .email-login {
-  @include form();
-}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 280px;
 
-.input {
-  @include input();
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  &__input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  &__input {
+    @include input();
+  }
+
+  &__input-alert {
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+    width: 85px;
+    margin-top: 16px;
+
+    div {
+      margin: 0;
+    }
+  }
+
+  &__error-container {
+    width: 100%;
+    padding-top: 8px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
+  }
 }

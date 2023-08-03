@@ -19,7 +19,6 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    margin-bottom: 16px;
   }
 
   &__input {
@@ -27,6 +26,7 @@
   }
 
   &__input-alert {
+    font-size: 14px;
     margin-top: 4px;
     padding: 4px 8px;
   }
@@ -35,7 +35,7 @@
     height: 40px;
     padding: 16px;
     width: 85px;
-    margin-top: 16px;
+    margin-top: 32px;
 
     div {
       margin: 0;

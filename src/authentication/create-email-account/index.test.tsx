@@ -53,4 +53,31 @@ describe('CreateEmailAccount', () => {
 
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
+
+  it('renders confirm password field', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').exists()).toEqual(true);
+  });
+
+  it('shows success/error alert if passwords match or do not match', function () {
+    const wrapper = subject({});
+
+    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
+    wrapper.find('PasswordInput[name="password"]').simulate('change', 'abcd9876');
+
+    // Passwords match
+    wrapper.find('PasswordInput[name="confirmPassword"]').simulate('change', 'abcd9876');
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').prop('alert')).toEqual({
+      variant: 'success',
+      text: 'Passwords match',
+    });
+
+    // Passwords do not match
+    wrapper.find('PasswordInput[name="confirmPassword"]').simulate('change', 'abcd9877');
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').prop('alert')).toEqual({
+      variant: 'error',
+      text: 'Passwords do not match',
+    });
+  });
 });

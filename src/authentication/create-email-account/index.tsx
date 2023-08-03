@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { Strength, passwordStrength } from '../../lib/password';
-import { PasswordStrength } from '../../components/password-strength';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../lib/bem';
@@ -97,7 +96,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
             error={!!this.passwordError}
             alert={this.passwordError}
           />
-          <PasswordStrength strength={this.state.strength} />
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
           <Button isLoading={this.props.isLoading} isSubmit>

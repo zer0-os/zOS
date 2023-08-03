@@ -77,7 +77,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get generalError() {
-    return 'this is not a valid email or password';
+    return this.props.errors.general;
   }
 
   get isNextDisabled() {

@@ -3,10 +3,11 @@ import * as React from 'react';
 import { Strength, passwordRulesDescription, passwordStrength } from '../../lib/password';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import './styles.scss';
 
 const cn = bemClassName('create-email-account');
+const c = bem('create-email-account');
 
 export interface Properties {
   isLoading: boolean;
@@ -105,40 +106,44 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     return (
       <div {...cn('')}>
         <form {...cn('form')} onSubmit={this.publishOnNext}>
-          <Input
-            {...cn('input')}
-            label='Email Address'
-            name='email'
-            value={this.state.email}
-            onChange={this.trackEmail}
-            error={!!this.emailError}
-            alert={this.emailError}
-          />
-          <PasswordInput
-            {...cn('input')}
-            label='Password'
-            name='password'
-            value={this.state.password}
-            onChange={this.trackPassword}
-            error={this.passwordAlert?.variant === 'error' || false}
-            alert={this.passwordAlert}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-          />
-          <PasswordInput
-            {...cn('input')}
-            label='Confirm Password'
-            name='confirm password'
-            value={this.state.confirmPassword}
-            onChange={this.trackConfirmPassword}
-            error={this.confirmPasswordAlert?.variant === 'error' || false}
-            success={this.confirmPasswordAlert?.variant === 'success' || false}
-            alert={this.confirmPasswordAlert}
-          />
-
+          <div {...cn('input-container')}>
+            <Input
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Email Address'
+              name='email'
+              value={this.state.email}
+              onChange={this.trackEmail}
+              error={!!this.emailError}
+              alert={this.emailError}
+            />
+            <PasswordInput
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Password'
+              name='password'
+              value={this.state.password}
+              onChange={this.trackPassword}
+              error={this.passwordAlert?.variant === 'error' || false}
+              alert={this.passwordAlert}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+            />
+            <PasswordInput
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Confirm Password'
+              name='confirm password'
+              value={this.state.confirmPassword}
+              onChange={this.trackConfirmPassword}
+              error={this.confirmPasswordAlert?.variant === 'error' || false}
+              success={this.confirmPasswordAlert?.variant === 'success' || false}
+              alert={this.confirmPasswordAlert}
+            />
+          </div>
           {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
 
-          <Button isLoading={this.props.isLoading} isSubmit isDisabled={this.isNextDisabled}>
+          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit isDisabled={this.isNextDisabled}>
             Next
           </Button>
         </form>

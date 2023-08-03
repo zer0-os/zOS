@@ -19,7 +19,7 @@ import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
-import { denormalize as denormalizeChannel } from '../channels';
+import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
 import { StoreBuilder } from '../test/store';
 
@@ -285,7 +285,7 @@ describe(userLeftChannel, () => {
   });
 });
 
-describe('fetchConversations', () => {
+describe(fetchConversations, () => {
   it('fetches direct messages', async () => {
     await expectSaga(fetchConversations)
       .provide([
@@ -335,5 +335,24 @@ describe('fetchConversations', () => {
       .run();
 
     expect(denormalizeChannel('conversation-id', storeState).lastMessage).toBe(optimisticMessage);
+  });
+
+  it('retains conversations that are not CREATED', async () => {
+    const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
+    const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
+    const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
+
+    const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
+
+    const { storeState } = await expectSaga(fetchConversations)
+      .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(storeState.channelsList.value).toIncludeSameMembers([
+      'optimistic-id-1',
+      'optimistic-id-2',
+      'conversation-id',
+    ]);
   });
 });

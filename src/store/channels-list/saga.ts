@@ -68,10 +68,15 @@ export function* fetchConversations() {
     };
   });
 
+  const optimisticConversationIds = existingConversationList
+    .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)
+    .map((c) => c.id);
+
   const channelsList = yield select(rawChannelsList());
   yield put(
     receive([
       ...channelsList,
+      ...optimisticConversationIds,
       ...newConversationList,
     ])
   );

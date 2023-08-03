@@ -21,7 +21,7 @@ interface LoginComponentProperties {
 }
 
 export class LoginComponent extends React.Component<LoginComponentProperties> {
-  get loginOption() {
+  renderLoginOption() {
     switch (this.props.stage) {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
@@ -32,16 +32,49 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     }
   }
 
-  render() {
-    const { isLoggingIn, stage } = this.props;
-
-    const isWeb3LoginStage = stage === LoginStage.Web3Login;
-    const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
-
+  renderToggleGroup(isLoggingIn, selectedOption) {
     const options = [
       { key: 'web3', label: 'Web3' },
       { key: 'email', label: 'Email' },
     ];
+
+    return (
+      !isLoggingIn && (
+        <ToggleGroup
+          {...cn('toggle-group')}
+          options={options}
+          variant='default'
+          onSelectionChange={this.props.handleSelectionChange}
+          selection={selectedOption}
+          selectionType='single'
+          isRequired
+        />
+      )
+    );
+  }
+
+  renderFooter(stage) {
+    return (
+      <div {...cn('other')}>
+        <span>
+          {stage === LoginStage.EmailLogin ? (
+            <>
+              Forgot your password? <Link to='/get-access'>Reset</Link>
+            </>
+          ) : (
+            <>
+              Not on ZERO? <Link to='/get-access'>Create account</Link>
+            </>
+          )}
+        </span>
+      </div>
+    );
+  }
+
+  render() {
+    const { isLoggingIn, stage } = this.props;
+    const isWeb3LoginStage = stage === LoginStage.Web3Login;
+    const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
 
     return (
       <>
@@ -53,27 +86,10 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
-
-              {!isLoggingIn && (
-                <ToggleGroup
-                  {...cn('toggle-group')}
-                  options={options}
-                  variant='default'
-                  onSelectionChange={this.props.handleSelectionChange}
-                  selection={selectedOption}
-                  selectionType='single'
-                  isRequired
-                />
-              )}
-
-              <div {...cn('login-option')}>{this.loginOption}</div>
+              {this.renderToggleGroup(isLoggingIn, selectedOption)}
+              <div {...cn('login-option')}>{this.renderLoginOption()}</div>
             </div>
-
-            <div {...cn('other')}>
-              <span>
-                New to ZERO? <Link to='/get-access'>Create an account</Link>
-              </span>
-            </div>
+            {this.renderFooter(stage)}
           </main>
         </div>
       </>

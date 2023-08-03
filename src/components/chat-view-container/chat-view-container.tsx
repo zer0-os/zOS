@@ -278,6 +278,22 @@ export class Container extends React.Component<Properties, State> {
     return `We're connecting you${reference}. Try again in a few seconds.`;
   }
 
+  get conversationErrorMessage() {
+    if (this.props.channel.conversationStatus !== ConversationStatus.ERROR) {
+      return '';
+    }
+
+    let reference = 'the group';
+    if (this.props.channel.name) {
+      reference = `${this.props.channel.name}`;
+    } else if (this.isOneOnOne) {
+      const otherMember = this.props.channel.otherMembers[0];
+      reference = `${otherMember.firstName} ${otherMember.lastName}`;
+    }
+
+    return `Sorry! We couldn't connect you with ${reference}. Please refresh and try again.`;
+  }
+
   get isOneOnOne() {
     return this.props.channel?.otherMembers?.length === 1;
   }
@@ -316,6 +332,7 @@ export class Container extends React.Component<Properties, State> {
           onReply={this.onReply}
           onRemove={this.removeReply}
           sendDisabledMessage={this.sendDisabledMessage}
+          conversationErrorMessage={this.conversationErrorMessage}
         />
       </>
     );

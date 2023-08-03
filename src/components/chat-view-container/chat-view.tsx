@@ -23,6 +23,11 @@ import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups, getMessageRenderProps } from './utils';
 import { MessagesFetchState } from '../../store/channels';
+import { bemClassName } from '../../lib/bem';
+
+// Note: this is the component convention. Existing styles reference channel-view which
+// is old and can be migrated to this component.
+const cn = bemClassName('chat-view');
 
 interface ChatMessageGroups {
   [date: string]: MessageModel[];
@@ -60,6 +65,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   isOneOnOne: boolean;
   sendDisabledMessage: string;
+  conversationErrorMessage: string;
 }
 
 export interface State {
@@ -292,15 +298,18 @@ export class ChatView extends React.Component<Properties, State> {
 
         <IfAuthenticated showChildren>
           {isMemberOfChannel && (
-            <MessageInput
-              onMessageInputRendered={this.props.onMessageInputRendered}
-              id={this.props.id}
-              onSubmit={this.props.sendMessage}
-              getUsersForMentions={this.searchMentionableUsers}
-              reply={this.props.reply}
-              onRemoveReply={this.props.onRemove}
-              sendDisabledMessage={this.props.sendDisabledMessage}
-            />
+            <>
+              {this.props.conversationErrorMessage && <div {...cn('error')}>{this.props.conversationErrorMessage}</div>}
+              <MessageInput
+                onMessageInputRendered={this.props.onMessageInputRendered}
+                id={this.props.id}
+                onSubmit={this.props.sendMessage}
+                getUsersForMentions={this.searchMentionableUsers}
+                reply={this.props.reply}
+                onRemoveReply={this.props.onRemove}
+                sendDisabledMessage={this.props.sendDisabledMessage}
+              />
+            </>
           )}
           {!isMemberOfChannel && this.renderJoinButton()}
         </IfAuthenticated>

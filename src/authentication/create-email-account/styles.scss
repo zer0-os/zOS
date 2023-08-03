@@ -15,7 +15,6 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    margin-bottom: 16px;
   }
 
   &__input {
@@ -29,6 +28,7 @@
   }
 
   &__submit-button {
+    margin-top: 16px;
     height: 40px;
     padding: 16px;
     width: 85px;
@@ -36,5 +36,14 @@
     div {
       margin: 0;
     }
+  }
+
+  &__error-container {
+    width: 100%;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
   }
 }

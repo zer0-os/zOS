@@ -77,7 +77,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get generalError() {
-    return this.props.errors.general;
+    return 'this is not a valid email or password';
   }
 
   get isNextDisabled() {
@@ -136,7 +136,13 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
               alert={this.confirmPasswordAlert}
             />
           </div>
-          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
+          {this.generalError && (
+            <div {...cn('error-container')}>
+              <Alert {...cn('error')} variant='error'>
+                {this.generalError}
+              </Alert>
+            </div>
+          )}
 
           <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit isDisabled={this.isNextDisabled}>
             Next

@@ -113,10 +113,11 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     groupChannelType: GroupChannelType.Private,
     shouldSyncChannels: false,
   };
+  const timestamp = Date.now();
   const conversation = {
     ...defaultConversationProperties,
-    id: Date.now(),
-    optimisticId: Date.now(),
+    id: `${timestamp}`,
+    optimisticId: `${timestamp}`,
     name,
     otherMembers: userIds,
     messages: [],

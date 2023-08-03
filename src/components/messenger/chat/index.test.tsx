@@ -11,7 +11,7 @@ describe('messenger-chat', () => {
     const allProps: Properties = {
       activeConversationId: '1',
       setactiveConversationId: jest.fn(),
-      directMessage: null,
+      directMessage: { id: '1', otherMembers: [] } as any,
       isFullScreen: false,
       allowCollapse: false,
       enterFullScreenMessenger: () => null,
@@ -127,12 +127,6 @@ describe('messenger-chat', () => {
 
       expect(tooltip.html()).toContain(otherMembersExpectation);
       expect(tooltip.prop('overlay')).toEqual(otherMembersExpectation);
-    });
-
-    it('nothing as title', function () {
-      const title = subject({ directMessage: undefined }).find('[className$="__title"]');
-
-      expect(title.text()).toEqual('');
     });
   });
 

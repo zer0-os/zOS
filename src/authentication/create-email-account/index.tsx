@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Strength, passwordRulesDescription, passwordStrength } from '../../lib/password';
+import { passwordRulesDescription } from '../../lib/password';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import { bem, bemClassName } from '../../lib/bem';
@@ -25,7 +25,6 @@ interface State {
   password: string;
   confirmPassword: string;
   isPasswordInputFocused: boolean;
-  strength: Strength;
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
@@ -34,7 +33,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     password: '',
     confirmPassword: '',
     isPasswordInputFocused: false,
-    strength: 0,
   };
 
   publishOnNext = (e) => {
@@ -43,10 +41,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   };
 
   trackEmail = (value) => this.setState({ email: value });
-  trackPassword = (value) => {
-    const strength = passwordStrength(value);
-    this.setState({ password: value, strength });
-  };
+  trackPassword = (value) => this.setState({ password: value });
 
   trackConfirmPassword = (value) => this.setState({ confirmPassword: value });
 

@@ -11,6 +11,11 @@ describe('isPasswordStrong', () => {
     expect(isPasswordStrong('aA1!aaa')).toBe(false);
   });
 
+  it('requires 1 lowercase letter', () => {
+    expect(isPasswordStrong('AA1!AAAA')).toBe(false);
+    expect(isPasswordStrong('aA1!AAAA')).toBe(true);
+  });
+
   it('requires 1 uppercase letter', () => {
     expect(isPasswordStrong('aa1!aaaa')).toBe(false);
     expect(isPasswordStrong('aA1!aaaa')).toBe(true);

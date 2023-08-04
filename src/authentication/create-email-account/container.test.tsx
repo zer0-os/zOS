@@ -58,15 +58,15 @@ describe('Container', () => {
       it('invalid email', () => {
         const props = subject({ errors: [AccountCreationErrors.EMAIL_INVALID] });
 
-        expect(props.errors).toEqual({ email: 'This email is invalid' });
+        expect(props.errors).toEqual({ email: 'Please enter a valid email address' });
       });
 
       it('email exists', () => {
         let props = subject({ errors: [AccountCreationErrors.EMAIL_ALREADY_EXISTS] });
-        expect(props.errors).toEqual({ email: 'This email already exists' });
+        expect(props.errors).toEqual({ email: 'This email is already associated with a ZERO account' });
 
         props = subject({ errors: [AccountCreationErrors.PROFILE_PRIMARY_EMAIL_ALREADY_EXISTS] });
-        expect(props.errors).toEqual({ email: 'This email already exists' });
+        expect(props.errors).toEqual({ email: 'This email is already associated with a ZERO account' });
       });
     });
 
@@ -80,13 +80,17 @@ describe('Container', () => {
       it('weak password', () => {
         const props = subject({ errors: [AccountCreationErrors.PASSWORD_TOO_WEAK] });
 
-        expect(props.errors.password[0]).toEqual('Password must:');
+        expect(props.errors.password).toEqual(
+          'Must include at least 8 characters, 1 number, 1 lowercase letter and 1 uppercase letter'
+        );
       });
 
       it('invalid password', () => {
         const props = subject({ errors: [AccountCreationErrors.PASSWORD_INVALID] });
 
-        expect(props.errors.password[0]).toEqual('Password must:');
+        expect(props.errors.password).toEqual(
+          'Must include at least 8 characters, 1 number, 1 lowercase letter and 1 uppercase letter'
+        );
       });
     });
 

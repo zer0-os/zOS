@@ -3,7 +3,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CreateEmailAccount, Properties } from '.';
-import { passwordStrength } from '../../lib/password';
 import { inputEvent } from '../../test/utils';
 
 describe('CreateEmailAccount', () => {
@@ -23,7 +22,7 @@ describe('CreateEmailAccount', () => {
     const wrapper = subject({ onNext });
 
     wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
-    wrapper.find('PasswordInput').simulate('change', 'abcd9876');
+    wrapper.find('PasswordInput[name="password"]').simulate('change', 'abcd9876');
     wrapper.find('form').simulate('submit', inputEvent());
 
     expect(onNext).toHaveBeenCalledWith({ email: 'jack@example.com', password: 'abcd9876' });
@@ -46,7 +45,7 @@ describe('CreateEmailAccount', () => {
   it('renders password errors', function () {
     const wrapper = subject({ errors: { password: 'invalid' } });
 
-    expect(wrapper.find('PasswordInput').prop('alert')).toEqual({ variant: 'error', text: 'invalid' });
+    expect(wrapper.find('PasswordInput[name="password"]').prop('alert')).toEqual({ variant: 'error', text: 'invalid' });
   });
 
   it('renders general errors', function () {
@@ -55,13 +54,30 @@ describe('CreateEmailAccount', () => {
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
 
-  it('updates the password strength when passwords are entered', function () {
-    const wrapper = subject({ errors: { general: 'invalid' } });
+  it('renders confirm password field', function () {
+    const wrapper = subject({});
 
-    const password = 'aA1!bbcddd';
-    const expectedStrength = passwordStrength(password);
-    wrapper.find('PasswordInput').simulate('change', password);
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').exists()).toEqual(true);
+  });
 
-    expect(wrapper.find('PasswordStrength').prop('strength')).toEqual(expectedStrength);
+  it('shows success/error alert if passwords match or do not match', function () {
+    const wrapper = subject({});
+
+    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
+    wrapper.find('PasswordInput[name="password"]').simulate('change', 'abcd9876');
+
+    // Passwords match
+    wrapper.find('PasswordInput[name="confirmPassword"]').simulate('change', 'abcd9876');
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').prop('alert')).toEqual({
+      variant: 'success',
+      text: 'Passwords match',
+    });
+
+    // Passwords do not match
+    wrapper.find('PasswordInput[name="confirmPassword"]').simulate('change', 'abcd9877');
+    expect(wrapper.find('PasswordInput[name="confirmPassword"]').prop('alert')).toEqual({
+      variant: 'error',
+      text: 'Passwords do not match',
+    });
   });
 });

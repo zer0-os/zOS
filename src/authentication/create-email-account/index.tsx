@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { Strength, passwordStrength } from '../../lib/password';
-import { PasswordStrength } from '../../components/password-strength';
+import { passwordRulesDescription } from '../../lib/password';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import './styles.scss';
 
 const cn = bemClassName('create-email-account');
+const c = bem('create-email-account');
 
 export interface Properties {
   isLoading: boolean;
@@ -23,21 +23,17 @@ export interface Properties {
 interface State {
   email: string;
   password: string;
-  strength: Strength;
-}
-
-function unorderedList(arr) {
-  return (
-    <ul {...cn('error-list')}>
-      {arr.map((item, index) => (
-        <li key={index}>{item}</li>
-      ))}
-    </ul>
-  );
+  confirmPassword: string;
+  isPasswordInputFocused: boolean;
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
-  state = { email: '', password: '', strength: 0 };
+  state = {
+    email: '',
+    password: '',
+    confirmPassword: '',
+    isPasswordInputFocused: false,
+  };
 
   publishOnNext = (e) => {
     e.preventDefault();
@@ -45,14 +41,9 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   };
 
   trackEmail = (value) => this.setState({ email: value });
-  trackPassword = (value) => {
-    const strength = passwordStrength(value);
-    this.setState({ password: value, strength });
-  };
+  trackPassword = (value) => this.setState({ password: value });
 
-  get isValid() {
-    return this.state.email.trim().length > 0 && this.state.password.trim().length > 0;
-  }
+  trackConfirmPassword = (value) => this.setState({ confirmPassword: value });
 
   get emailError() {
     if (this.props.errors.email) {
@@ -61,46 +52,99 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     return null;
   }
 
-  get passwordError() {
-    if (!this.props.errors.password) {
+  get passwordAlert() {
+    if (this.props.errors.password) {
+      return { variant: 'error', text: this.props.errors.password } as any;
+    }
+
+    if (this.state.isPasswordInputFocused) {
+      return { variant: 'info', text: passwordRulesDescription() } as any;
+    }
+
+    return null;
+  }
+
+  get confirmPasswordAlert() {
+    if (this.state.confirmPassword.trim().length === 0) {
       return null;
     }
-    if (Array.isArray(this.props.errors.password)) {
-      return { variant: 'error', text: unorderedList(this.props.errors.password) } as any;
+
+    if (this.state.password === this.state.confirmPassword) {
+      return { variant: 'success', text: 'Passwords match' };
     }
-    return { variant: 'error', text: this.props.errors.password } as any;
+
+    return { variant: 'error', text: 'Passwords do not match' } as any;
   }
 
   get generalError() {
     return this.props.errors.general;
   }
 
+  get isNextDisabled() {
+    return (
+      this.props.isLoading ||
+      this.state.password !== this.state.confirmPassword ||
+      this.state.password.length === 0 ||
+      this.state.email.length === 0
+    );
+  }
+
+  handleFocus = () => {
+    this.setState({ isPasswordInputFocused: true });
+  };
+
+  handleBlur = () => {
+    this.setState({ isPasswordInputFocused: false });
+  };
+
   render() {
     return (
       <div {...cn('')}>
         <form {...cn('form')} onSubmit={this.publishOnNext}>
-          <Input
-            {...cn('input')}
-            label='Email Address'
-            name='email'
-            value={this.state.email}
-            onChange={this.trackEmail}
-            error={!!this.emailError}
-            alert={this.emailError}
-          />
-          <PasswordInput
-            {...cn('input')}
-            label='Password'
-            name='password'
-            value={this.state.password}
-            onChange={this.trackPassword}
-            error={!!this.passwordError}
-            alert={this.passwordError}
-          />
-          <PasswordStrength strength={this.state.strength} />
-          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
+          <div {...cn('input-container')}>
+            <Input
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Email Address'
+              name='email'
+              value={this.state.email}
+              onChange={this.trackEmail}
+              error={!!this.emailError}
+              alert={this.emailError}
+            />
+            <PasswordInput
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Password'
+              name='password'
+              value={this.state.password}
+              onChange={this.trackPassword}
+              error={this.passwordAlert?.variant === 'error' || false}
+              alert={this.passwordAlert}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+            />
+            <PasswordInput
+              {...cn('input')}
+              alertClassName={c('input-alert')}
+              label='Confirm Password'
+              name='confirmPassword'
+              value={this.state.confirmPassword}
+              onChange={this.trackConfirmPassword}
+              error={this.confirmPasswordAlert?.variant === 'error' || false}
+              success={this.confirmPasswordAlert?.variant === 'success' || false}
+              alert={this.confirmPasswordAlert}
+            />
+          </div>
+          {this.generalError && (
+            <div {...cn('error-container')}>
+              <Alert {...cn('error')} variant='error'>
+                {this.generalError}
+              </Alert>
+            </div>
+          )}
 
-          <Button isLoading={this.props.isLoading} isSubmit>
+          <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit isDisabled={this.isNextDisabled}>
             Next
           </Button>
         </form>

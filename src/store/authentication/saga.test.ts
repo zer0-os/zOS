@@ -36,6 +36,7 @@ import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
+import { completePendingUserProfile } from '../registration/saga';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -99,6 +100,20 @@ describe(completeUserLogin, () => {
         ...successResponses(),
       ])
       .call(initializeUserState, { fake: 'user-response' })
+      .run();
+  });
+
+  it('completes the pending user profile if user is in pending state', async () => {
+    const user = { isPending: true };
+    await expectSaga(completeUserLogin)
+      .provide([
+        stubResponse(call(fetchCurrentUser), user),
+        stubResponse(call(completePendingUserProfile, user), null),
+        ...successResponses(),
+      ])
+      .withReducer(rootReducer)
+      .call(completePendingUserProfile, user)
+      .not.call(initializeUserState, user)
       .run();
   });
 

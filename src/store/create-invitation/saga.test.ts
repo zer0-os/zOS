@@ -30,6 +30,7 @@ describe('fetchInvite', () => {
         url: 'https://www.example.com/invite',
         invitesUsed: 3,
         maxUses: 6,
+        isLoading: false,
       });
     });
 

@@ -80,13 +80,17 @@ describe('Container', () => {
       it('weak password', () => {
         const props = subject({ errors: [AccountCreationErrors.PASSWORD_TOO_WEAK] });
 
-        expect(props.errors.password).toEqual('Must include at least 8 characters, 1 number and 1 uppercase letter');
+        expect(props.errors.password).toEqual(
+          'Must include at least 8 characters, 1 number, 1 lowercase letter and 1 uppercase letter'
+        );
       });
 
       it('invalid password', () => {
         const props = subject({ errors: [AccountCreationErrors.PASSWORD_INVALID] });
 
-        expect(props.errors.password).toEqual('Must include at least 8 characters, 1 number and 1 uppercase letter');
+        expect(props.errors.password).toEqual(
+          'Must include at least 8 characters, 1 number, 1 lowercase letter and 1 uppercase letter'
+        );
       });
     });
 

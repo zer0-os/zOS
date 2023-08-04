@@ -138,15 +138,35 @@ export function adminMessageText(message: Message, state: RootState) {
   const user = currentUserSelector()(state);
 
   let text = message.message;
-  if (message.admin?.type === AdminMessageType.JOINED_ZERO) {
-    if (message.admin?.inviteeId === user.id) {
-      const inviter = denormalizeUser(message.admin.inviterId, state);
-      text = inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : text;
-    } else {
-      const invitee = denormalizeUser(message.admin.inviteeId, state);
-      text = invitee?.firstName ? `${invitee.firstName} joined you on Zero` : text;
-    }
+  if (!message.admin) {
+    return;
+  }
+
+  if (message.admin.type === AdminMessageType.JOINED_ZERO) {
+    return translateJoinedZero(message.admin, user, state) ?? text;
+  } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
+    return translateConversationStarted(message.admin, user, state) ?? text;
   }
 
   return text;
+}
+
+function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {
+  const isCurrentUserInvitee = admin.inviteeId === currentUser.id;
+  if (isCurrentUserInvitee) {
+    const inviter = denormalizeUser(admin.inviterId, state);
+    return inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : null;
+  }
+
+  const invitee = denormalizeUser(admin.inviteeId, state);
+  return invitee?.firstName ? `${invitee.firstName} joined you on Zero` : null;
+}
+
+function translateConversationStarted(admin: { creatorId?: string }, currentUser, state: RootState) {
+  if (admin.creatorId === currentUser.id) {
+    return 'You started the conversation';
+  }
+
+  const creator = denormalizeUser(admin.creatorId, state);
+  return creator?.firstName ? `${creator.firstName} started the conversation` : null;
 }

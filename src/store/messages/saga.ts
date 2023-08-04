@@ -15,13 +15,7 @@ import { receive as receiveMessage } from './';
 import { Channel, ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
-import {
-  deleteMessageApi,
-  fetchMessagesByChannelId,
-  sendMessagesByChannelId,
-  editMessageApi,
-  getLinkPreviews,
-} from './api';
+import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -110,15 +104,31 @@ export function* fetch(action) {
   yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
 
   try {
+    const chatClient = yield call(chat.get);
+
     if (referenceTimestamp) {
       const existingMessages = yield select(rawMessagesSelector(channelId));
-      messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
+      messagesResponse = yield call(
+        [
+          chatClient,
+          chatClient.getMessagesByChannelId,
+        ],
+        channelId,
+        referenceTimestamp
+      );
+
       messages = [
         ...messagesResponse.messages,
         ...existingMessages,
       ];
     } else {
-      messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+      messagesResponse = yield call(
+        [
+          chatClient,
+          chatClient.getMessagesByChannelId,
+        ],
+        channelId
+      );
       messages = messagesResponse.messages;
     }
 

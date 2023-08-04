@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetchMessagesByChannelId, editMessageApi } from './api';
+import { editMessageApi } from './api';
 import {
   fetchNewMessages,
   stopSyncChannels,

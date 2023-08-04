@@ -197,7 +197,7 @@ describe('ConversationItem', () => {
       conversation,
       myUserId: 'my-user-id',
     });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: sent an image');
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Sent an image');
 
     // received
     conversation.lastMessage.sender.userId = 'other-user-id';
@@ -205,7 +205,7 @@ describe('ConversationItem', () => {
       conversation,
       myUserId: 'my-user-id',
     });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: received an image');
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('They sent an image');
   });
 
   it('renders failed to send message if the last message failed', function () {

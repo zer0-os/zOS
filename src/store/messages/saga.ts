@@ -29,6 +29,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { Uploadable, createUploadableFile } from './uploadable';
+import { chat } from '../../lib/chat';
 
 export interface Payload {
   channelId: string;
@@ -282,7 +283,15 @@ export function* fetchNewMessages(action) {
   yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
 
   try {
-    const messagesResponse = yield call(fetchMessagesByChannelId, channelId);
+    const chatClient = yield call(chat.get);
+    const messagesResponse = yield call(
+      [
+        chatClient,
+        chatClient.getMessagesByChannelId,
+      ],
+      channelId
+    );
+
     const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
     if (lastMessageCreatedAt > 0) {
       countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);

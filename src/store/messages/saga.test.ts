@@ -13,9 +13,25 @@ import {
   receiveUpdateMessage,
 } from './saga';
 
+import { chat } from '../../lib/chat';
+
 import { RootState, rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
+
+const getChatClientForMessageResponse = (props = {}) => ({
+  getMessagesByChannelId: () => ({
+    hasMore: true,
+    messages: [
+      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
+      { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
+      { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
+    ],
+    countNewMessages: 1,
+    lastMessageCreatedAt: 10000000009,
+    ...props,
+  }),
+});
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {
@@ -186,16 +202,6 @@ describe('messages saga', () => {
 
   it('sets countNewMessages on channel', async () => {
     const channelId = 'channel-id';
-    const NEW_MESSAGES_RESPONSE = {
-      hasMore: true,
-      messages: [
-        { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-        { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-        { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
-      ],
-      countNewMessages: 1,
-      lastMessageCreatedAt: 10000000009,
-    };
 
     const initialState = {
       normalized: {
@@ -218,8 +224,8 @@ describe('messages saga', () => {
       .withReducer(rootReducer, initialState as any)
       .provide([
         [
-          matchers.call.fn(fetchMessagesByChannelId),
-          NEW_MESSAGES_RESPONSE,
+          matchers.call.fn(chat.get),
+          getChatClientForMessageResponse({ countNewMessages: 1 }),
         ],
       ])
       .run();
@@ -229,16 +235,6 @@ describe('messages saga', () => {
 
   it('sets lastMessageCreatedAt on channel', async () => {
     const channelId = 'channel-id';
-    const NEW_MESSAGES_RESPONSE = {
-      hasMore: true,
-      messages: [
-        { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-        { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-        { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
-      ],
-      countNewMessages: 1,
-      lastMessageCreatedAt: 10000000009,
-    };
 
     const initialState = {
       normalized: {
@@ -261,8 +257,8 @@ describe('messages saga', () => {
       .withReducer(rootReducer, initialState as any)
       .provide([
         [
-          matchers.call.fn(fetchMessagesByChannelId),
-          NEW_MESSAGES_RESPONSE,
+          matchers.call.fn(chat.get),
+          getChatClientForMessageResponse({ lastMessageCreatedAt: 10000000009 }),
         ],
       ])
       .run();

@@ -22,7 +22,7 @@ export class Conversations extends React.PureComponent<Properties> {
   }
 
   name(conversation) {
-    return conversation.name || conversation.otherMembers[0].firstName;
+    return conversation.name || conversation.otherMembers[0]?.firstName;
   }
 
   render() {

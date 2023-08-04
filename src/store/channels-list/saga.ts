@@ -113,6 +113,8 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     groupChannelType: GroupChannelType.Private,
     shouldSyncChannels: false,
   };
+
+  const currentUser = yield select(currentUserSelector());
   const timestamp = Date.now();
   const conversation = {
     ...defaultConversationProperties,
@@ -120,7 +122,15 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     optimisticId: `${timestamp}`,
     name,
     otherMembers: userIds,
-    messages: [],
+    messages: [
+      {
+        id: `${timestamp}`,
+        message: 'Conversation was started',
+        createdAt: timestamp,
+        isAdmin: true,
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUser.id },
+      },
+    ],
     createdAt: Date.now(),
     conversationStatus: ConversationStatus.CREATING,
   };

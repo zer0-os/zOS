@@ -20,6 +20,7 @@ import {
 } from '../channels';
 import { setactiveConversationId } from '../chat';
 import { StoreBuilder } from '../test/store';
+import { AdminMessageType } from '../messages';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -77,11 +78,11 @@ describe(createOptimisticConversation, () => {
 
     const initialState = new StoreBuilder()
       .withConversationList({ id: 'existing-channel' })
-      .withUsers({ userId: 'other-user-id' })
-      .build();
+      .withCurrentUser({ id: 'current-user' })
+      .withUsers({ userId: 'other-user-id' });
 
     const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.channelsList.value).toHaveLength(2);
@@ -92,7 +93,6 @@ describe(createOptimisticConversation, () => {
         id: newChannelId,
         name: 'New Conversation',
         otherMembers: [{ userId: 'other-user-id' }],
-        messages: [],
         conversationStatus: ConversationStatus.CREATING,
       })
     );
@@ -100,8 +100,11 @@ describe(createOptimisticConversation, () => {
 
   it('returns the conversation', async () => {
     const name = 'New Conversation';
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
-    const { returnValue } = await expectSaga(createOptimisticConversation, [], name).withReducer(rootReducer).run();
+    const { returnValue } = await expectSaga(createOptimisticConversation, [], name)
+      .withReducer(rootReducer, initialState.build())
+      .run();
 
     expect(returnValue.name).toEqual(name);
   });
@@ -109,7 +112,11 @@ describe(createOptimisticConversation, () => {
   it('sets various default values', async () => {
     const userIds = ['other-user-id'];
     const name = 'New Conversation';
-    const { storeState } = await expectSaga(createOptimisticConversation, userIds, name).withReducer(rootReducer).run();
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
+
+    const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
+      .withReducer(rootReducer, initialState.build())
+      .run();
 
     const newChannelId = storeState.channelsList.value[0];
     expect(denormalizeChannel(newChannelId, storeState)).toEqual(
@@ -124,6 +131,26 @@ describe(createOptimisticConversation, () => {
         shouldSyncChannels: false,
       })
     );
+  });
+
+  it('creates optimistic admin message', async () => {
+    const userIds = ['other-user-id'];
+
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'existing-channel' })
+      .withCurrentUser({ id: 'current-user' })
+      .withUsers({ userId: 'other-user-id' });
+
+    const { storeState } = await expectSaga(createOptimisticConversation, userIds)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const newChannelId = storeState.channelsList.value[1];
+    expect(denormalizeChannel(newChannelId, storeState).messages[0]).toMatchObject({
+      message: 'Conversation was started',
+      isAdmin: true,
+      admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+    });
   });
 });
 

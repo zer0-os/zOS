@@ -1,7 +1,8 @@
-import { createClient, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { createClient, Direction, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { GroupChannelType, Channel } from '../../store/channels';
+import { MessagesResponse } from '../../store/messages';
 import { config as appConfig } from '../../config';
 
 enum ConnectionStatus {
@@ -60,7 +61,23 @@ export class MatrixClient implements IChatClient {
     return this.matrix.getRooms().map(this.mapChannel);
   }
 
-  setConnectionStatus(connectionStatus: ConnectionStatus) {
+  async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
+    const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 30, Direction.Forward);
+
+    const messages = chunk.filter((m) => m.type === 'm.room.message').map(mapMatrixMessage);
+
+    return { messages: messages as any, hasMore: false };
+  }
+
+  get isDisconnected() {
+    return this.connectionStatus === ConnectionStatus.Disconnected;
+  }
+
+  get isConnecting() {
+    return this.connectionStatus === ConnectionStatus.Connecting;
+  }
+
+  private setConnectionStatus(connectionStatus: ConnectionStatus) {
     if (this.isDisconnected && connectionStatus === ConnectionStatus.Connecting) {
       this.addConnectionAwaiter();
     }
@@ -70,14 +87,6 @@ export class MatrixClient implements IChatClient {
     }
 
     this.connectionStatus = connectionStatus;
-  }
-
-  get isDisconnected() {
-    return this.connectionStatus === ConnectionStatus.Disconnected;
-  }
-
-  get isConnecting() {
-    return this.connectionStatus === ConnectionStatus.Connecting;
   }
 
   private async initializeEventHandlers() {

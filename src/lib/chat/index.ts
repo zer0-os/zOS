@@ -1,4 +1,4 @@
-import { Message } from '../../store/messages';
+import { Message, MessagesResponse } from '../../store/messages';
 import { Channel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
@@ -23,6 +23,7 @@ export interface IChatClient {
   reconnect: () => void;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
+  getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
 }
 
 export class Chat {
@@ -38,6 +39,10 @@ export class Chat {
 
   async getChannels(id: string) {
     return this.client.getChannels(id);
+  }
+
+  async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
+    return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
   }
 
   initChat(events: RealtimeChatEvents): void {

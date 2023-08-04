@@ -1,7 +1,7 @@
 import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import SendbirdChat, { ConnectionHandler, ConnectionState, SessionHandler } from '@sendbird/chat';
 import { map as mapMessage } from './chat-message';
-import { Message } from '../../store/messages';
+import { Message, MessagesResponse } from '../../store/messages';
 import { config } from '../../config';
 import { get } from '../../lib/api/rest';
 import { channelMapper } from '../../store/channels-list/utils';
@@ -62,6 +62,17 @@ export class SendbirdClient implements IChatClient {
     } catch (error: any) {
       console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
     }
+  }
+
+  async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
+    const filter: any = {};
+
+    if (lastCreatedAt) {
+      filter.lastCreatedAt = lastCreatedAt;
+    }
+
+    const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
+    return response.body;
   }
 
   private initSessionHandler(events: RealtimeChatEvents) {

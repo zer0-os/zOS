@@ -1,8 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { call, select } from 'redux-saga/effects';
+import { call } from 'redux-saga/effects';
 import { editProfile as editProfileSaga, updateUserProfile } from './saga';
 import { editUserProfile as apiEditUserProfile } from './api';
-import { currentUserSelector } from '../authentication/saga';
 import { uploadImage } from '../registration/api';
 import { EditProfileState, State, initialState as initialEditProfileState } from '.';
 import { rootReducer } from '../reducer';
@@ -22,10 +21,6 @@ describe('editProfile', () => {
       storeState: { editProfile, authentication },
     } = await expectSaga(editProfileSaga, { payload: { name, image } })
       .provide([
-        [
-          select(currentUserSelector),
-          { profileId },
-        ],
         [
           call(uploadImage, image),
           { url: profileImage },
@@ -73,10 +68,6 @@ describe('editProfile', () => {
     } = await expectSaga(editProfileSaga, { payload: { name, image } })
       .provide([
         [
-          select(currentUserSelector),
-          { profileId },
-        ],
-        [
           call(uploadImage, image),
           { url: 'profile-image-url' },
         ],
@@ -99,10 +90,6 @@ describe('editProfile', () => {
       storeState: { editProfile, authentication },
     } = await expectSaga(editProfileSaga, { payload: { name } })
       .provide([
-        [
-          select(currentUserSelector),
-          { profileId },
-        ],
         [
           call(apiEditUserProfile, { profileId, name, profileImage: undefined }),
           { success: true },
@@ -136,12 +123,6 @@ describe('updateUserProfile', () => {
     const {
       storeState: { authentication },
     } = await expectSaga(updateUserProfile, { name: updatedName, profileImage: updatedProfileImage })
-      .provide([
-        [
-          select(currentUserSelector),
-          currentUser,
-        ],
-      ])
       .withReducer(rootReducer, initialState({}, currentUser as any))
       .run();
 

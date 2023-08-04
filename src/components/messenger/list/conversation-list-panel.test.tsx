@@ -111,6 +111,67 @@ describe('ConversationListPanel', () => {
     ]);
   });
 
+  it('filters conversations based on direct and indirect matches', () => {
+    const conversations = [
+      {
+        id: 'convo-id-1',
+        name: 'convo-1',
+        otherMembers: [{ firstName: 'jack' }],
+      },
+      {
+        id: 'convo-id-2',
+        name: 'convo-2',
+        otherMembers: [{ firstName: 'bob' }],
+      },
+      {
+        id: 'convo-id-3',
+        name: 'convo-3',
+        otherMembers: [{ firstName: 'jacklyn' }],
+      },
+      {
+        id: 'convo-id-4',
+        name: 'convo-4',
+        otherMembers: [
+          { firstName: 'user1' },
+          { firstName: 'user2' },
+        ],
+      },
+      {
+        id: 'convo-id-5',
+        name: 'user1 and user2',
+        otherMembers: [
+          { firstName: 'user1' },
+          { firstName: 'user2' },
+        ],
+      },
+    ];
+
+    const wrapper = subject({ conversations: conversations as any });
+
+    // Test filter by name
+    wrapper.find('Input').simulate('change', 'convo-1');
+    let displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual(['convo-1']);
+
+    // Test filter by otherMembers (one-to-one conversation)
+    wrapper.find('Input').simulate('change', 'bob');
+    displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual(['convo-2']);
+
+    // Test filter by otherMembers (indirect match in group conversation)
+    wrapper.find('Input').simulate('change', 'jacklyn');
+    displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual(['convo-3']);
+
+    // Test filter by both name and otherMembers (direct match takes priority)
+    wrapper.find('Input').simulate('change', 'user1');
+    displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+    expect(displayChatNames).toStrictEqual([
+      'user1 and user2',
+      'convo-4',
+    ]);
+  });
+
   it('selecting an existing conversation announces click event', async function () {
     const onConversationClick = jest.fn();
     const conversations = [

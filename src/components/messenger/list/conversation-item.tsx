@@ -116,10 +116,10 @@ export class ConversationItem extends React.Component<Properties> {
 
   isLastMessageSentOrReceived(lastMessage) {
     if (lastMessage.sender.userId === this.props.myUserId) {
-      return 'sent';
+      return 'You: Sent';
     }
 
-    return 'received';
+    return 'They sent';
   }
 
   get message() {
@@ -143,16 +143,16 @@ export class ConversationItem extends React.Component<Properties> {
       return `${lastSenderDisplayName}: ${messagePreview}`;
     }
 
-    const str = this.isLastMessageSentOrReceived(this.props.conversation.lastMessage);
+    const str = this.isLastMessageSentOrReceived(lastMessage);
     switch (lastMessage?.media?.type) {
       case MediaType.Image:
-        return `You: ${str} an image`;
+        return `${str} an image`;
       case MediaType.Video:
-        return `You: ${str} a video`;
+        return `${str} a video`;
       case MediaType.File:
-        return `You: ${str} a file`;
+        return `${str} a file`;
       case MediaType.Audio:
-        return `You: ${str} an audio`;
+        return `${str} an audio`;
       default:
         return '';
     }

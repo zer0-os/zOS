@@ -25,7 +25,6 @@ interface State {
   password: string;
   confirmPassword: string;
   isPasswordInputFocused: boolean;
-  nextButtonClicked: boolean;
 }
 
 export class CreateEmailAccount extends React.Component<Properties, State> {
@@ -34,12 +33,10 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     password: '',
     confirmPassword: '',
     isPasswordInputFocused: false,
-    nextButtonClicked: false,
   };
 
   publishOnNext = (e) => {
     e.preventDefault();
-    this.setState({ nextButtonClicked: true });
     this.props.onNext({ email: this.state.email, password: this.state.password });
   };
 
@@ -80,11 +77,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
       return { variant: 'success', text: 'Passwords match' } as any;
     }
 
-    if (this.state.nextButtonClicked) {
-      return { variant: 'error', text: 'Passwords do not match' } as any;
-    }
-
-    return null;
+    return { variant: 'error', text: 'Passwords do not match' } as any;
   }
 
   get generalError() {
@@ -92,7 +85,12 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get isNextDisabled() {
-    return this.props.isLoading || this.state.password.length === 0 || this.state.email.length === 0;
+    return (
+      this.props.isLoading ||
+      this.state.password !== this.state.confirmPassword ||
+      this.state.password.length === 0 ||
+      this.state.email.length === 0
+    );
   }
 
   handleFocus = () => {

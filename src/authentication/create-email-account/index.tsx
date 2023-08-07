@@ -136,7 +136,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
               value={this.state.confirmPassword}
               onChange={this.trackConfirmPassword}
               error={this.confirmPasswordAlert?.variant === 'error' || false}
-              success={this.confirmPasswordAlert?.variant === 'success' || undefined}
               alert={this.confirmPasswordAlert}
             />
           </div>

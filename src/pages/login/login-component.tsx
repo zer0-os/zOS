@@ -60,16 +60,13 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     return (
       <div {...cn('other')}>
         <span>
-          {stage === LoginStage.EmailLogin ? (
-            <>
-              Forgot your password? <Link to='/get-access'>Reset</Link>
-            </>
-          ) : (
-            <>
-              Not on ZERO? <Link to='/get-access'>Create account</Link>
-            </>
-          )}
+          Not on ZERO? <Link to='/get-access'>Create account</Link>
         </span>
+        {stage === LoginStage.EmailLogin && (
+          <span>
+            Forgot your password? <Link to='/get-access'>Reset</Link>
+          </span>
+        )}
       </div>
     );
   }

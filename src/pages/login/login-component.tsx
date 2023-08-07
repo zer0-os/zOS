@@ -32,14 +32,16 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     }
   }
 
-  renderToggleGroup(isLoggingIn, selectedOption) {
+  renderToggleGroup(isLoggingIn, selectedOption, stage) {
     const options = [
       { key: 'web3', label: 'Web3' },
       { key: 'email', label: 'Email' },
     ];
 
+    const shouldRenderToggleGroup = stage !== LoginStage.Web3Login || !isLoggingIn;
+
     return (
-      !isLoggingIn && (
+      shouldRenderToggleGroup && (
         <ToggleGroup
           {...cn('toggle-group')}
           options={options}
@@ -48,6 +50,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
           selection={selectedOption}
           selectionType='single'
           isRequired
+          isDisabled={isLoggingIn}
         />
       )
     );
@@ -86,7 +89,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
-              {this.renderToggleGroup(isLoggingIn, selectedOption)}
+              {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
               <div {...cn('login-option')}>{this.renderLoginOption()}</div>
             </div>
             {this.renderFooter(stage)}

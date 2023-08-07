@@ -1,5 +1,14 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .invite-dialog {
   width: 548px;
 
@@ -77,6 +86,7 @@
       border-radius: inherit;
       outline: none;
       border: none;
+      animation: fadeIn 0.2s ease-in;
 
       &::-webkit-scrollbar {
         display: none;
@@ -140,7 +150,7 @@
     }
   }
 
-  &__remaining-invite {
+  &__remaining-invite-container {
     display: flex;
     flex-direction: row;
     padding: 12px;
@@ -152,7 +162,11 @@
     margin-top: 16px;
   }
 
-  &__no-invite-left {
+  &__remaining-invite {
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  &__invite-left {
     color: theme.$color-success-11;
   }
 }

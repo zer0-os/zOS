@@ -16,6 +16,7 @@ export interface Properties extends PublicProperties {
   inviteUrl: string;
   assetPath: string;
   isAMemberOfWorlds: boolean;
+  isLoading: boolean;
 
   fetchInvite: () => void;
 }
@@ -34,6 +35,7 @@ export class Container extends React.Component<Properties> {
       invitesUsed: createInvitation.invitesUsed,
       maxUses: createInvitation.maxUses,
       isAMemberOfWorlds: user?.data?.isAMemberOfWorlds,
+      isLoading: createInvitation.isLoading,
     };
   }
 
@@ -55,6 +57,7 @@ export class Container extends React.Component<Properties> {
         assetsPath={this.props.assetPath}
         onClose={this.props.onClose}
         isUserAMemberOfWorlds={this.props.isAMemberOfWorlds}
+        isLoading={this.props.isLoading}
       />
     );
   }

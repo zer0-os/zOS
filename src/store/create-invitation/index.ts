@@ -12,6 +12,7 @@ export type CreateInvitationState = {
   url: string;
   invitesUsed: number;
   maxUses: number;
+  isLoading: boolean;
 };
 
 const initialState: CreateInvitationState = {
@@ -19,17 +20,21 @@ const initialState: CreateInvitationState = {
   url: '',
   invitesUsed: 0,
   maxUses: 0,
+  isLoading: false,
 };
 
 const slice = createSlice({
   name: 'createInvitation',
   initialState,
   reducers: {
-    setInvite: (state, action: PayloadAction<CreateInvitationState>) => {
+    setInviteDetails: (state, action: PayloadAction<Omit<CreateInvitationState, 'isLoading'>>) => {
       state.code = action.payload.code;
       state.url = action.payload.url;
       state.invitesUsed = action.payload.invitesUsed;
       state.maxUses = action.payload.maxUses;
+    },
+    setLoading: (state, action: PayloadAction<CreateInvitationState['isLoading']>) => {
+      state.isLoading = action.payload;
     },
     reset: (state, _action: PayloadAction) => {
       state.code = initialState.code;
@@ -40,5 +45,5 @@ const slice = createSlice({
   },
 });
 
-export const { setInvite, reset } = slice.actions;
+export const { setInviteDetails, setLoading, reset } = slice.actions;
 export const { reducer } = slice;

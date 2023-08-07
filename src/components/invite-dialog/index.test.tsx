@@ -14,6 +14,7 @@ describe('InviteDialog', () => {
       maxUses: 0,
       isUserAMemberOfWorlds: false,
       clipboard: { write: () => null },
+      isLoading: false,
       ...props,
     };
 
@@ -49,10 +50,15 @@ describe('InviteDialog', () => {
     expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('COPY');
   });
 
-  it('renders the loading state if code does not exist', function () {
+  it('does not render the text content if no invite code', function () {
     const wrapper = subject({ inviteCode: '' });
 
-    expect(wrapper).toHaveElement('.invite-dialog__code-block Skeleton');
+    expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
+  });
+
+  it('does not render the text content if isLoading is true ', function () {
+    const wrapper = subject({ inviteCode: '12345', isLoading: true });
+
     expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
   });
 
@@ -85,14 +91,14 @@ describe('InviteDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('displays text in green if no invites remaining', function () {
+  it('displays text in green if invites remaining', function () {
     // 2 invites left
     let wrapper = subject({ inviteCode: '123456', invitesUsed: 3, maxUses: 5 });
-    expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeFalse();
+    expect(wrapper.find('.invite-dialog__invite-left').exists()).toBeTrue();
 
     // no invite left
     wrapper = subject({ inviteCode: '123456', invitesUsed: 5, maxUses: 5 });
-    expect(wrapper.find('.invite-dialog__no-invite-left').exists()).toBeTrue();
+    expect(wrapper.find('.invite-dialog__invite-left').exists()).toBeFalse();
   });
 
   it('renders network notification alert if user is in full screen, and is a part of networks', function () {

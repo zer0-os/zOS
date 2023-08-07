@@ -8,9 +8,11 @@ import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
-import { bem } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import classNames from 'classnames';
+
 const c = bem('invite-dialog');
+const cn = bemClassName('invite-dialog');
 
 export interface Clipboard {
   write: (text: string) => Promise<void>;
@@ -23,6 +25,7 @@ export interface Properties {
   inviteUrl: string;
   assetsPath: string;
   isUserAMemberOfWorlds: boolean;
+  isLoading: boolean;
   clipboard?: Clipboard;
 
   onClose?: () => void;
@@ -68,37 +71,37 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div className={c('')}>
-        <div className={c('title-bar')}>
-          <h3 className={c('title')}>Invite to ZERO Messenger</h3>
-          <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
+      <div {...cn('')}>
+        <div {...cn('title-bar')}>
+          <h3 {...cn('title')}>Invite to ZERO Messenger</h3>
+          <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
-        <div className={c('content')}>
+        <div {...cn('content')}>
           <Image
             src={`${this.props.assetsPath}/InviteFriends.png`}
             alt='Hands reaching out to connect'
-            className={c('image')}
+            {...cn('image')}
           />
 
           {this.props.isUserAMemberOfWorlds && (
-            <Alert variant='info' className={c('network-alert')}>
+            <Alert variant='info' {...cn('network-alert')}>
               This invite will add someone to your direct messages, <b>not</b> your current network.
             </Alert>
           )}
 
-          <div className={c('heading')}>Invite a friend. Chat on ZERO. Earn rewards.</div>
-          <div className={c('byline')}>
+          <div {...cn('heading')}>Invite a friend. Chat on ZERO. Earn rewards.</div>
+          <div {...cn('byline')}>
             The more active you are, the more you earn. Take back ownership of your content and get rewarded.
             <br />
           </div>
-          <div className={c('code-block')}>
-            {this.props.inviteCode ? (
+          <div {...cn('code-block')}>
+            {this.props.inviteCode || !this.props.isLoading ? (
               <textarea readOnly={true} value={this.inviteText} />
             ) : (
               <Skeleton width={'100%'} height={'100px'} />
             )}
             <button
-              className={c('inline-button', 'right')}
+              {...cn('inline-button', 'right')}
               onClick={this.writeInviteToClipboard}
               disabled={!this.props.inviteCode}
             >
@@ -106,11 +109,17 @@ export class InviteDialog extends React.Component<Properties, State> {
             </button>
           </div>
           <div
-            className={classNames(c('remaining-invite'), { [c('no-invite-left')]: this.getInvitesRemaining() === 0 })}
+            className={classNames(c('remaining-invite-container'), {
+              [c('invite-left')]: this.getInvitesRemaining() !== 0 && !this.props.isLoading,
+            })}
           >
             <IconGift1 />
-            <div>
-              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
+            <div {...cn(!this.props.isLoading && 'remaining-invite')}>
+              {!this.props.isLoading && (
+                <>
+                  <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
+                </>
+              )}
             </div>
           </div>
         </div>

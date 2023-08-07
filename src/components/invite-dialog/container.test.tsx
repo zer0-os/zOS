@@ -15,6 +15,7 @@ describe('Container', () => {
       invitesUsed: 0,
       maxUses: 0,
       isAMemberOfWorlds: false,
+      isLoading: false,
       fetchInvite: () => null,
       ...props,
     };

@@ -1,5 +1,5 @@
 import { put, call, takeLeading } from 'redux-saga/effects';
-import { SagaActionTypes, reset, setInvite } from '.';
+import { SagaActionTypes, reset, setInviteDetails, setLoading } from '.';
 import { getInvite } from './api';
 import { config } from '../../config';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -10,11 +10,13 @@ export function* fetchInvite() {
   yield put(reset());
 
   try {
+    yield put(setLoading(true));
+
     const invitation = yield call(getInvite);
 
     // For now, we don't include the code in the url
     yield put(
-      setInvite({
+      setInviteDetails({
         code: invitation.slug,
         url: config.inviteUrl,
         invitesUsed: invitation.invitesUsed,
@@ -24,6 +26,8 @@ export function* fetchInvite() {
     return;
   } catch (e) {
     // Listen again
+  } finally {
+    yield put(setLoading(false));
   }
 }
 

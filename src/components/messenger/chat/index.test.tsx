@@ -288,6 +288,28 @@ describe('messenger-chat', () => {
       expect(headerAvatar.prop('style').backgroundImage).toEqual('url()');
       expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
     });
+
+    it('header renders avatar in case if custom icon is set', function () {
+      const wrapper = subject({
+        directMessage: {
+          icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url-1',
+            }),
+            stubUser({
+              profileImage: 'avatar-url-2',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+
+      expect(headerAvatar.prop('style').backgroundImage).toEqual(
+        'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)'
+      );
+    });
   });
 });
 

@@ -13,6 +13,7 @@ import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
+import { isCustomIcon } from '../list/utils';
 
 export interface PublicProperties {}
 
@@ -116,6 +117,11 @@ export class Container extends React.Component<Properties, State> {
     if (this.isOneOnOne()) {
       return this.props.directMessage.otherMembers[0].profileImage;
     }
+
+    if (isCustomIcon(this.props.directMessage?.icon)) {
+      return this.props.directMessage?.icon;
+    }
+
     return '';
   }
 

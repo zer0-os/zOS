@@ -57,12 +57,26 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
-    return this.props.conversations.filter(
-      (conversation) =>
-        conversation.otherMembers.length === 1
-          ? searchRegEx.test(otherMembersToString(conversation.otherMembers)) // for one-to-one
-          : searchRegEx.test(conversation.name ?? '') // for group
-    );
+
+    const directMatches = [];
+    const inDirectMatches = [];
+
+    for (const conversation of this.props.conversations) {
+      const isNameMatch = searchRegEx.test(conversation.name ?? '');
+      const isDirectMatch =
+        conversation.otherMembers.length === 1 && searchRegEx.test(otherMembersToString(conversation.otherMembers));
+
+      if (isNameMatch || isDirectMatch) {
+        directMatches.push(conversation);
+      } else if (searchRegEx.test(otherMembersToString(conversation.otherMembers))) {
+        inDirectMatches.push(conversation);
+      }
+    }
+
+    return [
+      ...directMatches,
+      ...inDirectMatches,
+    ];
   }
 
   openInviteDialog = (): void => {

@@ -29,7 +29,11 @@
   }
 
   &__close {
-    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
 
     &:focus-visible {
       outline: none;
@@ -47,6 +51,8 @@
 
   &__body-input {
     width: 240px;
+    gap: 4px;
+    line-height: 24px;
   }
 
   &__footer {

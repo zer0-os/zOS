@@ -141,6 +141,9 @@ export class SendbirdClient implements IChatClient {
       onUserReceivedInvitation: (channel) => {
         events.onUserReceivedInvitation(this.getChannelId(channel));
       },
+      onUserLeft: (channel, user) => {
+        events.onUserLeft(this.getChannelId(channel), user.userId);
+      },
     });
 
     this.sendbird.groupChannel.addGroupChannelHandler('chatHandler', channelHandler);

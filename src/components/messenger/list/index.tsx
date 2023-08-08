@@ -43,7 +43,6 @@ export interface Properties extends PublicProperties {
   groupUsers: Option[];
   conversations: (Channel & { messagePreview?: string })[];
   isFetchingExistingConversations: boolean;
-  isGroupCreating: boolean;
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
   allowClose: boolean;
@@ -106,7 +105,6 @@ export class Container extends React.Component<Properties, State> {
       activeConversationId,
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
-      isGroupCreating: createConversation.groupDetails.isCreating,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
@@ -270,12 +268,7 @@ export class Container extends React.Component<Properties, State> {
             />
           )}
           {this.props.stage === SagaStage.GroupDetails && (
-            <GroupDetailsPanel
-              users={this.props.groupUsers}
-              onCreate={this.createGroup}
-              onBack={this.props.back}
-              isCreating={this.props.isGroupCreating}
-            />
+            <GroupDetailsPanel users={this.props.groupUsers} onCreate={this.createGroup} onBack={this.props.back} />
           )}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.renderToastNotification()}

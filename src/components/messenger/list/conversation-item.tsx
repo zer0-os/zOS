@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { lastSeenText } from './utils';
+import { isCustomIcon, lastSeenText } from './utils';
 import { highlightFilter } from '../lib/utils';
 import { Channel } from '../../../store/channels';
 
@@ -48,13 +48,6 @@ export class ConversationItem extends React.Component<Properties> {
     return isAnyUserOnline ? 'active' : 'offline';
   }
 
-  isCustomIcon(url?: string) {
-    if (!url) return false;
-
-    // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
-    return !url.startsWith('https://static.sendbird.com/sample');
-  }
-
   highlightedName = () => {
     const { filter, conversation } = this.props;
     const name = conversation.name || otherMembersToString(conversation.otherMembers);
@@ -73,7 +66,7 @@ export class ConversationItem extends React.Component<Properties> {
           tabIndex={-1}
         />
       );
-    } else if (this.isCustomIcon(this.props.conversation.icon)) {
+    } else if (isCustomIcon(this.props.conversation.icon)) {
       return (
         <Avatar
           size={'regular'}

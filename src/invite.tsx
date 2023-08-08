@@ -5,6 +5,7 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { RegistrationStage } from './store/registration';
 import { InviteContainer } from './authentication/validate-invite/container';
+import { ResetPasswordContainer } from './authentication/reset-password/container';
 import { CreateAccountMethodContainer } from './authentication/create-account-method/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
 import { Footer } from './authentication/footer/footer';
@@ -56,6 +57,7 @@ export class Container extends React.Component<Properties> {
           </div>
 
           {this.props.stage === RegistrationStage.ValidateInvite && <InviteContainer />}
+          {this.props.stage === RegistrationStage.ResetPassword && <ResetPasswordContainer />}
 
           {(this.props.stage === RegistrationStage.EmailAccountCreation ||
             this.props.stage === RegistrationStage.WalletAccountCreation) && <CreateAccountMethodContainer />}

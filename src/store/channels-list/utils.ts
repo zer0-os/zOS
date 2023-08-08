@@ -16,20 +16,20 @@ export function filterChannelsList(state, filter: ChannelType) {
   });
 }
 
-export const channelMapper = (currentChannel): Partial<Channel> => {
+export const toLocalChannel = (input): Partial<Channel> => {
   return {
-    id: currentChannel.id,
-    name: currentChannel.name,
-    icon: currentChannel.icon,
-    category: currentChannel.category,
-    unreadCount: currentChannel.unreadCount,
-    hasJoined: currentChannel.hasJoined,
-    createdAt: currentChannel.createdAt,
-    otherMembers: currentChannel.otherMembers || [],
-    lastMessage: currentChannel.lastMessage || null,
-    lastMessageCreatedAt: currentChannel.lastMessage?.createdAt || null,
-    isChannel: currentChannel.isChannel === undefined ? true : currentChannel.isChannel,
-    groupChannelType: currentChannel.groupChannelType || '',
+    id: input.id,
+    name: input.name,
+    icon: input.icon,
+    category: input.category,
+    unreadCount: input.unreadCount,
+    hasJoined: input.hasJoined,
+    createdAt: input.createdAt,
+    otherMembers: input.otherMembers || [],
+    lastMessage: input.lastMessage || null,
+    lastMessageCreatedAt: input.lastMessage?.createdAt || null,
+    isChannel: input.isChannel === undefined ? true : input.isChannel,
+    groupChannelType: input.groupChannelType || '',
     conversationStatus: ConversationStatus.CREATED,
   };
 };

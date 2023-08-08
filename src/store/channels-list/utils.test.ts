@@ -1,12 +1,12 @@
-import { channelMapper } from './utils';
+import { toLocalChannel } from './utils';
 
-describe('channelMapper', () => {
+describe(toLocalChannel, () => {
   it('isChannel from Anonymous view', async function () {
     const channel = {
       isChannel: undefined,
     };
 
-    const result = channelMapper(channel as any);
+    const result = toLocalChannel(channel as any);
 
     expect(result).toMatchObject({ isChannel: true });
   });
@@ -16,7 +16,7 @@ describe('channelMapper', () => {
       isChannel: true,
     };
 
-    const result = channelMapper(channel as any);
+    const result = toLocalChannel(channel as any);
 
     expect(result).toMatchObject({ isChannel: true });
   });
@@ -26,7 +26,7 @@ describe('channelMapper', () => {
       isChannel: false,
     };
 
-    const result = channelMapper(channel as any);
+    const result = toLocalChannel(channel as any);
 
     expect(result).toMatchObject({ isChannel: false });
   });

@@ -12,7 +12,7 @@ import {
   uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { channelMapper, filterChannelsList } from './utils';
+import { toLocalChannel, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
@@ -57,7 +57,7 @@ export function* fetchChannels(action) {
 
 export function* fetchConversations() {
   const conversations = yield call(fetchConversationsMessagesApi);
-  const conversationsList = conversations.map((currentChannel) => channelMapper(currentChannel));
+  const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
 
   const existingConversationList = yield select(denormalizeConversations);
   const newConversationList = conversationsList.map((conversation) => {
@@ -213,7 +213,7 @@ export function* sendCreateConversationRequest(
 
   const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl, optimisticId);
 
-  const result = channelMapper(response);
+  const result = toLocalChannel(response);
   if (response.messages) {
     result.messages = response.messages;
   }
@@ -254,7 +254,7 @@ export function* startChannelsAndConversationsRefresh() {
 export function* channelsReceived(action) {
   const { channels } = action.payload;
 
-  const newChannels = channels.map(channelMapper);
+  const newChannels = channels.map(toLocalChannel);
 
   // Silly to get them separately but we'll be splitting these anyway
   const existingDirectMessages = yield select(rawConversationsList());

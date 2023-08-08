@@ -139,7 +139,7 @@ export function adminMessageText(message: Message, state: RootState) {
 
   let text = message.message;
   if (!message.admin) {
-    return;
+    return text;
   }
 
   if (message.admin.type === AdminMessageType.JOINED_ZERO) {

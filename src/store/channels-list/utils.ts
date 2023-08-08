@@ -16,7 +16,7 @@ export function filterChannelsList(state, filter: ChannelType) {
   });
 }
 
-export const channelMapper = (input): Partial<Channel> => {
+export const toLocalChannel = (input): Partial<Channel> => {
   return {
     id: input.id,
     name: input.name,

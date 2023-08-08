@@ -4,7 +4,7 @@ import { map as mapMessage } from './chat-message';
 import { Message, MessagesResponse } from '../../store/messages';
 import { config } from '../../config';
 import { get } from '../../lib/api/rest';
-import { channelMapper } from '../../store/channels-list/utils';
+import { toLocalChannel } from '../../store/channels-list/utils';
 
 import { RealtimeChatEvents, IChatClient } from './';
 
@@ -58,7 +58,7 @@ export class SendbirdClient implements IChatClient {
   async getChannels(id: string) {
     try {
       const channels = await get<any>(`/api/networks/${id}/chatChannels`);
-      return (channels.body || []).map(channelMapper);
+      return (channels.body || []).map(toLocalChannel);
     } catch (error: any) {
       console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
     }

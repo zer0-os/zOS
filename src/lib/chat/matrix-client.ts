@@ -129,11 +129,6 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private clearConnectionAwaiter() {
-    this.connectionAwaiter = null;
-    this.connectionResolver = null;
-  }
-
   private async waitForSync() {
     await new Promise<void>((resolve) => {
       this.matrix.on('sync' as any, (state, _prevState) => {

@@ -168,22 +168,38 @@ describe('sendbird events', () => {
       );
     });
   });
+});
 
-  describe('adminMessageText', () => {
-    const getState = (currentUserId: string, users = {}) => {
-      return {
-        authentication: {
-          user: { data: { id: currentUserId } },
-        },
-        normalized: {
-          users: { ...users },
-        } as any,
-      } as RootState;
-    };
+describe(adminMessageText, () => {
+  const getState = (currentUserId: string, users = {}) => {
+    return {
+      authentication: {
+        user: { data: { id: currentUserId } },
+      },
+      normalized: {
+        users: { ...users },
+      } as any,
+    } as RootState;
+  };
 
+  it('returns default message if admin type unknown', () => {
+    const state = getState('current-user', {});
+    const adminText = adminMessageText({ message: 'some message', isAdmin: true, admin: {} } as Message, state);
+
+    expect(adminText).toEqual('some message');
+  });
+
+  describe(AdminMessageType.JOINED_ZERO, () => {
     it('returns default message if users not found', () => {
       const state = getState('current-user', {});
-      const adminText = adminMessageText({ message: 'some message', isAdmin: true, admin: {} } as Message, state);
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.JOINED_ZERO, inviteeId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
 
       expect(adminText).toEqual('some message');
     });
@@ -212,6 +228,48 @@ describe('sendbird events', () => {
       const adminText = adminMessageText(message, state);
 
       expect(adminText).toEqual('Julie joined you on Zero');
+    });
+  });
+
+  describe(AdminMessageType.CONVERSATION_STARTED, () => {
+    it('returns default message if creator not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if current user was not the creator', () => {
+      const state = getState('current-user', { 'creator-id': { id: 'creator-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'creator-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney started the conversation');
+    });
+
+    it('translates message if current user was the creator', () => {
+      const state = getState('creator-id', { 'creator-id': { id: 'creator-id', firstName: 'Julie' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'creator-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('You started the conversation');
     });
   });
 });

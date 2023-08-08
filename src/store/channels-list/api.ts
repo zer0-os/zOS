@@ -26,9 +26,15 @@ export async function fetchConversations(): Promise<Channel[]> {
 export async function createConversation(
   userIds: string[],
   name: string = '',
-  coverUrl = ''
-): Promise<DirectMessage[]> {
-  const directMessages = await post<Channel[]>('/directMessages').send({ name, userIds, coverUrl });
+  coverUrl = '',
+  optimisticId: string
+): Promise<DirectMessage> {
+  const directMessages = await post<Channel[]>('/directMessages').send({
+    name,
+    userIds,
+    coverUrl,
+    optimisticId,
+  });
   return directMessages.body;
 }
 

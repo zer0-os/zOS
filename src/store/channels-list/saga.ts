@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
@@ -20,6 +21,8 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, receive as receiveChannel } from '../channels';
+import { AdminMessageType } from '../messages';
+import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -90,7 +93,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
   const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
   yield put(setactiveConversationId(optimisticConversation.id));
   try {
-    const conversation = yield call(sendCreateConversationRequest, userIds, name, image);
+    const conversation = yield call(sendCreateConversationRequest, userIds, name, image, optimisticConversation.id);
     yield call(receiveCreatedConversation, conversation, optimisticConversation);
     return conversation;
   } catch {
@@ -113,16 +116,29 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     groupChannelType: GroupChannelType.Private,
     shouldSyncChannels: false,
   };
+
+  const currentUser = yield select(currentUserSelector());
+  const id = uuidv4();
   const timestamp = Date.now();
+  const adminMessage = {
+    id,
+    optimisticId: id,
+    message: 'Conversation was started',
+    createdAt: timestamp,
+    isAdmin: true,
+    admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUser.id },
+  };
   const conversation = {
     ...defaultConversationProperties,
-    id: `${timestamp}`,
-    optimisticId: `${timestamp}`,
+    id,
+    optimisticId: id,
     name,
     otherMembers: userIds,
-    messages: [],
+    messages: [adminMessage],
     createdAt: Date.now(),
     conversationStatus: ConversationStatus.CREATING,
+    lastMessage: adminMessage,
+    lastMessageAt: adminMessage.createdAt,
   };
 
   const existingConversationsList = yield select(rawConversationsList());
@@ -147,6 +163,17 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
     conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
     conversation.optimisticId = optimisticConversation.optimisticId;
+
+    const existingMessageIds = yield select(rawMessagesSelector(optimisticConversation.id));
+    const firstMessage = conversation.messages?.[0];
+    if (firstMessage) {
+      const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
+      if (channelMessages) {
+        conversation.messages = channelMessages;
+        conversation.lastMessage = firstMessage;
+        conversation.lastMessageCreatedAt = firstMessage.createdAt;
+      }
+    }
     listWithoutOptimistic.push(conversation);
   }
 
@@ -161,7 +188,12 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
   yield put(setactiveConversationId(conversation.id));
 }
 
-export function* sendCreateConversationRequest(userIds: string[], name: string = null, image: File = null) {
+export function* sendCreateConversationRequest(
+  userIds: string[],
+  name: string = null,
+  image: File = null,
+  optimisticId: string
+) {
   let coverUrl = '';
   if (image) {
     try {
@@ -173,9 +205,13 @@ export function* sendCreateConversationRequest(userIds: string[], name: string =
     }
   }
 
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl, optimisticId);
 
-  return channelMapper(response);
+  const result = channelMapper(response);
+  if (response.messages) {
+    result.messages = response.messages;
+  }
+  return result;
 }
 
 export function* clearChannelsAndConversations() {

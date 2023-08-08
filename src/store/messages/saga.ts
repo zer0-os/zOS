@@ -77,7 +77,7 @@ interface MediaInfo {
   mediaType: MediaType;
 }
 
-const rawMessagesSelector = (channelId) => (state) => {
+export const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };
 

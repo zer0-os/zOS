@@ -20,6 +20,7 @@ import {
 } from '../channels';
 import { setactiveConversationId } from '../chat';
 import { StoreBuilder } from '../test/store';
+import { AdminMessageType } from '../messages';
 
 const MOCK_CHANNELS = [
   { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
@@ -42,7 +43,7 @@ describe(createConversation, () => {
       .next(stubOptimisticConversation)
       .put(setactiveConversationId(stubOptimisticConversation.id))
       .next()
-      .call(sendCreateConversationRequest, otherUserIds, name, image)
+      .call(sendCreateConversationRequest, otherUserIds, name, image, 'optimistic-id')
       .next(stubReceivedConversation)
       .call(receiveCreatedConversation, stubReceivedConversation, stubOptimisticConversation)
       .next()
@@ -77,11 +78,11 @@ describe(createOptimisticConversation, () => {
 
     const initialState = new StoreBuilder()
       .withConversationList({ id: 'existing-channel' })
-      .withUsers({ userId: 'other-user-id' })
-      .build();
+      .withCurrentUser({ id: 'current-user' })
+      .withUsers({ userId: 'other-user-id' });
 
     const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
-      .withReducer(rootReducer, initialState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.channelsList.value).toHaveLength(2);
@@ -92,7 +93,6 @@ describe(createOptimisticConversation, () => {
         id: newChannelId,
         name: 'New Conversation',
         otherMembers: [{ userId: 'other-user-id' }],
-        messages: [],
         conversationStatus: ConversationStatus.CREATING,
       })
     );
@@ -100,8 +100,11 @@ describe(createOptimisticConversation, () => {
 
   it('returns the conversation', async () => {
     const name = 'New Conversation';
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
-    const { returnValue } = await expectSaga(createOptimisticConversation, [], name).withReducer(rootReducer).run();
+    const { returnValue } = await expectSaga(createOptimisticConversation, [], name)
+      .withReducer(rootReducer, initialState.build())
+      .run();
 
     expect(returnValue.name).toEqual(name);
   });
@@ -109,7 +112,11 @@ describe(createOptimisticConversation, () => {
   it('sets various default values', async () => {
     const userIds = ['other-user-id'];
     const name = 'New Conversation';
-    const { storeState } = await expectSaga(createOptimisticConversation, userIds, name).withReducer(rootReducer).run();
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
+
+    const { storeState } = await expectSaga(createOptimisticConversation, userIds, name)
+      .withReducer(rootReducer, initialState.build())
+      .run();
 
     const newChannelId = storeState.channelsList.value[0];
     expect(denormalizeChannel(newChannelId, storeState)).toEqual(
@@ -125,13 +132,40 @@ describe(createOptimisticConversation, () => {
       })
     );
   });
+
+  it('creates optimistic admin message', async () => {
+    const userIds = ['other-user-id'];
+
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'existing-channel' })
+      .withCurrentUser({ id: 'current-user' })
+      .withUsers({ userId: 'other-user-id' });
+
+    const { storeState } = await expectSaga(createOptimisticConversation, userIds)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const newChannelId = storeState.channelsList.value[1];
+    const conversation = denormalizeChannel(newChannelId, storeState);
+    expect(conversation.messages[0]).toMatchObject({
+      message: 'Conversation was started',
+      isAdmin: true,
+      admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+    });
+    expect(conversation.lastMessage).toMatchObject({
+      message: 'Conversation was started',
+      isAdmin: true,
+      admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+    });
+    expect(conversation.lastMessageAt).toEqual(conversation.messages[0].createdAt);
+  });
 });
 
 describe(sendCreateConversationRequest, () => {
   it('creates conversation', async () => {
     const name = 'group';
     const userIds = ['7867766_7876Z2'];
-    await expectSaga(sendCreateConversationRequest, userIds, name)
+    await expectSaga(sendCreateConversationRequest, userIds, name, null, 'optimistic-id')
       .provide([
         [
           matchers.call.fn(createConversationApi),
@@ -139,29 +173,30 @@ describe(sendCreateConversationRequest, () => {
         ],
       ])
       .withReducer(rootReducer)
-      .call(createConversationApi, userIds, name, '')
+      .call(createConversationApi, userIds, name, '', 'optimistic-id')
       .run();
   });
 
   it('returns the new conversation', async () => {
-    const { returnValue } = await expectSaga(sendCreateConversationRequest, [], 'group')
+    const { returnValue } = await expectSaga(sendCreateConversationRequest, [], 'group', null, 'optimistic-id')
       .provide([
         [
           matchers.call.fn(createConversationApi),
-          { id: 'new-convo-id' },
+          { id: 'new-convo-id', messages: [{ id: 'first-message' }] },
         ],
       ])
       .withReducer(rootReducer)
       .run();
 
     expect(returnValue.id).toEqual('new-convo-id');
+    expect(returnValue.messages).toEqual([{ id: 'first-message' }]);
   });
 
   it('uploads image when creating conversation', async () => {
     const name = 'group';
     const userIds = ['user'];
     const image = { name: 'file' } as File;
-    await expectSaga(sendCreateConversationRequest, userIds, name, image)
+    await expectSaga(sendCreateConversationRequest, userIds, name, image, 'optimistic-id')
       .provide([
         [
           matchers.call.fn(uploadImageApi),
@@ -174,18 +209,18 @@ describe(sendCreateConversationRequest, () => {
       ])
       .withReducer(rootReducer)
       .call(uploadImageApi, image)
-      .call(createConversationApi, userIds, name, 'image-url')
+      .call(createConversationApi, userIds, name, 'image-url', 'optimistic-id')
       .run();
   });
 });
 
 describe(receiveCreatedConversation, () => {
-  it('replaces the optimistic message', async () => {
+  it('replaces the optimistic conversation', async () => {
     const optimistic = { id: 'optimistic-id' };
 
     const initialState = new StoreBuilder().withConversationList(optimistic).build();
 
-    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, optimistic)
+    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo', messages: [{}] }, optimistic)
       .withReducer(rootReducer, initialState)
       .run();
 
@@ -193,7 +228,7 @@ describe(receiveCreatedConversation, () => {
   });
 
   it('sets hasLoadedMessages to true and fetch status to success', async () => {
-    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo' }, {})
+    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo', messages: [{}] }, {})
       .withReducer(rootReducer)
       .run();
 
@@ -205,7 +240,9 @@ describe(receiveCreatedConversation, () => {
   it('sets the active conversation', async () => {
     const {
       storeState: { chat },
-    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' }, {}).withReducer(rootReducer).run();
+    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id', messages: [{}] }, {})
+      .withReducer(rootReducer)
+      .run();
 
     expect(chat.activeConversationId).toStrictEqual('existing-id');
   });
@@ -223,6 +260,33 @@ describe(receiveCreatedConversation, () => {
 
     expect(channelsList.value).toStrictEqual(['existing-id']);
     expect(chat.activeConversationId).toStrictEqual('existing-id');
+  });
+
+  it('replaces the optimistic admin message', async () => {
+    const optimisticConvo = {
+      id: 'optimistic-convo-id',
+      messages: [
+        { id: 'optimistic-id' },
+        { id: 'test-id' },
+      ],
+    } as any;
+    const createdMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+
+    const initialState = new StoreBuilder().withConversationList(optimisticConvo);
+
+    const { storeState } = await expectSaga(
+      receiveCreatedConversation,
+      { id: 'new-convo', messages: [createdMessage] },
+      optimisticConvo
+    )
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const channel = denormalizeChannel('new-convo', storeState);
+    expect(channel.messages.map((m) => m.id)).toIncludeSameMembers([
+      createdMessage.id,
+      'test-id',
+    ]);
   });
 });
 

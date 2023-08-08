@@ -46,6 +46,7 @@ export interface InfoUploadResponse {
 
 export enum AdminMessageType {
   JOINED_ZERO = 'JOINED_ZERO',
+  CONVERSATION_STARTED = 'CONVERSATION_STARTED',
 }
 
 export enum MessageSendStatus {
@@ -71,6 +72,7 @@ export interface Message {
     type: AdminMessageType;
     inviterId?: string;
     inviteeId?: string;
+    creatorId?: string;
   };
   optimisticId?: string;
   rootMessageId?: string;

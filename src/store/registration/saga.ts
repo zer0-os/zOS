@@ -29,6 +29,7 @@ import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
+import { setIsComplete as setPageLoadComplete } from '../page-load';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -222,6 +223,7 @@ export function* clearRegistrationStateOnLogout() {
 
 // sets initial state & takes the user to "complete profile" page
 export function* completePendingUserProfile(user) {
+  yield put(setPageLoadComplete(true)); // allow page to load incase of incomplete profile
   yield put(setStage(RegistrationStage.ProfileDetails));
   yield put(setUserId(user.id));
 

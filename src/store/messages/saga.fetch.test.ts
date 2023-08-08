@@ -184,7 +184,11 @@ describe(fetch, () => {
 
     await expectSaga(fetch, { payload: { channelId } })
       .withReducer(rootReducer, initialState)
-      .not.call(fetchMessagesByChannelId, channelId)
+      .provide([
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), {}),
+      ])
+      .not.call.fn(chatClient.getMessagesByChannelId)
       .run();
   });
 

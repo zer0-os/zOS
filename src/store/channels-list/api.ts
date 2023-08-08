@@ -9,7 +9,6 @@ export async function fetchChannels(id: string) {
     return await channels.body;
   } catch (error: any) {
     console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
-    return [];
   }
 }
 

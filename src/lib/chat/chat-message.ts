@@ -118,6 +118,22 @@ function extractMessageData(jsonData, isMediaMessage) {
   };
 }
 
+export function mapMatrixMessage(matrixMessage) {
+  const parent = matrixMessage.content['m.relates_to'];
+
+  return {
+    id: matrixMessage.event_id,
+    message: matrixMessage.content.body,
+    parentMessageText: '',
+    parentMessageId: parent ? parent['m.in_reply_to'].event_id : null,
+    createdAt: matrixMessage.origin_server_ts,
+    updatedAt: matrixMessage.origin_server_ts,
+    sender: {},
+    isAdmin: false,
+    ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
+  };
+}
+
 export function map(sendbirdMessage) {
   const { message, parentMessage, createdAt, messageId, sender, messageType, data, updatedAt } = sendbirdMessage;
 

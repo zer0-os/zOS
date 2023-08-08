@@ -2,20 +2,10 @@ import { AttachmentResponse } from '../../lib/api/attachment';
 import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { AttachmentUploadResult, EditMessageOptions, MessagesResponse } from './index';
+import { AttachmentUploadResult, EditMessageOptions } from './index';
 import { FileUploadResult, SendPayload } from './saga';
+
 import axios from 'axios';
-
-export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
-  const filter: any = {};
-
-  if (lastCreatedAt) {
-    filter.lastCreatedAt = lastCreatedAt;
-  }
-
-  const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
-  return response.body;
-}
 
 export async function sendFileMessage(channelId: string, file: FileUploadResult, optimisticId?: string): Promise<any> {
   return sendMessagesByChannelId(channelId, null, null, null, file, optimisticId);

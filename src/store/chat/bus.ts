@@ -23,6 +23,8 @@ export function* getChatBus() {
 }
 
 export function createChatConnection(userId, chatAccessToken) {
+  const chatClient = chat.get();
+
   return eventChannel((emit) => {
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
@@ -39,7 +41,7 @@ export function createChatConnection(userId, chatAccessToken) {
       emit({ type: Events.ChannelInvitationReceived, payload: { channelId } });
     const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
 
-    chat.initChat({
+    chatClient.initChat({
       reconnectStart,
       reconnectStop,
       receiveNewMessage,
@@ -50,10 +52,10 @@ export function createChatConnection(userId, chatAccessToken) {
       onUserReceivedInvitation,
       onUserLeft,
     });
-    chat.connect(userId, chatAccessToken);
+    chatClient.connect(userId, chatAccessToken);
 
     const unsubscribe = () => {
-      chat.disconnect();
+      chatClient.disconnect();
     };
     return unsubscribe;
   });

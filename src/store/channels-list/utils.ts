@@ -1,5 +1,5 @@
 import { ChannelType } from './types';
-import { GroupChannelType, Channel, ConversationStatus } from './../channels/index';
+import { Channel, ConversationStatus } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 
@@ -15,23 +15,6 @@ export function filterChannelsList(state, filter: ChannelType) {
     }
   });
 }
-
-export const matrixChannelMapper = (currentChannel): Partial<Channel> => {
-  return {
-    id: currentChannel.roomId,
-    name: currentChannel.name,
-    icon: currentChannel.getAvatarUrl(),
-    isChannel: true,
-    otherMembers: [],
-    lastMessage: null,
-    lastMessageCreatedAt: null,
-    groupChannelType: GroupChannelType.Public,
-    category: '',
-    unreadCount: 0,
-    hasJoined: true,
-    createdAt: 0,
-  };
-};
 
 export const channelMapper = (currentChannel): Partial<Channel> => {
   return {

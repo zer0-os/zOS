@@ -1,7 +1,7 @@
 import { createClient, Direction, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
-import { GroupChannelType, Channel } from '../../store/channels';
+import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { config as appConfig } from '../../config';
 
@@ -156,5 +156,6 @@ export class MatrixClient implements IChatClient {
     unreadCount: 0,
     hasJoined: true,
     createdAt: 0,
+    conversationStatus: ConversationStatus.CREATED,
   });
 }

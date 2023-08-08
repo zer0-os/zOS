@@ -9,7 +9,6 @@ describe('GroupDetailsPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       users: [],
-      isCreating: false,
       onBack: () => null,
       onCreate: () => null,
       ...props,
@@ -90,12 +89,6 @@ describe('GroupDetailsPanel', () => {
     wrapper.find('Button').simulate('press');
 
     expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ image }));
-  });
-
-  it('sets button to loading state if creating', function () {
-    const wrapper = subject({ isCreating: true });
-
-    expect(wrapper.find('Button').prop('isLoading')).toBeTrue();
   });
 });
 

@@ -28,7 +28,6 @@ describe('messenger-list', () => {
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
-      isGroupCreating: false,
       isFirstTimeLogin: false,
       includeTitleBar: true,
       allowClose: true,
@@ -216,21 +215,6 @@ describe('messenger-list', () => {
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
   });
 
-  it('sets the group details props', async function () {
-    const wrapper = subject({
-      stage: Stage.GroupDetails,
-      groupUsers: [{ value: 'user-id' } as any],
-      isGroupCreating: true,
-    });
-
-    expect(wrapper.find(GroupDetailsPanel).props()).toEqual(
-      expect.objectContaining({
-        users: [{ value: 'user-id' }],
-        isCreating: true,
-      })
-    );
-  });
-
   it('renders the title bar based on property', function () {
     const wrapper = subject({ includeTitleBar: true });
     expect(wrapper).toHaveElement('.messenger-list__header');
@@ -344,16 +328,6 @@ describe('messenger-list', () => {
         'convo-1',
         'convo-3',
       ]);
-    });
-
-    test('gets group details from state', () => {
-      const state = subject([], {
-        groupDetails: {
-          isCreating: true,
-        },
-      });
-
-      expect(state.isGroupCreating).toEqual(true);
     });
 
     test('messagePreview', () => {

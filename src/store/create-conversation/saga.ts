@@ -1,4 +1,4 @@
-import { put, call, select, race, take, fork } from 'redux-saga/effects';
+import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
@@ -132,7 +132,7 @@ function* handleStartGroup() {
 
 function* handleGroupDetails() {
   const action = yield take(SagaActionTypes.CreateConversation);
-  yield call(createConversation, action);
+  yield spawn(createConversation, action);
   return Stage.None;
 }
 

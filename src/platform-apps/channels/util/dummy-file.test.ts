@@ -33,6 +33,11 @@
 
 // data - clump
 
+//Feature request 4
+// Allow me to send in an arbitrary list rather than just assuming there are 2 configs. Eg: “Fizz" "Buzz" "Boop”.
+// When multiple matches are made (such as FizzBoop) they should be
+// printed in the order that they were in the list. Ex: fizzbuzz(int, []definitions)
+
 // Where we are declaring the helper functions
 const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
 const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
@@ -44,39 +49,111 @@ interface FizzBuzzConfig {
   params: any[];
 }
 
-export const Fizzbuzz = (inputNumber: number, fizz: FizzBuzzConfig, buzz: FizzBuzzConfig) => {
-  const isFizz = fizz.fn(inputNumber, ...fizz.params);
-  const isBuzz = buzz.fn(inputNumber, ...buzz.params);
+export const FizzbuzzNew = (inputNumber: number, definitions: FizzBuzzConfig[]) => {
+  let result = '';
 
-  if (isFizz && isBuzz) {
-    return `${fizz.word}${buzz.word}`;
-  } else if (isBuzz) {
-    return buzz.word;
-  } else if (isFizz) {
-    return fizz.word;
-  }
+  definitions.forEach((definition) => {
+    if (definition.fn(inputNumber, ...definition.params)) {
+      result += `${definition.word}`;
+    }
+  });
 
-  return inputNumber.toString();
+  return result || inputNumber.toString();
 };
 
 describe('Fizzbuzz', () => {
   it('should return a number as a string when neither condition matches', function () {
-    expect(Fizzbuzz(1, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('1');
+    expect(
+      FizzbuzzNew(1, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+      ])
+    ).toEqual('1');
   });
 
   it('should return first word if inputNumber is equal to fizzNumber', function () {
-    expect(Fizzbuzz(3, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Fizz');
-    expect(Fizzbuzz(3, divisibleBy(3, 'Zig'), divisibleBy(5, 'Buzz'))).toEqual('Zig');
+    expect(
+      FizzbuzzNew(3, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+      ])
+    ).toEqual('Fizz');
+    expect(
+      FizzbuzzNew(3, [
+        divisibleBy(3, 'Zig'),
+        divisibleBy(5, 'Buzz'),
+      ])
+    ).toEqual('Zig');
   });
 
   it('should return second word if inputNumber is equal to buzzNumber', function () {
-    expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('Buzz');
-    expect(Fizzbuzz(5, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Zag'))).toEqual('Zag');
+    expect(
+      FizzbuzzNew(5, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+      ])
+    ).toEqual('Buzz');
+    expect(
+      FizzbuzzNew(5, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Zag'),
+      ])
+    ).toEqual('Zag');
   });
 
   it('should return "FizzBuzz" if number is a multiple of fizzNumber and buzzNumber', function () {
-    expect(Fizzbuzz(15, divisibleBy(3, 'Fizz'), divisibleBy(5, 'Buzz'))).toEqual('FizzBuzz');
-    expect(Fizzbuzz(15, divisibleBy(3, 'Zig'), divisibleBy(5, 'Zag'))).toEqual('ZigZag');
+    expect(
+      FizzbuzzNew(15, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+      ])
+    ).toEqual('FizzBuzz');
+    expect(
+      FizzbuzzNew(15, [
+        divisibleBy(3, 'Zig'),
+        divisibleBy(5, 'Zag'),
+      ])
+    ).toEqual('ZigZag');
+  });
+
+  it('should return third word if third condition matches', function () {
+    expect(
+      FizzbuzzNew(7, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+        divisibleBy(7, 'Boop'),
+      ])
+    ).toEqual('Boop');
+  });
+
+  it('should return FizzBuzzBoop if all conditions match', function () {
+    expect(
+      FizzbuzzNew(105, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+        divisibleBy(7, 'Boop'),
+      ])
+    ).toEqual('FizzBuzzBoop');
+  });
+
+  it('should return FizzBoop if  first condition and third condition match', function () {
+    expect(
+      FizzbuzzNew(21, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+        divisibleBy(7, 'Boop'),
+      ])
+    ).toEqual('FizzBoop');
+  });
+
+  it('should return BuzzBoop if  second condition and third condition match', function () {
+    expect(
+      FizzbuzzNew(35, [
+        divisibleBy(3, 'Fizz'),
+        divisibleBy(5, 'Buzz'),
+        divisibleBy(7, 'Boop'),
+      ])
+    ).toEqual('BuzzBoop');
   });
 });
 

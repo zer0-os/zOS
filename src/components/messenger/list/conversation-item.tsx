@@ -119,7 +119,7 @@ export class ConversationItem extends React.Component<Properties> {
       return 'You: Sent';
     }
 
-    return 'They sent';
+    return `${lastMessage.sender.firstName ?? 'They'}: sent`;
   }
 
   get message() {

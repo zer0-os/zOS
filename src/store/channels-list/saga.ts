@@ -165,12 +165,14 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     conversation.optimisticId = optimisticConversation.optimisticId;
 
     const existingMessageIds = yield select(rawMessagesSelector(optimisticConversation.id));
-    const firstMessage = conversation.messages[0];
-    const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
-    if (channelMessages) {
-      conversation.messages = channelMessages;
-      conversation.lastMessage = firstMessage;
-      conversation.lastMessageCreatedAt = firstMessage.createdAt;
+    const firstMessage = conversation.messages?.[0];
+    if (firstMessage) {
+      const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
+      if (channelMessages) {
+        conversation.messages = channelMessages;
+        conversation.lastMessage = firstMessage;
+        conversation.lastMessageCreatedAt = firstMessage.createdAt;
+      }
     }
     listWithoutOptimistic.push(conversation);
   }

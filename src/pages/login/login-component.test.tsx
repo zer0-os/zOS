@@ -69,9 +69,14 @@ describe('Login Component', () => {
     expect(link.prop('to')).toBe('/get-access');
   });
 
-  it('does not render ToggleGroup when isLoggingIn is true', () => {
-    const wrapper = subject({ isLoggingIn: true });
+  it('does not render ToggleGroup when isLoggingIn is true and stage is Web3Login', () => {
+    const wrapper = subject({ isLoggingIn: true, stage: LoginStage.Web3Login });
     expect(wrapper).not.toHaveElement(ToggleGroup);
+  });
+
+  it('renders ToggleGroup when isLoggingIn is true and stage is EmailLogin', () => {
+    const wrapper = subject({ isLoggingIn: true, stage: LoginStage.EmailLogin });
+    expect(wrapper).toHaveElement(ToggleGroup);
   });
 
   it('renders ToggleGroup when isLoggingIn is false', () => {

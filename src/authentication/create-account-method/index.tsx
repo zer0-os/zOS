@@ -23,14 +23,15 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
     { key: 'email', label: 'Email' },
   ];
 
-  const selectedOption = stage === RegistrationStage.WalletAccountCreation ? 'web3' : 'email';
   const isWalletAccountCreationStage = stage === RegistrationStage.WalletAccountCreation;
+  const selectedOption = isWalletAccountCreationStage ? 'web3' : 'email';
+  const isConnectingWithWallet = isConnecting && isWalletAccountCreationStage;
 
   return (
     <div {...cn('', isConnecting && isWalletAccountCreationStage && 'is-connecting')}>
       <h3 {...cn('heading')}>Create Account</h3>
 
-      {!isConnecting && (
+      {!isConnectingWithWallet && (
         <ToggleGroup
           {...cn('toggle-group')}
           options={options}
@@ -39,6 +40,7 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
           selection={selectedOption}
           selectionType='single'
           isRequired
+          isDisabled={isConnecting}
         />
       )}
       {isWalletAccountCreationStage ? <CreateWalletAccountContainer /> : <CreateEmailAccountContainer />}

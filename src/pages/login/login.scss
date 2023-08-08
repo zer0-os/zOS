@@ -82,6 +82,7 @@ $login-padding-bottom: 24px;
   }
 
   &__other {
+    gap: 16px;
     margin: auto 0 0 0;
 
     @include flex(16px);

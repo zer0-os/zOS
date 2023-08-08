@@ -41,4 +41,19 @@ describe('CreateAccountMethod', () => {
     expect(wrapper).not.toHaveElement(CreateEmailAccountContainer);
     expect(wrapper).toHaveElement(CreateWalletAccountContainer);
   });
+
+  it('renders ToggleGroup when isConnecting is false', () => {
+    const wrapper = subject({ isConnecting: false });
+    expect(wrapper).toHaveElement('ToggleGroup');
+  });
+
+  it('does not render ToggleGroup when isConnecting is true and stage is WalletAccountCreation', () => {
+    const wrapper = subject({ isConnecting: true, stage: RegistrationStage.WalletAccountCreation });
+    expect(wrapper).not.toHaveElement('ToggleGroup');
+  });
+
+  it('renders ToggleGroup when isConnecting is true and stage is EmailAccountCreation', () => {
+    const wrapper = subject({ isConnecting: true, stage: RegistrationStage.EmailAccountCreation });
+    expect(wrapper).toHaveElement('ToggleGroup');
+  });
 });

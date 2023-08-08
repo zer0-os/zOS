@@ -127,6 +127,6 @@ describe(getSignedTokenForConnector, () => {
       .run();
 
     expect(returnValue.success).toEqual(false);
-    expect(returnValue.error).toEqual('Error signing token');
+    expect(returnValue.error).toEqual('Wallet connection failed. Please try again.');
   });
 });

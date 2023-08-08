@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { passwordRulesDescription } from '../../lib/password';
+import { passwordRulesDescription, isPasswordValid } from '../../lib/password';
 import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import { bem, bemClassName } from '../../lib/bem';
@@ -53,6 +53,10 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
   }
 
   get passwordAlert() {
+    if (isPasswordValid(this.state.password)) {
+      return { variant: 'success', text: passwordRulesDescription() } as any;
+    }
+
     if (this.props.errors.password) {
       return { variant: 'error', text: this.props.errors.password } as any;
     }
@@ -70,7 +74,7 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
     }
 
     if (this.state.password === this.state.confirmPassword) {
-      return { variant: 'success', text: 'Passwords match' };
+      return { variant: 'success', text: 'Passwords match' } as any;
     }
 
     return { variant: 'error', text: 'Passwords do not match' } as any;
@@ -132,7 +136,6 @@ export class CreateEmailAccount extends React.Component<Properties, State> {
               value={this.state.confirmPassword}
               onChange={this.trackConfirmPassword}
               error={this.confirmPasswordAlert?.variant === 'error' || false}
-              success={this.confirmPasswordAlert?.variant === 'success' || false}
               alert={this.confirmPasswordAlert}
             />
           </div>

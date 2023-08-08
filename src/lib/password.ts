@@ -2,7 +2,7 @@ export function passwordRulesDescription() {
   return 'Must include at least 8 characters, 1 number, 1 lowercase letter and 1 uppercase letter';
 }
 
-export function isPasswordStrong(password: string): boolean {
+export function isPasswordValid(password: string): boolean {
   if (password.trim() === '' || password.length < 8) {
     return false;
   }

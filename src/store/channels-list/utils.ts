@@ -28,8 +28,8 @@ export const toLocalChannel = (input): Partial<Channel> => {
     otherMembers: input.otherMembers || [],
     lastMessage: input.lastMessage || null,
     lastMessageCreatedAt: input.lastMessage?.createdAt || null,
-    isChannel: input.isChannel === undefined ? true : input.isChannel,
-    groupChannelType: input.groupChannelType || '',
+    isChannel: (input.isChannel ?? true) || !!input.isChannel,
+    groupChannelType: input.groupChannelType || '', // Is this the right default to use?
     conversationStatus: ConversationStatus.CREATED,
   };
 };

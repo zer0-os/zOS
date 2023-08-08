@@ -8,6 +8,7 @@
   0% {
     right: 0;
   }
+
   100% {
     right: $width-sidekick;
   }
@@ -21,8 +22,10 @@ $side-padding: 16px;
   flex-direction: column;
   padding-bottom: 16px;
 
-  user-select: none; /* Prevent text highlighting */
-  pointer-events: auto; /* Enable pointer events for click event */
+  /* Prevent text highlighting */
+  user-select: none;
+  /* Enable pointer events for click event */
+  pointer-events: auto;
 
   .messages-list {
     &__items {
@@ -64,6 +67,19 @@ $side-padding: 16px;
       // Forcing a height here allows the flex-grow to fill the size without growing too big
       height: 1px;
       padding: 0px $side-padding;
+    }
+
+    &__empty {
+      padding: 8px;
+      color: theme.$color-greyscale-11;
+      font-size: $font-size-medium;
+      line-height: 17px;
+      word-break: break-word;
+      text-align: center;
+
+      &-top-padding {
+        padding-top: 32px;
+      }
     }
   }
 }
@@ -431,7 +447,8 @@ $side-padding: 16px;
     }
 
     a {
-      pointer-events: none; /* Disable pointer events for clicking urls */
+      pointer-events: none;
+      /* Disable pointer events for clicking urls */
     }
   }
 

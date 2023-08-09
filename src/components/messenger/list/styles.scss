@@ -328,6 +328,7 @@ $side-padding: 16px;
 .selected-user-tag {
   &__selected-option {
     display: inline-block;
+    vertical-align: top;
   }
 
   &__selected-tag {

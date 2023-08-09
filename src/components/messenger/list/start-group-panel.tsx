@@ -8,6 +8,10 @@ import { AutocompleteMembers } from '../autocomplete-members';
 import { PanelHeader } from './panel-header';
 import { SelectedUserTag } from './selected-user-tag';
 
+import { bemClassName } from '../../../lib/bem';
+
+const cn = bemClassName('start-group-panel');
+
 export interface Properties {
   initialSelections: Option[];
   isContinuing: boolean;
@@ -61,10 +65,10 @@ export class StartGroupPanel extends React.Component<Properties, State> {
     return (
       <>
         <PanelHeader title='Select members' onBack={this.props.onBack} />
-        <div className='start-group-panel__search'>
+        <div {...cn('search')}>
           <AutocompleteMembers search={this.props.searchUsers} onSelect={this.selectOption}>
-            <div className='start-group-panel__selected-count'>
-              <span className='start-group-panel__selected-number'>{this.state.selectedOptions.length}</span> member
+            <div {...cn('selected-count')}>
+              <span {...cn('selected-number')}>{this.state.selectedOptions.length}</span> member
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected
             </div>
             <div>
@@ -75,7 +79,7 @@ export class StartGroupPanel extends React.Component<Properties, State> {
           </AutocompleteMembers>
         </div>
         <Button
-          className='start-group-panel__continue'
+          {...cn('continue')}
           onPress={this.continue}
           isDisabled={this.isContinueDisabled}
           isLoading={this.props.isContinuing}

@@ -4,8 +4,9 @@ import { AutocompleteMembers } from '../autocomplete-members';
 import { PanelHeader } from './panel-header';
 import { IconUsersPlus } from '@zero-tech/zui/icons';
 
-import { bem } from '../../../lib/bem';
-const c = bem('create-conversation');
+import { bemClassName } from '../../../lib/bem';
+
+const cn = bemClassName('create-conversation');
 
 export interface Properties {
   search: (input: string) => any;
@@ -25,11 +26,11 @@ export default class CreateConversationPanel extends React.Component<Properties>
       <>
         <PanelHeader title='New message' onBack={this.props.onBack} />
 
-        <div className={c('')}>
-          <div className={c('search')}>
+        <div {...cn('')}>
+          <div {...cn('search')}>
             <AutocompleteMembers search={this.props.search} onSelect={this.userSelected}>
-              <div className={c('group-button')} onClick={this.props.onStartGroupChat}>
-                <div className={c('group-icon')}>
+              <div {...cn('group-button')} onClick={this.props.onStartGroupChat}>
+                <div {...cn('group-icon')}>
                   <IconUsersPlus size={25} />
                 </div>
                 Start a group chat

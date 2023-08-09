@@ -13,6 +13,10 @@ import { itemToOption } from '../lib/utils';
 import { ScrollbarContainer } from '../../scrollbar-container';
 import escapeRegExp from 'lodash/escapeRegExp';
 
+import { bemClassName } from '../../../lib/bem';
+
+const cn = bemClassName('messages-list');
+
 export interface Properties {
   conversations: Channel[];
   myUserId: string;
@@ -108,23 +112,23 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        <div className='messages-list__items'>
-          <div className='messages-list__items-actions'>
+        <div {...cn('items')}>
+          <div {...cn('items-actions')}>
             <Input
-              className='messages-list__items-conversations-search'
+              {...cn('items-conversations-search')}
               onChange={this.searchChanged}
               size={'small'}
               type={'search'}
               placeholder='Search'
               value={this.state.filter}
             />
-            <div className='messages-list__items-conversations-new'>
+            <div {...cn('items-conversations-new')}>
               <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={24} />
             </div>
           </div>
 
           <ScrollbarContainer variant='on-hover'>
-            <div className='messages-list__item-list'>
+            <div {...cn('item-list')}>
               {this.filteredConversations.map((c) => (
                 <ConversationItem
                   key={c.id}
@@ -138,9 +142,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
               {this.filteredConversations?.length === 0 &&
                 this.state.userSearchResults?.length === 0 &&
-                this.state.filter !== '' && (
-                  <div className='messages-list__empty'>{`No results for '${this.state.filter}' `}</div>
-                )}
+                this.state.filter !== '' && <div {...cn('empty')}>{`No results for '${this.state.filter}' `}</div>}
 
               {this.state.userSearchResults?.length > 0 && this.state.filter !== '' && (
                 <UserSearchResults
@@ -153,7 +155,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </ScrollbarContainer>
         </div>
         <Button
-          className={'messages-list__invite-button'}
+          {...cn('invite-button')}
           variant={'text'}
           onPress={this.openInviteDialog}
           startEnhancer={<IconUserPlus1 />}

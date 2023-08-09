@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import { isCustomIcon, lastSeenText } from '../utils/utils';
+import { isCustomIcon, lastSeenText } from '../utils';
 import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 

@@ -1,6 +1,4 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../../modules/animation' as animation;
-@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @import '../../../variables';
 @import '../../../layout';
 
@@ -16,34 +14,6 @@ $side-padding: 16px;
   user-select: none;
   /* Enable pointer events for click event */
   pointer-events: auto;
-}
-
-.header-button {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 14px;
-  padding: 0px $side-padding;
-  color: themeDeprecated.$font-color-primary;
-  background-color: transparent;
-  transition: background-color animation.$animation-duration ease-out;
-
-  cursor: default;
-  height: 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  &__icon {
-    z-index: 30;
-
-    &-plus {
-      cursor: pointer;
-
-      path {
-        stroke: themeDeprecated.$actionable-active-color;
-      }
-    }
-  }
 }
 
 .messenger-list {

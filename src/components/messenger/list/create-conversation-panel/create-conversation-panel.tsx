@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import { AutocompleteMembers } from '../autocomplete-members';
-import { PanelHeader } from './panel-header';
+import { AutocompleteMembers } from '../../autocomplete-members';
+import { PanelHeader } from '../panel-header';
 import { IconUsersPlus } from '@zero-tech/zui/icons';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './create-conversation-panel.scss';
 
 const cn = bemClassName('create-conversation');
 

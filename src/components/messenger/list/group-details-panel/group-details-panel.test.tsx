@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { GroupDetailsPanel, Properties } from './group-details-panel';
-import { SelectedUserTag } from './selected-user-tag';
+import { SelectedUserTag } from '../selected-user-tag';
 
 describe('GroupDetailsPanel', () => {
   const subject = (props: Partial<Properties>) => {

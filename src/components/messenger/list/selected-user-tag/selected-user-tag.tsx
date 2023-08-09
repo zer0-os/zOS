@@ -1,11 +1,12 @@
 import * as React from 'react';
 
-import { Option } from '../lib/types';
+import { Option } from '../../lib/types';
 
 import { Avatar } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './selected-user-tag.scss';
 
 const cn = bemClassName('selected-user-tag');
 

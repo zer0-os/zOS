@@ -1,11 +1,13 @@
 import * as React from 'react';
 
-import { Option } from '../lib/types';
-import { highlightFilter } from '../lib/utils';
+import { Option } from '../../lib/types';
+import { highlightFilter } from '../../lib/utils';
 
 import { Avatar } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './user-search-results.scss';
+import '../styles.scss';
 
 const cn = bemClassName('user-search-results');
 

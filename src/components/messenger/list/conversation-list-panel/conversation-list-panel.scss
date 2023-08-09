@@ -1,0 +1,76 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+@import '../../../../layout';
+
+@keyframes conversation-slide-in {
+  0% {
+    right: 0;
+  }
+
+  100% {
+    right: $width-sidekick;
+  }
+}
+
+$side-padding: 16px;
+
+.messages-list {
+  &__items {
+    flex-grow: 1;
+    display: flex;
+    gap: 24px;
+    flex-direction: column;
+    padding: $side-padding 0;
+
+    animation: conversation-slide-in 600ms ease-in forwards;
+
+    &-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 $side-padding;
+    }
+
+    &-conversations-search {
+      flex: 1;
+
+      // @note: this is here because parent size calculations with flex 1
+      // are a little funky with zUI input right now.
+      input {
+        width: 0;
+      }
+    }
+
+    &-conversations-new {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+    }
+  }
+
+  &__item-list {
+    flex-grow: 1;
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
+    padding: 0px $side-padding;
+  }
+
+  &__empty {
+    padding: 8px;
+    color: theme.$color-greyscale-11;
+    font-size: $font-size-medium;
+    line-height: 17px;
+    word-break: break-word;
+    text-align: center;
+
+    &-top-padding {
+      padding-top: 32px;
+    }
+  }
+}
+
+.messages-list__invite-button {
+  margin: 0px 16px;
+  stroke-width: 2px; // make startEnhancer bold
+}

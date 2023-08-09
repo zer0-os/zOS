@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { StartGroupPanel, Properties } from './start-group-panel';
 
-jest.mock('../autocomplete-members');
+jest.mock('../../autocomplete-members');
 jest.mock('@zero-tech/zui/components');
 
 describe('StartGroupPanel', () => {

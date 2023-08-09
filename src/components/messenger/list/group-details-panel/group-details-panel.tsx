@@ -1,13 +1,14 @@
 import * as React from 'react';
 
-import { Option } from '../lib/types';
-import { PanelHeader } from './panel-header';
-import { ImageUpload } from '../../image-upload';
-import { SelectedUserTag } from './selected-user-tag';
+import { Option } from '../../lib/types';
+import { PanelHeader } from '../panel-header';
+import { ImageUpload } from '../../../image-upload';
+import { SelectedUserTag } from '../selected-user-tag';
 import { Button, Input } from '@zero-tech/zui/components';
 import { IconImagePlus, IconMessagePlusSquare } from '@zero-tech/zui/icons';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './group-details-panel.scss';
 
 const cn = bemClassName('group-details-panel');
 

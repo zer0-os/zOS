@@ -1,19 +1,21 @@
 import * as React from 'react';
 
-import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { isCustomIcon, lastSeenText } from './utils';
-import { highlightFilter } from '../lib/utils';
-import { Channel } from '../../../store/channels';
+import { otherMembersToString } from '../../../../platform-apps/channels/util';
+import { isCustomIcon, lastSeenText } from '../utils/utils';
+import { highlightFilter } from '../../lib/utils';
+import { Channel } from '../../../../store/channels';
 
-import Tooltip from '../../tooltip';
+import Tooltip from '../../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
 import moment from 'moment';
-import { ContentHighlighter } from '../../content-highlighter';
-import { MediaType, MessageSendStatus } from '../../../store/messages';
+import { ContentHighlighter } from '../../../content-highlighter';
+import { MediaType, MessageSendStatus } from '../../../../store/messages';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './conversation-item.scss';
+import '../styles.scss';
 
 const cn = bemClassName('conversation-item');
 

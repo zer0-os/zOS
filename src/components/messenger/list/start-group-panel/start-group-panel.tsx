@@ -2,13 +2,14 @@ import * as React from 'react';
 
 import { Button } from '@zero-tech/zui/components';
 
-import { Option } from '../lib/types';
+import { Option } from '../../lib/types';
 
-import { AutocompleteMembers } from '../autocomplete-members';
-import { PanelHeader } from './panel-header';
-import { SelectedUserTag } from './selected-user-tag';
+import { AutocompleteMembers } from '../../autocomplete-members';
+import { PanelHeader } from '../panel-header';
+import { SelectedUserTag } from '../selected-user-tag';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
+import './start-group-panel.scss';
 
 const cn = bemClassName('start-group-panel');
 

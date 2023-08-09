@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { IconArrowNarrowLeft } from '@zero-tech/zui/icons';
 
-import { bemClassName } from '../../../lib/bem';
-import './styles.scss';
+import { bemClassName } from '../../../../lib/bem';
+import './panel-header.scss';
 
 const cn = bemClassName('messenger-panel');
 

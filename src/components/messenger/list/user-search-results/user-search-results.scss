@@ -1,0 +1,41 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+@import '../../../../layout';
+
+.user-search-results {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+
+  &__title {
+    padding: 8px;
+    color: theme.$color-greyscale-11;
+    font-size: $font-size-medium;
+    line-height: 17px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 8px;
+    gap: 16px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: theme.$color-primary-3;
+      border-radius: 8px;
+      outline: none;
+    }
+  }
+
+  &__label {
+    font-size: $font-size-medium;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

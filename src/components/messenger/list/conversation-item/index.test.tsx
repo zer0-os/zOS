@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import { ConversationItem, Properties } from '.';
 import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
-import { MediaType, MessageSendStatus } from '../../../../store/messages';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -102,7 +101,6 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 0,
         otherMembers: [],
-        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -115,7 +113,6 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 7,
         otherMembers: [],
-        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -125,106 +122,9 @@ describe('ConversationItem', () => {
   it('renders the message preview', function () {
     const messagePreview = 'I said something here';
 
-    const wrapper = subject({
-      myUserId: 'id',
-      conversation: {
-        messagePreview,
-        otherMembers: [],
-        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' } },
-      } as any,
-    });
+    const wrapper = subject({ conversation: { messagePreview, otherMembers: [] } as any });
 
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(`You: ${messagePreview}`);
-  });
-
-  it('displays "You" when the last message sender is the user', function () {
-    const conversation: any = {
-      messagePreview: 'Hello there',
-      lastMessage: { sender: { userId: 'my-user-id', firstName: 'John' } },
-      otherMembers: [],
-    };
-
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Hello there');
-  });
-
-  it('displays the senders name when the last message sender is not the user', function () {
-    const conversation: any = {
-      messagePreview: 'Hello there',
-      lastMessage: { sender: { userId: 'other-user-id', firstName: 'Steve' } },
-      otherMembers: [],
-    };
-
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: Hello there');
-  });
-
-  it('displays only messagePreview when lastMessage.admin has data', function () {
-    const conversation: any = {
-      messagePreview: 'Admin Message',
-      lastMessage: {
-        admin: {
-          type: 'AdminMessageType',
-          inviterId: 'some-id',
-        },
-        sender: { userId: 'other-user-id', firstName: 'Steve' },
-      },
-      otherMembers: [],
-    };
-
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Admin Message');
-  });
-
-  it('renders a text if i sent/received a media message', function () {
-    const conversation: any = {
-      messagePreview: '',
-      otherMembers: [],
-      lastMessage: { sender: { userId: 'my-user-id' }, media: { type: MediaType.Image } },
-    };
-
-    // sent
-    let wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Sent an image');
-
-    // received
-    conversation.lastMessage.sender.userId = 'other-user-id';
-    conversation.lastMessage.sender.firstName = 'Steve';
-    wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: sent an image');
-  });
-
-  it('renders failed to send message if the last message failed', function () {
-    const messagePreview = 'I said something here';
-
-    const wrapper = subject({
-      myUserId: 'id',
-      conversation: {
-        messagePreview,
-        otherMembers: [],
-        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' }, sendStatus: MessageSendStatus.FAILED },
-      } as any,
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Failed to send');
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(messagePreview);
   });
 
   describe('status', () => {
@@ -328,6 +228,5 @@ function convoWith(...otherMembers): any {
   return {
     id: 'convo-id',
     otherMembers,
-    lastMessage: { sender: { ...otherMembers[0], userId: 'id' } },
   };
 }

@@ -11,7 +11,6 @@ import { IconUsers1 } from '@zero-tech/zui/icons';
 
 import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
-import { MediaType, MessageSendStatus } from '../../../../store/messages';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -111,50 +110,6 @@ export class ConversationItem extends React.Component<Properties> {
     return '';
   }
 
-  isLastMessageSentOrReceived(lastMessage) {
-    if (lastMessage.sender.userId === this.props.myUserId) {
-      return 'You: Sent';
-    }
-
-    return `${lastMessage.sender.firstName ?? 'They'}: sent`;
-  }
-
-  get message() {
-    if (!this.props.conversation || (!this.props.conversation.lastMessage && !this.props.conversation.messagePreview)) {
-      return '';
-    }
-
-    const { messagePreview, lastMessage } = this.props.conversation;
-
-    if (lastMessage.sendStatus === MessageSendStatus.FAILED) {
-      return 'You: Failed to send';
-    }
-
-    if (messagePreview) {
-      const isAdminMessage = lastMessage?.admin && Object.keys(lastMessage.admin).length > 0;
-      if (isAdminMessage) return messagePreview;
-
-      const isUserLastMessageSender = lastMessage?.sender?.userId === this.props.myUserId;
-      const lastSenderDisplayName = isUserLastMessageSender ? 'You' : lastMessage.sender.firstName;
-
-      return `${lastSenderDisplayName}: ${messagePreview}`;
-    }
-
-    const str = this.isLastMessageSentOrReceived(lastMessage);
-    switch (lastMessage?.media?.type) {
-      case MediaType.Image:
-        return `${str} an image`;
-      case MediaType.Video:
-        return `${str} a video`;
-      case MediaType.File:
-        return `${str} a file`;
-      case MediaType.Audio:
-        return `${str} an audio`;
-      default:
-        return '';
-    }
-  }
-
   render() {
     const { conversation, activeConversationId } = this.props;
     const hasUnreadMessages = conversation.unreadCount !== 0;
@@ -190,7 +145,7 @@ export class ConversationItem extends React.Component<Properties> {
             </div>
             <div {...cn('content')}>
               <div {...cn('message')} is-unread={isUnread}>
-                <ContentHighlighter message={this.message} variant='negative' tabIndex={-1} />
+                <ContentHighlighter message={this.props.conversation.messagePreview} variant='negative' tabIndex={-1} />
               </div>
               {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
             </div>

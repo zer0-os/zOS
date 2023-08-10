@@ -25,7 +25,7 @@ import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
-import { adminMessageText } from '../../../lib/chat/chat-message';
+import { getMessagePreview } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -98,12 +98,7 @@ export class Container extends React.Component<Properties, State> {
       .sort((a, b) =>
         compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
       )
-      .map((conversation) => ({
-        ...conversation,
-        messagePreview: conversation.lastMessage?.isAdmin
-          ? adminMessageText(conversation.lastMessage, state)
-          : conversation.lastMessage?.message,
-      }));
+      .map((conversation) => ({ ...conversation, messagePreview: getMessagePreview(conversation.lastMessage, state) }));
 
     return {
       conversations,

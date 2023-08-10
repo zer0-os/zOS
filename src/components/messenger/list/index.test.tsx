@@ -1,4 +1,3 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { normalize } from '../../../store/channels-list';
@@ -11,7 +10,6 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
-import { AdminMessageType } from '../../../store/messages';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
@@ -311,13 +309,13 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf() }, isChannel: false },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} }, isChannel: false },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} }, isChannel: false },
         { id: 'convo-3', createdAt: moment('2023-03-04').valueOf(), isChannel: false },
         {
           id: 'convo-4',
           createdAt: moment('2023-03-05').valueOf(),
-          lastMessage: { createdAt: moment('2023-03-02').valueOf() },
+          lastMessage: { createdAt: moment('2023-03-02').valueOf(), sender: {} },
           isChannel: false,
         },
       ]);
@@ -345,40 +343,21 @@ describe('messenger-list', () => {
 
     test('messagePreview', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { message: 'The last message' }, isChannel: false },
-        { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
+        {
+          id: 'convo-1',
+          lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
+          isChannel: false,
+        },
+        {
+          id: 'convo-2',
+          lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
+          isChannel: false,
+        },
       ]);
 
       expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-        'The last message',
-        'Second message last',
-      ]);
-    });
-
-    test('admin messagePreview', () => {
-      const state = subject(
-        [
-          {
-            id: 'convo-1',
-            lastMessage: {
-              message: 'The last message',
-              isAdmin: true,
-              admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'invitee-id' },
-            },
-            isChannel: false,
-          },
-          { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
-        ],
-        {},
-        [
-          user({ userId: 'inviter-id', firstName: 'current user' }),
-          user({ userId: 'invitee-id', firstName: 'Courtney' }),
-        ]
-      );
-
-      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-        'Courtney joined you on Zero',
-        'Second message last',
+        'Jack: The last message',
+        'Jack: Second message last',
       ]);
     });
 
@@ -482,7 +461,3 @@ describe('messenger-list', () => {
     });
   });
 });
-
-function user(attrs: Partial<{ userId: string; firstName: string; isAMemberOfWorlds: boolean }> = {}) {
-  return { userId: 'inviter-id', firstName: 'current user', isAMemberOfWorlds: true, ...attrs };
-}

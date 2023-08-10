@@ -126,7 +126,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   isOneOnOne() {
-    return this.props.directMessage?.otherMembers?.length === 1;
+    return this.props.directMessage?.isOneOnOne;
   }
 
   avatarStatus() {

@@ -22,7 +22,10 @@ describe('ConversationItem', () => {
 
   it('renders other members avatar for one on one', function () {
     const wrapper = subject({
-      conversation: convoWith({ firstName: 'Johnny', profileImage: 'image-url' }),
+      conversation: {
+        isOneOnOne: true,
+        ...convoWith({ firstName: 'Johnny', profileImage: 'image-url' }),
+      },
     });
 
     expect(wrapper.find('Avatar').prop('imageURL')).toEqual('image-url');

@@ -14,7 +14,3 @@ export interface CreateMessengerConversation {
   userIds: string[];
   image?: File;
 }
-
-export interface ChannelsReceivedPayload {
-  channels: Channel[];
-}

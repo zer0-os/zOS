@@ -432,7 +432,9 @@ describe('ChannelViewContainer', () => {
 
     it('includes user name if one on one', () => {
       const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
-      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
+      const wrapper = subject({
+        channel: { isOneOnOne: true, otherMembers, conversationStatus: ConversationStatus.CREATING },
+      });
 
       expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
         "We're connecting you with Jack Black. Try again in a few seconds."
@@ -469,7 +471,9 @@ describe('ChannelViewContainer', () => {
 
     it('includes user name if one on one', () => {
       const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
-      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.ERROR } });
+      const wrapper = subject({
+        channel: { isOneOnOne: true, otherMembers, conversationStatus: ConversationStatus.ERROR },
+      });
 
       expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual(
         "Sorry! We couldn't connect you with Jack Black. Please refresh and try again."

@@ -327,7 +327,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
-  yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);

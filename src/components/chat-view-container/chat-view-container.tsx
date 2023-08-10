@@ -295,13 +295,11 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get isOneOnOne() {
-    return this.props.channel?.otherMembers?.length === 1;
+    return this.props.channel?.isOneOnOne;
   }
 
   render() {
     if (!this.props.channel) return null;
-
-    const isOneOnOne = this.isOneOnOne;
 
     return (
       <>
@@ -327,7 +325,7 @@ export class Container extends React.Component<Properties, State> {
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}
-          isOneOnOne={isOneOnOne}
+          isOneOnOne={this.isOneOnOne}
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}

@@ -15,6 +15,7 @@ import { AdminMessageType } from '../../../store/messages';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
+import { RewardsBar } from '../../rewards-bar';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -92,6 +93,18 @@ describe('messenger-list', () => {
     wrapper.find(ConversationListPanel).prop('startConversation')();
 
     expect(startCreateConversation).toHaveBeenCalledOnce();
+  });
+
+  it('renders RewardsBar when stage is equal to none', function () {
+    const wrapper = subject({ stage: Stage.None });
+
+    expect(wrapper).toHaveElement(RewardsBar);
+  });
+
+  it('does not render RewardsBar when stage is not equal to none', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
+
+    expect(wrapper).not.toHaveElement(RewardsBar);
   });
 
   it('renders CreateConversationPanel', function () {

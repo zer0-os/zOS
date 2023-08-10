@@ -25,7 +25,7 @@ export default class CreateConversationPanel extends React.Component<Properties>
   render() {
     return (
       <>
-        <PanelHeader title='New message' onBack={this.props.onBack} />
+        <PanelHeader title='New Conversation' onBack={this.props.onBack} />
 
         <div {...cn('')}>
           <div {...cn('search')}>

@@ -123,8 +123,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               placeholder='Search'
               value={this.state.filter}
             />
-            <div {...cn('items-conversations-new')}>
-              <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={24} />
+            <div>
+              <IconButton
+                {...cn('items-conversations-new-icon')}
+                Icon={IconPlus}
+                onClick={this.props.startConversation}
+                size={24}
+              />
             </div>
           </div>
 

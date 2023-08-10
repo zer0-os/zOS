@@ -49,6 +49,7 @@ export interface Channel {
   hasJoined?: boolean;
   groupChannelType: GroupChannelType;
   icon?: string;
+  isOneOnOne: boolean;
   isChannel: boolean;
   hasLoadedMessages: boolean;
   conversationStatus: ConversationStatus;

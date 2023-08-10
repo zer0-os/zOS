@@ -143,6 +143,7 @@ export class MatrixClient implements IChatClient {
     name: channel.name,
     icon: channel.getAvatarUrl(),
     isChannel: true,
+    isOneOnOne: false,
     otherMembers: [],
     lastMessage: null,
     lastMessageCreatedAt: null,

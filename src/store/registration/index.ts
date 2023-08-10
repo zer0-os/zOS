@@ -6,7 +6,6 @@ export enum SagaActionTypes {
   CreateAccount = 'registration/createAccount',
   CreateWeb3Account = 'registration/createWeb3Account',
   UpdateProfile = 'registration/updateProfile',
-  ResetPassword = 'registration/resetPassword',
 }
 
 export enum RegistrationStage {
@@ -14,7 +13,6 @@ export enum RegistrationStage {
   EmailAccountCreation = 'email-creation',
   WalletAccountCreation = 'wallet-creation',
   ProfileDetails = 'details',
-  ResetPassword = 'reset-password',
   Done = 'done',
 }
 
@@ -75,7 +73,6 @@ export const validateInvite = createAction<{ code: string }>(SagaActionTypes.Val
 export const createAccount = createAction<{ email: string; password: string }>(SagaActionTypes.CreateAccount);
 export const createWeb3Account = createAction<{ connector: Connectors }>(SagaActionTypes.CreateWeb3Account);
 export const updateProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.UpdateProfile);
-export const resetPassword = createAction<{ email: string }>(SagaActionTypes.ResetPassword);
 
 const slice = createSlice({
   name: 'registration',

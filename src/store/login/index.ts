@@ -16,6 +16,7 @@ export type LoginState = {
 export enum LoginStage {
   EmailLogin = 'email',
   Web3Login = 'web3',
+  ResetPassword = 'reset-password',
   Done = 'done',
 }
 

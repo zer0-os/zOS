@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { AccountCreationErrors, resetPassword } from '../../store/registration';
-import { ResetPassword } from '.';
+import { ResetPasswordErrors, resetPassword } from '../../store/reset-password';
+import { ResetPassword as ResetPasswordComponent } from '.';
 
 export interface PublicProperties {}
 
@@ -11,19 +11,21 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   errors: {
     email?: string;
-    password?: string | string[];
     general?: string;
   };
+  emailSubmitted: boolean;
+
   resetPassword: (data: { email: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { registration } = state;
+    const { resetPassword } = state;
 
     return {
-      isLoading: registration.loading,
-      errors: Container.mapErrors(registration.errors),
+      isLoading: resetPassword.loading,
+      emailSubmitted: resetPassword.emailSubmitted,
+      errors: Container.mapErrors(resetPassword.errors),
     };
   }
 
@@ -32,14 +34,11 @@ export class Container extends React.Component<Properties> {
 
     errors.forEach((error) => {
       switch (error) {
-        case AccountCreationErrors.EMAIL_INVALID:
+        case ResetPasswordErrors.EMAIL_INVALID:
           errorObject.email = 'Please enter a valid email address';
           break;
-        case AccountCreationErrors.EMAIL_ALREADY_EXISTS:
-          errorObject.email = 'This email is already associated with a ZERO account';
-          break;
-        case AccountCreationErrors.PROFILE_PRIMARY_EMAIL_ALREADY_EXISTS:
-          errorObject.email = 'This email is already associated with a ZERO account';
+        case ResetPasswordErrors.EMAIL_REQUIRED:
+          errorObject.email = 'Email is required';
           break;
         default:
           errorObject.general = 'An error has occurred';
@@ -55,7 +54,12 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <ResetPassword isLoading={this.props.isLoading} onSubmit={this.props.resetPassword} errors={this.props.errors} />
+      <ResetPasswordComponent
+        isLoading={this.props.isLoading}
+        onSubmit={this.props.resetPassword}
+        errors={this.props.errors}
+        emailSubmitted={this.props.emailSubmitted}
+      />
     );
   }
 }

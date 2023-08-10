@@ -38,6 +38,10 @@ $login-padding-bottom: 24px;
     box-sizing: border-box;
     margin: 0 auto;
     height: 100%;
+
+    &--is-reset-stage {
+      width: 310px;
+    }
   }
 
   &__header {
@@ -97,5 +101,20 @@ $login-padding-bottom: 24px;
         text-underline-offset: 2px;
       }
     }
+  }
+
+  &__forgotten-password-container {
+    padding-top: 16px;
+  }
+
+  &__button-link {
+    background: none;
+    color: var(--color-greyscale-12);
+    text-decoration: underline 1px;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    border: none;
+    outline: inherit;
+    padding: 0;
   }
 }

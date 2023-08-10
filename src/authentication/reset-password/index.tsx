@@ -12,9 +12,9 @@ const cn = bemClassName('reset-password');
 
 export interface Properties {
   isLoading: boolean;
+  emailSubmitted: boolean; // <- Add this property
   errors: {
     email?: string;
-    password?: string | string[];
     general?: string;
   };
 
@@ -96,7 +96,7 @@ export class ResetPassword extends React.Component<Properties, State> {
   }
 
   render() {
-    const emailSubmitted = false;
+    const { emailSubmitted } = this.props;
 
     return (
       <div {...cn('')}>

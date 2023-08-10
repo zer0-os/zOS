@@ -11,6 +11,7 @@ import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
+import { ResetPasswordContainer } from '../../authentication/reset-password/container';
 
 const cn = bemClassName('login-main');
 
@@ -25,6 +26,8 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     switch (this.props.stage) {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
+      case LoginStage.ResetPassword:
+        return <ResetPasswordContainer />;
       case LoginStage.Done:
         return <Redirect to='/' />;
       default:
@@ -39,7 +42,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     ];
 
     return (
-      !isLoggingIn && (
+      (!isLoggingIn || this.props.stage === LoginStage.EmailLogin) && (
         <ToggleGroup
           {...cn('toggle-group')}
           options={options}
@@ -48,22 +51,35 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
           selection={selectedOption}
           selectionType='single'
           isRequired
+          isDisabled={isLoggingIn}
         />
       )
     );
   }
 
-  renderFooter(stage) {
+  renderFooter(stage: LoginStage) {
     return (
       <div {...cn('other')}>
         <span>
-          {stage === LoginStage.EmailLogin ? (
-            <>
-              Forgot your password? <Link to='/get-access'>Reset</Link>
-            </>
-          ) : (
+          {(stage === LoginStage.EmailLogin || stage === LoginStage.Web3Login) && (
             <>
               Not on ZERO? <Link to='/get-access'>Create account</Link>
+            </>
+          )}
+          {stage === LoginStage.EmailLogin && (
+            <div {...cn('forgotten-password-container')}>
+              Forgot your password?{' '}
+              <button {...cn('button-link')} onClick={() => this.props.handleSelectionChange('reset')}>
+                Reset
+              </button>
+            </div>
+          )}
+          {stage === LoginStage.ResetPassword && (
+            <>
+              Back to{' '}
+              <button {...cn('button-link')} onClick={() => this.props.handleSelectionChange('backToLogin')}>
+                Log in
+              </button>
             </>
           )}
         </span>
@@ -74,21 +90,29 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   render() {
     const { isLoggingIn, stage } = this.props;
     const isWeb3LoginStage = stage === LoginStage.Web3Login;
+    const isResetPasswordStage = stage === LoginStage.ResetPassword;
     const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
 
     return (
       <>
         <ThemeEngine theme={Themes.Dark} />
         <div {...cn('')}>
-          <main {...cn('content')}>
+          <main {...cn('content', isResetPasswordStage && 'is-reset-stage')}>
             <div {...cn('logo-container')}>
               <ZeroLogo />
             </div>
-            <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
-              <h3 {...cn('header')}>Log In</h3>
-              {this.renderToggleGroup(isLoggingIn, selectedOption)}
+
+            <div
+              {...cn(
+                'inner-content-wrapper',
+                ((isLoggingIn && isWeb3LoginStage) || isResetPasswordStage) && 'is-logging-in'
+              )}
+            >
+              {!isResetPasswordStage && <h3 {...cn('header')}>Log In</h3>}
+              {!isResetPasswordStage && this.renderToggleGroup(isLoggingIn, selectedOption)}
               <div {...cn('login-option')}>{this.renderLoginOption()}</div>
             </div>
+
             {this.renderFooter(stage)}
           </main>
         </div>

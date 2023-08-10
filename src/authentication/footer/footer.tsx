@@ -21,7 +21,7 @@ export class Footer extends React.Component<Properties> {
     return (
       <div className={c('')}>
         <div>
-          <span>{this.props.stage === RegistrationStage.ResetPassword ? 'Back to ' : 'Already on ZERO? '}</span>
+          <span>Already on ZERO? </span>
           <Link to='/login'>Log in</Link>
         </div>
 

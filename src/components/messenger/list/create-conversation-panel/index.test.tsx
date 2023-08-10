@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import CreateConversationPanel, { Properties } from './create-conversation-panel';
+import CreateConversationPanel, { Properties } from '.';
 
 jest.mock('../../autocomplete-members');
 

@@ -8,7 +8,7 @@ import { ConversationItem } from '../conversation-item';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { Button, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
-import { UserSearchResults } from '../user-search-results/user-search-results';
+import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import escapeRegExp from 'lodash/escapeRegExp';

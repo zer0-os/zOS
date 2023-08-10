@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { UserSearchResults, Properties } from './user-search-results';
+import { UserSearchResults, Properties } from '.';
 
 describe('UserSearchResults', () => {
   const subject = (props: Partial<Properties>) => {

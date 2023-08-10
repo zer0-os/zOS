@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { GroupDetailsPanel, Properties } from './group-details-panel';
+import { GroupDetailsPanel, Properties } from '.';
 import { SelectedUserTag } from '../selected-user-tag';
 
 describe('GroupDetailsPanel', () => {

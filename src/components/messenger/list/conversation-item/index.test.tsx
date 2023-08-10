@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ConversationItem, Properties } from './conversation-item';
+import { ConversationItem, Properties } from '.';
 import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
 import { MediaType, MessageSendStatus } from '../../../../store/messages';

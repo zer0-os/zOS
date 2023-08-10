@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { PanelHeader, Properties } from './panel-header';
+import { PanelHeader, Properties } from '.';
 
 jest.mock('@zero-tech/zui/icons');
 

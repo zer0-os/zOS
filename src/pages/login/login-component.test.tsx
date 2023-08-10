@@ -75,7 +75,7 @@ describe('Login Component', () => {
 
   it('renders "Login" button when stage is LoginStage.ResetPassword', () => {
     const wrapper = subject({ stage: LoginStage.ResetPassword });
-    expect(wrapper.find('button').text()).toBe('Login');
+    expect(wrapper.find('button').text()).toBe('Log in');
   });
 
   it('does not render ToggleGroup when isLoggingIn is true', () => {

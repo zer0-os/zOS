@@ -17,6 +17,9 @@ export function filterChannelsList(state, filter: ChannelType) {
 }
 
 export const toLocalChannel = (input): Partial<Channel> => {
+  const isChannel = (input.isChannel ?? true) || !!input.isChannel;
+  const otherMembers = input.otherMembers || [];
+
   return {
     id: input.id,
     name: input.name,
@@ -25,11 +28,12 @@ export const toLocalChannel = (input): Partial<Channel> => {
     unreadCount: input.unreadCount,
     hasJoined: input.hasJoined,
     createdAt: input.createdAt,
-    otherMembers: input.otherMembers || [],
+    otherMembers,
     lastMessage: input.lastMessage || null,
     lastMessageCreatedAt: input.lastMessage?.createdAt || null,
-    isChannel: input.isChannel === undefined ? true : input.isChannel,
-    groupChannelType: input.groupChannelType || '',
+    isChannel,
+    groupChannelType: input.groupChannelType || '', // Is this the right default to use?
     conversationStatus: ConversationStatus.CREATED,
+    isOneOnOne: !isChannel && input.isDistinct && otherMembers.length === 1,
   };
 };

@@ -58,14 +58,6 @@
     &--edit {
       width: 100%;
     }
-
-    &--fill {
-      .message__block-image {
-        img {
-          max-height: 640px;
-        }
-      }
-    }
   }
 
   &__block-body {
@@ -125,6 +117,7 @@
       display: block;
       margin: auto;
       max-width: 100%;
+      max-height: 640px;
     }
   }
 

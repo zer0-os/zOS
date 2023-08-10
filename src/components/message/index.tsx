@@ -309,7 +309,7 @@ export class Message extends React.Component<Properties, State> {
             />
           </div>
         )}
-        <div {...cn('block', (this.state.isFullWidth && 'fill', this.state.isEditing && 'edit'))}>
+        <div {...cn('block', this.state.isEditing && 'edit')}>
           {(message || media || preview) && (
             <>
               {!this.state.isEditing && (

@@ -19,7 +19,7 @@ import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
-import CreateConversationPanel from './create-conversation-panel/create-conversation-panel';
+import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ConversationListPanel, Properties } from './conversation-list-panel';
+import { ConversationListPanel, Properties } from '.';
 import { Channel } from '../../../../store/channels';
 
 describe('ConversationListPanel', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { SelectedUserTag, Properties } from './selected-user-tag';
+import { SelectedUserTag, Properties } from '.';
 
 jest.mock('@zero-tech/zui/components', () => ({ Avatar: () => <></> }));
 jest.mock('@zero-tech/zui/icons', () => ({ IconXClose: () => <></> }));

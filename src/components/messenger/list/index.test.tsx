@@ -6,7 +6,7 @@ import { normalize as normalizeUsers } from '../../../store/users';
 import { RootState } from '../../../store/reducer';
 import moment from 'moment';
 import { when } from 'jest-when';
-import CreateConversationPanel from './create-conversation-panel/create-conversation-panel';
+import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';

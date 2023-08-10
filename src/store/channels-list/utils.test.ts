@@ -113,4 +113,45 @@ describe(toLocalChannel, () => {
       expect(channel.isChannel).toBe(false);
     });
   });
+
+  describe('isOneOnOne', () => {
+    it('is true if it is a conversation and isDistinct and has a single other member', async function () {
+      const apiResponse = { isChannel: false, isDistinct: true, otherMembers: [{ id: 'other' }] };
+
+      const channel = toLocalChannel(apiResponse);
+
+      expect(channel.isOneOnOne).toBe(true);
+    });
+
+    it('is false if it is NOT a conversation', async function () {
+      const apiResponse = { isChannel: true, isDistinct: true, otherMembers: [{ id: 'other' }] };
+
+      const channel = toLocalChannel(apiResponse);
+
+      expect(channel.isOneOnOne).toBe(false);
+    });
+
+    it('is false if it is NOT isDistcint', async function () {
+      const apiResponse = { isChannel: false, isDistinct: false, otherMembers: [{ id: 'other' }] };
+
+      const channel = toLocalChannel(apiResponse);
+
+      expect(channel.isOneOnOne).toBe(false);
+    });
+
+    it('is false if there is more than one othe member', async function () {
+      const apiResponse = {
+        isChannel: false,
+        isDistinct: true,
+        otherMembers: [
+          { id: 'other' },
+          { id: 'second' },
+        ],
+      };
+
+      const channel = toLocalChannel(apiResponse);
+
+      expect(channel.isOneOnOne).toBe(false);
+    });
+  });
 });

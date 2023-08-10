@@ -42,7 +42,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
     this.setState({ filter: tempSearch });
 
-    const oneOnOneConversations = this.props.conversations.filter((c) => c.otherMembers.length === 1);
+    const oneOnOneConversations = this.props.conversations.filter((c) => c.isOneOnOne);
     const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
 
     const items: Item[] = await this.props.search(tempSearch);

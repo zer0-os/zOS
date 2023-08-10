@@ -187,6 +187,7 @@ describe('messenger-chat', () => {
     it('header renders avatar', function () {
       const wrapper = subject({
         directMessage: {
+          isOneOnOne: true,
           otherMembers: [
             stubUser({
               profileImage: 'avatar-url',

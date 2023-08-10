@@ -34,7 +34,6 @@ export function* resetPasswordPage() {
     if (success) {
       yield put(setEmailSubmitted(true));
     } else {
-      // Map result.response to proper error enum values here
       let errors = [];
       if (result.response === 'EMAIL_NOT_FOUND') {
         errors.push(ResetPasswordErrors.EMAIL_NOT_FOUND);

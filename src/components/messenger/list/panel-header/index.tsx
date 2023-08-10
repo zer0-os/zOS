@@ -2,6 +2,11 @@ import * as React from 'react';
 
 import { IconArrowNarrowLeft } from '@zero-tech/zui/icons';
 
+import { bemClassName } from '../../../../lib/bem';
+import './panel-header.scss';
+
+const cn = bemClassName('messenger-panel');
+
 export interface Properties {
   title: string;
   onBack: () => void;
@@ -10,8 +15,8 @@ export interface Properties {
 export class PanelHeader extends React.Component<Properties> {
   render() {
     return (
-      <div className='messenger-panel__header'>
-        <span className='messenger-panel__back' onClick={this.props.onBack}>
+      <div {...cn('header')}>
+        <span {...cn('back')} onClick={this.props.onBack}>
           <IconArrowNarrowLeft size={24} isFilled />
         </span>
         {this.props.title}

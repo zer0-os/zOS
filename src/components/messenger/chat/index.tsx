@@ -13,7 +13,7 @@ import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
-import { isCustomIcon } from '../list/utils';
+import { isCustomIcon } from '../list/utils/utils';
 
 export interface PublicProperties {}
 

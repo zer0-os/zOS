@@ -1,19 +1,23 @@
 import * as React from 'react';
 
-import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { isCustomIcon, lastSeenText } from './utils';
-import { highlightFilter } from '../lib/utils';
-import { Channel } from '../../../store/channels';
+import { otherMembersToString } from '../../../../platform-apps/channels/util';
+import { isCustomIcon, lastSeenText } from '../utils/utils';
+import { highlightFilter } from '../../lib/utils';
+import { Channel } from '../../../../store/channels';
 
-import Tooltip from '../../tooltip';
+import Tooltip from '../../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
-import { bem } from '../../../lib/bem';
 import moment from 'moment';
-import { ContentHighlighter } from '../../content-highlighter';
-import { MediaType, MessageSendStatus } from '../../../store/messages';
-const c = bem('conversation-item');
+import { ContentHighlighter } from '../../../content-highlighter';
+import { MediaType, MessageSendStatus } from '../../../../store/messages';
+
+import { bemClassName } from '../../../../lib/bem';
+import './conversation-item.scss';
+import '../styles.scss';
+
+const cn = bemClassName('conversation-item');
 
 export interface Properties {
   filter: string;
@@ -79,9 +83,9 @@ export class ConversationItem extends React.Component<Properties> {
     }
 
     return (
-      <div className={c('group-icon')}>
+      <div {...cn('group-icon')}>
         <IconUsers1 size={25} />
-        <Status className={c('group-status')} type={this.conversationStatus} />
+        <Status {...cn('group-status')} type={this.conversationStatus} />
       </div>
     );
   }
@@ -169,7 +173,7 @@ export class ConversationItem extends React.Component<Properties> {
         }}
       >
         <div
-          className={c('')}
+          {...cn('')}
           onClick={this.handleMemberClick}
           onKeyDown={this.handleKeyDown}
           tabIndex={0}
@@ -177,18 +181,18 @@ export class ConversationItem extends React.Component<Properties> {
           is-active={isActive}
         >
           {this.renderAvatar()}
-          <div className={c('summary')}>
-            <div className={c('header')}>
-              <div className={c('name')} is-unread={isUnread}>
+          <div {...cn('summary')}>
+            <div {...cn('header')}>
+              <div {...cn('name')} is-unread={isUnread}>
                 {this.highlightedName()}
               </div>
-              <div className={c('timestamp')}>{this.displayDate}</div>
+              <div {...cn('timestamp')}>{this.displayDate}</div>
             </div>
-            <div className={c('content')}>
-              <div className={c('message')} is-unread={isUnread}>
+            <div {...cn('content')}>
+              <div {...cn('message')} is-unread={isUnread}>
                 <ContentHighlighter message={this.message} variant='negative' tabIndex={-1} />
               </div>
-              {hasUnreadMessages && <div className={c('unread-count')}>{conversation.unreadCount}</div>}
+              {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
             </div>
           </div>
         </div>

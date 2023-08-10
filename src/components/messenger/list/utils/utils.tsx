@@ -1,4 +1,4 @@
-import { monthsSince, fromNow } from '../../../lib/date';
+import { monthsSince, fromNow } from '../../../../lib/date';
 
 export function lastSeenText(user): string {
   if (user.isOnline) {

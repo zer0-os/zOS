@@ -1,0 +1,33 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+
+.messenger-panel {
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    color: theme.$color-greyscale-12;
+
+    padding: 16px;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    cursor: pointer;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: theme.$color-greyscale-transparency-3;
+    }
+  }
+}

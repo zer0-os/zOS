@@ -1,12 +1,14 @@
 import * as React from 'react';
 
-import { Option } from '../lib/types';
+import { Option } from '../../lib/types';
 
 import { Avatar } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 
-import { bem } from '../../../lib/bem';
-const c = bem('selected-user-tag');
+import { bemClassName } from '../../../../lib/bem';
+import './selected-user-tag.scss';
+
+const cn = bemClassName('selected-user-tag');
 
 export interface Properties {
   userOption: Option;
@@ -23,12 +25,12 @@ export class SelectedUserTag extends React.Component<Properties> {
     const { userOption: option } = this.props;
 
     return (
-      <div className={c('selected-option')}>
-        <div className={c('selected-tag')}>
+      <div {...cn('selected-option')}>
+        <div {...cn('selected-tag')}>
           <Avatar size={'extra small'} type={'circle'} imageURL={option.image} />
-          <span className={c('user-label')}>{option.label}</span>
+          <span {...cn('user-label')}>{option.label}</span>
           {this.props.onRemove && (
-            <button onClick={this.publishRemove} data-value={option.value} className={c('user-remove')}>
+            <button {...cn('user-remove')} onClick={this.publishRemove} data-value={option.value}>
               <IconXClose size={16} />
             </button>
           )}

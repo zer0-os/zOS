@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { StartGroupPanel, Properties } from './start-group-panel';
+import { StartGroupPanel, Properties } from '.';
 
-jest.mock('../autocomplete-members');
+jest.mock('../../autocomplete-members');
 jest.mock('@zero-tech/zui/components');
 
 describe('StartGroupPanel', () => {

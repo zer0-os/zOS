@@ -19,7 +19,6 @@ import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
-import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
@@ -33,6 +32,12 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards, rewardsPopupClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
 import { receiveSearchResults } from '../../../store/users';
+
+import { bemClassName } from '../../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('direct-message-members');
+const cnMessageList = bemClassName('messenger-list');
 
 export interface PublicProperties {
   onClose: () => void;
@@ -204,14 +209,14 @@ export class Container extends React.Component<Properties, State> {
 
   renderTitleBar() {
     return (
-      <div className='messenger-list__header'>
+      <div {...cnMessageList('header')}>
         {this.props.allowExpand && (
-          <button className='messenger-list__icon-button' onClick={this.props.enterFullScreenMessenger}>
+          <button {...cnMessageList('icon-button')} onClick={this.props.enterFullScreenMessenger}>
             <IconExpand1 label='Expand Messenger' size={12} isFilled={false} />
           </button>
         )}
         {this.props.allowClose && (
-          <button className='messenger-list__icon-button' onClick={this.props.onClose}>
+          <button {...cnMessageList('icon-button')} onClick={this.props.onClose}>
             <IconXClose label='Close Messenger' size={12} isFilled={false} />
           </button>
         )}
@@ -238,7 +243,7 @@ export class Container extends React.Component<Properties, State> {
           showNewRewards={this.props.showNewRewards}
         />
 
-        <div className='direct-message-members'>
+        <div {...cn('')}>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
               search={this.usersInMyNetworks}

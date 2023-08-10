@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ConversationListPanel, Properties } from './conversation-list-panel';
-import { Channel } from '../../../store/channels';
+import { ConversationListPanel, Properties } from '.';
+import { Channel } from '../../../../store/channels';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {

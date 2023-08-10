@@ -10,6 +10,7 @@ describe('ResetPassword', () => {
     const allProps: Properties = {
       isLoading: false,
       errors: {},
+      emailSubmitted: false,
       onSubmit: () => null,
       ...props,
     };
@@ -45,5 +46,28 @@ describe('ResetPassword', () => {
     const wrapper = subject({ errors: { general: 'invalid' } });
 
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
+  });
+
+  it('renders success message when email submitted', function () {
+    const wrapper = subject({ emailSubmitted: true });
+    wrapper.setState({ email: 'test@example.com' });
+    expect(wrapper.find('.reset-password__success-message').text()).toContain(
+      'An email containing a reset password link has been emailed to: test@example.com'
+    );
+  });
+
+  it('disables the submit button if isLoading or email is empty', function () {
+    let wrapper = subject({ isLoading: true });
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+
+    wrapper = subject({});
+    wrapper.setState({ email: '' });
+    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
+  });
+
+  it('tracks email input correctly', function () {
+    const wrapper = subject({});
+    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
+    expect(wrapper.state('email')).toEqual('jack@example.com');
   });
 });

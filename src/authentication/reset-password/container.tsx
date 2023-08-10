@@ -34,14 +34,17 @@ export class Container extends React.Component<Properties> {
 
     errors.forEach((error) => {
       switch (error) {
-        case ResetPasswordErrors.EMAIL_INVALID:
-          errorObject.email = 'Please enter a valid email address';
+        case ResetPasswordErrors.EMAIL_NOT_FOUND:
+          errorObject.email = 'Email not found';
           break;
         case ResetPasswordErrors.EMAIL_REQUIRED:
           errorObject.email = 'Email is required';
           break;
+        case ResetPasswordErrors.UNKNOWN_ERROR:
+          errorObject.general = 'An unknown error has occurred';
+          break;
         default:
-          errorObject.general = 'An error has occurred';
+          errorObject.general = 'An unknown error has occurred';
           break;
       }
     });

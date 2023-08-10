@@ -11,9 +11,9 @@ export type ResetState = {
 };
 
 export enum ResetPasswordErrors {
-  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+  UNKNOWN_ERROR = 'UNKNOWN',
   EMAIL_REQUIRED = 'EMAIL_REQUIRED',
-  EMAIL_INVALID = 'EMAIL_INVALID',
+  EMAIL_NOT_FOUND = 'EMAIL_NOT_FOUND',
 }
 
 export const initialState: ResetState = {

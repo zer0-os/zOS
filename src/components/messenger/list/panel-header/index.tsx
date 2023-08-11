@@ -19,7 +19,7 @@ export class PanelHeader extends React.Component<Properties> {
         <span {...cn('back')} onClick={this.props.onBack}>
           <IconArrowNarrowLeft size={24} isFilled />
         </span>
-        {this.props.title}
+        <div {...cn('title')}>{this.props.title}</div>
       </div>
     );
   }

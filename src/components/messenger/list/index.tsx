@@ -229,19 +229,21 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
 
-        <RewardsBar
-          zeroPreviousDay={this.props.zeroPreviousDay}
-          isRewardsLoading={this.props.isRewardsLoading}
-          isMessengerFullScreen={this.props.isMessengerFullScreen}
-          isFirstTimeLogin={this.props.isFirstTimeLogin}
-          includeRewardsAvatar={this.props.includeRewardsAvatar}
-          userName={this.props.userName}
-          userHandle={this.props.userHandle}
-          userAvatarUrl={this.props.userAvatarUrl}
-          onRewardsPopupClose={this.props.rewardsPopupClosed}
-          onLogout={this.props.logout}
-          showNewRewards={this.props.showNewRewards}
-        />
+        {this.props.stage === SagaStage.None && (
+          <RewardsBar
+            zeroPreviousDay={this.props.zeroPreviousDay}
+            isRewardsLoading={this.props.isRewardsLoading}
+            isMessengerFullScreen={this.props.isMessengerFullScreen}
+            isFirstTimeLogin={this.props.isFirstTimeLogin}
+            includeRewardsAvatar={this.props.includeRewardsAvatar}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+            onRewardsPopupClose={this.props.rewardsPopupClosed}
+            onLogout={this.props.logout}
+            showNewRewards={this.props.showNewRewards}
+          />
+        )}
 
         <div {...cn('')}>
           {this.props.stage === SagaStage.None && (

@@ -53,4 +53,25 @@ describe('Login Container', () => {
     });
     expect(wrapper.find(LoginComponent).exists()).toBe(false);
   });
+
+  test('handles reset password selection', () => {
+    const mockSwitchStage = jest.fn();
+    const wrapper = subject({
+      switchLoginStage: mockSwitchStage,
+    });
+    wrapper.find(LoginComponent).prop('handleSelectionChange')('reset');
+    expect(mockSwitchStage).toHaveBeenCalledWith(LoginStage.ResetPassword);
+  });
+
+  test('handles back to login selection and resets email submission', () => {
+    const mockSwitchStage = jest.fn();
+    const mockSetEmailSubmitted = jest.fn();
+    const wrapper = subject({
+      switchLoginStage: mockSwitchStage,
+      setEmailSubmitted: mockSetEmailSubmitted,
+    });
+    wrapper.find(LoginComponent).prop('handleSelectionChange')('backToLogin');
+    expect(mockSwitchStage).toHaveBeenCalledWith(LoginStage.EmailLogin);
+    expect(mockSetEmailSubmitted).toHaveBeenCalledWith(false);
+  });
 });

@@ -61,12 +61,21 @@ describe('Login Component', () => {
     expect(handleSelectionChange).toHaveBeenCalledWith('email');
   });
 
-  it('renders Link to create an account', () => {
-    const wrapper = subject();
+  it('renders "Create account" link and "Reset" button when stage is LoginStage.EmailLogin', () => {
+    const wrapper = subject({ stage: LoginStage.EmailLogin });
+    expect(wrapper.find(Link).prop('to')).toBe('/get-access');
+    expect(wrapper.find('button').text()).toBe('Reset');
+  });
 
-    const link = wrapper.find(Link);
-    expect(link).toHaveLength(1);
-    expect(link.prop('to')).toBe('/get-access');
+  it('renders "Create account" link when stage is LoginStage.Web3Login', () => {
+    const wrapper = subject({ stage: LoginStage.Web3Login });
+    expect(wrapper.find(Link).prop('to')).toBe('/get-access');
+    expect(wrapper).not.toHaveElement('button');
+  });
+
+  it('renders "Login" button when stage is LoginStage.ResetPassword', () => {
+    const wrapper = subject({ stage: LoginStage.ResetPassword });
+    expect(wrapper.find('button').text()).toBe('Log in');
   });
 
   it('does not render ToggleGroup when isLoggingIn is true and stage is Web3Login', () => {

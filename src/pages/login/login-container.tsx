@@ -3,14 +3,16 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { LoginStage, switchLoginStage } from '../../store/login';
+import { setEmailSubmitted } from '../../store/reset-password';
 
 import { LoginComponent } from './login-component';
 
 export interface LoginContainerProperties {
   shouldRender: boolean;
-
   isLoggingIn: boolean;
   stage: LoginStage;
+
+  setEmailSubmitted: (submitted: boolean) => void;
   switchLoginStage: (stage: LoginStage) => void;
 }
 
@@ -28,12 +30,29 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapActions(_props: LoginContainerProperties): Partial<LoginContainerProperties> {
     return {
       switchLoginStage,
+      setEmailSubmitted,
     };
   }
 
   handleSelectionChange = (selectedOption: string) => {
     const { switchLoginStage } = this.props;
-    switchLoginStage(selectedOption === 'web3' ? LoginStage.Web3Login : LoginStage.EmailLogin);
+    switch (selectedOption) {
+      case 'web3':
+        switchLoginStage(LoginStage.Web3Login);
+        break;
+      case 'email':
+        switchLoginStage(LoginStage.EmailLogin);
+        break;
+      case 'reset':
+        switchLoginStage(LoginStage.ResetPassword);
+        break;
+      case 'backToLogin':
+        switchLoginStage(LoginStage.EmailLogin);
+        this.props.setEmailSubmitted(false);
+        break;
+      default:
+        break;
+    }
   };
 
   render() {

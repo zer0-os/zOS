@@ -5,7 +5,6 @@ export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
   Web3Login = 'login/web3Login',
   SwitchLoginStage = 'login/switchLoginStage',
-  ResetPassword = 'reset-password',
 }
 
 export type LoginState = {
@@ -17,6 +16,7 @@ export type LoginState = {
 export enum LoginStage {
   EmailLogin = 'email',
   Web3Login = 'web3',
+  ResetPassword = 'reset-password',
   Done = 'done',
 }
 

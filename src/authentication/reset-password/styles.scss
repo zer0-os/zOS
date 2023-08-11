@@ -1,0 +1,76 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../styles';
+
+.reset-password {
+  margin: auto 0 0;
+
+  @include base();
+
+  &__heading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  &__heading {
+    @include heading();
+  }
+
+  &__sub-heading {
+    @include sub-heading();
+    color: theme.$color-greyscale-10;
+    max-width: 310px;
+  }
+
+  &__form {
+    padding-top: 8px;
+
+    @include form();
+  }
+
+  &__input {
+    width: 100%;
+    @include input();
+  }
+
+  &__input-alert {
+    font-size: 14px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    line-height: 17px;
+  }
+
+  &__error-container {
+    width: 100%;
+    padding-bottom: 16px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+    width: 100%;
+
+    &--no-error {
+      margin-top: 16px;
+    }
+
+    div {
+      margin: 0;
+    }
+  }
+
+  &__success-message {
+    text-align: center;
+    color: theme.$color-success-11;
+    width: 358px;
+    margin-top: 32px;
+  }
+}

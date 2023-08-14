@@ -94,22 +94,7 @@ export class Container extends React.Component<Properties, State> {
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
 
-    const conversations = denormalizeConversations(state)
-      .map((conversation) => {
-        const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
-        let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
-        return { ...conversation, mostRecentMessage };
-      })
-      .sort((a, b) =>
-        compareDatesDesc(a.mostRecentMessage?.createdAt || a.createdAt, b.mostRecentMessage?.createdAt || b.createdAt)
-      )
-      .map((conversation) => {
-        return {
-          ...conversation,
-          messagePreview: getMessagePreview(conversation.mostRecentMessage, state),
-          previewDisplayDate: previewDisplayDate(conversation.mostRecentMessage?.createdAt),
-        };
-      });
+    const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
 
     return {
       conversations,
@@ -289,6 +274,25 @@ export class Container extends React.Component<Properties, State> {
       </>
     );
   }
+}
+
+function addLastMessageMeta(state: RootState): any {
+  return (conversation) => {
+    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
+    return {
+      ...conversation,
+      mostRecentMessage,
+      messagePreview: getMessagePreview(mostRecentMessage, state),
+      previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
+    };
+  };
+}
+
+function byLastMessageOrCreation(a, b) {
+  const aDate = a.mostRecentMessage?.createdAt || a.createdAt;
+  const bDate = b.mostRecentMessage?.createdAt || b.createdAt;
+  return compareDatesDesc(aDate, bDate);
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

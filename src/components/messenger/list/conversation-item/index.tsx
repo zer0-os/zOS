@@ -9,7 +9,6 @@ import Tooltip from '../../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
-import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
 
 import { bemClassName } from '../../../../lib/bem';
@@ -87,27 +86,6 @@ export class ConversationItem extends React.Component<Properties> {
         <Status {...cn('group-status')} type={this.conversationStatus} />
       </div>
     );
-  }
-
-  get displayDate() {
-    const { lastMessage } = this.props.conversation;
-
-    if (lastMessage?.createdAt) {
-      const messageDate = moment(lastMessage.createdAt);
-      const currentDate = moment();
-
-      if (messageDate.isSame(currentDate, 'day')) {
-        return messageDate.format('h:mm A');
-      } else if (messageDate.isAfter(currentDate.clone().subtract(7, 'days'), 'day')) {
-        return messageDate.format('ddd');
-      } else if (messageDate.year() === currentDate.year()) {
-        return messageDate.format('MMM D');
-      } else {
-        return messageDate.format('MMM D, YYYY');
-      }
-    }
-
-    return '';
   }
 
   render() {

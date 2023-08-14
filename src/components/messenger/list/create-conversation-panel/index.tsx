@@ -22,6 +22,10 @@ export default class CreateConversationPanel extends React.Component<Properties>
     this.props.onCreate(option.value);
   };
 
+  startGroupChat = (_e) => {
+    this.props.onStartGroupChat();
+  };
+
   render() {
     return (
       <>
@@ -30,7 +34,7 @@ export default class CreateConversationPanel extends React.Component<Properties>
         <div {...cn('')}>
           <div {...cn('search')}>
             <AutocompleteMembers search={this.props.search} onSelect={this.userSelected}>
-              <div {...cn('group-button')} onClick={this.props.onStartGroupChat}>
+              <div {...cn('group-button')} onClick={this.startGroupChat}>
                 <div {...cn('group-icon')}>
                   <IconUsersPlus size={25} />
                 </div>

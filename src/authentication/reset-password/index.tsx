@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { Button, Input, Alert } from '@zero-tech/zui/components';
 
-import classNames from 'classnames';
 import { bem, bemClassName } from '../../lib/bem';
 
 import './styles.scss';
@@ -83,7 +82,7 @@ export class ResetPassword extends React.Component<Properties, State> {
         )}
 
         <Button
-          className={classNames(c('submit-button', !this.generalError && 'no-error'))}
+          {...cn('submit-button', !this.generalError && 'no-error')}
           variant='primary'
           isDisabled={this.isSubmitDisabled}
           isLoading={this.props.isLoading}

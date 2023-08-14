@@ -1,6 +1,7 @@
-import { AdminMessageType, Message } from '../../store/messages';
+import { AdminMessageType, MediaType, Message, MessageSendStatus } from '../../store/messages';
 import { RootState } from '../../store/reducer';
-import { adminMessageText, map as mapMessage } from './chat-message';
+import { StoreBuilder } from '../../store/test/store';
+import { adminMessageText, getMessagePreview, map as mapMessage } from './chat-message';
 
 describe('sendbird events', () => {
   describe('mapMessage', () => {
@@ -271,5 +272,71 @@ describe(adminMessageText, () => {
 
       expect(adminText).toEqual('You started the conversation');
     });
+  });
+});
+
+describe(getMessagePreview, () => {
+  it('adds the prefix for current user', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'current-user' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: some message');
+  });
+
+  it('adds the user firstName for non-current user', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('Jack: some message');
+  });
+
+  it('returns admin preview for admin messages', () => {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+      } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You started the conversation');
+  });
+
+  it('describes an image message', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      {
+        message: '',
+        isAdmin: false,
+        sender: { userId: 'current-user' },
+        media: { type: MediaType.Image },
+      } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: sent an image');
+  });
+
+  it('returns failed to send message', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', isAdmin: false, sendStatus: MessageSendStatus.FAILED } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: Failed to send');
   });
 });

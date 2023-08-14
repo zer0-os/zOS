@@ -60,23 +60,6 @@ export function* fetchConversations() {
   const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
 
   const existingConversationList = yield select(denormalizeConversations);
-  const newConversationList = conversationsList.map((conversation) => {
-    const existingConversation = existingConversationList.find((existing) => existing.id === conversation.id);
-    if (
-      !existingConversation ||
-      !existingConversation.lastMessageCreatedAt ||
-      (conversation.lastMessageCreatedAt ?? 0) > existingConversation.lastMessageCreatedAt
-    ) {
-      return conversation;
-    }
-
-    return {
-      ...conversation,
-      lastMessage: existingConversation.lastMessage,
-      lastMessageCreatedAt: existingConversation.lastMessageCreatedAt,
-    };
-  });
-
   const optimisticConversationIds = existingConversationList
     .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)
     .map((c) => c.id);
@@ -86,7 +69,7 @@ export function* fetchConversations() {
     receive([
       ...channelsList,
       ...optimisticConversationIds,
-      ...newConversationList,
+      ...conversationsList,
     ])
   );
 

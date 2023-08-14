@@ -40,9 +40,6 @@ export class Container extends React.Component<Properties> {
         case ResetPasswordErrors.EMAIL_REQUIRED:
           errorObject.email = 'Email is required';
           break;
-        case ResetPasswordErrors.UNKNOWN_ERROR:
-          errorObject.general = 'An unknown error has occurred';
-          break;
         default:
           errorObject.general = 'An unknown error has occurred';
           break;

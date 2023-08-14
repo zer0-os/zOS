@@ -13,10 +13,14 @@ export interface Properties {
 }
 
 export class PanelHeader extends React.Component<Properties> {
+  goBack = (_e) => {
+    this.props.onBack();
+  };
+
   render() {
     return (
       <div {...cn('header')}>
-        <span {...cn('back')} onClick={this.props.onBack}>
+        <span {...cn('back')} onClick={this.goBack}>
           <IconArrowNarrowLeft size={24} isFilled />
         </span>
         <div {...cn('title')}>{this.props.title}</div>

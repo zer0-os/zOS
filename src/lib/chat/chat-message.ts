@@ -3,7 +3,6 @@ import { RootState } from '../../store/reducer';
 import { ChatMember } from './types';
 import { denormalize as denormalizeUser } from '../../store/users';
 import { currentUserSelector } from '../../store/authentication/saga';
-import { Moment } from 'moment';
 import moment from 'moment';
 
 const DEFAULT_MEDIA_TYPE = 'image';

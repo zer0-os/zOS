@@ -18,6 +18,7 @@ import { denormalize as denormalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { MessageSendStatus } from '.';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 const mockCreateUploadableFile = jest.fn();
 jest.mock('./uploadable', () => ({
@@ -173,7 +174,11 @@ describe(createOptimisticPreview, () => {
 });
 
 describe(performSend, () => {
-  it('sends the message via the api', async () => {
+  const chatClient = {
+    sendMessagesByChannelId: () => ({}),
+  };
+
+  it('sends the message via the chat client', async () => {
     const channelId = 'channel-id';
     const message = 'test message';
     const mentionedUserIds = [
@@ -183,9 +188,13 @@ describe(performSend, () => {
     const parentMessage = { id: 'parent' };
 
     await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-id')
-      .provide(successResponses())
+      .provide([
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {}),
+        ...successResponses(),
+      ])
       .call.like({
-        fn: sendMessagesByChannelId,
+        fn: chatClient.sendMessagesByChannelId,
         args: [
           channelId,
           message,
@@ -201,7 +210,8 @@ describe(performSend, () => {
   it('returns the new message information', async () => {
     const { returnValue } = await expectSaga(performSend, 'channel-id', '', null, null, '')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id' }),
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), { id: 'new-id' }),
       ])
       .run();
 
@@ -222,7 +232,11 @@ describe(performSend, () => {
 
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id', optimisticId: 'optimistic-id' }),
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {
+          id: 'new-id',
+          optimisticId: 'optimistic-id',
+        }),
         ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())

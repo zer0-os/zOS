@@ -2,9 +2,12 @@ import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sen
 import SendbirdChat, { ConnectionHandler, ConnectionState, SessionHandler } from '@sendbird/chat';
 import { map as mapMessage } from './chat-message';
 import { Message, MessagesResponse } from '../../store/messages';
+import { sendMessagesByChannelId } from '../../store/messages/api';
+import { FileUploadResult } from '../../store/messages/saga';
 import { config } from '../../config';
 import { get } from '../../lib/api/rest';
 import { toLocalChannel } from '../../store/channels-list/utils';
+import { ParentMessage } from './types';
 
 import { RealtimeChatEvents, IChatClient } from './';
 
@@ -73,6 +76,17 @@ export class SendbirdClient implements IChatClient {
 
     const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
     return response.body;
+  }
+
+  async sendMessagesByChannelId(
+    channelId: string,
+    message: string,
+    mentionedUserIds: string[],
+    parentMessage?: ParentMessage,
+    file?: FileUploadResult,
+    optimisticId?: string
+  ): Promise<any> {
+    return sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
   }
 
   private initSessionHandler(events: RealtimeChatEvents) {

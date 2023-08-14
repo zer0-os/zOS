@@ -16,7 +16,7 @@ import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
-import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
+import { deleteMessageApi, editMessageApi, getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -217,8 +217,13 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+  const chatClient = yield call(chat.get);
+
   const messageCall = call(
-    sendMessagesByChannelId,
+    [
+      chatClient,
+      chatClient.sendMessagesByChannelId,
+    ],
     channelId,
     message,
     mentionedUserIds,

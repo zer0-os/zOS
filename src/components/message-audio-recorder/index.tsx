@@ -1,12 +1,11 @@
 import React from 'react';
 import { RecordState } from 'audio-react-recorder-fixed';
 import { IconCheck, IconTrash4 } from '@zero-tech/zui/icons';
-import { IconButton } from '../icon-button';
+import { IconButton } from '@zero-tech/zui/components';
 import { Media } from '../message-input/utils';
 
 import './styles.scss';
 import { MediaType } from '../../store/messages';
-
 const AudioReactRecorder = require('audio-react-recorder-fixed').default;
 
 export interface Properties {

@@ -3,6 +3,7 @@ import { RootState } from '../../store/reducer';
 import { ChatMember } from './types';
 import { denormalize as denormalizeUser } from '../../store/users';
 import { currentUserSelector } from '../../store/authentication/saga';
+import moment from 'moment';
 
 const DEFAULT_MEDIA_TYPE = 'image';
 
@@ -148,6 +149,25 @@ export function map(sendbirdMessage) {
     isAdmin: messageType.toLowerCase() === 'admin',
     sendStatus: MessageSendStatus.SUCCESS,
   } as unknown as Message;
+}
+
+export function previewDisplayDate(timestamp: number) {
+  if (!timestamp) {
+    return '';
+  }
+
+  const messageDate = moment(timestamp);
+  const currentDate = moment();
+
+  if (messageDate.isSame(currentDate, 'day')) {
+    return messageDate.format('h:mm A');
+  } else if (messageDate.isAfter(currentDate.clone().subtract(7, 'days'), 'day')) {
+    return messageDate.format('ddd');
+  } else if (messageDate.year() === currentDate.year()) {
+    return messageDate.format('MMM D');
+  }
+
+  return messageDate.format('MMM D, YYYY');
 }
 
 export function getMessagePreview(message: Message, state: RootState) {

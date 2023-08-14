@@ -25,7 +25,7 @@ import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
-import { getMessagePreview } from '../../../lib/chat/chat-message';
+import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -46,7 +46,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   stage: SagaStage;
   groupUsers: Option[];
-  conversations: (Channel & { messagePreview?: string })[];
+  conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
@@ -98,7 +98,13 @@ export class Container extends React.Component<Properties, State> {
       .sort((a, b) =>
         compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
       )
-      .map((conversation) => ({ ...conversation, messagePreview: getMessagePreview(conversation.lastMessage, state) }));
+      .map((conversation) => {
+        return {
+          ...conversation,
+          messagePreview: getMessagePreview(conversation.lastMessage, state),
+          previewDisplayDate: previewDisplayDate(conversation.lastMessage?.createdAt),
+        };
+      });
 
     return {
       conversations,

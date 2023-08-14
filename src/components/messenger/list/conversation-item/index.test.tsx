@@ -127,6 +127,14 @@ describe('ConversationItem', () => {
     expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(messagePreview);
   });
 
+  it('renders the previewDisplayDate', function () {
+    const previewDisplayDate = 'Aug 1, 2021';
+
+    const wrapper = subject({ conversation: { previewDisplayDate, otherMembers: [] } as any });
+
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(previewDisplayDate);
+  });
+
   describe('status', () => {
     it('renders inactive if no other members are online', function () {
       const wrapper = subject({
@@ -174,48 +182,6 @@ describe('ConversationItem', () => {
       });
 
       expect(wrapper.find('Tooltip').prop('overlay')).toEqual('Johnny Cash, Jackie Chan');
-    });
-  });
-
-  describe('displayDate', () => {
-    const createWrapper = (createdAt: moment.Moment) => {
-      return subject({
-        conversation: {
-          lastMessage: {
-            createdAt: createdAt.valueOf(),
-            sender: { userId: 'id' },
-          },
-          otherMembers: [],
-        } as any,
-      });
-    };
-
-    it('displays the time of day for messages sent on the current day', () => {
-      const now = moment();
-      const wrapper = createWrapper(now);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('h:mm A'));
-    });
-
-    it('displays the three-letter day abbreviation for messages sent within the preceding 7 days', () => {
-      const sevenDaysAgo = moment().subtract(5, 'days');
-      const wrapper = createWrapper(sevenDaysAgo);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(sevenDaysAgo.format('ddd'));
-    });
-
-    it('displays the three-letter month abbreviation and day of the month for messages sent in the same calendar year prior to the last 7 days', () => {
-      const messageDate = moment().subtract(10, 'days');
-      const wrapper = createWrapper(messageDate);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(messageDate.format('MMM D'));
-    });
-
-    it('displays the three-letter month abbreviation, day of the month, and the year for messages sent before the current calendar year', () => {
-      const messageDate = moment().subtract(1, 'year').subtract(5, 'days');
-      const wrapper = createWrapper(messageDate);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(messageDate.format('MMM D, YYYY'));
     });
   });
 });

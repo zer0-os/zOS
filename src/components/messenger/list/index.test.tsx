@@ -14,6 +14,7 @@ import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
+import { previewDisplayDate } from '../../../lib/chat/chat-message';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -359,6 +360,19 @@ describe('messenger-list', () => {
         'Jack: The last message',
         'Jack: Second message last',
       ]);
+    });
+
+    test('previewDeisplayDate', () => {
+      const date = moment('2023-03-03').valueOf();
+      const state = subject([
+        {
+          id: 'convo-1',
+          lastMessage: { createdAt: date, message: '', sender: {} },
+          isChannel: false,
+        },
+      ]);
+
+      expect(state.conversations.map((c) => c.previewDisplayDate)).toEqual([previewDisplayDate(date)]);
     });
 
     test('isLoading', () => {

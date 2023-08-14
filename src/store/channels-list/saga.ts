@@ -158,8 +158,6 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
       const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
       if (channelMessages) {
         conversation.messages = channelMessages;
-        conversation.lastMessage = firstMessage;
-        conversation.lastMessageCreatedAt = firstMessage.createdAt;
       }
     }
     listWithoutOptimistic.push(conversation);

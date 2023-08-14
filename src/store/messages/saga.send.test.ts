@@ -244,7 +244,7 @@ describe(performSend, () => {
         stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('simulated error'))),
         stubResponse(matchers.call.fn(messageSendFailed), null),
       ])
-      .call(messageSendFailed, channelId, optimisticId)
+      .call(messageSendFailed, optimisticId)
       .run();
   });
 });
@@ -262,60 +262,12 @@ describe(messageSendFailed, () => {
 
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: optimisticMessageList });
 
-    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
+    const { storeState } = await expectSaga(messageSendFailed, 'optimistic')
       .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[1].sendStatus).toEqual(MessageSendStatus.FAILED);
-  });
-
-  it('updates the lastMessage status if the optimistic message was latest', async () => {
-    const channelId = 'channel-id';
-    const message1 = { id: 'message 1', message: 'message_0001', createdAt: 10000000007 };
-    const optimisticChannel = {
-      id: channelId,
-      messages: [
-        message1,
-        { id: 'optimistic' },
-      ],
-      lastMessage: { id: 'optimistic' },
-      lastMessageCreatedAt: 10000000010,
-    } as any;
-
-    const initialState = new StoreBuilder().withConversationList(optimisticChannel);
-
-    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage.id).toStrictEqual('optimistic');
-    expect(channel.lastMessage.sendStatus).toStrictEqual(MessageSendStatus.FAILED);
-  });
-
-  it('does not reset the lastMessage information if another message came after', async () => {
-    const channelId = 'channel-id';
-    const messageLater = { id: 'message after', message: 'message_0001', createdAt: 10000000015 };
-    const optimisticChannel = {
-      id: channelId,
-      messages: [
-        { id: 'optimistic', createdAt: 10000000010 },
-        messageLater,
-      ],
-      lastMessage: messageLater,
-      lastMessageCreatedAt: messageLater.createdAt,
-    } as any;
-
-    const initialState = new StoreBuilder().withConversationList(optimisticChannel);
-
-    const { storeState } = await expectSaga(messageSendFailed, channelId, 'optimistic')
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toEqual(expect.objectContaining(messageLater));
-    expect(channel.lastMessageCreatedAt).toStrictEqual(messageLater.createdAt);
   });
 });
 

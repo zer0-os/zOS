@@ -12,7 +12,7 @@ import {
   MessageSendStatus,
 } from '.';
 import { receive as receiveMessage } from './';
-import { Channel, ConversationStatus, MessagesFetchState, receive } from '../channels';
+import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
@@ -261,29 +261,18 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     }
     return createdMessage;
   } catch (e) {
-    yield call(messageSendFailed, channelId, optimisticId);
+    yield call(messageSendFailed, optimisticId);
     return null;
   }
 }
 
-export function* messageSendFailed(channelId, optimisticId) {
+export function* messageSendFailed(optimisticId) {
   yield put(
     receiveMessage({
       id: optimisticId,
       sendStatus: MessageSendStatus.FAILED,
     })
   );
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  // This wouldn't have to happen if we normalized the lastMessage attribute
-  if (existingMessageIds[existingMessageIds.length - 1] === optimisticId) {
-    const channel = yield select(rawChannelSelector(channelId));
-    yield put(
-      receive({
-        id: channelId,
-        lastMessage: { ...channel.lastMessage, sendStatus: MessageSendStatus.FAILED },
-      })
-    );
-  }
 }
 
 export function* fetchNewMessages(action) {

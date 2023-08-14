@@ -452,13 +452,7 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
-  if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
-    updatedChannel.lastMessage = message;
-    updatedChannel.lastMessageCreatedAt = message.createdAt;
-  }
-
-  yield put(receive(updatedChannel));
+  yield put(receive({ id: channelId, messages: newMessages }));
   yield spawn(sendBrowserNotification, channelId, message);
 
   const isChannel = yield select(_isChannel(channelId));

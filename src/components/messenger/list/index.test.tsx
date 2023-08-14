@@ -342,24 +342,51 @@ describe('messenger-list', () => {
       ]);
     });
 
-    test('messagePreview', () => {
-      const state = subject([
-        {
-          id: 'convo-1',
-          lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
-          isChannel: false,
-        },
-        {
-          id: 'convo-2',
-          lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
-          isChannel: false,
-        },
-      ]);
+    describe('messagePreview', () => {
+      it('sets the preview for all conversations', () => {
+        const state = subject([
+          {
+            id: 'convo-1',
+            lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
+            isChannel: false,
+          },
+          {
+            id: 'convo-2',
+            lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
+            isChannel: false,
+          },
+        ]);
 
-      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-        'Jack: The last message',
-        'Jack: Second message last',
-      ]);
+        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+          'Jack: The last message',
+          'Jack: Second message last',
+        ]);
+      });
+
+      it('uses most recent of last message in list or lastMessage on conversation', () => {
+        const state = subject([
+          {
+            id: 'convo-1',
+            lastMessage: { message: 'lastMessage', createdAt: 10003, sender: { firstName: 'Jack' } },
+            messages: [
+              { id: '1', message: 'recent message', createdAt: 10005, sender: { firstName: 'Jack' } },
+              { id: '2', message: 'old message', createdAt: 10002 },
+            ],
+            isChannel: false,
+          },
+          {
+            id: 'convo-2',
+            lastMessage: { message: 'lastMessage', createdAt: 20007, sender: { firstName: 'Jack' } },
+            messages: [],
+            isChannel: false,
+          },
+        ]);
+
+        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+          'Jack: lastMessage',
+          'Jack: recent message',
+        ]);
+      });
     });
 
     test('previewDeisplayDate', () => {

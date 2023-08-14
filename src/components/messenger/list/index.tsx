@@ -95,14 +95,19 @@ export class Container extends React.Component<Properties, State> {
     const hasWallet = user?.data?.wallets?.length > 0;
 
     const conversations = denormalizeConversations(state)
+      .map((conversation) => {
+        const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+        let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
+        return { ...conversation, mostRecentMessage };
+      })
       .sort((a, b) =>
-        compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
+        compareDatesDesc(a.mostRecentMessage?.createdAt || a.createdAt, b.mostRecentMessage?.createdAt || b.createdAt)
       )
       .map((conversation) => {
         return {
           ...conversation,
-          messagePreview: getMessagePreview(conversation.lastMessage, state),
-          previewDisplayDate: previewDisplayDate(conversation.lastMessage?.createdAt),
+          messagePreview: getMessagePreview(conversation.mostRecentMessage, state),
+          previewDisplayDate: previewDisplayDate(conversation.mostRecentMessage?.createdAt),
         };
       });
 

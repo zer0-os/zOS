@@ -20,7 +20,7 @@ const cn = bemClassName('conversation-item');
 
 export interface Properties {
   filter: string;
-  conversation: Channel & { messagePreview?: string };
+  conversation: Channel & { messagePreview?: string; previewDisplayDate?: string };
   myUserId: string;
   activeConversationId: string;
 
@@ -112,6 +112,7 @@ export class ConversationItem extends React.Component<Properties> {
 
   render() {
     const { conversation, activeConversationId } = this.props;
+    const { messagePreview, previewDisplayDate } = conversation;
     const hasUnreadMessages = conversation.unreadCount !== 0;
     const isUnread = hasUnreadMessages ? 'true' : 'false';
     const isActive = conversation.id === activeConversationId ? 'true' : 'false';
@@ -141,11 +142,11 @@ export class ConversationItem extends React.Component<Properties> {
               <div {...cn('name')} is-unread={isUnread}>
                 {this.highlightedName()}
               </div>
-              <div {...cn('timestamp')}>{this.displayDate}</div>
+              <div {...cn('timestamp')}>{previewDisplayDate}</div>
             </div>
             <div {...cn('content')}>
               <div {...cn('message')} is-unread={isUnread}>
-                <ContentHighlighter message={this.props.conversation.messagePreview} variant='negative' tabIndex={-1} />
+                <ContentHighlighter message={messagePreview} variant='negative' tabIndex={-1} />
               </div>
               {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
             </div>

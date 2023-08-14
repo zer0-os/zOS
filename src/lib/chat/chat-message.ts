@@ -153,6 +153,10 @@ export function map(sendbirdMessage) {
 }
 
 export function previewDisplayDate(timestamp: number) {
+  if (!timestamp) {
+    return '';
+  }
+
   const messageDate = moment(timestamp);
   const currentDate = moment();
 

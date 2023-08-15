@@ -52,9 +52,11 @@ describe(send, () => {
     const uploadableFile = { file: { nativeFile: {} } };
     const files = [{ id: 'file-id' }];
 
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
+
     testSaga(send, { payload: { channelId, files } })
       .next()
-      .call(createOptimisticMessages, channelId, undefined, undefined, files)
+      .call(createOptimisticMessages, channelId, undefined, undefined, [uploadableFile])
       .next({ uploadableFiles: [uploadableFile] })
       .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
@@ -118,12 +120,10 @@ describe(createOptimisticMessages, () => {
   it('creates the uploadable files with optimistic message', async () => {
     const channelId = 'channel-id';
     const message = 'test message';
-    const file = { nativeFile: {} };
     const uploadableFile = { file: { name: 'media-file' } };
-    mockCreateUploadableFile.mockReturnValue(uploadableFile);
 
     const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [
-      file,
+      uploadableFile,
     ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();

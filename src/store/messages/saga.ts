@@ -138,12 +138,14 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
 
+  const processedFiles: Uploadable[] = files.map(createUploadableFile);
+
   const { optimisticRootMessage, uploadableFiles } = yield call(
     createOptimisticMessages,
     channelId,
     message,
     parentMessage,
-    files
+    processedFiles
   );
 
   let rootMessageId = '';
@@ -169,15 +171,13 @@ export function* send(action) {
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
 }
 
-export function* createOptimisticMessages(channelId, message, parentMessage, files?) {
+export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {
   let optimisticRootMessage = null;
   if (message?.trim()) {
     const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
     optimisticRootMessage = optimisticMessage;
   }
 
-  const uploadableFiles: Uploadable[] = [];
-  files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
   for (const index in uploadableFiles) {
     const file = uploadableFiles[index].file;
     // only the first file should connect to the root message for now.

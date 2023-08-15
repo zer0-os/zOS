@@ -325,34 +325,6 @@ describe('ChannelViewContainer', () => {
     expect(startMessageSync).not.toHaveBeenCalled();
   });
 
-  it('should call hasMoreMessages when new messages arrive', async () => {
-    const startMessageSync = jest.fn();
-    const messages = [
-      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
-      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
-    ] as unknown as Message[];
-
-    const newMessages = [
-      { id: 'the-second-message-id', message: 'the second message', createdAt: 100000001 },
-      { id: 'the-first-message-id', message: 'the first message', createdAt: 100000002 },
-      { id: 'the-third-message-id', message: 'the third message', createdAt: 100000003 },
-      { id: 'the-fourth-message-id', message: 'the fourth message', createdAt: 100000004 },
-    ] as unknown as Message[];
-
-    const wrapper = subject({
-      startMessageSync,
-      channelId: 'the-channel-id',
-      channel: { hasMore: true, name: 'first channel', messages },
-    });
-
-    wrapper.setProps({
-      channelId: 'the-channel-id',
-      channel: { name: 'first channel', messages: newMessages, countNewMessages: 2 },
-    });
-
-    expect(wrapper.find(ChatView).prop('countNewMessages')).toStrictEqual(2);
-  });
-
   it('should not call fetchMore when hasMore is false', () => {
     const fetchMessages = jest.fn();
     const messages = [

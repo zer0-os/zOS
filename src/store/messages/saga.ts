@@ -288,7 +288,6 @@ export function* messageSendFailed(channelId, optimisticId) {
 
 export function* fetchNewMessages(action) {
   const { channelId } = action.payload;
-  let countNewMessages: number = 0;
 
   yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
 
@@ -303,10 +302,6 @@ export function* fetchNewMessages(action) {
     );
 
     const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-    if (lastMessageCreatedAt > 0) {
-      countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
-    }
-
     const lastMessage = filteredLastMessage(messagesResponse.messages);
 
     yield put(
@@ -314,7 +309,6 @@ export function* fetchNewMessages(action) {
         id: channelId,
         messages: messagesResponse.messages,
         hasMore: messagesResponse.hasMore,
-        countNewMessages,
         lastMessageCreatedAt:
           lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
@@ -508,10 +502,6 @@ export function* getPreview(message) {
   if (!link.length) return;
 
   return yield call(getLinkPreviews, link[0].href);
-}
-
-function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {
-  return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
 }
 
 function filteredLastMessage(messages: Message[]): Message {

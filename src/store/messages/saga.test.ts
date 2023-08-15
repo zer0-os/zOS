@@ -27,7 +27,6 @@ const getChatClientForMessageResponse = (props = {}) => ({
       { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
       { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
     ],
-    countNewMessages: 1,
     lastMessageCreatedAt: 10000000009,
     ...props,
   }),
@@ -200,39 +199,6 @@ describe('messages saga', () => {
     ]);
   });
 
-  it('sets countNewMessages on channel', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-            countNewMessages: 0,
-            lastMessageCreatedAt: 10000000008,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetchNewMessages, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          getChatClientForMessageResponse({ countNewMessages: 1 }),
-        ],
-      ])
-      .run();
-
-    expect(channels[channelId].countNewMessages).toStrictEqual(1);
-  });
-
   it('sets lastMessageCreatedAt on channel', async () => {
     const channelId = 'channel-id';
 
@@ -242,7 +208,6 @@ describe('messages saga', () => {
           [channelId]: {
             id: channelId,
             hasMore: true,
-            countNewMessages: 0,
             lastMessageCreatedAt: 10000000008,
           },
         },

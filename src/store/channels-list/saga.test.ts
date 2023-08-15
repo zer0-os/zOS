@@ -157,7 +157,6 @@ describe('channels list saga', () => {
       createdAt: 7000,
       otherMembers: [],
       lastMessage: {},
-      lastMessageCreatedAt: null,
       groupChannelType: '',
     };
 
@@ -172,7 +171,6 @@ describe('channels list saga', () => {
       createdAt: 5000,
       otherMembers: [],
       lastMessage: {},
-      lastMessageCreatedAt: null,
       groupChannelType: '',
     };
 
@@ -289,9 +287,9 @@ describe(userLeftChannel, () => {
     const initialState = new StoreBuilder()
       .withCurrentUserId(userId)
       .withConversationList(
-        { id: 'conversation-1', lastMessageCreatedAt: 10000000 },
+        { id: 'conversation-1', lastMessage: { createdAt: 10000000 } as any },
         { id: channelId },
-        { id: 'conversation-2', lastMessageCreatedAt: 10000001 }
+        { id: 'conversation-2', lastMessage: { createdAt: 10000001 } as any }
       )
       .withActiveConversation({ id: channelId })
       .build();

@@ -220,7 +220,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
         temporaryMessage,
       ],
       lastMessage: temporaryMessage,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
     })
   );
 

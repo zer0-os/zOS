@@ -292,7 +292,7 @@ function* currentUserLeftChannel(channelId) {
     const conversations = yield select(denormalizeConversations);
 
     if (conversations.length > 0) {
-      const sorted = conversations.sort((a, b) => (b.lastMessageCreatedAt || 0) - (a.lastMessageCreatedAt || 0));
+      const sorted = conversations.sort((a, b) => (b.lastMessage?.createdAt || 0) - (a.lastMessage?.createdAt || 0));
       yield put(setactiveConversationId(sorted[0].id));
     } else {
       // Probably not possible but handled just in case

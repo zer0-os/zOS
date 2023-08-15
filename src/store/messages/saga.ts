@@ -80,9 +80,6 @@ const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-const rawLastMessageSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
-};
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
@@ -290,16 +287,11 @@ export function* fetchNewMessages(action) {
       channelId
     );
 
-    const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-    const lastMessage = filteredLastMessage(messagesResponse.messages);
-
     yield put(
       receive({
         id: channelId,
         messages: messagesResponse.messages,
         hasMore: messagesResponse.hasMore,
-        lastMessageCreatedAt:
-          lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
     );
@@ -485,10 +477,6 @@ export function* getPreview(message) {
   if (!link.length) return;
 
   return yield call(getLinkPreviews, link[0].href);
-}
-
-function filteredLastMessage(messages: Message[]): Message {
-  return messages[Object.keys(messages).pop()];
 }
 
 function* syncChannelsTask(action) {

@@ -13,24 +13,9 @@ import {
   receiveUpdateMessage,
 } from './saga';
 
-import { chat } from '../../lib/chat';
-
 import { RootState, rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
-
-const getChatClientForMessageResponse = (props = {}) => ({
-  getMessagesByChannelId: () => ({
-    hasMore: true,
-    messages: [
-      { id: 'message 1', message: 'message_0001', createdAt: 10000000007 },
-      { id: 'message 2', message: 'message_0002', createdAt: 10000000008 },
-      { id: 'message 3', message: 'message_0003', createdAt: 10000000009 },
-    ],
-    lastMessageCreatedAt: 10000000009,
-    ...props,
-  }),
-});
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {
@@ -197,38 +182,6 @@ describe('messages saga', () => {
       messages[0].id,
       messages[2].id,
     ]);
-  });
-
-  it('sets lastMessageCreatedAt on channel', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-            lastMessageCreatedAt: 10000000008,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(fetchNewMessages, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          getChatClientForMessageResponse({ lastMessageCreatedAt: 10000000009 }),
-        ],
-      ])
-      .run();
-
-    expect(channels[channelId].lastMessageCreatedAt).toStrictEqual(10000000009);
   });
 
   it('stop syncChannels when calling stopSyncChannels', async () => {

@@ -3,7 +3,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { editMessageApi } from './api';
 import {
-  stopSyncChannels,
   receiveDelete,
   editMessage,
   getPreview,
@@ -181,32 +180,6 @@ describe('messages saga', () => {
       messages[0].id,
       messages[2].id,
     ]);
-  });
-
-  it('stop syncChannels when calling stopSyncChannels', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            hasMore: true,
-            shouldSyncChannels: true,
-          },
-        },
-      },
-    };
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(stopSyncChannels, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .run();
-
-    expect(channels[channelId].shouldSyncChannels).toBe(false);
   });
 
   describe('getPreview', () => {

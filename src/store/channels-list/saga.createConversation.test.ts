@@ -127,7 +127,6 @@ describe(createOptimisticConversation, () => {
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
         groupChannelType: GroupChannelType.Private,
-        shouldSyncChannels: false,
       })
     );
   });

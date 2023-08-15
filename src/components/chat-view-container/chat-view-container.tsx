@@ -9,8 +9,6 @@ import {
   deleteMessage,
   editMessage,
   Message,
-  startMessageSync,
-  stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
@@ -34,8 +32,6 @@ export interface Properties extends PublicProperties {
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  startMessageSync: (payload: PayloadFetchMessages) => void;
-  stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
   isMessengerFullScreen: boolean;
   context: {
@@ -76,8 +72,6 @@ export class Container extends React.Component<Properties, State> {
     return {
       fetchMessages,
       sendMessage,
-      startMessageSync,
-      stopSyncChannels,
       deleteMessage,
       joinChannel,
       editMessage,
@@ -97,8 +91,6 @@ export class Container extends React.Component<Properties, State> {
     const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
-      this.props.stopSyncChannels(prevProps);
-
       this.props.fetchMessages({ channelId });
       this.setState({ reply: null });
     }
@@ -107,24 +99,10 @@ export class Container extends React.Component<Properties, State> {
       this.props.fetchMessages({ channelId });
     }
 
-    if (
-      !this.props.context.isAuthenticated &&
-      channel &&
-      channel.shouldSyncChannels &&
-      (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)
-    ) {
-      this.props.startMessageSync({ channelId });
-    }
-
     if (this.textareaRef && channel && Boolean(channel.messages)) {
       this.onMessageInputRendered(this.textareaRef);
       this.textareaRef = null;
     }
-  }
-
-  componentWillUnmount() {
-    const { channelId } = this.props;
-    this.props.stopSyncChannels({ channelId });
   }
 
   getOldestTimestamp(messages: Message[] = []): number {

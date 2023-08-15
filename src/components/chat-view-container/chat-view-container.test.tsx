@@ -24,8 +24,7 @@ describe('ChannelViewContainer', () => {
       uploadFileMessage: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
-      startMessageSync: () => undefined,
-      stopSyncChannels: () => undefined,
+      setActiveChannelId: () => undefined,
       context: {
         isAuthenticated: false,
       },
@@ -138,11 +137,9 @@ describe('ChannelViewContainer', () => {
 
   it('fetches messages when channel id is set', () => {
     const fetchMessages = jest.fn();
-    const stopSyncChannels = jest.fn();
 
     const wrapper = subject({
       fetchMessages,
-      stopSyncChannels,
       channelId: '',
       channel: { name: 'first channel', shouldSyncChannels: false },
     });
@@ -154,11 +151,9 @@ describe('ChannelViewContainer', () => {
 
   it('fetches messages when channel id is updated', () => {
     const fetchMessages = jest.fn();
-    const stopSyncChannels = jest.fn();
 
     const wrapper = subject({
       fetchMessages,
-      stopSyncChannels,
       channelId: 'the-first-channel-id',
       channel: { name: 'first channel', shouldSyncChannels: false },
     });
@@ -283,45 +278,6 @@ describe('ChannelViewContainer', () => {
     wrapper.find(ChatView).first().prop('editMessage')(messageId, message, mentionedUserIds);
 
     expect(editMessage).toHaveBeenCalledOnce();
-  });
-
-  it('startMessageSync messages when channel id is set', () => {
-    const startMessageSync = jest.fn();
-    const stopSyncChannels = jest.fn();
-
-    const wrapper = subject({
-      startMessageSync,
-      stopSyncChannels,
-      channelId: '',
-      channel: { name: 'first channel', shouldSyncChannels: false },
-    });
-
-    wrapper.setProps({ channelId: 'the-channel-id', channel: { shouldSyncChannels: true } });
-
-    expect(startMessageSync).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
-  });
-
-  it('should sync channel when user is authenticated', () => {
-    const startMessageSync = jest.fn();
-
-    const wrapper = subject({
-      startMessageSync,
-      channelId: '',
-      channel: { name: 'first channel', shouldSyncChannels: false },
-      context: {
-        isAuthenticated: false,
-      },
-    });
-
-    wrapper.setProps({
-      channelId: 'the-channel-id',
-      channel: { shouldSyncChannels: true },
-      context: {
-        isAuthenticated: true,
-      },
-    });
-
-    expect(startMessageSync).not.toHaveBeenCalled();
   });
 
   it('should not call fetchMore when hasMore is false', () => {

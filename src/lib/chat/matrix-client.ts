@@ -3,7 +3,9 @@ import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
+import { FileUploadResult } from '../../store/messages/saga';
 import { config as appConfig } from '../../config';
+import { ParentMessage } from './types';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -67,6 +69,25 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === 'm.room.message').map(mapMatrixMessage);
 
     return { messages: messages as any, hasMore: false };
+  }
+
+  async sendMessagesByChannelId(
+    channelId: string,
+    message: string,
+    _mentionedUserIds: string[],
+    _parentMessage?: ParentMessage,
+    _file?: FileUploadResult,
+    optimisticId?: string
+  ): Promise<any> {
+    const messageResult = await this.matrix.sendTextMessage(channelId, message);
+    const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
+
+    console.log('message: ', newMessage);
+
+    return {
+      ...mapMatrixMessage(newMessage),
+      optimisticId,
+    };
   }
 
   get isDisconnected() {

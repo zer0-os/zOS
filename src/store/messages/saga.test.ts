@@ -3,7 +3,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { editMessageApi } from './api';
 import {
-  fetchNewMessages,
   stopSyncChannels,
   receiveDelete,
   editMessage,

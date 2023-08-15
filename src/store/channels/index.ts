@@ -42,7 +42,6 @@ export interface Channel {
   createdAt: number;
   lastMessage: Message;
   category?: string;
-  shouldSyncChannels: boolean;
   unreadCount?: number;
   hasJoined?: boolean;
   groupChannelType: GroupChannelType;

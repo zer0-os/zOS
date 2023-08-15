@@ -102,7 +102,6 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     hasLoadedMessages: true,
     messagesFetchStatus: MessagesFetchState.SUCCESS,
     groupChannelType: GroupChannelType.Private,
-    shouldSyncChannels: false,
   };
 
   const currentUser = yield select(currentUserSelector());

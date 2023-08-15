@@ -8,6 +8,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
+import { activeChannelIdSelector } from '../chat/selectors';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -45,7 +46,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
 export function* markChannelAsReadIfActive(channelId) {
-  const activeChannelId = yield select((state) => state.chat.activeChannelId);
+  const activeChannelId = yield select(activeChannelIdSelector);
   if (channelId !== activeChannelId) {
     return;
   }

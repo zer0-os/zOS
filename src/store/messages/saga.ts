@@ -24,6 +24,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
+import { activeChannelIdSelector } from '../chat/selectors';
 
 export interface Payload {
   channelId: string;
@@ -80,9 +81,6 @@ const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-const rawShouldSyncChannels = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
-
 export const _isChannel = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
 
@@ -134,7 +132,6 @@ export function* fetch(action) {
         id: channelId,
         messages,
         hasMore: messagesResponse.hasMore,
-        shouldSyncChannels: true,
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
@@ -270,9 +267,7 @@ export function* messageSendFailed(optimisticId) {
   );
 }
 
-export function* fetchNewMessages(action) {
-  const { channelId } = action.payload;
-
+export function* fetchNewMessages(channelId: string) {
   yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
 
   try {
@@ -397,17 +392,6 @@ export function* receiveDelete(action) {
   );
 }
 
-export function* stopSyncChannels(action) {
-  const { channelId } = action.payload;
-
-  yield put(
-    receive({
-      id: channelId,
-      shouldSyncChannels: false,
-    })
-  );
-}
-
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 
@@ -477,9 +461,15 @@ export function* getPreview(message) {
   return yield call(getLinkPreviews, link[0].href);
 }
 
-function* syncChannelsTask(action) {
-  while (yield select(rawShouldSyncChannels(action.payload.channelId))) {
-    yield call(fetchNewMessages, action);
+function* pollForPublicChannelMessages() {
+  while (true) {
+    const currentUser = yield select(currentUserSelector());
+    const isPublicZOS = !currentUser?.id;
+    const activeChannelId = yield select(activeChannelIdSelector);
+
+    if (isPublicZOS && activeChannelId) {
+      yield call(fetchNewMessages, activeChannelId);
+    }
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
@@ -510,8 +500,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-  yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
-  yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
+
+  yield spawn(pollForPublicChannelMessages);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

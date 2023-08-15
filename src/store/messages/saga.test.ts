@@ -228,7 +228,7 @@ describe('messages saga', () => {
       .withState({
         normalized: { messages, channels },
       })
-      .run(0);
+      .run();
 
     expect(normalized).toEqual({
       messages: {},

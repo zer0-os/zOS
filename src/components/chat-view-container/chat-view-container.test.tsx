@@ -26,7 +26,6 @@ describe('ChannelViewContainer', () => {
       editMessage: () => undefined,
       startMessageSync: () => undefined,
       stopSyncChannels: () => undefined,
-      setActiveChannelId: () => undefined,
       context: {
         isAuthenticated: false,
       },

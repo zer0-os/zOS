@@ -41,7 +41,6 @@ export interface Channel {
   hasMore: boolean;
   createdAt: number;
   lastMessage: Message;
-  lastMessageCreatedAt: number;
   category?: string;
   shouldSyncChannels: boolean;
   unreadCount?: number;

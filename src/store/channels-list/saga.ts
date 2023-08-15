@@ -60,23 +60,6 @@ export function* fetchConversations() {
   const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
 
   const existingConversationList = yield select(denormalizeConversations);
-  const newConversationList = conversationsList.map((conversation) => {
-    const existingConversation = existingConversationList.find((existing) => existing.id === conversation.id);
-    if (
-      !existingConversation ||
-      !existingConversation.lastMessageCreatedAt ||
-      (conversation.lastMessageCreatedAt ?? 0) > existingConversation.lastMessageCreatedAt
-    ) {
-      return conversation;
-    }
-
-    return {
-      ...conversation,
-      lastMessage: existingConversation.lastMessage,
-      lastMessageCreatedAt: existingConversation.lastMessageCreatedAt,
-    };
-  });
-
   const optimisticConversationIds = existingConversationList
     .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)
     .map((c) => c.id);
@@ -86,7 +69,7 @@ export function* fetchConversations() {
     receive([
       ...channelsList,
       ...optimisticConversationIds,
-      ...newConversationList,
+      ...conversationsList,
     ])
   );
 
@@ -175,8 +158,6 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
       const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
       if (channelMessages) {
         conversation.messages = channelMessages;
-        conversation.lastMessage = firstMessage;
-        conversation.lastMessageCreatedAt = firstMessage.createdAt;
       }
     }
     listWithoutOptimistic.push(conversation);
@@ -311,7 +292,7 @@ function* currentUserLeftChannel(channelId) {
     const conversations = yield select(denormalizeConversations);
 
     if (conversations.length > 0) {
-      const sorted = conversations.sort((a, b) => (b.lastMessageCreatedAt || 0) - (a.lastMessageCreatedAt || 0));
+      const sorted = conversations.sort((a, b) => (b.lastMessage?.createdAt || 0) - (a.lastMessage?.createdAt || 0));
       yield put(setactiveConversationId(sorted[0].id));
     } else {
       // Probably not possible but handled just in case

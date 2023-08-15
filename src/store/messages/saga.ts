@@ -12,7 +12,7 @@ import {
   MessageSendStatus,
 } from '.';
 import { receive as receiveMessage } from './';
-import { Channel, ConversationStatus, MessagesFetchState, receive } from '../channels';
+import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
@@ -80,9 +80,6 @@ const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-const rawLastMessageSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
-};
 const rawShouldSyncChannels = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
 
@@ -222,8 +219,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
         ...existingMessages,
         temporaryMessage,
       ],
-      lastMessage: temporaryMessage,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
     })
   );
 
@@ -261,29 +256,18 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     }
     return createdMessage;
   } catch (e) {
-    yield call(messageSendFailed, channelId, optimisticId);
+    yield call(messageSendFailed, optimisticId);
     return null;
   }
 }
 
-export function* messageSendFailed(channelId, optimisticId) {
+export function* messageSendFailed(optimisticId) {
   yield put(
     receiveMessage({
       id: optimisticId,
       sendStatus: MessageSendStatus.FAILED,
     })
   );
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  // This wouldn't have to happen if we normalized the lastMessage attribute
-  if (existingMessageIds[existingMessageIds.length - 1] === optimisticId) {
-    const channel = yield select(rawChannelSelector(channelId));
-    yield put(
-      receive({
-        id: channelId,
-        lastMessage: { ...channel.lastMessage, sendStatus: MessageSendStatus.FAILED },
-      })
-    );
-  }
 }
 
 export function* fetchNewMessages(action) {
@@ -301,16 +285,11 @@ export function* fetchNewMessages(action) {
       channelId
     );
 
-    const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-    const lastMessage = filteredLastMessage(messagesResponse.messages);
-
     yield put(
       receive({
         id: channelId,
         messages: messagesResponse.messages,
         hasMore: messagesResponse.hasMore,
-        lastMessageCreatedAt:
-          lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
     );
@@ -452,13 +431,7 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
-  if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
-    updatedChannel.lastMessage = message;
-    updatedChannel.lastMessageCreatedAt = message.createdAt;
-  }
-
-  yield put(receive(updatedChannel));
+  yield put(receive({ id: channelId, messages: newMessages }));
   yield spawn(sendBrowserNotification, channelId, message);
 
   const isChannel = yield select(_isChannel(channelId));
@@ -502,10 +475,6 @@ export function* getPreview(message) {
   if (!link.length) return;
 
   return yield call(getLinkPreviews, link[0].href);
-}
-
-function filteredLastMessage(messages: Message[]): Message {
-  return messages[Object.keys(messages).pop()];
 }
 
 function* syncChannelsTask(action) {

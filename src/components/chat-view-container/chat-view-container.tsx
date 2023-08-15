@@ -52,7 +52,6 @@ interface PublicProperties {
   showSenderAvatar?: boolean;
 }
 export interface State {
-  countNewMessages: number;
   reply: null | ParentMessage;
 }
 
@@ -88,7 +87,7 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = { countNewMessages: 0, reply: null };
+  state = { reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -126,15 +125,6 @@ export class Container extends React.Component<Properties, State> {
       this.props.startMessageSync({ channelId });
     }
 
-    if (
-      channel &&
-      channel.countNewMessages &&
-      prevProps.channel.countNewMessages !== channel.countNewMessages &&
-      channel.countNewMessages > 0
-    ) {
-      this.setState({ countNewMessages: channel.countNewMessages });
-    }
-
     if (this.textareaRef && channel && Boolean(channel.messages)) {
       this.onMessageInputRendered(this.textareaRef);
       this.textareaRef = null;
@@ -145,10 +135,6 @@ export class Container extends React.Component<Properties, State> {
     const { channelId } = this.props;
     this.props.stopSyncChannels({ channelId });
   }
-
-  resetCountNewMessage = () => {
-    this.setState({ countNewMessages: 0 });
-  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -320,8 +306,6 @@ export class Container extends React.Component<Properties, State> {
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
-          countNewMessages={this.state.countNewMessages}
-          resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}

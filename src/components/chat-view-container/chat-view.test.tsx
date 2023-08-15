@@ -5,7 +5,6 @@ import { ChatView, Properties } from './chat-view';
 
 import { MediaType, Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../message-input/container';
 import { Button as ConnectButton } from '../authentication/button';
@@ -40,14 +39,12 @@ describe('ChatView', () => {
       hasJoined: false,
       user: null,
       joinChannel: () => null,
-      countNewMessages: 0,
       onFetchMore: () => null,
       sendMessage: () => null,
       deleteMessage: () => null,
       editMessage: () => null,
       onRemove: () => null,
       onReply: () => null,
-      resetCountNewMessage: () => null,
       onMessageInputRendered: () => null,
       isDirectMessage: true,
       isMessengerFullScreen: false,
@@ -212,12 +209,6 @@ describe('ChatView', () => {
       false,
       false,
     ]);
-  });
-
-  it('it should not render IndicatorMessage at first', () => {
-    const wrapper = subject({ countNewMessages: 2 });
-
-    expect(wrapper.find(IndicatorMessage).exists()).toBe(false);
   });
 
   it('render with className', () => {

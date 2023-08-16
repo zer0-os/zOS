@@ -1,12 +1,12 @@
 import { requestPasswordReset as requestPasswordResetApi } from './api';
 import { setLoading, setStage, setErrors, SagaActionTypes, RequestPasswordResetStage } from './index';
-import { ResetPasswordErrors } from '.';
+import { RequestPasswordResetErrors } from '.';
 import { call, put, take, fork, cancel } from 'redux-saga/effects';
 
 export function validateRequestPasswordResetEmail({ email }) {
   const validationErrors = [];
   if (!email || !email.trim()) {
-    validationErrors.push(ResetPasswordErrors.EMAIL_REQUIRED);
+    validationErrors.push(RequestPasswordResetErrors.EMAIL_REQUIRED);
   }
   return validationErrors;
 }
@@ -30,15 +30,10 @@ export function* requestPasswordReset() {
         yield put(setStage(RequestPasswordResetStage.Done));
         break;
       } else {
-        let errors = [];
-        if (result.response === 'UNKNOWN_ERROR') {
-          errors.push(ResetPasswordErrors.UNKNOWN_ERROR);
-        }
-        yield put(setErrors(errors));
+        yield put(setErrors([RequestPasswordResetErrors.UNKNOWN_ERROR]));
       }
     } catch (error: any) {
-      console.error(error);
-      yield put(setErrors([ResetPasswordErrors.API_ERROR]));
+      yield put(setErrors([RequestPasswordResetErrors.API_ERROR]));
     } finally {
       yield put(setLoading(false));
     }

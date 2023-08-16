@@ -13,7 +13,7 @@ import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '../icon-button';
+import { IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 
@@ -284,7 +284,7 @@ export class Message extends React.Component<Properties, State> {
           <div {...cn('block-preview')}>
             <LinkPreview url={preview.url} {...preview} />
             {isOwner && (
-              <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
+              <IconButton size={24} Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
             )}
           </div>
         )}

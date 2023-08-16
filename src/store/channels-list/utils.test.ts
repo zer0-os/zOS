@@ -44,24 +44,6 @@ describe(toLocalChannel, () => {
     });
   });
 
-  describe('lastMessageCreatedAt', () => {
-    it('is the last message created at if exists', async function () {
-      const apiResponse = { lastMessage: { createdAt: 100007 } };
-
-      const channel = toLocalChannel(apiResponse);
-
-      expect(channel.lastMessageCreatedAt).toEqual(100007);
-    });
-
-    it('is null if last message does NOT exist from api', async function () {
-      const apiResponse = {};
-
-      const channel = toLocalChannel(apiResponse);
-
-      expect(channel.lastMessageCreatedAt).toEqual(null);
-    });
-  });
-
   describe('groupChannelType', () => {
     it('maps directly if exists from api', async function () {
       const apiResponse = { groupChannelType: 'private' };

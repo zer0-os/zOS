@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-import { Image, Skeleton, Alert } from '@zero-tech/zui/components';
+import { Image, Skeleton, Alert, IconButton } from '@zero-tech/zui/components';
 import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
-import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
@@ -74,7 +73,7 @@ export class InviteDialog extends React.Component<Properties, State> {
       <div {...cn('')}>
         <div {...cn('title-bar')}>
           <h3 {...cn('title')}>Invite to ZERO Messenger</h3>
-          <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} />
+          <IconButton {...cn('close')} size={32} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
         <div {...cn('content')}>
           <Image

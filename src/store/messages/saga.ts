@@ -12,7 +12,7 @@ import {
   MessageSendStatus,
 } from '.';
 import { receive as receiveMessage } from './';
-import { Channel, ConversationStatus, MessagesFetchState, receive } from '../channels';
+import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 
 import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
@@ -24,6 +24,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
+import { activeChannelIdSelector } from '../chat/selectors';
 
 export interface Payload {
   channelId: string;
@@ -80,12 +81,6 @@ const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-const rawLastMessageSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
-};
-const rawShouldSyncChannels = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
-
 export const _isChannel = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
 
@@ -137,7 +132,6 @@ export function* fetch(action) {
         id: channelId,
         messages,
         hasMore: messagesResponse.hasMore,
-        shouldSyncChannels: true,
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
@@ -222,8 +216,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
         ...existingMessages,
         temporaryMessage,
       ],
-      lastMessage: temporaryMessage,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
     })
   );
 
@@ -261,35 +253,21 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     }
     return createdMessage;
   } catch (e) {
-    yield call(messageSendFailed, channelId, optimisticId);
+    yield call(messageSendFailed, optimisticId);
     return null;
   }
 }
 
-export function* messageSendFailed(channelId, optimisticId) {
+export function* messageSendFailed(optimisticId) {
   yield put(
     receiveMessage({
       id: optimisticId,
       sendStatus: MessageSendStatus.FAILED,
     })
   );
-  const existingMessageIds = yield select(rawMessagesSelector(channelId));
-  // This wouldn't have to happen if we normalized the lastMessage attribute
-  if (existingMessageIds[existingMessageIds.length - 1] === optimisticId) {
-    const channel = yield select(rawChannelSelector(channelId));
-    yield put(
-      receive({
-        id: channelId,
-        lastMessage: { ...channel.lastMessage, sendStatus: MessageSendStatus.FAILED },
-      })
-    );
-  }
 }
 
-export function* fetchNewMessages(action) {
-  const { channelId } = action.payload;
-  let countNewMessages: number = 0;
-
+export function* fetchNewMessages(channelId: string) {
   yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
 
   try {
@@ -302,21 +280,11 @@ export function* fetchNewMessages(action) {
       channelId
     );
 
-    const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-    if (lastMessageCreatedAt > 0) {
-      countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
-    }
-
-    const lastMessage = filteredLastMessage(messagesResponse.messages);
-
     yield put(
       receive({
         id: channelId,
         messages: messagesResponse.messages,
         hasMore: messagesResponse.hasMore,
-        countNewMessages,
-        lastMessageCreatedAt:
-          lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
     );
@@ -424,17 +392,6 @@ export function* receiveDelete(action) {
   );
 }
 
-export function* stopSyncChannels(action) {
-  const { channelId } = action.payload;
-
-  yield put(
-    receive({
-      id: channelId,
-      shouldSyncChannels: false,
-    })
-  );
-}
-
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 
@@ -458,13 +415,7 @@ export function* receiveNewMessage(action) {
     ];
   }
 
-  const updatedChannel: Partial<Channel> = { id: channelId, messages: newMessages };
-  if (!channel.lastMessageCreatedAt || message.createdAt > channel.lastMessageCreatedAt) {
-    updatedChannel.lastMessage = message;
-    updatedChannel.lastMessageCreatedAt = message.createdAt;
-  }
-
-  yield put(receive(updatedChannel));
+  yield put(receive({ id: channelId, messages: newMessages }));
   yield spawn(sendBrowserNotification, channelId, message);
 
   const isChannel = yield select(_isChannel(channelId));
@@ -510,17 +461,15 @@ export function* getPreview(message) {
   return yield call(getLinkPreviews, link[0].href);
 }
 
-function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {
-  return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
-}
+function* pollForPublicChannelMessages() {
+  while (true) {
+    const currentUser = yield select(currentUserSelector());
+    const isPublicZOS = !currentUser?.id;
+    const activeChannelId = yield select(activeChannelIdSelector);
 
-function filteredLastMessage(messages: Message[]): Message {
-  return messages[Object.keys(messages).pop()];
-}
-
-function* syncChannelsTask(action) {
-  while (yield select(rawShouldSyncChannels(action.payload.channelId))) {
-    yield call(fetchNewMessages, action);
+    if (isPublicZOS && activeChannelId) {
+      yield call(fetchNewMessages, activeChannelId);
+    }
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
@@ -551,8 +500,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-  yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
-  yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
+
+  yield spawn(pollForPublicChannelMessages);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

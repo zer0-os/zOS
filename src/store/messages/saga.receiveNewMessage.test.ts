@@ -71,53 +71,6 @@ describe(receiveNewMessage, () => {
       .run();
   });
 
-  it('sets the lastMessage and lastMessageCreatedAt if it is now the most recent message', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'new-message', message: '', createdAt: 10000007 };
-    const existingMessages = [
-      { id: 'other-message', message: '', createdAt: 10000005 },
-    ] as any;
-    const initialState = new StoreBuilder().withConversationList({
-      id: channelId,
-      messages: existingMessages,
-      lastMessage: existingMessages[0],
-      lastMessageCreatedAt: existingMessages[0].createdAt,
-    });
-
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toEqual(message);
-    expect(channel.lastMessageCreatedAt).toEqual(message.createdAt);
-  });
-
-  it('does not set the lastMessage and lastMessageAt if the received message is earlier than the latest', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'message text', createdAt: 10000001 };
-    const existingMessages = [
-      { id: 'other-message', message: 'message_0001', createdAt: 10000005 },
-    ] as any;
-
-    const initialState = new StoreBuilder().withConversationList({
-      id: channelId,
-      messages: existingMessages,
-      lastMessage: existingMessages[0],
-      lastMessageCreatedAt: existingMessages[0].createdAt,
-    });
-
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.lastMessage).toEqual(existingMessages[0]);
-    expect(channel.lastMessageCreatedAt).toEqual(existingMessages[0].createdAt);
-  });
-
   it('sends a browser notification', async () => {
     const message = { id: 'message-id', message: '' };
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id' });

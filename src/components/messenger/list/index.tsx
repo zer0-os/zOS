@@ -25,7 +25,7 @@ import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
-import { adminMessageText } from '../../../lib/chat/chat-message';
+import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -46,7 +46,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   stage: SagaStage;
   groupUsers: Option[];
-  conversations: (Channel & { messagePreview?: string })[];
+  conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
@@ -94,16 +94,7 @@ export class Container extends React.Component<Properties, State> {
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
 
-    const conversations = denormalizeConversations(state)
-      .sort((a, b) =>
-        compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
-      )
-      .map((conversation) => ({
-        ...conversation,
-        messagePreview: conversation.lastMessage?.isAdmin
-          ? adminMessageText(conversation.lastMessage, state)
-          : conversation.lastMessage?.message,
-      }));
+    const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
 
     return {
       conversations,
@@ -229,19 +220,21 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
 
-        <RewardsBar
-          zeroPreviousDay={this.props.zeroPreviousDay}
-          isRewardsLoading={this.props.isRewardsLoading}
-          isMessengerFullScreen={this.props.isMessengerFullScreen}
-          isFirstTimeLogin={this.props.isFirstTimeLogin}
-          includeRewardsAvatar={this.props.includeRewardsAvatar}
-          userName={this.props.userName}
-          userHandle={this.props.userHandle}
-          userAvatarUrl={this.props.userAvatarUrl}
-          onRewardsPopupClose={this.props.rewardsPopupClosed}
-          onLogout={this.props.logout}
-          showNewRewards={this.props.showNewRewards}
-        />
+        {this.props.stage === SagaStage.None && (
+          <RewardsBar
+            zeroPreviousDay={this.props.zeroPreviousDay}
+            isRewardsLoading={this.props.isRewardsLoading}
+            isMessengerFullScreen={this.props.isMessengerFullScreen}
+            isFirstTimeLogin={this.props.isFirstTimeLogin}
+            includeRewardsAvatar={this.props.includeRewardsAvatar}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+            onRewardsPopupClose={this.props.rewardsPopupClosed}
+            onLogout={this.props.logout}
+            showNewRewards={this.props.showNewRewards}
+          />
+        )}
 
         <div {...cn('')}>
           {this.props.stage === SagaStage.None && (
@@ -281,6 +274,25 @@ export class Container extends React.Component<Properties, State> {
       </>
     );
   }
+}
+
+function addLastMessageMeta(state: RootState): any {
+  return (conversation) => {
+    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
+    return {
+      ...conversation,
+      mostRecentMessage,
+      messagePreview: getMessagePreview(mostRecentMessage, state),
+      previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
+    };
+  };
+}
+
+function byLastMessageOrCreation(a, b) {
+  const aDate = a.mostRecentMessage?.createdAt || a.createdAt;
+  const bDate = b.mostRecentMessage?.createdAt || b.createdAt;
+  return compareDatesDesc(aDate, bDate);
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

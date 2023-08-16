@@ -157,7 +157,6 @@ describe('channels list saga', () => {
       createdAt: 7000,
       otherMembers: [],
       lastMessage: {},
-      lastMessageCreatedAt: null,
       groupChannelType: '',
     };
 
@@ -172,7 +171,6 @@ describe('channels list saga', () => {
       createdAt: 5000,
       otherMembers: [],
       lastMessage: {},
-      lastMessageCreatedAt: null,
       groupChannelType: '',
     };
 
@@ -243,7 +241,7 @@ describe('channels list saga', () => {
         channelsList,
         normalized: { channels, notifications },
       })
-      .run(0);
+      .run();
 
     expect(normalized).toEqual({
       channels: {},
@@ -289,9 +287,9 @@ describe(userLeftChannel, () => {
     const initialState = new StoreBuilder()
       .withCurrentUserId(userId)
       .withConversationList(
-        { id: 'conversation-1', lastMessageCreatedAt: 10000000 },
+        { id: 'conversation-1', lastMessage: { createdAt: 10000000 } as any },
         { id: channelId },
-        { id: 'conversation-2', lastMessageCreatedAt: 10000001 }
+        { id: 'conversation-2', lastMessage: { createdAt: 10000001 } as any }
       )
       .withActiveConversation({ id: channelId })
       .build();
@@ -337,29 +335,10 @@ describe(fetchConversations, () => {
       .run();
   });
 
-  it('maintains lastMessage information if a local message is newer', async () => {
-    const optimisticMessage = { id: 'message-id' } as any;
-    const channelWithOptimisticMessage = {
-      id: 'conversation-id',
-      lastMessage: optimisticMessage,
-      lastMessageCreatedAt: 10000001,
-    };
-    const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
-
-    const initialState = new StoreBuilder().withConversationList(channelWithOptimisticMessage).build();
-
-    const { storeState } = await expectSaga(fetchConversations)
-      .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])
-      .withReducer(rootReducer, initialState)
-      .run();
-
-    expect(denormalizeChannel('conversation-id', storeState).lastMessage).toBe(optimisticMessage);
-  });
-
   it('retains conversations that are not CREATED', async () => {
     const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
     const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
-    const fetchedChannel = { id: 'conversation-id', lastMessage: { id: 'old-message', createdAt: 10000000 } };
+    const fetchedChannel = { id: 'conversation-id' };
 
     const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 

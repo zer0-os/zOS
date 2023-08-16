@@ -1,6 +1,8 @@
-import { AdminMessageType, Message } from '../../store/messages';
+import moment from 'moment';
+import { AdminMessageType, MediaType, Message, MessageSendStatus } from '../../store/messages';
 import { RootState } from '../../store/reducer';
-import { adminMessageText, map as mapMessage } from './chat-message';
+import { StoreBuilder } from '../../store/test/store';
+import { adminMessageText, getMessagePreview, map as mapMessage, previewDisplayDate } from './chat-message';
 
 describe('sendbird events', () => {
   describe('mapMessage', () => {
@@ -271,5 +273,97 @@ describe(adminMessageText, () => {
 
       expect(adminText).toEqual('You started the conversation');
     });
+  });
+});
+
+describe(getMessagePreview, () => {
+  it('adds the prefix for current user', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'current-user' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: some message');
+  });
+
+  it('adds the user firstName for non-current user', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('Jack: some message');
+  });
+
+  it('returns admin preview for admin messages', () => {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+      } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You started the conversation');
+  });
+
+  it('describes an image message', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      {
+        message: '',
+        isAdmin: false,
+        sender: { userId: 'current-user' },
+        media: { type: MediaType.Image },
+      } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: sent an image');
+  });
+
+  it('returns failed to send message', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', isAdmin: false, sendStatus: MessageSendStatus.FAILED } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: Failed to send');
+  });
+});
+
+describe(previewDisplayDate, () => {
+  it('displays the time of day for messages sent on the current day', () => {
+    const now = moment();
+
+    expect(previewDisplayDate(now.valueOf())).toEqual(now.format('h:mm A'));
+  });
+
+  it('displays the three-letter day abbreviation for messages sent within the preceding 7 days', () => {
+    const sevenDaysAgo = moment().subtract(5, 'days');
+
+    expect(previewDisplayDate(sevenDaysAgo.valueOf())).toEqual(sevenDaysAgo.format('ddd'));
+  });
+
+  it('displays the three-letter month abbreviation and day of the month for messages sent in the same calendar year prior to the last 7 days', () => {
+    const withinCalendarYear = moment().subtract(10, 'days');
+
+    expect(previewDisplayDate(withinCalendarYear.valueOf())).toEqual(withinCalendarYear.format('MMM D'));
+  });
+
+  it('displays the three-letter month abbreviation, day of the month, and the year for messages sent before the current calendar year', () => {
+    const olderThanCalendarYear = moment().subtract(1, 'year').subtract(5, 'days');
+
+    expect(previewDisplayDate(olderThanCalendarYear.valueOf())).toEqual(olderThanCalendarYear.format('MMM D, YYYY'));
   });
 });

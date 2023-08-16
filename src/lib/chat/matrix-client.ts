@@ -146,7 +146,6 @@ export class MatrixClient implements IChatClient {
     isOneOnOne: false,
     otherMembers: [],
     lastMessage: null,
-    lastMessageCreatedAt: null,
     groupChannelType: GroupChannelType.Public,
     category: '',
     unreadCount: 0,

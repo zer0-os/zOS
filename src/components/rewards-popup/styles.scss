@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../functions';
 @import '../../animation';
@@ -20,8 +21,8 @@ $content-padding-y: 40px;
       position: absolute;
       background: theme.$color-primary-2;
 
-      $height: if($is-top, $arrow-size / 2, $arrow-size);
-      $width: if($is-top, $arrow-size, $arrow-size / 2);
+      $height: if($is-top, math.div($arrow-size, 2), $arrow-size);
+      $width: if($is-top, $arrow-size, math.div($arrow-size, 2));
       height: $height;
       width: $width;
       top: if($is-top, -$content-padding-y - $height, -$content-padding-y + 24px);

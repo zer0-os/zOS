@@ -9,7 +9,7 @@ import { initializePublicLayout } from '../layout/saga';
 jest.mock('../../config', () => ({
   config: {
     defaultZnsRoute: 'wilder',
-    defaultApp: 'nfts',
+    defaultApp: 'channels',
   },
 }));
 
@@ -41,8 +41,8 @@ describe('page-load saga', () => {
       .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /login to /0.wilder.nfts
-    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
+    // redirected from /login to /0.wilder.channels
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
     expect(loginStoreState.pageload.isComplete).toBe(true);
 
     // signup
@@ -52,8 +52,8 @@ describe('page-load saga', () => {
       .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /get-access to /0.wilder.nfts
-    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/nfts' });
+    // redirected from /get-access to /0.wilder.channels
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
     expect(getAccessStoreState.pageload.isComplete).toBe(true);
   });
 
@@ -79,7 +79,7 @@ describe('page-load saga', () => {
       pageload: { isComplete: false },
     };
 
-    const history = new StubHistory('/0.wilder/nfts');
+    const history = new StubHistory('/0.wilder/channels');
     const { storeState } = await expectSaga(saga)
       .provide(stubResponses(history, false))
       .withReducer(rootReducer, initialState as any)
@@ -95,7 +95,7 @@ describe('page-load saga', () => {
       pageload: { isComplete: false },
     };
 
-    const history = new StubHistory('/0.wilder/nfts');
+    const history = new StubHistory('/0.wilder/channels');
     featureFlags.allowPublicZOS = true;
     const { storeState } = await expectSaga(saga)
       .provide(stubResponses(history, false))

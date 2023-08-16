@@ -32,7 +32,7 @@ describe('AppMenuContainer', () => {
   });
 
   it('passes selectedApp', () => {
-    const selectedApp = Apps.Feed;
+    const selectedApp = Apps.Channels;
 
     const wrapper = subject({ selectedApp });
 

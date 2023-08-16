@@ -4,12 +4,12 @@ import { apps, Apps } from '../../lib/apps';
 
 describe('apps reducer', () => {
   const initialExistingState: AppsState = {
-    selectedApp: apps[Apps.Members],
+    selectedApp: null,
   };
 
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      selectedApp: apps[Apps.NFTS],
+      selectedApp: apps[Apps.Channels],
     });
   });
 

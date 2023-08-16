@@ -39,12 +39,9 @@ export interface Channel {
   messages: Message[];
   otherMembers: User[];
   hasMore: boolean;
-  countNewMessages: number;
   createdAt: number;
   lastMessage: Message;
-  lastMessageCreatedAt: number;
   category?: string;
-  shouldSyncChannels: boolean;
   unreadCount?: number;
   hasJoined?: boolean;
   groupChannelType: GroupChannelType;

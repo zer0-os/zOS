@@ -3,15 +3,12 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
-import { setActiveChannelId } from '../../store/chat';
 import {
   fetch as fetchMessages,
   send as sendMessage,
   deleteMessage,
   editMessage,
   Message,
-  startMessageSync,
-  stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
@@ -29,15 +26,12 @@ import { ParentMessage } from '../../lib/chat/types';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
-  setActiveChannelId: (channelId: string) => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  startMessageSync: (payload: PayloadFetchMessages) => void;
-  stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
   isMessengerFullScreen: boolean;
   context: {
@@ -52,7 +46,6 @@ interface PublicProperties {
   showSenderAvatar?: boolean;
 }
 export interface State {
-  countNewMessages: number;
   reply: null | ParentMessage;
 }
 
@@ -79,24 +72,17 @@ export class Container extends React.Component<Properties, State> {
     return {
       fetchMessages,
       sendMessage,
-      startMessageSync,
-      stopSyncChannels,
       deleteMessage,
       joinChannel,
       editMessage,
-      setActiveChannelId,
     };
   }
 
-  state = { countNewMessages: 0, reply: null };
+  state = { reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
     if (channelId) {
-      // only set the active channel ID if it's not a direct message conversation
-      if (!this.props.activeConversationId) {
-        this.props.setActiveChannelId(channelId);
-      }
       this.props.fetchMessages({ channelId });
     }
   }
@@ -105,34 +91,12 @@ export class Container extends React.Component<Properties, State> {
     const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
-      this.props.stopSyncChannels(prevProps);
-
-      this.props.setActiveChannelId(channelId);
       this.props.fetchMessages({ channelId });
       this.setState({ reply: null });
     }
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
-      this.props.setActiveChannelId(channelId);
       this.props.fetchMessages({ channelId });
-    }
-
-    if (
-      !this.props.context.isAuthenticated &&
-      channel &&
-      channel.shouldSyncChannels &&
-      (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)
-    ) {
-      this.props.startMessageSync({ channelId });
-    }
-
-    if (
-      channel &&
-      channel.countNewMessages &&
-      prevProps.channel.countNewMessages !== channel.countNewMessages &&
-      channel.countNewMessages > 0
-    ) {
-      this.setState({ countNewMessages: channel.countNewMessages });
     }
 
     if (this.textareaRef && channel && Boolean(channel.messages)) {
@@ -140,15 +104,6 @@ export class Container extends React.Component<Properties, State> {
       this.textareaRef = null;
     }
   }
-
-  componentWillUnmount() {
-    const { channelId } = this.props;
-    this.props.stopSyncChannels({ channelId });
-  }
-
-  resetCountNewMessage = () => {
-    this.setState({ countNewMessages: 0 });
-  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -320,8 +275,6 @@ export class Container extends React.Component<Properties, State> {
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
-          countNewMessages={this.state.countNewMessages}
-          resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}

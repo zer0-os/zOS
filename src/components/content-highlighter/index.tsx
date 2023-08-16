@@ -69,7 +69,7 @@ export class ContentHighlighter extends React.Component<Properties> {
             },
           }}
         >
-          {this.renderContent(this.props.message)}
+          <div>{this.renderContent(this.props.message)}</div>
         </Linkify>
       );
     } else {

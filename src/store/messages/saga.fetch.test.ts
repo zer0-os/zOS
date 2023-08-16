@@ -109,21 +109,6 @@ describe(fetch, () => {
     expect(denormalize(channel.id, storeState).hasLoadedMessages).toBe(true);
   });
 
-  it('forces shouldSyncChannels to be true', async () => {
-    const channel = { id: 'channel-id', shouldSyncChannels: false };
-    const messageResponse = { shouldSyncChannels: false };
-
-    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
-      .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse),
-      ])
-      .withReducer(rootReducer, initialChannelState(channel) as any)
-      .run();
-
-    expect(denormalize(channel.id, storeState).shouldSyncChannels).toBe(true);
-  });
-
   it('adds messages to channel', async () => {
     const channel = { id: 'channel-id', messages: ['old-message-id'] };
     const messageResponse = {

@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
@@ -55,8 +54,6 @@ export interface Properties {
   onRemove?: () => void;
   onReply: (reply: ParentMessage) => void;
   joinChannel: () => void;
-  resetCountNewMessage: () => void;
-  countNewMessages: number;
   className?: string;
   reply?: null | ParentMessage;
   onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
@@ -75,11 +72,6 @@ export interface State {
 }
 
 export class ChatView extends React.Component<Properties, State> {
-  bottomRef;
-  constructor(props) {
-    super(props);
-    this.bottomRef = React.createRef();
-  }
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   getMessagesByDay() {
@@ -125,23 +117,6 @@ export class ChatView extends React.Component<Properties, State> {
       return date.format('MMM D, YYYY');
     }
   }
-
-  closeIndicator = () => {
-    this.props.resetCountNewMessage();
-    this.bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  isShowIndicator = (): boolean => {
-    if (this.props.countNewMessages > 0 && this.bottomRef.current) {
-      const { bottom } = this.bottomRef.current?.getBoundingClientRect();
-      if (window.innerHeight + 50 < bottom) {
-        return true;
-      }
-      this.props.resetCountNewMessage();
-      return false;
-    }
-    return false;
-  };
 
   isUserOwnerOfMessage(message: MessageModel) {
     // eslint-disable-next-line eqeqeq
@@ -253,9 +228,6 @@ export class ChatView extends React.Component<Properties, State> {
           'channel-view__fullscreen': this.props.isMessengerFullScreen,
         })}
       >
-        {this.isShowIndicator() && (
-          <IndicatorMessage countNewMessages={this.props.countNewMessages} closeIndicator={this.closeIndicator} />
-        )}
         {isLightboxOpen && (
           <Lightbox
             provider={getProvider()}
@@ -277,8 +249,6 @@ export class ChatView extends React.Component<Properties, State> {
             {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
               <ChatSkeleton conversationId={this.props.id} />
             )}
-
-            <div ref={this.bottomRef} />
           </div>
         </InvertedScroll>
 

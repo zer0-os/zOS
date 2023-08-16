@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import { ConversationItem, Properties } from '.';
 import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
-import { MediaType, MessageSendStatus } from '../../../../store/messages';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -102,7 +101,6 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 0,
         otherMembers: [],
-        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -115,7 +113,6 @@ describe('ConversationItem', () => {
         id: 'id',
         unreadCount: 7,
         otherMembers: [],
-        lastMessage: { sender: { userId: 'id' } },
       } as any,
     });
 
@@ -125,106 +122,17 @@ describe('ConversationItem', () => {
   it('renders the message preview', function () {
     const messagePreview = 'I said something here';
 
-    const wrapper = subject({
-      myUserId: 'id',
-      conversation: {
-        messagePreview,
-        otherMembers: [],
-        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' } },
-      } as any,
-    });
+    const wrapper = subject({ conversation: { messagePreview, otherMembers: [] } as any });
 
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(`You: ${messagePreview}`);
+    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual(messagePreview);
   });
 
-  it('displays "You" when the last message sender is the user', function () {
-    const conversation: any = {
-      messagePreview: 'Hello there',
-      lastMessage: { sender: { userId: 'my-user-id', firstName: 'John' } },
-      otherMembers: [],
-    };
+  it('renders the previewDisplayDate', function () {
+    const previewDisplayDate = 'Aug 1, 2021';
 
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
+    const wrapper = subject({ conversation: { previewDisplayDate, otherMembers: [] } as any });
 
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Hello there');
-  });
-
-  it('displays the senders name when the last message sender is not the user', function () {
-    const conversation: any = {
-      messagePreview: 'Hello there',
-      lastMessage: { sender: { userId: 'other-user-id', firstName: 'Steve' } },
-      otherMembers: [],
-    };
-
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: Hello there');
-  });
-
-  it('displays only messagePreview when lastMessage.admin has data', function () {
-    const conversation: any = {
-      messagePreview: 'Admin Message',
-      lastMessage: {
-        admin: {
-          type: 'AdminMessageType',
-          inviterId: 'some-id',
-        },
-        sender: { userId: 'other-user-id', firstName: 'Steve' },
-      },
-      otherMembers: [],
-    };
-
-    const wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Admin Message');
-  });
-
-  it('renders a text if i sent/received a media message', function () {
-    const conversation: any = {
-      messagePreview: '',
-      otherMembers: [],
-      lastMessage: { sender: { userId: 'my-user-id' }, media: { type: MediaType.Image } },
-    };
-
-    // sent
-    let wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Sent an image');
-
-    // received
-    conversation.lastMessage.sender.userId = 'other-user-id';
-    conversation.lastMessage.sender.firstName = 'Steve';
-    wrapper = subject({
-      conversation,
-      myUserId: 'my-user-id',
-    });
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('Steve: sent an image');
-  });
-
-  it('renders failed to send message if the last message failed', function () {
-    const messagePreview = 'I said something here';
-
-    const wrapper = subject({
-      myUserId: 'id',
-      conversation: {
-        messagePreview,
-        otherMembers: [],
-        lastMessage: { sender: { userId: 'id', firstName: 'Johnny' }, sendStatus: MessageSendStatus.FAILED },
-      } as any,
-    });
-
-    expect(wrapper.find(ContentHighlighter).prop('message')).toEqual('You: Failed to send');
+    expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(previewDisplayDate);
   });
 
   describe('status', () => {
@@ -276,48 +184,6 @@ describe('ConversationItem', () => {
       expect(wrapper.find('Tooltip').prop('overlay')).toEqual('Johnny Cash, Jackie Chan');
     });
   });
-
-  describe('displayDate', () => {
-    const createWrapper = (createdAt: moment.Moment) => {
-      return subject({
-        conversation: {
-          lastMessage: {
-            createdAt: createdAt.valueOf(),
-            sender: { userId: 'id' },
-          },
-          otherMembers: [],
-        } as any,
-      });
-    };
-
-    it('displays the time of day for messages sent on the current day', () => {
-      const now = moment();
-      const wrapper = createWrapper(now);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(now.format('h:mm A'));
-    });
-
-    it('displays the three-letter day abbreviation for messages sent within the preceding 7 days', () => {
-      const sevenDaysAgo = moment().subtract(5, 'days');
-      const wrapper = createWrapper(sevenDaysAgo);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(sevenDaysAgo.format('ddd'));
-    });
-
-    it('displays the three-letter month abbreviation and day of the month for messages sent in the same calendar year prior to the last 7 days', () => {
-      const messageDate = moment().subtract(10, 'days');
-      const wrapper = createWrapper(messageDate);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(messageDate.format('MMM D'));
-    });
-
-    it('displays the three-letter month abbreviation, day of the month, and the year for messages sent before the current calendar year', () => {
-      const messageDate = moment().subtract(1, 'year').subtract(5, 'days');
-      const wrapper = createWrapper(messageDate);
-
-      expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(messageDate.format('MMM D, YYYY'));
-    });
-  });
 });
 
 function title(wrapper) {
@@ -328,6 +194,5 @@ function convoWith(...otherMembers): any {
   return {
     id: 'convo-id',
     otherMembers,
-    lastMessage: { sender: { ...otherMembers[0], userId: 'id' } },
   };
 }

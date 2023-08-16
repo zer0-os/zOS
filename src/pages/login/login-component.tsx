@@ -13,6 +13,8 @@ import { ResetPasswordContainer } from '../../authentication/reset-password/cont
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
 
+import { FeatureFlag } from '../../components/feature-flag';
+
 const cn = bemClassName('login-main');
 
 interface LoginComponentProperties {
@@ -85,6 +87,13 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </>
           )}
         </span>
+        <FeatureFlag featureFlag={'resetPasswordPage'}>
+          {stage === LoginStage.EmailLogin && (
+            <span>
+              Forgot your password? <Link to='/get-access'>Reset</Link>
+            </span>
+          )}
+        </FeatureFlag>
       </div>
     );
   }

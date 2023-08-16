@@ -30,7 +30,6 @@ export const toLocalChannel = (input): Partial<Channel> => {
     createdAt: input.createdAt,
     otherMembers,
     lastMessage: input.lastMessage || null,
-    lastMessageCreatedAt: input.lastMessage?.createdAt || null,
     isChannel,
     groupChannelType: input.groupChannelType || '', // Is this the right default to use?
     conversationStatus: ConversationStatus.CREATED,

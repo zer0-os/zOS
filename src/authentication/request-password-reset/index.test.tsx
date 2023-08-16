@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { Properties, RequestPasswordReset } from '.';
 import { inputEvent } from '../../test/utils';
+import { RequestPasswordResetStage } from '../../store/request-password-reset';
 
 describe('RequestPasswordReset', () => {
   const subject = (props: Partial<Properties>) => {

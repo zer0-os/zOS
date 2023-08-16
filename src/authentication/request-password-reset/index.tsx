@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Button, Input, Alert } from '@zero-tech/zui/components';
 
 import { bem, bemClassName } from '../../lib/bem';
+import { RequestPasswordResetStage } from '../../store/request-password-reset';
 
 import './styles.scss';
 

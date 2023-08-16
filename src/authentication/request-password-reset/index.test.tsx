@@ -2,20 +2,20 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { Properties, ResetPassword } from '.';
+import { Properties, RequestPasswordReset } from '.';
 import { inputEvent } from '../../test/utils';
 
-describe('ResetPassword', () => {
+describe('RequestPasswordReset', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      stage: RequestPasswordResetStage.SubmitEmail,
       isLoading: false,
       errors: {},
-      emailSubmitted: false,
       onSubmit: () => null,
       ...props,
     };
 
-    return shallow(<ResetPassword {...allProps} />);
+    return shallow(<RequestPasswordReset {...allProps} />);
   };
 
   it('calls on submit when submit button is clicked', function () {
@@ -48,9 +48,12 @@ describe('ResetPassword', () => {
     expect(wrapper.find('Alert').prop('children')).toEqual('invalid');
   });
 
-  it('renders success message when email submitted', function () {
-    const wrapper = subject({ emailSubmitted: true });
-    wrapper.setState({ email: 'test@example.com' });
+  it('renders success message when stage is equal to "Done" ', function () {
+    const wrapper = subject({ stage: RequestPasswordResetStage.Done });
+    wrapper.find('Input[name="email"]').simulate('change', { target: { value: 'test@example.com' } });
+    wrapper.find('form').simulate('submit');
+    wrapper.setProps({ stage: RequestPasswordResetStage.Done });
+
     expect(wrapper.find('.reset-password__success-message').text()).toContain(
       'An email containing a reset password link has been emailed to: test@example.com'
     );
@@ -63,11 +66,5 @@ describe('ResetPassword', () => {
     wrapper = subject({});
     wrapper.setState({ email: '' });
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-  });
-
-  it('tracks email input correctly', function () {
-    const wrapper = subject({});
-    wrapper.find('Input[name="email"]').simulate('change', 'jack@example.com');
-    expect(wrapper.state('email')).toEqual('jack@example.com');
   });
 });

@@ -6,12 +6,12 @@ import { bem, bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 
-const c = bem('reset-password');
-const cn = bemClassName('reset-password');
+const c = bem('request-password-reset');
+const cn = bemClassName('request-password-reset');
 
 export interface Properties {
+  stage: RequestPasswordResetStage;
   isLoading: boolean;
-  emailSubmitted: boolean;
   errors: {
     email?: string;
     general?: string;
@@ -24,12 +24,12 @@ interface State {
   email: string;
 }
 
-export class ResetPassword extends React.Component<Properties, State> {
+export class RequestPasswordReset extends React.Component<Properties, State> {
   state = {
     email: '',
   };
 
-  handleResetPassword = (e) => {
+  handleRequestPasswordReset = (e) => {
     e.preventDefault();
     this.props.onSubmit({ email: this.state.email });
   };
@@ -61,7 +61,7 @@ export class ResetPassword extends React.Component<Properties, State> {
 
   renderForm() {
     return (
-      <form {...cn('form')} onSubmit={this.handleResetPassword}>
+      <form {...cn('form')} onSubmit={this.handleRequestPasswordReset}>
         <Input
           {...cn('input')}
           alertClassName={c('input-alert')}
@@ -95,20 +95,20 @@ export class ResetPassword extends React.Component<Properties, State> {
   }
 
   render() {
-    const { emailSubmitted } = this.props;
+    const { stage } = this.props;
 
     return (
       <div {...cn('')}>
         <div {...cn('heading-container')}>
           <h3 {...cn('heading')}>Reset Password</h3>
-          {emailSubmitted && this.renderSuccessMessage()}
+          {stage === RequestPasswordResetStage.Done && this.renderSuccessMessage()}
 
-          {!emailSubmitted && (
+          {stage !== RequestPasswordResetStage.Done && (
             <div {...cn('sub-heading')}>Enter your ZERO account email and we’ll send a reset link</div>
           )}
         </div>
 
-        {!emailSubmitted && this.renderForm()}
+        {stage !== RequestPasswordResetStage.Done && this.renderForm()}
       </div>
     );
   }

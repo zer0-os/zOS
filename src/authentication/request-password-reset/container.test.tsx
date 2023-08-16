@@ -1,16 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ResetPasswordErrors } from '../../store/reset-password';
+import { RequestPasswordResetErrors } from '../../store/request-password-reset';
 import { RootState } from '../../store/reducer';
 import { Container, Properties } from './container';
 
 describe('Container', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      stage: RequestPasswordResetStage.SubmitEmail,
       isLoading: false,
       errors: {},
-      emailSubmitted: false,
-      resetPassword: () => null,
+      requestPasswordReset: () => null,
       ...props,
     };
 
@@ -18,24 +18,23 @@ describe('Container', () => {
   };
 
   it('passes data down', function () {
-    const wrapper = subject({ isLoading: true, emailSubmitted: true });
+    const wrapper = subject({ isLoading: true });
 
-    expect(wrapper.find('ResetPassword').props()).toEqual(
+    expect(wrapper.find('RequestPasswordReset').props()).toEqual(
       expect.objectContaining({
         isLoading: true,
-        emailSubmitted: true,
       })
     );
   });
 
   describe('mapState', () => {
-    const subject = (resetPasswordState) => {
+    const subject = (requestPasswordReset) => {
       const state = {
         resetPassword: {
+          // stage ?
           loading: false,
-          emailSubmitted: false,
           errors: [],
-          ...resetPasswordState,
+          ...requestPasswordReset,
         },
       } as RootState;
 
@@ -48,21 +47,9 @@ describe('Container', () => {
       expect(props.isLoading).toEqual(true);
     });
 
-    it('emailSubmitted', () => {
-      const props = subject({ emailSubmitted: true });
-
-      expect(props.emailSubmitted).toEqual(true);
-    });
-
     describe('email errors', () => {
-      it('email not found', () => {
-        const props = subject({ errors: [ResetPasswordErrors.EMAIL_NOT_FOUND] });
-
-        expect(props.errors).toEqual({ email: 'Email not found' });
-      });
-
       it('email is required', () => {
-        const props = subject({ errors: [ResetPasswordErrors.EMAIL_REQUIRED] });
+        const props = subject({ errors: [RequestPasswordResetErrors.EMAIL_REQUIRED] });
 
         expect(props.errors).toEqual({ email: 'Email is required' });
       });
@@ -70,7 +57,7 @@ describe('Container', () => {
 
     describe('general errors', () => {
       it('unknown error', () => {
-        const props = subject({ errors: [ResetPasswordErrors.UNKNOWN_ERROR] });
+        const props = subject({ errors: [RequestPasswordResetErrors.UNKNOWN_ERROR] });
 
         expect(props.errors).toEqual({ general: 'An unknown error has occurred' });
       });

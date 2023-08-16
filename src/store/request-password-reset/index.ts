@@ -2,8 +2,8 @@ import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   RequestPasswordReset = 'requestPasswordReset',
-  EnterRequesetPasswordResetPage = 'enterRequesetPasswordResetPage',
-  LeaveRequesetPasswordResetPage = 'leaveRequesetPasswordResetPage',
+  EnterRequestPasswordResetPage = 'enterRequestPasswordResetPage',
+  LeaveRequestPasswordResetPage = 'leaveRequestPasswordResetPage',
 }
 
 export enum RequestPasswordResetStage {
@@ -30,8 +30,8 @@ export const initialState: RequestPasswordResetState = {
 };
 
 export const requestPasswordReset = createAction<{ email: string }>(SagaActionTypes.RequestPasswordReset);
-export const enterResetPasswordPage = createAction(SagaActionTypes.EnterRequesetPasswordResetPage);
-export const leaveResetPasswordPage = createAction(SagaActionTypes.LeaveRequesetPasswordResetPage);
+export const enterResetPasswordPage = createAction(SagaActionTypes.EnterRequestPasswordResetPage);
+export const leaveResetPasswordPage = createAction(SagaActionTypes.LeaveRequestPasswordResetPage);
 
 const slice = createSlice({
   name: 'request-password-reset',

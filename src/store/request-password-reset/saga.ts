@@ -47,9 +47,9 @@ export function* requestPasswordReset() {
 
 export function* watchRequestPasswordReset() {
   while (true) {
-    yield take(SagaActionTypes.EnterRequesetPasswordResetPage);
+    yield take(SagaActionTypes.EnterRequestPasswordResetPage);
     const task = yield fork(requestPasswordReset);
-    yield take(SagaActionTypes.LeaveRequesetPasswordResetPage);
+    yield take(SagaActionTypes.LeaveRequestPasswordResetPage);
     yield cancel(task);
   }
 }

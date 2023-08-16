@@ -1,9 +1,9 @@
-import { resetPassword as resetPasswordApi } from './api';
+import { requestPasswordReset as requestPasswordResetApi } from './api';
 import { setLoading, setErrors, SagaActionTypes, setEmailSubmitted } from './index';
 import { ResetPasswordErrors } from '.';
 import { call, put, take } from 'redux-saga/effects';
 
-export function validateResetPassword({ email }) {
+export function validateRequestPasswordResetEmail({ email }) {
   const validationErrors = [];
 
   if (!email.trim()) {
@@ -13,14 +13,14 @@ export function validateResetPassword({ email }) {
   return validationErrors;
 }
 
-export function* resetPasswordPage() {
+export function* requestPasswordResetPage() {
   let success;
   do {
-    const action = yield take(SagaActionTypes.ResetPassword);
+    const action = yield take(SagaActionTypes.RequestPasswordReset);
     yield put(setLoading(true));
     yield put(setEmailSubmitted(false));
 
-    const validationErrors = validateResetPassword(action.payload);
+    const validationErrors = validateRequestPasswordResetEmail(action.payload);
 
     if (validationErrors.length > 0) {
       yield put(setErrors(validationErrors));
@@ -28,7 +28,7 @@ export function* resetPasswordPage() {
       continue;
     }
 
-    const result = yield call(resetPasswordApi, action.payload);
+    const result = yield call(requestPasswordResetApi, action.payload);
     success = result.success;
 
     if (success) {
@@ -48,5 +48,5 @@ export function* resetPasswordPage() {
 }
 
 export function* saga() {
-  yield resetPasswordPage();
+  yield requestPasswordResetPage();
 }

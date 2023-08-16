@@ -17,7 +17,7 @@ import { reducer as registration } from './registration';
 import { reducer as login } from './login';
 import { reducer as rewards } from './rewards';
 import { reducer as editProfile } from './edit-profile';
-import { reducer as resetPassword } from './reset-password';
+import { reducer as requestPasswordReset } from './request-password-reset';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -37,7 +37,7 @@ export const rootReducer = combineReducers({
   login,
   rewards,
   editProfile,
-  resetPassword,
+  requestPasswordReset,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

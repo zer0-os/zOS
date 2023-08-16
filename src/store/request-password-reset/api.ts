@@ -1,8 +1,12 @@
 import { post } from '../../lib/api/rest';
 
-export async function resetPassword({ email }: { email: string }): Promise<{ success: boolean; response?: string }> {
+export async function requestPasswordReset({
+  email,
+}: {
+  email: string;
+}): Promise<{ success: boolean; response?: string }> {
   try {
-    await post('/api/v2/accounts/reset-password').send({ email });
+    await post('/api/v2/accounts/request-password-reset').send({ email });
     return {
       success: true,
     };

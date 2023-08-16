@@ -19,7 +19,7 @@ import { saga as rewards } from './rewards/saga';
 import { saga as pageLoad } from './page-load/saga';
 import { saga as editProfile } from './edit-profile/saga';
 import { saga as users } from './users/saga';
-import { saga as resetPassword } from './reset-password/saga';
+import { saga as resetPassword } from './request-password-reset/saga';
 
 export function* rootSaga() {
   const allSagas = {

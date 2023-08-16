@@ -1,10 +1,10 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  ResetPassword = 'resetPassword',
+  RequestPasswordReset = 'requestPasswordReset',
 }
 
-export type ResetState = {
+export type RequestPasswordResetState = {
   loading: boolean;
   errors: string[];
   emailSubmitted: boolean;
@@ -16,25 +16,25 @@ export enum ResetPasswordErrors {
   EMAIL_NOT_FOUND = 'EMAIL_NOT_FOUND',
 }
 
-export const initialState: ResetState = {
+export const initialState: RequestPasswordResetState = {
   loading: false,
   errors: [],
   emailSubmitted: false,
 };
 
-export const resetPassword = createAction<{ email: string }>(SagaActionTypes.ResetPassword);
+export const resetPassword = createAction<{ email: string }>(SagaActionTypes.RequestPasswordReset);
 
 const slice = createSlice({
-  name: 'reset-password',
+  name: 'request-password-reset',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<ResetState['loading']>) => {
+    setLoading: (state, action: PayloadAction<RequestPasswordResetState['loading']>) => {
       state.loading = action.payload;
     },
-    setErrors: (state, action: PayloadAction<ResetState['errors']>) => {
+    setErrors: (state, action: PayloadAction<RequestPasswordResetState['errors']>) => {
       state.errors = action.payload;
     },
-    setEmailSubmitted: (state, action: PayloadAction<ResetState['emailSubmitted']>) => {
+    setEmailSubmitted: (state, action: PayloadAction<RequestPasswordResetState['emailSubmitted']>) => {
       state.emailSubmitted = action.payload;
     },
   },

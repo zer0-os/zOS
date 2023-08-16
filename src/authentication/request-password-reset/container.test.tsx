@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { RequestPasswordResetErrors } from '../../store/request-password-reset';
+import { RequestPasswordResetErrors, RequestPasswordResetStage } from '../../store/request-password-reset';
 import { RootState } from '../../store/reducer';
 import { Container, Properties } from './container';
 
@@ -30,8 +30,8 @@ describe('Container', () => {
   describe('mapState', () => {
     const subject = (requestPasswordReset) => {
       const state = {
-        resetPassword: {
-          // stage ?
+        requestPasswordReset: {
+          stage: RequestPasswordResetStage.SubmitEmail,
           loading: false,
           errors: [],
           ...requestPasswordReset,

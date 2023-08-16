@@ -17,7 +17,7 @@ export type RequestPasswordResetState = {
   errors: string[];
 };
 
-export enum ResetPasswordErrors {
+export enum RequestPasswordResetErrors {
   UNKNOWN_ERROR = 'UNKNOWN',
   API_ERROR = 'API_ERROR',
   EMAIL_REQUIRED = 'EMAIL_REQUIRED',

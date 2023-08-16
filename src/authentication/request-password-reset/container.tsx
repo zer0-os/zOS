@@ -2,7 +2,11 @@ import * as React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { RequestPasswordResetErrors, requestPasswordReset } from '../../store/reset-password';
+import {
+  RequestPasswordResetErrors,
+  RequestPasswordResetStage,
+  requestPasswordReset,
+} from '../../store/request-password-reset';
 import { RequestPasswordReset as RequestPasswordResetComponent } from '.';
 
 export interface PublicProperties {}
@@ -25,7 +29,6 @@ export class Container extends React.Component<Properties> {
     return {
       stage: requestPasswordReset.stage,
       isLoading: requestPasswordReset.loading,
-      emailSubmitted: requestPasswordReset.emailSubmitted,
       errors: Container.mapErrors(requestPasswordReset.errors),
     };
   }

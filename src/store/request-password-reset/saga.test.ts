@@ -6,7 +6,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { requestPasswordReset, validateRequestPasswordResetEmail } from './saga';
 import { requestPasswordReset as requestPasswordResetApi } from './api';
 import {
-  ResetPasswordErrors,
+  RequestPasswordResetErrors,
   RequestPasswordResetStage,
   initialState as initialResetPasswordState,
   RequestPasswordResetState,
@@ -21,14 +21,14 @@ describe('requestPasswordReset saga', () => {
       .provide([
         [
           call(validateRequestPasswordResetEmail, { email }),
-          [ResetPasswordErrors.EMAIL_REQUIRED],
+          [RequestPasswordResetErrors.EMAIL_REQUIRED],
         ],
       ])
       .withReducer(rootReducer, initialState({}))
       .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
 
-    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.EMAIL_REQUIRED);
+    expect(requestPasswordState.errors).toContain(RequestPasswordResetErrors.EMAIL_REQUIRED);
   });
 
   it('should call the API and handle success response', async () => {
@@ -67,7 +67,7 @@ describe('requestPasswordReset saga', () => {
       .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
 
-    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.UNKNOWN_ERROR);
+    expect(requestPasswordState.errors).toContain(RequestPasswordResetErrors.UNKNOWN_ERROR);
     expect(requestPasswordState.loading).toBeFalsy();
   });
 
@@ -87,7 +87,7 @@ describe('requestPasswordReset saga', () => {
       .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
 
-    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.API_ERROR);
+    expect(requestPasswordState.errors).toContain(RequestPasswordResetErrors.API_ERROR);
     expect(requestPasswordState.loading).toBeFalsy();
   });
 });

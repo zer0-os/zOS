@@ -1,20 +1,10 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 
-import { App } from '@zer0-os/zos-feed';
 import { AppSandbox } from '.';
 import { Apps } from '../lib/apps';
-import { Chains } from '../lib/web3';
 import { Channels } from '../platform-apps/channels';
 import { AppLayoutContextProvider } from '@zer0-os/zos-component-library';
 import { AppLayout } from '../store/layout';
-
-// Don't load full external projects
-jest.mock('@zero-tech/zapp-nfts', () => ({}));
-jest.mock('@zero-tech/zapp-staking', () => ({}));
-jest.mock('@zero-tech/zapp-daos', () => ({}));
-jest.mock('@zero-tech/zapp-buy-domains', () => ({}));
-jest.mock('@zer0-os/zos-feed', () => ({ App: () => <></> }));
 
 describe('AppSandbox', () => {
   const subject = (props: any = {}) => {
@@ -38,45 +28,10 @@ describe('AppSandbox', () => {
     expect(wrapper.find(Channels).prop('store')).toStrictEqual(store);
   });
 
-  it('does not pass store to feed app', () => {
-    const store: any = { what: 'no' };
-
-    const wrapper = subject({ selectedApp: Apps.Feed, store });
-
-    expect(wrapper.find(App).prop('store')).toBeUndefined();
-  });
-
-  it('renders Feed app container when Feed app selected', () => {
-    const wrapper = subject({ selectedApp: Apps.Feed });
-
-    expect(wrapper.find(App).exists()).toBe(true);
-  });
-
   it('renders error if no app is selected', () => {
     const wrapper = subject({ selectedApp: null });
 
     expect(wrapper.find('.app-sandbox__error').exists()).toBe(true);
-  });
-
-  it('passes AppInterface properties to Feed app', () => {
-    const web3Provider = { chain: '7' };
-
-    const wrapper = subject({
-      selectedApp: Apps.Feed,
-      web3Provider,
-      znsRoute: 'food.tacos',
-      chainId: Chains.MainNet,
-      address: '0x0000000000000000000000000000000000000009',
-    });
-
-    expect(wrapper.find(App).props()).toMatchObject({
-      provider: web3Provider,
-      route: 'food.tacos',
-      web3: {
-        chainId: Chains.MainNet,
-        address: '0x0000000000000000000000000000000000000009',
-      },
-    });
   });
 
   it('renders Channels app container when Channels app selected', () => {
@@ -91,34 +46,6 @@ describe('AppSandbox', () => {
     const wrapper = subject({ selectedApp: Apps.Channels, user });
 
     expect(wrapper.find(Channels).prop('user')).toStrictEqual(user);
-  });
-
-  it('passes route to feed app', () => {
-    const znsRoute = 'food.tacos';
-
-    const wrapper = subject({ selectedApp: Apps.Feed, znsRoute });
-
-    expect(wrapper.find(App).prop('route')).toStrictEqual(znsRoute);
-  });
-
-  it('passes provider to feed app', () => {
-    const web3Provider = { chain: '7' };
-
-    const wrapper = subject({ selectedApp: Apps.Feed, web3Provider });
-
-    expect(wrapper.find(App).prop('provider')).toStrictEqual(web3Provider);
-  });
-
-  it('passes connectWallet to feed app', () => {
-    const web3 = { connectWallet: jest.fn() };
-
-    const wrapper = subject({ selectedApp: Apps.Feed, connectWallet: web3.connectWallet });
-
-    expect(wrapper.find(App).prop('web3')).toEqual(
-      expect.objectContaining({
-        connectWallet: web3.connectWallet,
-      })
-    );
   });
 
   it('sets context values from layout', () => {

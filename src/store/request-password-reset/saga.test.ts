@@ -3,7 +3,7 @@ import { call } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 
-import { requestPasswordReset, validateRequestPasswordResetEmail } from './saga';
+import { requestPasswordReset, validateRequestPasswordResetEmail, watchRequestPasswordReset } from './saga';
 import { requestPasswordReset as requestPasswordResetApi } from './api';
 import {
   RequestPasswordResetErrors,
@@ -89,6 +89,20 @@ describe('requestPasswordReset saga', () => {
 
     expect(requestPasswordState.errors).toContain(RequestPasswordResetErrors.API_ERROR);
     expect(requestPasswordState.loading).toBeFalsy();
+  });
+});
+
+describe('watchRequestPasswordReset saga', () => {
+  it('should reset the stage upon entering the reset page', async () => {
+    const {
+      storeState: { requestPasswordReset: requestPasswordState },
+    } = await expectSaga(watchRequestPasswordReset)
+      .withReducer(rootReducer, initialState({ stage: RequestPasswordResetStage.Done }))
+      .put({ type: 'request-password-reset/setStage', payload: RequestPasswordResetStage.SubmitEmail })
+      .dispatch({ type: 'enterRequestPasswordResetPage' })
+      .run();
+
+    expect(requestPasswordState.stage).toEqual(RequestPasswordResetStage.SubmitEmail);
   });
 });
 

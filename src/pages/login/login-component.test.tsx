@@ -74,7 +74,7 @@ describe('Login Component', () => {
   });
 
   it('renders "Login" button when stage is LoginStage.ResetPassword', () => {
-    const wrapper = subject({ stage: LoginStage.ResetPassword });
+    const wrapper = subject({ stage: LoginStage.RequestPasswordReset });
     expect(wrapper.find('button').text()).toBe('Log in');
   });
 

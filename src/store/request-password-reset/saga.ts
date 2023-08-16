@@ -43,6 +43,9 @@ export function* requestPasswordReset() {
 export function* watchRequestPasswordReset() {
   while (true) {
     yield take(SagaActionTypes.EnterRequestPasswordResetPage);
+    // set the stage back to the initial stage
+    yield put(setStage(RequestPasswordResetStage.SubmitEmail));
+
     const task = yield fork(requestPasswordReset);
     yield take(SagaActionTypes.LeaveRequestPasswordResetPage);
     yield cancel(task);

@@ -60,18 +60,6 @@ describe('Login Container', () => {
       switchLoginStage: mockSwitchStage,
     });
     wrapper.find(LoginComponent).prop('handleSelectionChange')('reset');
-    expect(mockSwitchStage).toHaveBeenCalledWith(LoginStage.ResetPassword);
-  });
-
-  test('handles back to login selection and resets email submission', () => {
-    const mockSwitchStage = jest.fn();
-    const mockSetEmailSubmitted = jest.fn();
-    const wrapper = subject({
-      switchLoginStage: mockSwitchStage,
-      setEmailSubmitted: mockSetEmailSubmitted,
-    });
-    wrapper.find(LoginComponent).prop('handleSelectionChange')('backToLogin');
-    expect(mockSwitchStage).toHaveBeenCalledWith(LoginStage.EmailLogin);
-    expect(mockSetEmailSubmitted).toHaveBeenCalledWith(false);
+    expect(mockSwitchStage).toHaveBeenCalledWith(LoginStage.RequestPasswordReset);
   });
 });

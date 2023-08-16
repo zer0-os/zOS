@@ -8,12 +8,10 @@ import { EmailLoginContainer } from '../../authentication/email-login/container'
 import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
 import { ToggleGroup } from '@zero-tech/zui/components';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
-import { ResetPasswordContainer } from '../../authentication/reset-password/container';
+import { RequestPasswordResetContainer } from '../../authentication/request-password-reset/container';
 
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
-
-import { FeatureFlag } from '../../components/feature-flag';
 
 const cn = bemClassName('login-main');
 
@@ -29,7 +27,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
       case LoginStage.RequestPasswordReset:
-        return <ResetPasswordContainer />;
+        return <RequestPasswordResetContainer />;
       case LoginStage.Done:
         return <Redirect to='/' />;
       default:
@@ -87,13 +85,6 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </>
           )}
         </span>
-        <FeatureFlag featureFlag={'resetPasswordPage'}>
-          {stage === LoginStage.EmailLogin && (
-            <span>
-              Forgot your password? <Link to='/get-access'>Reset</Link>
-            </span>
-          )}
-        </FeatureFlag>
       </div>
     );
   }

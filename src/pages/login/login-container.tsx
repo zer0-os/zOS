@@ -3,7 +3,6 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { LoginStage, switchLoginStage } from '../../store/login';
-import { setEmailSubmitted } from '../../store/reset-password';
 
 import { LoginComponent } from './login-component';
 
@@ -12,7 +11,6 @@ export interface LoginContainerProperties {
   isLoggingIn: boolean;
   stage: LoginStage;
 
-  setEmailSubmitted: (submitted: boolean) => void;
   switchLoginStage: (stage: LoginStage) => void;
 }
 
@@ -30,7 +28,6 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapActions(_props: LoginContainerProperties): Partial<LoginContainerProperties> {
     return {
       switchLoginStage,
-      setEmailSubmitted,
     };
   }
 
@@ -44,11 +41,10 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
         switchLoginStage(LoginStage.EmailLogin);
         break;
       case 'reset':
-        switchLoginStage(LoginStage.ResetPassword);
+        switchLoginStage(LoginStage.RequestPasswordReset);
         break;
       case 'backToLogin':
         switchLoginStage(LoginStage.EmailLogin);
-        this.props.setEmailSubmitted(false);
         break;
       default:
         break;

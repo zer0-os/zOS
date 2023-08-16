@@ -34,6 +34,11 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
+    if (prevProps.children !== this.props.children) {
+      const div = document.getElementById('scrollbar-container__content');
+      div.scrollTop = 0; // reset scroll position
+    }
+
     if (prevProps.variant !== this.props.variant) {
       const { variant } = this.props;
       const currentRef = this.scrollContainerRef.current;
@@ -72,7 +77,12 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
 
     return (
       <div className='scrollbar-container'>
-        <div className='scrollbar-container__content' data-variant={variant} ref={this.scrollContainerRef}>
+        <div
+          id='scrollbar-container__content'
+          className='scrollbar-container__content'
+          data-variant={variant}
+          ref={this.scrollContainerRef}
+        >
           {children}
         </div>
         {variant === 'on-hover' && showPanel && hasPanel && <div className='scrollbar-container__panel'></div>}

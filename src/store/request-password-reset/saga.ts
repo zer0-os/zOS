@@ -30,14 +30,9 @@ export function* requestPasswordReset() {
         yield put(setStage(RequestPasswordResetStage.Done));
         break;
       } else {
-        let errors = [];
-        if (result.response === 'UNKNOWN_ERROR') {
-          errors.push(RequestPasswordResetErrors.UNKNOWN_ERROR);
-        }
-        yield put(setErrors(errors));
+        yield put(setErrors([RequestPasswordResetErrors.UNKNOWN_ERROR]));
       }
     } catch (error: any) {
-      console.error(error);
       yield put(setErrors([RequestPasswordResetErrors.API_ERROR]));
     } finally {
       yield put(setLoading(false));

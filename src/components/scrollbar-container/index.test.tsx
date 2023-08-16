@@ -10,6 +10,19 @@ describe('ScrollbarContainer', () => {
     hasPanel: false,
   };
 
+  const initialDocument = global.document;
+
+  beforeEach(() => {
+    // @ts-ignore
+    global.document = {
+      getElementById: jest.fn(() => ({ scrollTop: 100 } as any)),
+    };
+  });
+
+  afterEach(() => {
+    global.document = initialDocument;
+  });
+
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = { ...defaultProps, ...props };
     return shallow(<ScrollbarContainer {...allProps} />);
@@ -49,5 +62,13 @@ describe('ScrollbarContainer', () => {
     const wrapper = subject({ variant: 'on-hover' });
     wrapper.setState({ showPanel: false });
     expect(wrapper.find('.scrollbar-container__panel')).toHaveLength(0);
+  });
+
+  it('resets scroll position when new children are provided', () => {
+    const wrapper = subject();
+
+    // Simulate new children
+    wrapper.setProps({ children: <div>New Test Content</div> });
+    expect(global.document.getElementById).toHaveBeenCalledWith('scrollbar-container__content');
   });
 });

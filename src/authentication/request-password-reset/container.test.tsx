@@ -11,6 +11,8 @@ describe('Container', () => {
       isLoading: false,
       errors: {},
       requestPasswordReset: () => null,
+      enterRequestPasswordResetPage: () => null,
+      leaveRequestPasswordResetPage: () => null,
       ...props,
     };
 
@@ -25,6 +27,19 @@ describe('Container', () => {
         isLoading: true,
       })
     );
+  });
+
+  it('calls enterRequestPasswordResetPage on mount', () => {
+    const mockEnter = jest.fn();
+    subject({ enterRequestPasswordResetPage: mockEnter });
+    expect(mockEnter).toHaveBeenCalled();
+  });
+
+  it('calls leaveRequestPasswordResetPage on unmount', () => {
+    const mockLeave = jest.fn();
+    const wrapper = subject({ leaveRequestPasswordResetPage: mockLeave });
+    wrapper.unmount();
+    expect(mockLeave).toHaveBeenCalled();
   });
 
   describe('mapState', () => {

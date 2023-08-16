@@ -6,6 +6,8 @@ import {
   RequestPasswordResetErrors,
   RequestPasswordResetStage,
   requestPasswordReset,
+  enterRequestPasswordResetPage,
+  leaveRequestPasswordResetPage,
 } from '../../store/request-password-reset';
 import { RequestPasswordReset as RequestPasswordResetComponent } from '.';
 
@@ -20,9 +22,19 @@ export interface Properties extends PublicProperties {
   };
 
   requestPasswordReset: (data: { email: string }) => void;
+  enterRequestPasswordResetPage: () => void;
+  leaveRequestPasswordResetPage: () => void;
 }
 
 export class Container extends React.Component<Properties> {
+  componentDidMount() {
+    this.props.enterRequestPasswordResetPage();
+  }
+
+  componentWillUnmount() {
+    this.props.leaveRequestPasswordResetPage();
+  }
+
   static mapState(state: RootState) {
     const { requestPasswordReset } = state;
 
@@ -53,7 +65,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties) {
-    return { requestPasswordReset };
+    return { requestPasswordReset, enterRequestPasswordResetPage, leaveRequestPasswordResetPage };
   }
 
   render() {

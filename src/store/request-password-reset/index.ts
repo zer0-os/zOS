@@ -30,8 +30,8 @@ export const initialState: RequestPasswordResetState = {
 };
 
 export const requestPasswordReset = createAction<{ email: string }>(SagaActionTypes.RequestPasswordReset);
-export const enterResetPasswordPage = createAction(SagaActionTypes.EnterRequestPasswordResetPage);
-export const leaveResetPasswordPage = createAction(SagaActionTypes.LeaveRequestPasswordResetPage);
+export const enterRequestPasswordResetPage = createAction(SagaActionTypes.EnterRequestPasswordResetPage);
+export const leaveRequestPasswordResetPage = createAction(SagaActionTypes.LeaveRequestPasswordResetPage);
 
 const slice = createSlice({
   name: 'request-password-reset',

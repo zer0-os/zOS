@@ -59,13 +59,13 @@ describe('Container', () => {
       it('unknown error', () => {
         const props = subject({ errors: [RequestPasswordResetErrors.UNKNOWN_ERROR] });
 
-        expect(props.errors).toEqual({ general: 'An unknown error has occurred' });
+        expect(props.errors).toEqual({ email: 'Something went wrong. Please try again.' });
       });
 
       it('other unknown errors', () => {
         const props = subject({ errors: ['random_error'] });
 
-        expect(props.errors).toEqual({ general: 'An unknown error has occurred' });
+        expect(props.errors).toEqual({ general: 'Something went wrong. Please try again.' });
       });
     });
   });

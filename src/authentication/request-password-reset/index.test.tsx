@@ -50,12 +50,14 @@ describe('RequestPasswordReset', () => {
   });
 
   it('renders success message when stage is equal to "Done" ', function () {
-    const wrapper = subject({ stage: RequestPasswordResetStage.Done });
-    wrapper.find('Input[name="email"]').simulate('change', { target: { value: 'test@example.com' } });
-    wrapper.find('form').simulate('submit');
+    const wrapper = subject({});
+    wrapper.find('Input[name="email"]').simulate('change', 'test@example.com');
+
+    wrapper.find('form').simulate('submit', { preventDefault: jest.fn() });
+
     wrapper.setProps({ stage: RequestPasswordResetStage.Done });
 
-    expect(wrapper.find('.reset-password__success-message').text()).toContain(
+    expect(wrapper.find('.request-password-reset__success-message').text()).toContain(
       'An email containing a reset password link has been emailed to: test@example.com'
     );
   });

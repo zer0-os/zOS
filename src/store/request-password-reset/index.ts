@@ -2,27 +2,36 @@ import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   RequestPasswordReset = 'requestPasswordReset',
+  EnterRequesetPasswordResetPage = 'enterRequesetPasswordResetPage',
+  LeaveRequesetPasswordResetPage = 'leaveRequesetPasswordResetPage',
+}
+
+export enum RequestPasswordResetStage {
+  SubmitEmail = 'submit-email',
+  Done = 'done',
 }
 
 export type RequestPasswordResetState = {
   loading: boolean;
+  stage: RequestPasswordResetStage;
   errors: string[];
-  emailSubmitted: boolean;
 };
 
 export enum ResetPasswordErrors {
   UNKNOWN_ERROR = 'UNKNOWN',
+  API_ERROR = 'API_ERROR',
   EMAIL_REQUIRED = 'EMAIL_REQUIRED',
-  EMAIL_NOT_FOUND = 'EMAIL_NOT_FOUND',
 }
 
 export const initialState: RequestPasswordResetState = {
   loading: false,
+  stage: RequestPasswordResetStage.SubmitEmail,
   errors: [],
-  emailSubmitted: false,
 };
 
-export const resetPassword = createAction<{ email: string }>(SagaActionTypes.RequestPasswordReset);
+export const requestPasswordReset = createAction<{ email: string }>(SagaActionTypes.RequestPasswordReset);
+export const enterResetPasswordPage = createAction(SagaActionTypes.EnterRequesetPasswordResetPage);
+export const leaveResetPasswordPage = createAction(SagaActionTypes.LeaveRequesetPasswordResetPage);
 
 const slice = createSlice({
   name: 'request-password-reset',
@@ -34,11 +43,11 @@ const slice = createSlice({
     setErrors: (state, action: PayloadAction<RequestPasswordResetState['errors']>) => {
       state.errors = action.payload;
     },
-    setEmailSubmitted: (state, action: PayloadAction<RequestPasswordResetState['emailSubmitted']>) => {
-      state.emailSubmitted = action.payload;
+    setStage: (state, action: PayloadAction<RequestPasswordResetState['stage']>) => {
+      state.stage = action.payload;
     },
   },
 });
 
-export const { setLoading, setErrors, setEmailSubmitted } = slice.actions;
+export const { setLoading, setStage, setErrors } = slice.actions;
 export const { reducer } = slice;

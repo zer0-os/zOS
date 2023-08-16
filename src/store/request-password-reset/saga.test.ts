@@ -1,75 +1,102 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { requestPasswordResetPage } from './saga';
-import { requestPasswordReset as requestPasswordResetApi } from './api';
-import { setLoading, setErrors, setEmailSubmitted, SagaActionTypes } from './index';
-import { ResetPasswordErrors } from '.';
+import { rootReducer } from '../reducer';
+import { throwError } from 'redux-saga-test-plan/providers';
 
-describe('requestPasswordResetPage', () => {
-  it('successfully submits email for password reset', async () => {
+import { requestPasswordReset, validateRequestPasswordResetEmail } from './saga';
+import { requestPasswordReset as requestPasswordResetApi } from './api';
+import {
+  ResetPasswordErrors,
+  RequestPasswordResetStage,
+  initialState as initialResetPasswordState,
+  RequestPasswordResetState,
+} from '.';
+
+describe('requestPasswordReset saga', () => {
+  it('should validate the email and set EMAIL_REQUIRED error if email is empty', async () => {
+    const email = '';
+    const {
+      storeState: { requestPasswordReset: requestPasswordState },
+    } = await expectSaga(requestPasswordReset)
+      .provide([
+        [
+          call(validateRequestPasswordResetEmail, { email }),
+          [ResetPasswordErrors.EMAIL_REQUIRED],
+        ],
+      ])
+      .withReducer(rootReducer, initialState({}))
+      .dispatch({ type: 'requestPasswordReset', payload: { email } })
+      .run();
+
+    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.EMAIL_REQUIRED);
+  });
+
+  it('should call the API and handle success response', async () => {
     const email = 'test@example.com';
 
-    await expectSaga(requestPasswordResetPage)
+    const {
+      storeState: { requestPasswordReset: requestPasswordState },
+    } = await expectSaga(requestPasswordReset)
       .provide([
         [
           call(requestPasswordResetApi, { email }),
           { success: true },
         ],
       ])
-      .put(setLoading(true))
-      .put(setEmailSubmitted(true))
-      .put(setLoading(false))
-      .dispatch({ type: SagaActionTypes.RequestPasswordReset, payload: { email } })
+      .withReducer(rootReducer, initialState({}))
+      .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
+
+    expect(requestPasswordState.stage).toEqual(RequestPasswordResetStage.Done);
+    expect(requestPasswordState.loading).toBeFalsy();
   });
 
-  it('sets error state if email not found', async () => {
+  it('should call the API and handle UNKNOWN_ERROR response', async () => {
     const email = 'test@example.com';
 
-    await expectSaga(requestPasswordResetPage)
-      .provide([
-        [
-          call(requestPasswordResetApi, { email }),
-          { success: false, response: 'EMAIL_NOT_FOUND' },
-        ],
-      ])
-      .put(setLoading(true))
-      .put(setErrors([ResetPasswordErrors.EMAIL_NOT_FOUND]))
-      .put(setLoading(false))
-      .dispatch({ type: SagaActionTypes.RequestPasswordReset, payload: { email } })
-      .run();
-  });
-
-  it('sets error state if reset password fails with unknown error', async () => {
-    const email = 'test@example.com';
-
-    await expectSaga(requestPasswordResetPage)
+    const {
+      storeState: { requestPasswordReset: requestPasswordState },
+    } = await expectSaga(requestPasswordReset)
       .provide([
         [
           call(requestPasswordResetApi, { email }),
           { success: false, response: 'UNKNOWN_ERROR' },
         ],
       ])
-      .put(setLoading(true))
-      .put(setErrors([ResetPasswordErrors.UNKNOWN_ERROR]))
-      .put(setLoading(false))
-      .dispatch({ type: SagaActionTypes.RequestPasswordReset, payload: { email } })
+      .withReducer(rootReducer, initialState({}))
+      .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
+
+    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.UNKNOWN_ERROR);
+    expect(requestPasswordState.loading).toBeFalsy();
   });
 
-  it('sets loading state correctly', async () => {
+  it('should handle exceptions thrown by the API call', async () => {
     const email = 'test@example.com';
 
-    await expectSaga(requestPasswordResetPage)
+    const {
+      storeState: { requestPasswordReset: requestPasswordState },
+    } = await expectSaga(requestPasswordReset)
       .provide([
         [
           call(requestPasswordResetApi, { email }),
-          { success: true },
+          throwError(new Error('API error')),
         ],
       ])
-      .put(setLoading(true))
-      .put(setLoading(false))
-      .dispatch({ type: SagaActionTypes.RequestPasswordReset, payload: { email } })
+      .withReducer(rootReducer, initialState({}))
+      .dispatch({ type: 'requestPasswordReset', payload: { email } })
       .run();
+
+    expect(requestPasswordState.errors).toContain(ResetPasswordErrors.API_ERROR);
+    expect(requestPasswordState.loading).toBeFalsy();
   });
 });
+
+function initialState(attrs: Partial<RequestPasswordResetState> = {}) {
+  return {
+    requestPasswordReset: {
+      ...initialResetPasswordState,
+      ...attrs,
+    },
+  } as any;
+}

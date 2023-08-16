@@ -1,52 +1,59 @@
 import { requestPasswordReset as requestPasswordResetApi } from './api';
-import { setLoading, setErrors, SagaActionTypes, setEmailSubmitted } from './index';
+import { setLoading, setStage, setErrors, SagaActionTypes, RequestPasswordResetStage } from './index';
 import { ResetPasswordErrors } from '.';
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, take, fork, cancel } from 'redux-saga/effects';
 
 export function validateRequestPasswordResetEmail({ email }) {
   const validationErrors = [];
-
-  if (!email.trim()) {
+  if (!email || !email.trim()) {
     validationErrors.push(ResetPasswordErrors.EMAIL_REQUIRED);
   }
-
   return validationErrors;
 }
 
-export function* requestPasswordResetPage() {
-  let success;
-  do {
+export function* requestPasswordReset() {
+  while (true) {
     const action = yield take(SagaActionTypes.RequestPasswordReset);
     yield put(setLoading(true));
-    yield put(setEmailSubmitted(false));
 
     const validationErrors = validateRequestPasswordResetEmail(action.payload);
 
     if (validationErrors.length > 0) {
       yield put(setErrors(validationErrors));
-      success = false;
       continue;
     }
 
-    const result = yield call(requestPasswordResetApi, action.payload);
-    success = result.success;
+    try {
+      const result = yield call(requestPasswordResetApi, action.payload);
 
-    if (success) {
-      yield put(setEmailSubmitted(true));
-    } else {
-      let errors = [];
-      if (result.response === 'EMAIL_NOT_FOUND') {
-        errors.push(ResetPasswordErrors.EMAIL_NOT_FOUND);
+      if (result.success) {
+        yield put(setStage(RequestPasswordResetStage.Done));
+        break;
       } else {
-        errors.push(ResetPasswordErrors.UNKNOWN_ERROR);
+        let errors = [];
+        if (result.response === 'UNKNOWN_ERROR') {
+          errors.push(ResetPasswordErrors.UNKNOWN_ERROR);
+        }
+        yield put(setErrors(errors));
       }
-      yield put(setErrors(errors));
+    } catch (error: any) {
+      console.error(error);
+      yield put(setErrors([ResetPasswordErrors.API_ERROR]));
+    } finally {
+      yield put(setLoading(false));
     }
+  }
+}
 
-    yield put(setLoading(false));
-  } while (!success);
+export function* watchRequestPasswordReset() {
+  while (true) {
+    yield take(SagaActionTypes.EnterRequesetPasswordResetPage);
+    const task = yield fork(requestPasswordReset);
+    yield take(SagaActionTypes.LeaveRequesetPasswordResetPage);
+    yield cancel(task);
+  }
 }
 
 export function* saga() {
-  yield requestPasswordResetPage();
+  yield watchRequestPasswordReset();
 }

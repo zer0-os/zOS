@@ -28,7 +28,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     switch (this.props.stage) {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
-      case LoginStage.ResetPassword:
+      case LoginStage.RequestPasswordReset:
         return <ResetPasswordContainer />;
       case LoginStage.Done:
         return <Redirect to='/' />;
@@ -78,7 +78,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
               </button>
             </div>
           )}
-          {stage === LoginStage.ResetPassword && (
+          {stage === LoginStage.RequestPasswordReset && (
             <>
               Back to{' '}
               <button {...cn('button-link')} onClick={() => this.props.handleSelectionChange('backToLogin')}>
@@ -101,7 +101,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   render() {
     const { isLoggingIn, stage } = this.props;
     const isWeb3LoginStage = stage === LoginStage.Web3Login;
-    const isResetPasswordStage = stage === LoginStage.ResetPassword;
+    const isResetPasswordStage = stage === LoginStage.RequestPasswordReset;
     const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
 
     return (

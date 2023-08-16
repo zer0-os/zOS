@@ -68,4 +68,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const RequestPasswordReset = connectContainer<PublicProperties>(Container);
+export const RequestPasswordResetContainer = connectContainer<PublicProperties>(Container);

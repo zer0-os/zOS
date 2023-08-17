@@ -106,6 +106,33 @@ describe('page-load saga', () => {
     expect(storeState.pageload.isComplete).toBe(true);
     expect(history.replace).not.toHaveBeenCalledWith({ pathname: '/login' });
   });
+
+  it('redirects authenticated user from /reset-password to main page', async () => {
+    const initialState = { pageload: { isComplete: false } };
+
+    let history = new StubHistory('/reset-password');
+    const { storeState: resetPasswordStoreState } = await expectSaga(saga)
+      .withReducer(rootReducer, initialState as any)
+      .provide(stubResponses(history, true))
+      .run();
+
+    // redirected from /reset-password to /0.wilder.channels
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
+    expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
+  });
+
+  it('allows unauthenticated user to stay on /reset-password page', async () => {
+    const initialState = { pageload: { isComplete: false } };
+
+    let history = new StubHistory('/reset-password');
+    const { storeState: resetPasswordStoreState } = await expectSaga(saga)
+      .withReducer(rootReducer, initialState as any)
+      .provide(stubResponses(history, false))
+      .run();
+
+    expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
+    expect(history.replace).not.toHaveBeenCalled();
+  });
 });
 
 const stubResponses = (history, success) => {

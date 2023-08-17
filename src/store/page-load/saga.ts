@@ -9,6 +9,7 @@ import { config } from '../../config';
 const anonymousPaths = [
   '/get-access',
   '/login',
+  '/reset-password',
 ];
 
 export function* saga() {

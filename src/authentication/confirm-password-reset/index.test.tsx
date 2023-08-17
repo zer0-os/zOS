@@ -84,7 +84,7 @@ describe('ConfirmPasswordReset', () => {
     wrapper.setProps({ stage: ConfirmPasswordResetStage.Done });
 
     expect(wrapper.find('.confirm-password-reset__success-message').text()).toContain(
-      'Password reset successful. You can now Login with your new password.'
+      'Password reset successful. You can now Log in with your new password.'
     );
   });
 });

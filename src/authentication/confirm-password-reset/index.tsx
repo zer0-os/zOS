@@ -151,13 +151,13 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
         <div {...cn('')}>
           <div {...cn('heading-container')}>
             <h3 {...cn('heading')}>Reset Password</h3>
-            {stage !== ConfirmPasswordResetStage.Done && this.renderSuccessMessage()}
+            {stage === ConfirmPasswordResetStage.Done && this.renderSuccessMessage()}
 
-            {stage !== ConfirmPasswordResetStage.SubmitNewPassword && (
+            {stage === ConfirmPasswordResetStage.SubmitNewPassword && (
               <div {...cn('sub-heading')}>Enter a new password</div>
             )}
           </div>
-          {stage !== ConfirmPasswordResetStage.SubmitNewPassword && this.renderForm()}
+          {stage === ConfirmPasswordResetStage.SubmitNewPassword && this.renderForm()}
         </div>
       </>
     );

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
-import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
+// import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
 import { ConfirmPasswordResetContainer } from './authentication/confirm-password-reset/container';
 
 import { ReactComponent as ZeroLogo } from './zero-logo.svg';

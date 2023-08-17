@@ -3,6 +3,7 @@ import React from 'react';
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
+import { ConfirmPasswordResetContainer } from './authentication/confirm-password-reset/container';
 
 import { ReactComponent as ZeroLogo } from './zero-logo.svg';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
@@ -41,8 +42,8 @@ export class Container extends React.Component<Properties> {
             <ZeroLogo />
           </div>
 
-          <RequestPasswordResetContainer />
-          {/* TODO: Add ResetPasswordConfirmation - this will redirect user to login*/}
+          {/* <RequestPasswordResetContainer /> */}
+          <ConfirmPasswordResetContainer />
         </div>
       </>
     );

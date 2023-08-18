@@ -1,0 +1,19 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.parent-message {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: theme.$color-greyscale-transparency-2;
+  color: theme.$color-greyscale-11;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+
+  &__text {
+    padding-left: 8px;
+    flex-grow: 1;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+  }
+}

@@ -7,7 +7,7 @@ import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
-import { ParentMessage } from '../../lib/chat/types';
+import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
@@ -18,6 +18,7 @@ import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { ParentMessage } from './parent-message';
 
 const cn = bemClassName('message');
 
@@ -31,7 +32,7 @@ interface Properties extends MessageModel {
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
-  onReply: (reply: ParentMessage) => void;
+  onReply: (reply: ParentMessageType) => void;
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
@@ -258,13 +259,6 @@ export class Message extends React.Component<Properties, State> {
 
     return (
       <div {...cn('block-body')}>
-        {this.props.parentMessageText && (
-          <div {...cn('block-reply')}>
-            <span {...cn('block-reply-text')}>
-              <ContentHighlighter message={this.props.parentMessageText} />
-            </span>
-          </div>
-        )}
         {message && <ContentHighlighter message={message} />}
         {preview && !hidePreview && (
           <div {...cn('block-preview')}>
@@ -302,6 +296,7 @@ export class Message extends React.Component<Properties, State> {
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
+                  {this.props.parentMessageText && <ParentMessage text={this.props.parentMessageText} />}
                   {this.renderBody()}
                 </>
               )}

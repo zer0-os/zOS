@@ -250,6 +250,26 @@ describe('ConversationListPanel', () => {
 
     expect(wrapper).not.toHaveElement('UserSearchResults');
   });
+
+  it('scrollToTop is called when search result is changed', async function () {
+    const wrapper: any = subject({});
+    wrapper.instance().scrollContainerRef = {
+      current: {
+        scrollToTop: jest.fn(),
+      },
+    } as any;
+
+    // Simulate a search query change
+    await searchFor(wrapper, 'bob');
+
+    // Ensure scrollToTop is called
+    const scrollContainerRef = wrapper.instance().scrollContainerRef;
+    expect(scrollContainerRef.current.scrollToTop).toHaveBeenCalled();
+
+    // Simulate a search query change (from 'bob' to '')
+    await searchFor(wrapper, '');
+    expect(scrollContainerRef.current.scrollToTop).toHaveBeenCalled();
+  });
 });
 
 function renderedUserSearchResults(wrapper) {

@@ -14,6 +14,10 @@ export interface Properties {
 
 export class ParentMessage extends React.Component<Properties> {
   render() {
+    if (!this.props.text) {
+      return null;
+    }
+
     return (
       <div {...cn('')}>
         <IconCornerDownRight size={16} />

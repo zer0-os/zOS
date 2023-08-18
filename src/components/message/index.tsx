@@ -296,7 +296,7 @@ export class Message extends React.Component<Properties, State> {
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
-                  {this.props.parentMessageText && <ParentMessage text={this.props.parentMessageText} />}
+                  <ParentMessage text={this.props.parentMessageText} />
                   {this.renderBody()}
                 </>
               )}

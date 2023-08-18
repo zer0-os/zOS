@@ -27,7 +27,7 @@ describe('ConfirmPasswordReset', () => {
     wrapper.find('PasswordInput[name="password"]').simulate('change', 'abcd9876');
     wrapper.find('form').simulate('submit', inputEvent());
 
-    expect(onSubmit).toHaveBeenCalledWith({ password: 'abcd9876' });
+    expect(onSubmit).toHaveBeenCalledWith({ password: 'abcd9876', token: 'token' });
   });
 
   it('sets button to loading', function () {

@@ -1,4 +1,4 @@
-import { patch } from '../../lib/api/rest';
+import { post } from '../../lib/api/rest';
 
 export async function confirmPasswordReset({
   token,
@@ -8,7 +8,7 @@ export async function confirmPasswordReset({
   password: string;
 }): Promise<{ success: boolean; response?: string }> {
   try {
-    await patch('/api/v2/users/set-password').send({ token, password });
+    await post('/api/v2/accounts/set-password').send({ token, password });
 
     return {
       success: true,

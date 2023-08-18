@@ -10,6 +10,7 @@ describe('ConfirmPasswordReset', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       stage: ConfirmPasswordResetStage.SubmitNewPassword,
+      token: 'token',
       isLoading: false,
       errors: {},
       onSubmit: () => null,

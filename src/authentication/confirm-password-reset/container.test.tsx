@@ -16,6 +16,7 @@ describe('Container', () => {
       stage: ConfirmPasswordResetStage.SubmitNewPassword,
       isLoading: false,
       errors: {},
+      token: 'token',
       updatePassword: () => null,
       enterConfirmPasswordResetPage: () => null,
       leaveConfirmPasswordResetPage: () => null,

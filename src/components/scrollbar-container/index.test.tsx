@@ -50,15 +50,4 @@ describe('ScrollbarContainer', () => {
     wrapper.setState({ showPanel: false });
     expect(wrapper.find('.scrollbar-container__panel')).toHaveLength(0);
   });
-
-  it('resets scroll position when children change', () => {
-    const wrapper: any = subject();
-    const scrollContainerRef = { current: { scrollTop: 100 } }; // Simulate the ref object
-    wrapper.instance().scrollContainerRef = scrollContainerRef;
-
-    const newProps = { children: <div>New Content</div> };
-    wrapper.setProps(newProps);
-
-    expect(scrollContainerRef.current.scrollTop).toBe(0); // Check if scrollTop was reset
-  });
 });

@@ -23,6 +23,11 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
     this.checkScrollBottom = this.checkScrollBottom.bind(this);
   }
 
+  // used when we have "new" results while searching conversations, to scroll to the top
+  scrollToTop() {
+    this.scrollContainerRef.current.scrollTop = 0;
+  }
+
   componentDidMount() {
     const { variant } = this.props;
     if (variant === 'on-hover') {
@@ -34,10 +39,6 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    if (prevProps.children !== this.props.children) {
-      this.scrollContainerRef.current.scrollTop = 0; // reset scroll position
-    }
-
     if (prevProps.variant !== this.props.variant) {
       const { variant } = this.props;
       const currentRef = this.scrollContainerRef.current;

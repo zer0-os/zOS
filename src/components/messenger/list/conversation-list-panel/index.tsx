@@ -36,12 +36,25 @@ interface State {
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
+  scrollContainerRef: React.RefObject<ScrollbarContainer>;
   state = { filter: '', inviteDialogOpen: false, userSearchResults: [] };
+
+  constructor(props) {
+    super(props);
+    this.scrollContainerRef = React.createRef();
+  }
+
+  scrollToTop = () => {
+    if (this.scrollContainerRef.current) {
+      this.scrollContainerRef.current.scrollToTop();
+    }
+  };
 
   searchChanged = async (search: string) => {
     const tempSearch = search;
 
     if (!tempSearch) {
+      this.scrollToTop();
       return this.setState({ filter: tempSearch, userSearchResults: [] });
     }
 
@@ -53,6 +66,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const items: Item[] = await this.props.search(tempSearch);
     const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id));
 
+    this.scrollToTop();
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
@@ -134,7 +148,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             </div>
           </div>
 
-          <ScrollbarContainer variant='on-hover'>
+          <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
               {this.filteredConversations.map((c) => (
                 <ConversationItem

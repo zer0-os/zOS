@@ -19,8 +19,8 @@ export interface Properties {
     password?: string | string[];
     general?: string;
   };
-
-  onSubmit: (data: { password: string }) => void;
+  token: string;
+  onSubmit: (data: { token: string; password: string }) => void;
 }
 
 interface State {
@@ -38,7 +38,7 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
 
   handleConfirmPasswordReset = (e) => {
     e.preventDefault();
-    this.props.onSubmit({ password: this.state.password });
+    this.props.onSubmit({ token: this.props.token, password: this.state.password });
   };
 
   trackPassword = (value) => this.setState({ password: value });

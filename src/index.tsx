@@ -34,7 +34,7 @@ const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
   if (route === 'get-access') return <Redirect to={'/get-access'} />;
   if (route === 'login') return <Redirect to={'/login'} />;
-  if (route === 'reset-password') return <Redirect to={'/reset-password'} />;
+  if (route === 'reset-password') return <ResetPassword />;
 
   return <Redirect to={`/${route}/${config.defaultApp}`} />;
 };
@@ -49,7 +49,7 @@ ReactDOM.render(
               <Web3Connect>
                 <Route path='/get-access' exact component={Invite} />
                 <Route path='/login' exact component={LoginPage} />
-                <Route path='/reset-password' exact component={ResetPassword} />
+                {/* <Route path='/reset-password' exact component={ResetPassword} /> */}
                 <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
                 <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
               </Web3Connect>

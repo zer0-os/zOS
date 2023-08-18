@@ -1,7 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  UpdatePassword = 'confirm-reset-password/updatePassword',
+  UpdatePassword = 'updatePassword',
   EnterConfirmPasswordResetPage = 'enterConfirmPasswordResetPage',
   LeaveConfirmPasswordResetPage = 'leaveConfirmPasswordResetPage',
 }
@@ -30,7 +30,7 @@ export const initialState: ConfirmPasswordResetState = {
   errors: [],
 };
 
-export const updatePassword = createAction<{ password: string }>(SagaActionTypes.UpdatePassword);
+export const updatePassword = createAction<{ token: string; password: string }>(SagaActionTypes.UpdatePassword);
 export const enterConfirmPasswordResetPage = createAction(SagaActionTypes.EnterConfirmPasswordResetPage);
 export const leaveConfirmPasswordResetPage = createAction(SagaActionTypes.LeaveConfirmPasswordResetPage);
 

@@ -1,8 +1,8 @@
 import React from 'react';
-
+import { withRouter } from 'react-router-dom';
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
-// import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
+import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
 import { ConfirmPasswordResetContainer } from './authentication/confirm-password-reset/container';
 
 import { ReactComponent as ZeroLogo } from './zero-logo.svg';
@@ -15,13 +15,20 @@ const cn = bemClassName('reset-password-main');
 
 export interface Properties {
   shouldRender: boolean;
+  location: {
+    search: string;
+  };
+  token?: string;
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
+  static mapState(state: RootState, ownProps: Properties): Partial<Properties> {
     const { pageload } = state;
+    const urlSearchParams = new URLSearchParams(ownProps.location.search);
+    const token = urlSearchParams.get('token');
     return {
       shouldRender: pageload.isComplete,
+      token,
     };
   }
 
@@ -34,6 +41,8 @@ export class Container extends React.Component<Properties> {
       return null;
     }
 
+    const isConfirmPasswordReset = !!this.props.token;
+
     return (
       <>
         <ThemeEngine theme={Themes.Dark} />
@@ -42,12 +51,15 @@ export class Container extends React.Component<Properties> {
             <ZeroLogo />
           </div>
 
-          {/* <RequestPasswordResetContainer /> */}
-          <ConfirmPasswordResetContainer />
+          {isConfirmPasswordReset ? (
+            <ConfirmPasswordResetContainer token={this.props.token} />
+          ) : (
+            <RequestPasswordResetContainer />
+          )}
         </div>
       </>
     );
   }
 }
 
-export const ResetPassword = connectContainer<{}>(Container);
+export const ResetPassword = withRouter(connectContainer<{}>(Container));

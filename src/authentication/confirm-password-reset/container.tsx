@@ -12,7 +12,9 @@ import {
   updatePassword,
 } from '../../store/confirm-password-reset';
 
-export interface PublicProperties {}
+export interface PublicProperties {
+  token: string;
+}
 
 export interface Properties extends PublicProperties {
   stage: ConfirmPasswordResetStage;
@@ -22,7 +24,7 @@ export interface Properties extends PublicProperties {
     general?: string;
   };
 
-  updatePassword: (data: { password: string }) => void;
+  updatePassword: (data: { token: string; password: string }) => void;
   enterConfirmPasswordResetPage: () => void;
   leaveConfirmPasswordResetPage: () => void;
 }
@@ -80,6 +82,7 @@ export class Container extends React.Component<Properties> {
         isLoading={this.props.isLoading}
         onSubmit={this.props.updatePassword}
         errors={this.props.errors}
+        token={this.props.token}
       />
     );
   }

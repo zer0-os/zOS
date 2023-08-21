@@ -23,7 +23,6 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
     this.checkScrollBottom = this.checkScrollBottom.bind(this);
   }
 
-  // used when we have "new" results while searching conversations, to scroll to the top
   scrollToTop() {
     this.scrollContainerRef.current.scrollTop = 0;
   }

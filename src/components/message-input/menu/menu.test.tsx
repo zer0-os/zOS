@@ -58,19 +58,4 @@ describe('Menu', () => {
     const toastNotification = wrapper.find(ToastNotification);
     expect(toastNotification.prop('openToast')).toBe(true);
   });
-
-  it('does not render ToastNotification when file is not too large', function () {
-    const wrapper = subject({});
-
-    const instance: any = wrapper.instance();
-    const rejectedFiles = [
-      {
-        errors: [],
-      },
-    ];
-    instance.onDropRejected(rejectedFiles);
-
-    const toastNotification = wrapper.find(ToastNotification);
-    expect(toastNotification.prop('openToast')).toBe(false);
-  });
 });

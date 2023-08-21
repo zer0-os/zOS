@@ -188,7 +188,7 @@ export class Container extends React.Component<Properties, State> {
     return (
       <ToastNotification
         title={'Invite your friends'}
-        description={'To get more rewards simply build your friend network and start messaging'}
+        description={'Build your network and message friends to earn more rewards.'}
         actionTitle={'Invite Friends'}
         actionAltText={'invite dialog modal call to action'}
         positionVariant='left'

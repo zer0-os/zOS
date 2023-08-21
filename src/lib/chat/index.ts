@@ -23,6 +23,7 @@ export interface IChatClient {
   connect: (userId: string, accessToken: string) => Promise<void>;
   disconnect: () => void;
   reconnect: () => void;
+  supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
@@ -38,6 +39,8 @@ export interface IChatClient {
 
 export class Chat {
   constructor(private client: IChatClient = null) {}
+
+  supportsOptimisticSend = () => this.client.supportsOptimisticSend();
 
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {

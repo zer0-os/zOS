@@ -136,7 +136,38 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
+  const chatClient = yield call(chat.get);
+
+  if (yield call(chatClient.supportsOptimisticSend)) {
+    yield call(sendOptimistically, action.payload);
+    return;
+  }
+
+  yield call(sendPessimistically, action.payload);
+}
+
+export function* sendPessimistically(payload) {
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
+
+  const uploadableFiles: Uploadable[] = files.map(createUploadableFile);
+
+  let rootMessageId = '';
+  if (message?.trim()) {
+    const textMessage = yield call(performSend, channelId, message, mentionedUserIds, parentMessage, '0');
+
+    if (textMessage) {
+      rootMessageId = textMessage.id;
+    } else {
+      // If the text message failed, we'll leave the first file as unsent
+      uploadableFiles.shift();
+    }
+  }
+
+  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
+}
+
+export function* sendOptimistically(payload) {
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
 
   const processedFiles: Uploadable[] = files.map(createUploadableFile);
 
@@ -151,6 +182,7 @@ export function* send(action) {
   let rootMessageId = '';
   if (optimisticRootMessage) {
     yield spawn(createOptimisticPreview, channelId, optimisticRootMessage);
+
     const textMessage = yield call(
       performSend,
       channelId,

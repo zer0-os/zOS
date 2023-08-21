@@ -233,6 +233,7 @@ export class Container extends React.Component<Properties, State> {
             onRewardsPopupClose={this.props.rewardsPopupClosed}
             onLogout={this.props.logout}
             showNewRewards={this.props.showNewRewards}
+            hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
           />
         )}
 

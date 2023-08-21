@@ -16,6 +16,7 @@ describe('rewards-bar', () => {
       zeroPreviousDay: '',
       isRewardsLoading: false,
       showNewRewards: false,
+      hasLoadedConversation: false,
       onRewardsPopupClose: () => {},
       onLogout: () => {},
       ...props,
@@ -36,10 +37,14 @@ describe('rewards-bar', () => {
     expect(wrapper).not.toHaveElement(RewardsPopupContainer);
   });
 
-  it('rewards popup is rendered immediately if first time login', async function () {
-    const wrapper = subject({ isFirstTimeLogin: true });
-
+  it('rewards popup is rendered immediately if first time login and conversation is loaded', async function () {
+    const wrapper = subject({ isFirstTimeLogin: true, hasLoadedConversation: true });
     expect(wrapper).toHaveElement(RewardsPopupContainer);
+  });
+
+  it('rewards popup is not rendered on first time login if conversation is not loaded', async function () {
+    const wrapper = subject({ isFirstTimeLogin: true, hasLoadedConversation: false });
+    expect(wrapper).not.toHaveElement(RewardsPopupContainer);
   });
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {

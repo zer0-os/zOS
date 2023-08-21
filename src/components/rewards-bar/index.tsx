@@ -17,6 +17,7 @@ export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
   isMessengerFullScreen: boolean;
+  hasLoadedConversation: boolean;
 
   userName: string;
   userHandle: string;
@@ -121,13 +122,14 @@ export class RewardsBar extends React.Component<Properties, State> {
           this.renderRewardsBar()
         )}
 
-        {this.state.isRewardsPopupOpen && (
+        {this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin) && (
           <RewardsPopupContainer
             onClose={this.closeRewards}
-            openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
+            openRewardsFAQModal={this.openRewardsFAQModal}
             isLoading={this.props.isRewardsLoading}
           />
         )}
+
         {this.state.isRewardsFAQModalOpen && (
           <RewardsFAQModal
             isRewardsFAQModalOpen={this.state.isRewardsFAQModalOpen}

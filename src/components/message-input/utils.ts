@@ -75,3 +75,13 @@ export function windowClipboard() {
     },
   };
 }
+
+export function bytesToMB(bytes) {
+  if (typeof bytes !== 'number') {
+    return 'Invalid input';
+  }
+
+  const megabytes = bytes / (1024 * 1024);
+  const formattedMegabytes = megabytes.toFixed(2).replace(/\.00$/, '');
+  return `${formattedMegabytes} MB`;
+}

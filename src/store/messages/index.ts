@@ -81,7 +81,6 @@ export interface Message {
 
 export interface EditMessageOptions {
   hidePreview: Boolean;
-  mentionedUsers: string[];
 }
 
 export enum SagaActionTypes {

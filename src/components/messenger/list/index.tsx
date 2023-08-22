@@ -193,7 +193,7 @@ export class Container extends React.Component<Properties, State> {
         actionTitle={'Invite Friends'}
         actionAltText={'invite dialog modal call to action'}
         positionVariant='left'
-        openToast
+        openToast={this.props.isInviteNotificationOpen}
         onClick={this.openInviteDialog}
         duration={20000}
       />

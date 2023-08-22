@@ -42,7 +42,7 @@ export function createOptimisticMessageObject(
     id,
     optimisticId: id,
     rootMessageId,
-    mentionedUserIds: [],
+    mentionedUsers: [],
     message: messageText,
     isAdmin: false,
     parentMessageText: parentMessage ? parentMessage.message : '',

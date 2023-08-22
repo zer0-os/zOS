@@ -63,8 +63,7 @@ export interface Message {
   createdAt: number;
   updatedAt: number;
   sender: Sender;
-  // TODO: type to be defined
-  mentionedUserIds: any;
+  mentionedUsers: { id: string }[];
   hidePreview: boolean;
   preview: LinkPreview;
   media?: Media;

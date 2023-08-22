@@ -13,14 +13,6 @@ export interface Properties {
 }
 
 export class ContentHighlighter extends React.Component<Properties> {
-  getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
-
-    if (!user) return null;
-
-    return user.profileId;
-  }
-
   renderContent(message) {
     const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
     return parts.map((part, index) => {
@@ -31,16 +23,11 @@ export class ContentHighlighter extends React.Component<Properties> {
       }
 
       if (match[2] === 'user') {
-        const profileId = this.getProfileId(match[3]);
         const mention = `${match[1]}`.trim();
-        const props: { className: string; key: string; id?: string } = {
+        const props: { className: string; key: string } = {
           className: 'content-highlighter__user-mention',
           key: match[3] + index,
         };
-
-        if (profileId) {
-          props.id = profileId;
-        }
 
         return (
           <span data-variant={this.props.variant} {...props}>

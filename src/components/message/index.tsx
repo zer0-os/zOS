@@ -67,14 +67,6 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
-
-    if (!user) return null;
-
-    return user.profileId;
-  }
-
   onImageClick = (media) => (_event) => {
     this.props.onImageClick(media);
   };

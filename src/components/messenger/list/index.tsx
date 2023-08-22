@@ -195,7 +195,7 @@ export class Container extends React.Component<Properties, State> {
         positionVariant='left'
         openToast={this.props.isInviteNotificationOpen}
         onClick={this.openInviteDialog}
-        duration={20000}
+        duration={10000}
       />
     );
   };

@@ -7,7 +7,6 @@ import * as linkifyjs from 'linkifyjs';
 
 export interface Properties {
   message: string;
-  mentionedUserIds?: any[];
   variant?: 'negative';
   tabIndex?: number;
 }

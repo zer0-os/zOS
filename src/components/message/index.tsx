@@ -264,14 +264,11 @@ export class Message extends React.Component<Properties, State> {
         {this.props.parentMessageText && (
           <div {...cn('block-reply')}>
             <span {...cn('block-reply-text')}>
-              <ContentHighlighter
-                message={this.props.parentMessageText}
-                mentionedUserIds={this.props.mentionedUserIds}
-              />
+              <ContentHighlighter message={this.props.parentMessageText} />
             </span>
           </div>
         )}
-        {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
+        {message && <ContentHighlighter message={message} />}
         {preview && !hidePreview && (
           <div {...cn('block-preview')}>
             <LinkPreview url={preview.url} {...preview} />

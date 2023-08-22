@@ -42,7 +42,7 @@ describe('rewards-bar', () => {
     expect(wrapper).toHaveElement(RewardsPopupContainer);
   });
 
-  it('rewards popup is not rendered on first time login if conversation is not loaded', async function () {
+  it('rewards popup is not render on first time login if conversation is not loaded', async function () {
     const wrapper = subject({ isFirstTimeLogin: true, hasLoadedConversation: false });
     expect(wrapper).not.toHaveElement(RewardsPopupContainer);
   });

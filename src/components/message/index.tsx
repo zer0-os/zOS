@@ -37,6 +37,8 @@ interface Properties extends MessageModel {
   messageId?: number;
   updatedAt: number;
   parentMessageText?: string;
+  parentSenderFirstName?: string;
+  parentSenderLastName?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
@@ -190,8 +192,15 @@ export class Message extends React.Component<Properties, State> {
   onReply = (): void => {
     this.props.onReply({
       messageId: this.props.messageId,
-      message: this.props.message,
       userId: this.props.sender.userId,
+      message: this.props.message,
+      sender: this.props.sender,
+      isAdmin: this.props.isAdmin,
+      mentionedUsers: this.props.mentionedUsers,
+      hidePreview: this.props.hidePreview,
+      admin: this.props.admin,
+      optimisticId: this.props.optimisticId,
+      rootMessageId: this.props.rootMessageId,
     });
   };
 
@@ -296,7 +305,11 @@ export class Message extends React.Component<Properties, State> {
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
-                  <ParentMessage text={this.props.parentMessageText} />
+                  <ParentMessage
+                    message={this.props.parentMessageText}
+                    senderFirstName={this.props.parentSenderFirstName}
+                    senderLastName={this.props.parentSenderLastName}
+                  />
                   {this.renderBody()}
                 </>
               )}

@@ -153,6 +153,9 @@ export class ChatView extends React.Component<Properties, State> {
               onEdit={this.props.editMessage}
               onReply={this.props.onReply}
               parentMessageText={message.parentMessageText}
+              parentSenderId={message.parentMessage?.sender?.userId}
+              parentSenderFirstName={message.parentMessage?.sender?.firstName}
+              parentSenderLastName={message.parentMessage?.sender?.lastName}
               getUsersForMentions={this.searchMentionableUsers}
               showSenderAvatar={this.props.showSenderAvatar}
               showTimestamp={messageRenderProps.showTimestamp}

@@ -9,21 +9,30 @@ import { IconCornerDownRight } from '@zero-tech/zui/icons';
 const cn = bemClassName('parent-message');
 
 export interface Properties {
-  text: string;
+  message: string;
+  senderFirstName: string;
+  senderLastName: string;
 }
 
-export class ParentMessage extends React.Component<Properties> {
+export class ParentMessage extends React.PureComponent<Properties> {
+  get name() {
+    return `${this.props.senderFirstName} ${this.props.senderLastName}`;
+  }
+
   render() {
-    if (!this.props.text) {
+    if (!this.props.message) {
       return null;
     }
 
     return (
       <div {...cn('')}>
         <IconCornerDownRight size={16} />
-        <span {...cn('text')}>
-          <ContentHighlighter message={this.props.text} />
-        </span>
+        <div {...cn('content')}>
+          <div {...cn('header')}>{this.name}</div>
+          <span>
+            <ContentHighlighter message={this.props.message} />
+          </span>
+        </div>
       </div>
     );
   }

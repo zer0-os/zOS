@@ -85,13 +85,15 @@ export class RewardsBar extends React.Component<Properties, State> {
           <button
             onClick={this.openRewards}
             className={classnames(c('rewards-button'), {
-              [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
+              [c('rewards-button', 'open')]:
+                this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
             })}
           >
             <div>Rewards</div>
             <div
               className={classnames(c('rewards-icon'), {
-                [c('rewards-icon', 'open')]: this.state.isRewardsPopupOpen,
+                [c('rewards-icon', 'open')]:
+                  this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
               })}
             >
               <IconCurrencyDollar size={16} />

@@ -72,7 +72,24 @@ export interface State {
 }
 
 export class ChatView extends React.Component<Properties, State> {
+  scrollContainerRef: React.RefObject<InvertedScroll>;
   state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
+
+  constructor(props) {
+    super(props);
+    this.scrollContainerRef = React.createRef();
+  }
+
+  scrollToBottom = () => {
+    if (this.scrollContainerRef.current) {
+      this.scrollContainerRef.current.scrollToBottom();
+    }
+  };
+
+  handleSendMessage = (message: string, mentionedUserIds: string[], media: Media[]) => {
+    this.props.sendMessage(message, mentionedUserIds, media);
+    this.scrollToBottom();
+  };
 
   getMessagesByDay() {
     return this.props.messages.reduce((prev, current) => {
@@ -236,7 +253,7 @@ export class ChatView extends React.Component<Properties, State> {
             onClose={this.closeLightBox}
           />
         )}
-        <InvertedScroll className='channel-view__inverted-scroll'>
+        <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
           <div className='channel-view__main'>
             {!this.props.isDirectMessage && (
               <div className='channel-view__name'>
@@ -273,7 +290,7 @@ export class ChatView extends React.Component<Properties, State> {
               <MessageInput
                 onMessageInputRendered={this.props.onMessageInputRendered}
                 id={this.props.id}
-                onSubmit={this.props.sendMessage}
+                onSubmit={this.handleSendMessage}
                 getUsersForMentions={this.searchMentionableUsers}
                 reply={this.props.reply}
                 onRemoveReply={this.props.onRemove}

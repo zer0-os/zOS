@@ -36,6 +36,7 @@ export default class Menu extends React.Component<Properties, State> {
 
     return (
       <ToastNotification
+        viewportClassName='invite-toast-notification'
         title={''}
         description={`File exceeds ${maxSize} size limit`}
         actionTitle=''

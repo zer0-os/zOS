@@ -10,12 +10,17 @@ const cn = bemClassName('parent-message');
 
 export interface Properties {
   message: string;
+  senderIsCurrentUser: boolean;
   senderFirstName: string;
   senderLastName: string;
 }
 
 export class ParentMessage extends React.PureComponent<Properties> {
   get name() {
+    if (this.props.senderIsCurrentUser) {
+      return 'You';
+    }
+
     return `${this.props.senderFirstName} ${this.props.senderLastName}`;
   }
 

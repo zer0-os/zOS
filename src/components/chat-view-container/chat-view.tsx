@@ -120,7 +120,7 @@ export class ChatView extends React.Component<Properties, State> {
 
   isUserOwnerOfMessage(message: MessageModel) {
     // eslint-disable-next-line eqeqeq
-    return this.props.user && message.sender && this.props.user.id == message.sender.userId;
+    return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
   }
 
   renderMessageGroup(groupMessages) {
@@ -153,7 +153,7 @@ export class ChatView extends React.Component<Properties, State> {
               onEdit={this.props.editMessage}
               onReply={this.props.onReply}
               parentMessageText={message.parentMessageText}
-              parentSenderId={message.parentMessage?.sender?.userId}
+              parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
               parentSenderFirstName={message.parentMessage?.sender?.firstName}
               parentSenderLastName={message.parentMessage?.sender?.lastName}
               getUsersForMentions={this.searchMentionableUsers}

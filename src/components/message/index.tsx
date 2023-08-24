@@ -37,6 +37,7 @@ interface Properties extends MessageModel {
   messageId?: number;
   updatedAt: number;
   parentMessageText?: string;
+  parentSenderIsCurrentUser?: boolean;
   parentSenderFirstName?: string;
   parentSenderLastName?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
@@ -307,6 +308,7 @@ export class Message extends React.Component<Properties, State> {
                   {media && this.renderMedia(media)}
                   <ParentMessage
                     message={this.props.parentMessageText}
+                    senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
                     senderFirstName={this.props.parentSenderFirstName}
                     senderLastName={this.props.parentSenderLastName}
                   />

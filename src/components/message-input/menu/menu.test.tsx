@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import Dropzone from 'react-dropzone';
 
 import Menu, { Properties } from './menu';
+import { ToastNotification } from '@zero-tech/zui/components';
 
 describe('Menu', () => {
   const subject = (props: Partial<Properties>) => {
@@ -41,5 +42,20 @@ describe('Menu', () => {
     const wrapper = subject({ maxSize });
     const dropZone = wrapper.find(Dropzone);
     expect(dropZone.prop('maxSize')).toEqual(maxSize);
+  });
+
+  it('renders ToastNotification when file is too large', function () {
+    const wrapper = subject({ maxSize: 1234 });
+
+    const instance: any = wrapper.instance();
+    const rejectedFiles = [
+      {
+        errors: [{ code: 'file-too-large' }],
+      },
+    ];
+    instance.onDropRejected(rejectedFiles);
+
+    const toastNotification = wrapper.find(ToastNotification);
+    expect(toastNotification.prop('openToast')).toBe(true);
   });
 });

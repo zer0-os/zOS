@@ -25,8 +25,9 @@ import { Avatar, Tooltip } from '@zero-tech/zui/components';
 import classNames from 'classnames';
 import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 
+const c = bem('message-input');
 const cn = bemClassName('message-input');
 
 export interface PublicProperties extends PublicPropertiesContainer {
@@ -342,11 +343,22 @@ export class MessageInput extends React.Component<Properties, State> {
     const hasInputValue = this.state.value?.length > 0;
 
     return (
-      <>
+      <div {...cn('container')}>
+        <div {...cn('addon-row')}>
+          {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
+        </div>
         <div
-          className={classNames('message-input__container', this.props.className, {
-            'message-input__container--editing': this.props.isEditing,
-          })}
+          className={classNames(
+            c('input-row'),
+            this.props.className,
+            {
+              'message-input__container--editing': this.props.isEditing,
+            },
+            this.props.className,
+            {
+              'message-input__container--editing': this.props.isEditing,
+            }
+          )}
         >
           {!this.props.isEditing && (
             <div className='message-input__icon-outer'>
@@ -381,7 +393,6 @@ export class MessageInput extends React.Component<Properties, State> {
                       <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
-                      {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
 
                       <div
                         className={classNames('message-input__emoji-picker-container', {
@@ -463,7 +474,7 @@ export class MessageInput extends React.Component<Properties, State> {
           )}
         </div>
         {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
-      </>
+      </div>
     );
   }
 

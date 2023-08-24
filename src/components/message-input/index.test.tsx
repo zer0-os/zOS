@@ -193,7 +193,7 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply });
     const dropzone = wrapper.find(Dropzone).shallow();
@@ -219,7 +219,7 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply, onRemoveReply });
 

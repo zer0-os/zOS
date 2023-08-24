@@ -4,6 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { LinkPreview } from '../../lib/link-preview';
+import { ParentMessage } from '../../lib/chat/types';
 
 export interface AttachmentUploadResult {
   name: string;
@@ -59,6 +60,7 @@ export interface Message {
   id: number;
   message?: string;
   parentMessageText?: string;
+  parentMessage?: ParentMessage;
   isAdmin: boolean;
   createdAt: number;
   updatedAt: number;

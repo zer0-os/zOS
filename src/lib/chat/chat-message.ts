@@ -136,6 +136,10 @@ export function mapMatrixMessage(matrixMessage) {
 }
 
 export function map(sendbirdMessage) {
+  if (!sendbirdMessage) {
+    return null;
+  }
+
   const { message, parentMessage, createdAt, messageId, sender, messageType, data, updatedAt } = sendbirdMessage;
 
   return {
@@ -148,6 +152,7 @@ export function map(sendbirdMessage) {
     ...extractMessageData(data, messageType.toLowerCase() === 'file'),
     isAdmin: messageType.toLowerCase() === 'admin',
     sendStatus: MessageSendStatus.SUCCESS,
+    parentMessage: map(parentMessage),
   } as unknown as Message;
 }
 

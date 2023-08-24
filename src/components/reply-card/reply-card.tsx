@@ -1,7 +1,10 @@
 import React from 'react';
 import { ContentHighlighter } from '../content-highlighter';
+import { bemClassName } from '../../lib/bem';
 
 require('./styles.scss');
+
+const cn = bemClassName('reply-card');
 
 export interface Properties {
   message: string;
@@ -19,12 +22,12 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
     const { message } = this.props;
 
     return (
-      <div className='reply-card'>
-        <div className='reply-card__container'>
-          <div className='reply-card__message'>
+      <div {...cn()}>
+        <div {...cn('container')}>
+          <div {...cn('message')}>
             <ContentHighlighter message={message} />
           </div>
-          <span className='reply-card__icon-close' onClick={this.itemRemoved} />
+          <span {...cn('icon-close')} onClick={this.itemRemoved} />
         </div>
       </div>
     );

@@ -10,12 +10,20 @@ const cn = bemClassName('reply-card');
 
 export interface Properties {
   message: string;
+  senderIsCurrentUser: boolean;
+  senderFirstName: string;
+  senderLastName: string;
+
   onRemove?: () => void;
 }
 
 export default class ReplyCard extends React.Component<Properties, undefined> {
   get name() {
-    return 'You';
+    if (this.props.senderIsCurrentUser) {
+      return 'You';
+    }
+
+    return `${this.props.senderFirstName} ${this.props.senderLastName}`;
   }
 
   itemRemoved = () => {

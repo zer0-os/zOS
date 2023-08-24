@@ -6,6 +6,7 @@ import { connectContainer } from '../../store/redux-container';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { MessageInput as MessageInputComponent } from './index';
 import { ParentMessage } from '../../lib/chat/types';
+import { currentUserSelector } from '../../store/authentication/saga';
 
 export interface PublicProperties {
   className?: string;
@@ -16,6 +17,7 @@ export interface PublicProperties {
   onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   id?: string;
   reply?: null | ParentMessage;
+  currentUserId?: string;
   onRemoveReply?: () => void;
   isEditing?: boolean;
   sendDisabledMessage?: string;
@@ -28,6 +30,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
+    const user = currentUserSelector()(state);
     const {
       theme: {
         value: { viewMode },
@@ -38,6 +41,7 @@ export class Container extends React.Component<Properties> {
     return {
       viewMode,
       isFullScreen: layout.value?.isMessengerFullScreen,
+      currentUserId: user?.id,
     };
   }
 
@@ -46,6 +50,9 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
+    const { reply, currentUserId } = this.props;
+    const replyIsCurrentUser = currentUserId && reply?.sender && currentUserId === reply.sender.userId;
+
     return (
       <MessageInputComponent
         className={this.props.className}
@@ -58,6 +65,7 @@ export class Container extends React.Component<Properties> {
         onRemoveReply={this.props.onRemoveReply}
         viewMode={this.props.viewMode}
         reply={this.props.reply}
+        replyIsCurrentUser={replyIsCurrentUser}
         isMessengerFullScreen={this.props.isFullScreen}
         isEditing={this.props.isEditing}
         sendDisabledMessage={this.props.sendDisabledMessage}

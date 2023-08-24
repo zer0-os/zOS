@@ -30,11 +30,9 @@ import { bem, bemClassName } from '../../lib/bem';
 const c = bem('message-input');
 const cn = bemClassName('message-input');
 
-export interface PublicProperties extends PublicPropertiesContainer {
+export interface Properties extends PublicPropertiesContainer {
+  replyIsCurrentUser: boolean;
   sendDisabledMessage?: string;
-}
-
-export interface Properties extends PublicProperties {
   viewMode: ViewModes;
   isMessengerFullScreen?: boolean;
   placeholder?: string;
@@ -341,11 +339,20 @@ export class MessageInput extends React.Component<Properties, State> {
 
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
+    const reply = this.props.reply;
 
     return (
       <div {...cn('container')}>
         <div {...cn('addon-row')}>
-          {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
+          {reply && (
+            <ReplyCard
+              message={reply.message}
+              senderIsCurrentUser={this.props.replyIsCurrentUser}
+              senderFirstName={reply?.sender?.firstName}
+              senderLastName={reply?.sender?.lastName}
+              onRemove={this.removeReply}
+            />
+          )}
         </div>
         <div
           className={classNames(

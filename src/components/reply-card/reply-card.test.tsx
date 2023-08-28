@@ -9,6 +9,9 @@ describe('ReplyCard', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       message: '',
+      senderIsCurrentUser: false,
+      senderFirstName: '',
+      senderLastName: '',
       onRemove: jest.fn(),
       ...props,
     };

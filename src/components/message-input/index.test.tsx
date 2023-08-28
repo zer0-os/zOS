@@ -30,6 +30,7 @@ describe('MessageInput', () => {
         removePasteListener: (_) => {},
       },
       viewMode: ViewModes.Dark,
+      replyIsCurrentUser: false,
       ...props,
     };
 

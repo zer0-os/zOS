@@ -198,7 +198,7 @@ describe('MessageInput', () => {
 
     const wrapper = subject({ reply });
 
-    expect(wrapper).toHaveElement(ReplyCard);
+    expect(wrapper.find(ReplyCard).prop('message')).toEqual('hello');
   });
 
   it('renders MessageAudioRecorder', function () {

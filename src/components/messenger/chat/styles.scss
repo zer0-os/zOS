@@ -176,6 +176,7 @@ $recent-indicator-size: 8px;
   &--full-screen {
     position: unset;
     flex-grow: 1;
+    overflow: hidden;
 
     .direct-message-chat__content {
       height: 100vh;

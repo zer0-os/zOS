@@ -197,9 +197,8 @@ describe('MessageInput', () => {
     const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply });
-    const dropzone = wrapper.find(Dropzone).shallow();
 
-    expect(dropzone.find(ReplyCard).exists()).toBe(true);
+    expect(wrapper).toHaveElement(ReplyCard);
   });
 
   it('renders MessageAudioRecorder', function () {
@@ -223,9 +222,7 @@ describe('MessageInput', () => {
     const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply, onRemoveReply });
-
-    const dropzone = wrapper.find(Dropzone).shallow();
-    dropzone.find(ReplyCard).prop('onRemove')();
+    wrapper.find(ReplyCard).simulate('remove');
 
     expect(onRemoveReply).toHaveBeenCalledOnce();
   });

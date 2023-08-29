@@ -12,7 +12,6 @@ describe('EditMessageActions', () => {
       secondaryTooltipText: '',
       onEdit: jest.fn(),
       onCancel: jest.fn(),
-      scrollContainerRef: React.createRef(),
       ...props,
     };
 

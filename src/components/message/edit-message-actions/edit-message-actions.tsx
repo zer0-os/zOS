@@ -6,7 +6,6 @@ import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton, Tooltip } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import InvertedScroll from '../../inverted-scroll';
 
 const cn = bemClassName('edit-message-actions');
 
@@ -17,7 +16,6 @@ export interface Properties {
   secondaryTooltipText: string;
   onEdit: () => void;
   onCancel?: () => void;
-  scrollContainerRef: React.RefObject<InvertedScroll>;
 }
 
 export default class EditMessageActions extends React.Component<Properties> {
@@ -32,23 +30,16 @@ export default class EditMessageActions extends React.Component<Properties> {
     this.editMessageActionRef = React.createRef();
   }
 
-  // scrolls up if 'x' or 'check' button is hidden in bottom of the screen (while editing a message)
-  fixScroll = () => {
-    const scrollRef = this.props.scrollContainerRef?.current;
+  // scrolls the element into view if it is not already in view
+  scrollIntoView = () => {
     const editMessageActionRef = this.editMessageActionRef?.current;
-    if (scrollRef && editMessageActionRef) {
-      const clientHeight = scrollRef.scrollWrapper.clientHeight + 64;
-      const bottom = editMessageActionRef.getBoundingClientRect().bottom;
-
-      const diff = clientHeight - bottom;
-      if (diff < 0) {
-        scrollRef.scrollWrapper.scrollTop += Math.abs(diff) + 16;
-      }
+    if (editMessageActionRef) {
+      editMessageActionRef.scrollIntoView({ block: 'nearest' });
     }
   };
 
   componentDidMount(): void {
-    this.fixScroll();
+    this.scrollIntoView();
   }
 
   handleTooltipChange = (open: boolean) => {

@@ -215,7 +215,6 @@ export class Message extends React.Component<Properties, State> {
         secondaryTooltipText='Discard Changes'
         onEdit={this.editMessage.bind(this, value, mentionedUserIds, { hidePreview: this.props.hidePreview })}
         onCancel={this.toggleEdit}
-        scrollContainerRef={this.props.scrollContainerRef}
       />
     );
   };

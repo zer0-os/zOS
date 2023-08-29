@@ -177,7 +177,6 @@ export class ChatView extends React.Component<Properties, State> {
               showSenderAvatar={this.props.showSenderAvatar}
               showTimestamp={messageRenderProps.showTimestamp}
               showAuthorName={messageRenderProps.showAuthorName}
-              scrollContainerRef={this.scrollContainerRef}
               {...message}
             />
           </div>

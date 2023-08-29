@@ -28,3 +28,7 @@ export function getHistory() {
 function createHistory() {
   return isElectron() ? createHashHistory() : createBrowserHistory();
 }
+
+export function getNavigator() {
+  return navigator;
+}

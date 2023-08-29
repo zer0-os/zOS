@@ -1,6 +1,6 @@
 import { call, put } from 'redux-saga/effects';
-import { setIsComplete } from '.';
-import { getHistory } from '../../lib/browser';
+import { setIsComplete, setShowAndroidDownload } from '.';
+import { getHistory, getNavigator } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { initializePublicLayout } from '../layout/saga';
@@ -20,6 +20,7 @@ export function* saga() {
     yield handleAuthenticatedUser(history);
   } else {
     yield handleUnauthenticatedUser(history);
+    yield call(setMobileAppDownloadVisibility, history);
   }
 
   yield put(setIsComplete(true));
@@ -46,4 +47,19 @@ function* handleUnauthenticatedUser(history) {
   }
 
   history.replace({ pathname: '/login' });
+}
+
+const MOBILE_APP_DOWNLOAD_PATHS = [
+  '/get-access',
+  '/login',
+];
+
+function* setMobileAppDownloadVisibility(history) {
+  const isMobileAppDownloadPath = MOBILE_APP_DOWNLOAD_PATHS.includes(history.location.pathname);
+  if (isMobileAppDownloadPath) {
+    const navigator = yield call(getNavigator);
+    if (navigator.userAgent.match(/Android/i)) {
+      yield put(setShowAndroidDownload(isMobileAppDownloadPath));
+    }
+  }
 }

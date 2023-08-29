@@ -341,6 +341,10 @@ export class MessageInput extends React.Component<Properties, State> {
     const hasInputValue = this.state.value?.length > 0;
     const reply = this.props.reply;
 
+    if (this.props.reply) {
+      setTimeout(() => this.focusInput(), 100);
+    }
+
     return (
       <div {...cn('container')}>
         <div {...cn('addon-row')}>

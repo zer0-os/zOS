@@ -19,13 +19,11 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import { ParentMessage } from './parent-message';
-import InvertedScroll from '../inverted-scroll';
 
 const cn = bemClassName('message');
 
 interface Properties extends MessageModel {
   className: string;
-  scrollContainerRef: React.RefObject<InvertedScroll>;
   onImageClick: (media: any) => void;
   onDelete: (messageId: number) => void;
   onEdit: (

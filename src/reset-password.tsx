@@ -41,7 +41,7 @@ export class Container extends React.Component<Properties> {
       return null;
     }
 
-    const isRequestResetPwdTokenValid = !!this.props.token;
+    const isTokenValid = !!this.props.token;
 
     return (
       <>
@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
             <ZeroLogo />
           </div>
 
-          {isRequestResetPwdTokenValid ? (
+          {isTokenValid ? (
             <ConfirmPasswordResetContainer token={this.props.token} />
           ) : (
             <RequestPasswordResetContainer />

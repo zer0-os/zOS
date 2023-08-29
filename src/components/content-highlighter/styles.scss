@@ -1,6 +1,9 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .content-highlighter {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   &__user-mention {
     display: inline-block;
     padding: 4px 8px;

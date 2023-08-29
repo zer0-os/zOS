@@ -4,6 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { LinkPreview } from '../../lib/link-preview';
+import { ParentMessage } from '../../lib/chat/types';
 
 export interface AttachmentUploadResult {
   name: string;
@@ -59,12 +60,12 @@ export interface Message {
   id: number;
   message?: string;
   parentMessageText?: string;
+  parentMessage?: ParentMessage;
   isAdmin: boolean;
   createdAt: number;
   updatedAt: number;
   sender: Sender;
-  // TODO: type to be defined
-  mentionedUserIds: any;
+  mentionedUsers: { id: string }[];
   hidePreview: boolean;
   preview: LinkPreview;
   media?: Media;
@@ -81,7 +82,6 @@ export interface Message {
 
 export interface EditMessageOptions {
   hidePreview: Boolean;
-  mentionedUsers: string[];
 }
 
 export enum SagaActionTypes {

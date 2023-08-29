@@ -49,6 +49,7 @@ ReactDOM.render(
               <Web3Connect>
                 <Route path='/get-access' exact component={Invite} />
                 <Route path='/login' exact component={LoginPage} />
+                <Route path='/reset-password' exact component={ResetPassword} />
                 <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
                 <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
               </Web3Connect>

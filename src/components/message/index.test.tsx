@@ -7,6 +7,7 @@ import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { ContentHighlighter } from '../content-highlighter';
+import { ParentMessage } from './parent-message';
 
 describe('message', () => {
   const sender = {
@@ -204,8 +205,7 @@ describe('message', () => {
       parentMessageText,
     });
 
-    expect(wrapper.find('.message__block-reply').exists()).toBe(true);
-    expect(wrapper.find(ContentHighlighter).first().prop('message').trim()).toStrictEqual(parentMessageText);
+    expect(wrapper.find(ParentMessage).prop('message')).toStrictEqual(parentMessageText);
   });
 
   it('call reply message', () => {
@@ -213,15 +213,32 @@ describe('message', () => {
     const messageId = '989887';
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const replyMessage = { messageId, message, userId: sender.userId };
+    const replyMessage = {
+      messageId,
+      message,
+      userId: sender.userId,
+      sender: sender,
+      isAdmin: false,
+      mentionedUsers: [],
+      hidePreview: true,
+      admin: {},
+      optimisticId: '',
+      rootMessageId: '',
+    };
     const wrapper = subject({
       message,
       messageId,
       sender,
+      isAdmin: false,
+      mentionedUsers: [],
+      hidePreview: true,
+      admin: {},
+      optimisticId: '',
+      rootMessageId: '',
       onReply,
     });
 
-    wrapper.find(MessageMenu).first().prop('onReply')();
+    wrapper.find(MessageMenu).simulate('reply');
 
     expect(onReply).toHaveBeenCalledWith(replyMessage);
   });

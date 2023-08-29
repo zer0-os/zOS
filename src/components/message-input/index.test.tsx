@@ -30,6 +30,7 @@ describe('MessageInput', () => {
         removePasteListener: (_) => {},
       },
       viewMode: ViewModes.Dark,
+      replyIsCurrentUser: false,
       ...props,
     };
 
@@ -193,12 +194,11 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply });
-    const dropzone = wrapper.find(Dropzone).shallow();
 
-    expect(dropzone.find(ReplyCard).exists()).toBe(true);
+    expect(wrapper.find(ReplyCard).prop('message')).toEqual('hello');
   });
 
   it('renders MessageAudioRecorder', function () {
@@ -219,12 +219,10 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply, onRemoveReply });
-
-    const dropzone = wrapper.find(Dropzone).shallow();
-    dropzone.find(ReplyCard).prop('onRemove')();
+    wrapper.find(ReplyCard).simulate('remove');
 
     expect(onRemoveReply).toHaveBeenCalledOnce();
   });

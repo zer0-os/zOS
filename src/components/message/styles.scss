@@ -80,21 +80,6 @@
     }
   }
 
-  &__block-reply {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-  }
-
-  &__block-reply-text {
-    padding-left: 8px;
-    border-left: 2px solid theme.$color-primary-5;
-    flex-grow: 1;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
-  }
-
   &__block-preview {
     display: flex;
     flex-direction: row;

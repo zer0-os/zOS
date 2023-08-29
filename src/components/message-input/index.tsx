@@ -25,15 +25,14 @@ import { Avatar, Tooltip } from '@zero-tech/zui/components';
 import classNames from 'classnames';
 import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
-import { bemClassName } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 
+const c = bem('message-input');
 const cn = bemClassName('message-input');
 
-export interface PublicProperties extends PublicPropertiesContainer {
+export interface Properties extends PublicPropertiesContainer {
+  replyIsCurrentUser: boolean;
   sendDisabledMessage?: string;
-}
-
-export interface Properties extends PublicProperties {
   viewMode: ViewModes;
   isMessengerFullScreen?: boolean;
   placeholder?: string;
@@ -340,11 +339,23 @@ export class MessageInput extends React.Component<Properties, State> {
 
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
+    const reply = this.props.reply;
 
     return (
-      <>
+      <div {...cn('container')}>
+        <div {...cn('addon-row')}>
+          {reply && (
+            <ReplyCard
+              message={reply.message}
+              senderIsCurrentUser={this.props.replyIsCurrentUser}
+              senderFirstName={reply?.sender?.firstName}
+              senderLastName={reply?.sender?.lastName}
+              onRemove={this.removeReply}
+            />
+          )}
+        </div>
         <div
-          className={classNames('message-input__container', this.props.className, {
+          className={classNames(c('input-row'), this.props.className, {
             'message-input__container--editing': this.props.isEditing,
           })}
         >
@@ -381,7 +392,6 @@ export class MessageInput extends React.Component<Properties, State> {
                       <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
-                      {this.props.reply && <ReplyCard message={this.props.reply.message} onRemove={this.removeReply} />}
 
                       <div
                         className={classNames('message-input__emoji-picker-container', {
@@ -463,7 +473,7 @@ export class MessageInput extends React.Component<Properties, State> {
           )}
         </div>
         {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
-      </>
+      </div>
     );
   }
 

@@ -42,10 +42,11 @@ export function createOptimisticMessageObject(
     id,
     optimisticId: id,
     rootMessageId,
-    mentionedUserIds: [],
+    mentionedUsers: [],
     message: messageText,
     isAdmin: false,
     parentMessageText: parentMessage ? parentMessage.message : '',
+    parentMessage,
     sender: {
       userId: user.id,
       firstName: user.profileSummary.firstName,

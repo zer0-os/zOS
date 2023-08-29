@@ -23,6 +23,10 @@ export class ScrollbarContainer extends React.Component<Properties, State> {
     this.checkScrollBottom = this.checkScrollBottom.bind(this);
   }
 
+  scrollToTop() {
+    this.scrollContainerRef.current.scrollTop = 0;
+  }
+
   componentDidMount() {
     const { variant } = this.props;
     if (variant === 'on-hover') {

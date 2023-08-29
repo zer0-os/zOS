@@ -187,13 +187,15 @@ export class Container extends React.Component<Properties, State> {
   renderToastNotification = (): JSX.Element => {
     return (
       <ToastNotification
+        viewportClassName='invite-toast-notification'
         title={'Invite your friends'}
-        description={'To get more rewards simply build your friend network and start messaging'}
+        description={'Build your network and message friends to earn more rewards.'}
         actionTitle={'Invite Friends'}
         actionAltText={'invite dialog modal call to action'}
         positionVariant='left'
         openToast={this.props.isInviteNotificationOpen}
         onClick={this.openInviteDialog}
+        duration={10000}
       />
     );
   };
@@ -233,6 +235,7 @@ export class Container extends React.Component<Properties, State> {
             onRewardsPopupClose={this.props.rewardsPopupClosed}
             onLogout={this.props.logout}
             showNewRewards={this.props.showNewRewards}
+            hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
           />
         )}
 

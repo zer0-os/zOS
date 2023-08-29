@@ -98,20 +98,21 @@ export class RequestPasswordReset extends React.Component<Properties, State> {
 
   render() {
     const { stage } = this.props;
+    const isResetPasswordDone = stage === RequestPasswordResetStage.Done;
 
     return (
       <>
         <div {...cn('')}>
           <div {...cn('heading-container')}>
             <h3 {...cn('heading')}>Reset Password</h3>
-            {stage === RequestPasswordResetStage.Done && this.renderSuccessMessage()}
+            {isResetPasswordDone && this.renderSuccessMessage()}
 
-            {stage !== RequestPasswordResetStage.Done && (
+            {!isResetPasswordDone && (
               <div {...cn('sub-heading')}>Enter your ZERO account email and we’ll send a reset link</div>
             )}
           </div>
 
-          {stage !== RequestPasswordResetStage.Done && this.renderForm()}
+          {!isResetPasswordDone && this.renderForm()}
         </div>
         <Footer stage={this.props.stage} />
       </>

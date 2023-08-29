@@ -48,6 +48,8 @@ export async function editMessageApi(
   mentionedUserIds: string[],
   data?: Partial<EditMessageOptions>
 ): Promise<number> {
+  // Note: this is actually wrong. The api endpoint does not take the `mentionedUsersId`
+  // parameter at all.
   const response = await put<any>(`/chatChannels/${channelId}/message`).send({
     message: { id: messageId, message, mentionedUserIds, data },
   });

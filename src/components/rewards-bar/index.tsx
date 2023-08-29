@@ -17,6 +17,7 @@ export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
   isMessengerFullScreen: boolean;
+  hasLoadedConversation: boolean;
 
   userName: string;
   userHandle: string;
@@ -84,13 +85,15 @@ export class RewardsBar extends React.Component<Properties, State> {
           <button
             onClick={this.openRewards}
             className={classnames(c('rewards-button'), {
-              [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
+              [c('rewards-button', 'open')]:
+                this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
             })}
           >
             <div>Rewards</div>
             <div
               className={classnames(c('rewards-icon'), {
-                [c('rewards-icon', 'open')]: this.state.isRewardsPopupOpen,
+                [c('rewards-icon', 'open')]:
+                  this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
               })}
             >
               <IconCurrencyDollar size={16} />
@@ -121,13 +124,14 @@ export class RewardsBar extends React.Component<Properties, State> {
           this.renderRewardsBar()
         )}
 
-        {this.state.isRewardsPopupOpen && (
+        {this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin) && (
           <RewardsPopupContainer
             onClose={this.closeRewards}
-            openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
+            openRewardsFAQModal={this.openRewardsFAQModal}
             isLoading={this.props.isRewardsLoading}
           />
         )}
+
         {this.state.isRewardsFAQModalOpen && (
           <RewardsFAQModal
             isRewardsFAQModalOpen={this.state.isRewardsFAQModalOpen}

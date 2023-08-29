@@ -5,11 +5,12 @@ import { RegistrationStage } from '../../store/registration';
 
 import { bem } from '../../lib/bem';
 import './styles.scss';
+import { RequestPasswordResetStage } from '../../store/request-password-reset';
 
 const c = bem('authentication-footer');
 
 export interface Properties {
-  stage: RegistrationStage;
+  stage: RegistrationStage | RequestPasswordResetStage;
 }
 
 export class Footer extends React.Component<Properties> {
@@ -18,10 +19,13 @@ export class Footer extends React.Component<Properties> {
       return null;
     }
 
+    const loginPromptText =
+      this.props.stage === RequestPasswordResetStage.SubmitEmail ? 'Back to ' : 'Already on ZERO? ';
+
     return (
       <div className={c('')}>
         <div>
-          <span>Already on ZERO? </span>
+          <span>{loginPromptText}</span>
           <Link to='/login'>Log in</Link>
         </div>
 

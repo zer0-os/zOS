@@ -17,6 +17,7 @@ import { AppSandboxContainer } from './app-sandbox/container';
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
+import { ResetPassword } from './reset-password';
 import { LoginPage } from './pages';
 import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
@@ -33,6 +34,7 @@ const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
   if (route === 'get-access') return <Redirect to={'/get-access'} />;
   if (route === 'login') return <Redirect to={'/login'} />;
+  if (route === 'reset-password') return <Redirect to={'/reset-password'} />;
 
   return <Redirect to={`/${route}/${config.defaultApp}`} />;
 };
@@ -47,6 +49,7 @@ ReactDOM.render(
               <Web3Connect>
                 <Route path='/get-access' exact component={Invite} />
                 <Route path='/login' exact component={LoginPage} />
+                <Route path='/reset-password' exact component={ResetPassword} />
                 <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
                 <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
               </Web3Connect>

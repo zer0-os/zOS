@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Footer } from '../footer/footer';
 import { Button, Input, Alert } from '@zero-tech/zui/components';
 
 import { bem, bemClassName } from '../../lib/bem';
@@ -97,20 +98,24 @@ export class RequestPasswordReset extends React.Component<Properties, State> {
 
   render() {
     const { stage } = this.props;
+    const isResetPasswordDone = stage === RequestPasswordResetStage.Done;
 
     return (
-      <div {...cn('')}>
-        <div {...cn('heading-container')}>
-          <h3 {...cn('heading')}>Reset Password</h3>
-          {stage === RequestPasswordResetStage.Done && this.renderSuccessMessage()}
+      <>
+        <div {...cn('')}>
+          <div {...cn('heading-container')}>
+            <h3 {...cn('heading')}>Reset Password</h3>
+            {isResetPasswordDone && this.renderSuccessMessage()}
 
-          {stage !== RequestPasswordResetStage.Done && (
-            <div {...cn('sub-heading')}>Enter your ZERO account email and we’ll send a reset link</div>
-          )}
+            {!isResetPasswordDone && (
+              <div {...cn('sub-heading')}>Enter your ZERO account email and we’ll send a reset link</div>
+            )}
+          </div>
+
+          {!isResetPasswordDone && this.renderForm()}
         </div>
-
-        {stage !== RequestPasswordResetStage.Done && this.renderForm()}
-      </div>
+        <Footer stage={this.props.stage} />
+      </>
     );
   }
 }

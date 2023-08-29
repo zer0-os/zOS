@@ -67,7 +67,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
         <FeatureFlag featureFlag={'resetPasswordPage'}>
           {stage === LoginStage.EmailLogin && (
             <span>
-              Forgot your password? <Link to='/get-access'>Reset</Link>
+              Forgot your password? <Link to='/reset-password'>Reset</Link>
             </span>
           )}
         </FeatureFlag>

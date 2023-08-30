@@ -20,6 +20,7 @@ import { saga as pageLoad } from './page-load/saga';
 import { saga as editProfile } from './edit-profile/saga';
 import { saga as users } from './users/saga';
 import { saga as requestPasswordReset } from './request-password-reset/saga';
+import { saga as confirmPasswordReset } from './confirm-password-reset/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -43,6 +44,7 @@ export function* rootSaga() {
     editProfile,
     users,
     requestPasswordReset,
+    confirmPasswordReset,
   };
 
   yield all(

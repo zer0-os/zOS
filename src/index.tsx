@@ -34,7 +34,7 @@ const redirectToDefaults = ({ match: { params } }) => {
   const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
   if (route === 'get-access') return <Redirect to={'/get-access'} />;
   if (route === 'login') return <Redirect to={'/login'} />;
-  if (route === 'reset-password') return <Redirect to={'/reset-password'} />;
+  if (route === 'reset-password') return <ResetPassword />;
 
   return <Redirect to={`/${route}/${config.defaultApp}`} />;
 };

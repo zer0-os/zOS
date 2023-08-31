@@ -17,19 +17,25 @@ export function* saga() {
 
   const success = yield call(getCurrentUserWithChatAccessToken);
   if (success) {
-    // if you have a current user but they still hit login/sign-up,
-    // we should redirect to index page in that case
-    if (anonymousPaths.includes(history.location.pathname)) {
-      history.replace({
-        pathname: `/0.${config.defaultZnsRoute}/${config.defaultApp}`,
-      });
-    }
-    yield put(setIsComplete(true));
-    return;
+    yield handleAuthenticatedUser(history);
+  } else {
+    yield handleUnauthenticatedUser(history);
   }
 
   yield put(setIsComplete(true));
+}
 
+function handleAuthenticatedUser(history) {
+  // if you have a current user but they still hit login/sign-up,
+  // we should redirect to index page in that case
+  if (anonymousPaths.includes(history.location.pathname)) {
+    history.replace({
+      pathname: `/0.${config.defaultZnsRoute}/${config.defaultApp}`,
+    });
+  }
+}
+
+function* handleUnauthenticatedUser(history) {
   if (anonymousPaths.includes(history.location.pathname)) {
     return;
   }
@@ -39,7 +45,5 @@ export function* saga() {
     return;
   }
 
-  history.replace({
-    pathname: '/login',
-  });
+  history.replace({ pathname: '/login' });
 }

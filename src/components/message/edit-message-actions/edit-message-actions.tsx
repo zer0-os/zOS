@@ -23,6 +23,25 @@ export default class EditMessageActions extends React.Component<Properties> {
     tooltipOpen: false,
   };
 
+  editMessageActionRef: React.RefObject<HTMLDivElement>;
+
+  constructor(props: Properties) {
+    super(props);
+    this.editMessageActionRef = React.createRef();
+  }
+
+  // scrolls the element into view if it is not already in view
+  scrollIntoView = () => {
+    const editMessageActionRef = this.editMessageActionRef?.current;
+    if (editMessageActionRef) {
+      editMessageActionRef.scrollIntoView({ block: 'nearest' });
+    }
+  };
+
+  componentDidMount(): void {
+    this.scrollIntoView();
+  }
+
   handleTooltipChange = (open: boolean) => {
     this.setState({ tooltipOpen: !this.isDisabled() && open });
   };
@@ -35,7 +54,7 @@ export default class EditMessageActions extends React.Component<Properties> {
     const isDisabled = this.isDisabled();
 
     return (
-      <div {...cn()}>
+      <div {...cn()} ref={this.editMessageActionRef}>
         <Tooltip content={this.props.secondaryTooltipText}>
           <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size={24} />
         </Tooltip>

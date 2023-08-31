@@ -13,7 +13,7 @@ import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '@zero-tech/zui/components';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 
@@ -293,10 +293,14 @@ export class Message extends React.Component<Properties, State> {
       >
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>
-            <div
-              style={{ backgroundImage: `url(${getProvider().getSourceUrl(sender.profileImage)})` }}
-              {...cn('author-avatar')}
-            />
+            <div {...cn('author-avatar')}>
+              <Avatar
+                size='medium'
+                type='circle'
+                imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`}
+                tabIndex={-1}
+              />
+            </div>
           </div>
         )}
         <div {...cn('block', this.state.isEditing && 'edit')}>

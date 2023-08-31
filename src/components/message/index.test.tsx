@@ -350,17 +350,6 @@ describe('message', () => {
     );
   });
 
-  // it('renders author avatar', () => {
-  //   const wrapper = subject({
-  //     message: 'text',
-  //     showSenderAvatar: true,
-  //   });
-
-  //   const authorAvatarElement = wrapper.find('.message__author-avatar');
-
-  //   expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
-  // });
-
   it('renders author avatar', () => {
     const wrapper = subject({
       message: 'text',

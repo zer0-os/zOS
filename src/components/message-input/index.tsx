@@ -85,16 +85,12 @@ export class MessageInput extends React.Component<Properties, State> {
     return this.props.clipboard || windowClipboard();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if (this.props.onMessageInputRendered) {
       this.props.onMessageInputRendered(this.textareaRef);
     }
     if (this.state.isSendTooltipOpen && this.isSendingEnabled) {
       this.setState({ isSendTooltipOpen: false });
-    }
-
-    if (this.props.reply && !prevProps.reply) {
-      this.focusInput();
     }
   }
 
@@ -131,7 +127,7 @@ export class MessageInput extends React.Component<Properties, State> {
 
   focusInput() {
     if (this.textareaRef && this.textareaRef.current) {
-      setTimeout(() => this.textareaRef.current.focus(), 1);
+      this.textareaRef.current.focus();
     }
   }
 

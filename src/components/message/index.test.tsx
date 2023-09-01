@@ -356,9 +356,11 @@ describe('message', () => {
       showSenderAvatar: true,
     });
 
-    const authorAvatarElement = wrapper.find('.message__author-avatar');
+    const avatarComponent = wrapper.find('.message__author-avatar Avatar');
 
-    expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
+    expect(avatarComponent.exists()).toBe(true);
+
+    expect(avatarComponent.prop('imageURL')).toEqual(`${sender.profileImage}`);
   });
 
   it('renders with a tag', () => {

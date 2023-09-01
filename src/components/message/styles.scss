@@ -172,13 +172,10 @@
 
   &__author-avatar {
     visibility: hidden;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 32px;
-    height: 32px;
-    overflow: hidden;
-    border-radius: 50%;
+
+    > *:first-child {
+      cursor: default;
+    }
   }
 
   &__author-name {

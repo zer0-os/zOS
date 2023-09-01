@@ -104,7 +104,7 @@ export class Container extends React.Component<Properties> {
 
   renderChannelView() {
     if (this.props.channelId && this.isChannelValid(this.props.channelId)) {
-      return <ChatViewContainer channelId={this.props.channelId} />;
+      return <ChatViewContainer channelId={this.props.channelId} showSenderAvatar />;
     }
 
     const defaultChannelId = getDeepProperty(this.props, 'channels[0].id', null);

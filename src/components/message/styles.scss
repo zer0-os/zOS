@@ -106,6 +106,12 @@
     }
   }
 
+  &__block-audio {
+    audio {
+      width: 300px;
+    }
+  }
+
   &__block-video {
     video {
       min-height: 186px;

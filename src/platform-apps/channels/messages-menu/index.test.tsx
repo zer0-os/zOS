@@ -70,7 +70,7 @@ describe('Message Menu', () => {
       expect(editItem).toBeDefined();
     });
 
-    it('should call edit message when clicked', () => {
+    it('should call edit message when clicked after releasing the thread', async () => {
       const onEdit = jest.fn();
       const wrapper = subject({ canEdit: true, onEdit }) as ShallowWrapper;
 
@@ -80,6 +80,9 @@ describe('Message Menu', () => {
 
       editItem.onSelect();
 
+      expect(onEdit).not.toHaveBeenCalled();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(onEdit).toHaveBeenCalled();
     });
   });
@@ -96,7 +99,7 @@ describe('Message Menu', () => {
       expect(replyItem).toBeDefined();
     });
 
-    it('should call reply message when clicked', () => {
+    it('should call reply message when clicked after releasing the thread', async () => {
       const onReply = jest.fn();
       const wrapper = subject({ canReply: true, onReply }) as ShallowWrapper;
 
@@ -105,7 +108,9 @@ describe('Message Menu', () => {
       const replyItem = items.find((item) => item.id === 'reply');
 
       replyItem.onSelect();
+      expect(onReply).not.toHaveBeenCalled();
 
+      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(onReply).toHaveBeenCalled();
     });
   });

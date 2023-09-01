@@ -39,20 +39,27 @@ export class MessageMenu extends React.Component<Properties, State> {
     );
   }
 
+  // Our zUI DropdownMenu component actively steals focus.
+  // In order to allow actions to change focus without the dropdown menu stealing it back,
+  // we delay publishing the event by releasing the thread for a single tick.
+  delayEvent = (handler) => setTimeout(handler, 1);
+  onEdit = () => this.delayEvent(this.props.onEdit);
+  onReply = () => this.delayEvent(this.props.onReply);
+
   renderItems = () => {
     const menuItems = [];
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'edit',
         label: this.renderMenuOption(<IconEdit5 />, 'Edit'),
-        onSelect: this.props.onEdit,
+        onSelect: this.onEdit,
       });
     }
     if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'reply',
         label: this.renderMenuOption(<IconFlipBackward />, 'Reply'),
-        onSelect: this.props.onReply,
+        onSelect: this.onReply,
       });
     }
     if (this.props.onDelete && this.props.canDelete) {

@@ -173,7 +173,7 @@
   &__author-avatar {
     visibility: hidden;
 
-    > div:first-child {
+    > *:first-child {
       cursor: default;
     }
   }

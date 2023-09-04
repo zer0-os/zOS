@@ -67,10 +67,10 @@
     "web3-utils": "^1.7.5"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true craco start",
+    "start": "DISABLE_ESLINT_PLUGIN=true craco start --verbose",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",
+    "build": "DISABLE_ESLINT_PLUGIN=true NODE_OPTIONS='--max-old-space-size=4096' craco build --verbose",
     "test": "craco test --env=node",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",

@@ -7,6 +7,7 @@ import { LoginStage, switchLoginStage } from '../../store/login';
 import { LoginComponent } from './login-component';
 import { AndroidDownload } from '../../authentication/android-download';
 import { config } from '../../config';
+import { setShowAndroidDownload } from '../../store/page-load';
 
 export interface LoginContainerProperties {
   shouldRender: boolean;
@@ -15,6 +16,7 @@ export interface LoginContainerProperties {
   isLoggingIn: boolean;
   stage: LoginStage;
   switchLoginStage: (stage: LoginStage) => void;
+  continueInBrowser: () => void;
 }
 
 export class LoginContainer extends React.Component<LoginContainerProperties> {
@@ -33,6 +35,7 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapActions(_props: LoginContainerProperties): Partial<LoginContainerProperties> {
     return {
       switchLoginStage,
+      continueInBrowser: () => setShowAndroidDownload(false),
     };
   }
 
@@ -52,7 +55,7 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
       <>
         <LoginComponent isLoggingIn={isLoggingIn} stage={stage} handleSelectionChange={this.handleSelectionChange} />
         {this.props.showAndroidDownload && (
-          <AndroidDownload storePath={this.props.androidStorePath} onUseBrowser={() => {}} />
+          <AndroidDownload storePath={this.props.androidStorePath} onUseBrowser={this.props.continueInBrowser} />
         )}
       </>
     );

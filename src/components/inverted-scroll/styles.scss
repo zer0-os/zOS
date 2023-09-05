@@ -1,12 +1,4 @@
 .scroll-container {
   overflow-y: scroll;
   overflow-x: hidden;
-
-  .scroll-container__children {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: 100%;
-    overflow: hidden;
-  }
 }

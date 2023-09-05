@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { Fragment, RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -69,11 +69,12 @@ export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
   isLightboxOpen: boolean;
+  pinnedBottom: boolean;
 }
 
 export class ChatView extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<InvertedScroll>;
-  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
+  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false, pinnedBottom: false };
 
   constructor(props) {
     super(props);
@@ -81,14 +82,15 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   scrollToBottom = () => {
+    this.pinBottom();
     if (this.scrollContainerRef.current) {
       this.scrollContainerRef.current.scrollToBottom();
     }
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[], media: Media[]) => {
-    this.props.sendMessage(message, mentionedUserIds, media);
     this.scrollToBottom();
+    this.props.sendMessage(message, mentionedUserIds, media);
   };
 
   getMessagesByDay() {
@@ -143,7 +145,7 @@ export class ChatView extends React.Component<Properties, State> {
   renderMessageGroup(groupMessages) {
     return groupMessages.map((message, index) => {
       if (message.isAdmin) {
-        return <AdminMessageContainer key={message.id} message={message} />;
+        return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
         const messageRenderProps = getMessageRenderProps(
           index,
@@ -194,8 +196,9 @@ export class ChatView extends React.Component<Properties, State> {
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
         {groups.map((group, index) => {
+          const groupKey = `group_${groups.length - index}`;
           return (
-            <div key={index} className='message__group'>
+            <div key={groupKey} className='message__group'>
               {this.renderMessageGroup(group)}
             </div>
           );
@@ -238,6 +241,14 @@ export class ChatView extends React.Component<Properties, State> {
     }
   }
 
+  preventHigherScroll = () => {
+    if (this.scrollContainerRef.current) {
+      this.scrollContainerRef.current.scroll(0, 1);
+    }
+  };
+  pinBottom = () => this.setState({ pinnedBottom: true });
+  unpinBottom = () => this.setState({ pinnedBottom: false });
+
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
     const { hasJoined: isMemberOfChannel } = this.props;
@@ -257,18 +268,31 @@ export class ChatView extends React.Component<Properties, State> {
           />
         )}
         <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
-          <div className='channel-view__main'>
+          <Waypoint onEnter={this.preventHigherScroll} />
+          <div
+            className={classNames('channel-view__main', {
+              'messages__container--pinned-bottom': this.state.pinnedBottom,
+            })}
+          >
             {!this.props.isDirectMessage && (
               <div className='channel-view__name'>
                 <h1>Welcome to #{this.props.name}</h1>
                 <span>This is the start of the channel.</span>
               </div>
             )}
-            {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+
+            {this.props.messages.length > 0 && (
+              <div {...cn('way')}>
+                <Waypoint onEnter={this.props.onFetchMore} />
+              </div>
+            )}
             {this.props.messages.length > 0 && this.renderMessages()}
             {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
               <ChatSkeleton conversationId={this.props.id} />
             )}
+          </div>
+          <div {...cn('bottom-anchor')}>
+            <Waypoint onEnter={this.pinBottom} onLeave={this.unpinBottom} />
           </div>
         </InvertedScroll>
 

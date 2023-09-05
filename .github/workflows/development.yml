@@ -50,6 +50,7 @@ jobs:
       REACT_APP_PUSHER_CLUSTER: ${{secrets.PUSHER_CLUSTER}}
       REACT_APP_MESSENGER_INVITE_PATH: ${{vars.MESSENGER_INVITE_PATH}}
       REACT_APP_ASSETS_PATH: ${{vars.ASSETS_PATH}}
+      REACT_APP_ANDROID_STORE_PATH: ${{vars.ANDROID_STORE_PATH}}
     steps:
       - uses: actions/checkout@v2
       - name: Common Setup

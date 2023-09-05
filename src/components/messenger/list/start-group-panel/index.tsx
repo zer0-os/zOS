@@ -67,7 +67,11 @@ export class StartGroupPanel extends React.Component<Properties, State> {
       <>
         <PanelHeader title='Select members' onBack={this.props.onBack} />
         <div {...cn('search')}>
-          <AutocompleteMembers search={this.props.searchUsers} onSelect={this.selectOption}>
+          <AutocompleteMembers
+            search={this.props.searchUsers}
+            onSelect={this.selectOption}
+            selectedOptions={this.state.selectedOptions}
+          >
             <div {...cn('selected-count')}>
               <span {...cn('selected-number')}>{this.state.selectedOptions.length}</span> member
               {this.state.selectedOptions.length === 1 ? '' : 's'} selected

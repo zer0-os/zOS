@@ -11,6 +11,7 @@ import classNames from 'classnames';
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
+  selectedOptions?: Option[];
   onSelect: (selected: Option) => void;
 }
 
@@ -29,25 +30,32 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     }
 
     const items = await this.props.search(searchString);
-
-    this.setState({ results: items.map(itemToOption) });
+    const options = items.map(itemToOption);
+    const selectedOptions = this.props.selectedOptions || [];
+    const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
+    this.setState({ results: filteredOptions });
   };
 
-  itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  itemSelected(event) {
     const clickedId = event.currentTarget.dataset.id;
     const selectedUser = this.state.results.find((r) => r.value === clickedId);
+
     if (selectedUser) {
       this.props.onSelect(selectedUser);
+      // exclude selected user from results
+      this.setState({
+        results: this.state.results.filter((r) => r.value !== clickedId),
+      });
     }
+  }
+
+  itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    this.itemSelected(event);
   };
 
   handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
-      const clickedId = event.currentTarget.dataset.id;
-      const selectedUser = this.state.results.find((r) => r.value === clickedId);
-      if (selectedUser) {
-        this.props.onSelect(selectedUser);
-      }
+      this.itemSelected(event);
     }
   };
 

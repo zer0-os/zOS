@@ -39,4 +39,5 @@ export const config = {
     userId: process.env.REACT_APP_MATRIX_USER_ID,
     accessToken: process.env.REACT_APP_MATRIX_ACCESS_TOKEN,
   },
+  androidStorePath: process.env.REACT_APP_ANDROID_STORE_PATH,
 };

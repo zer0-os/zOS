@@ -6,6 +6,7 @@ export type PageloadState = {
 
 export const initialState = {
   isComplete: false,
+  showAndroidDownload: false,
 };
 
 const slice = createSlice({
@@ -15,8 +16,11 @@ const slice = createSlice({
     setIsComplete: (state, action: PayloadAction<PageloadState['isComplete']>) => {
       state.isComplete = action.payload;
     },
+    setShowAndroidDownload: (state, action: PayloadAction<boolean>) => {
+      state.showAndroidDownload = action.payload;
+    },
   },
 });
 
-export const { setIsComplete } = slice.actions;
+export const { setIsComplete, setShowAndroidDownload } = slice.actions;
 export const { reducer } = slice;

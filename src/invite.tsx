@@ -8,6 +8,9 @@ import { InviteContainer } from './authentication/validate-invite/container';
 import { CreateAccountMethodContainer } from './authentication/create-account-method/container';
 import { CreateAccountDetailsContainer } from './authentication/create-account-details/container';
 import { Footer } from './authentication/footer/footer';
+import { AndroidDownload } from './authentication/android-download';
+import { config } from './config';
+import { setShowAndroidDownload } from './store/page-load';
 
 import { ReactComponent as ZeroLogo } from './zero-logo.svg';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
@@ -20,6 +23,9 @@ const cn = bemClassName('invite-main');
 export interface Properties {
   stage: RegistrationStage;
   shouldRender: boolean;
+  showAndroidDownload: boolean;
+  androidStorePath: string;
+  continueInBrowser: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -28,11 +34,15 @@ export class Container extends React.Component<Properties> {
     return {
       stage: registration.stage,
       shouldRender: pageload.isComplete,
+      showAndroidDownload: pageload.showAndroidDownload,
+      androidStorePath: config.androidStorePath,
     };
   }
 
   static mapActions() {
-    return {};
+    return {
+      continueInBrowser: () => setShowAndroidDownload(false),
+    };
   }
 
   render() {
@@ -65,6 +75,9 @@ export class Container extends React.Component<Properties> {
 
           <Footer stage={this.props.stage} />
         </div>
+        {this.props.showAndroidDownload && (
+          <AndroidDownload storePath={this.props.androidStorePath} onUseBrowser={this.props.continueInBrowser} />
+        )}
       </>
     );
   }

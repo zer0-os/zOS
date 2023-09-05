@@ -1,10 +1,11 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { saga } from './saga';
-import { getHistory } from '../../lib/browser';
+import { getHistory, getNavigator } from '../../lib/browser';
 import { rootReducer } from '../reducer';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { call } from 'redux-saga/effects';
 import { initializePublicLayout } from '../layout/saga';
+import { stubResponse } from '../../test/saga';
 
 jest.mock('../../config', () => ({
   config: {
@@ -133,9 +134,47 @@ describe('page-load saga', () => {
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
     expect(history.replace).not.toHaveBeenCalled();
   });
+
+  describe('showAndroidDownload', () => {
+    async function expectPageLoad(path: string, userAgent: string) {
+      const initialState = { pageload: { showAndroidDownload: false } };
+
+      return await expectSaga(saga)
+        .provide([
+          stubResponse(call(getNavigator), stubNavigator(userAgent)),
+          ...stubResponses(new StubHistory(path), false),
+        ])
+        .withReducer(rootReducer, initialState as any)
+        .run();
+    }
+
+    it('is false if not on a configured page', async () => {
+      const { storeState } = await expectPageLoad('/', 'Android');
+
+      expect(storeState.pageload.showAndroidDownload).toBe(false);
+    });
+
+    it('is false if not an android user agent', async () => {
+      const { storeState } = await expectPageLoad('/login', 'Chrome');
+
+      expect(storeState.pageload.showAndroidDownload).toBe(false);
+    });
+
+    it('is true if the user agent matches and is login page', async () => {
+      const { storeState } = await expectPageLoad('/login', 'Android');
+
+      expect(storeState.pageload.showAndroidDownload).toBe(true);
+    });
+
+    it('is true if the user agent matches and is get-access page', async () => {
+      const { storeState } = await expectPageLoad('/get-access', 'Android');
+
+      expect(storeState.pageload.showAndroidDownload).toBe(true);
+    });
+  });
 });
 
-const stubResponses = (history, success) => {
+const stubResponses = (history, success, navigator = stubNavigator()) => {
   return [
     [
       call(getHistory),
@@ -145,5 +184,15 @@ const stubResponses = (history, success) => {
       call(getCurrentUserWithChatAccessToken),
       success,
     ],
+    [
+      call(getNavigator),
+      navigator,
+    ],
   ] as any;
 };
+
+function stubNavigator(userAgent: string = 'chrome') {
+  return {
+    userAgent,
+  };
+}

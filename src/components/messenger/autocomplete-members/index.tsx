@@ -30,13 +30,13 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     }
 
     const items = await this.props.search(searchString);
-    const itemsToOption = items.map(itemToOption);
+    const options = items.map(itemToOption);
     const selectedOptions = this.props.selectedOptions || [];
-    const filteredOptions = itemsToOption.filter((o) => !selectedOptions.find((s) => s.value === o.value));
+    const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
     this.setState({ results: filteredOptions });
   };
 
-  onSelect(event) {
+  itemSelected(event) {
     const clickedId = event.currentTarget.dataset.id;
     const selectedUser = this.state.results.find((r) => r.value === clickedId);
 
@@ -50,12 +50,12 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
   }
 
   itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    this.onSelect(event);
+    this.itemSelected(event);
   };
 
   handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
-      this.onSelect(event);
+      this.itemSelected(event);
     }
   };
 

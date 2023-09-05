@@ -36,42 +36,40 @@ describe('confirmPasswordReset saga', () => {
   });
 
   it('should call the API and handle UNKNOWN_ERROR response', async () => {
-    const payload = { token: 'testToken', newPassword: 'newPassword123' };
+    const payload = { token: 'testToken', password: 'newPassword123' };
 
     const {
       storeState: { confirmPasswordReset: confirmPasswordState },
     } = await expectSaga(confirmPasswordReset)
       .provide([
         [
-          call(confirmPasswordResetApi, { token: payload.token, password: payload.newPassword }),
-
+          call(confirmPasswordResetApi, { token: payload.token, password: payload.password }),
           { success: false, response: 'UNKNOWN_ERROR' },
         ],
       ])
       .withReducer(rootReducer, initialState({}))
       .dispatch({ type: SagaActionTypes.UpdatePassword, payload })
-      .run();
+      .run({ silenceTimeout: true }); // Because this saga uses an infinite loop it will always timeout
 
     expect(confirmPasswordState.errors).toContain(ConfirmPasswordResetErrors.UNKNOWN_ERROR);
     expect(confirmPasswordState.loading).toBeFalsy();
   });
 
   it('should handle exceptions thrown by the API call', async () => {
-    const payload = { token: 'testToken', newPassword: 'newPassword123' };
+    const payload = { token: 'testToken', password: 'newPassword123' };
 
     const {
       storeState: { confirmPasswordReset: confirmPasswordState },
     } = await expectSaga(confirmPasswordReset)
       .provide([
         [
-          call(confirmPasswordResetApi, { token: payload.token, password: payload.newPassword }),
-
+          call(confirmPasswordResetApi, { token: payload.token, password: payload.password }),
           throwError(new Error('API error')),
         ],
       ])
       .withReducer(rootReducer, initialState({}))
       .dispatch({ type: SagaActionTypes.UpdatePassword, payload })
-      .run();
+      .run({ silenceTimeout: true }); // Because this saga uses an infinite loop it will always timeout
 
     expect(confirmPasswordState.errors).toContain(ConfirmPasswordResetErrors.UNKNOWN_ERROR);
     expect(confirmPasswordState.loading).toBeFalsy();
@@ -85,7 +83,7 @@ describe('confirmPasswordReset saga', () => {
         .withReducer(rootReducer, initialState({ stage: ConfirmPasswordResetStage.Done }))
         .put({ type: 'confirm-password-reset/setStage', payload: ConfirmPasswordResetStage.SubmitNewPassword })
         .dispatch({ type: SagaActionTypes.EnterConfirmPasswordResetPage })
-        .run();
+        .run({ silenceTimeout: true }); // Because this saga uses an infinite loop it will always timeout
 
       expect(confirmPasswordState.stage).toEqual(ConfirmPasswordResetStage.SubmitNewPassword);
     });

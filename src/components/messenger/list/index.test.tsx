@@ -41,7 +41,8 @@ describe('messenger-list', () => {
       isRewardsLoading: false,
       isInviteNotificationOpen: false,
       myUserId: '',
-      showNewRewards: false,
+      showRewardsInTooltip: false,
+      showRewardsInPopup: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -53,6 +54,7 @@ describe('messenger-list', () => {
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
+      rewardsTooltipClosed: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
       ...props,
@@ -389,7 +391,7 @@ describe('messenger-list', () => {
       });
     });
 
-    test('previewDeisplayDate', () => {
+    test('previewDisplayDate', () => {
       const date = moment('2023-03-03').valueOf();
       const state = subject([
         {

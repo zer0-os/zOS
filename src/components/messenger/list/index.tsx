@@ -29,7 +29,7 @@ import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-me
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { fetch as fetchRewards, rewardsPopupClosed } from '../../../store/rewards';
+import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
 import { receiveSearchResults } from '../../../store/users';
 
@@ -62,7 +62,8 @@ export interface Properties extends PublicProperties {
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
-  showNewRewards: boolean;
+  showRewardsTooltip: boolean;
+  showRewardsModal: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -74,6 +75,7 @@ export interface Properties extends PublicProperties {
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
+  rewardsTooltipClosed: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
 }
@@ -115,7 +117,8 @@ export class Container extends React.Component<Properties, State> {
       myUserId: user?.data?.id,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
-      showNewRewards: rewards.showNewRewards,
+      showRewardsTooltip: rewards.showRewardsTooltip,
+      showRewardsModal: rewards.showRewardsModal,
     };
   }
 
@@ -131,6 +134,7 @@ export class Container extends React.Component<Properties, State> {
       fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
+      rewardsTooltipClosed,
       logout,
       receiveSearchResults,
     };
@@ -227,14 +231,16 @@ export class Container extends React.Component<Properties, State> {
             zeroPreviousDay={this.props.zeroPreviousDay}
             isRewardsLoading={this.props.isRewardsLoading}
             isMessengerFullScreen={this.props.isMessengerFullScreen}
+            showRewardsTooltip={this.props.showRewardsTooltip}
+            showRewardsModal={this.props.showRewardsModal}
             isFirstTimeLogin={this.props.isFirstTimeLogin}
             includeRewardsAvatar={this.props.includeRewardsAvatar}
             userName={this.props.userName}
             userHandle={this.props.userHandle}
             userAvatarUrl={this.props.userAvatarUrl}
             onRewardsPopupClose={this.props.rewardsPopupClosed}
+            onRewardsTooltipClose={this.props.rewardsTooltipClosed}
             onLogout={this.props.logout}
-            showNewRewards={this.props.showNewRewards}
             hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
           />
         )}

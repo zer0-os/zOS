@@ -36,26 +36,22 @@ export interface Properties {
 interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
-  isRewardsTooltipOpen: boolean;
 }
 
 export class RewardsBar extends React.Component<Properties, State> {
   state = {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
-    isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
   constructor(props: Properties) {
     super(props);
     this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
-    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
   }
 
   openRewards = () => {
     this.setState({
       isRewardsPopupOpen: true,
-      isRewardsTooltipOpen: false,
     });
   };
 
@@ -66,10 +62,7 @@ export class RewardsBar extends React.Component<Properties, State> {
 
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => {
-    this.setState({ isRewardsTooltipOpen: false });
-    this.props.onRewardsTooltipClose();
-  };
+  closeRewardsTooltip = () => this.props.onRewardsTooltipClose();
 
   renderRewardsBar() {
     return (
@@ -117,7 +110,7 @@ export class RewardsBar extends React.Component<Properties, State> {
       <div>
         {this.props.showRewardsTooltip && this.props.isMessengerFullScreen ? (
           <TooltipPopup
-            open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
+            open={!this.props.isRewardsLoading}
             align='center'
             side='left'
             content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}

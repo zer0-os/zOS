@@ -15,9 +15,11 @@ describe('rewards-bar', () => {
       userAvatarUrl: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
-      showNewRewards: false,
+      showRewardsInTooltip: false,
+      showRewardsInPopup: false,
       hasLoadedConversation: false,
       onRewardsPopupClose: () => {},
+      onRewardsTooltipClose: () => {},
       onLogout: () => {},
       ...props,
     };
@@ -65,7 +67,7 @@ describe('rewards-bar', () => {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
-      showNewRewards: true,
+      showRewardsInTooltip: true,
       isMessengerFullScreen: false,
     });
     expect(wrapper).not.toHaveElement(TooltipPopup);
@@ -75,31 +77,32 @@ describe('rewards-bar', () => {
     const wrapper = subject({
       zeroPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
-      showNewRewards: true,
+      showRewardsInTooltip: true,
       isMessengerFullScreen: true,
     });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
     expect(wrapper.find(TooltipPopup).prop('content')).toEqual('You’ve earned 9 ZERO today');
-    expect(wrapper.state()['isRewardsTooltipOpen']).toBeTrue();
   });
 
   it('closes rewards tooltip popup if clicked on close icon', async function () {
+    const onRewardsTooltipClose = jest.fn();
     const wrapper = subject({
       zeroPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
-      showNewRewards: true,
+      showRewardsInTooltip: true,
       isMessengerFullScreen: true,
+      onRewardsTooltipClose,
     });
     expect(wrapper.find(TooltipPopup).prop('open')).toBeTrue();
 
     wrapper.find(TooltipPopup).simulate('close');
-    expect(wrapper.find(TooltipPopup).prop('open')).toBeFalse();
+    expect(onRewardsTooltipClose).toHaveBeenCalled();
   });
 
   it('displays rewards icon status when conditions are met', function () {
     const wrapper = subject({
-      showNewRewards: true,
+      showRewardsInPopup: true,
       isMessengerFullScreen: true,
     });
 
@@ -111,7 +114,7 @@ describe('rewards-bar', () => {
 
   it('does not display rewards icon status when rewards pop up is open', function () {
     const wrapper = subject({
-      showNewRewards: true,
+      showRewardsInPopup: true,
       isMessengerFullScreen: true,
     });
 

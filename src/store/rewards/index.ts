@@ -3,6 +3,7 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 export enum SagaActionTypes {
   Fetch = 'rewards/fetch',
   RewardsPopupClosed = 'registration/rewardsPopupClosed',
+  RewardsTooltipClosed = 'registration/rewardsTooltipClosed',
 }
 
 export type RewardsState = {
@@ -10,7 +11,8 @@ export type RewardsState = {
   zero: string;
   zeroInUSD: number;
   zeroPreviousDay: string;
-  showNewRewards: boolean;
+  showRewardsTooltip: boolean;
+  showRewardsModal: boolean;
 };
 
 export const initialState: RewardsState = {
@@ -18,11 +20,13 @@ export const initialState: RewardsState = {
   zero: '0',
   zeroInUSD: 0.0,
   zeroPreviousDay: '0',
-  showNewRewards: false,
+  showRewardsTooltip: false,
+  showRewardsModal: false,
 };
 
 export const fetch = createAction<{}>(SagaActionTypes.Fetch);
 export const rewardsPopupClosed = createAction(SagaActionTypes.RewardsPopupClosed);
+export const rewardsTooltipClosed = createAction(SagaActionTypes.RewardsTooltipClosed);
 
 const slice = createSlice({
   name: 'rewards',
@@ -40,11 +44,15 @@ const slice = createSlice({
     setZeroPreviousDay: (state, action: PayloadAction<RewardsState['zeroPreviousDay']>) => {
       state.zeroPreviousDay = action.payload;
     },
-    setShowNewRewards: (state, action: PayloadAction<RewardsState['showNewRewards']>) => {
-      state.showNewRewards = action.payload;
+    setShowRewardsTooltip: (state, action: PayloadAction<RewardsState['showRewardsTooltip']>) => {
+      state.showRewardsTooltip = action.payload;
+    },
+    setShowRewardsModal: (state, action: PayloadAction<RewardsState['showRewardsModal']>) => {
+      state.showRewardsModal = action.payload;
     },
   },
 });
 
-export const { setLoading, setZero, setZeroPreviousDay, setShowNewRewards, setZeroInUSD } = slice.actions;
+export const { setLoading, setZero, setZeroPreviousDay, setZeroInUSD, setShowRewardsTooltip, setShowRewardsModal } =
+  slice.actions;
 export const { reducer } = slice;

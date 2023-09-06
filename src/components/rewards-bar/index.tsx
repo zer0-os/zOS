@@ -25,10 +25,12 @@ export interface Properties {
 
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
-  showNewRewards: boolean;
+  showRewardsTooltip: boolean;
+  showRewardsModal: boolean;
 
   onLogout: () => void;
   onRewardsPopupClose: () => void;
+  onRewardsTooltipClose: () => void;
 }
 
 interface State {
@@ -64,7 +66,10 @@ export class RewardsBar extends React.Component<Properties, State> {
 
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
+  closeRewardsTooltip = () => {
+    this.setState({ isRewardsTooltipOpen: false });
+    this.props.onRewardsTooltipClose();
+  };
 
   renderRewardsBar() {
     return (
@@ -97,7 +102,7 @@ export class RewardsBar extends React.Component<Properties, State> {
               })}
             >
               <IconCurrencyDollar size={16} />
-              {!this.state.isRewardsPopupOpen && this.props.showNewRewards && this.props.isMessengerFullScreen && (
+              {!this.state.isRewardsPopupOpen && this.props.showRewardsModal && this.props.isMessengerFullScreen && (
                 <Status type='idle' className={c('rewards-icon__status')} />
               )}
             </div>
@@ -110,7 +115,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showNewRewards && this.props.isMessengerFullScreen ? (
+        {this.props.showRewardsTooltip && this.props.isMessengerFullScreen ? (
           <TooltipPopup
             open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
             align='center'

@@ -62,8 +62,8 @@ export interface Properties extends PublicProperties {
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
-  showRewardsTooltip: boolean;
-  showRewardsModal: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -117,8 +117,8 @@ export class Container extends React.Component<Properties, State> {
       myUserId: user?.data?.id,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
-      showRewardsTooltip: rewards.showRewardsTooltip,
-      showRewardsModal: rewards.showRewardsModal,
+      showRewardsInTooltip: rewards.showRewardsInTooltip,
+      showRewardsInPopup: rewards.showRewardsInPopup,
     };
   }
 
@@ -231,8 +231,8 @@ export class Container extends React.Component<Properties, State> {
             zeroPreviousDay={this.props.zeroPreviousDay}
             isRewardsLoading={this.props.isRewardsLoading}
             isMessengerFullScreen={this.props.isMessengerFullScreen}
-            showRewardsTooltip={this.props.showRewardsTooltip}
-            showRewardsModal={this.props.showRewardsModal}
+            showRewardsInTooltip={this.props.showRewardsInTooltip}
+            showRewardsInPopup={this.props.showRewardsInPopup}
             isFirstTimeLogin={this.props.isFirstTimeLogin}
             includeRewardsAvatar={this.props.includeRewardsAvatar}
             userName={this.props.userName}

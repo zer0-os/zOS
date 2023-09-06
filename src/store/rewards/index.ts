@@ -11,8 +11,8 @@ export type RewardsState = {
   zero: string;
   zeroInUSD: number;
   zeroPreviousDay: string;
-  showRewardsTooltip: boolean;
-  showRewardsModal: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 };
 
 export const initialState: RewardsState = {
@@ -20,8 +20,8 @@ export const initialState: RewardsState = {
   zero: '0',
   zeroInUSD: 0.0,
   zeroPreviousDay: '0',
-  showRewardsTooltip: false,
-  showRewardsModal: false,
+  showRewardsInTooltip: false,
+  showRewardsInPopup: false,
 };
 
 export const fetch = createAction<{}>(SagaActionTypes.Fetch);
@@ -44,15 +44,15 @@ const slice = createSlice({
     setZeroPreviousDay: (state, action: PayloadAction<RewardsState['zeroPreviousDay']>) => {
       state.zeroPreviousDay = action.payload;
     },
-    setShowRewardsTooltip: (state, action: PayloadAction<RewardsState['showRewardsTooltip']>) => {
-      state.showRewardsTooltip = action.payload;
+    setShowRewardsInTooltip: (state, action: PayloadAction<RewardsState['showRewardsInTooltip']>) => {
+      state.showRewardsInTooltip = action.payload;
     },
-    setShowRewardsModal: (state, action: PayloadAction<RewardsState['showRewardsModal']>) => {
-      state.showRewardsModal = action.payload;
+    setShowRewardsInPopup: (state, action: PayloadAction<RewardsState['showRewardsInPopup']>) => {
+      state.showRewardsInPopup = action.payload;
     },
   },
 });
 
-export const { setLoading, setZero, setZeroPreviousDay, setZeroInUSD, setShowRewardsTooltip, setShowRewardsModal } =
+export const { setLoading, setZero, setZeroPreviousDay, setZeroInUSD, setShowRewardsInTooltip, setShowRewardsInPopup } =
   slice.actions;
 export const { reducer } = slice;

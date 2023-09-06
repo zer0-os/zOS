@@ -3,12 +3,12 @@ import getDeepProperty from 'lodash.get';
 
 import {
   SagaActionTypes,
-  setShowRewardsTooltip,
+  setShowRewardsInTooltip,
   setLoading,
   setZero,
   setZeroInUSD,
   setZeroPreviousDay,
-  setShowRewardsModal,
+  setShowRewardsInPopup,
 } from '.';
 import { RewardsResp, fetchCurrentZeroPriceInUSD as fetchCurrentZeroPriceInUSDAPI, fetchRewards } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -75,30 +75,30 @@ export function* checkNewRewardsLoaded() {
 
   if (isMessengerFullScreen && !isFirstTimeLogin && zeroPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== zeroPreviousDay) {
-      yield put(setShowRewardsTooltip(true));
+      yield put(setShowRewardsInTooltip(true));
     }
 
     if (localStorage.getItem(totalRewardsKey) !== zeroTotal) {
-      yield put(setShowRewardsModal(true));
+      yield put(setShowRewardsInPopup(true));
     }
   }
 }
 
 export function* rewardsPopupClosed() {
   // set last viewed "total" rewards to the current rewards when the popup is closed
-  const { zero, showRewardsModal } = yield select((state) => state.rewards);
-  if (showRewardsModal) {
+  const { zero, showRewardsInPopup } = yield select((state) => state.rewards);
+  if (showRewardsInPopup) {
     localStorage.setItem(totalRewardsKey, zero);
-    yield put(setShowRewardsModal(false));
+    yield put(setShowRewardsInPopup(false));
   }
 }
 
 export function* rewardsTooltipClosed() {
   // set last viewed "daily" rewards to the current rewards when the popup is closed
-  const { zeroPreviousDay, showRewardsTooltip } = yield select((state) => state.rewards);
-  if (showRewardsTooltip) {
+  const { zeroPreviousDay, showRewardsInTooltip } = yield select((state) => state.rewards);
+  if (showRewardsInTooltip) {
     localStorage.setItem(lastDayRewardsKey, zeroPreviousDay);
-    yield put(setShowRewardsTooltip(false));
+    yield put(setShowRewardsInTooltip(false));
   }
 }
 
@@ -107,8 +107,8 @@ function* clearOnLogout() {
   yield put(setZero('0'));
   yield put(setZeroPreviousDay('0'));
   yield put(setZeroInUSD(0.0));
-  yield put(setShowRewardsTooltip(false));
-  yield put(setShowRewardsModal(false));
+  yield put(setShowRewardsInTooltip(false));
+  yield put(setShowRewardsInPopup(false));
 }
 
 export function* saga() {

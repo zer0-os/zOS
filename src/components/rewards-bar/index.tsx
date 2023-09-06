@@ -25,8 +25,8 @@ export interface Properties {
 
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
-  showRewardsTooltip: boolean;
-  showRewardsModal: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 
   onLogout: () => void;
   onRewardsPopupClose: () => void;
@@ -95,7 +95,7 @@ export class RewardsBar extends React.Component<Properties, State> {
               })}
             >
               <IconCurrencyDollar size={16} />
-              {!this.state.isRewardsPopupOpen && this.props.showRewardsModal && this.props.isMessengerFullScreen && (
+              {!this.state.isRewardsPopupOpen && this.props.showRewardsInPopup && this.props.isMessengerFullScreen && (
                 <Status type='idle' className={c('rewards-icon__status')} />
               )}
             </div>
@@ -108,7 +108,7 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showRewardsTooltip && this.props.isMessengerFullScreen ? (
+        {this.props.showRewardsInTooltip && this.props.isMessengerFullScreen ? (
           <TooltipPopup
             open={!this.props.isRewardsLoading}
             align='center'

@@ -15,7 +15,8 @@
   }
 }
 
-.message__header {
+.message__header,
+.chat-view__scroll-skeleton {
   // This node can move when new content comes in so don't use it to pin the scroll position.
   overflow-anchor: none;
 }

@@ -239,12 +239,6 @@ export class ChatView extends React.Component<Properties, State> {
     }
   }
 
-  preventHigherScroll = () => {
-    if (this.scrollContainerRef.current) {
-      this.scrollContainerRef.current.scroll(0, 1);
-    }
-  };
-
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
     const { hasJoined: isMemberOfChannel } = this.props;
@@ -264,7 +258,6 @@ export class ChatView extends React.Component<Properties, State> {
           />
         )}
         <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
-          <Waypoint onEnter={this.preventHigherScroll} />
           <div className='channel-view__main'>
             {!this.props.isDirectMessage && (
               <div className='channel-view__name'>

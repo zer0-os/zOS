@@ -34,9 +34,18 @@ function isRelated(message1, message2) {
 
 export function getMessageRenderProps(index: number, groupLength: number, isOneOnOne: boolean, isOwner: boolean) {
   const lastIndex = groupLength - 1;
+  let position = '';
+  if (groupLength <= 1) {
+    position = 'only';
+  } else if (index === 0) {
+    position = 'first';
+  } else if (index === lastIndex) {
+    position = 'last';
+  }
 
   return {
     showAuthorName: index === 0 && !isOwner && !isOneOnOne,
     showTimestamp: index === lastIndex,
+    position,
   };
 }

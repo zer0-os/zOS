@@ -127,6 +127,44 @@ describe(getMessageRenderProps, () => {
     });
   });
 
+  describe('position', () => {
+    it('is "only" if there is only one message', () => {
+      const index = 0;
+      const groupLength = 1;
+
+      const props = getProps({ index, groupLength });
+
+      expect(props.position).toEqual('only');
+    });
+
+    it('is "first" if it is the first in the group', () => {
+      const index = 0;
+      const groupLength = 2;
+
+      const props = getProps({ index, groupLength });
+
+      expect(props.position).toEqual('first');
+    });
+
+    it('is "last" if it is the last in the group', () => {
+      const index = 3;
+      const groupLength = 4;
+
+      const props = getProps({ index, groupLength });
+
+      expect(props.position).toEqual('last');
+    });
+
+    it('is empty if it is in the middle', () => {
+      const index = 2;
+      const groupLength = 4;
+
+      const props = getProps({ index, groupLength });
+
+      expect(props.position).toEqual('');
+    });
+  });
+
   function getProps({
     index,
     groupLength,

@@ -13,6 +13,44 @@
     font-weight: 400;
     line-height: normal;
   }
+
+  &__group-message {
+    --border-radius: 2px 8px 8px 2px;
+  }
+
+  &__group-message--first {
+    --border-radius: 8px 8px 8px 2px;
+  }
+
+  &__group-message--last {
+    margin-bottom: 16px;
+    --border-radius: 2px 8px 8px 0px;
+  }
+
+  &__group-message--only {
+    margin-bottom: 16px;
+    --border-radius: 8px 8px 8px 0px;
+  }
+}
+
+.messages__message-row--owner {
+  .chat-view {
+    &__group-message {
+      --border-owner-radius: 8px 2px 2px 8px;
+    }
+
+    &__group-message--first {
+      --border-owner-radius: 8px 8px 2px 8px;
+    }
+
+    &__group-message--last {
+      --border-owner-radius: 8px 2px 0px 8px;
+    }
+
+    &__group-message--only {
+      --border-owner-radius: 8px 8px 2px 8px;
+    }
+  }
 }
 
 .message__header,

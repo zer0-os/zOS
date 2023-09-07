@@ -158,27 +158,29 @@ export class ChatView extends React.Component<Properties, State> {
               'messages__message-row--owner': this.isUserOwnerOfMessage(message),
             })}
           >
-            <Message
-              className={classNames('messages__message', {
-                'messages__message--last-in-group': this.props.showSenderAvatar && index === groupMessages.length - 1,
-              })}
-              onImageClick={this.openLightbox}
-              messageId={message.id}
-              updatedAt={message.updatedAt}
-              isOwner={this.isUserOwnerOfMessage(message)}
-              onDelete={this.props.deleteMessage}
-              onEdit={this.props.editMessage}
-              onReply={this.props.onReply}
-              parentMessageText={message.parentMessageText}
-              parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
-              parentSenderFirstName={message.parentMessage?.sender?.firstName}
-              parentSenderLastName={message.parentMessage?.sender?.lastName}
-              getUsersForMentions={this.searchMentionableUsers}
-              showSenderAvatar={this.props.showSenderAvatar}
-              showTimestamp={messageRenderProps.showTimestamp}
-              showAuthorName={messageRenderProps.showAuthorName}
-              {...message}
-            />
+            <div {...cn('group-message', messageRenderProps.position)}>
+              <Message
+                className={classNames('messages__message', {
+                  'messages__message--last-in-group': this.props.showSenderAvatar && index === groupMessages.length - 1,
+                })}
+                onImageClick={this.openLightbox}
+                messageId={message.id}
+                updatedAt={message.updatedAt}
+                isOwner={this.isUserOwnerOfMessage(message)}
+                onDelete={this.props.deleteMessage}
+                onEdit={this.props.editMessage}
+                onReply={this.props.onReply}
+                parentMessageText={message.parentMessageText}
+                parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
+                parentSenderFirstName={message.parentMessage?.sender?.firstName}
+                parentSenderLastName={message.parentMessage?.sender?.lastName}
+                getUsersForMentions={this.searchMentionableUsers}
+                showSenderAvatar={this.props.showSenderAvatar}
+                showTimestamp={messageRenderProps.showTimestamp}
+                showAuthorName={messageRenderProps.showAuthorName}
+                {...message}
+              />
+            </div>
           </div>
         );
       }
@@ -193,19 +195,7 @@ export class ChatView extends React.Component<Properties, State> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {groups.map((group) => {
-          // Good enough approximation of a unique key to allow consistent enough
-          // rendering of the message groups to not mess up the scroll position.
-          // An alternative would be to not render the group wrapper at all and
-          // style the groups messages via separate classes/attributes.
-          const lastMessage = group.at(-1);
-          const groupKey = `group_${lastMessage.optimisticId || lastMessage.id}`;
-          return (
-            <div key={groupKey} className='message__group'>
-              {this.renderMessageGroup(group)}
-            </div>
-          );
-        })}
+        {groups.map((group) => this.renderMessageGroup(group)).flat()}
       </div>
     );
   }

@@ -270,7 +270,11 @@ export class ChatView extends React.Component<Properties, State> {
                 <span>This is the start of the channel.</span>
               </div>
             )}
-            {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
+            {this.props.messages.length > 0 && (
+              <div {...cn('infinite-scroll-waypoint')}>
+                <Waypoint onEnter={this.props.onFetchMore} />
+              </div>
+            )}
             {this.props.messages.length > 0 && this.renderMessages()}
             {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
               <ChatSkeleton conversationId={this.props.id} />

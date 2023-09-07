@@ -20,6 +20,12 @@
   overflow-anchor: none;
 }
 
+.chat-view__infinite-scroll-waypoint {
+  overflow-anchor: none;
+  position: relative;
+  top: 700px;
+}
+
 .chat-skeleton {
   animation: fadein 1s ease-in forwards;
   width: 100%;

@@ -193,8 +193,13 @@ export class ChatView extends React.Component<Properties, State> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {groups.map((group, index) => {
-          const groupKey = `group_${groups.length - index}`;
+        {groups.map((group) => {
+          // Good enough approximation of a unique key to allow consistent enough
+          // rendering of the message groups to not mess up the scroll position.
+          // An alternative would be to not render the group wrapper at all and
+          // style the groups messages via separate classes/attributes.
+          const lastMessage = group.at(-1);
+          const groupKey = `group_${lastMessage.optimisticId || lastMessage.id}`;
           return (
             <div key={groupKey} className='message__group'>
               {this.renderMessageGroup(group)}
@@ -265,7 +270,6 @@ export class ChatView extends React.Component<Properties, State> {
                 <span>This is the start of the channel.</span>
               </div>
             )}
-
             {this.props.messages.length > 0 && <Waypoint onEnter={this.props.onFetchMore} />}
             {this.props.messages.length > 0 && this.renderMessages()}
             {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (

@@ -191,12 +191,12 @@ export class ChatView extends React.Component<Properties, State> {
     const groups = createMessageGroups(messagesByDay[day]);
 
     return (
-      <div className='messages' key={day}>
+      <Fragment key={day}>
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
         {groups.map((group) => this.renderMessageGroup(group)).flat()}
-      </div>
+      </Fragment>
     );
   }
 

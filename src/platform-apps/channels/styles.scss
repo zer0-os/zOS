@@ -240,38 +240,28 @@ $scrollbar-width: 5px;
 .messages__container {
   animation: fadein 200ms ease-out forwards;
 
-  .messages {
+  .message__header {
+    display: flex;
+    align-items: center;
     position: relative;
-    overflow: inherit;
-    transition: opacity 0.9s ease-out;
-    opacity: 1;
-    clear: both;
+    margin: 8px 16px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
 
-    .message__header {
-      display: flex;
-      align-items: center;
-      position: relative;
-      margin: 8px 16px;
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 15px;
-      clear: both;
-
-      &-date {
-        color: theme.$color-greyscale-transparency-11;
-        width: 100%;
-        text-align: center;
-      }
+    &-date {
+      color: theme.$color-greyscale-transparency-11;
+      width: 100%;
+      text-align: center;
     }
+  }
 
-    &__message-row {
-      display: flex;
-      clear: both;
-      margin: 4px 16px;
+  .messages__message-row {
+    display: flex;
+    margin: 4px 16px;
 
-      &--owner {
-        justify-content: flex-end;
-      }
+    &--owner {
+      justify-content: flex-end;
     }
   }
 }
@@ -285,7 +275,7 @@ $scrollbar-width: 5px;
   }
 }
 
-.messages__container .messages .messages__message-row:hover {
+.messages__container .messages__message-row:hover {
   .message__menu {
     transform: translateX(0);
     transition: transform 0.1s ease-in-out, opacity 0s ease-in-out;

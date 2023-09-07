@@ -265,7 +265,7 @@ export class ChatView extends React.Component<Properties, State> {
                 <ChatSkeleton conversationId={this.props.id} short />
               </div>
             )}
-            {this.props.messages.length > 0 && (
+            {this.props.messages.length > 0 && this.props.messagesFetchStatus === MessagesFetchState.SUCCESS && (
               <div {...cn('infinite-scroll-waypoint')}>
                 <Waypoint onEnter={this.props.onFetchMore} />
               </div>

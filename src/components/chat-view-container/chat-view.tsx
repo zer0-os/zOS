@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { Fragment, RefObject } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -87,8 +87,8 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[], media: Media[]) => {
-    this.props.sendMessage(message, mentionedUserIds, media);
     this.scrollToBottom();
+    this.props.sendMessage(message, mentionedUserIds, media);
   };
 
   getMessagesByDay() {
@@ -143,7 +143,7 @@ export class ChatView extends React.Component<Properties, State> {
   renderMessageGroup(groupMessages) {
     return groupMessages.map((message, index) => {
       if (message.isAdmin) {
-        return <AdminMessageContainer key={message.id} message={message} />;
+        return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
         const messageRenderProps = getMessageRenderProps(
           index,
@@ -193,9 +193,15 @@ export class ChatView extends React.Component<Properties, State> {
         <div className='message__header'>
           <div className='message__header-date'>{this.formatDayHeader(day)}</div>
         </div>
-        {groups.map((group, index) => {
+        {groups.map((group) => {
+          // Good enough approximation of a unique key to allow consistent enough
+          // rendering of the message groups to not mess up the scroll position.
+          // An alternative would be to not render the group wrapper at all and
+          // style the groups messages via separate classes/attributes.
+          const lastMessage = group.at(-1);
+          const groupKey = `group_${lastMessage.optimisticId || lastMessage.id}`;
           return (
-            <div key={index} className='message__group'>
+            <div key={groupKey} className='message__group'>
               {this.renderMessageGroup(group)}
             </div>
           );

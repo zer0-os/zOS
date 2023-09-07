@@ -44,4 +44,10 @@ describe(ChatSkeleton, () => {
     wrapper.setProps({ conversationId: 'should restart' });
     expect(wrapper).toHaveElement('ChatSkeleton1');
   });
+
+  it('renders a shortened skeleton', () => {
+    const wrapper = subject({ conversationId: 'aaa', short: true });
+
+    expect(wrapper.childAt(0).prop('short')).toBe(true);
+  });
 });

@@ -15,14 +15,6 @@
   }
 }
 
-.chat-view__way {
-  height: 10px;
-  background-color: blue;
-  position: relative;
-  top: 505px;
-  overflow-anchor: none;
-}
-
 .message__header {
   // This node can move when new content comes in so don't use it to pin the scroll position.
   overflow-anchor: none;

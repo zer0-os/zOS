@@ -25,35 +25,33 @@ export interface Properties {
 
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
-  showNewRewards: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 
   onLogout: () => void;
   onRewardsPopupClose: () => void;
+  onRewardsTooltipClose: () => void;
 }
 
 interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
-  isRewardsTooltipOpen: boolean;
 }
 
 export class RewardsBar extends React.Component<Properties, State> {
   state = {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
-    isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
   constructor(props: Properties) {
     super(props);
     this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
-    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
   }
 
   openRewards = () => {
     this.setState({
       isRewardsPopupOpen: true,
-      isRewardsTooltipOpen: false,
     });
   };
 
@@ -64,7 +62,7 @@ export class RewardsBar extends React.Component<Properties, State> {
 
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
+  closeRewardsTooltip = () => this.props.onRewardsTooltipClose();
 
   renderRewardsBar() {
     return (
@@ -97,7 +95,7 @@ export class RewardsBar extends React.Component<Properties, State> {
               })}
             >
               <IconCurrencyDollar size={16} />
-              {!this.state.isRewardsPopupOpen && this.props.showNewRewards && this.props.isMessengerFullScreen && (
+              {!this.state.isRewardsPopupOpen && this.props.showRewardsInPopup && this.props.isMessengerFullScreen && (
                 <Status type='idle' className={c('rewards-icon__status')} />
               )}
             </div>
@@ -110,9 +108,9 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showNewRewards && this.props.isMessengerFullScreen ? (
+        {this.props.showRewardsInTooltip && this.props.isMessengerFullScreen ? (
           <TooltipPopup
-            open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
+            open={!this.props.isRewardsLoading}
             align='center'
             side='left'
             content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}

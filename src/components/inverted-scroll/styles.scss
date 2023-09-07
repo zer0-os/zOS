@@ -6,6 +6,11 @@
 .inverted-scroll {
   &__content {
     overflow-anchor: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+    overflow: hidden;
   }
 
   &__content.inverted-scroll__content--pinned-bottom {

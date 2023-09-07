@@ -2,3 +2,20 @@
   overflow-y: scroll;
   overflow-x: hidden;
 }
+
+.inverted-scroll {
+  &__content {
+    overflow-anchor: auto;
+  }
+
+  &__content.inverted-scroll__content--pinned-bottom {
+    overflow-anchor: none;
+  }
+
+  &__bottom-anchor {
+    overflow-anchor: auto;
+    height: 10px;
+    margin: 0px 10px;
+    background-color: yellow;
+  }
+}

@@ -69,12 +69,11 @@ export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
   isLightboxOpen: boolean;
-  pinnedBottom: boolean;
 }
 
 export class ChatView extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<InvertedScroll>;
-  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false, pinnedBottom: false };
+  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
 
   constructor(props) {
     super(props);
@@ -82,7 +81,6 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   scrollToBottom = () => {
-    this.pinBottom();
     if (this.scrollContainerRef.current) {
       this.scrollContainerRef.current.scrollToBottom();
     }
@@ -246,8 +244,6 @@ export class ChatView extends React.Component<Properties, State> {
       this.scrollContainerRef.current.scroll(0, 1);
     }
   };
-  pinBottom = () => this.setState({ pinnedBottom: true });
-  unpinBottom = () => this.setState({ pinnedBottom: false });
 
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
@@ -269,11 +265,7 @@ export class ChatView extends React.Component<Properties, State> {
         )}
         <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
           <Waypoint onEnter={this.preventHigherScroll} />
-          <div
-            className={classNames('channel-view__main', {
-              'messages__container--pinned-bottom': this.state.pinnedBottom,
-            })}
-          >
+          <div className='channel-view__main'>
             {!this.props.isDirectMessage && (
               <div className='channel-view__name'>
                 <h1>Welcome to #{this.props.name}</h1>
@@ -290,9 +282,6 @@ export class ChatView extends React.Component<Properties, State> {
             {!this.props.hasLoadedMessages && this.props.messagesFetchStatus !== MessagesFetchState.FAILED && (
               <ChatSkeleton conversationId={this.props.id} />
             )}
-          </div>
-          <div {...cn('bottom-anchor')}>
-            <Waypoint onEnter={this.pinBottom} onLeave={this.unpinBottom} />
           </div>
         </InvertedScroll>
 

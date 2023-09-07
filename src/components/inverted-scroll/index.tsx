@@ -1,16 +1,26 @@
 import React from 'react';
 import classNames from 'classnames';
 import './styles.scss';
+import { bemClassName } from '../../lib/bem';
+import { Waypoint } from 'react-waypoint';
+
+const cn = bemClassName('inverted-scroll');
 
 export interface Properties {
   className?: string;
 }
 
-export class InvertedScroll extends React.Component<Properties, undefined> {
+interface State {
+  pinnedBottom: boolean;
+}
+
+export class InvertedScroll extends React.Component<Properties, State> {
+  state = { pinnedBottom: false };
   scrollWrapper: HTMLElement;
 
   scrollToBottom() {
     console.log('manual scroll');
+    this.pinBottom();
     this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
   }
 
@@ -29,6 +39,9 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
     this.scrollToBottom();
   };
 
+  pinBottom = () => this.setState({ pinnedBottom: true });
+  unpinBottom = () => this.setState({ pinnedBottom: false });
+
   render() {
     return (
       <div
@@ -36,7 +49,10 @@ export class InvertedScroll extends React.Component<Properties, undefined> {
         className={classNames('scroll-container', this.props.className)}
         ref={this.setScrollWrapper}
       >
-        {this.props.children}
+        <div {...cn('content', this.state.pinnedBottom && 'pinned-bottom')}>{this.props.children}</div>
+        <div {...cn('bottom-anchor')}>
+          <Waypoint onEnter={this.pinBottom} onLeave={this.unpinBottom} />
+        </div>
       </div>
     );
   }

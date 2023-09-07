@@ -23,37 +23,15 @@
   overflow-anchor: none;
 }
 
-.channel-view__inverted-scroll {
-  overflow-anchor: auto;
-
-  * {
-    overflow-anchor: none;
-  }
-
-  .channel-view__main.messages__container--pinned-bottom {
-    overflow-anchor: none;
-  }
-
-  .channel-view__main,
-  .messages__container,
-  .messages,
-  .message__group,
-  .messages__message-row,
-  .messages__message {
-    overflow-anchor: auto;
-  }
-
-  .chat-view__bottom-anchor {
-    overflow-anchor: auto;
-    height: 10px;
-    margin: 0px 10px;
-    background-color: yellow;
-  }
+.message__header {
+  // This node can move when new content comes in so don't use it to pin the scroll position.
+  overflow-anchor: none;
 }
 
 .chat-skeleton {
   animation: fadein 1s ease-in forwards;
   width: 100%;
+  overflow: hidden;
 
   &__date {
     clear: both;

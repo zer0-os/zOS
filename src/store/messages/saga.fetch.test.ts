@@ -15,17 +15,29 @@ const chatClient = {
 };
 
 describe(fetch, () => {
-  it('fetches messages', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+  it('adds messages to channel', async () => {
+    const channel = { id: 'channel-id', messages: ['old-message-id'] };
+    const messageResponse = {
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
 
-    await expectSaga(fetch, { payload: { channelId } })
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
         [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.getMessagesByChannelId), {}],
+        [call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse],
       ])
-      .withReducer(rootReducer, initialChannelState({ id: channelId }))
-      .call([chatClient, chatClient.getMessagesByChannelId], channelId)
+      .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
+
+    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
+      { id: 'the-first-message-id', message: 'the first message' },
+      { id: 'the-second-message-id', message: 'the second message' },
+      { id: 'the-third-message-id', message: 'the third message' },
+    ]);
   });
 
   it('sets hasMore on channel', async () => {
@@ -82,31 +94,6 @@ describe(fetch, () => {
       .run();
 
     expect(denormalize(channel.id, storeState).hasLoadedMessages).toBe(true);
-  });
-
-  it('adds messages to channel', async () => {
-    const channel = { id: 'channel-id', messages: ['old-message-id'] };
-    const messageResponse = {
-      messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
-      ],
-    };
-
-    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
-      .provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse],
-      ])
-      .withReducer(rootReducer, initialChannelState(channel) as any)
-      .run();
-
-    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
-      { id: 'the-first-message-id', message: 'the first message' },
-      { id: 'the-second-message-id', message: 'the second message' },
-      { id: 'the-third-message-id', message: 'the third message' },
-    ]);
   });
 
   it('prepends message ids to channels state when referenceTimestamp included', async () => {

@@ -7,6 +7,8 @@ import { ConversationStatus, denormalize } from '../channels';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { multicastChannel } from 'redux-saga';
 import { chat } from '../../lib/chat';
+import { stubResponse } from '../../test/saga';
+import { StoreBuilder } from '../test/store';
 
 const chatClient = {
   getMessagesByChannelId: () => ({}),
@@ -178,27 +180,7 @@ describe(fetch, () => {
   });
 
   function initialChannelState(channel) {
-    const messages = {};
-    (channel.messages || []).forEach((m) => (messages[m.id] = m));
-
-    return {
-      normalized: {
-        channels: {
-          [channel.id]: {
-            conversationStatus: ConversationStatus.CREATED,
-            ...channel,
-          },
-        },
-        messages,
-      },
-    } as any;
+    channel.conversationStatus = channel.conversationStatus ?? ConversationStatus.CREATED;
+    return new StoreBuilder().withChannelList(channel).build();
   }
 });
-
-// Duplicated in other tests. Not quite sure where to put a test library file
-function stubResponse(matcher, response) {
-  return [
-    matcher,
-    response,
-  ] as any;
-}

@@ -17,6 +17,7 @@
   &__content {
     padding-left: 8px;
     flex-grow: 1;
+    width: 1px; // Force an initial width to allow flex-grow to work properly
     overflow: hidden;
     white-space: nowrap;
   }

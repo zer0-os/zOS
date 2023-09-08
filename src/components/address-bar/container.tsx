@@ -55,10 +55,7 @@ export class Container extends React.Component<Properties> {
   }
 
   getNextRoute() {
-    let [
-      nextRoute,
-      ...segments
-    ] = this.props.deepestVisitedRoute.split('.');
+    let [nextRoute, ...segments] = this.props.deepestVisitedRoute.split('.');
 
     for (const segment of segments) {
       const workingRoute = `${nextRoute}.${segment}`;

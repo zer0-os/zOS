@@ -14,6 +14,7 @@ import {
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
+import uniqBy from 'lodash.uniqby';
 
 import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
@@ -101,31 +102,16 @@ export function* fetch(action) {
 
     if (referenceTimestamp) {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
+      messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
       const existingMessages = yield select(rawMessagesSelector(channelId));
-      messagesResponse = yield call(
-        [
-          chatClient,
-          chatClient.getMessagesByChannelId,
-        ],
-        channelId,
-        referenceTimestamp
-      );
-
-      messages = [
-        ...messagesResponse.messages,
-        ...existingMessages,
-      ];
+      messages = [...messagesResponse.messages, ...existingMessages];
     } else {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
-      messagesResponse = yield call(
-        [
-          chatClient,
-          chatClient.getMessagesByChannelId,
-        ],
-        channelId
-      );
-      messages = messagesResponse.messages;
+      messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
+      const existingMessages = yield select(rawMessagesSelector(channelId));
+      messages = [...existingMessages, ...messagesResponse.messages];
     }
+    messages = uniqBy(messages, (m) => m.id ?? m);
 
     yield put(
       receive({

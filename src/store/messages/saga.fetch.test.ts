@@ -22,13 +22,16 @@ describe(fetch, () => {
     ]);
   }
 
-  it('adds messages to channel', async () => {
-    const channel = { id: 'channel-id', messages: ['old-message-id'] };
+  it('adds newly fetched messages to channel', async () => {
+    const existingMessages = [
+      { id: 'second-page', message: 'old' },
+      { id: 'first-page', message: 'fresh' },
+    ];
+    const channel = { id: 'channel-id', messages: existingMessages };
     const messageResponse = {
       messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
+        { id: 'first-page', message: 'fresh' },
+        { id: 'brand-new', message: 'new' },
       ],
     };
 
@@ -38,15 +41,15 @@ describe(fetch, () => {
       .run();
 
     expect(denormalize(channel.id, storeState).messages).toStrictEqual([
-      { id: 'the-first-message-id', message: 'the first message' },
-      { id: 'the-second-message-id', message: 'the second message' },
-      { id: 'the-third-message-id', message: 'the third message' },
+      { id: 'second-page', message: 'old' },
+      { id: 'first-page', message: 'fresh' },
+      { id: 'brand-new', message: 'new' },
     ]);
   });
 
   it('sets hasMore on channel', async () => {
-    const channel = { id: 'channel-id', hasMore: true };
-    const messageResponse = { hasMore: false };
+    const channel = { id: 'channel-id', hasMore: true, messages: [] };
+    const messageResponse = { hasMore: false, messages: [] };
 
     const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
       .provide([[matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse]])

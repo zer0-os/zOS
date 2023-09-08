@@ -23,6 +23,7 @@ export enum GroupChannelType {
 export enum MessagesFetchState {
   SUCCESS,
   IN_PROGRESS,
+  MORE_IN_PROGRESS,
   FAILED,
 }
 

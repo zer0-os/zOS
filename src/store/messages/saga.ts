@@ -96,12 +96,11 @@ export function* fetch(action) {
   let messagesResponse: any;
   let messages: any[];
 
-  yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
-
   try {
     const chatClient = yield call(chat.get);
 
     if (referenceTimestamp) {
+      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
       const existingMessages = yield select(rawMessagesSelector(channelId));
       messagesResponse = yield call(
         [
@@ -117,6 +116,7 @@ export function* fetch(action) {
         ...existingMessages,
       ];
     } else {
+      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
       messagesResponse = yield call(
         [
           chatClient,

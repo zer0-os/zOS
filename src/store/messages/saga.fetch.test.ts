@@ -24,13 +24,7 @@ describe(fetch, () => {
         [matchers.call.fn(chatClient.getMessagesByChannelId), {}],
       ])
       .withReducer(rootReducer, initialChannelState({ id: channelId }))
-      .call(
-        [
-          chatClient,
-          chatClient.getMessagesByChannelId,
-        ],
-        channelId
-      )
+      .call([chatClient, chatClient.getMessagesByChannelId], channelId)
       .run();
   });
 
@@ -123,18 +117,11 @@ describe(fetch, () => {
       ],
     };
 
-    const channel = {
-      id: 'channel-id',
-      messages: [
-        { id: 'the-first-message-id' },
-      ],
-    };
+    const channel = { id: 'channel-id', messages: [{ id: 'the-first-message-id' }] };
     const initialState = initialChannelState(channel);
 
     const referenceTimestamp = 1658776625730;
-    const { storeState } = await expectSaga(fetch, {
-      payload: { channelId: channel.id, referenceTimestamp },
-    })
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id, referenceTimestamp } })
       .withReducer(rootReducer, initialState as any)
       .provide([
         [matchers.call.fn(chat.get), chatClient],

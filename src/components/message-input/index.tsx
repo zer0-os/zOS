@@ -75,6 +75,10 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   componentDidMount() {
+    if (this.props.isEditing) {
+      this.focusInput();
+    }
+
     if (this.props.onMessageInputRendered) {
       this.props.onMessageInputRendered(this.textareaRef);
     }
@@ -127,7 +131,14 @@ export class MessageInput extends React.Component<Properties, State> {
 
   focusInput() {
     if (this.textareaRef && this.textareaRef.current) {
-      this.textareaRef.current.focus();
+      const input = this.textareaRef.current;
+
+      // Set focus on the input
+      input.focus();
+
+      // Move the cursor to the end of the text
+      const textLength = input.value.length;
+      input.setSelectionRange(textLength, textLength);
     }
   }
 

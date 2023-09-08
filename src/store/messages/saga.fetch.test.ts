@@ -7,50 +7,37 @@ import { ConversationStatus, denormalize } from '../channels';
 import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { multicastChannel } from 'redux-saga';
 import { chat } from '../../lib/chat';
+import { StoreBuilder } from '../test/store';
+import { call } from 'redux-saga/effects';
 
 const chatClient = {
-  getMessagesByChannelId: () => ({}),
+  getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),
 };
 
 describe(fetch, () => {
-  it('fetches messages', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
+  it('adds messages to channel', async () => {
+    const channel = { id: 'channel-id', messages: ['old-message-id'] };
+    const messageResponse = {
+      messages: [
+        { id: 'the-first-message-id', message: 'the first message' },
+        { id: 'the-second-message-id', message: 'the second message' },
+        { id: 'the-third-message-id', message: 'the third message' },
+      ],
+    };
 
-    await expectSaga(fetch, { payload: { channelId } })
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), {}),
+        [matchers.call.fn(chat.get), chatClient],
+        [call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse],
       ])
-      .withReducer(rootReducer, initialChannelState({ id: channelId }))
-      .call(
-        [
-          chatClient,
-          chatClient.getMessagesByChannelId,
-        ],
-        channelId
-      )
+      .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
-  });
 
-  it('fetches messages for referenceTimestamp', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-    const referenceTimestamp = 1658776625730;
-
-    await expectSaga(fetch, { payload: { channelId, referenceTimestamp } })
-      .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), { messages: [] }),
-      ])
-      .withReducer(rootReducer, initialChannelState({ id: channelId }))
-      .call(
-        [
-          chatClient,
-          chatClient.getMessagesByChannelId,
-        ],
-        channelId,
-        1658776625730
-      )
-      .run();
+    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
+      { id: 'the-first-message-id', message: 'the first message' },
+      { id: 'the-second-message-id', message: 'the second message' },
+      { id: 'the-third-message-id', message: 'the third message' },
+    ]);
   });
 
   it('sets hasMore on channel', async () => {
@@ -59,8 +46,8 @@ describe(fetch, () => {
 
     const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse],
       ])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
@@ -75,9 +62,9 @@ describe(fetch, () => {
     // channel
     await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), { messages: [] }),
-        stubResponse(matchers.call.fn(conversationsChannel), conversationsChannelStub),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getMessagesByChannelId), { messages: [] }],
+        [matchers.call.fn(conversationsChannel), conversationsChannelStub],
       ])
       .withReducer(rootReducer, initialChannelState({ ...channel, isChannel: true }))
       .put(conversationsChannelStub, { type: ChannelEvents.MessagesLoadedForChannel, channelId: channel.id })
@@ -86,9 +73,9 @@ describe(fetch, () => {
     // conversation
     await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), { messages: [] }),
-        stubResponse(matchers.call.fn(conversationsChannel), conversationsChannelStub),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getMessagesByChannelId), { messages: [] }],
+        [matchers.call.fn(conversationsChannel), conversationsChannelStub],
       ])
       .withReducer(rootReducer, initialChannelState({ ...channel, isChannel: false }))
       .put(conversationsChannelStub, { type: ChannelEvents.MessagesLoadedForConversation, channelId: channel.id })
@@ -100,38 +87,13 @@ describe(fetch, () => {
 
     const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), {}),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getMessagesByChannelId), {}],
       ])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
 
     expect(denormalize(channel.id, storeState).hasLoadedMessages).toBe(true);
-  });
-
-  it('adds messages to channel', async () => {
-    const channel = { id: 'channel-id', messages: ['old-message-id'] };
-    const messageResponse = {
-      messages: [
-        { id: 'the-first-message-id', message: 'the first message' },
-        { id: 'the-second-message-id', message: 'the second message' },
-        { id: 'the-third-message-id', message: 'the third message' },
-      ],
-    };
-
-    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id } })
-      .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse),
-      ])
-      .withReducer(rootReducer, initialChannelState(channel) as any)
-      .run();
-
-    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
-      { id: 'the-first-message-id', message: 'the first message' },
-      { id: 'the-second-message-id', message: 'the second message' },
-      { id: 'the-third-message-id', message: 'the third message' },
-    ]);
   });
 
   it('prepends message ids to channels state when referenceTimestamp included', async () => {
@@ -145,13 +107,12 @@ describe(fetch, () => {
     const channel = { id: 'channel-id', messages: [{ id: 'the-first-message-id' }] };
     const initialState = initialChannelState(channel);
 
-    const { storeState } = await expectSaga(fetch, {
-      payload: { channelId: channel.id, referenceTimestamp: 1658776625730 },
-    })
+    const referenceTimestamp = 1658776625730;
+    const { storeState } = await expectSaga(fetch, { payload: { channelId: channel.id, referenceTimestamp } })
       .withReducer(rootReducer, initialState as any)
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse),
+        [matchers.call.fn(chat.get), chatClient],
+        [call([chatClient, chatClient.getMessagesByChannelId], channel.id, referenceTimestamp), messageResponse],
       ])
       .run();
 
@@ -170,35 +131,15 @@ describe(fetch, () => {
     await expectSaga(fetch, { payload: { channelId } })
       .withReducer(rootReducer, initialState)
       .provide([
-        stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.getMessagesByChannelId), {}),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getMessagesByChannelId), {}],
       ])
       .not.call.fn(chatClient.getMessagesByChannelId)
       .run();
   });
 
   function initialChannelState(channel) {
-    const messages = {};
-    (channel.messages || []).forEach((m) => (messages[m.id] = m));
-
-    return {
-      normalized: {
-        channels: {
-          [channel.id]: {
-            conversationStatus: ConversationStatus.CREATED,
-            ...channel,
-          },
-        },
-        messages,
-      },
-    } as any;
+    channel.conversationStatus = channel.conversationStatus ?? ConversationStatus.CREATED;
+    return new StoreBuilder().withChannelList(channel).build();
   }
 });
-
-// Duplicated in other tests. Not quite sure where to put a test library file
-function stubResponse(matcher, response) {
-  return [
-    matcher,
-    response,
-  ] as any;
-}

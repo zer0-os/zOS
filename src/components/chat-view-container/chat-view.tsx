@@ -260,7 +260,7 @@ export class ChatView extends React.Component<Properties, State> {
                 <span>This is the start of the channel.</span>
               </div>
             )}
-            {this.props.hasLoadedMessages && this.props.messagesFetchStatus === MessagesFetchState.IN_PROGRESS && (
+            {this.props.hasLoadedMessages && this.props.messagesFetchStatus === MessagesFetchState.MORE_IN_PROGRESS && (
               <div {...cn('scroll-skeleton')}>
                 <ChatSkeleton conversationId={this.props.id} short />
               </div>

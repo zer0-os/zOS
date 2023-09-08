@@ -6,15 +6,14 @@
 
   &__user-mention {
     display: inline-block;
-    padding: 4px 8px;
+    padding: 2px 4px;
 
     font-size: 12px;
     line-height: 14px;
 
-    border-radius: 8px;
-    border: 1px solid theme.$color-primary-5;
-    background-color: theme.$color-primary-3;
-    color: theme.$color-text-primary-9;
+    border-radius: 4px;
+    background-color: theme.$color-primary-7;
+    color: theme.$color-greyscale-12;
 
     &[data-variant='negative'] {
       padding: 0;

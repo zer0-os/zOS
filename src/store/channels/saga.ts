@@ -5,7 +5,6 @@ import { SagaActionTypes, receive, schema, removeAll } from '.';
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
 import { activeChannelIdSelector } from '../chat/selectors';
@@ -45,7 +44,9 @@ export function* markAllMessagesAsRead(channelId, userId) {
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
-export function* markChannelAsReadIfActive(channelId) {
+export function* markChannelAsReadIfActive(action) {
+  const { channelId } = action.payload;
+
   const activeChannelId = yield select(activeChannelIdSelector);
   if (channelId !== activeChannelId) {
     return;
@@ -62,7 +63,9 @@ export function* markChannelAsReadIfActive(channelId) {
 }
 
 // mark all messages in read in current active conversation
-export function* markConversationAsReadIfActive(channelId) {
+export function* markConversationAsReadIfActive(action) {
+  const { channelId } = action.payload;
+
   const activeConversationId = yield select((state) => state.chat.activeConversationId);
   if (channelId !== activeConversationId) {
     return;
@@ -102,14 +105,9 @@ export function* clearChannels() {
 }
 
 export function* saga() {
-  yield takeEveryFromBus(yield call(conversationsChannel), ChannelEvents.MessagesLoadedForChannel, (event) =>
-    markChannelAsReadIfActive(event.channelId)
-  );
-  yield takeEveryFromBus(yield call(conversationsChannel), ChannelEvents.MessagesLoadedForConversation, (event) =>
-    markConversationAsReadIfActive(event.channelId)
-  );
-
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
+  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markChannelAsReadIfActive);
+  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInConversation, markConversationAsReadIfActive);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

@@ -3,6 +3,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
 import { setactiveConversationId } from '../../../store/chat';
+import { markAllMessagesAsReadInConversation } from '../../../store/channels';
 import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -72,6 +73,7 @@ export interface Properties extends PublicProperties {
   fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  markConversationAsRead: (payload: { channelId: string }) => void;
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
@@ -125,6 +127,7 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       openConversation: setactiveConversationId,
+      markConversationAsRead: markAllMessagesAsReadInConversation,
       fetchConversations,
       createConversation,
       startCreateConversation,
@@ -252,6 +255,7 @@ export class Container extends React.Component<Properties, State> {
               conversations={this.props.conversations}
               onCreateConversation={this.createOneOnOneConversation}
               onConversationClick={this.props.openConversation}
+              markConversationAsRead={this.props.markConversationAsRead}
               startConversation={this.props.startCreateConversation}
               myUserId={this.props.myUserId}
               activeConversationId={this.props.activeConversationId}

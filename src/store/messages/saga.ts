@@ -22,7 +22,6 @@ import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
@@ -122,14 +121,6 @@ export function* fetch(action) {
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
     );
-
-    // Publish a system message across the channel
-    const channel = yield call(conversationsChannel);
-    const isChannel = yield select(_isChannel(channelId));
-    yield put(channel, {
-      type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
-      channelId,
-    });
   } catch (error) {
     yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
   }
@@ -407,7 +398,7 @@ export function* receiveNewMessage(action) {
   const isChannel = yield select(_isChannel(channelId));
   const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
 
-  yield call(markAllAsReadAction, channelId);
+  yield call(markAllAsReadAction, { payload: { channelId } });
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

@@ -23,6 +23,7 @@ import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
+import { compareDatesAsc } from '../../lib/date';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -214,7 +215,7 @@ export class Container extends React.Component<Properties, State> {
       }
     });
 
-    return messages;
+    return messages.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt));
   }
 
   get sendDisabledMessage() {

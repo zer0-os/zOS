@@ -26,6 +26,7 @@ describe('ChannelsContainer', () => {
       fetchChannels: () => undefined,
       stopSyncChannels: () => undefined,
       setActiveChannelId: () => undefined,
+      markAllMessagesAsReadInChannel: () => undefined,
       channelId: '',
       match: { url: '' },
       user: {

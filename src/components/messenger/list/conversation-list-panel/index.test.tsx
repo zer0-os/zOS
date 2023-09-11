@@ -14,6 +14,7 @@ describe('ConversationListPanel', () => {
       onConversationClick: () => null,
       startConversation: () => null,
       onCreateConversation: () => null,
+      markConversationAsRead: () => null,
       ...props,
     };
 

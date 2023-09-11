@@ -90,14 +90,14 @@ describe(receiveNewMessage, () => {
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, channelState.build())
-      .call(markChannelAsReadIfActive, 'channel-id')
+      .call(markChannelAsReadIfActive, { payload: { channelId: 'channel-id' } })
       .run();
 
     const conversationState = new StoreBuilder().withConversationList({ id: 'channel-id' });
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, conversationState.build())
-      .call(markConversationAsReadIfActive, 'channel-id')
+      .call(markConversationAsReadIfActive, { payload: { channelId: 'channel-id' } })
       .run();
   });
 

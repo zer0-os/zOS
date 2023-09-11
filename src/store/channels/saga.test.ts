@@ -66,7 +66,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, channelId)
+      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
@@ -82,7 +82,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: 'some-other-channel-id' })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, channelId)
+      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -97,7 +97,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, channelId)
+      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -112,7 +112,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 0 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, channelId)
+      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -128,7 +128,7 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markConversationAsReadIfActive, channelId)
+      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
@@ -143,7 +143,7 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: 'some-other-channel-id' })
         .build();
 
-      await expectSaga(markConversationAsReadIfActive, channelId)
+      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -157,7 +157,7 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId, unreadCount: 0 })
         .build();
 
-      await expectSaga(markConversationAsReadIfActive, channelId)
+      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)

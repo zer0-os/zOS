@@ -28,10 +28,6 @@ export interface Properties {
   onRemove?: () => void;
 }
 
-interface State {
-  width: number;
-}
-
 let twitterLogo;
 function getTwitterLogo() {
   if (!twitterLogo) {
@@ -40,30 +36,9 @@ function getTwitterLogo() {
   return twitterLogo;
 }
 
-export class LinkPreview extends React.Component<Properties, State> {
-  state = { width: 0 };
-  ref = React.createRef<HTMLDivElement>();
-
-  componentDidMount() {
-    if (this.ref.current && !this.props.width) {
-      const { width } = this.ref.current.getBoundingClientRect();
-
-      this.setState({ width: Math.round(width) });
-    }
-  }
-
+export class LinkPreview extends React.Component<Properties> {
   get width() {
-    return this.props.width || this.state.width;
-  }
-
-  get bannerRatio() {
-    const {
-      thumbnail: { width, height },
-    } = this.props;
-
-    if (!width || !height) return undefined;
-
-    return height / width;
+    return this.props.thumbnail?.width || 40;
   }
 
   get titleUrl() {
@@ -155,7 +130,7 @@ export class LinkPreview extends React.Component<Properties, State> {
     const { className } = this.props;
 
     return (
-      <div ref={this.ref} className={classNames('link-preview', className)} onClick={this.handleOnClick}>
+      <div className={classNames('link-preview', className)} onClick={this.handleOnClick}>
         {this.renderBanner()}
         <div {...cn('body')}>
           <div {...cn('title')}>{this.title}</div>

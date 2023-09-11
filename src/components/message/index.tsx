@@ -269,12 +269,7 @@ export class Message extends React.Component<Properties, State> {
     return (
       <>
         {preview && !hidePreview && (
-          <div {...cn('block-preview')}>
-            <LinkPreview url={preview.url} {...preview} />
-            {isOwner && (
-              <IconButton size={24} Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
-            )}
-          </div>
+          <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />
         )}
       </>
     );

@@ -1,4 +1,4 @@
-@use '../../shared-components/theme-engine/theme' as theme;
+@use '~@zero-tech/zui/styles/theme' as theme;
 
 @import '../../variables';
 @import '../../animation';
@@ -7,88 +7,66 @@ $link-preview-min-height: 250px;
 $weight-bold: 900;
 
 .link-preview {
-  background-color: theme.$background-color-primary;
-  margin-top: 5px;
-  max-width: 330px;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+
+  background-color: theme.$color-greyscale-transparency-2;
   cursor: pointer;
 
-  &__body {
-    padding: 20px 8px 8px 20px;
+  &__default-image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__banner {
     position: relative;
-    margin-left: 3px;
+    background-color: theme.$color-greyscale-transparency-4;
+    border-radius: 4px;
+    width: 40px;
+    height: 40px;
+    flex-grow: 0;
+    flex-shrink: 0;
 
     &-image {
+      position: absolute;
+      width: 40px !important;
+      height: 40px !important;
+      border-radius: 4px;
       background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
     }
+  }
+
+  &__body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
   }
 
   &__title {
-    font-size: $font-size-xl;
-    font-weight: $weight-bold;
-    color: theme.$font-color-primary;
-    margin-bottom: 10px;
-    width: 100%;
-
-    .button-link__label {
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    &-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  &__author-name {
-    margin-right: 6px;
-    overflow: hidden;
+    color: theme.$color-greyscale-12;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
     text-overflow: ellipsis;
-  }
-
-  &__author-handle {
-    color: theme.$font-color-secondary;
     overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  &__description {
-    font-size: $font-size-small;
-    color: theme.$font-color-primary;
-    line-height: $font-size-large;
+  &__url {
+    color: theme.$color-greyscale-11;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    text-overflow: ellipsis;
     overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__footer {
-    padding: 10px 8px 8px 20px;
-  }
-
-  &__content-link {
-    font-size: $font-size-small;
-    font-weight: $weight-bold;
-  }
-
-  &__content-link.button-link,
-  &__title.button-link {
-    &:hover .button-link__label,
-    .button-link__label {
-      color: inherit;
-      background-color: transparent;
-      font-size: inherit;
-      font-weight: inherit;
-      text-transform: none;
-      line-height: normal;
-      text-align: inherit;
-      border-radius: 0;
-      padding: 0;
-    }
-  }
-
-  .button-link {
-    text-decoration: underline;
+    white-space: nowrap;
   }
 }

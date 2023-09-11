@@ -1,11 +1,15 @@
 import React from 'react';
 
 import classNames from 'classnames';
-import { BackgroundImage, BackgroundImageProperties, VideoPlayer, ButtonLink } from '@zer0-os/zos-component-library';
+import { BackgroundImage, BackgroundImageProperties } from '@zer0-os/zos-component-library';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
+import { IconButton } from '@zero-tech/zui/components';
+import { IconLink1, IconXClose } from '@zero-tech/zui/icons';
+import { bemClassName } from '../../lib/bem';
 
 require('./styles.scss');
+const cn = bemClassName('link-preview');
 
 export interface Properties {
   type: LinkPreviewType;
@@ -19,6 +23,9 @@ export interface Properties {
   width?: number;
   thumbnail?: { url: string; width: number; height: number };
   className?: string;
+
+  allowRemove?: boolean;
+  onRemove?: () => void;
 }
 
 interface State {
@@ -57,10 +64,6 @@ export class LinkPreview extends React.Component<Properties, State> {
     if (!width || !height) return undefined;
 
     return height / width;
-  }
-
-  get isVideo() {
-    return this.props.type === LinkPreviewType.Video;
   }
 
   get titleUrl() {
@@ -114,24 +117,14 @@ export class LinkPreview extends React.Component<Properties, State> {
     return window.open(this.props.url, '_blank');
   };
 
-  renderVideoBanner() {
-    return (
-      <div className='link-preview__banner'>
-        <VideoPlayer className='link-preview__banner-video' url={this.props.url} autoplay={false} />
-      </div>
-    );
-  }
-
   renderBanner() {
-    if (this.isVideo) return this.renderVideoBanner();
-
     const { thumbnail, providerName } = this.props;
 
     if (!thumbnail || !this.width) return null;
 
     let source = thumbnail.url;
     const options: any = {
-      width: this.width,
+      width: 200,
       crop: 'fill',
     };
 
@@ -145,43 +138,30 @@ export class LinkPreview extends React.Component<Properties, State> {
       options,
       className: 'link-preview__banner-image',
       provider: getProvider(),
+      autoHeight: true,
     };
-
-    const ratio = this.bannerRatio;
-
-    if (ratio) {
-      const height = Math.round(ratio * this.width);
-      const maxHeight = Math.round(2 * this.width);
-
-      props.style = { height: `${Math.min(height, maxHeight)}px` };
-    } else {
-      props.autoHeight = true;
-    }
 
     return (
       <div className='link-preview__banner'>
+        <div {...cn('default-image')}>
+          <IconLink1 size={24} />
+        </div>
         <BackgroundImage {...props} />
       </div>
     );
   }
 
   render() {
-    const { className, description, url, providerName } = this.props;
+    const { className } = this.props;
 
     return (
       <div ref={this.ref} className={classNames('link-preview', className)} onClick={this.handleOnClick}>
         {this.renderBanner()}
-        <div className='link-preview__body'>
-          <ButtonLink url={this.titleUrl} openInNewTab className='link-preview__title'>
-            {this.title}
-          </ButtonLink>
-          <div className='link-preview__description'>{description}</div>
+        <div {...cn('body')}>
+          <div {...cn('title')}>{this.title}</div>
+          <div {...cn('url')}>{this.titleUrl}</div>
         </div>
-        <div className='link-preview__footer'>
-          <ButtonLink className='link-preview__content-link' url={url} openInNewTab>
-            View this on <span className='link-preview__content-provider'>{providerName}</span>
-          </ButtonLink>
-        </div>
+        {this.props.allowRemove && <IconButton size={24} Icon={IconXClose} onClick={this.props.onRemove} />}
       </div>
     );
   }

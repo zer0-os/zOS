@@ -264,12 +264,10 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  renderBody() {
-    const { message, preview, isOwner, hidePreview } = this.props;
-
+  renderLinkPreview() {
+    const { preview, isOwner, hidePreview } = this.props;
     return (
-      <div {...cn('block-body')}>
-        {message && <ContentHighlighter message={message} />}
+      <>
         {preview && !hidePreview && (
           <div {...cn('block-preview')}>
             <LinkPreview url={preview.url} {...preview} />
@@ -278,8 +276,28 @@ export class Message extends React.Component<Properties, State> {
             )}
           </div>
         )}
+      </>
+    );
+  }
+  renderBody() {
+    const { message } = this.props;
+
+    return (
+      <div {...cn('block-body')}>
+        {message && <ContentHighlighter message={message} />}
         {this.renderFooter()}
       </div>
+    );
+  }
+
+  renderParentMessage() {
+    return (
+      <ParentMessage
+        message={this.props.parentMessageText}
+        senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
+        senderFirstName={this.props.parentSenderFirstName}
+        senderLastName={this.props.parentSenderLastName}
+      />
     );
   }
 
@@ -310,12 +328,8 @@ export class Message extends React.Component<Properties, State> {
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
-                  <ParentMessage
-                    message={this.props.parentMessageText}
-                    senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
-                    senderFirstName={this.props.parentSenderFirstName}
-                    senderLastName={this.props.parentSenderLastName}
-                  />
+                  {this.renderLinkPreview()}
+                  {this.renderParentMessage()}
                   {this.renderBody()}
                 </>
               )}

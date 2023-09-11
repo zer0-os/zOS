@@ -26,7 +26,6 @@ $weight-bold: 900;
 
   &__banner {
     position: relative;
-    background-color: theme.$color-greyscale-transparency-4;
     border-radius: 4px;
     width: 40px;
     height: 40px;
@@ -68,5 +67,9 @@ $weight-bold: 900;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  &__author-handle {
+    margin-left: 8px;
   }
 }

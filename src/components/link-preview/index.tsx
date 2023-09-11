@@ -28,14 +28,6 @@ export interface Properties {
   onRemove?: () => void;
 }
 
-let twitterLogo;
-function getTwitterLogo() {
-  if (!twitterLogo) {
-    twitterLogo = getProvider().getSource({ src: 'twitter-logo.png', local: false, options: {} });
-  }
-  return twitterLogo;
-}
-
 export class LinkPreview extends React.Component<Properties> {
   get width() {
     return this.props.thumbnail?.width || 40;
@@ -58,16 +50,16 @@ export class LinkPreview extends React.Component<Properties> {
       return this.generateUserContentTitle(authorName, authorUrl);
     }
 
-    return <span className='link-preview__title-text'>{title}</span>;
+    return title;
   }
 
   generateUserContentTitle(name: string, url: string) {
-    const userName = <span className='link-preview__author-name'>{name}</span>;
+    const userName = <span>{name}</span>;
     const handle = this.extractHandleFromUrl(url);
     let userHandle: any = null;
 
     if (handle) {
-      userHandle = <span className='link-preview__author-handle'>{handle}</span>;
+      userHandle = <span {...cn('author-handle')}>{handle}</span>;
     }
 
     return (
@@ -93,20 +85,15 @@ export class LinkPreview extends React.Component<Properties> {
   };
 
   renderBanner() {
-    const { thumbnail, providerName } = this.props;
+    const { thumbnail } = this.props;
 
-    if (!thumbnail || !this.width) return null;
+    if (!this.width) return null;
 
     let source = thumbnail.url;
     const options: any = {
-      width: 200,
+      width: this.width,
       crop: 'fill',
     };
-
-    if (providerName === 'Twitter') {
-      options.background = 'transparent';
-      source = getTwitterLogo();
-    }
 
     const props: BackgroundImageProperties = {
       source,

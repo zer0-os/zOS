@@ -40,6 +40,14 @@ export class FeatureFlags {
   set resetPasswordPage(value: boolean) {
     this._setBoolean('resetPasswordPage', value);
   }
+
+  get enableRewards() {
+    return this._getBoolean('enableRewards');
+  }
+
+  set enableRewards(value: boolean) {
+    this._setBoolean('enableRewards', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -8,11 +8,7 @@ describe('rewards-bar', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
-      includeRewardsAvatar: false,
       isMessengerFullScreen: false,
-      userName: '',
-      userHandle: '',
-      userAvatarUrl: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
       showRewardsInTooltip: false,
@@ -20,7 +16,6 @@ describe('rewards-bar', () => {
       hasLoadedConversation: false,
       onRewardsPopupClose: () => {},
       onRewardsTooltipClose: () => {},
-      onLogout: () => {},
       ...props,
     };
 
@@ -51,7 +46,8 @@ describe('rewards-bar', () => {
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', async function () {
     const wrapper = subject({ zeroPreviousDay: '9000000000000000000' });
-    expect(wrapper).not.toHaveElement(TooltipPopup);
+    const tooltipPopup = wrapper.find(TooltipPopup);
+    expect(tooltipPopup.prop('open')).toBe(false);
   });
 
   it('rewards tooltip popup is not rendered if first time log in', async function () {
@@ -60,7 +56,8 @@ describe('rewards-bar', () => {
       isRewardsLoading: false,
       isFirstTimeLogin: true,
     });
-    expect(wrapper).not.toHaveElement(TooltipPopup);
+    const tooltipPopup = wrapper.find(TooltipPopup);
+    expect(tooltipPopup.prop('open')).toBe(false);
   });
 
   it('does not render rewards tooltip popup if not in full screen', async function () {
@@ -70,7 +67,8 @@ describe('rewards-bar', () => {
       showRewardsInTooltip: true,
       isMessengerFullScreen: false,
     });
-    expect(wrapper).not.toHaveElement(TooltipPopup);
+    const tooltipPopup = wrapper.find(TooltipPopup);
+    expect(tooltipPopup.prop('open')).toBe(false);
   });
 
   it('rewards tooltip popup is rendered upon load', async function () {
@@ -121,13 +119,5 @@ describe('rewards-bar', () => {
     wrapper.find('.rewards-bar__rewards-button').simulate('click');
 
     expect(wrapper.find('.rewards-bar__rewards-icon__status')).toHaveLength(0);
-  });
-
-  it('renders the SettingsMenu as necessary', function () {
-    let wrapper = subject({ includeRewardsAvatar: true });
-    expect(wrapper).toHaveElement('SettingsMenu');
-
-    wrapper.setProps({ includeRewardsAvatar: false });
-    expect(wrapper).not.toHaveElement('SettingsMenu');
   });
 });

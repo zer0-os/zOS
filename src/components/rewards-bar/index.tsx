@@ -1,34 +1,30 @@
+import * as React from 'react';
+
+import { RewardsFAQModal } from '../rewards-faq-modal';
+import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
+import { RewardsPopupContainer } from '../rewards-popup/container';
+
 import { Status } from '@zero-tech/zui/components';
 import { IconCurrencyDollar } from '@zero-tech/zui/icons';
-import classnames from 'classnames';
-import * as React from 'react';
-import { RewardsFAQModal } from '../rewards-faq-modal';
-import { RewardsPopupContainer } from '../rewards-popup/container';
-import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
-import { SettingsMenu } from '../settings-menu';
+
 import { bem } from '../../lib/bem';
 import { formatWeiAmount } from '../../lib/number';
 
+import classnames from 'classnames';
 import './styles.scss';
 
 const c = bem('rewards-bar');
 
 export interface Properties {
   isFirstTimeLogin: boolean;
-  includeRewardsAvatar: boolean;
   isMessengerFullScreen: boolean;
   hasLoadedConversation: boolean;
-
-  userName: string;
-  userHandle: string;
-  userAvatarUrl: string;
 
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
 
-  onLogout: () => void;
   onRewardsPopupClose: () => void;
   onRewardsTooltipClose: () => void;
 }
@@ -64,21 +60,15 @@ export class RewardsBar extends React.Component<Properties, State> {
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
   closeRewardsTooltip = () => this.props.onRewardsTooltipClose();
 
-  renderRewardsBar() {
+  renderRewardsButton() {
     return (
-      <div
-        className={classnames(c('rewards-bar'), {
-          [c('rewards-bar', 'with-avatar')]: this.props.includeRewardsAvatar,
-        })}
+      <TooltipPopup
+        open={!this.props.isRewardsLoading && this.props.showRewardsInTooltip && this.props.isMessengerFullScreen}
+        align='center'
+        side='right'
+        content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}
+        onClose={this.closeRewardsTooltip}
       >
-        {this.props.includeRewardsAvatar && (
-          <SettingsMenu
-            onLogout={this.props.onLogout}
-            userName={this.props.userName}
-            userHandle={this.props.userHandle}
-            userAvatarUrl={this.props.userAvatarUrl}
-          />
-        )}
         <div className={c('rewards-button-container')}>
           <button
             onClick={this.openRewards}
@@ -101,26 +91,14 @@ export class RewardsBar extends React.Component<Properties, State> {
             </div>
           </button>
         </div>
-      </div>
+      </TooltipPopup>
     );
   }
 
   render() {
     return (
-      <div>
-        {this.props.showRewardsInTooltip && this.props.isMessengerFullScreen ? (
-          <TooltipPopup
-            open={!this.props.isRewardsLoading}
-            align='center'
-            side='left'
-            content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}
-            onClose={this.closeRewardsTooltip}
-          >
-            {this.renderRewardsBar()}
-          </TooltipPopup>
-        ) : (
-          this.renderRewardsBar()
-        )}
+      <div className={c('')}>
+        {this.renderRewardsButton()}
 
         {this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin) && (
           <RewardsPopupContainer

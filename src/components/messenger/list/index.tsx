@@ -32,6 +32,8 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
 import { receiveSearchResults } from '../../../store/users';
+import { SettingsMenu } from '../../settings-menu';
+import { FeatureFlag } from '../../feature-flag';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -221,28 +223,44 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
+  renderSettingsMenu() {
+    return (
+      <SettingsMenu
+        onLogout={this.props.logout}
+        userName={this.props.userName}
+        userHandle={this.props.userHandle}
+        userAvatarUrl={this.props.userAvatarUrl}
+      />
+    );
+  }
+
   render() {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
 
         {this.props.stage === SagaStage.None && (
-          <RewardsBar
-            zeroPreviousDay={this.props.zeroPreviousDay}
-            isRewardsLoading={this.props.isRewardsLoading}
-            isMessengerFullScreen={this.props.isMessengerFullScreen}
-            showRewardsInTooltip={this.props.showRewardsInTooltip}
-            showRewardsInPopup={this.props.showRewardsInPopup}
-            isFirstTimeLogin={this.props.isFirstTimeLogin}
-            includeRewardsAvatar={this.props.includeRewardsAvatar}
-            userName={this.props.userName}
-            userHandle={this.props.userHandle}
-            userAvatarUrl={this.props.userAvatarUrl}
-            onRewardsPopupClose={this.props.rewardsPopupClosed}
-            onRewardsTooltipClose={this.props.rewardsTooltipClosed}
-            onLogout={this.props.logout}
-            hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
-          />
+          <div {...cnMessageList('profile-bar')}>
+            {this.props.includeRewardsAvatar && (
+              <div {...cnMessageList('avatar-container')}>{this.renderSettingsMenu()}</div>
+            )}
+
+            <FeatureFlag featureFlag='enableRewards'>
+              <div {...cnMessageList('rewards-container', this.props.includeRewardsAvatar && 'with-avatar')}>
+                <RewardsBar
+                  zeroPreviousDay={this.props.zeroPreviousDay}
+                  isRewardsLoading={this.props.isRewardsLoading}
+                  isMessengerFullScreen={this.props.isMessengerFullScreen}
+                  showRewardsInTooltip={this.props.showRewardsInTooltip}
+                  showRewardsInPopup={this.props.showRewardsInPopup}
+                  isFirstTimeLogin={this.props.isFirstTimeLogin}
+                  onRewardsPopupClose={this.props.rewardsPopupClosed}
+                  onRewardsTooltipClose={this.props.rewardsTooltipClosed}
+                  hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
+                />
+              </div>
+            </FeatureFlag>
+          </div>
         )}
 
         <div {...cn('')}>

@@ -5,42 +5,59 @@ import { connectContainer } from '../../store/redux-container';
 import { LoginStage, switchLoginStage } from '../../store/login';
 
 import { LoginComponent } from './login-component';
+import { AndroidDownload } from '../../authentication/android-download';
+import { config } from '../../config';
+import { setShowAndroidDownload } from '../../store/page-load';
 
 export interface LoginContainerProperties {
+  shouldRender: boolean;
+  showAndroidDownload: boolean;
+  androidStorePath: string;
   isLoggingIn: boolean;
   stage: LoginStage;
   switchLoginStage: (stage: LoginStage) => void;
+  continueInBrowser: () => void;
 }
 
 export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapState(state: RootState): Partial<LoginContainerProperties> {
-    const { login } = state;
+    const { login, pageload } = state;
+
     return {
       stage: login.stage,
       isLoggingIn: login.loading,
+      shouldRender: pageload.isComplete,
+      showAndroidDownload: pageload.showAndroidDownload,
+      androidStorePath: config.androidStorePath,
     };
   }
 
   static mapActions(_props: LoginContainerProperties): Partial<LoginContainerProperties> {
     return {
       switchLoginStage,
+      continueInBrowser: () => setShowAndroidDownload(false),
     };
   }
 
-  get handleToggleLoginOption() {
-    const { switchLoginStage, stage } = this.props;
-    return () => switchLoginStage(stage === LoginStage.Web3Login ? LoginStage.EmailLogin : LoginStage.Web3Login);
-  }
+  handleSelectionChange = (selectedOption: string) => {
+    const { switchLoginStage } = this.props;
+    switchLoginStage(selectedOption === 'web3' ? LoginStage.Web3Login : LoginStage.EmailLogin);
+  };
 
   render() {
-    const { isLoggingIn } = this.props;
+    const { isLoggingIn, stage } = this.props;
+
+    if (!this.props.shouldRender) {
+      return null;
+    }
 
     return (
-      <LoginComponent
-        isLoggingIn={isLoggingIn}
-        stage={this.props.stage}
-        onToggleLoginOption={this.handleToggleLoginOption}
-      />
+      <>
+        <LoginComponent isLoggingIn={isLoggingIn} stage={stage} handleSelectionChange={this.handleSelectionChange} />
+        {this.props.showAndroidDownload && (
+          <AndroidDownload storePath={this.props.androidStorePath} onUseBrowser={this.props.continueInBrowser} />
+        )}
+      </>
     );
   }
 }

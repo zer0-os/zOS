@@ -38,13 +38,13 @@ export class Container extends React.Component<Properties> {
           errorObject.email = 'Email is required';
           break;
         case AccountCreationErrors.EMAIL_INVALID:
-          errorObject.email = 'This email is invalid';
+          errorObject.email = 'Please enter a valid email address';
           break;
         case AccountCreationErrors.EMAIL_ALREADY_EXISTS:
-          errorObject.email = 'This email already exists';
+          errorObject.email = 'This email is already associated with a ZERO account';
           break;
         case AccountCreationErrors.PROFILE_PRIMARY_EMAIL_ALREADY_EXISTS:
-          errorObject.email = 'This email already exists';
+          errorObject.email = 'This email is already associated with a ZERO account';
           break;
         case AccountCreationErrors.PASSWORD_REQUIRED:
           errorObject.password = 'Password is required';

@@ -24,11 +24,12 @@ import {
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
-import { passwordStrength } from '../../lib/password';
+import { isPasswordValid } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
+import { setIsComplete as setPageLoadComplete } from '../page-load';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -38,7 +39,7 @@ export function* validateInvite(action) {
     yield put(setInviteStatus(inviteCodeStatus));
 
     if (inviteCodeStatus === InviteCodeStatus.VALID) {
-      yield put(setStage(RegistrationStage.SelectMethod));
+      yield put(setStage(RegistrationStage.WalletAccountCreation));
       yield put(setInviteCode(code));
       return true;
     }
@@ -135,7 +136,7 @@ export function validateAccountInfo({ email, password }) {
 
   if (!password.trim()) {
     validationErrors.push(AccountCreationErrors.PASSWORD_REQUIRED);
-  } else if (passwordStrength(password) < 2) {
+  } else if (!isPasswordValid(password)) {
     validationErrors.push(AccountCreationErrors.PASSWORD_TOO_WEAK);
   }
 
@@ -222,6 +223,7 @@ export function* clearRegistrationStateOnLogout() {
 
 // sets initial state & takes the user to "complete profile" page
 export function* completePendingUserProfile(user) {
+  yield put(setPageLoadComplete(true)); // allow page to load incase of incomplete profile
   yield put(setStage(RegistrationStage.ProfileDetails));
   yield put(setUserId(user.id));
 

@@ -7,7 +7,7 @@ export async function searchMentionableUsersForChannel(
   apiSearch = searchMentionableUsers
 ) {
   const results = await apiSearch(channelId, search);
-  return results.map((u) => ({ id: u.id, display: u.name }));
+  return results.map((u) => ({ id: u.id, display: u.name, profileImage: u.profileImage }));
 }
 
 export async function searchMyNetworksByName(search: string, apiSearch = searchMyNetworksByNameApi) {

@@ -1,0 +1,198 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../shared-components/theme-engine/theme' as themeDeprecated;
+
+.message {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0px 0px;
+  gap: 8px;
+  overflow: hidden;
+  width: 100%;
+
+  &--owner {
+    flex-direction: row-reverse;
+
+    .message__block-body {
+      transition: background-color 0.3s ease-out;
+      position: relative;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+
+      &.chat-message__input-wrapper {
+        background: none;
+
+        &:before {
+          background: none;
+        }
+      }
+    }
+
+    .message__block-reply-text {
+      border-color: theme.$color-secondary-5;
+    }
+
+    .message__block {
+      background-color: theme.$color-secondary-3;
+      border-radius: var(--border-owner-radius); // set in message__message-row
+
+      &--edit {
+        border-radius: 8px 2px 0px 8px;
+      }
+    }
+
+    .message__menu {
+      transform: translateX(100%);
+    }
+  }
+
+  &__block {
+    background-color: theme.$color-primary-3;
+    position: relative;
+    padding: 0px;
+    color: themeDeprecated.$card-text-color;
+    overflow: hidden;
+    z-index: 1;
+
+    border-radius: var(--border-radius); // set in message__message-row
+
+    &--edit {
+      width: 100%;
+    }
+  }
+
+  &__block-body {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: theme.$color-greyscale-12;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    margin: 8px 0 0px 0;
+    padding: 0px 8px 8px 8px;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__block-image {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+
+    img {
+      display: block;
+      margin: auto;
+      max-width: 100%;
+      max-height: 640px;
+    }
+  }
+
+  &__block-audio {
+    audio {
+      width: 100%;
+      min-width: 300px;
+    }
+  }
+
+  &__block-video {
+    video {
+      min-height: 186px;
+      width: 100%;
+      border-radius: 8px;
+    }
+  }
+
+  &__block-edit {
+    padding: 8px;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 4px;
+    color: theme.$color-greyscale-11;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+  }
+
+  &__time {
+    display: flex;
+  }
+
+  &__failure-message {
+    display: flex;
+    align-items: center;
+    color: theme.$color-failure-11;
+  }
+
+  &__menu {
+    align-self: center;
+    transition: opacity 0s ease-in-out, transform 0.1s ease-in-out;
+    transform: translateX(-100%);
+    opacity: 0;
+    // Sometimes we render an empty menu. This ensures consistency of width of the message bubble.
+    min-width: 32px;
+  }
+
+  .menu--open {
+    transform: unset;
+    opacity: 1;
+  }
+
+  .menu--force-visible {
+    transform: unset;
+    opacity: 1;
+  }
+
+  &__left {
+    width: 32px;
+    align-self: flex-end;
+  }
+
+  &__author-avatar {
+    visibility: hidden;
+
+    > *:first-child {
+      cursor: default;
+    }
+  }
+
+  &__author-name {
+    display: flex;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    color: theme.$color-greyscale-12;
+    margin: 0 0 8px 0;
+    padding: 8px 8px 0px 8px;
+  }
+
+  &.messages__message--last-in-group {
+    .message__author-avatar {
+      visibility: visible;
+    }
+  }
+
+  .emoji-mart-emoji {
+    height: 19px;
+  }
+
+  &__user-mention {
+    background-color: themeDeprecated.$accent-color;
+    color: black;
+    padding: 3px;
+    border-radius: 5px;
+    margin-bottom: 0.8px;
+    margin-top: 0.8px;
+    display: inline-block;
+  }
+}

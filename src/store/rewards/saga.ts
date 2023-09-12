@@ -1,11 +1,33 @@
-import { call, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, takeEvery, takeLatest } from 'redux-saga/effects';
+import getDeepProperty from 'lodash.get';
 
-import { SagaActionTypes, setLoading, setShowNewRewards, setZero, setZeroPreviousDay } from '.';
-import { RewardsResp, fetchRewards } from './api';
+import {
+  SagaActionTypes,
+  setShowRewardsInTooltip,
+  setLoading,
+  setZero,
+  setZeroInUSD,
+  setZeroPreviousDay,
+  setShowRewardsInPopup,
+} from '.';
+import { RewardsResp, fetchCurrentZeroPriceInUSD as fetchCurrentZeroPriceInUSDAPI, fetchRewards } from './api';
+import { takeEveryFromBus } from '../../lib/saga';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
+const SYNC_ZERO_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
 
-const lastViewedRewardsKey = 'last_viewed_rewards';
+const lastDayRewardsKey = 'last_viewed_day_rewards';
+const totalRewardsKey = 'last_viewed_total_rewards';
+
+export function* fetchCurrentZeroPriceInUSD() {
+  try {
+    const result = yield call(fetchCurrentZeroPriceInUSDAPI);
+    if (result.success) {
+      yield put(setZeroInUSD(result.response.price));
+    }
+  } catch (e) {}
+}
 
 export function* fetch(_action) {
   yield put(setLoading(true));
@@ -32,24 +54,66 @@ export function* syncFetchRewards() {
   }
 }
 
+export function* syncZEROPrice() {
+  while (true) {
+    yield call(fetchCurrentZeroPriceInUSD);
+
+    yield delay(SYNC_ZERO_TOKEN_PRICE_INTERVAL);
+  }
+}
+
+export function* syncRewardsAndTokenPrice() {
+  yield spawn(syncFetchRewards);
+  yield spawn(syncZEROPrice);
+}
+
 export function* checkNewRewardsLoaded() {
-  const zeroPreviousDay = yield select((state) => state.rewards.zeroPreviousDay);
-  const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
-  if (!isFirstTimeLogin && zeroPreviousDay !== '0' && localStorage.getItem(lastViewedRewardsKey) !== zeroPreviousDay) {
-    yield put(setShowNewRewards(true));
+  const zeroPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.zeroPreviousDay'));
+  const zeroTotal = yield select((state) => getDeepProperty(state, 'rewards.zero'));
+  const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
+  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
+
+  if (isMessengerFullScreen && !isFirstTimeLogin && zeroPreviousDay !== '0') {
+    if (localStorage.getItem(lastDayRewardsKey) !== zeroPreviousDay) {
+      yield put(setShowRewardsInTooltip(true));
+    }
+
+    if (localStorage.getItem(totalRewardsKey) !== zeroTotal) {
+      yield put(setShowRewardsInPopup(true));
+    }
   }
 }
 
 export function* rewardsPopupClosed() {
-  // set last viewed rewards to the current rewards when the popup is closed
-  const { zeroPreviousDay, showNewRewards } = yield select((state) => state.rewards);
-  if (showNewRewards) {
-    localStorage.setItem(lastViewedRewardsKey, zeroPreviousDay);
-    yield put(setShowNewRewards(false));
+  // set last viewed "total" rewards to the current rewards when the popup is closed
+  const { zero, showRewardsInPopup } = yield select((state) => state.rewards);
+  if (showRewardsInPopup) {
+    localStorage.setItem(totalRewardsKey, zero);
+    yield put(setShowRewardsInPopup(false));
   }
 }
 
+export function* rewardsTooltipClosed() {
+  // set last viewed "daily" rewards to the current rewards when the popup is closed
+  const { zeroPreviousDay, showRewardsInTooltip } = yield select((state) => state.rewards);
+  if (showRewardsInTooltip) {
+    localStorage.setItem(lastDayRewardsKey, zeroPreviousDay);
+    yield put(setShowRewardsInTooltip(false));
+  }
+}
+
+function* clearOnLogout() {
+  yield put(setLoading(false));
+  yield put(setZero('0'));
+  yield put(setZeroPreviousDay('0'));
+  yield put(setZeroInUSD(0.0));
+  yield put(setShowRewardsInTooltip(false));
+  yield put(setShowRewardsInPopup(false));
+}
+
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Fetch, syncFetchRewards);
+  yield takeLatest(SagaActionTypes.Fetch, syncRewardsAndTokenPrice);
   yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
+  yield takeEvery(SagaActionTypes.RewardsTooltipClosed, rewardsTooltipClosed);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

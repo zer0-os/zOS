@@ -6,41 +6,35 @@ import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
   send as sendMessage,
-  uploadFileMessage,
   deleteMessage,
   editMessage,
   Message,
-  startMessageSync,
-  stopSyncChannels,
   EditMessageOptions,
 } from '../../store/messages';
-import { Channel, denormalize, joinChannel, markAllMessagesAsReadInChannel } from '../../store/channels';
+import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
   EditPayload,
   Payload as PayloadFetchMessages,
   SendPayload as PayloadSendMessage,
-  MediaPayload,
 } from '../../store/messages/saga';
-import { Payload as PayloadJoinChannel, MarkAsReadPayload } from '../../store/channels/types';
+import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
+import { compareDatesAsc } from '../../lib/date';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   sendMessage: (payload: PayloadSendMessage) => void;
-  uploadFileMessage: (payload: MediaPayload) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
-  markAllMessagesAsReadInChannel: (payload: MarkAsReadPayload) => void;
-  startMessageSync: (payload: PayloadFetchMessages) => void;
-  stopSyncChannels: (payload: PayloadFetchMessages) => void;
   activeConversationId?: string;
+  isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
   };
@@ -53,7 +47,6 @@ interface PublicProperties {
   showSenderAvatar?: boolean;
 }
 export interface State {
-  countNewMessages: number;
   reply: null | ParentMessage;
 }
 
@@ -65,12 +58,14 @@ export class Container extends React.Component<Properties, State> {
     const {
       authentication: { user },
       chat: { activeConversationId },
+      layout,
     } = state;
 
     return {
       channel,
       user,
       activeConversationId,
+      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -78,17 +73,13 @@ export class Container extends React.Component<Properties, State> {
     return {
       fetchMessages,
       sendMessage,
-      uploadFileMessage,
-      startMessageSync,
-      stopSyncChannels,
       deleteMessage,
       joinChannel,
-      markAllMessagesAsReadInChannel,
       editMessage,
     };
   }
 
-  state = { countNewMessages: 0, reply: null };
+  state = { reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -98,40 +89,15 @@ export class Container extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId, channel, user } = this.props;
+    const { channelId, channel } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
-      this.props.stopSyncChannels(prevProps);
       this.props.fetchMessages({ channelId });
-      this.setState({
-        reply: null,
-      });
+      this.setState({ reply: null });
     }
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
       this.props.fetchMessages({ channelId });
-    }
-
-    if (
-      !this.props.context.isAuthenticated &&
-      channel &&
-      channel.shouldSyncChannels &&
-      (!prevProps.channel || !prevProps.channel?.shouldSyncChannels)
-    ) {
-      this.props.startMessageSync({ channelId });
-    }
-
-    if (
-      channel &&
-      channel.countNewMessages &&
-      prevProps.channel.countNewMessages !== channel.countNewMessages &&
-      channel.countNewMessages > 0
-    ) {
-      this.setState({ countNewMessages: channel.countNewMessages });
-    }
-
-    if (channel && channel.unreadCount > 0 && user.data) {
-      this.props.markAllMessagesAsReadInChannel({ channelId, userId: user.data.id });
     }
 
     if (this.textareaRef && channel && Boolean(channel.messages)) {
@@ -139,15 +105,6 @@ export class Container extends React.Component<Properties, State> {
       this.textareaRef = null;
     }
   }
-
-  componentWillUnmount() {
-    const { channelId } = this.props;
-    this.props.stopSyncChannels({ channelId });
-  }
-
-  resetCountNewMessage = () => {
-    this.setState({ countNewMessages: 0 });
-  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -175,18 +132,22 @@ export class Container extends React.Component<Properties, State> {
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
     const { channelId } = this.props;
-    if (channelId && this.isNotEmpty(message)) {
-      let payloadSendMessage: PayloadSendMessage = { channelId, message, mentionedUserIds };
-      if (this.state.reply) {
-        payloadSendMessage.parentMessage = this.state.reply;
-      }
-
-      this.props.sendMessage(payloadSendMessage);
-      this.removeReply();
+    if (!channelId) {
+      return;
     }
 
-    if (channelId && media.length) {
-      this.props.uploadFileMessage({ channelId, media });
+    let payloadSendMessage = {
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage: this.state.reply,
+      files: media,
+    };
+
+    this.props.sendMessage(payloadSendMessage);
+
+    if (this.isNotEmpty(message)) {
+      this.removeReply();
     }
   };
 
@@ -236,6 +197,63 @@ export class Container extends React.Component<Properties, State> {
     }
   };
 
+  get messages() {
+    const messagesById = {};
+    const messages = [];
+    // Assumption is that messages are already ordered by date and that
+    // the "child" message will always come after the "parent" message.
+    (this.channel?.messages || []).forEach((m) => {
+      if (m.rootMessageId && messagesById[m.rootMessageId]) {
+        messagesById[m.rootMessageId].media = m.media;
+      } else {
+        // Hmm... not sure how we ended up with integers as our message ids. For now, just cast to a string.
+        messagesById[m.id.toString()] = m;
+        if (m.id.toString() !== m.optimisticId) {
+          messagesById[m.optimisticId] = m;
+        }
+        messages.push(m);
+      }
+    });
+
+    return messages.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt));
+  }
+
+  get sendDisabledMessage() {
+    if (this.props.channel.conversationStatus === ConversationStatus.CREATED) {
+      return '';
+    }
+
+    let reference = ' with the group';
+    if (this.props.channel.name) {
+      reference = ` with ${this.props.channel.name}`;
+    } else if (this.isOneOnOne) {
+      const otherMember = this.props.channel.otherMembers[0];
+      reference = ` with ${otherMember.firstName} ${otherMember.lastName}`;
+    }
+
+    return `We're connecting you${reference}. Try again in a few seconds.`;
+  }
+
+  get conversationErrorMessage() {
+    if (this.props.channel.conversationStatus !== ConversationStatus.ERROR) {
+      return '';
+    }
+
+    let reference = 'the group';
+    if (this.props.channel.name) {
+      reference = `${this.props.channel.name}`;
+    } else if (this.isOneOnOne) {
+      const otherMember = this.props.channel.otherMembers[0];
+      reference = `${otherMember.firstName} ${otherMember.lastName}`;
+    }
+
+    return `Sorry! We couldn't connect you with ${reference}. Please refresh and try again.`;
+  }
+
+  get isOneOnOne() {
+    return this.props.channel?.isOneOnOne;
+  }
+
   render() {
     if (!this.props.channel) return null;
 
@@ -245,22 +263,28 @@ export class Container extends React.Component<Properties, State> {
           className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
-          messages={this.channel.messages || []}
+          isMessengerFullScreen={this.props.isMessengerFullScreen}
+          messages={this.messages}
+          messagesFetchStatus={this.channel.messagesFetchStatus}
+          otherMembers={this.channel.otherMembers}
+          hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
+          fetchMessages={this.props.fetchMessages}
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}
           editMessage={this.handleEditMessage}
           sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
-          countNewMessages={this.state.countNewMessages}
-          resetCountNewMessage={this.resetCountNewMessage}
           onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}
+          isOneOnOne={this.isOneOnOne}
           reply={this.state.reply}
           onReply={this.onReply}
           onRemove={this.removeReply}
+          sendDisabledMessage={this.sendDisabledMessage}
+          conversationErrorMessage={this.conversationErrorMessage}
         />
       </>
     );

@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { Alert, Button } from '@zero-tech/zui/components';
-import { IconLoading2 } from '@zero-tech/zui/icons';
+import { Alert } from '@zero-tech/zui/components';
 import { WalletSelect } from '../../components/wallet-select';
 
+import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-import { bem } from '../../lib/bem';
+import { Web3LoginErrors } from '../../store/login';
 
-const c = bem('web3-login');
+const cn = bemClassName('web3-login');
 
 export interface Web3LoginProperties {
   error: string;
@@ -21,22 +21,25 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
   render() {
     const { error, isConnecting, onSelect } = this.props;
 
+    const errorText =
+      error === Web3LoginErrors.PROFILE_NOT_FOUND
+        ? 'The wallet you connected is not associated with a ZERO account'
+        : error;
+
     return (
-      <div className={c('')}>
-        {isConnecting ? (
-          <div className={c('connecting')}>
-            <Button isDisabled={true} endEnhancer={<IconLoading2 isFilled={true} className={c('spinner')} size={20} />}>
-              Waiting for wallet confirmation
-            </Button>
+      <div {...cn('')}>
+        <div {...cn('login')}>
+          <div {...cn('select-wallet')}>
+            <WalletSelect isConnecting={isConnecting} onSelect={onSelect} />
           </div>
-        ) : (
-          <div className={c('login')}>
-            <div className={c('select-wallet')}>
-              <WalletSelect isConnecting={false} onSelect={onSelect} />
+          {error && (
+            <div {...cn('error-container')}>
+              <Alert {...cn('error')} variant='error'>
+                {errorText}
+              </Alert>
             </div>
-            {error && <Alert variant='error'>{error}</Alert>}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }

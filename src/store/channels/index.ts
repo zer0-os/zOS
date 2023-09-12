@@ -20,34 +20,46 @@ export enum GroupChannelType {
   Private = 'private',
 }
 
+export enum MessagesFetchState {
+  SUCCESS,
+  IN_PROGRESS,
+  MORE_IN_PROGRESS,
+  FAILED,
+}
+
+export enum ConversationStatus {
+  CREATING,
+  CREATED,
+  ERROR,
+}
+
 export interface Channel {
   id: string;
+  optimisticId?: string;
   name: string;
   messages: Message[];
   otherMembers: User[];
   hasMore: boolean;
-  countNewMessages: number;
   createdAt: number;
   lastMessage: Message;
-  lastMessageCreatedAt: number;
   category?: string;
-  shouldSyncChannels: boolean;
   unreadCount?: number;
   hasJoined?: boolean;
   groupChannelType: GroupChannelType;
   icon?: string;
-  messageIdsCache?: string[];
+  isOneOnOne: boolean;
   isChannel: boolean;
+  hasLoadedMessages: boolean;
+  conversationStatus: ConversationStatus;
+  messagesFetchStatus: MessagesFetchState;
 }
 
 export enum SagaActionTypes {
   JoinChannel = 'channels/saga/joinChannel',
-  MarkAllMessagesAsReadInChannel = 'channels/saga/markAllMessagesAsReadInChannel',
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
 }
 
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
-const markAllMessagesAsReadInChannel = createAction<Payload>(SagaActionTypes.MarkAllMessagesAsReadInChannel);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 
 const slice = createNormalizedSlice({
@@ -60,4 +72,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { joinChannel, markAllMessagesAsReadInChannel, unreadCountUpdated, removeAll };
+export { joinChannel, unreadCountUpdated, removeAll };

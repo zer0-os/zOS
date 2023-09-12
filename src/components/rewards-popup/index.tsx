@@ -7,6 +7,7 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import classnames from 'classnames';
+
 const c = bem('rewards-popup');
 
 export interface Properties {
@@ -55,27 +56,28 @@ export class RewardsPopup extends React.Component<Properties, State> {
       >
         <div className={c('underlay')} onClick={this.abort}>
           <div className={c('content')} onClick={this.preventAbortOnChildClick}>
+            <div className={c('arrow')}></div>
             <IconButton
               Icon={IconXClose}
               className={c('close-button')}
               variant='tertiary'
-              color='greyscale'
+              size={32}
               onClick={this.abort}
             />
             <ZeroSymbol height={32} width={32} />
-            <span className={c('heading')}>My Rewards</span>
-            <div className={c('rewards-usd')}>
+            <span className={c('heading')}>$ZERO</span>
+            <div className={c('rewards-zero')}>
               <SkeletonText
                 asyncText={{
                   isLoading: this.props.isLoading,
-                  text: this.props.usd,
+                  text: this.props.zero,
                 }}
                 skeletonOptions={{
                   width: 50,
                 }}
               />
             </div>
-            <div className={c('rewards-zero')}>{this.props.zero} ZERO</div>
+            <div className={c('rewards-usd')}>{this.props.usd}</div>
             <div className={c('info-card')}>
               <div className={c('info-card__icon')}>
                 <IconGift1 />
@@ -89,7 +91,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
                 <IconTrendUp1 />
               </div>
               <div className={c('info-card__text')}>
-                (Coming soon) Redeem your tokens for cash or vote on what you want to see in Zero.
+                (Coming soon) Redeem your tokens for cash or vote on what you want to see in ZERO.
               </div>
             </div>
             <Button className={c('button')} isDisabled={true}>
@@ -97,7 +99,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
             </Button>
 
             <div className={c('rewards-faq-text')} onClick={this.openRewardsFAQModal}>
-              Learn more about Zero rewards
+              Learn more about ZERO rewards
             </div>
           </div>
         </div>

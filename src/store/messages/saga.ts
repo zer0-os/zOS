@@ -1,25 +1,31 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, all } from 'redux-saga/effects';
-import { EditMessageOptions, Message, SagaActionTypes, schema, removeAll } from '.';
-import { receive as receiveMessage } from './';
-import { receive } from '../channels';
-import { rawChannelSelector } from '../channels/saga';
-
+import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
 import {
-  deleteMessageApi,
-  fetchMessagesByChannelId,
-  sendMessagesByChannelId,
-  editMessageApi,
-  uploadFileMessage as uploadFileMessageApi,
-  getLinkPreviews,
-} from './api';
-import { extractLink, linkifyType, messageFactory } from './utils';
-import { Media as MediaUtils } from '../../components/message-input/utils';
+  EditMessageOptions,
+  Message,
+  SagaActionTypes,
+  schema,
+  removeAll,
+  denormalize,
+  MediaType,
+  MessageSendStatus,
+} from '.';
+import { receive as receiveMessage } from './';
+import { ConversationStatus, MessagesFetchState, receive } from '../channels';
+import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
+import uniqBy from 'lodash.uniqby';
+
+import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
+import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
+import { Uploadable, createUploadableFile } from './uploadable';
+import { chat } from '../../lib/chat';
+import { activeChannelIdSelector } from '../chat/selectors';
 
 export interface Payload {
   channelId: string;
@@ -56,78 +62,138 @@ export interface SendPayload {
   parentMessageId?: number;
   parentMessageUserId?: string;
   file?: FileUploadResult;
+  optimisticId?: string;
+  files?: MediaInfo[];
 }
 
-export interface MediaPayload {
-  channelId?: string;
-  media: MediaUtils[];
+interface MediaInfo {
+  nativeFile?: File;
+  giphy?: any;
+  name: string;
+  url: string;
+  mediaType: MediaType;
 }
 
-const rawMessagesSelector = (channelId) => (state) => {
+export const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
 };
 
 const messageSelector = (messageId) => (state) => {
-  return getDeepProperty(state, `normalized.messages[${messageId}]`, []);
+  return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-const rawLastMessageSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].lastMessageCreatedAt`, 0);
-};
-const getCachedMessageIds = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messageIdsCache`, []);
-};
-
-const rawShouldSyncChannels = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels[${channelId}].shouldSyncChannels`, false);
+export const _isChannel = (channelId) => (state) =>
+  getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
+  const channel = yield select(rawChannelSelector(channelId));
+  if (channel.conversationStatus !== ConversationStatus.CREATED) {
+    return;
+  }
 
   let messagesResponse: any;
   let messages: any[];
 
-  if (referenceTimestamp) {
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId, referenceTimestamp);
-    messages = [
-      ...messagesResponse.messages,
-      ...existingMessages,
-    ];
-  } else {
-    messagesResponse = yield call(fetchMessagesByChannelId, channelId);
-    messages = messagesResponse.messages;
-  }
+  try {
+    const chatClient = yield call(chat.get);
 
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-      hasMore: messagesResponse.hasMore,
-      shouldSyncChannels: true,
-    })
-  );
+    if (referenceTimestamp) {
+      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
+      messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
+      const existingMessages = yield select(rawMessagesSelector(channelId));
+      messages = [...messagesResponse.messages, ...existingMessages];
+    } else {
+      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
+      messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
+      const existingMessages = yield select(rawMessagesSelector(channelId));
+      messages = [...existingMessages, ...messagesResponse.messages];
+    }
+    messages = uniqBy(messages, (m) => m.id ?? m);
+
+    yield put(
+      receive({
+        id: channelId,
+        messages,
+        hasMore: messagesResponse.hasMore,
+        hasLoadedMessages: true,
+        messagesFetchStatus: MessagesFetchState.SUCCESS,
+      })
+    );
+
+    // Publish a system message across the channel
+    const channel = yield call(conversationsChannel);
+    const isChannel = yield select(_isChannel(channelId));
+    yield put(channel, {
+      type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
+      channelId,
+    });
+  } catch (error) {
+    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
+  }
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage } = action.payload;
-  // cloning the array to be able to push new cache id
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
 
+  const { optimisticRootMessage, uploadableFiles } = yield call(
+    createOptimisticMessages,
+    channelId,
+    message,
+    parentMessage,
+    files
+  );
+
+  let rootMessageId = '';
+  if (optimisticRootMessage) {
+    yield spawn(createOptimisticPreview, channelId, optimisticRootMessage);
+    const textMessage = yield call(
+      performSend,
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      optimisticRootMessage.id
+    );
+
+    if (textMessage) {
+      rootMessageId = textMessage.id;
+    } else {
+      // If the text message failed, we'll leave the first file as unsent
+      uploadableFiles.shift();
+    }
+  }
+
+  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
+}
+
+export function* createOptimisticMessages(channelId, message, parentMessage, files?) {
+  let optimisticRootMessage = null;
+  if (message?.trim()) {
+    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+    optimisticRootMessage = optimisticMessage;
+  }
+
+  const uploadableFiles: Uploadable[] = [];
+  files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
+  for (const index in uploadableFiles) {
+    const file = uploadableFiles[index].file;
+    // only the first file should connect to the root message for now.
+    const rootId = index === '0' ? optimisticRootMessage?.id : '';
+    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file, rootId);
+    uploadableFiles[index].optimisticMessage = optimisticMessage;
+  }
+
+  return { optimisticRootMessage, uploadableFiles };
+}
+
+export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector());
 
-  let temporaryMessage = messageFactory(message, currentUser, parentMessage);
-  const preview = yield getPreview(message);
-
-  if (preview) {
-    temporaryMessage = { ...temporaryMessage, preview };
-  }
-
-  // add cache message id to prevent having double messages when we receive the message from sendbird.
-  cachedMessageIds.push(temporaryMessage.id);
+  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
 
   yield put(
     receive({
@@ -136,68 +202,113 @@ export function* send(action) {
         ...existingMessages,
         temporaryMessage,
       ],
-      shouldSyncChannels: true,
-      countNewMessages: 0,
-      lastMessageCreatedAt: temporaryMessage.createdAt,
-      lastMessage: temporaryMessage,
-      messageIdsCache: cachedMessageIds,
     })
   );
-  const messagesResponse = yield call(sendMessagesByChannelId, channelId, message, mentionedUserIds, parentMessage);
-  const isMessageSent = messagesResponse.status === 200;
 
-  if (!isMessageSent) {
-    yield put(
-      receive({
-        id: channelId,
-        messages: [...existingMessages],
-        shouldSyncChannels: true,
-        countNewMessages: 0,
-        lastMessage: messagesResponse.body,
-        lastMessageCreatedAt: messagesResponse.body.createdAt,
-        messageIdsCache: cachedMessageIds,
-      })
-    );
+  return { optimisticMessage: temporaryMessage };
+}
+
+export function* createOptimisticPreview(channelId: string, optimisticMessage) {
+  const preview = yield getPreview(optimisticMessage.message);
+
+  if (preview) {
+    yield put(receiveMessage({ id: optimisticMessage.id, preview }));
   }
 }
 
-export function* fetchNewMessages(action) {
-  const { channelId } = action.payload;
-  let countNewMessages: number = 0;
+export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+  const messageCall = call(
+    sendMessagesByChannelId,
+    channelId,
+    message,
+    mentionedUserIds,
+    parentMessage,
+    null,
+    optimisticId
+  );
+  return yield sendMessage(messageCall, channelId, optimisticId);
+}
 
-  const messagesResponse = yield call(fetchMessagesByChannelId, channelId);
-  const lastMessageCreatedAt = yield select(rawLastMessageSelector(channelId));
-  if (lastMessageCreatedAt > 0) {
-    countNewMessages = getCountNewMessages(messagesResponse.messages, lastMessageCreatedAt);
+export function* sendMessage(apiCall, channelId, optimisticId) {
+  try {
+    const createdMessage = yield apiCall;
+    const existingMessageIds = yield select(rawMessagesSelector(channelId));
+    const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
+    if (messages) {
+      yield put(receive({ id: channelId, messages: messages }));
+    }
+    return createdMessage;
+  } catch (e) {
+    yield call(messageSendFailed, optimisticId);
+    return null;
   }
+}
 
-  const lastMessage = filteredLastMessage(messagesResponse.messages);
-
+export function* messageSendFailed(optimisticId) {
   yield put(
-    receive({
-      id: channelId,
-      messages: messagesResponse.messages,
-      hasMore: messagesResponse.hasMore,
-      countNewMessages,
-      lastMessageCreatedAt:
-        lastMessage && lastMessage.createdAt > lastMessageCreatedAt ? lastMessage.createdAt : lastMessageCreatedAt,
+    receiveMessage({
+      id: optimisticId,
+      sendStatus: MessageSendStatus.FAILED,
     })
   );
+}
+
+export function* fetchNewMessages(channelId: string) {
+  yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
+
+  try {
+    const chatClient = yield call(chat.get);
+    const messagesResponse = yield call(
+      [
+        chatClient,
+        chatClient.getMessagesByChannelId,
+      ],
+      channelId
+    );
+
+    yield put(
+      receive({
+        id: channelId,
+        messages: messagesResponse.messages,
+        hasMore: messagesResponse.hasMore,
+        messagesFetchStatus: MessagesFetchState.SUCCESS,
+      })
+    );
+  } catch (e) {
+    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
+  }
 }
 
 export function* deleteMessage(action) {
   const { channelId, messageId } = action.payload;
 
-  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
+
+  const messageIdsToDelete = fullMessages
+    .filter((m) => m.rootMessageId === messageId.toString()) // toString() because message ids are currently a number
+    .map((m) => m.id);
+  messageIdsToDelete.unshift(messageId);
 
   yield put(
     receive({
       id: channelId,
-      messages: existingMessages.filter((id) => id !== messageId),
+      messages: existingMessageIds.filter((id) => !messageIdsToDelete.includes(id)),
     })
   );
 
-  yield call(deleteMessageApi, channelId, messageId);
+  const nonOptimisticMessagesIds = fullMessages
+    .filter((m) => messageIdsToDelete.includes(m.id))
+    .filter((m) => m.id !== m.optimisticId)
+    .map((m) => m.id);
+
+  // In the future we'd prefer that the api did this so that the front-ends
+  // could treat these as independent messages. However, given that we have
+  // multiple front ends and they don't all support treating these messages
+  // as a single entity yet, this is how we'll do it for now.
+  for (let id of nonOptimisticMessagesIds) {
+    yield call(deleteMessageApi, channelId, id);
+  }
 }
 
 export function* editMessage(action) {
@@ -234,36 +345,20 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessage(action) {
-  const { channelId, media } = action.payload;
-
-  const existingMessages = yield select(rawMessagesSelector(channelId));
-
-  if (!media.length) return;
-
-  let messages = [...existingMessages];
-  for (const file of media.filter((i) => i.nativeFile)) {
-    const messagesResponse = yield call(uploadFileMessageApi, channelId, file.nativeFile);
-    messages.push(messagesResponse);
+export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
+  // Opportunities for parallelization here.
+  for (const uploadableFile of uploadableFiles) {
+    const upload = call(
+      [
+        uploadableFile,
+        'upload',
+      ],
+      channelId,
+      rootMessageId
+    );
+    yield sendMessage(upload, channelId, uploadableFile.optimisticMessage.id);
+    rootMessageId = ''; // only the first file should connect to the root message for now.
   }
-
-  for (const file of media.filter((i) => i.giphy)) {
-    const original = file.giphy.images.original;
-    const giphyFile = { url: original.url, name: file.name, type: file.giphy.type };
-    const messagesResponse = yield call(sendMessagesByChannelId, channelId, undefined, undefined, undefined, giphyFile);
-    const message = messagesResponse.body;
-
-    if (messagesResponse.status !== 200) return;
-
-    messages.push(message);
-  }
-
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-    })
-  );
 }
 
 export function* receiveDelete(action) {
@@ -283,67 +378,55 @@ export function* receiveDelete(action) {
   );
 }
 
-export function* stopSyncChannels(action) {
-  const { channelId } = action.payload;
-
-  yield put(
-    receive({
-      id: channelId,
-      shouldSyncChannels: false,
-    })
-  );
-}
-
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
 
-  const cachedMessageIds = [...(yield select(getCachedMessageIds(channelId)))];
-  const currentMessages = yield select(rawMessagesSelector(channelId));
-  const preview = yield getPreview(message?.message);
+  const channel = yield select(rawChannelSelector(channelId));
+  const currentMessages = channel?.messages || [];
+  if (!channel || currentMessages.includes(message.id)) {
+    return;
+  }
+
+  const preview = yield call(getPreview, message.message);
 
   if (preview) {
     message = { ...message, preview };
   }
 
-  let messages = [];
-  if (cachedMessageIds.length) {
-    messages = [
+  let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+  if (!newMessages) {
+    newMessages = [
       ...currentMessages,
-    ];
-
-    // What is going on here? We set messages above but then we loop around
-    // all the cached message ids... and map messages to something that might be a message or
-    // might be a messageId... but only the last one in the list would ever impact
-    // the messages array because...we keep overwriting it?
-    cachedMessageIds.forEach((id, index, object) => {
-      messages = messages.map((messageId) => {
-        if (messageId === id && message.message && !message.image) {
-          object.splice(index, 1);
-          return message;
-        } else {
-          return messageId;
-        }
-      });
-    });
-  } else {
-    const filteredCurrentMessages = currentMessages.filter((currentMessageId) => currentMessageId !== message.id);
-    messages = [
-      ...filteredCurrentMessages,
       message,
     ];
   }
 
-  yield all([
-    put(
-      receive({
-        id: channelId,
-        messages,
-        messageIdsCache: cachedMessageIds,
-        lastMessage: message,
-      })
-    ),
-    call(sendBrowserNotification, channelId, message),
-  ]);
+  yield put(receive({ id: channelId, messages: newMessages }));
+  yield spawn(sendBrowserNotification, channelId, message);
+
+  const isChannel = yield select(_isChannel(channelId));
+  const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
+
+  yield call(markAllAsReadAction, channelId);
+}
+
+export function* replaceOptimisticMessage(currentMessages, message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+  const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+  if (messageIndex < 0) {
+    return null;
+  }
+
+  const optimisticMessage = yield select(messageSelector(message.optimisticId));
+  if (optimisticMessage) {
+    const messages = [...currentMessages];
+    messages[messageIndex] = { ...message, sendStatus: MessageSendStatus.SUCCESS };
+    return messages;
+  }
+
+  return null;
 }
 
 export function* receiveUpdateMessage(action) {
@@ -364,17 +447,15 @@ export function* getPreview(message) {
   return yield call(getLinkPreviews, link[0].href);
 }
 
-function getCountNewMessages(messages: Message[] = [], lastMessageCreatedAt: number): number {
-  return messages.filter((x) => x.createdAt > lastMessageCreatedAt).length;
-}
+function* pollForPublicChannelMessages() {
+  while (true) {
+    const currentUser = yield select(currentUserSelector());
+    const isPublicZOS = !currentUser?.id;
+    const activeChannelId = yield select(activeChannelIdSelector);
 
-function filteredLastMessage(messages: Message[]): Message {
-  return messages[Object.keys(messages).pop()];
-}
-
-function* syncChannelsTask(action) {
-  while (yield select(rawShouldSyncChannels(action.payload.channelId))) {
-    yield call(fetchNewMessages, action);
+    if (isPublicZOS && activeChannelId) {
+      yield call(fetchNewMessages, activeChannelId);
+    }
     yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
@@ -390,6 +471,7 @@ export function isOwner(currentUser, entityUserId) {
 }
 
 export function* sendBrowserNotification(channelId, message: Message) {
+  // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
   const channel = yield select(rawChannelSelector(channelId));
 
   if (channel?.isChannel) return;
@@ -404,9 +486,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-  yield takeLatest(SagaActionTypes.startMessageSync, syncChannelsTask);
-  yield takeLatest(SagaActionTypes.stopSyncChannels, stopSyncChannels);
-  yield takeLatest(SagaActionTypes.uploadFileMessage, uploadFileMessage);
+
+  yield spawn(pollForPublicChannelMessages);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

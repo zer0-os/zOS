@@ -5,6 +5,7 @@ import { update, SagaActionTypes } from './';
 import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 import { User } from '../authentication/types';
 import { openFirstConversation } from '../login/saga';
+import { checkNewRewardsLoaded } from '../rewards/saga';
 
 export const getKeyWithUserId = (key: string) => (state) => {
   const user: User = getDeepProperty(state, 'authentication.user.data', null);
@@ -66,6 +67,8 @@ export function* clearUserLayout() {
 
 export function* enterFullScreenMessenger(_action) {
   yield put(update({ isMessengerFullScreen: true }));
+
+  yield call(checkNewRewardsLoaded);
 
   // open the first conversation when entering full screen
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId'));

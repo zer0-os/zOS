@@ -1,18 +1,14 @@
+import { AttachmentResponse } from '../../lib/api/attachment';
 import { del, get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { EditMessageOptions, Media, MessagesResponse } from './index';
+import { AttachmentUploadResult, EditMessageOptions } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 
-export async function fetchMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
-  const filter: any = {};
+import axios from 'axios';
 
-  if (lastCreatedAt) {
-    filter.lastCreatedAt = lastCreatedAt;
-  }
-
-  const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
-  return response.body;
+export async function sendFileMessage(channelId: string, file: FileUploadResult, optimisticId?: string): Promise<any> {
+  return sendMessagesByChannelId(channelId, null, null, null, file, optimisticId);
 }
 
 export async function sendMessagesByChannelId(
@@ -20,9 +16,10 @@ export async function sendMessagesByChannelId(
   message: string,
   mentionedUserIds: string[],
   parentMessage?: ParentMessage,
-  file?: FileUploadResult
+  file?: FileUploadResult,
+  optimisticId?: string
 ): Promise<any> {
-  const data: SendPayload = { message, mentionedUserIds };
+  const data: SendPayload = { message, mentionedUserIds, optimisticId };
 
   if (parentMessage) {
     data.parentMessageId = parentMessage.messageId;
@@ -35,7 +32,7 @@ export async function sendMessagesByChannelId(
 
   const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
 
-  return response;
+  return response.body;
 }
 
 export async function deleteMessageApi(channelId: string, messageId: number): Promise<number> {
@@ -51,6 +48,8 @@ export async function editMessageApi(
   mentionedUserIds: string[],
   data?: Partial<EditMessageOptions>
 ): Promise<number> {
+  // Note: this is actually wrong. The api endpoint does not take the `mentionedUsersId`
+  // parameter at all.
   const response = await put<any>(`/chatChannels/${channelId}/message`).send({
     message: { id: messageId, message, mentionedUserIds, data },
   });
@@ -58,10 +57,38 @@ export async function editMessageApi(
   return response.status;
 }
 
-export async function uploadFileMessage(channelId: string, media: File): Promise<Media> {
-  const response = await post<any>(`/upload/chatChannels/${channelId}/message`).attach('file', media);
+export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+  const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
+    .field('rootMessageId', rootMessageId)
+    .field('optimisticId', optimisticId)
+    .attach('file', media);
 
   return response.body;
+}
+
+export async function uploadAttachment(file: File): Promise<AttachmentUploadResult> {
+  const response = await get<any>('/api/feedItems/getAttachmentUploadInfo', undefined, {
+    name: file.name,
+    type: file.type,
+  });
+  const uploadInfo: AttachmentResponse = response.body;
+
+  await axios.put(uploadInfo.signedUrl, file, {
+    timeout: 2 * 60 * 1000,
+    headers: {
+      'Content-Type': file.type,
+    },
+    // note: for adding progress bar to the upload
+    // https://github.com/m3m3n70/zero-web/blob/development/src/app/api/file/index.ts#L110
+    onUploadProgress: (_event) => {},
+  });
+
+  return {
+    name: file.name,
+    key: uploadInfo.key,
+    url: uploadInfo.key,
+    type: 'file',
+  };
 }
 
 export async function getLinkPreviews(link: string): Promise<LinkPreview> {

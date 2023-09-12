@@ -7,7 +7,10 @@ $left-padding: 12px;
 }
 
 .zos-wallet-select {
+  padding: 8px;
+  border-radius: 8px;
   color: theme.$color-greyscale-12;
+  background-color: theme.$color-primary-transparency-1;
 
   &__title-bar {
     border-bottom: 1px solid theme.$color-primary-4;
@@ -40,7 +43,7 @@ $left-padding: 12px;
     border-radius: 8px;
 
     &:hover {
-      background-color: theme.$color-primary-4;
+      background-color: theme.$color-primary-transparency-2;
     }
   }
 
@@ -51,7 +54,6 @@ $left-padding: 12px;
     align-items: center;
     height: 28px;
     width: 28px;
-    background-color: theme.$color-primary-1;
     padding: 2px;
   }
 
@@ -64,8 +66,7 @@ $left-padding: 12px;
 
   &__footer {
     border-top: 1px solid theme.$color-primary-4;
-    padding-top: 16px;
-    padding-left: $left-padding;
+    padding: 24px 16px 16px;
 
     color: theme.$color-greyscale-11;
     font-weight: 400;
@@ -91,7 +92,24 @@ $left-padding: 12px;
 
   &__connecting-indicator {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 7px 12px;
+  }
+
+  &__connecting-wallet-name {
+    display: flex;
+    height: 24px;
+    flex-direction: column;
     justify-content: center;
-    padding: 18px;
+    flex: 1 0 0;
+  }
+
+  &__connecting-wallet-button-spinner {
+    &::after {
+      border: none;
+    }
   }
 }

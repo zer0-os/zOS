@@ -1,12 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from '.';
-import { MediaType } from '../../store/messages';
+import { MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
-import MessageMenu from '../../platform-apps/channels/messages-menu';
+import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { ContentHighlighter } from '../content-highlighter';
+import { ParentMessage } from './parent-message';
 
 describe('message', () => {
   const sender = {
@@ -70,13 +71,66 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
-  it('renders time', () => {
+  it('renders time if specified', () => {
     const wrapper = subject({
-      message: 'the message',
       createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: true,
+      message: 'message',
     });
 
     expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
+  });
+
+  it('does not render time if not specified', () => {
+    const wrapper = subject({
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: false,
+    });
+
+    expect(wrapper).not.toHaveElement('.message__time');
+  });
+
+  it('renders author name if specified', () => {
+    const wrapper = subject({
+      sender: { firstName: 'first', lastName: 'last' },
+      showAuthorName: true,
+      message: 'the message',
+    });
+
+    expect(wrapper.find('.message__author-name').text()).toStrictEqual('first last');
+  });
+
+  it('does not render author name if not specified', () => {
+    const wrapper = subject({
+      sender: { firstName: 'first', lastName: 'last' },
+      showAuthorName: false,
+      message: 'the message',
+    });
+
+    expect(wrapper).not.toHaveElement('.message__author-name');
+  });
+
+  it('renders time if status not failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      showTimestamp: true,
+    });
+
+    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
+    expect(wrapper).not.toHaveElement('.message__failure-message');
+  });
+
+  it('renders failure message instead of time if status is failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      createdAt: new Date('December 17, 1995 17:04:00').valueOf(),
+      sendStatus: MessageSendStatus.FAILED,
+      showTimestamp: true,
+    });
+
+    expect(wrapper).not.toHaveElement('.message__time');
+    expect(wrapper).toHaveElement('.message__failure-message');
   });
 
   it('renders message menu of items', () => {
@@ -97,13 +151,51 @@ describe('message', () => {
     expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
+  it('disables all menu abilities when in progress', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.IN_PROGRESS,
+    });
+
+    const props = wrapper.find(MessageMenu).props();
+
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(false);
+  });
+
+  it('allows only delete when message send failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.FAILED,
+    });
+
+    const props = wrapper.find(MessageMenu).props();
+
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(true);
+  });
+
+  it('displays the menu when message send failed', () => {
+    const wrapper = subject({
+      message: 'the message',
+      isOwner: true,
+      sendStatus: MessageSendStatus.FAILED,
+    });
+
+    expect(wrapper).toHaveElement('.menu--force-visible');
+  });
+
   it('renders edited indicator', () => {
     const wrapper = subject({
       message: 'the message',
       updatedAt: 86276372,
     });
 
-    expect(wrapper.find('.message__block-edited').exists()).toBe(true);
+    expect(wrapper.find('.message__footer').text()).toEqual('(Edited)');
   });
 
   it('renders reply message', () => {
@@ -113,8 +205,7 @@ describe('message', () => {
       parentMessageText,
     });
 
-    expect(wrapper.find('.message__block-reply').exists()).toBe(true);
-    expect(wrapper.find(ContentHighlighter).first().prop('message').trim()).toStrictEqual(parentMessageText);
+    expect(wrapper.find(ParentMessage).prop('message')).toStrictEqual(parentMessageText);
   });
 
   it('call reply message', () => {
@@ -122,15 +213,32 @@ describe('message', () => {
     const messageId = '989887';
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const replyMessage = { messageId, message, userId: sender.userId };
+    const replyMessage = {
+      messageId,
+      message,
+      userId: sender.userId,
+      sender: sender,
+      isAdmin: false,
+      mentionedUsers: [],
+      hidePreview: true,
+      admin: {},
+      optimisticId: '',
+      rootMessageId: '',
+    };
     const wrapper = subject({
       message,
       messageId,
       sender,
+      isAdmin: false,
+      mentionedUsers: [],
+      hidePreview: true,
+      admin: {},
+      optimisticId: '',
+      rootMessageId: '',
       onReply,
     });
 
-    wrapper.find(MessageMenu).first().prop('onReply')();
+    wrapper.find(MessageMenu).simulate('reply');
 
     expect(onReply).toHaveBeenCalledWith(replyMessage);
   });
@@ -186,7 +294,7 @@ describe('message', () => {
 
     const wrapper = subject({ preview, message, hidePreview: false });
 
-    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
     expect(wrapper.find(ContentHighlighter).first().prop('message').includes(message)).toBeTruthy();
   });
 
@@ -200,7 +308,7 @@ describe('message', () => {
 
     const wrapper = subject({ preview, message: undefined, hidePreview: false });
 
-    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
   });
 
   it('does not render LinkPreview when there is a message but hidePreview is true', () => {
@@ -230,7 +338,7 @@ describe('message', () => {
 
     const wrapper = subject({ messageId: id, preview, message, hidePreview: false, isOwner: true, onEdit });
 
-    expect(wrapper.find('.remove-preview__icon').simulate('click'));
+    expect(wrapper.find(LinkPreview).simulate('remove'));
     expect(onEdit).toHaveBeenCalledWith(id, message, [], { hidePreview: true });
   });
 
@@ -248,9 +356,11 @@ describe('message', () => {
       showSenderAvatar: true,
     });
 
-    const authorAvatarElement = wrapper.find('.message__author-avatar');
+    const avatarComponent = wrapper.find('.message__author-avatar Avatar');
 
-    expect(authorAvatarElement.prop('style').backgroundImage).toEqual(`url(${sender.profileImage})`);
+    expect(avatarComponent.exists()).toBe(true);
+
+    expect(avatarComponent.prop('imageURL')).toEqual(`${sender.profileImage}`);
   });
 
   it('renders with a tag', () => {

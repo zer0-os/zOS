@@ -20,7 +20,9 @@ describe('Container', () => {
           registration: { errors: [AccountCreationErrors.PUBLIC_ADDRESS_ALREADY_EXISTS] } as RegistrationState,
         });
 
-        expect(props.error).toEqual('This address has already been registered');
+        expect(props.error).toEqual(
+          'The wallet you connected is already associated with a ZERO account. Please try a different wallet or log in instead.'
+        );
       });
     });
 

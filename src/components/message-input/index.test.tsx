@@ -9,10 +9,10 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { EmojiPicker } from './emoji-picker';
 import MessageAudioRecorder from '../message-audio-recorder';
-import { Giphy } from './giphy';
+import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
+import { IconSend3 } from '@zero-tech/zui/icons';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -30,6 +30,7 @@ describe('MessageInput', () => {
         removePasteListener: (_) => {},
       },
       viewMode: ViewModes.Dark,
+      replyIsCurrentUser: false,
       ...props,
     };
 
@@ -63,6 +64,85 @@ describe('MessageInput', () => {
     expect(renderAfterInput).toHaveBeenCalled();
   });
 
+  it('does not submit message when message state is empty', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, ctrlKey: true });
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('submits message when Enter is pressed', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    input.simulate('change', { target: { value: 'Hello' } });
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('submits message when Enter is pressed and files have been added', () => {
+    const onSubmit = jest.fn();
+    const dropzoneToMedia = (files) => files;
+    const wrapper = subject({ onSubmit, dropzoneToMedia });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(MentionsInput);
+    wrapper.find(Dropzone).simulate('drop', [{ name: 'file1' }]);
+    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('', [], [{ name: 'file1' }]);
+  });
+
+  it('submits message when send icon is clicked', () => {
+    const onSubmit = jest.fn();
+    const wrapper = subject({ onSubmit });
+    setInput(wrapper, 'Hello');
+
+    const sendIcon = wrapper.find('.message-input__icon--end-action');
+    sendIcon.simulate('click');
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith('Hello', [], []);
+  });
+
+  it('shows send icon when input has value', () => {
+    const wrapper = subject({});
+    setInput(wrapper, 'Hello');
+
+    const sendIcon = wrapper.find('.message-input__icon--end-action');
+
+    expect(sendIcon.prop('Icon')).toEqual(IconSend3);
+  });
+
+  it('send icon is highlighted when input has a value and there is no disabled message', () => {
+    const wrapper = subject({ sendDisabledMessage: '' });
+    setInput(wrapper, 'Hello');
+
+    expect(wrapper).toHaveElement('.message-input__icon--highlighted');
+  });
+
+  it('send icon is not highlighted if there is no input', () => {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement('.message-input__icon--highlighted');
+  });
+
+  it('send icon is not highlighted if there is a disabled message', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    expect(wrapper).not.toHaveElement('.message-input__icon--highlighted');
+  });
+
   it('submit message when click on textarea', () => {
     const onSubmit = jest.fn();
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
@@ -73,6 +153,25 @@ describe('MessageInput', () => {
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
     expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('opens tooltip if disable message is set and user tries to submit', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    wrapper.find('.message-input__icon--end-action').simulate('click');
+
+    expect(wrapper.find('Tooltip').prop('open')).toBe(true);
+  });
+
+  it('closes tooltip if disable message clears', () => {
+    const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
+    setInput(wrapper, 'Hello');
+
+    wrapper.find('.message-input__icon--end-action').simulate('click');
+    wrapper.setProps({ sendDisabledMessage: '' });
+
+    expect(wrapper.find('Tooltip').prop('open')).toBe(false);
   });
 
   it('call after render', () => {
@@ -95,12 +194,11 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply });
-    const dropzone = wrapper.find(Dropzone).shallow();
 
-    expect(dropzone.find(ReplyCard).exists()).toBe(true);
+    expect(wrapper.find(ReplyCard).prop('message')).toEqual('hello');
   });
 
   it('renders MessageAudioRecorder', function () {
@@ -109,7 +207,7 @@ describe('MessageInput', () => {
 
     expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
 
-    wrapper.find('.record-voice__icon').simulate('click');
+    wrapper.find('.message-input__icon--end-action').simulate('click');
 
     dropzone.setProps({});
 
@@ -121,19 +219,22 @@ describe('MessageInput', () => {
     const messageId = 98988743;
     const message = 'hello';
     const sender = { userId: '78676X67767' };
-    const reply = { messageId, message, userId: sender.userId };
+    const reply = { messageId, message, userId: sender.userId } as any;
 
     const wrapper = subject({ reply, onRemoveReply });
-
-    const dropzone = wrapper.find(Dropzone).shallow();
-    dropzone.find(ReplyCard).prop('onRemove')();
+    wrapper.find(ReplyCard).simulate('remove');
 
     expect(onRemoveReply).toHaveBeenCalledOnce();
   });
 
-  it('dropzone accept all type of images', function () {
+  it('dropzone accept all type of images, text, .pdf, .doc files', function () {
     const mimeTypes = {
       'image/*': [],
+      'text/*': [],
+      'video/*': [],
+      'application/pdf': [],
+      'application/zip': [],
+      'application/msword': [],
     };
 
     const wrapper = subject({});
@@ -150,42 +251,44 @@ describe('MessageInput', () => {
   });
 
   it('searches for matching users via userMentionSearch function', async function () {
-    const getUsersForMentions = async (_searchString) => Promise.resolve([{ id: '1', display: 'dale' }]);
+    const getUsersForMentions = async (_searchString) =>
+      Promise.resolve([{ id: '1', display: 'dale', profileImage: 'http://example.com' }]);
     const wrapper = subject({ getUsersForMentions });
 
     const searchResults = await userSearch(wrapper, 'da');
 
-    expect(searchResults).toEqual([{ display: 'dale', id: '1' }]);
+    expect(searchResults).toEqual([{ display: 'dale', id: '1', profileImage: 'http://example.com' }]);
   });
 
   it('sorts by search string index', async function () {
     const getUsersForMentions = async (_searchString) =>
       Promise.resolve([
-        { id: 'd-2', display: '2-dale' },
-        { id: 'd-3', display: '3--dale' },
-        { id: 'd-1', display: 'dale' },
+        { id: 'd-2', display: '2-dale', profileImage: 'http://example.com/2' },
+        { id: 'd-3', display: '3--dale', profileImage: 'http://example.com/3' },
+        { id: 'd-1', display: 'dale', profileImage: 'http://example.com/' },
       ]);
     const wrapper = subject({ getUsersForMentions });
 
     const searchResults = await userSearch(wrapper, 'da');
 
     expect(searchResults).toEqual([
-      { display: 'dale', id: 'd-1' },
-      { display: '2-dale', id: 'd-2' },
-      { display: '3--dale', id: 'd-3' },
+      { display: 'dale', id: 'd-1', profileImage: 'http://example.com/' },
+      { display: '2-dale', id: 'd-2', profileImage: 'http://example.com/2' },
+      { display: '3--dale', id: 'd-3', profileImage: 'http://example.com/3' },
     ]);
   });
 
   describe('Emojis', () => {
-    const getEmojiPicker = () => {
-      const wrapper = subject({});
-      return wrapper.find(Dropzone).shallow().find(EmojiPicker);
-    };
+    it('translates typed colon emojis to unicode emojis', () => {
+      const onSubmit = jest.fn();
+      const wrapper = subject({ onSubmit });
+      const dropzone = wrapper.find(Dropzone).shallow();
 
-    it('renders', function () {
-      const emojiPicker = getEmojiPicker();
+      const message = 'Message with :smile:';
+      dropzone.find(MentionsInput).simulate('change', { target: { value: message } });
+      wrapper.find('.message-input__icon--end-action').simulate('click');
 
-      expect(emojiPicker.exists()).toBe(true);
+      expect(onSubmit).toHaveBeenCalledWith('Message with 😄', [], []);
     });
   });
 
@@ -196,7 +299,7 @@ describe('MessageInput', () => {
 
       expect(dropzone.find(Giphy).exists()).toBe(false);
 
-      wrapper.find('.giphy__icon').simulate('click');
+      wrapper.find('.message-input__icon--giphy').simulate('click');
 
       dropzone.setProps({});
 
@@ -207,7 +310,7 @@ describe('MessageInput', () => {
       const wrapper = subject({});
       const dropzone = wrapper.find(Dropzone).shallow();
 
-      wrapper.find('.giphy__icon').simulate('click');
+      wrapper.find('.message-input__icon--giphy').simulate('click');
 
       dropzone.setProps({});
 
@@ -243,3 +346,8 @@ describe('MessageInput', () => {
     return searchResults;
   }
 });
+
+function setInput(wrapper, input) {
+  const dropzone = wrapper.find(Dropzone).shallow();
+  dropzone.find(MentionsInput).simulate('change', { target: { value: input } });
+}

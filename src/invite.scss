@@ -3,10 +3,10 @@
 .invite-main {
   display: flex;
   flex-direction: column;
-  padding: 104px 0 0 0;
+  padding: 24px 0;
   box-sizing: border-box;
 
-  justify-content: flex-start;
+  justify-content: space-between;
   align-content: flex-start;
   align-items: center;
 
@@ -34,7 +34,12 @@
     flex-shrink: 0;
   }
 
-  > *:last-child {
-    margin-bottom: 150px;
+  &__logo-container {
+    margin-bottom: 76px;
+    padding-left: 8px;
+
+    &--is-landing-page {
+      margin-bottom: 0;
+    }
   }
 }

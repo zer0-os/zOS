@@ -10,6 +10,13 @@ export interface Properties extends TooltipProps {
 
 export default class Tooltip extends React.Component<Properties> {
   render() {
+    const { overlay } = this.props;
+    const hasOverlayContent = overlay && overlay !== '';
+
+    if (!hasOverlayContent) {
+      return <>{this.props.children}</>;
+    }
+
     return (
       <ReactTooltip
         overlayClassName={classNames('tooltip', this.props.className)}

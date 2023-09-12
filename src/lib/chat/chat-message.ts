@@ -1,8 +1,9 @@
-import { AdminMessageType, Message } from '../../store/messages';
+import { AdminMessageType, MediaType, Message, MessageSendStatus } from '../../store/messages';
 import { RootState } from '../../store/reducer';
 import { ChatMember } from './types';
 import { denormalize as denormalizeUser } from '../../store/users';
 import { currentUserSelector } from '../../store/authentication/saga';
+import moment from 'moment';
 
 const DEFAULT_MEDIA_TYPE = 'image';
 
@@ -65,7 +66,7 @@ function coerceType(type) {
     return 'audio';
   }
 
-  if (type.indexOf('file') !== -1) {
+  if (type.indexOf('file') !== -1 || type.indexOf('application/') !== -1 || type.indexOf('text/') !== -1) {
     return 'file';
   }
 
@@ -90,6 +91,8 @@ function extractMessageData(jsonData, isMediaMessage) {
   let hidePreview = false;
   let media;
   let admin;
+  let optimisticId = '';
+  let rootMessageId = '';
 
   try {
     const data = jsonData ? JSON.parse(jsonData) : {};
@@ -101,12 +104,42 @@ function extractMessageData(jsonData, isMediaMessage) {
     mentionedUsers = data.mentionedUsers || [];
     hidePreview = data.hidePreview || false;
     admin = data.admin || {};
+    optimisticId = data.optimisticId || '';
+    rootMessageId = data.rootMessageId || '';
   } catch (e) {}
 
-  return { mentionedUsers, hidePreview, media, image: media, admin };
+  return {
+    mentionedUsers,
+    hidePreview,
+    media,
+    image: media?.type === 'image' ? media : undefined,
+    admin,
+    optimisticId,
+    rootMessageId,
+  };
+}
+
+export function mapMatrixMessage(matrixMessage) {
+  const parent = matrixMessage.content['m.relates_to'];
+
+  return {
+    id: matrixMessage.event_id,
+    message: matrixMessage.content.body,
+    parentMessageText: '',
+    parentMessageId: parent ? parent['m.in_reply_to'].event_id : null,
+    createdAt: matrixMessage.origin_server_ts,
+    updatedAt: matrixMessage.origin_server_ts,
+    sender: {},
+    isAdmin: false,
+    ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
+  };
 }
 
 export function map(sendbirdMessage) {
+  if (!sendbirdMessage) {
+    return null;
+  }
+
   const { message, parentMessage, createdAt, messageId, sender, messageType, data, updatedAt } = sendbirdMessage;
 
   return {
@@ -118,22 +151,100 @@ export function map(sendbirdMessage) {
     sender: getSender(sender),
     ...extractMessageData(data, messageType.toLowerCase() === 'file'),
     isAdmin: messageType.toLowerCase() === 'admin',
+    sendStatus: MessageSendStatus.SUCCESS,
+    parentMessage: map(parentMessage),
   } as unknown as Message;
+}
+
+export function previewDisplayDate(timestamp: number) {
+  if (!timestamp) {
+    return '';
+  }
+
+  const messageDate = moment(timestamp);
+  const currentDate = moment();
+
+  if (messageDate.isSame(currentDate, 'day')) {
+    return messageDate.format('h:mm A');
+  } else if (messageDate.isAfter(currentDate.clone().subtract(7, 'days'), 'day')) {
+    return messageDate.format('ddd');
+  } else if (messageDate.year() === currentDate.year()) {
+    return messageDate.format('MMM D');
+  }
+
+  return messageDate.format('MMM D, YYYY');
+}
+
+export function getMessagePreview(message: Message, state: RootState) {
+  if (!message) {
+    return '';
+  }
+
+  if (message.sendStatus === MessageSendStatus.FAILED) {
+    return 'You: Failed to send';
+  }
+
+  if (message.isAdmin) {
+    return adminMessageText(message, state);
+  }
+
+  let prefix = previewPrefix(message.sender, state);
+  return `${prefix}: ${message.message || getMediaPreview(message)}`;
+}
+
+function previewPrefix(sender: Message['sender'], state: RootState) {
+  const user = currentUserSelector()(state);
+  return sender.userId === user.id ? 'You' : sender.firstName;
+}
+
+function getMediaPreview(message: Message) {
+  switch (message?.media?.type) {
+    case MediaType.Image:
+      return 'sent an image';
+    case MediaType.Video:
+      return 'sent a video';
+    case MediaType.File:
+      return 'sent a file';
+    case MediaType.Audio:
+      return 'sent an audio message';
+    default:
+      return '';
+  }
 }
 
 export function adminMessageText(message: Message, state: RootState) {
   const user = currentUserSelector()(state);
 
   let text = message.message;
-  if (message.admin?.type === AdminMessageType.JOINED_ZERO) {
-    if (message.admin?.inviteeId === user.id) {
-      const inviter = denormalizeUser(message.admin.inviterId, state);
-      text = inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : text;
-    } else {
-      const invitee = denormalizeUser(message.admin.inviteeId, state);
-      text = invitee?.firstName ? `${invitee.firstName} joined you on Zero` : text;
-    }
+  if (!message.admin) {
+    return text;
+  }
+
+  if (message.admin.type === AdminMessageType.JOINED_ZERO) {
+    return translateJoinedZero(message.admin, user, state) ?? text;
+  } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
+    return translateConversationStarted(message.admin, user, state) ?? text;
   }
 
   return text;
+}
+
+function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {
+  const isCurrentUserInvitee = admin.inviteeId === currentUser.id;
+  if (isCurrentUserInvitee) {
+    const inviter = denormalizeUser(admin.inviterId, state);
+    return inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : null;
+  }
+
+  const invitee = denormalizeUser(admin.inviteeId, state);
+  return invitee?.firstName ? `${invitee.firstName} joined you on Zero` : null;
+}
+
+function translateConversationStarted(admin: { creatorId?: string }, currentUser, state: RootState) {
+  if (admin.creatorId === currentUser.id) {
+    return 'You started the conversation';
+  }
+
+  const creator = denormalizeUser(admin.creatorId, state);
+  return creator?.firstName ? `${creator.firstName} started the conversation` : null;
 }

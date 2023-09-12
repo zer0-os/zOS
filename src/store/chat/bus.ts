@@ -11,6 +11,7 @@ export enum Events {
   ReconnectStop = 'chat/reconnectStop',
   InvalidToken = 'chat/invalidToken',
   ChannelInvitationReceived = 'chat/channel/invitationReceived',
+  UserLeftChannel = 'chat/channel/userLeft',
 }
 
 let theBus;
@@ -22,6 +23,8 @@ export function* getChatBus() {
 }
 
 export function createChatConnection(userId, chatAccessToken) {
+  const chatClient = chat.get();
+
   return eventChannel((emit) => {
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
@@ -36,8 +39,9 @@ export function createChatConnection(userId, chatAccessToken) {
     const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
     const onUserReceivedInvitation = (channelId) =>
       emit({ type: Events.ChannelInvitationReceived, payload: { channelId } });
+    const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
 
-    chat.initChat({
+    chatClient.initChat({
       reconnectStart,
       reconnectStop,
       receiveNewMessage,
@@ -46,11 +50,12 @@ export function createChatConnection(userId, chatAccessToken) {
       receiveUnreadCount,
       invalidChatAccessToken,
       onUserReceivedInvitation,
+      onUserLeft,
     });
-    chat.connect(userId, chatAccessToken);
+    chatClient.connect(userId, chatAccessToken);
 
     const unsubscribe = () => {
-      chat.disconnect();
+      chatClient.disconnect();
     };
     return unsubscribe;
   });

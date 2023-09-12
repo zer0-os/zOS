@@ -87,14 +87,14 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food',
-      app: getAppFor(Apps.Feed),
+      app: getAppFor(Apps.Channels),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
 
     wrapper.find(AddressBar).simulate('forward');
 
-    expect(push).toHaveBeenCalledWith('/food.tacos/feed');
+    expect(push).toHaveBeenCalledWith('/food.tacos/channels');
   });
 
   it('does not navigate when forward is called if already at deepest route', () => {
@@ -117,7 +117,7 @@ describe('AddressBarContainer', () => {
 
     const wrapper = subject({
       route: 'food.tacos.bean',
-      app: getAppFor(Apps.Staking),
+      app: getAppFor(Apps.Channels),
       deepestVisitedRoute: 'food.tacos.bean.pinto',
       history: { push },
     });
@@ -183,10 +183,10 @@ describe('AddressBarContainer', () => {
 
     test('app', () => {
       const state = subject({
-        apps: { selectedApp: { type: Apps.Feed } as PlatformApp },
+        apps: { selectedApp: { type: Apps.Channels } as PlatformApp },
       });
 
-      expect(state.app).toEqual({ type: Apps.Feed });
+      expect(state.app).toEqual({ type: Apps.Channels });
     });
 
     test('deepestVisitedRoute', () => {

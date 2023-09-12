@@ -179,6 +179,7 @@ jest.mock('@zero-tech/zui/icons', () => ({
   IconEqualNot: () => null,
   IconEraser: () => null,
   IconExpand1: () => null,
+  IconCollapse1: () => null,
   IconExpand2: () => null,
   IconExpand6: () => null,
   IconEye: () => null,

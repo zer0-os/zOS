@@ -24,22 +24,15 @@ describe('AppMenu', () => {
     const wrapper = subject({
       apps: [
         {
-          type: Apps.DAOS,
-          name: 'DAOS',
-        },
-        {
-          type: Apps.Staking,
-          name: 'Staking',
+          type: Apps.Channels,
+          name: 'Chat',
         },
       ],
     });
 
     const labels = wrapper.find('.app-menu__app-name').map((element) => element.text().trim());
 
-    expect(labels).toStrictEqual([
-      'DAOS',
-      'Staking',
-    ]);
+    expect(labels).toStrictEqual(['Chat']);
   });
 
   it('renders a ZnsLink for each app', () => {
@@ -47,12 +40,8 @@ describe('AppMenu', () => {
       route: 'what.is.this',
       apps: [
         {
-          type: Apps.DAOS,
-          name: 'DAOS',
-        },
-        {
-          type: Apps.Staking,
-          name: 'Staking',
+          type: Apps.Channels,
+          name: 'Chat',
         },
       ],
     });
@@ -62,30 +51,23 @@ describe('AppMenu', () => {
       app: element.prop('app'),
     }));
 
-    expect(linkProps).toStrictEqual([
-      { route: 'what.is.this', app: Apps.DAOS },
-      { route: 'what.is.this', app: Apps.Staking },
-    ]);
+    expect(linkProps).toStrictEqual([{ route: 'what.is.this', app: Apps.Channels }]);
   });
 
   it('adds selected class to selected app', () => {
     const wrapper = subject({
       apps: [
         {
-          type: Apps.Staking,
-          name: 'Staking',
-        },
-        {
-          type: Apps.Feed,
-          name: 'Feed',
+          type: Apps.Channels,
+          name: 'Chat',
         },
       ],
-      selectedApp: Apps.Feed,
+      selectedApp: Apps.Channels,
     });
 
     const feedApp = wrapper
       .find('.app-menu__app')
-      .filterWhere((app: any) => app.find('.app-menu__app-name').text().trim() === 'Feed');
+      .filterWhere((app: any) => app.find('.app-menu__app-name').text().trim() === 'Chat');
 
     expect(feedApp.hasClass('selected')).toBe(true);
   });

@@ -1,65 +1,79 @@
-import { IconDotsVertical } from '@zero-tech/zui/icons';
-import { ModalConfirmation } from '@zero-tech/zui/components';
-import React from 'react';
-import { IconButton } from '../../../components/icon-button';
-import PortalMenu from './portal-menu';
+import React, { createRef } from 'react';
+import { createPortal } from 'react-dom';
 
+import { DropdownMenu, Modal, IconButton, Button } from '@zero-tech/zui/components';
+import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
+
+import classNames from 'classnames';
 import './styles.scss';
 
-interface Properties {
+export interface Properties {
   className: string;
   canEdit: boolean;
+  canDelete: boolean;
   canReply?: boolean;
   isMediaMessage?: boolean;
+  isMenuOpen?: boolean;
 
+  onOpenChange?: (isOpen: boolean) => void;
+  onCloseMenu?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
   onReply?: () => void;
 }
 
 export interface State {
-  isOpen: boolean;
   deleteDialogIsOpen: boolean;
 }
 
 export class MessageMenu extends React.Component<Properties, State> {
-  state = { isOpen: false, deleteDialogIsOpen: false };
+  ref = createRef();
 
-  open = (): void => {
-    this.setState({ isOpen: true });
-  };
+  state = { deleteDialogIsOpen: false };
+
+  renderMenuOption(icon, label) {
+    return (
+      <div className={'option'}>
+        {label} {icon}
+      </div>
+    );
+  }
+
+  // Our zUI DropdownMenu component actively steals focus.
+  // In order to allow actions to change focus without the dropdown menu stealing it back,
+  // we delay publishing the event by releasing the thread for a single tick.
+  delayEvent = (handler) => setTimeout(handler, 1);
+  onEdit = () => this.delayEvent(this.props.onEdit);
+  onReply = () => this.delayEvent(this.props.onReply);
 
   renderItems = () => {
     const menuItems = [];
-
-    if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
-      menuItems.push(
-        <li className='menu-button reply-item' key='reply' onClick={this.props.onReply}>
-          <span>Reply</span>
-        </li>
-      );
-    }
-    if (this.props.onDelete && this.props.canEdit) {
-      menuItems.push(
-        <li className='menu-button delete-item' key='delete' onClick={this.toggleDeleteDialog}>
-          <span>Delete</span>
-        </li>
-      );
-    }
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
-      menuItems.push(
-        <li className='menu-button edit-item' key='edit' onClick={this.props.onEdit}>
-          <span>Edit</span>
-        </li>
-      );
+      menuItems.push({
+        id: 'edit',
+        label: this.renderMenuOption(<IconEdit5 />, 'Edit'),
+        onSelect: this.onEdit,
+      });
+    }
+    if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
+      menuItems.push({
+        id: 'reply',
+        label: this.renderMenuOption(<IconFlipBackward />, 'Reply'),
+        onSelect: this.onReply,
+      });
+    }
+    if (this.props.onDelete && this.props.canDelete) {
+      menuItems.push({
+        id: 'delete',
+        label: this.renderMenuOption(<IconTrash4 />, 'Delete'),
+        onSelect: this.toggleDeleteDialog,
+      });
     }
 
     return menuItems;
   };
 
-  close = () => this.setState({ isOpen: false });
-
-  delete = () => {
+  handleDeleteMessage = () => {
     this.setState({
       deleteDialogIsOpen: false,
     });
@@ -76,22 +90,31 @@ export class MessageMenu extends React.Component<Properties, State> {
     return this.state.deleteDialogIsOpen;
   }
 
-  get showEditInput(): boolean {
-    return this.state.deleteDialogIsOpen;
-  }
-
   renderDeleteModal() {
     return (
-      <ModalConfirmation
-        open
-        onCancel={this.toggleDeleteDialog}
-        onConfirm={this.delete}
-        title='Delete Message'
-        cancelLabel='Cancel'
-        confirmationLabel='ok'
-      >
-        Are you sure you want to delete this message?
-      </ModalConfirmation>
+      <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
+        <div className='delete-message-modal__header'>
+          <h2>Delete message</h2>
+          <IconButton
+            className='delete-message-modal__icon-button'
+            Icon={IconXClose}
+            size={32}
+            onClick={this.toggleDeleteDialog}
+          />
+        </div>
+        <div className='delete-message-text-content'>
+          Are you sure you want to delete this message? This cannot be undone.
+        </div>
+        <div className='delete-message-modal__footer'>
+          <Button className='delete-message-modal__text-button' variant='text' onPress={this.toggleDeleteDialog}>
+            Cancel
+          </Button>
+
+          <Button variant='negative' onPress={this.handleDeleteMessage}>
+            Delete message
+          </Button>
+        </div>
+      </Modal>
     );
   }
 
@@ -104,14 +127,28 @@ export class MessageMenu extends React.Component<Properties, State> {
 
     return (
       <div className={this.props.className}>
-        <IconButton onClick={this.open} Icon={IconDotsVertical} size={20} />
-        <PortalMenu className='portal-menu' onClose={this.close} isOpen={this.state.isOpen}>
-          {menuItems}
-        </PortalMenu>
-        {this.showDeleteModal && this.renderDeleteModal()}
+        {this.props.isMenuOpen &&
+          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body)}
+
+        <DropdownMenu
+          menuClassName={'dropdown-menu'}
+          items={menuItems}
+          side='bottom'
+          alignMenu='center'
+          onOpenChange={this.props.onOpenChange}
+          showArrow
+          trigger={
+            <div
+              className={classNames('dropdown-menu-trigger', {
+                'dropdown-menu-trigger--open': this.props.isMenuOpen,
+              })}
+            >
+              <IconDotsHorizontal size={24} isFilled />
+            </div>
+          }
+        />
+        {this.renderDeleteModal()}
       </div>
     );
   }
 }
-
-export default MessageMenu;

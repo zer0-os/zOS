@@ -4,10 +4,14 @@ import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { itemToOption } from '../lib/utils';
+import '../list/styles.scss';
+
+import { highlightFilter, itemToOption } from '../lib/utils';
+import classNames from 'classnames';
 
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
+  selectedOptions?: Option[];
   onSelect: (selected: Option) => void;
 }
 
@@ -26,15 +30,32 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     }
 
     const items = await this.props.search(searchString);
-
-    this.setState({ results: items.map(itemToOption) });
+    const options = items.map(itemToOption);
+    const selectedOptions = this.props.selectedOptions || [];
+    const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
+    this.setState({ results: filteredOptions });
   };
 
-  itemClicked = (event: any) => {
+  itemSelected(event) {
     const clickedId = event.currentTarget.dataset.id;
     const selectedUser = this.state.results.find((r) => r.value === clickedId);
+
     if (selectedUser) {
       this.props.onSelect(selectedUser);
+      // exclude selected user from results
+      this.setState({
+        results: this.state.results.filter((r) => r.value !== clickedId),
+      });
+    }
+  }
+
+  itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    this.itemSelected(event);
+  };
+
+  handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      this.itemSelected(event);
     }
   };
 
@@ -45,20 +66,34 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
           autoFocus
           type='search'
           size={'small'}
-          placeholder='Search for a person'
+          placeholder='Search'
           onChange={this.searchChanged}
           value={this.state.searchString}
           wrapperClassName={'autocomplete-members__search-wrapper force-extra-specificity'}
           inputClassName={'autocomplete-members__search-input'}
         />
+
+        {this.state.results?.length === 0 && this.state.results !== '' && (
+          <div className={classNames('messages-list__empty', 'messages-list__empty-top-padding')}>
+            {`No results for '${this.state.searchString}' `}
+          </div>
+        )}
+
         {this.props.children}
         <div className='autocomplete-members__content'>
           {this.state.results && this.state.results.length > 0 && (
             <div className='autocomplete-members__search-results'>
               {this.state.results.map((r) => (
-                <div key={r.value} data-id={r.value} onClick={this.itemClicked}>
-                  <Avatar size='regular' type='circle' imageURL={r.image} />
-                  <div>{r.label}</div>
+                <div
+                  key={r.value}
+                  data-id={r.value}
+                  tabIndex={0}
+                  role='button'
+                  onKeyDown={this.handleKeyDown}
+                  onClick={this.itemClicked}
+                >
+                  <Avatar size='regular' type='circle' imageURL={r.image} tabIndex={-1} />
+                  <div>{highlightFilter(r.label, this.state.searchString)}</div>
                 </div>
               ))}
             </div>

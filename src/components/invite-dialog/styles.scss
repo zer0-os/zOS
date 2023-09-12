@@ -1,5 +1,14 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .invite-dialog {
   width: 548px;
 
@@ -8,8 +17,6 @@
     height: 53px;
     border-bottom: 1px solid theme.$color-primary-4;
     margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 40px;
 
     color: theme.$color-greyscale-12;
 
@@ -30,8 +37,6 @@
   }
 
   &__close {
-    height: 28px;
-
     &:focus-visible {
       outline: none;
     }
@@ -52,13 +57,12 @@
   }
 
   &__byline {
-    margin-top: 8px;
-    margin-bottom: 12px;
+    margin-top: 12px;
+    margin-bottom: 16px;
     color: theme.$color-greyscale-11;
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
-    line-height: 150%;
   }
 
   &__code-block {
@@ -80,6 +84,7 @@
       border-radius: inherit;
       outline: none;
       border: none;
+      animation: fadeIn 0.2s ease-in;
 
       &::-webkit-scrollbar {
         display: none;
@@ -113,7 +118,7 @@
     border-bottom-left-radius: 0px;
     background-color: theme.$color-secondary-1;
     color: theme.$color-secondary-11;
-
+    width: 70px;
     font-weight: 700;
     font-size: 14px;
     line-height: 17px;
@@ -143,7 +148,7 @@
     }
   }
 
-  &__remaining-invite {
+  &__remaining-invite-container {
     display: flex;
     flex-direction: row;
     padding: 12px;
@@ -155,7 +160,11 @@
     margin-top: 16px;
   }
 
-  &__no-invite-left {
+  &__remaining-invite {
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  &__invite-left {
     color: theme.$color-success-11;
   }
 }

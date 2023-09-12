@@ -15,7 +15,8 @@
     animation: fadein 700ms ease-out forwards;
 
     display: flex;
-    padding: 14px;
+    align-items: center;
+    padding: 16px;
     max-width: 32rem;
     height: 24px;
     background-color: theme.$color-primary-3;
@@ -47,6 +48,9 @@
   }
 
   &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-left: 8px;
   }
 }

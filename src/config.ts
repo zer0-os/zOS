@@ -9,7 +9,7 @@ export const config = {
   ipfsBaseUrl: process.env.REACT_APP_IPFS_BASE_URL,
   fortmaticApiKey: process.env.REACT_APP_FORTMATIC_API_KEY,
   portisDAppId: process.env.REACT_APP_PORTIS_DAPP_ID,
-  defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.NFTS,
+  defaultApp: process.env.REACT_APP_DEFAULT_APP || Apps.Channels,
   supportedChainId: process.env.REACT_APP_ETH_CHAIN || '1',
   appVersion: process.env.REACT_APP_VERSION,
   cloudinary: {
@@ -35,4 +35,9 @@ export const config = {
   },
   inviteUrl: process.env.REACT_APP_MESSENGER_INVITE_PATH,
   assetsPath: process.env.REACT_APP_ASSETS_PATH,
+  matrix: {
+    userId: process.env.REACT_APP_MATRIX_USER_ID,
+    accessToken: process.env.REACT_APP_MATRIX_ACCESS_TOKEN,
+  },
+  androidStorePath: process.env.REACT_APP_ANDROID_STORE_PATH,
 };

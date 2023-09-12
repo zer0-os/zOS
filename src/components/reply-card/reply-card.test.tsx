@@ -9,6 +9,9 @@ describe('ReplyCard', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       message: '',
+      senderIsCurrentUser: false,
+      senderFirstName: '',
+      senderLastName: '',
       onRemove: jest.fn(),
       ...props,
     };
@@ -27,8 +30,28 @@ describe('ReplyCard', () => {
     const onRemove = jest.fn();
 
     const wrapper = subject({ onRemove });
-    wrapper.find('.reply-card__icon-close').simulate('click');
+    wrapper.find('IconButton').simulate('click');
 
     expect(onRemove).toHaveBeenCalledOnce();
+  });
+
+  it('renders the sender name', function () {
+    const wrapper = subject({
+      senderIsCurrentUser: false,
+      senderFirstName: 'Jackie',
+      senderLastName: 'Chan',
+    });
+
+    expect(wrapper.find('.reply-card__header').text()).toEqual('Jackie Chan');
+  });
+
+  it('renders "You" if the sender is the current user', function () {
+    const wrapper = subject({
+      senderIsCurrentUser: true,
+      senderFirstName: 'Jackie',
+      senderLastName: 'Chan',
+    });
+
+    expect(wrapper.find('.reply-card__header').text()).toEqual('You');
   });
 });

@@ -26,7 +26,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return <AdminMessage message={this.props.text} createdAt={this.props.message.createdAt} />;
+    return <AdminMessage message={this.props.text} />;
   }
 }
 

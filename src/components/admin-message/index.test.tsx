@@ -6,16 +6,15 @@ describe('AdminMessage', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       message: '',
-      createdAt: 0,
       ...props,
     };
 
     return shallow(<AdminMessage {...allProps} />);
   };
 
-  it('renders the date', function () {
-    const wrapper = subject({ message: 'test message', createdAt: 1681745762146 });
+  it('renders the message', function () {
+    const wrapper = subject({ message: 'test message' });
 
-    expect(wrapper.find('.admin-message__date').text().trim()).toEqual('17/04/2023');
+    expect(wrapper.find('.admin-message').text().trim()).toEqual('test message');
   });
 });

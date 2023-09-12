@@ -19,19 +19,25 @@ import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
-import './styles.scss';
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
-import { adminMessageText } from '../../../lib/chat/chat-message';
+import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { fetch as fetchRewards, rewardsPopupClosed } from '../../../store/rewards';
+import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
+import { receiveSearchResults } from '../../../store/users';
+
+import { bemClassName } from '../../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('direct-message-members');
+const cnMessageList = bemClassName('messenger-list');
 
 export interface PublicProperties {
   onClose: () => void;
@@ -40,9 +46,8 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   stage: SagaStage;
   groupUsers: Option[];
-  conversations: (Channel & { messagePreview?: string })[];
+  conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
-  isGroupCreating: boolean;
   isFirstTimeLogin: boolean;
   includeTitleBar: boolean;
   allowClose: boolean;
@@ -51,14 +56,14 @@ export interface Properties extends PublicProperties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
-  zero: string;
   zeroPreviousDay: string;
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
-  showNewRewards: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -70,7 +75,9 @@ export interface Properties extends PublicProperties {
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
+  rewardsTooltipClosed: () => void;
   logout: () => void;
+  receiveSearchResults: (data) => void;
 }
 
 interface State {
@@ -87,38 +94,31 @@ export class Container extends React.Component<Properties, State> {
       layout,
       rewards,
     } = state;
-    const conversations = denormalizeConversations(state)
-      .sort((a, b) =>
-        compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
-      )
-      .map((conversation) => ({
-        ...conversation,
-        messagePreview: conversation.lastMessage?.isAdmin
-          ? adminMessageText(conversation.lastMessage, state)
-          : conversation.lastMessage?.message,
-      }));
+    const hasWallet = user?.data?.wallets?.length > 0;
+
+    const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
 
     return {
       conversations,
       activeConversationId,
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
-      isGroupCreating: createConversation.groupDetails.isCreating,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
-      includeTitleBar: user?.data?.isAMemberOfWorlds,
+      includeTitleBar: !layout?.value?.isMessengerFullScreen,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
       includeRewardsAvatar: layout?.value?.isMessengerFullScreen,
+      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
-      userHandle: user?.data?.handle || '',
+      userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
-      zero: rewards.zero,
       zeroPreviousDay: rewards.zeroPreviousDay,
       isRewardsLoading: rewards.loading,
-      showNewRewards: rewards.showNewRewards,
+      showRewardsInTooltip: rewards.showRewardsInTooltip,
+      showRewardsInPopup: rewards.showRewardsInPopup,
     };
   }
 
@@ -134,7 +134,9 @@ export class Container extends React.Component<Properties, State> {
       fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
+      rewardsTooltipClosed,
       logout,
+      receiveSearchResults,
     };
   }
 
@@ -149,6 +151,7 @@ export class Container extends React.Component<Properties, State> {
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
+    this.props.receiveSearchResults(users);
 
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
@@ -188,27 +191,29 @@ export class Container extends React.Component<Properties, State> {
   renderToastNotification = (): JSX.Element => {
     return (
       <ToastNotification
+        viewportClassName='invite-toast-notification'
         title={'Invite your friends'}
-        description={'To get more rewards simply build your friend network and start messaging'}
+        description={'Build your network and message friends to earn more rewards.'}
         actionTitle={'Invite Friends'}
         actionAltText={'invite dialog modal call to action'}
         positionVariant='left'
         openToast={this.props.isInviteNotificationOpen}
         onClick={this.openInviteDialog}
+        duration={10000}
       />
     );
   };
 
   renderTitleBar() {
     return (
-      <div className='messenger-list__header'>
+      <div {...cnMessageList('header')}>
         {this.props.allowExpand && (
-          <button className='messenger-list__icon-button' onClick={this.props.enterFullScreenMessenger}>
+          <button {...cnMessageList('icon-button')} onClick={this.props.enterFullScreenMessenger}>
             <IconExpand1 label='Expand Messenger' size={12} isFilled={false} />
           </button>
         )}
         {this.props.allowClose && (
-          <button className='messenger-list__icon-button' onClick={this.props.onClose}>
+          <button {...cnMessageList('icon-button')} onClick={this.props.onClose}>
             <IconXClose label='Close Messenger' size={12} isFilled={false} />
           </button>
         )}
@@ -221,21 +226,26 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
 
-        <RewardsBar
-          zero={this.props.zero}
-          zeroPreviousDay={this.props.zeroPreviousDay}
-          isRewardsLoading={this.props.isRewardsLoading}
-          isFirstTimeLogin={this.props.isFirstTimeLogin}
-          includeRewardsAvatar={this.props.includeRewardsAvatar}
-          userName={this.props.userName}
-          userHandle={this.props.userHandle}
-          userAvatarUrl={this.props.userAvatarUrl}
-          onRewardsPopupClose={this.props.rewardsPopupClosed}
-          onLogout={this.props.logout}
-          showNewRewards={this.props.showNewRewards}
-        />
+        {this.props.stage === SagaStage.None && (
+          <RewardsBar
+            zeroPreviousDay={this.props.zeroPreviousDay}
+            isRewardsLoading={this.props.isRewardsLoading}
+            isMessengerFullScreen={this.props.isMessengerFullScreen}
+            showRewardsInTooltip={this.props.showRewardsInTooltip}
+            showRewardsInPopup={this.props.showRewardsInPopup}
+            isFirstTimeLogin={this.props.isFirstTimeLogin}
+            includeRewardsAvatar={this.props.includeRewardsAvatar}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+            onRewardsPopupClose={this.props.rewardsPopupClosed}
+            onRewardsTooltipClose={this.props.rewardsTooltipClosed}
+            onLogout={this.props.logout}
+            hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
+          />
+        )}
 
-        <div className='direct-message-members'>
+        <div {...cn('')}>
           {this.props.stage === SagaStage.None && (
             <ConversationListPanel
               search={this.usersInMyNetworks}
@@ -265,12 +275,7 @@ export class Container extends React.Component<Properties, State> {
             />
           )}
           {this.props.stage === SagaStage.GroupDetails && (
-            <GroupDetailsPanel
-              users={this.props.groupUsers}
-              onCreate={this.createGroup}
-              onBack={this.props.back}
-              isCreating={this.props.isGroupCreating}
-            />
+            <GroupDetailsPanel users={this.props.groupUsers} onCreate={this.createGroup} onBack={this.props.back} />
           )}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.renderToastNotification()}
@@ -278,6 +283,25 @@ export class Container extends React.Component<Properties, State> {
       </>
     );
   }
+}
+
+function addLastMessageMeta(state: RootState): any {
+  return (conversation) => {
+    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
+    return {
+      ...conversation,
+      mostRecentMessage,
+      messagePreview: getMessagePreview(mostRecentMessage, state),
+      previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
+    };
+  };
+}
+
+function byLastMessageOrCreation(a, b) {
+  const aDate = a.mostRecentMessage?.createdAt || a.createdAt;
+  const bDate = b.mostRecentMessage?.createdAt || b.createdAt;
+  return compareDatesDesc(aDate, bDate);
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

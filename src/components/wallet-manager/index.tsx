@@ -132,6 +132,7 @@ export class Container extends React.Component<Properties> {
             networkName={this.getNetworkNameById}
             onClose={this.closeModal}
             onSelect={this.handleWalletSelected}
+            walletSelectTitle='Connect To A Wallet'
           />
         )}
       </div>

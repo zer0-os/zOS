@@ -5,8 +5,8 @@ import { RewardsPopup, Properties } from '.';
 describe('RewardsPopup', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      usd: '',
-      zero: '',
+      usd: '1',
+      zero: '1',
       isLoading: false,
       isFullScreen: false,
       withTitleBar: true,
@@ -18,27 +18,27 @@ describe('RewardsPopup', () => {
     return shallow(<RewardsPopup {...allProps} />);
   };
 
-  it('renders your rewards count in USD', function () {
-    const wrapper = subject({ usd: '$5.71' });
+  it('renders your rewards count in ZERO', function () {
+    const wrapper = subject({ zero: '360.12K' });
 
-    const skeleton = wrapper.find('.rewards-popup__rewards-usd SkeletonText');
-    expect((skeleton.prop('asyncText') as any).text).toEqual('$5.71');
+    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
+    expect((skeleton.prop('asyncText') as any).text).toEqual('360.12K');
   });
 
-  it('renders your rewards count in ZERO', function () {
-    const wrapper = subject({ zero: '838' });
+  it('renders your rewards in USD', function () {
+    const wrapper = subject({ usd: '$5,055.00 USD' });
 
-    expect(wrapper.find('.rewards-popup__rewards-zero').text()).toEqual('838 ZERO');
+    expect(wrapper.find('.rewards-popup__rewards-usd').text()).toEqual('$5,055.00 USD');
   });
 
   it('sets the skeleton loading attribute', function () {
     const wrapper = subject({ isLoading: true });
 
-    let skeleton = wrapper.find('.rewards-popup__rewards-usd SkeletonText');
+    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(true);
 
     wrapper.setProps({ isLoading: false });
-    skeleton = wrapper.find('.rewards-popup__rewards-usd SkeletonText');
+    skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(false);
   });
 

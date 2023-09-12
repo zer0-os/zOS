@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.40.0",
+  "version": "0.60.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {
@@ -27,13 +27,8 @@
     "@web3-react/walletconnect-connector": "^6.2.13",
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "0.18.9",
-    "@zer0-os/zos-feed": "^1.29.2",
     "@zer0-os/zos-zns": "2.3.3",
-    "@zero-tech/zapp-buy-domains": "latest",
-    "@zero-tech/zapp-daos": "latest",
-    "@zero-tech/zapp-nfts": "latest",
-    "@zero-tech/zapp-staking": "latest",
-    "@zero-tech/zui": "^0.24.3",
+    "@zero-tech/zui": "^0.26.4",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",
@@ -47,6 +42,8 @@
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
+    "matrix-js-sdk": "^26.2.0",
+    "millify": "^6.1.0",
     "moment": "^2.29.4",
     "normalizr": "^3.6.2",
     "pusher-js": "^8.0.2",
@@ -119,12 +116,14 @@
     "prettier-plugin-multiline-arrays": "^1.0.0",
     "pretty-quick": "^3.1.3",
     "redux-saga-test-plan": "^4.0.4",
+    "uuid": "^9.0.0",
     "wait-on": "^6.0.1"
   },
   "overrides": {
     "@types/react": "^16.14.21",
     "react@16.x": "^17.0.2",
     "@zer0-os/zos-component-library": "$@zer0-os/zos-component-library",
-    "@zero-tech/zui": "$@zero-tech/zui"
+    "@zero-tech/zui": "$@zero-tech/zui",
+    "@radix-ui/react-popper": "1.0.0"
   }
 }

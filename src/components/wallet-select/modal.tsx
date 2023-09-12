@@ -10,6 +10,7 @@ export interface Properties extends WalletSelectProperties {
   isConnecting: boolean;
   isNotSupportedNetwork: boolean;
   wallets: WalletType[];
+  walletSelectTitle?: string;
   className?: string;
   networkName: string;
   onClose?: () => void;
@@ -38,6 +39,7 @@ export class WalletSelectModal extends React.Component<Properties> {
           wallets={this.props.wallets}
           isConnecting={this.props.isConnecting}
           onSelect={this.props.onSelect}
+          walletSelectTitle={this.props.walletSelectTitle}
         />
         {this.supportedNetwork && <ErrorNetwork supportedNetwork={this.props.networkName} />}
       </Modal>

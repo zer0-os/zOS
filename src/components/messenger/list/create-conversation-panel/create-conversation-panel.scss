@@ -1,0 +1,42 @@
+@import '../../../../variables';
+
+.create-conversation {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: initial;
+
+  &__search {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+  }
+
+  &__group-button {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  &__group-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(223deg, #421349 14.62%, #0d0416 36.73%, #0b060e 59.58%, #2b0659 85.38%);
+    border-radius: 9999px;
+
+    & > * {
+      margin: auto;
+    }
+  }
+}

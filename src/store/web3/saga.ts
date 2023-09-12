@@ -61,7 +61,7 @@ export function* getSignedToken(address = null) {
     return { success: true, token };
   } catch (error) {
     yield updateConnector({ payload: Connectors.None });
-    return { success: false, error: 'Error signing token' };
+    return { success: false, error: 'Wallet connection failed. Please try again.' };
   }
 }
 

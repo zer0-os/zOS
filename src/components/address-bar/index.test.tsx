@@ -1,9 +1,8 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 
 import { AddressBar, AddressBarMode } from '.';
 import { Apps } from '../../lib/apps';
-import { Icons, IconButton, ZnsLink } from '@zer0-os/zos-component-library';
+import { Icons, IconButton } from '@zer0-os/zos-component-library';
 
 import { ZNSDropdown } from '../zns-dropdown';
 
@@ -17,7 +16,7 @@ describe('AddressBar', () => {
   const subject = (props: any = {}) => {
     const allProps = {
       route: '',
-      app: Apps.Feed,
+      app: Apps.Channels,
       onSelect,
       addressBarMode: null,
       ...props,
@@ -39,9 +38,11 @@ describe('AddressBar', () => {
   });
 
   it('renders app name', () => {
-    const wrapper = subject({ app: { type: Apps.Feed, name: 'Feed' } });
+    const wrapper = subject({ app: { type: Apps.Channels, name: 'Channels' } });
 
-    expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').text().trim()).toStrictEqual('Feed');
+    expect(wrapper.find('[className$="trigger-region"] .address-bar__route-app').text().trim()).toStrictEqual(
+      'Channels'
+    );
   });
 
   it('does not render app name no app selected', () => {
@@ -60,23 +61,6 @@ describe('AddressBar', () => {
       'street',
       'tacos',
     ]);
-  });
-
-  it('renders ZnsLink to route with app at segment', () => {
-    const app = { type: Apps.Feed };
-    const wrapper = subject({ route: 'food.street.tacos', app });
-
-    const segments = wrapper.find(ZnsLink);
-
-    expect(segments.at(0).props()).toMatchObject({
-      route: 'food',
-      app: Apps.Feed,
-    });
-
-    expect(segments.at(1).props()).toMatchObject({
-      route: 'food.street',
-      app: Apps.Feed,
-    });
   });
 
   it('renders route seperators', () => {

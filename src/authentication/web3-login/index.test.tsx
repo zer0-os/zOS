@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { Web3Login, Web3LoginProperties } from '.';
+import { Web3LoginErrors } from '../../store/login';
 
 describe('Web3Login', () => {
   const subject = (props: Partial<Web3LoginProperties>) => {
@@ -41,6 +42,17 @@ describe('Web3Login', () => {
       expect(alert.prop('children')).toEqual(errorText);
     });
 
+    it('shows a specific error when error is PROFILE_NOT_FOUND', function () {
+      const errorText = Web3LoginErrors.PROFILE_NOT_FOUND;
+      const expectedText = 'The wallet you connected is not associated with a ZERO account';
+      const wrapper = subject({ error: errorText });
+
+      const alert = wrapper.find('Alert');
+      expect(alert.exists()).toBeTruthy();
+      expect(alert.prop('variant')).toEqual('error');
+      expect(alert.prop('children')).toEqual(expectedText);
+    });
+
     it('does not show an error when error is empty', function () {
       const wrapper = subject({ error: '' });
 
@@ -49,18 +61,10 @@ describe('Web3Login', () => {
   });
 
   describe('when connecting', () => {
-    it('shows a loading indicator', function () {
+    it('passes isConnecting to WalletSelect', function () {
       const wrapper = subject({ isConnecting: true });
 
-      const button = wrapper.find('Button');
-      expect(button.prop('isDisabled')).toBeTruthy();
-      expect(button.prop('children')).toEqual('Waiting for wallet confirmation');
-    });
-
-    it('does not show error', function () {
-      const wrapper = subject({ isConnecting: true, error: 'something went wrong' });
-
-      expect(wrapper).not.toHaveElement('Alert');
+      expect(wrapper.find('WalletSelect').prop('isConnecting')).toBeTruthy();
     });
   });
 });

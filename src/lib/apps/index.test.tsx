@@ -1,14 +1,9 @@
 import { Apps, apps, allApps } from '.';
 
 describe('apps', () => {
-  it('defaults to apps: Feed, NFTS, Staking, Channels, DAOS', () => {
+  it('defaults to apps', () => {
     expect(allApps()).toStrictEqual([
       apps[Apps.Channels],
-      apps[Apps.NFTS],
-      apps[Apps.Feed],
-      apps[Apps.DAOS],
-      apps[Apps.Staking],
-      apps[Apps.BuyDomains],
     ]);
   });
 });

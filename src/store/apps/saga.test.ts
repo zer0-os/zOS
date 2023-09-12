@@ -8,7 +8,7 @@ import { Apps } from '../../lib/apps';
 
 describe('apps saga', () => {
   it('sets selected app', async () => {
-    const selectedAppType = Apps.Members;
+    const selectedAppType = Apps.Channels;
 
     const {
       storeState: { selectedApp },
@@ -16,9 +16,9 @@ describe('apps saga', () => {
 
     expect(selectedApp).toMatchObject({
       type: selectedAppType,
-      name: 'Members',
+      name: 'Chat',
       imageSource:
-        'https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/members.svg',
+        'https://res.cloudinary.com/fact0ry-dev/image/upload/v1649095368/zero-assets/zer0-os/apps/channels.svg',
     });
   });
 });

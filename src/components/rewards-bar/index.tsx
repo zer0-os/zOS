@@ -7,6 +7,7 @@ import { RewardsPopupContainer } from '../rewards-popup/container';
 import { TooltipPopup } from '../tooltip-popup/tooltip-popup';
 import { SettingsMenu } from '../settings-menu';
 import { bem } from '../../lib/bem';
+import { formatWeiAmount } from '../../lib/number';
 
 import './styles.scss';
 
@@ -15,51 +16,42 @@ const c = bem('rewards-bar');
 export interface Properties {
   isFirstTimeLogin: boolean;
   includeRewardsAvatar: boolean;
+  isMessengerFullScreen: boolean;
+  hasLoadedConversation: boolean;
 
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
 
-  zero: string;
   zeroPreviousDay: string;
   isRewardsLoading: boolean;
-  showNewRewards: boolean;
+  showRewardsInTooltip: boolean;
+  showRewardsInPopup: boolean;
 
   onLogout: () => void;
   onRewardsPopupClose: () => void;
+  onRewardsTooltipClose: () => void;
 }
 
 interface State {
   isRewardsPopupOpen: boolean;
   isRewardsFAQModalOpen: boolean;
-  isRewardsTooltipOpen: boolean;
 }
 
 export class RewardsBar extends React.Component<Properties, State> {
   state = {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,
-    isRewardsTooltipOpen: true, // initally open, will close after user clicks on 'x' button
   };
 
   constructor(props: Properties) {
     super(props);
     this.state.isRewardsPopupOpen = props.isFirstTimeLogin;
-    this.state.isRewardsTooltipOpen = !props.isFirstTimeLogin;
-  }
-
-  stringifyZero(zero: string) {
-    const stringValue = zero.padStart(19, '0');
-    const whole = stringValue.slice(0, -18);
-    const decimal = stringValue.slice(-18).slice(0, 4).replace(/0+$/, '');
-    const decimalString = decimal.length > 0 ? `.${decimal}` : '';
-    return `${whole}${decimalString}`;
   }
 
   openRewards = () => {
     this.setState({
       isRewardsPopupOpen: true,
-      isRewardsTooltipOpen: false,
     });
   };
 
@@ -70,7 +62,7 @@ export class RewardsBar extends React.Component<Properties, State> {
 
   openRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: true });
   closeRewardsFAQModal = () => this.setState({ isRewardsFAQModalOpen: false });
-  closeRewardsTooltip = () => this.setState({ isRewardsTooltipOpen: false });
+  closeRewardsTooltip = () => this.props.onRewardsTooltipClose();
 
   renderRewardsBar() {
     return (
@@ -87,18 +79,28 @@ export class RewardsBar extends React.Component<Properties, State> {
             userAvatarUrl={this.props.userAvatarUrl}
           />
         )}
-        <button
-          onClick={this.openRewards}
-          className={classnames(c('rewards-button'), {
-            [c('rewards-button', 'open')]: this.state.isRewardsPopupOpen,
-          })}
-        >
-          <div>Rewards</div>
-          <div className={c('rewards-icon')}>
-            <IconCurrencyDollar size={16} />
-            {this.props.showNewRewards && <Status type='idle' className={c('rewards-icon__status')} />}
-          </div>
-        </button>
+        <div className={c('rewards-button-container')}>
+          <button
+            onClick={this.openRewards}
+            className={classnames(c('rewards-button'), {
+              [c('rewards-button', 'open')]:
+                this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
+            })}
+          >
+            <div>Rewards</div>
+            <div
+              className={classnames(c('rewards-icon'), {
+                [c('rewards-icon', 'open')]:
+                  this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin),
+              })}
+            >
+              <IconCurrencyDollar size={16} />
+              {!this.state.isRewardsPopupOpen && this.props.showRewardsInPopup && this.props.isMessengerFullScreen && (
+                <Status type='idle' className={c('rewards-icon__status')} />
+              )}
+            </div>
+          </button>
+        </div>
       </div>
     );
   }
@@ -106,12 +108,12 @@ export class RewardsBar extends React.Component<Properties, State> {
   render() {
     return (
       <div>
-        {this.props.showNewRewards ? (
+        {this.props.showRewardsInTooltip && this.props.isMessengerFullScreen ? (
           <TooltipPopup
-            open={!this.props.isRewardsLoading && this.state.isRewardsTooltipOpen}
+            open={!this.props.isRewardsLoading}
             align='center'
             side='left'
-            content={`You’ve earned ${this.stringifyZero(this.props.zeroPreviousDay)} ZERO today`}
+            content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}
             onClose={this.closeRewardsTooltip}
           >
             {this.renderRewardsBar()}
@@ -120,14 +122,14 @@ export class RewardsBar extends React.Component<Properties, State> {
           this.renderRewardsBar()
         )}
 
-        {this.state.isRewardsPopupOpen && (
+        {this.state.isRewardsPopupOpen && (this.props.hasLoadedConversation || !this.props.isFirstTimeLogin) && (
           <RewardsPopupContainer
             onClose={this.closeRewards}
-            openRewardsFAQModal={this.openRewardsFAQModal} // modal is opened in the popup, after which the popup is closed
-            zero={this.stringifyZero(this.props.zero)}
+            openRewardsFAQModal={this.openRewardsFAQModal}
             isLoading={this.props.isRewardsLoading}
           />
         )}
+
         {this.state.isRewardsFAQModalOpen && (
           <RewardsFAQModal
             isRewardsFAQModalOpen={this.state.isRewardsFAQModalOpen}

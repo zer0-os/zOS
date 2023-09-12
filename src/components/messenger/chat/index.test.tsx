@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconXClose, IconMinus, IconExpand1, IconLayoutRight } from '@zero-tech/zui/icons';
+import { IconXClose, IconMinus, IconExpand1, IconCollapse1 } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
@@ -11,9 +11,9 @@ describe('messenger-chat', () => {
     const allProps: Properties = {
       activeConversationId: '1',
       setactiveConversationId: jest.fn(),
-      directMessage: null,
+      directMessage: { id: '1', otherMembers: [] } as any,
       isFullScreen: false,
-      includeTitleBar: true,
+      allowCollapse: false,
       enterFullScreenMessenger: () => null,
       exitFullScreenMessenger: () => null,
       ...props,
@@ -69,9 +69,9 @@ describe('messenger-chat', () => {
 
   it('publishes exit full screen event', function () {
     const exitFullScreenMessenger = jest.fn();
-    const wrapper = subject({ exitFullScreenMessenger, isFullScreen: true });
+    const wrapper = subject({ exitFullScreenMessenger, isFullScreen: true, allowCollapse: true });
 
-    icon(wrapper, IconLayoutRight).simulate('click');
+    icon(wrapper, IconCollapse1).simulate('click');
 
     expect(exitFullScreenMessenger).toHaveBeenCalledOnce();
   });
@@ -127,12 +127,6 @@ describe('messenger-chat', () => {
 
       expect(tooltip.html()).toContain(otherMembersExpectation);
       expect(tooltip.prop('overlay')).toEqual(otherMembersExpectation);
-    });
-
-    it('nothing as title', function () {
-      const title = subject({ directMessage: undefined }).find('[className$="__title"]');
-
-      expect(title.text()).toEqual('');
     });
   });
 
@@ -193,6 +187,7 @@ describe('messenger-chat', () => {
     it('header renders avatar', function () {
       const wrapper = subject({
         directMessage: {
+          isOneOnOne: true,
           otherMembers: [
             stubUser({
               profileImage: 'avatar-url',
@@ -293,6 +288,28 @@ describe('messenger-chat', () => {
 
       expect(headerAvatar.prop('style').backgroundImage).toEqual('url()');
       expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
+    });
+
+    it('header renders avatar in case if custom icon is set', function () {
+      const wrapper = subject({
+        directMessage: {
+          icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url-1',
+            }),
+            stubUser({
+              profileImage: 'avatar-url-2',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+
+      expect(headerAvatar.prop('style').backgroundImage).toEqual(
+        'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)'
+      );
     });
   });
 });

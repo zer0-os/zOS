@@ -2,32 +2,27 @@
 @import '../styles';
 
 .create-wallet-account {
+  margin: 0 0 auto;
+
   @include base();
-
-  &__heading {
-    @include heading();
-  }
-
-  &__sub-heading {
-    @include sub-heading();
-  }
 
   &__main {
     box-sizing: border-box;
-    width: 256px;
-    margin: auto;
+    width: 280px;
+    margin-bottom: 8px;
   }
 
   &__select-wallet {
-    background-color: theme.$color-primary-2;
-    border: 1px solid theme.$color-primary-5;
-    border-radius: 8px;
-    padding: 16px 6px 24px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
-  &__other-options {
-    text-align: center;
-    padding-top: 64px;
+  &__error-container {
+    padding-top: 4px;
+  }
+
+  &__error {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
   }
 }

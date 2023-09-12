@@ -8,6 +8,20 @@ export interface ChatMember {
 
 export interface ParentMessage {
   messageId: number;
-  message?: string;
   userId: string;
+
+  message?: string;
+  sender: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    profileImage: string;
+    profileId: string;
+  };
+  isAdmin: boolean;
+  mentionedUsers: { id: string }[];
+  hidePreview: boolean;
+  admin?: any;
+  optimisticId?: string;
+  rootMessageId?: string;
 }

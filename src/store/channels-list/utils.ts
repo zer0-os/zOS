@@ -1,5 +1,5 @@
 import { ChannelType } from './types';
-import { Channel } from './../channels/index';
+import { Channel, ConversationStatus } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 
@@ -16,19 +16,23 @@ export function filterChannelsList(state, filter: ChannelType) {
   });
 }
 
-export const channelMapper = (currentChannel): Partial<Channel> => {
+export const toLocalChannel = (input): Partial<Channel> => {
+  const isChannel = (input.isChannel ?? true) || !!input.isChannel;
+  const otherMembers = input.otherMembers || [];
+
   return {
-    id: currentChannel.id,
-    name: currentChannel.name,
-    icon: currentChannel.icon,
-    category: currentChannel.category,
-    unreadCount: currentChannel.unreadCount,
-    hasJoined: currentChannel.hasJoined,
-    createdAt: currentChannel.createdAt,
-    otherMembers: currentChannel.otherMembers || [],
-    lastMessage: currentChannel.lastMessage || null,
-    lastMessageCreatedAt: currentChannel.lastMessage?.createdAt || null,
-    isChannel: currentChannel.isChannel === undefined ? true : currentChannel.isChannel,
-    groupChannelType: currentChannel.groupChannelType || '',
+    id: input.id,
+    name: input.name,
+    icon: input.icon,
+    category: input.category,
+    unreadCount: input.unreadCount,
+    hasJoined: input.hasJoined,
+    createdAt: input.createdAt,
+    otherMembers,
+    lastMessage: input.lastMessage || null,
+    isChannel,
+    groupChannelType: input.groupChannelType || '', // Is this the right default to use?
+    conversationStatus: ConversationStatus.CREATED,
+    isOneOnOne: !isChannel && input.isDistinct && otherMembers.length === 1,
   };
 };

@@ -72,7 +72,7 @@ describe('AppSandboxContainer', () => {
   });
 
   it('passes selected app to sandbox', () => {
-    const selectedApp = Apps.Feed;
+    const selectedApp = Apps.Channels;
 
     const wrapper = subject({ selectedApp });
 
@@ -241,7 +241,7 @@ describe('AppSandboxContainer', () => {
     });
 
     test('selectedApp', () => {
-      const selectedApp = Apps.DAOS;
+      const selectedApp = Apps.Channels;
 
       const state = subject({
         apps: { selectedApp: { type: selectedApp } as PlatformApp },

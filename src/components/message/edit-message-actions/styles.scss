@@ -1,0 +1,25 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.edit-message-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    color: theme.$color-greyscale-12;
+
+    &--disabled {
+      color: theme.$color-greyscale-9;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: unset;
+      }
+    }
+  }
+}

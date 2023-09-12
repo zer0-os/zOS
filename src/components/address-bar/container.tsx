@@ -8,7 +8,7 @@ import { AddressBar } from '.';
 import { routeWithApp } from './util';
 import { client, ZnsClientFactory } from '@zer0-os/zos-zns';
 import { ProviderService, inject as injectProviderService } from '../../lib/web3/provider-service';
-import { Apps, PlatformApp } from '../../lib/apps';
+import { PlatformApp } from '../../lib/apps';
 import { config } from '../../config';
 interface PublicProperties {
   className?: string;
@@ -55,10 +55,7 @@ export class Container extends React.Component<Properties> {
   }
 
   getNextRoute() {
-    let [
-      nextRoute,
-      ...segments
-    ] = this.props.deepestVisitedRoute.split('.');
+    let [nextRoute, ...segments] = this.props.deepestVisitedRoute.split('.');
 
     for (const segment of segments) {
       const workingRoute = `${nextRoute}.${segment}`;
@@ -88,14 +85,7 @@ export class Container extends React.Component<Properties> {
   };
 
   getSelectedApp = (): string => {
-    if (
-      ![
-        Apps.Feed,
-        Apps.NFTS,
-      ].includes(this.props.app.type)
-    )
-      return config.defaultApp;
-    return this.props.app.type;
+    return config.defaultApp;
   };
 
   goToRoute = (route) => {

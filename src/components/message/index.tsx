@@ -1,20 +1,26 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
-import { ParentMessage } from '../../lib/chat/types';
+import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
-import EditMessageActions from '../../platform-apps/channels/messages-menu/edit-message-actions';
-import MessageMenu from '../../platform-apps/channels/messages-menu';
+import EditMessageActions from './edit-message-actions/edit-message-actions';
+import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '../icon-button';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
+import { bemClassName } from '../../lib/bem';
+
+import './styles.scss';
+import { ParentMessage } from './parent-message';
+
+const cn = bemClassName('message');
 
 interface Properties extends MessageModel {
   className: string;
@@ -26,21 +32,31 @@ interface Properties extends MessageModel {
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
-  onReply: (reply: ParentMessage) => void;
+  onReply: (reply: ParentMessageType) => void;
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
   parentMessageText?: string;
+  parentSenderIsCurrentUser?: boolean;
+  parentSenderFirstName?: string;
+  parentSenderLastName?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
+  showTimestamp: boolean;
+  showAuthorName: boolean;
 }
 
 export interface State {
   isEditing: boolean;
+  isFullWidth: boolean;
+  isMessageMenuOpen: boolean;
 }
+
 export class Message extends React.Component<Properties, State> {
   state = {
     isEditing: false,
+    isFullWidth: false,
+    isMessageMenuOpen: false,
   } as State;
 
   openAttachment = async (attachment): Promise<void> => {
@@ -49,35 +65,37 @@ export class Message extends React.Component<Properties, State> {
 
   renderAttachment(attachment) {
     return (
-      <div className='message__attachment' onClick={this.openAttachment.bind(this, attachment)}>
+      <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
         <AttachmentCards attachments={[attachment]} onAttachmentClicked={this.openAttachment.bind(this, attachment)} />
       </div>
     );
-  }
-
-  getProfileId(id: string): string | null {
-    const user = (this.props.mentionedUserIds || []).find((user) => user.id === id);
-
-    if (!user) return null;
-
-    return user.profileId;
   }
 
   onImageClick = (media) => (_event) => {
     this.props.onImageClick(media);
   };
 
+  handleMediaAspectRatio = (width: number, height: number) => {
+    const aspectRatio = width / height;
+    this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
+  };
+
+  handleImageLoad = (event) => {
+    const { naturalWidth: width, naturalHeight: height } = event.target;
+    this.handleMediaAspectRatio(width, height);
+  };
+
   renderMedia(media) {
     const { type, url, name } = media;
     if (MediaType.Image === type) {
       return (
-        <div className='message__block-image' onClick={this.onImageClick(media)}>
-          <img src={url} alt={name} />
+        <div {...cn('block-image')} onClick={this.onImageClick(media)}>
+          <img src={url} alt={this.props.media.name} onLoad={this.handleImageLoad} />
         </div>
       );
     } else if (MediaType.Video === type) {
       return (
-        <div className='message__block-video'>
+        <div {...cn('block-video')}>
           <video controls>
             <source src={url} />
           </video>
@@ -87,7 +105,7 @@ export class Message extends React.Component<Properties, State> {
       return this.renderAttachment({ url, name, type });
     } else if (MediaType.Audio === type) {
       return (
-        <div className='message__block-audio'>
+        <div {...cn('block-audio')}>
           <audio controls>
             <source src={url} type='audio/mpeg' />
           </audio>
@@ -97,14 +115,64 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
+  renderFooter() {
+    if (this.state.isEditing) {
+      return;
+    }
+
+    const isSendStatusFailed = this.props.sendStatus === MessageSendStatus.FAILED;
+    const footerElements = [];
+
+    if (!!this.props.updatedAt && !isSendStatusFailed) {
+      footerElements.push(<span>(Edited)</span>);
+    }
+    if (!isSendStatusFailed && this.props.showTimestamp) {
+      footerElements.push(this.renderTime(this.props.createdAt));
+    }
+    if (isSendStatusFailed) {
+      footerElements.push(
+        <div {...cn('failure-message')}>
+          Failed to send&nbsp;
+          <IconAlertCircle size={16} />
+        </div>
+      );
+    }
+
+    if (footerElements.length === 0) {
+      return;
+    }
+
+    return (
+      <div {...cn('footer')}>
+        {footerElements[0]}
+        {footerElements[1]}
+        {footerElements[2]}
+      </div>
+    );
+  }
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
-
-    return <div className='message__time'>{createdTime}</div>;
+    return <div {...cn('time')}>{createdTime}</div>;
   }
 
+  renderAuthorName(): React.ReactElement {
+    return (
+      <div {...cn('author-name')}>
+        {this.props.sender.firstName} {this.props.sender.lastName}
+      </div>
+    );
+  }
+
+  canEditMessage = (): boolean => {
+    return (
+      this.props.isOwner &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
+  };
+
   canDeleteMessage = (): boolean => {
-    return this.props.isOwner;
+    return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
   };
 
   isMediaMessage = (): boolean => {
@@ -125,105 +193,159 @@ export class Message extends React.Component<Properties, State> {
   onReply = (): void => {
     this.props.onReply({
       messageId: this.props.messageId,
-      message: this.props.message,
       userId: this.props.sender.userId,
+      message: this.props.message,
+      sender: this.props.sender,
+      isAdmin: this.props.isAdmin,
+      mentionedUsers: this.props.mentionedUsers,
+      hidePreview: this.props.hidePreview,
+      admin: this.props.admin,
+      optimisticId: this.props.optimisticId,
+      rootMessageId: this.props.rootMessageId,
     });
   };
 
   editActions = (value: string, mentionedUserIds: string[]) => {
     return (
       <EditMessageActions
-        onEdit={this.editMessage.bind(this, value, mentionedUserIds, {
-          hidePreview: this.props.hidePreview,
-          mentionedUsers: this.props.mentionedUserIds,
-        })}
+        value={value}
+        primaryTooltipText='Save Changes'
+        secondaryTooltipText='Discard Changes'
+        onEdit={this.editMessage.bind(this, value, mentionedUserIds, { hidePreview: this.props.hidePreview })}
         onCancel={this.toggleEdit}
       />
     );
   };
 
+  handleOpenMenu = (isMessageMenuOpen: boolean) => {
+    this.setState({ isMessageMenuOpen });
+  };
+
+  handleCloseMenu = () => {
+    this.setState({ isMessageMenuOpen: false });
+  };
+
+  canReply = () => {
+    return (
+      !this.props.parentMessageText &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
+  };
+
+  isMenuTriggerAlwaysVisible = () => {
+    return this.props.sendStatus === MessageSendStatus.FAILED;
+  };
+
   renderMenu(): React.ReactElement {
     return (
-      <div className='message__menu'>
+      <div
+        {...cn(
+          classNames('menu', {
+            'menu--open': this.state.isMessageMenuOpen,
+            'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
+          })
+        )}
+      >
         <MessageMenu
-          className='message__menu-item'
-          canEdit={this.canDeleteMessage()}
-          canReply={!this.props.parentMessageText}
+          {...cn('menu-item')}
+          canEdit={this.canEditMessage()}
+          canDelete={this.canDeleteMessage()}
+          canReply={this.canReply()}
           onDelete={this.deleteMessage}
           onEdit={this.toggleEdit}
           onReply={this.onReply}
           isMediaMessage={this.isMediaMessage()}
+          isMenuOpen={this.state.isMessageMenuOpen}
+          onOpenChange={this.handleOpenMenu}
+          onCloseMenu={this.handleCloseMenu}
         />
       </div>
     );
   }
 
-  render() {
-    const { message, media, preview, createdAt, sender, isOwner, hidePreview } = this.props;
+  renderLinkPreview() {
+    const { preview, isOwner, hidePreview } = this.props;
+    return (
+      <>
+        {preview && !hidePreview && (
+          <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />
+        )}
+      </>
+    );
+  }
+  renderBody() {
+    const { message } = this.props;
 
+    return (
+      <div {...cn('block-body')}>
+        {message && <ContentHighlighter message={message} />}
+        {this.renderFooter()}
+      </div>
+    );
+  }
+
+  renderParentMessage() {
+    return (
+      <ParentMessage
+        message={this.props.parentMessageText}
+        senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
+        senderFirstName={this.props.parentSenderFirstName}
+        senderLastName={this.props.parentSenderLastName}
+      />
+    );
+  }
+
+  render() {
+    const { message, media, preview, sender, isOwner } = this.props;
     return (
       <div
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
-          'message--media': Boolean(media),
-          'message--sender-avatar': this.props.showSenderAvatar,
         })}
       >
         {this.props.showSenderAvatar && (
-          <div className='message__left'>
-            <div
-              style={{ backgroundImage: `url(${getProvider().getSourceUrl(sender.profileImage)})` }}
-              className='message__author-avatar'
-            />
+          <div {...cn('left')}>
+            <div {...cn('author-avatar')}>
+              <Avatar
+                size='medium'
+                type='circle'
+                imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`}
+                tabIndex={-1}
+              />
+            </div>
           </div>
         )}
-        <div className='message__block'>
+        <div {...cn('block', this.state.isEditing && 'edit')}>
           {(message || media || preview) && (
             <>
-              <div className='message__author-name'>
-                {sender.firstName} {sender.lastName}
-              </div>
               {!this.state.isEditing && (
-                <div className={classNames('message__block-body')}>
+                <>
+                  {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
-                  {this.props.parentMessageText && (
-                    <div className='message__block-reply'>
-                      <span className='message__block-reply-text'>
-                        <ContentHighlighter
-                          message={this.props.parentMessageText}
-                          mentionedUserIds={this.props.mentionedUserIds}
-                        />
-                      </span>
-                    </div>
-                  )}
-                  {message && <ContentHighlighter message={message} mentionedUserIds={this.props.mentionedUserIds} />}
-                  {preview && !hidePreview && (
-                    <div className='message__block-preview'>
-                      <LinkPreview url={preview.url} {...preview} />
-                      {isOwner && (
-                        <IconButton Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
-                      )}
-                    </div>
-                  )}
-                </div>
+                  {this.renderLinkPreview()}
+                  {this.renderParentMessage()}
+                  {this.renderBody()}
+                </>
               )}
-              {!!this.props.updatedAt && !this.state.isEditing && (
-                <span className='message__block-edited'>(edited)</span>
-              )}
+
               {this.state.isEditing && this.props.message && (
-                <MessageInput
-                  className='message__block-body'
-                  initialValue={this.props.message}
-                  onSubmit={this.editMessage}
-                  getUsersForMentions={this.props.getUsersForMentions}
-                  renderAfterInput={this.editActions}
-                />
+                <>
+                  <div {...cn('block-edit')}>
+                    <MessageInput
+                      initialValue={this.props.message}
+                      onSubmit={this.editMessage}
+                      getUsersForMentions={this.props.getUsersForMentions}
+                      isEditing={this.state.isEditing}
+                      renderAfterInput={this.editActions}
+                    />
+                  </div>
+                </>
               )}
             </>
           )}
-          <div className='message__footer'>{this.renderTime(createdAt)}</div>
-          {this.renderMenu()}
         </div>
+        {this.renderMenu()}
       </div>
     );
   }

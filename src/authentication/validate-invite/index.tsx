@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { Button, Input, Alert } from '@zero-tech/zui/components';
 import { InviteCodeStatus } from '../../store/registration';
@@ -21,12 +20,14 @@ const MAX_INVITE_CODE_LENGTH = 14;
 interface State {
   inviteCode: string;
   renderAlert: boolean;
+  lastSubmittedInviteCode: string;
 }
 
 export class Invite extends React.Component<Properties, State> {
   state: State = {
     inviteCode: '',
     renderAlert: false,
+    lastSubmittedInviteCode: '',
   };
 
   onInviteCodeChanged = (code: string) => {
@@ -35,16 +36,9 @@ export class Invite extends React.Component<Properties, State> {
 
   submitForm = async (e) => {
     e.preventDefault();
-    this.setState({ renderAlert: true });
+    this.setState({ renderAlert: true, lastSubmittedInviteCode: this.state.inviteCode });
     this.props.validateInvite({ code: this.state.inviteCode });
   };
-
-  componentDidUpdate(_prevProps: Readonly<Properties>, prevState: Readonly<State>): void {
-    // Hide alert when invite code is changed
-    if (prevState.inviteCode !== this.state.inviteCode && this.state.renderAlert) {
-      this.setState({ renderAlert: false });
-    }
-  }
 
   renderAlert = (status: string) => {
     let errorMessage: string;
@@ -69,48 +63,49 @@ export class Invite extends React.Component<Properties, State> {
         errorMessage = 'Invite code error.';
     }
 
-    return <Alert variant='error'>{errorMessage}</Alert>;
+    return (
+      <Alert className={c('alert')} variant='error'>
+        {errorMessage}
+      </Alert>
+    );
   };
 
   render() {
+    const isError = this.state.renderAlert && this.props.inviteCodeStatus !== InviteCodeStatus.VALID;
+
     return (
       <div className={c('')}>
-        <h3 className={c('heading')}>Add your invite code</h3>
-        <div className={c('sub-heading')}>This is the 6 digit code you received in your invite</div>
-
+        <div className={c('heading-container')}>
+          <h3 className={c('heading')}>Add invite code</h3>
+          <div className={c('sub-heading')}>6 digit code you received in your invite</div>
+        </div>
         <form className={c('form')} onSubmit={this.submitForm}>
-          <Input
-            onChange={this.onInviteCodeChanged}
-            placeholder='E.g. 123456'
-            value={this.state.inviteCode}
-            type='text'
-          />
+          <div className={c('input-container')}>
+            <Input
+              onChange={this.onInviteCodeChanged}
+              placeholder='e.g 123456'
+              value={this.state.inviteCode}
+              type='text'
+              error={isError}
+            />
 
-          {this.state.renderAlert &&
-            this.props.inviteCodeStatus !== InviteCodeStatus.VALID &&
-            this.renderAlert(this.props.inviteCodeStatus)}
+            {isError && this.renderAlert(this.props.inviteCodeStatus)}
+          </div>
 
           <Button
+            className={c('submit-button')}
             variant='primary'
-            isDisabled={!this.state.inviteCode.length || this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH}
+            isDisabled={
+              !this.state.inviteCode.length ||
+              this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||
+              this.state.inviteCode === this.state.lastSubmittedInviteCode
+            }
             isLoading={this.props.isLoading}
             isSubmit
           >
             Get access
           </Button>
         </form>
-
-        <div className={c('other-options')}>
-          <div>
-            <span>Not been invited yet? </span>
-            <a href='https://www.zine.live/#/portal/signup'>Subscribe for public launch updates</a>
-          </div>
-
-          <div>
-            <span>Already on ZERO? </span>
-            <Link to='/login'>Log in</Link>
-          </div>
-        </div>
       </div>
     );
   }

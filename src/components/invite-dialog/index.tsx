@@ -1,16 +1,17 @@
 import * as React from 'react';
 
-import { Image, Skeleton, Alert } from '@zero-tech/zui/components';
+import { Image, Skeleton, Alert, IconButton } from '@zero-tech/zui/components';
 import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
-import { IconButton } from '../icon-button';
 
 import './styles.scss';
 
-import { bem } from '../../lib/bem';
+import { bem, bemClassName } from '../../lib/bem';
 import classNames from 'classnames';
+
 const c = bem('invite-dialog');
+const cn = bemClassName('invite-dialog');
 
 export interface Clipboard {
   write: (text: string) => Promise<void>;
@@ -23,6 +24,7 @@ export interface Properties {
   inviteUrl: string;
   assetsPath: string;
   isUserAMemberOfWorlds: boolean;
+  isLoading: boolean;
   clipboard?: Clipboard;
 
   onClose?: () => void;
@@ -33,7 +35,7 @@ interface State {
 }
 
 export class InviteDialog extends React.Component<Properties, State> {
-  state = { copyText: 'Copy' };
+  state = { copyText: 'COPY' };
   buttonTimeout = null;
 
   static defaultProps = { clipboard: clipboard };
@@ -48,9 +50,10 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   get inviteText() {
     return (
-      'Here is an invite code for Zero messenger:\n' +
+      // eslint-disable-next-line
+      "Here's your invite code for ZERO Messenger:\n" +
       `${this.props.inviteCode}\n\n` +
-      'Get exclusive access:\n' +
+      'Join early, earn more:\n' +
       `${this.props.inviteUrl}`
     );
   }
@@ -58,8 +61,8 @@ export class InviteDialog extends React.Component<Properties, State> {
   writeInviteToClipboard = async () => {
     try {
       await this.props.clipboard.write(this.inviteText);
-      this.setState({ copyText: 'Copied' });
-      this.buttonTimeout = setTimeout(() => this.setState({ copyText: 'Copy' }), 3000);
+      this.setState({ copyText: 'COPIED' });
+      this.buttonTimeout = setTimeout(() => this.setState({ copyText: 'COPY' }), 3000);
     } catch (e) {
       // Assume copying succeeds. There's not much we can do if it fails.
     }
@@ -67,39 +70,37 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   render() {
     return (
-      <div className={c('')}>
-        <div className={c('title-bar')}>
-          <h3 className={c('title')}>Invite to Messenger</h3>
-          <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} />
+      <div {...cn('')}>
+        <div {...cn('title-bar')}>
+          <h3 {...cn('title')}>Invite to ZERO Messenger</h3>
+          <IconButton {...cn('close')} size={32} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
-        <div className={c('content')}>
+        <div {...cn('content')}>
           <Image
-            src={`${this.props.assetsPath}/ReachingHands.png`}
+            src={`${this.props.assetsPath}/InviteFriends.png`}
             alt='Hands reaching out to connect'
-            className={c('image')}
+            {...cn('image')}
           />
 
           {this.props.isUserAMemberOfWorlds && (
-            <Alert variant='info' className={c('network-alert')}>
+            <Alert variant='info' {...cn('network-alert')}>
               This invite will add someone to your direct messages, <b>not</b> your current network.
             </Alert>
           )}
 
-          <div className={c('heading')}>Invite a friend, speak on Zero and both earn more rewards</div>
-          <div className={c('byline')}>
-            The larger and more active your network of contacts is, the more you will receive in rewards. Let's take
-            back ownership of our social platforms.
-            <br />
+          <div {...cn('heading')}>Invite a friend. Chat on ZERO. Earn rewards.</div>
+          <div {...cn('byline')}>
+            The more active you are, the more you earn. Take back ownership of your content and get rewarded.
             <br />
           </div>
-          <div className={c('code-block')}>
-            {this.props.inviteCode ? (
+          <div {...cn('code-block')}>
+            {this.props.inviteCode || !this.props.isLoading ? (
               <textarea readOnly={true} value={this.inviteText} />
             ) : (
               <Skeleton width={'100%'} height={'100px'} />
             )}
             <button
-              className={c('inline-button', 'right')}
+              {...cn('inline-button', 'right')}
               onClick={this.writeInviteToClipboard}
               disabled={!this.props.inviteCode}
             >
@@ -107,11 +108,17 @@ export class InviteDialog extends React.Component<Properties, State> {
             </button>
           </div>
           <div
-            className={classNames(c('remaining-invite'), { [c('no-invite-left')]: this.getInvitesRemaining() === 0 })}
+            className={classNames(c('remaining-invite-container'), {
+              [c('invite-left')]: this.getInvitesRemaining() !== 0 && !this.props.isLoading,
+            })}
           >
             <IconGift1 />
-            <div>
-              <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
+            <div {...cn(!this.props.isLoading && 'remaining-invite')}>
+              {!this.props.isLoading && (
+                <>
+                  <b>{this.getInvitesRemaining()}</b> of <b>{this.props.maxUses}</b> invites remaining
+                </>
+              )}
             </div>
           </div>
         </div>

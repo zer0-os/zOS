@@ -5,13 +5,14 @@ import { ChatView, Properties } from './chat-view';
 
 import { MediaType, Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import IndicatorMessage from '../indicator-message';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../message-input/container';
 import { Button as ConnectButton } from '../authentication/button';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
 import { User } from '../../store/authentication/types';
+import moment from 'moment';
+import { MessagesFetchState } from '../../store/channels';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../platform-apps/channels/util/api', () => {
@@ -38,17 +39,22 @@ describe('ChatView', () => {
       hasJoined: false,
       user: null,
       joinChannel: () => null,
-      countNewMessages: 0,
       onFetchMore: () => null,
       sendMessage: () => null,
       deleteMessage: () => null,
       editMessage: () => null,
       onRemove: () => null,
       onReply: () => null,
-      resetCountNewMessage: () => null,
       onMessageInputRendered: () => null,
       isDirectMessage: true,
-
+      isMessengerFullScreen: false,
+      hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+      otherMembers: [],
+      fetchMessages: () => null,
+      isOneOnOne: false,
+      sendDisabledMessage: '',
+      conversationErrorMessage: '',
       ...props,
     };
 
@@ -67,7 +73,6 @@ describe('ChatView', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
-
     expect(ids).toIncludeAllMembers([
       1111,
       2222,
@@ -119,8 +124,8 @@ describe('ChatView', () => {
     const classNames = wrapper.find(Message).map((m) => m.prop('className'));
 
     expect(classNames).toIncludeAllMembers([
-      'messages__message messages__message--first-in-group',
-      'messages__message messages__message--first-in-group',
+      'messages__message messages__message--last-in-group',
+      'messages__message messages__message--last-in-group',
       'messages__message',
       'messages__message',
     ]);
@@ -131,6 +136,22 @@ describe('ChatView', () => {
 
     expect(wrapper.find(InvertedScroll).exists()).toBe(true);
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
+  });
+
+  it('scrollToBottom is called when a message is sent', async function () {
+    const sendMessageMock = jest.fn().mockResolvedValue({});
+    const wrapper: any = subject({ sendMessage: sendMessageMock });
+
+    wrapper.instance().scrollContainerRef = {
+      current: {
+        scrollToBottom: jest.fn(),
+      },
+    } as any;
+
+    await wrapper.instance().handleSendMessage('Hello', [], []);
+
+    const scrollContainerRef = wrapper.instance().scrollContainerRef;
+    expect(scrollContainerRef.current.scrollToBottom).toHaveBeenCalled();
   });
 
   it('render MessageInput', () => {
@@ -206,17 +227,75 @@ describe('ChatView', () => {
     ]);
   });
 
-  it('it should not render IndicatorMessage at first', () => {
-    const wrapper = subject({ countNewMessages: 2 });
-
-    expect(wrapper.find(IndicatorMessage).exists()).toBe(false);
-  });
-
   it('render with className', () => {
     const className = 'className';
     const wrapper = subject({ className });
 
     expect(wrapper.find(`.${className}`).exists()).toBe(true);
+  });
+
+  it('renders skeleton if messages have not been loaded yet', () => {
+    const wrapper = subject({ messages: MESSAGES_TEST, hasLoadedMessages: false });
+
+    expect(wrapper).toHaveElement('ChatSkeleton');
+
+    wrapper.setProps({ hasLoadedMessages: true });
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('does not render skeleton if messages have not been loaded yet AND the fetch has failed', () => {
+    const wrapper = subject({
+      messages: MESSAGES_TEST,
+      hasLoadedMessages: false,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+    });
+
+    expect(wrapper).not.toHaveElement('ChatSkeleton');
+  });
+
+  it('renders failure message if message load failed', () => {
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: true,
+    });
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load new messages. Try Reload');
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: 'channel-name',
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load conversation with channel-name. Try Reload'
+    );
+
+    wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      hasLoadedMessages: false,
+      name: '',
+      otherMembers: [{ firstName: 'ratik', lastName: 'jindal' } as any],
+    });
+
+    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+      'Failed to load your conversation with ratik. Try Reload'
+    );
+  });
+
+  it('renders failure message if message load failed, and fetches messages on reload', () => {
+    const fetchMessages = jest.fn();
+    let wrapper = subject({
+      messages: MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.FAILED,
+      fetchMessages,
+      id: 'channel-id',
+    });
+
+    wrapper.find('.channel-view__try-reload').simulate('click');
+    expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });
   });
 
   describe('Lightbox', () => {
@@ -265,5 +344,49 @@ describe('ChatView', () => {
     await input.prop('getUsersForMentions')('bob');
 
     expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob');
+  });
+
+  describe('formatDayHeader', () => {
+    it('returns "Today" for the current day', () => {
+      const today = moment().startOf('day');
+      const messages = [
+        { id: 111, message: 'what', createdAt: today.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find('.message__header-date').text()).toEqual('Today');
+    });
+
+    it('returns "Yesterday" for the previous day', () => {
+      const yesterday = moment().subtract(1, 'day').startOf('day');
+      const messages = [
+        { id: 111, message: 'what', createdAt: yesterday.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+
+      expect(wrapper.find('.message__header-date').text()).toEqual('Yesterday');
+    });
+
+    it('returns the formatted date for the same year', () => {
+      const currentYearDate = moment('2023-06-11'); // Example date within the same year
+      const messages = [
+        { id: 111, message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+      expect(wrapper.find('.message__header-date').text()).toEqual('Sun, Jun 11');
+    });
+
+    it('returns the formatted date for previous years', () => {
+      const previousYearDate = moment('2022-07-16'); // Example date from a previous year
+      const messages = [
+        { id: 111, message: 'what', createdAt: previousYearDate.valueOf() } as MessageModel,
+      ];
+
+      const wrapper = subject({ messages });
+      expect(wrapper.find('.message__header-date').text()).toEqual('Jul 16, 2022');
+    });
   });
 });

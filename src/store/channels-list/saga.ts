@@ -1,23 +1,28 @@
+import { v4 as uuidv4 } from 'uuid';
 import { ChannelType, DirectMessage } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, receive } from '.';
+import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
+import { chat } from '../../lib/chat';
 
 import {
-  fetchChannels as fetchChannelsApi,
   fetchConversations as fetchConversationsMessagesApi,
   createConversation as createConversationMessageApi,
   uploadImage as uploadImageApi,
 } from './api';
 import { AsyncListStatus } from '../normalized';
-import { channelMapper, filterChannelsList } from './utils';
+import { toLocalChannel, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { currentUserSelector } from '../authentication/saga';
+import { ConversationStatus, GroupChannelType, MessagesFetchState, receive as receiveChannel } from '../channels';
+import { AdminMessageType } from '../messages';
+import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -29,8 +34,14 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
-  const channels = yield call(fetchChannelsApi, action.payload);
-  const channelsList = channels.map((currentChannel) => channelMapper(currentChannel));
+  const chatClient = yield call(chat.get);
+  const channelsList = yield call(
+    [
+      chatClient,
+      chatClient.getChannels,
+    ],
+    action.payload
+  );
 
   const conversationsList = yield select(rawConversationsList());
 
@@ -46,13 +57,18 @@ export function* fetchChannels(action) {
 
 export function* fetchConversations() {
   const conversations = yield call(fetchConversationsMessagesApi);
+  const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
+
+  const existingConversationList = yield select(denormalizeConversations);
+  const optimisticConversationIds = existingConversationList
+    .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)
+    .map((c) => c.id);
+
   const channelsList = yield select(rawChannelsList());
-
-  const conversationsList = conversations.map((currentChannel) => channelMapper(currentChannel));
-
   yield put(
     receive([
       ...channelsList,
+      ...optimisticConversationIds,
       ...conversationsList,
     ])
   );
@@ -62,9 +78,107 @@ export function* fetchConversations() {
   yield put(channel, { loaded: true });
 }
 
-export function* createConversation(action) {
-  const { name, userIds, image } = action.payload;
+export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+  const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
+  yield put(setactiveConversationId(optimisticConversation.id));
+  try {
+    const conversation = yield call(sendCreateConversationRequest, userIds, name, image, optimisticConversation.id);
+    yield call(receiveCreatedConversation, conversation, optimisticConversation);
+    return conversation;
+  } catch {
+    yield call(handleCreateConversationError, optimisticConversation);
+  }
+}
 
+export function* handleCreateConversationError(optimisticConversation) {
+  yield put(receiveChannel({ id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR }));
+}
+
+export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
+  const defaultConversationProperties = {
+    hasMore: false,
+    isChannel: false,
+    unreadCount: 0,
+    hasLoadedMessages: true,
+    messagesFetchStatus: MessagesFetchState.SUCCESS,
+    groupChannelType: GroupChannelType.Private,
+  };
+
+  const currentUser = yield select(currentUserSelector());
+  const id = uuidv4();
+  const timestamp = Date.now();
+  const adminMessage = {
+    id,
+    optimisticId: id,
+    message: 'Conversation was started',
+    createdAt: timestamp,
+    isAdmin: true,
+    admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUser.id },
+  };
+  const conversation = {
+    ...defaultConversationProperties,
+    id,
+    optimisticId: id,
+    name,
+    otherMembers: userIds,
+    messages: [adminMessage],
+    createdAt: Date.now(),
+    conversationStatus: ConversationStatus.CREATING,
+    lastMessage: adminMessage,
+    lastMessageAt: adminMessage.createdAt,
+  };
+
+  const existingConversationsList = yield select(rawConversationsList());
+  const existingChannelsList = yield select(rawChannelsList());
+
+  yield put(
+    receive([
+      ...existingConversationsList,
+      ...existingChannelsList,
+      conversation,
+    ])
+  );
+
+  return conversation;
+}
+
+export function* receiveCreatedConversation(conversation, optimisticConversation) {
+  const existingConversationsList = yield select(rawConversationsList());
+  const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
+
+  if (!existingConversationsList.includes(conversation.id)) {
+    conversation.hasLoadedMessages = true; // Brand new conversation doesn't have messages to load
+    conversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
+    conversation.optimisticId = optimisticConversation.optimisticId;
+
+    const existingMessageIds = yield select(rawMessagesSelector(optimisticConversation.id));
+    const firstMessage = conversation.messages?.[0];
+    if (firstMessage) {
+      const channelMessages = yield call(replaceOptimisticMessage, existingMessageIds, firstMessage);
+      if (channelMessages) {
+        conversation.messages = channelMessages;
+      }
+    }
+    listWithoutOptimistic.push(conversation);
+  }
+
+  const channelsList = yield select(rawChannelsList());
+  yield put(
+    receive([
+      ...channelsList,
+      ...listWithoutOptimistic,
+    ])
+  );
+
+  yield put(setactiveConversationId(conversation.id));
+}
+
+export function* sendCreateConversationRequest(
+  userIds: string[],
+  name: string = null,
+  image: File = null,
+  optimisticId: string
+) {
   let coverUrl = '';
   if (image) {
     try {
@@ -76,28 +190,13 @@ export function* createConversation(action) {
     }
   }
 
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl);
+  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl, optimisticId);
 
-  const conversation = channelMapper(response);
-  const existingConversationsList = yield select(rawConversationsList());
-  const channelsList = yield select(rawChannelsList());
-
-  if (conversation && conversation.id) {
-    const hasExistingConversation =
-      Array.isArray(existingConversationsList) && existingConversationsList.includes(conversation.id);
-
-    if (!hasExistingConversation) {
-      // add new chat to the list
-      yield put(
-        receive([
-          ...channelsList,
-          ...existingConversationsList,
-          conversation,
-        ])
-      );
-    }
-    yield put(setactiveConversationId(conversation.id));
+  const result = toLocalChannel(response);
+  if (response.messages) {
+    result.messages = response.messages;
   }
+  return result;
 }
 
 export function* clearChannelsAndConversations() {
@@ -134,7 +233,7 @@ export function* startChannelsAndConversationsRefresh() {
 export function* channelsReceived(action) {
   const { channels } = action.payload;
 
-  const newChannels = channels.map(channelMapper);
+  const newChannels = channels.map(toLocalChannel);
 
   // Silly to get them separately but we'll be splitting these anyway
   const existingDirectMessages = yield select(rawConversationsList());
@@ -174,15 +273,43 @@ export function* currentUserAddedToChannel(_action) {
   yield fetchConversations();
 }
 
+export function* userLeftChannel(channelId, userId) {
+  const currentUser = yield select(currentUserSelector());
+
+  if (userId === currentUser.id) {
+    yield call(currentUserLeftChannel, channelId);
+  }
+}
+
+function* currentUserLeftChannel(channelId) {
+  const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
+  const newList = channelIdList.filter((id) => id !== channelId);
+  yield put(receive(newList));
+
+  const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
+  if (activeConversationId === channelId) {
+    const conversations = yield select(denormalizeConversations);
+
+    if (conversations.length > 0) {
+      const sorted = conversations.sort((a, b) => (b.lastMessage?.createdAt || 0) - (a.lastMessage?.createdAt || 0));
+      yield put(setactiveConversationId(sorted[0].id));
+    } else {
+      // Probably not possible but handled just in case
+      yield put(setactiveConversationId(null));
+    }
+  }
+}
+
 export function* saga() {
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
   yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
-  yield takeLatest(SagaActionTypes.CreateConversation, createConversation);
-  yield takeLatest(SagaActionTypes.ChannelsReceived, channelsReceived);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);
+  yield takeEveryFromBus(chatBus, ChatEvents.UserLeftChannel, ({ payload }) =>
+    userLeftChannel(payload.channelId, payload.userId)
+  );
 }

@@ -2,7 +2,17 @@
 @import '../styles';
 
 .validate-invite {
+  margin: auto 0 0;
+
   @include base();
+
+  &__heading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 24px;
+    gap: 8px;
+  }
 
   &__heading {
     @include heading();
@@ -13,15 +23,31 @@
   }
 
   &__form {
+    gap: 32px !important;
+
     @include form();
   }
 
-  &__other-options {
-    text-align: center;
-    padding-top: 32px;
+  &__input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 280px;
+  }
 
-    > * {
-      margin-top: 16px;
+  &__alert {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  &__submit-button {
+    height: 40px;
+    padding: 16px;
+    width: 120px;
+
+    div {
+      margin: 0;
     }
   }
 }

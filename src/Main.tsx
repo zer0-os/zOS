@@ -12,6 +12,8 @@ import classNames from 'classnames';
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
 import { MessengerChat } from './components/messenger/chat';
+import { DevPanelContainer } from './components/dev-panel/container';
+import { FeatureFlag } from './components/feature-flag';
 
 export interface Properties {
   hasContextPanel: boolean;
@@ -89,6 +91,9 @@ export class Container extends React.Component<Properties> {
           <>
             <Sidekick className='main__sidekick' />
             <MessengerChat />
+            <FeatureFlag featureFlag='enableDevPanel'>
+              <DevPanelContainer />
+            </FeatureFlag>
           </>
         )}
 

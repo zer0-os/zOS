@@ -1,4 +1,4 @@
-import { put, call, select, race, take, fork } from 'redux-saga/effects';
+import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
@@ -46,9 +46,10 @@ export function* performGroupMembersSelected(action) {
 }
 
 export function* createConversation(action) {
+  const { userIds, name, image } = action.payload;
   try {
     yield put(setGroupCreating(true));
-    yield call(performCreateConversation, { payload: action.payload });
+    yield call(performCreateConversation, userIds, name, image);
   } finally {
     yield put(setGroupCreating(false));
   }
@@ -56,7 +57,6 @@ export function* createConversation(action) {
 
 export function* saga() {
   yield fork(authWatcher);
-  yield fork(handleCreateConversation);
 
   while (true) {
     const { startEvent, createConversationEvent } = yield race({
@@ -112,13 +112,6 @@ const PREVIOUS_STAGES = {
   [Stage.GroupDetails]: Stage.StartGroupChat,
 };
 
-function* handleCreateConversation() {
-  while (true) {
-    const action = yield take(SagaActionTypes.CreateConversation);
-    yield call(createConversation, action);
-  }
-}
-
 function* handleOneOnOne() {
   const action = yield take([
     SagaActionTypes.StartGroup,
@@ -139,7 +132,7 @@ function* handleStartGroup() {
 
 function* handleGroupDetails() {
   const action = yield take(SagaActionTypes.CreateConversation);
-  yield call(createConversation, action);
+  yield spawn(createConversation, action);
   return Stage.None;
 }
 

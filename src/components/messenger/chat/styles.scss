@@ -33,6 +33,10 @@ $recent-indicator-size: 8px;
       height: calc(100% - $title-bar-height - $header-height);
       display: flex;
       flex-direction: column;
+
+      &__fullscreen {
+        height: calc(100% - $header-height);
+      }
     }
   }
 
@@ -76,6 +80,12 @@ $recent-indicator-size: 8px;
     border-bottom: 1px solid theme.$color-greyscale-transparency-2;
     display: flex;
     gap: 8px;
+
+    > div:last-child {
+      flex-grow: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
 
     &-avatar {
       background-position: center;
@@ -147,6 +157,14 @@ $recent-indicator-size: 8px;
     color: theme.$color-greyscale-11;
   }
 
+  &__icon-collapse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+  }
+
   &--transition {
     transition: all animation.$animation-duration-half ease-out;
 
@@ -158,6 +176,7 @@ $recent-indicator-size: 8px;
   &--full-screen {
     position: unset;
     flex-grow: 1;
+    overflow: hidden;
 
     .direct-message-chat__content {
       height: 100vh;
@@ -174,11 +193,5 @@ $recent-indicator-size: 8px;
 
   &--minimized {
     bottom: calc($title-bar-height + $header-height - $window-height);
-  }
-
-  &--one-on-one {
-    .message__author-name {
-      display: none;
-    }
   }
 }

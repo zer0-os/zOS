@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getDeepProperty from 'lodash.get';
+import { setActiveChannelId } from '../../store/chat';
 
 import { RootState } from '../../store/reducer';
 import { Store } from 'redux';
@@ -18,6 +19,7 @@ import './styles.scss';
 import { AuthenticationState } from '../../store/authentication/types';
 import { ChatViewContainer } from '../../components/chat-view-container/chat-view-container';
 import { ScrollbarContainer } from '../../components/scrollbar-container';
+import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 
 interface PublicProperties {
   store: Store<RootState>;
@@ -28,6 +30,8 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
+  setActiveChannelId: (channelId: string) => void;
+
   domainId: string;
   channels: Channel[];
   fetchChannels: (domainId: string) => void;
@@ -52,7 +56,14 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchChannels,
+      setActiveChannelId,
     };
+  }
+
+  setActiveChannelId() {
+    if (this.props.channelId) {
+      this.props.setActiveChannelId(this.props.channelId);
+    }
   }
 
   componentDidMount() {
@@ -60,7 +71,12 @@ export class Container extends React.Component<Properties> {
 
     if (domainId) {
       this.props.fetchChannels(domainId);
+      this.setActiveChannelId();
     }
+  }
+
+  componentWillUnmount(): void {
+    this.props.setActiveChannelId(null);
   }
 
   componentDidUpdate(prevProps: Properties) {
@@ -73,6 +89,12 @@ export class Container extends React.Component<Properties> {
     if (prevProps.user.data !== user.data || prevProps.domainId !== domainId) {
       this.props.fetchChannels(domainId);
     }
+
+    // to handle the case when you switch between apps (eg.Chat -> Trade -> Chat)
+    // or when you're switching between channels (channel1 -> channel2)
+    if (prevProps.channelId !== this.props.channelId) {
+      this.setActiveChannelId();
+    }
   }
 
   // only render the channel(s) which belong to "this" domain/network
@@ -82,7 +104,7 @@ export class Container extends React.Component<Properties> {
 
   renderChannelView() {
     if (this.props.channelId && this.isChannelValid(this.props.channelId)) {
-      return <ChatViewContainer channelId={this.props.channelId} />;
+      return <ChatViewContainer channelId={this.props.channelId} showSenderAvatar />;
     }
 
     const defaultChannelId = getDeepProperty(this.props, 'channels[0].id', null);
@@ -96,14 +118,16 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <Provider store={this.props.store}>
-        <AppLayout className='channels'>
-          <AppContextPanel>
-            <ScrollbarContainer variant='on-hover'>
-              <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
-            </ScrollbarContainer>
-          </AppContextPanel>
-          <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
-        </AppLayout>
+        <ZUIProvider>
+          <AppLayout className='channels'>
+            <AppContextPanel>
+              <ScrollbarContainer variant='on-hover'>
+                <ChannelList channels={this.props.channels} currentChannelId={this.props.channelId} />
+              </ScrollbarContainer>
+            </AppContextPanel>
+            <AppContent className='channel-app'>{this.renderChannelView()}</AppContent>
+          </AppLayout>
+        </ZUIProvider>
       </Provider>
     );
   }

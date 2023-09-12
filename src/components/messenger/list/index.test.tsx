@@ -1,4 +1,3 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { normalize } from '../../../store/channels-list';
@@ -11,10 +10,11 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
-import { AdminMessageType } from '../../../store/messages';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
+import { RewardsBar } from '../../rewards-bar';
+import { previewDisplayDate } from '../../../lib/chat/chat-message';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -28,7 +28,6 @@ describe('messenger-list', () => {
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
-      isGroupCreating: false,
       isFirstTimeLogin: false,
       includeTitleBar: true,
       allowClose: true,
@@ -38,12 +37,12 @@ describe('messenger-list', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      zero: '',
       zeroPreviousDay: '',
       isRewardsLoading: false,
       isInviteNotificationOpen: false,
       myUserId: '',
-      showNewRewards: false,
+      showRewardsInTooltip: false,
+      showRewardsInPopup: false,
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
@@ -55,6 +54,8 @@ describe('messenger-list', () => {
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
+      rewardsTooltipClosed: () => null,
+      receiveSearchResults: () => null,
       logout: () => null,
       ...props,
     };
@@ -93,6 +94,18 @@ describe('messenger-list', () => {
     wrapper.find(ConversationListPanel).prop('startConversation')();
 
     expect(startCreateConversation).toHaveBeenCalledOnce();
+  });
+
+  it('renders RewardsBar when stage is equal to none', function () {
+    const wrapper = subject({ stage: Stage.None });
+
+    expect(wrapper).toHaveElement(RewardsBar);
+  });
+
+  it('does not render RewardsBar when stage is not equal to none', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
+
+    expect(wrapper).not.toHaveElement(RewardsBar);
   });
 
   it('renders CreateConversationPanel', function () {
@@ -216,21 +229,6 @@ describe('messenger-list', () => {
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
   });
 
-  it('sets the group details props', async function () {
-    const wrapper = subject({
-      stage: Stage.GroupDetails,
-      groupUsers: [{ value: 'user-id' } as any],
-      isGroupCreating: true,
-    });
-
-    expect(wrapper.find(GroupDetailsPanel).props()).toEqual(
-      expect.objectContaining({
-        users: [{ value: 'user-id' }],
-        isCreating: true,
-      })
-    );
-  });
-
   it('renders the title bar based on property', function () {
     const wrapper = subject({ includeTitleBar: true });
     expect(wrapper).toHaveElement('.messenger-list__header');
@@ -314,13 +312,13 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf() }, isChannel: false },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf() }, isChannel: false },
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} }, isChannel: false },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} }, isChannel: false },
         { id: 'convo-3', createdAt: moment('2023-03-04').valueOf(), isChannel: false },
         {
           id: 'convo-4',
           createdAt: moment('2023-03-05').valueOf(),
-          lastMessage: { createdAt: moment('2023-03-02').valueOf() },
+          lastMessage: { createdAt: moment('2023-03-02').valueOf(), sender: {} },
           isChannel: false,
         },
       ]);
@@ -346,65 +344,70 @@ describe('messenger-list', () => {
       ]);
     });
 
-    test('gets group details from state', () => {
-      const state = subject([], {
-        groupDetails: {
-          isCreating: true,
-        },
-      });
-
-      expect(state.isGroupCreating).toEqual(true);
-    });
-
-    test('messagePreview', () => {
-      const state = subject([
-        { id: 'convo-1', lastMessage: { message: 'The last message' }, isChannel: false },
-        { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
-      ]);
-
-      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-        'The last message',
-        'Second message last',
-      ]);
-    });
-
-    test('admin messagePreview', () => {
-      const state = subject(
-        [
+    describe('messagePreview', () => {
+      it('sets the preview for all conversations', () => {
+        const state = subject([
           {
             id: 'convo-1',
-            lastMessage: {
-              message: 'The last message',
-              isAdmin: true,
-              admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'invitee-id' },
-            },
+            lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
             isChannel: false,
           },
-          { id: 'convo-2', lastMessage: { message: 'Second message last' }, isChannel: false },
-        ],
-        {},
-        [
-          user({ userId: 'inviter-id', firstName: 'current user' }),
-          user({ userId: 'invitee-id', firstName: 'Courtney' }),
-        ]
-      );
+          {
+            id: 'convo-2',
+            lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
+            isChannel: false,
+          },
+        ]);
 
-      expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-        'Courtney joined you on Zero',
-        'Second message last',
+        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+          'Jack: The last message',
+          'Jack: Second message last',
+        ]);
+      });
+
+      it('uses most recent of last message in list or lastMessage on conversation', () => {
+        const state = subject([
+          {
+            id: 'convo-1',
+            lastMessage: { message: 'lastMessage', createdAt: 10003, sender: { firstName: 'Jack' } },
+            messages: [
+              { id: '1', message: 'recent message', createdAt: 10005, sender: { firstName: 'Jack' } },
+              { id: '2', message: 'old message', createdAt: 10002 },
+            ],
+            isChannel: false,
+          },
+          {
+            id: 'convo-2',
+            lastMessage: { message: 'lastMessage', createdAt: 20007, sender: { firstName: 'Jack' } },
+            messages: [],
+            isChannel: false,
+          },
+        ]);
+
+        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+          'Jack: lastMessage',
+          'Jack: recent message',
+        ]);
+      });
+    });
+
+    test('previewDisplayDate', () => {
+      const date = moment('2023-03-03').valueOf();
+      const state = subject([
+        {
+          id: 'convo-1',
+          lastMessage: { createdAt: date, message: '', sender: {} },
+          isChannel: false,
+        },
       ]);
+
+      expect(state.conversations.map((c) => c.previewDisplayDate)).toEqual([previewDisplayDate(date)]);
     });
 
     test('isLoading', () => {
       const state = subject([], {}, undefined, undefined, { loading: true });
 
       expect(state.isRewardsLoading).toEqual(true);
-    });
-
-    test('zero', () => {
-      const state = subject([], {}, undefined, undefined, { zero: '17' });
-
-      expect(state.zero).toEqual('17');
     });
 
     test('activeConversationId', () => {
@@ -419,7 +422,7 @@ describe('messenger-list', () => {
       expect(state.stage).toEqual(Stage.GroupDetails);
     });
 
-    test('stage', () => {
+    test('groupUsers', () => {
       const state = subject([], { groupUsers: [{ value: 'a-thing' }] });
 
       expect(state.groupUsers).toEqual([{ value: 'a-thing' }]);
@@ -445,10 +448,16 @@ describe('messenger-list', () => {
     });
 
     test('includeTitleBar', async () => {
-      let state = subject([], {}, [user({ isAMemberOfWorlds: false })]);
+      let state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
+      });
       expect(state.includeTitleBar).toEqual(false);
 
-      state = subject([], {}, [user({ isAMemberOfWorlds: true })]);
+      state = DirectMessageChat.mapState({
+        ...getState([]),
+        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
+      });
       expect(state.includeTitleBar).toEqual(true);
     });
 
@@ -495,7 +504,3 @@ describe('messenger-list', () => {
     });
   });
 });
-
-function user(attrs: Partial<{ userId: string; firstName: string; isAMemberOfWorlds: boolean }> = {}) {
-  return { userId: 'inviter-id', firstName: 'current user', isAMemberOfWorlds: true, ...attrs };
-}

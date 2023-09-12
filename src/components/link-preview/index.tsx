@@ -1,7 +1,7 @@
 import React from 'react';
 
 import classNames from 'classnames';
-import { BackgroundImage, BackgroundImageProperties } from '@zer0-os/zos-component-library';
+import { BackgroundImage } from '@zer0-os/zos-component-library';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { IconButton } from '@zero-tech/zui/components';
@@ -89,27 +89,30 @@ export class LinkPreview extends React.Component<Properties> {
 
     if (!this.width) return null;
 
-    let source = thumbnail.url;
-    const options: any = {
-      width: this.width,
-      crop: 'fill',
-    };
-
-    const props: BackgroundImageProperties = {
-      source,
-      options,
-      className: 'link-preview__banner-image',
-      provider: getProvider(),
-      autoHeight: true,
-    };
-
     return (
       <div className='link-preview__banner'>
         <div {...cn('default-image')}>
           <IconLink1 size={24} />
         </div>
-        <BackgroundImage {...props} />
+        {thumbnail && this.renderThumbnail(thumbnail)}
       </div>
+    );
+  }
+
+  renderThumbnail(thumbnail) {
+    const options: any = {
+      width: this.width,
+      crop: 'fill',
+    };
+
+    return (
+      <BackgroundImage
+        {...cn('banner-image')}
+        source={thumbnail.url}
+        options={options}
+        provider={getProvider()}
+        autoHeight
+      />
     );
   }
 

@@ -342,6 +342,26 @@ describe('message', () => {
     expect(onEdit).toHaveBeenCalledWith(id, message, [], { hidePreview: true });
   });
 
+  it('does not render link preview if there is a file', () => {
+    const wrapper = subject({
+      preview: { url: 'example.com' },
+      hidePreview: false,
+      media: { url: 'https://image.com/image.png', type: MediaType.Image },
+    });
+
+    expect(wrapper).not.toHaveElement(LinkPreview);
+  });
+
+  it('does not render link preview if message is a reply', () => {
+    const wrapper = subject({
+      preview: { url: 'example.com' },
+      hidePreview: false,
+      parentMessageText: 'quoted message',
+    });
+
+    expect(wrapper).not.toHaveElement(LinkPreview);
+  });
+
   it('renders message with mention', () => {
     const wrapper = subject({ message: '@[HamzaKH ](user:aec3c346-a34c-4440-a9e6-d476c2671dd1)' });
 

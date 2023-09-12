@@ -1,22 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .rewards-bar {
-  &__rewards-bar {
-    background-color: theme.$color-primary-3;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0px 8px 0 16px;
-
-    height: 64px;
-
-    &--with-avatar {
-      justify-content: space-between;
-    }
-  }
-
   &__rewards-button-container {
     padding: 8px;
 
@@ -71,8 +55,8 @@
 
     &__status {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 8px;
+      right: 8px;
     }
   }
 }

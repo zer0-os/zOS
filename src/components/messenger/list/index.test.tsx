@@ -15,6 +15,7 @@ import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
 import { RewardsBar } from '../../rewards-bar';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
+import { SettingsMenu } from '../../settings-menu';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -106,6 +107,24 @@ describe('messenger-list', () => {
     const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
     expect(wrapper).not.toHaveElement(RewardsBar);
+  });
+
+  it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {
+    const wrapper = subject({ stage: Stage.None, includeRewardsAvatar: true, isMessengerFullScreen: true });
+
+    expect(wrapper).toHaveElement(SettingsMenu);
+  });
+
+  it('does not render SettingsMenu when stage is equal to none and messenger is not fullscreen', function () {
+    const wrapper = subject({ stage: Stage.None, isMessengerFullScreen: false });
+
+    expect(wrapper).not.toHaveElement(SettingsMenu);
+  });
+
+  it('does not render SettingsMenu when stage is not equal to none', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne });
+
+    expect(wrapper).not.toHaveElement(SettingsMenu);
   });
 
   it('renders CreateConversationPanel', function () {

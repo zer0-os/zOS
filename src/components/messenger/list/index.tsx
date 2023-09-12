@@ -33,7 +33,6 @@ import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from 
 import { RewardsBar } from '../../rewards-bar';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
-import { FeatureFlag } from '../../feature-flag';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -245,21 +244,19 @@ export class Container extends React.Component<Properties, State> {
               <div {...cnMessageList('avatar-container')}>{this.renderSettingsMenu()}</div>
             )}
 
-            <FeatureFlag featureFlag='enableRewards'>
-              <div {...cnMessageList('rewards-container', this.props.includeRewardsAvatar && 'with-avatar')}>
-                <RewardsBar
-                  zeroPreviousDay={this.props.zeroPreviousDay}
-                  isRewardsLoading={this.props.isRewardsLoading}
-                  isMessengerFullScreen={this.props.isMessengerFullScreen}
-                  showRewardsInTooltip={this.props.showRewardsInTooltip}
-                  showRewardsInPopup={this.props.showRewardsInPopup}
-                  isFirstTimeLogin={this.props.isFirstTimeLogin}
-                  onRewardsPopupClose={this.props.rewardsPopupClosed}
-                  onRewardsTooltipClose={this.props.rewardsTooltipClosed}
-                  hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
-                />
-              </div>
-            </FeatureFlag>
+            <div {...cnMessageList('rewards-container', this.props.includeRewardsAvatar && 'with-avatar')}>
+              <RewardsBar
+                zeroPreviousDay={this.props.zeroPreviousDay}
+                isRewardsLoading={this.props.isRewardsLoading}
+                isMessengerFullScreen={this.props.isMessengerFullScreen}
+                showRewardsInTooltip={this.props.showRewardsInTooltip}
+                showRewardsInPopup={this.props.showRewardsInPopup}
+                isFirstTimeLogin={this.props.isFirstTimeLogin}
+                onRewardsPopupClose={this.props.rewardsPopupClosed}
+                onRewardsTooltipClose={this.props.rewardsTooltipClosed}
+                hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
+              />
+            </div>
           </div>
         )}
 

@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
@@ -12,7 +12,7 @@ import {
   EditMessageOptions,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
-import { ChatView } from './chat-view';
+// import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import {
   EditPayload,
@@ -24,6 +24,17 @@ import { withContext as withAuthenticationContext } from '../authentication/cont
 import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
+import { FizzbuzzNew } from '../../platform-apps/channels/util/dummy-file';
+
+const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
+// const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
+//  inputNumber > startNumber && inputNumber < endNumber;
+
+const divisibleBy = (factor: number, word: string) => ({
+  word,
+  fn: isDivisibleBy,
+  params: [factor],
+});
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -254,12 +265,23 @@ export class Container extends React.Component<Properties, State> {
     return this.props.channel?.isOneOnOne;
   }
 
+  result = FizzbuzzNew(1, [
+    divisibleBy(3, 'Fizz'),
+    divisibleBy(5, 'Buzz'),
+  ]);
+
   render() {
     if (!this.props.channel) return null;
 
     return (
       <>
-        <ChatView
+        <div style={{ paddingTop: '100px' }}>
+          {' '}
+          <>FIZBUZZ</>
+          <br />
+          {this.result}
+        </div>
+        {/* <ChatView
           className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
@@ -285,7 +307,7 @@ export class Container extends React.Component<Properties, State> {
           onRemove={this.removeReply}
           sendDisabledMessage={this.sendDisabledMessage}
           conversationErrorMessage={this.conversationErrorMessage}
-        />
+        /> */}
       </>
     );
   }

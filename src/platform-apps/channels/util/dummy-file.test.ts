@@ -5,6 +5,8 @@
 // Initial request
 // For our purposes, write a function that takes an integer and returns the appropriate FizzBuzz string: fizzbuzz(int) string
 
+import { FizzbuzzNew } from './dummy-file';
+
 // Note: We recommend completing the initial request before reading
 // the next feature request because even knowing what the next feature might
 // be may impact how you approach the original problem.
@@ -42,24 +44,6 @@
 const isDivisibleBy = (inputNumber: number, factor: number) => inputNumber % factor === 0;
 const isInbetween = (inputNumber: number, startNumber: number, endNumber: number) =>
   inputNumber > startNumber && inputNumber < endNumber;
-
-interface FizzBuzzConfig {
-  word: string;
-  fn: (inputNumber: number, ...params: any[]) => boolean;
-  params: any[];
-}
-
-export const FizzbuzzNew = (inputNumber: number, definitions: FizzBuzzConfig[]) => {
-  let result = '';
-
-  definitions.forEach((definition) => {
-    if (definition.fn(inputNumber, ...definition.params)) {
-      result += `${definition.word}`;
-    }
-  });
-
-  return result || inputNumber.toString();
-};
 
 describe('Fizzbuzz', () => {
   it('should return a number as a string when neither condition matches', function () {

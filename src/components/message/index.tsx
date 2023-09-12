@@ -12,8 +12,8 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 
@@ -264,22 +264,35 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
+  renderLinkPreview() {
+    const { preview, isOwner, hidePreview } = this.props;
+    return (
+      <>
+        {preview && !hidePreview && (
+          <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />
+        )}
+      </>
+    );
+  }
   renderBody() {
-    const { message, preview, isOwner, hidePreview } = this.props;
+    const { message } = this.props;
 
     return (
       <div {...cn('block-body')}>
         {message && <ContentHighlighter message={message} />}
-        {preview && !hidePreview && (
-          <div {...cn('block-preview')}>
-            <LinkPreview url={preview.url} {...preview} />
-            {isOwner && (
-              <IconButton size={24} Icon={IconXClose} onClick={this.onRemovePreview} className='remove-preview__icon' />
-            )}
-          </div>
-        )}
         {this.renderFooter()}
       </div>
+    );
+  }
+
+  renderParentMessage() {
+    return (
+      <ParentMessage
+        message={this.props.parentMessageText}
+        senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
+        senderFirstName={this.props.parentSenderFirstName}
+        senderLastName={this.props.parentSenderLastName}
+      />
     );
   }
 
@@ -310,12 +323,8 @@ export class Message extends React.Component<Properties, State> {
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
-                  <ParentMessage
-                    message={this.props.parentMessageText}
-                    senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
-                    senderFirstName={this.props.parentSenderFirstName}
-                    senderLastName={this.props.parentSenderLastName}
-                  />
+                  {this.renderLinkPreview()}
+                  {this.renderParentMessage()}
                   {this.renderBody()}
                 </>
               )}

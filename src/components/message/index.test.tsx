@@ -294,7 +294,7 @@ describe('message', () => {
 
     const wrapper = subject({ preview, message, hidePreview: false });
 
-    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
     expect(wrapper.find(ContentHighlighter).first().prop('message').includes(message)).toBeTruthy();
   });
 
@@ -308,7 +308,7 @@ describe('message', () => {
 
     const wrapper = subject({ preview, message: undefined, hidePreview: false });
 
-    expect(wrapper.find(LinkPreview).props()).toEqual(preview);
+    expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
   });
 
   it('does not render LinkPreview when there is a message but hidePreview is true', () => {
@@ -338,7 +338,7 @@ describe('message', () => {
 
     const wrapper = subject({ messageId: id, preview, message, hidePreview: false, isOwner: true, onEdit });
 
-    expect(wrapper.find('.remove-preview__icon').simulate('click'));
+    expect(wrapper.find(LinkPreview).simulate('remove'));
     expect(onEdit).toHaveBeenCalledWith(id, message, [], { hidePreview: true });
   });
 

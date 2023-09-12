@@ -265,15 +265,14 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderLinkPreview() {
-    const { preview, isOwner, hidePreview } = this.props;
-    return (
-      <>
-        {preview && !hidePreview && (
-          <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />
-        )}
-      </>
-    );
+    const { preview, isOwner, hidePreview, media, parentMessageText } = this.props;
+    if (!preview || hidePreview || media || parentMessageText) {
+      return;
+    }
+
+    return <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />;
   }
+
   renderBody() {
     const { message } = this.props;
 

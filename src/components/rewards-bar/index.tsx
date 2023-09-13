@@ -23,7 +23,7 @@ interface State {
   isRewardsFAQModalOpen: boolean;
 }
 
-export class RewardsContainer extends React.Component<Properties, State> {
+export class RewardsBar extends React.Component<Properties, State> {
   state = {
     isRewardsPopupOpen: false,
     isRewardsFAQModalOpen: false,

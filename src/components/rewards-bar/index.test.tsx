@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Properties, RewardsContainer } from '.';
+import { Properties, RewardsBar } from '.';
 import { RewardsFAQModal } from '../rewards-faq-modal';
 import { RewardsPopupContainer } from '../rewards-popup/container';
 import { RewardsButton } from '../rewards-button';
 
-describe('rewards-container', () => {
+describe('rewards-bar', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
@@ -20,7 +20,7 @@ describe('rewards-container', () => {
       ...props,
     };
 
-    return shallow(<RewardsContainer {...allProps} />);
+    return shallow(<RewardsBar {...allProps} />);
   };
 
   it('renders the RewardsButton component', function () {

@@ -30,7 +30,7 @@ import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
-import { RewardsContainer } from '../../rewards-container';
+import { RewardsBar } from '../../rewards-bar';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
 import { FeatureFlag } from '../../feature-flag';
@@ -239,7 +239,7 @@ export class Container extends React.Component<Properties, State> {
 
         <FeatureFlag featureFlag='enableRewards'>
           <div {...cnMessageList('rewards-container', !this.props.includeUserSettings && 'center')}>
-            <RewardsContainer
+            <RewardsBar
               zeroPreviousDay={this.props.zeroPreviousDay}
               isRewardsLoading={this.props.isRewardsLoading}
               isMessengerFullScreen={this.props.isMessengerFullScreen}

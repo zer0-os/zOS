@@ -411,26 +411,23 @@ export function* receiveNewMessage(action) {
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {
-  if (!message.optimisticId) {
-    return null;
-  }
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
   if (messageIndex < 0) {
     return null;
   }
 
   const optimisticMessage = yield select(messageSelector(message.optimisticId));
-  if (optimisticMessage) {
-    const messages = [...currentMessages];
-    messages[messageIndex] = {
-      ...message,
-      preview: message.preview || optimisticMessage.preview,
-      sendStatus: MessageSendStatus.SUCCESS,
-    };
-    return messages;
+  if (!optimisticMessage) {
+    return null; // This shouldn't happen because we'd have bailed above, but just in case.
   }
 
-  return null;
+  const messages = [...currentMessages];
+  messages[messageIndex] = {
+    ...message,
+    preview: message.preview || optimisticMessage.preview,
+    sendStatus: MessageSendStatus.SUCCESS,
+  };
+  return messages;
 }
 
 export function* receiveUpdateMessage(action) {

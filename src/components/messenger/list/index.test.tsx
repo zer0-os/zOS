@@ -33,7 +33,6 @@ describe('messenger-list', () => {
       includeTitleBar: true,
       allowClose: true,
       allowExpand: true,
-      includeRewardsAvatar: false,
       isMessengerFullScreen: false,
       userName: '',
       userHandle: '',
@@ -110,7 +109,7 @@ describe('messenger-list', () => {
   });
 
   it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {
-    const wrapper = subject({ stage: Stage.None, includeRewardsAvatar: true, isMessengerFullScreen: true });
+    const wrapper = subject({ stage: Stage.None, isMessengerFullScreen: true });
 
     expect(wrapper).toHaveElement(SettingsMenu);
   });
@@ -506,20 +505,6 @@ describe('messenger-list', () => {
         layout: { value: { isMessengerFullScreen: false } } as LayoutState,
       });
       expect(state.allowExpand).toEqual(true);
-    });
-
-    test('includeRewardsAvatar', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.includeRewardsAvatar).toEqual(true);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.includeRewardsAvatar).toEqual(false);
     });
   });
 });

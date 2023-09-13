@@ -46,7 +46,6 @@ describe('messenger-list', () => {
       openConversation: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
-      markConversationAsRead: jest.fn(),
       startCreateConversation: () => null,
       membersSelected: () => null,
       startGroup: () => null,

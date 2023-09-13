@@ -7,7 +7,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
-import { activeChannelIdSelector } from '../chat/selectors';
+import { setActiveChannelId, setactiveConversationId } from '../chat';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -44,39 +44,44 @@ export function* markAllMessagesAsRead(channelId, userId) {
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
-export function* markChannelAsReadIfActive(action) {
-  const { channelId } = action.payload;
-
-  const activeChannelId = yield select(activeChannelIdSelector);
-  if (channelId !== activeChannelId) {
-    return;
-  }
-
+export function* markChannelAsRead(channelId) {
   const currentUser = yield select(currentUserSelector());
   const isMessengerFullScreen = yield select((state) => state.layout.value.isMessengerFullScreen);
-  const activeChannelInfo = activeChannelId ? yield select(rawChannelSelector(activeChannelId)) : null;
+  const activeChannelInfo = yield select(rawChannelSelector(channelId));
 
   // just ensure first that you're not in full screen mode before marking all messages as read in a "channel"
-  if (!isMessengerFullScreen && activeChannelId && activeChannelInfo?.unreadCount > 0) {
-    yield call(markAllMessagesAsRead, activeChannelId, currentUser.id);
+  if (!isMessengerFullScreen && activeChannelInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, channelId, currentUser.id);
   }
 }
 
 // mark all messages in read in current active conversation
-export function* markConversationAsReadIfActive(action) {
-  const { channelId } = action.payload;
+export function* markConversationAsRead(conversationId) {
+  const currentUser = yield select(currentUserSelector());
+  const activeConversationInfo = yield select(rawChannelSelector(conversationId));
+  if (activeConversationInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, conversationId, currentUser.id);
+  }
+}
 
-  const activeConversationId = yield select((state) => state.chat.activeConversationId);
-  if (channelId !== activeConversationId) {
+export function* openChannel(action) {
+  const { channelId } = action.payload;
+  if (!channelId) {
     return;
   }
 
-  const currentUser = yield select(currentUserSelector());
-  const activeConversationInfo = activeConversationId ? yield select(rawChannelSelector(activeConversationId)) : null;
+  yield put(setActiveChannelId(channelId));
+  yield call(markChannelAsRead, channelId);
+}
 
-  if (activeConversationId && activeConversationInfo?.unreadCount > 0) {
-    yield call(markAllMessagesAsRead, activeConversationId, currentUser.id);
+export function* openConversation(action) {
+  const { conversationId } = action.payload;
+  if (!conversationId) {
+    return;
   }
+
+  yield put(setactiveConversationId(conversationId));
+  yield call(markConversationAsRead, conversationId);
 }
 
 export function* unreadCountUpdated(action) {
@@ -106,8 +111,8 @@ export function* clearChannels() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
-  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInChannel, markChannelAsReadIfActive);
-  yield takeLatest(SagaActionTypes.MarkAllMessagesAsReadInConversation, markConversationAsReadIfActive);
+  yield takeLatest(SagaActionTypes.OpenChannel, openChannel);
+  yield takeLatest(SagaActionTypes.OpenConversation, openConversation);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

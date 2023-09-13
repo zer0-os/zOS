@@ -11,10 +11,9 @@ describe('ConversationListPanel', () => {
       myUserId: '',
       activeConversationId: '',
       search: () => undefined,
-      onConversationClick: () => null,
+      openConversation: () => null,
       startConversation: () => null,
       onCreateConversation: () => null,
-      markConversationAsRead: () => null,
       ...props,
     };
 
@@ -22,9 +21,9 @@ describe('ConversationListPanel', () => {
   };
 
   it('handle member click', function () {
-    const handleMemberClick = jest.fn();
+    const openConversation = jest.fn();
     const wrapper = subject({
-      onConversationClick: handleMemberClick,
+      openConversation,
       conversations: [
         {
           id: 'test-conversation-id',
@@ -35,7 +34,7 @@ describe('ConversationListPanel', () => {
 
     wrapper.find('ConversationItem').simulate('click', 'test-conversation-id');
 
-    expect(handleMemberClick).toHaveBeenCalledWith('test-conversation-id');
+    expect(openConversation).toHaveBeenCalledWith({ conversationId: 'test-conversation-id' });
   });
 
   it('renders filtered conversation list', function () {
@@ -174,26 +173,26 @@ describe('ConversationListPanel', () => {
   });
 
   it('selecting an existing conversation announces click event', async function () {
-    const onConversationClick = jest.fn();
+    const openConversation = jest.fn();
     const conversations = [
       { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
     ] as any;
-    const wrapper = subject({ conversations, onConversationClick });
+    const wrapper = subject({ conversations, openConversation });
 
     await searchFor(wrapper, 'bob');
     const filteredConversations = wrapper.find('ConversationItem');
     filteredConversations.at(0).simulate('click', 'convo-id-2');
 
-    expect(onConversationClick).toHaveBeenCalledWith('convo-id-2');
+    expect(openConversation).toHaveBeenCalledWith({ conversationId: 'convo-id-2' });
   });
 
   it('selecting an existing conversation clears the filtered state', async function () {
-    const onConversationClick = jest.fn();
+    const openConversation = jest.fn();
     const conversations = [
       { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
       { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'jack' }] },
     ] as any;
-    const wrapper = subject({ conversations, onConversationClick });
+    const wrapper = subject({ conversations, openConversation });
 
     await searchFor(wrapper, 'bob');
     const filteredConversations = wrapper.find('ConversationItem');

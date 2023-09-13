@@ -2,8 +2,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import getDeepProperty from 'lodash.get';
+import { openChannel } from '../../store/channels';
 import { setActiveChannelId } from '../../store/chat';
-import { markAllMessagesAsReadInChannel } from '../../store/channels';
 
 import { RootState } from '../../store/reducer';
 import { Store } from 'redux';
@@ -32,7 +32,7 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   setActiveChannelId: (channelId: string) => void;
-  markAllMessagesAsReadInChannel: (payload: { channelId: string }) => void;
+  openChannel: (payload: { channelId: string }) => void;
 
   domainId: string;
   channels: Channel[];
@@ -59,14 +59,13 @@ export class Container extends React.Component<Properties> {
     return {
       fetchChannels,
       setActiveChannelId,
-      markAllMessagesAsReadInChannel,
+      openChannel,
     };
   }
 
   setActiveChannelId() {
     if (this.props.channelId) {
-      this.props.setActiveChannelId(this.props.channelId);
-      this.props.markAllMessagesAsReadInChannel({ channelId: this.props.channelId });
+      this.props.openChannel({ channelId: this.props.channelId });
     }
   }
 

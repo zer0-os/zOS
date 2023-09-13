@@ -18,8 +18,7 @@ import { Events as AuthEvents, getAuthChannel } from '../authentication/channels
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { conversationsChannel } from '../channels-list/channels';
 import { rawConversationsList } from '../channels-list/saga';
-import { setactiveConversationId } from '../chat';
-import { markConversationAsReadIfActive } from '../channels/saga';
+import { openConversation } from '../channels/saga';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -157,8 +156,7 @@ function* listenForUserLogin() {
 export function* openFirstConversation() {
   const existingConversationsList = yield select(rawConversationsList());
   if (existingConversationsList.length > 0) {
-    yield put(setactiveConversationId(existingConversationsList[0]));
-    yield call(markConversationAsReadIfActive, { payload: { channelId: existingConversationsList[0] } });
+    yield call(openConversation, { payload: { conversationId: existingConversationsList[0] } });
   }
 }
 

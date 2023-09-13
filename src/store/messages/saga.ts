@@ -13,7 +13,7 @@ import {
 } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
-import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
+import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
@@ -83,6 +83,10 @@ const messageSelector = (messageId) => (state) => {
 
 export const _isChannel = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
+
+const _isActive = (channelId) => (state) => {
+  return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;
+};
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -395,10 +399,11 @@ export function* receiveNewMessage(action) {
   yield put(receive({ id: channelId, messages: newMessages }));
   yield spawn(sendBrowserNotification, channelId, message);
 
-  const isChannel = yield select(_isChannel(channelId));
-  const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
-
-  yield call(markAllAsReadAction, { payload: { channelId } });
+  if (yield select(_isActive(channelId))) {
+    const isChannel = yield select(_isChannel(channelId));
+    const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
+    yield call(markAllAsReadAction, channelId);
+  }
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

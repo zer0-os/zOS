@@ -8,8 +8,8 @@ import {
 import {
   joinChannel,
   markAllMessagesAsRead,
-  markChannelAsReadIfActive,
-  markConversationAsReadIfActive,
+  markChannelAsRead,
+  markConversationAsRead,
   unreadCountUpdated,
 } from './saga';
 import { fetch as fetchMessages } from '../messages/saga';
@@ -66,26 +66,10 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
+      await expectSaga(markChannelAsRead, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
-        .run();
-    });
-
-    it('does not mark all messages as read if channelId is not equal to activeChannelId', async () => {
-      const channelId = 'channel-id';
-      const state = new StoreBuilder()
-        .inWindowedMode()
-        .withCurrentUserId(userId)
-        .withChannelList({ id: channelId, unreadCount: 3 })
-        .withActiveChannel({ id: 'some-other-channel-id' })
-        .build();
-
-      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
-        .withReducer(rootReducer, state)
-        .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
     });
 
@@ -97,7 +81,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
+      await expectSaga(markChannelAsRead, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -112,7 +96,7 @@ describe('channels list saga', () => {
         .withActiveChannel({ id: channelId, unreadCount: 0 })
         .build();
 
-      await expectSaga(markChannelAsReadIfActive, { payload: { channelId } })
+      await expectSaga(markChannelAsRead, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
@@ -128,25 +112,10 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId, unreadCount: 3 })
         .build();
 
-      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
+      await expectSaga(markConversationAsRead, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
-        .run();
-    });
-
-    it('does not mark all messages as read if channelId is not equal to activeConversationId', async () => {
-      const channelId = 'channel-id';
-      const state = new StoreBuilder()
-        .withCurrentUserId(userId)
-        .withConversationList({ id: channelId, unreadCount: 3 })
-        .withActiveConversation({ id: 'some-other-channel-id' })
-        .build();
-
-      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
-        .withReducer(rootReducer, state)
-        .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
     });
 
@@ -157,7 +126,7 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId, unreadCount: 0 })
         .build();
 
-      await expectSaga(markConversationAsReadIfActive, { payload: { channelId } })
+      await expectSaga(markConversationAsRead, channelId)
         .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)

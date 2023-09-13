@@ -8,7 +8,7 @@ import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
-import { markChannelAsReadIfActive, markConversationAsReadIfActive } from '../channels/saga';
+import { markChannelAsRead, markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
 
 describe(receiveNewMessage, () => {
@@ -85,19 +85,47 @@ describe(receiveNewMessage, () => {
   it('calls markAsReadAction when new message is received', async () => {
     const message = { id: 'message-id', message: '' };
 
+    const channelState = new StoreBuilder()
+      .withChannelList({ id: 'channel-id' })
+      .withActiveChannel({ id: 'channel-id' });
+
+    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, channelState.build())
+      .call(markChannelAsRead, 'channel-id')
+      .run();
+
+    const conversationState = new StoreBuilder()
+      .withConversationList({ id: 'channel-id' })
+      .withActiveConversation({ id: 'channel-id' });
+
+    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+      .provide(successResponses())
+      .withReducer(rootReducer, conversationState.build())
+      .call(markConversationAsRead, 'channel-id')
+      .run();
+  });
+
+  it('does not call markChannelAsRead when new message is received but channel is NOT active', async () => {
+    const message = { id: 'message-id', message: '' };
+
     const channelState = new StoreBuilder().withChannelList({ id: 'channel-id' });
 
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, channelState.build())
-      .call(markChannelAsReadIfActive, { payload: { channelId: 'channel-id' } })
+      .not.call(markChannelAsRead, 'channel-id')
       .run();
+  });
 
+  it('does not call markConversationAsRead when new message is received but conversation is NOT active', async () => {
+    const message = { id: 'message-id', message: '' };
     const conversationState = new StoreBuilder().withConversationList({ id: 'channel-id' });
+
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, conversationState.build())
-      .call(markConversationAsReadIfActive, { payload: { channelId: 'channel-id' } })
+      .not.call(markConversationAsRead, 'channel-id')
       .run();
   });
 
@@ -158,6 +186,6 @@ function successResponses() {
   return [
     stubResponse(matchers.call.fn(getLinkPreviews), null),
     stubResponse(matchers.spawn.fn(sendBrowserNotification), undefined),
-    stubResponse(matchers.call.fn(markConversationAsReadIfActive), undefined),
+    stubResponse(matchers.call.fn(markConversationAsRead), undefined),
   ] as any;
 }

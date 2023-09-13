@@ -14,8 +14,8 @@ describe('rewards-button', () => {
       showRewardsInPopup: false,
       hasLoadedConversation: false,
       isRewardsPopupOpen: false,
-      closeRewardsTooltip: jest.fn(),
-      openRewards: jest.fn(),
+      closeRewardsTooltip: () => {},
+      openRewards: () => {},
       ...props,
     };
 

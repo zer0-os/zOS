@@ -45,13 +45,13 @@ $side-padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-right: 8px;
     width: 100%;
     height: 64px;
     background-color: theme.$color-primary-3;
 
     &--with-full-screen-modifier {
       width: unset;
+      padding-right: 8px;
     }
   }
 

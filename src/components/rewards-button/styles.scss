@@ -1,13 +1,11 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
-.rewards-bar {
-  &__rewards-button-container {
-    padding: 8px;
+.rewards-button-container {
+  padding: 8px;
 
-    &:hover {
-      border-radius: 64px;
-      background-color: theme.$color-primary-4;
-    }
+  &:hover {
+    border-radius: 64px;
+    background-color: theme.$color-primary-4;
   }
 
   &__rewards-button {

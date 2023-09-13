@@ -58,6 +58,7 @@ export interface Properties extends PublicProperties {
   userHandle: string;
   userAvatarUrl: string;
   zeroPreviousDay: string;
+  includesUserSettings: boolean;
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
@@ -110,6 +111,7 @@ export class Container extends React.Component<Properties, State> {
       includeTitleBar: !layout?.value?.isMessengerFullScreen,
       allowClose: !layout?.value?.isMessengerFullScreen,
       allowExpand: !layout?.value?.isMessengerFullScreen,
+      includesUserSettings: layout?.value?.isMessengerFullScreen,
       isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
@@ -239,14 +241,12 @@ export class Container extends React.Component<Properties, State> {
 
         {this.props.stage === SagaStage.None && (
           <div {...cnMessageList('profile-bar')}>
-            {this.props.isMessengerFullScreen && (
+            {this.props.includesUserSettings && (
               <div {...cnMessageList('avatar-container')}>{this.renderSettingsMenu()}</div>
             )}
 
             <FeatureFlag featureFlag='enableRewards'>
-              <div
-                {...cnMessageList('rewards-container', this.props.isMessengerFullScreen && 'with-full-screen-modifier')}
-              >
+              <div {...cnMessageList('rewards-container', this.props.includesUserSettings && 'center')}>
                 <RewardsBar
                   zeroPreviousDay={this.props.zeroPreviousDay}
                   isRewardsLoading={this.props.isRewardsLoading}

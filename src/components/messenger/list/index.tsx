@@ -240,7 +240,7 @@ export class Container extends React.Component<Properties, State> {
         {this.props.stage === SagaStage.None && (
           <div {...cnMessageList('profile-bar')}>
             {this.props.isMessengerFullScreen && (
-              <div {...cnMessageList('avatar-container')}>{this.renderSettingsMenu()}</div>
+              <div {...cnMessageList('settings-menu-container')}>{this.renderSettingsMenu()}</div>
             )}
 
             <FeatureFlag featureFlag='enableRewards'>

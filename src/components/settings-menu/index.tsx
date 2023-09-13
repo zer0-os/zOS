@@ -1,12 +1,12 @@
 import * as React from 'react';
 
+import { EditProfileContainer } from '../edit-profile/container';
 import { IconLogOut3, IconUser1 } from '@zero-tech/zui/icons';
 import { Address, Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 
-import { bem } from '../../lib/bem';
+import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { EditProfileContainer } from '../edit-profile/container';
 
 export interface Properties {
   userName: string;
@@ -47,13 +47,13 @@ export class SettingsMenu extends React.Component<Properties, State> {
   };
 
   renderSettingsHeader() {
-    const c = bem('header');
+    const cn = bemClassName('header');
     return (
-      <div className={c('')}>
+      <div {...cn('')}>
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
-        <div className={c('user-details')}>
-          <div className={c('name')}>{this.props.userName}</div>
-          <div className={c('address')}>{this.getUserHandle()}</div>
+        <div {...cn('user-details')}>
+          <div {...cn('name')}>{this.props.userName}</div>
+          <div {...cn('address')}>{this.getUserHandle()}</div>
         </div>
       </div>
     );

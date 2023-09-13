@@ -209,10 +209,23 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
 }
 
 export function* createOptimisticPreview(channelId: string, optimisticMessage) {
+  const url = getFirstUrl(optimisticMessage.message);
+  if (!url) {
+    return;
+  }
+
+  yield put(receiveMessage({ id: optimisticMessage.id, preview: { url } }));
   const preview = yield getPreview(optimisticMessage.message);
 
   if (preview) {
     yield put(receiveMessage({ id: optimisticMessage.id, preview }));
+    // In case the optimistic message has been replaced by a real message
+    const existingMessageIds = yield select(rawMessagesSelector(channelId));
+    const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
+    const message = fullMessages.find((m) => m.optimisticId === optimisticMessage.id);
+    if (message) {
+      yield put(receiveMessage({ id: message.id, preview }));
+    }
   }
 }
 
@@ -442,10 +455,16 @@ export function* receiveUpdateMessage(action) {
 export function* getPreview(message) {
   if (!message) return;
 
+  const firstUrl = getFirstUrl(message);
+  if (firstUrl) {
+    return yield call(getLinkPreviews, firstUrl);
+  }
+}
+
+function getFirstUrl(message: string) {
   const link: linkifyType[] = extractLink(message);
   if (!link.length) return;
-
-  return yield call(getLinkPreviews, link[0].href);
+  return link[0].href;
 }
 
 function* pollForPublicChannelMessages() {

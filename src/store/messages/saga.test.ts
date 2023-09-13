@@ -9,11 +9,14 @@ import {
   clearMessages,
   sendBrowserNotification,
   receiveUpdateMessage,
+  replaceOptimisticMessage,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
+import { StoreBuilder } from '../test/store';
+import { MessageSendStatus } from '.';
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {
@@ -271,4 +274,70 @@ describe(receiveUpdateMessage, () => {
       ],
     ] as any;
   }
+});
+
+describe(replaceOptimisticMessage, () => {
+  it('returns null if there is no optimisticId on the new message', async () => {
+    const newMessage = { id: 'new-message' };
+    const { returnValue } = await expectSaga(replaceOptimisticMessage, [], newMessage).run();
+
+    expect(returnValue).toEqual(null);
+  });
+
+  it('returns null if there is no message identified by the optimisticId', async () => {
+    const currentMessages = ['message-1', 'message-2'];
+    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+
+    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage).run();
+
+    expect(returnValue).toEqual(null);
+  });
+
+  it('returns message list with replaced message and success status', async () => {
+    const currentMessages = ['message-1', 'optimistic-id', 'message-2'];
+    const oldMessages = [
+      { id: 'message-1' },
+      { id: 'optimistic-id', optimisticId: 'optimistic-id' },
+      { id: 'message-2' },
+    ] as any;
+    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
+
+    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const expectedNewMessage = { ...newMessage, sendStatus: MessageSendStatus.SUCCESS };
+    expect(returnValue).toEqual(['message-1', expectedNewMessage, 'message-2']);
+  });
+
+  it('replaces the preview with the new one if exists', async () => {
+    const currentMessages = ['optimistic-id'];
+    const oldMessages = [{ id: 'optimistic-id', preview: { url: 'example.com/old-preview' } }] as any;
+    const newMessage = {
+      id: 'new-message',
+      optimisticId: 'optimistic-id',
+      preview: { url: 'example.com/new-preview' },
+    };
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
+
+    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(returnValue[0].preview).toEqual({ url: 'example.com/new-preview' });
+  });
+
+  it('maintains the optimistic preview if no new one received', async () => {
+    const currentMessages = ['optimistic-id'];
+    const oldMessages = [{ id: 'optimistic-id', preview: { url: 'example.com/old-preview' } }] as any;
+    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
+
+    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(returnValue[0].preview).toEqual({ url: 'example.com/old-preview' });
+  });
 });

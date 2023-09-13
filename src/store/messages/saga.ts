@@ -422,7 +422,11 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   const optimisticMessage = yield select(messageSelector(message.optimisticId));
   if (optimisticMessage) {
     const messages = [...currentMessages];
-    messages[messageIndex] = { ...message, sendStatus: MessageSendStatus.SUCCESS };
+    messages[messageIndex] = {
+      ...message,
+      preview: message.preview || optimisticMessage.preview,
+      sendStatus: MessageSendStatus.SUCCESS,
+    };
     return messages;
   }
 

@@ -221,14 +221,36 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  renderSettingsMenu() {
+  renderUserAccountContainer() {
     return (
-      <SettingsMenu
-        onLogout={this.props.logout}
-        userName={this.props.userName}
-        userHandle={this.props.userHandle}
-        userAvatarUrl={this.props.userAvatarUrl}
-      />
+      <div {...cnMessageList('user-account-container')}>
+        {this.props.isMessengerFullScreen && (
+          <div {...cnMessageList('settings-menu-container')}>
+            <SettingsMenu
+              onLogout={this.props.logout}
+              userName={this.props.userName}
+              userHandle={this.props.userHandle}
+              userAvatarUrl={this.props.userAvatarUrl}
+            />
+          </div>
+        )}
+
+        <FeatureFlag featureFlag='enableRewards'>
+          <div {...cnMessageList('rewards-container', this.props.isMessengerFullScreen && 'with-full-screen-modifier')}>
+            <RewardsBar
+              zeroPreviousDay={this.props.zeroPreviousDay}
+              isRewardsLoading={this.props.isRewardsLoading}
+              isMessengerFullScreen={this.props.isMessengerFullScreen}
+              showRewardsInTooltip={this.props.showRewardsInTooltip}
+              showRewardsInPopup={this.props.showRewardsInPopup}
+              isFirstTimeLogin={this.props.isFirstTimeLogin}
+              onRewardsPopupClose={this.props.rewardsPopupClosed}
+              onRewardsTooltipClose={this.props.rewardsTooltipClosed}
+              hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
+            />
+          </div>
+        </FeatureFlag>
+      </div>
     );
   }
 
@@ -237,31 +259,7 @@ export class Container extends React.Component<Properties, State> {
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
 
-        {this.props.stage === SagaStage.None && (
-          <div {...cnMessageList('profile-bar')}>
-            {this.props.isMessengerFullScreen && (
-              <div {...cnMessageList('settings-menu-container')}>{this.renderSettingsMenu()}</div>
-            )}
-
-            <FeatureFlag featureFlag='enableRewards'>
-              <div
-                {...cnMessageList('rewards-container', this.props.isMessengerFullScreen && 'with-full-screen-modifier')}
-              >
-                <RewardsBar
-                  zeroPreviousDay={this.props.zeroPreviousDay}
-                  isRewardsLoading={this.props.isRewardsLoading}
-                  isMessengerFullScreen={this.props.isMessengerFullScreen}
-                  showRewardsInTooltip={this.props.showRewardsInTooltip}
-                  showRewardsInPopup={this.props.showRewardsInPopup}
-                  isFirstTimeLogin={this.props.isFirstTimeLogin}
-                  onRewardsPopupClose={this.props.rewardsPopupClosed}
-                  onRewardsTooltipClose={this.props.rewardsTooltipClosed}
-                  hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
-                />
-              </div>
-            </FeatureFlag>
-          </div>
-        )}
+        {this.props.stage === SagaStage.None && this.renderUserAccountContainer()}
 
         <div {...cn('')}>
           {this.props.stage === SagaStage.None && (

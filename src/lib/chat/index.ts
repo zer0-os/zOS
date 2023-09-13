@@ -3,6 +3,8 @@ import { Channel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
 import { config } from '../../config';
+import { FileUploadResult } from '../../store/messages/saga';
+import { ParentMessage } from './types';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -21,13 +23,24 @@ export interface IChatClient {
   connect: (userId: string, accessToken: string) => Promise<void>;
   disconnect: () => void;
   reconnect: () => void;
+  supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
+  sendMessagesByChannelId: (
+    channelId: string,
+    message: string,
+    mentionedUserIds: string[],
+    parentMessage?: ParentMessage,
+    file?: FileUploadResult,
+    optimisticId?: string
+  ) => Promise<MessagesResponse>;
 }
 
 export class Chat {
   constructor(private client: IChatClient = null) {}
+
+  supportsOptimisticSend = () => this.client.supportsOptimisticSend();
 
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {
@@ -43,6 +56,17 @@ export class Chat {
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async sendMessagesByChannelId(
+    channelId: string,
+    message: string,
+    mentionedUserIds: string[],
+    parentMessage?: ParentMessage,
+    file?: FileUploadResult,
+    optimisticId?: string
+  ): Promise<any> {
+    return this.client.sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
   }
 
   initChat(events: RealtimeChatEvents): void {

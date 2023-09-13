@@ -10,6 +10,8 @@ import {
   messageSendFailed,
   performSend,
   send,
+  sendOptimistically,
+  sendPessimistically,
   uploadFileMessages,
 } from './saga';
 import { rootReducer } from '../reducer';
@@ -18,6 +20,7 @@ import { denormalize as denormalizeChannel } from '../channels';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { MessageSendStatus } from '.';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 const mockCreateUploadableFile = jest.fn();
 jest.mock('./uploadable', () => ({
@@ -25,6 +28,157 @@ jest.mock('./uploadable', () => ({
 }));
 
 describe(send, () => {
+  it('sends optimistically when lib supports it', async () => {
+    const channelId = 'channel-id';
+    const message = 'hello';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { messageId: 999, userId: 'user' };
+
+    const chatClient = {
+      supportsOptimisticSend: () => undefined,
+    };
+
+    testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+      .next()
+      .call(chat.get)
+      .next(chatClient)
+      .call(chatClient.supportsOptimisticSend)
+      .next(true)
+      .call(sendOptimistically, { channelId, message, mentionedUserIds, parentMessage })
+      .next()
+      .isDone();
+  });
+
+  it('sends pessimistically when lib does not support optimistic sending', async () => {
+    const channelId = 'channel-id';
+    const message = 'hello';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { messageId: 999, userId: 'user' };
+
+    const chatClient = {
+      supportsOptimisticSend: () => undefined,
+    };
+
+    testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+      .next()
+      .call(chat.get)
+      .next(chatClient)
+      .call(chatClient.supportsOptimisticSend)
+      .next(false)
+      .call(sendPessimistically, { channelId, message, mentionedUserIds, parentMessage })
+      .next()
+      .isDone();
+  });
+});
+
+describe(sendPessimistically, () => {
+  it('performs the message sending', async () => {
+    const channelId = 'channel-id';
+    const message = 'test message';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { id: 'parent' };
+
+    await expectSaga(sendPessimistically, { channelId, message, mentionedUserIds, parentMessage })
+      .provide([
+        ...successResponses(),
+        stubResponse(matchers.call.fn(performSend), { id: 'message-id' }),
+        // stubResponse(matchers.call(performSend, channelId, message, mentionedUserIds, parentMessage, 0), { id: 'message-id' }),
+      ])
+      .call.like({
+        fn: performSend,
+        args: [
+          channelId,
+          message,
+          mentionedUserIds,
+          parentMessage,
+          '0',
+        ],
+      })
+      .run();
+  });
+
+  it('sends the files', async () => {
+    const channelId = 'channel-id';
+    const uploadableFile = { file: { nativeFile: {} } };
+    const files = [{ id: 'file-id' }];
+
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
+
+    await expectSaga(sendPessimistically, { channelId, files })
+      .provide([
+        ...successResponses(),
+        stubResponse(matchers.call.fn(performSend), { id: 'message-id' }),
+        [matchers.call.fn(uploadFileMessages)],
+        // stubResponse(matchers.call(performSend, channelId, message, mentionedUserIds, parentMessage, 0), { id: 'message-id' }),
+      ])
+      .not.call.fn(performSend)
+      .call(uploadFileMessages, channelId, '', [uploadableFile])
+      .run();
+  });
+
+  it('sends text, and files with rootMessageId', async () => {
+    const channelId = 'channel-id';
+    const uploadableFile = { file: { nativeFile: {} } };
+    const files = [{ id: 'file-id' }];
+    const message = 'test message';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { id: 'parent' };
+
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
+
+    await expectSaga(sendPessimistically, { channelId, message, mentionedUserIds, parentMessage, files })
+      .provide([
+        ...successResponses(),
+        stubResponse(matchers.call.fn(performSend), { id: 'message-id' }),
+        [matchers.call.fn(uploadFileMessages)],
+      ])
+      .call(performSend, channelId, message, mentionedUserIds, parentMessage, '0')
+      .call(uploadFileMessages, channelId, 'message-id', [uploadableFile])
+      .run();
+  });
+
+  it('sends all but the first file if the text message fails', async () => {
+    const channelId = 'channel-id';
+    const uploadableFile1 = { file: { nativeFile: { what: '1' } } };
+    const uploadableFile2 = { file: { nativeFile: { what: '2' } } };
+    const files = [
+      { id: 'file-id-1' },
+      { id: 'file-id-2' },
+    ];
+    const message = 'test message';
+    const mentionedUserIds = [
+      'user-id1',
+      'user-id2',
+    ];
+    const parentMessage = { id: 'parent' };
+
+    mockCreateUploadableFile.mockReturnValueOnce(uploadableFile1).mockReturnValueOnce(uploadableFile2);
+
+    await expectSaga(sendPessimistically, { channelId, message, mentionedUserIds, parentMessage, files })
+      .provide([
+        ...successResponses(),
+        stubResponse(matchers.call.fn(performSend), null),
+        [matchers.call.fn(uploadFileMessages)],
+      ])
+      .call(performSend, channelId, message, mentionedUserIds, parentMessage, '0')
+      .call(uploadFileMessages, channelId, '', [uploadableFile2])
+      .run();
+  });
+});
+
+describe(sendOptimistically, () => {
   it('creates optimistic messages then fetches preview and sends the message in parallel', async () => {
     const channelId = 'channel-id';
     const message = 'hello';
@@ -34,7 +188,7 @@ describe(send, () => {
     ];
     const parentMessage = { messageId: 999, userId: 'user' };
 
-    testSaga(send, { payload: { channelId, message, mentionedUserIds, parentMessage } })
+    testSaga(sendOptimistically, { channelId, message, mentionedUserIds, parentMessage })
       .next()
       .call(createOptimisticMessages, channelId, message, parentMessage, [])
       .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
@@ -51,9 +205,11 @@ describe(send, () => {
     const uploadableFile = { file: { nativeFile: {} } };
     const files = [{ id: 'file-id' }];
 
-    testSaga(send, { payload: { channelId, files } })
+    mockCreateUploadableFile.mockReturnValue(uploadableFile);
+
+    testSaga(sendOptimistically, { channelId, files })
       .next()
-      .call(createOptimisticMessages, channelId, undefined, undefined, files)
+      .call(createOptimisticMessages, channelId, undefined, undefined, [uploadableFile])
       .next({ uploadableFiles: [uploadableFile] })
       .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
@@ -65,7 +221,7 @@ describe(send, () => {
     const uploadableFile = { nativeFile: {} };
     const files = [{ id: 'file-id' }];
 
-    testSaga(send, { payload: { channelId, files } })
+    testSaga(sendOptimistically, { channelId, files })
       .next()
       .next({ optimisticRootMessage: { id: 'root-id' }, uploadableFiles: [uploadableFile] })
       .next()
@@ -81,7 +237,7 @@ describe(send, () => {
     const uploadableFile2 = { nativeFile: {} };
     const files = [{ id: 'file-id' }];
 
-    testSaga(send, { payload: { channelId, files } })
+    testSaga(sendOptimistically, { channelId, files })
       .next()
       .next({
         optimisticRootMessage: { id: 'root-id' },
@@ -117,12 +273,10 @@ describe(createOptimisticMessages, () => {
   it('creates the uploadable files with optimistic message', async () => {
     const channelId = 'channel-id';
     const message = 'test message';
-    const file = { nativeFile: {} };
     const uploadableFile = { file: { name: 'media-file' } };
-    mockCreateUploadableFile.mockReturnValue(uploadableFile);
 
     const { returnValue, storeState } = await expectSaga(createOptimisticMessages, channelId, message, undefined, [
-      file,
+      uploadableFile,
     ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
@@ -206,7 +360,11 @@ describe(createOptimisticPreview, () => {
 });
 
 describe(performSend, () => {
-  it('sends the message via the api', async () => {
+  const chatClient = {
+    sendMessagesByChannelId: () => ({}),
+  };
+
+  it('sends the message via the chat client', async () => {
     const channelId = 'channel-id';
     const message = 'test message';
     const mentionedUserIds = [
@@ -216,9 +374,13 @@ describe(performSend, () => {
     const parentMessage = { id: 'parent' };
 
     await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-id')
-      .provide(successResponses())
+      .provide([
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {}),
+        ...successResponses(),
+      ])
       .call.like({
-        fn: sendMessagesByChannelId,
+        fn: chatClient.sendMessagesByChannelId,
         args: [
           channelId,
           message,
@@ -234,7 +396,8 @@ describe(performSend, () => {
   it('returns the new message information', async () => {
     const { returnValue } = await expectSaga(performSend, 'channel-id', '', null, null, '')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id' }),
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), { id: 'new-id' }),
       ])
       .run();
 
@@ -255,7 +418,11 @@ describe(performSend, () => {
 
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'new-id', optimisticId: 'optimistic-id' }),
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {
+          id: 'new-id',
+          optimisticId: 'optimistic-id',
+        }),
         ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())

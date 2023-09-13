@@ -16,7 +16,7 @@ import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
-import { deleteMessageApi, sendMessagesByChannelId, editMessageApi, getLinkPreviews } from './api';
+import { deleteMessageApi, editMessageApi, getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -136,19 +136,53 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
+  const chatClient = yield call(chat.get);
+
+  if (yield call(chatClient.supportsOptimisticSend)) {
+    yield call(sendOptimistically, action.payload);
+    return;
+  }
+
+  yield call(sendPessimistically, action.payload);
+}
+
+export function* sendPessimistically(payload) {
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
+
+  const uploadableFiles: Uploadable[] = files.map(createUploadableFile);
+
+  let rootMessageId = '';
+  if (message?.trim()) {
+    const textMessage = yield call(performSend, channelId, message, mentionedUserIds, parentMessage, '0');
+
+    if (textMessage) {
+      rootMessageId = textMessage.id;
+    } else {
+      // If the text message failed, we'll leave the first file as unsent
+      uploadableFiles.shift();
+    }
+  }
+
+  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
+}
+
+export function* sendOptimistically(payload) {
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
+
+  const processedFiles: Uploadable[] = files.map(createUploadableFile);
 
   const { optimisticRootMessage, uploadableFiles } = yield call(
     createOptimisticMessages,
     channelId,
     message,
     parentMessage,
-    files
+    processedFiles
   );
 
   let rootMessageId = '';
   if (optimisticRootMessage) {
     yield spawn(createOptimisticPreview, channelId, optimisticRootMessage);
+
     const textMessage = yield call(
       performSend,
       channelId,
@@ -169,15 +203,13 @@ export function* send(action) {
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
 }
 
-export function* createOptimisticMessages(channelId, message, parentMessage, files?) {
+export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {
   let optimisticRootMessage = null;
   if (message?.trim()) {
     const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
     optimisticRootMessage = optimisticMessage;
   }
 
-  const uploadableFiles: Uploadable[] = [];
-  files.forEach((f) => uploadableFiles.push(createUploadableFile(f)));
   for (const index in uploadableFiles) {
     const file = uploadableFiles[index].file;
     // only the first file should connect to the root message for now.
@@ -230,8 +262,13 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+  const chatClient = yield call(chat.get);
+
   const messageCall = call(
-    sendMessagesByChannelId,
+    [
+      chatClient,
+      chatClient.sendMessagesByChannelId,
+    ],
     channelId,
     message,
     mentionedUserIds,

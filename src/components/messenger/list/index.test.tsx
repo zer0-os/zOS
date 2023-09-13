@@ -13,7 +13,7 @@ import { Stage } from '../../../store/create-conversation';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
-import { RewardsBar } from '../../rewards-bar';
+import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { SettingsMenu } from '../../settings-menu';
 
@@ -97,16 +97,16 @@ describe('messenger-list', () => {
     expect(startCreateConversation).toHaveBeenCalledOnce();
   });
 
-  it('renders RewardsBar when stage is equal to none', function () {
+  it('renders RewardsContainer when stage is equal to none', function () {
     const wrapper = subject({ stage: Stage.None });
 
-    expect(wrapper).toHaveElement(RewardsBar);
+    expect(wrapper).toHaveElement(RewardsContainer);
   });
 
-  it('does not render RewardsBar when stage is not equal to none', function () {
+  it('does not render RewardsContainer when stage is not equal to none', function () {
     const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
-    expect(wrapper).not.toHaveElement(RewardsBar);
+    expect(wrapper).not.toHaveElement(RewardsContainer);
   });
 
   it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {

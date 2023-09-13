@@ -62,7 +62,7 @@ export function createOptimisticMessageObject(
 }
 
 export function extractLink(messageText: string): linkifyType[] {
-  return linkifyjs.find(messageText);
+  return linkifyjs.find(messageText || '');
 }
 
 export const enum FileType {

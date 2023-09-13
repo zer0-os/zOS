@@ -155,12 +155,45 @@ describe(createOptimisticMessage, () => {
 });
 
 describe(createOptimisticPreview, () => {
+  it('sets initial partial preview on optimistic message', async () => {
+    const channelId = 'channel-id';
+    const optimisticMessage = { id: 'optimistic-id', message: 'example.com' } as any;
+
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
+
+    const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
+      // stub empty response to retain the initial, optmistic preview
+      .provide([[call(getLinkPreviews, 'http://example.com'), null]])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].preview).toEqual({ url: 'http://example.com' });
+  });
+
   it('fetches the preview and adds it to the optimistic message', async () => {
     const channelId = 'channel-id';
     const optimisticMessage = { id: 'optimistic-id', message: 'example.com' } as any;
     const linkPreview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0' };
 
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
+
+    const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
+      .provide([stubResponse(call(getLinkPreviews, 'http://example.com'), linkPreview)])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].preview).toEqual(linkPreview);
+  });
+
+  it('sets the preview on the previously optimistically rendered message when it has already been truly rendered', async () => {
+    const channelId = 'channel-id';
+    const optimisticMessage = { id: 'optimistic-id', optimisticId: 'optimistic-id', message: 'example.com' } as any;
+    const receivedMessage = { id: 'id-from-server', optimisticId: 'optimistic-id', message: 'example.com' } as any;
+    const linkPreview = { url: 'http://example.com', width: 25 };
+
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [receivedMessage] });
 
     const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
       .provide([stubResponse(call(getLinkPreviews, 'http://example.com'), linkPreview)])

@@ -50,7 +50,7 @@ export function* markChannelAsRead(channelId) {
   const channelInfo = yield select(rawChannelSelector(channelId));
 
   // just ensure first that you're not in full screen mode before marking all messages as read in a "channel"
-  if (!isMessengerFullScreen && activeChannelInfo?.unreadCount > 0) {
+  if (!isMessengerFullScreen && channelInfo?.unreadCount > 0) {
     yield call(markAllMessagesAsRead, channelId, currentUser.id);
   }
 }
@@ -58,8 +58,8 @@ export function* markChannelAsRead(channelId) {
 // mark all messages in read in current active conversation
 export function* markConversationAsRead(conversationId) {
   const currentUser = yield select(currentUserSelector());
-  const activeConversationInfo = yield select(rawChannelSelector(conversationId));
-  if (activeConversationInfo?.unreadCount > 0) {
+  const conversationInfo = yield select(rawChannelSelector(conversationId));
+  if (conversationInfo?.unreadCount > 0) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }
 }

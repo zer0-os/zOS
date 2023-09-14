@@ -82,7 +82,7 @@ export default class AttachmentCard extends React.Component<Properties, undefine
       <div className={className}>
         {this.file()}
         {this.props.onRemove && (
-          <IconButton Icon={IconXClose} onClick={this.onRemove} size={17} className='attachment-card__delete' />
+          <IconButton Icon={IconXClose} onClick={this.onRemove} size={24} className='attachment-card__delete' />
         )}
       </div>
     );

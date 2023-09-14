@@ -27,7 +27,7 @@ describe('RewardsPopup', () => {
     const closeRewardsFAQModal = jest.fn();
     const wrapper = subject({ isRewardsFAQModalOpen: true, closeRewardsFAQModal });
 
-    wrapper.find('.rewards-faq-modal__close').simulate('click');
+    wrapper.find('IconButton').simulate('click');
     expect(closeRewardsFAQModal).toHaveBeenCalledOnce();
   });
 });

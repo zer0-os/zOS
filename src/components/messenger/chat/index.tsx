@@ -5,7 +5,6 @@ import { setactiveConversationId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
-import { IconButton } from '../../icon-button';
 import { Channel, denormalize } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { getProvider } from '../../../lib/cloudinary/provider';
@@ -14,6 +13,7 @@ import { otherMembersToString } from '../../../platform-apps/channels/util';
 import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
+import { IconButton } from '@zero-tech/zui/components';
 
 export interface PublicProperties {}
 
@@ -157,9 +157,9 @@ export class Container extends React.Component<Properties, State> {
         <div className='direct-message-chat__content'>
           {!this.props.isFullScreen && (
             <div className='direct-message-chat__title-bar'>
-              <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size={12} />
-              <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size={12} />
-              <IconButton onClick={this.handleClose} Icon={IconXClose} size={12} />
+              <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size='x-small' />
+              <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size='x-small' />
+              <IconButton onClick={this.handleClose} Icon={IconXClose} size='x-small' />
             </div>
           )}
 
@@ -184,12 +184,7 @@ export class Container extends React.Component<Properties, State> {
 
             {this.props.allowCollapse && (
               <div>
-                <IconButton
-                  className='direct-message-chat__icon-collapse'
-                  onClick={this.handleDockRight}
-                  Icon={IconCollapse1}
-                  size={24}
-                />
+                <IconButton onClick={this.handleDockRight} Icon={IconCollapse1} size='small' />
               </div>
             )}
           </div>

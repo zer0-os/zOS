@@ -157,14 +157,6 @@ $recent-indicator-size: 8px;
     color: theme.$color-greyscale-11;
   }
 
-  &__icon-collapse {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-  }
-
   &--transition {
     transition: all animation.$animation-duration-half ease-out;
 

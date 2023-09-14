@@ -28,16 +28,4 @@
     line-height: 29px;
     margin: 0px;
   }
-
-  &__close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    width: 40px;
-
-    &:focus-visible {
-      outline: none;
-    }
-  }
 }

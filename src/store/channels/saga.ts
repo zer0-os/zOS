@@ -64,8 +64,7 @@ export function* markConversationAsRead(conversationId) {
   }
 }
 
-export function* openChannel(action) {
-  const { channelId } = action.payload;
+export function* openChannel(channelId) {
   if (!channelId) {
     return;
   }
@@ -74,8 +73,7 @@ export function* openChannel(action) {
   yield call(markChannelAsRead, channelId);
 }
 
-export function* openConversation(action) {
-  const { conversationId } = action.payload;
+export function* openConversation(conversationId) {
   if (!conversationId) {
     return;
   }
@@ -111,8 +109,8 @@ export function* clearChannels() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
-  yield takeLatest(SagaActionTypes.OpenChannel, openChannel);
-  yield takeLatest(SagaActionTypes.OpenConversation, openConversation);
+  yield takeLatest(SagaActionTypes.OpenChannel, ({ payload }: any) => openChannel(payload.channelId));
+  yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

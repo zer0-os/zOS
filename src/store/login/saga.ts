@@ -156,7 +156,7 @@ function* listenForUserLogin() {
 export function* openFirstConversation() {
   const existingConversationsList = yield select(rawConversationsList());
   if (existingConversationsList.length > 0) {
-    yield call(openConversation, { payload: { conversationId: existingConversationsList[0] } });
+    yield call(openConversation, existingConversationsList[0]);
   }
 }
 

@@ -4,13 +4,9 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  padding: 8px 0px 0px;
 
   &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 32px;
-    width: 32px;
     color: theme.$color-greyscale-12;
 
     &--disabled {

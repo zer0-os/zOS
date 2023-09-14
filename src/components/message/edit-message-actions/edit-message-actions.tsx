@@ -56,7 +56,7 @@ export default class EditMessageActions extends React.Component<Properties> {
     return (
       <div {...cn()} ref={this.editMessageActionRef}>
         <Tooltip content={this.props.secondaryTooltipText}>
-          <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size={24} />
+          <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size='small' />
         </Tooltip>
         <Tooltip
           content={this.props.primaryTooltipText}
@@ -69,7 +69,7 @@ export default class EditMessageActions extends React.Component<Properties> {
             Icon={IconCheck}
             isDisabled={isDisabled}
             isFilled
-            size={24}
+            size='small'
           />
         </Tooltip>
       </div>

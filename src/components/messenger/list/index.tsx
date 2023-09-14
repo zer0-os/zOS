@@ -71,7 +71,7 @@ export interface Properties extends PublicProperties {
   fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
-  openConversation: (payload: { conversationId: string }) => void;
+  onConversationClick: (payload: { conversationId: string }) => void;
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
@@ -124,7 +124,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      openConversation,
+      onConversationClick: openConversation,
       fetchConversations,
       createConversation,
       startCreateConversation,
@@ -251,7 +251,7 @@ export class Container extends React.Component<Properties, State> {
               search={this.usersInMyNetworks}
               conversations={this.props.conversations}
               onCreateConversation={this.createOneOnOneConversation}
-              openConversation={this.props.openConversation}
+              onConversationClick={this.props.onConversationClick}
               startConversation={this.props.startCreateConversation}
               myUserId={this.props.myUserId}
               activeConversationId={this.props.activeConversationId}

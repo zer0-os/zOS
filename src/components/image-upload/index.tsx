@@ -62,6 +62,7 @@ export class ImageUpload extends Component<Properties, State> {
         />
         <IconButton
           className={'image-upload__edit-button'}
+          size='small'
           type='button'
           color='primary'
           variant='primary'

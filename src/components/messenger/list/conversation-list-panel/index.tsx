@@ -3,10 +3,9 @@ import * as React from 'react';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { Channel } from '../../../../store/channels';
 import { IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';
-import { IconButton } from '../../../icon-button';
 import { ConversationItem } from '../conversation-item';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { Button, Input, Modal } from '@zero-tech/zui/components';
+import { Button, IconButton, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
@@ -139,12 +138,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
 
             <div>
-              <IconButton
-                {...cn('items-conversations-new-icon')}
-                Icon={IconPlus}
-                onClick={this.props.startConversation}
-                size={24}
-              />
+              <IconButton Icon={IconPlus} onClick={this.props.startConversation} size='small' />
             </div>
           </div>
 

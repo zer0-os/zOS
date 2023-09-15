@@ -1,6 +1,6 @@
 import { IconTrash4 } from '@zero-tech/zui/icons';
 import React from 'react';
-import { IconButton } from '../../../components/icon-button';
+import { IconButton } from '@zero-tech/zui/components';
 import { AudioModel } from './types';
 
 export interface Properties {
@@ -15,7 +15,7 @@ export default class AudioCard extends React.Component<Properties> {
     if (onRemove) {
       return (
         <div className='audio__cards-card__actions'>
-          <IconButton onClick={onRemove} Icon={IconTrash4} size={20} className='audio__cards-card__actions-delete' />
+          <IconButton onClick={onRemove} Icon={IconTrash4} size={28} className='audio__cards-card__actions-delete' />
         </div>
       );
     }

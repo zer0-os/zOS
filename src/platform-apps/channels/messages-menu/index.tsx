@@ -95,12 +95,7 @@ export class MessageMenu extends React.Component<Properties, State> {
       <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
         <div className='delete-message-modal__header'>
           <h2>Delete message</h2>
-          <IconButton
-            className='delete-message-modal__icon-button'
-            Icon={IconXClose}
-            size={32}
-            onClick={this.toggleDeleteDialog}
-          />
+          <IconButton Icon={IconXClose} size='large' onClick={this.toggleDeleteDialog} />
         </div>
         <div className='delete-message-text-content'>
           Are you sure you want to delete this message? This cannot be undone.

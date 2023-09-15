@@ -9,7 +9,6 @@ import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
 import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 
 import Menu from './menu/menu';
-import { IconButton } from '../icon-button';
 import { EmojiPicker } from './emoji-picker/emoji-picker';
 import ReplyCard from '../reply-card/reply-card';
 import MessageAudioRecorder from '../message-audio-recorder';
@@ -20,7 +19,7 @@ import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconMicrophone2, IconStickerCircle } from '@zero-tech/zui/icons';
-import { Avatar, Tooltip } from '@zero-tech/zui/components';
+import { Avatar, IconButton, Tooltip } from '@zero-tech/zui/components';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -377,8 +376,9 @@ export class MessageInput extends React.Component<Properties, State> {
                   className={classNames('message-input__icon', 'message-input__icon--giphy')}
                   onClick={this.openGiphy}
                   Icon={IconStickerCircle}
-                  size={24}
+                  size='small'
                 />
+
                 <Menu
                   onSelected={this.mediaSelected}
                   mimeTypes={this.mimeTypes}
@@ -457,7 +457,7 @@ export class MessageInput extends React.Component<Properties, State> {
                         className={classNames('message-input__icon', ' message-input__icon--emoji')}
                         onClick={this.openEmojis}
                         Icon={IconFaceSmile}
-                        size={24}
+                        size='small'
                       />
                     )}
                   </div>
@@ -476,7 +476,7 @@ export class MessageInput extends React.Component<Properties, State> {
                     })}
                     onClick={hasInputValue ? this.onSend : this.startMic}
                     Icon={hasInputValue ? IconSend3 : IconMicrophone2}
-                    size={24}
+                    size='small'
                   />
                 </Tooltip>
               </div>

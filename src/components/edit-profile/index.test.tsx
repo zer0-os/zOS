@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { EditProfile, Properties } from './index';
-import { IconButton, Alert, Button, Input } from '@zero-tech/zui/components';
+import { IconButton, Alert, Button } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { ImageUpload } from '../../components/image-upload';
 import { State as EditProfileState } from '../../store/edit-profile';
@@ -40,7 +40,7 @@ describe('EditProfile', () => {
     const wrapper = subject({});
     expect(wrapper.find('.edit-profile__body').length).toEqual(1);
     expect(wrapper.find(ImageUpload).props().imageSrc).toEqual('profile.jpg');
-    expect(wrapper.find(Input).props().label).toEqual('Display Name');
+    expect(wrapper.find('Input[name="name"]').props().label).toEqual('Display Name');
   });
 
   it('calls onEdit when Save Changes button is clicked', () => {
@@ -48,7 +48,12 @@ describe('EditProfile', () => {
     const wrapper = subject({ onEdit: onEditMock });
 
     wrapper.find(Button).simulate('press');
-    expect(onEditMock).toHaveBeenCalledWith({ name: 'John Doe', image: null });
+    expect(onEditMock).toHaveBeenCalledWith({
+      name: 'John Doe',
+      image: null,
+      matrixId: '',
+      matrixAccessToken: '',
+    });
   });
 
   it('disables Save Changes button when name is empty', () => {
@@ -72,7 +77,7 @@ describe('EditProfile', () => {
   it('enables Save Changes button when changes are made', () => {
     const wrapper = subject({ currentDisplayName: 'John Doe', currentProfileImage: null });
 
-    wrapper.find(Input).simulate('change', 'Jane Smith');
+    wrapper.find('Input[name="name"]').simulate('change', 'Jane Smith');
     expect(wrapper.find(Button).prop('isDisabled')).toEqual(false);
   });
 
@@ -83,9 +88,11 @@ describe('EditProfile', () => {
     const formData = {
       name: 'Jane Smith',
       image: 'new-image.jpg', // note: this is actually supposed to be a nodejs FILE object
+      matrixId: '',
+      matrixAccessToken: '',
     };
 
-    wrapper.find(Input).simulate('change', formData.name);
+    wrapper.find('Input[name="name"]').simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
     wrapper.find(Button).simulate('press');
 
@@ -101,13 +108,16 @@ describe('EditProfile', () => {
   it('renders name error when name is empty', () => {
     const wrapper = subject({ currentDisplayName: '' });
 
-    expect(wrapper.find(Input).prop('alert')).toEqual({ variant: 'error', text: 'name cannot be empty' });
+    expect(wrapper.find('Input[name="name"]').prop('alert')).toEqual({
+      variant: 'error',
+      text: 'name cannot be empty',
+    });
   });
 
   it('does not render name error when name is not empty', () => {
     const wrapper = subject({ currentDisplayName: 'John Doe' });
 
-    expect(wrapper.find(Input).prop('alert')).toBeNull();
+    expect(wrapper.find('Input[name="name"]').prop('alert')).toBeNull();
   });
 
   it('renders general errors', () => {

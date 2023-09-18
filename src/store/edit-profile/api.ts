@@ -15,3 +15,18 @@ export async function editUserProfile({
     response: response.body,
   };
 }
+
+export async function saveUserMatrixCredentials({
+  matrixId,
+  matrixAccessToken,
+}: {
+  matrixId: string;
+  matrixAccessToken: string;
+}) {
+  console.log(matrixId, matrixAccessToken);
+  // const _response = await post('/api/matrix/link-zero-user').send({ matrixId, matrixAccessToken });
+  return {
+    success: true,
+    response: [],
+  };
+}

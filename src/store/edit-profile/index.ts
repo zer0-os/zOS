@@ -21,7 +21,12 @@ export const initialState: EditProfileState = {
   state: State.NONE,
 };
 
-export const editProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.EditProfile);
+export const editProfile = createAction<{
+  name: string;
+  image: File | null;
+  matrixId: string;
+  matrixAccessToken: string;
+}>(SagaActionTypes.EditProfile);
 
 const slice = createSlice({
   name: 'edit-profile',

@@ -92,7 +92,7 @@ describe(receiveNewMessage, () => {
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, channelState.build())
-      .call(markChannelAsRead, 'channel-id')
+      .spawn(markChannelAsRead, 'channel-id')
       .run();
 
     const conversationState = new StoreBuilder()
@@ -102,7 +102,7 @@ describe(receiveNewMessage, () => {
     await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .provide(successResponses())
       .withReducer(rootReducer, conversationState.build())
-      .call(markConversationAsRead, 'channel-id')
+      .spawn(markConversationAsRead, 'channel-id')
       .run();
   });
 

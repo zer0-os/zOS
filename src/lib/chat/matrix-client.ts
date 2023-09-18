@@ -55,23 +55,6 @@ export class MatrixClient implements IChatClient {
   disconnect: () => void;
   reconnect: () => void;
 
-  async getChannels(_id: string) {
-    if (this.isDisconnected) {
-      return [];
-    }
-
-    if (this.isConnecting) {
-      await this.waitForConnection();
-    }
-
-    const accountData = await this.getAccountData('m.direct');
-    const rooms = this.matrix.getRooms();
-    const dmConversationIds = Object.values(accountData.event.content).flat();
-    const filteredRooms = rooms.filter((r) => !dmConversationIds.includes(r.roomId));
-    console.log('FILTEREDCHANNELS', filteredRooms);
-    return filteredRooms.map(this.mapChannel);
-  }
-
   async getAccountData(eventType: string) {
     if (this.isDisconnected) {
       throw new Error('Matrix client is disconnected');
@@ -84,21 +67,14 @@ export class MatrixClient implements IChatClient {
     return this.matrix.getAccountData(eventType);
   }
 
+  async getChannels(_id: string) {
+    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => !dmConversationIds.includes(roomId));
+    return rooms.map(this.mapChannel);
+  }
+
   async getConversations() {
-    if (this.isDisconnected) {
-      return [];
-    }
-
-    if (this.isConnecting) {
-      await this.waitForConnection();
-    }
-
-    const accountData = await this.getAccountData('m.direct');
-    const rooms = this.matrix.getRooms();
-    const dmConversationIds = Object.values(accountData.event.content).flat();
-    const filteredRooms = rooms.filter((r) => dmConversationIds.includes(r.roomId));
-    console.log('FILTERED', filteredRooms);
-    return filteredRooms.map(this.mapConversation);
+    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => dmConversationIds.includes(roomId));
+    return rooms.map(this.mapConversation);
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -164,7 +140,7 @@ export class MatrixClient implements IChatClient {
   private async initializeClient(userId: string, accessToken: string) {
     if (!this.matrix) {
       this.matrix = this.sdk.createClient({
-        baseUrl: 'http://localhost:8008',
+        baseUrl: 'https://zero-synapse-development-db365bf96189.herokuapp.com',
         accessToken,
         userId,
       });
@@ -228,4 +204,20 @@ export class MatrixClient implements IChatClient {
     createdAt: 0,
     conversationStatus: ConversationStatus.CREATED,
   });
+
+  private async getFilteredRooms(filterFunc: (roomId: string, dmConversationIds: string[]) => boolean) {
+    if (this.isDisconnected) {
+      return [];
+    }
+
+    if (this.isConnecting) {
+      await this.waitForConnection();
+    }
+
+    const accountData = await this.getAccountData('m.direct');
+    const rooms = this.matrix.getRooms();
+    const dmConversationIds = Object.values(accountData.event.content).flat();
+
+    return rooms.filter((r) => filterFunc(r.roomId, dmConversationIds));
+  }
 }

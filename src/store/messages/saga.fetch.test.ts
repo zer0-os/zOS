@@ -3,8 +3,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { fetch } from './saga';
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize } from '../channels';
-import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
-import { multicastChannel } from 'redux-saga';
 import { chat } from '../../lib/chat';
 import { StoreBuilder } from '../test/store';
 import { call } from 'redux-saga/effects';
@@ -57,25 +55,6 @@ describe(fetch, () => {
       .run();
 
     expect(denormalize(channel.id, storeState).hasMore).toBe(false);
-  });
-
-  it('emits markAsRead event on the conversations channel for a channel OR conversation', async () => {
-    const channel = { id: 'channel-id' };
-    const conversationsChannelStub = multicastChannel();
-
-    // channel
-    await subject(fetch, { payload: { channelId: channel.id } })
-      .provide([[matchers.call.fn(conversationsChannel), conversationsChannelStub]])
-      .withReducer(rootReducer, initialChannelState({ ...channel, isChannel: true }))
-      .put(conversationsChannelStub, { type: ChannelEvents.MessagesLoadedForChannel, channelId: channel.id })
-      .run();
-
-    // conversation
-    await subject(fetch, { payload: { channelId: channel.id } })
-      .provide([[matchers.call.fn(conversationsChannel), conversationsChannelStub]])
-      .withReducer(rootReducer, initialChannelState({ ...channel, isChannel: false }))
-      .put(conversationsChannelStub, { type: ChannelEvents.MessagesLoadedForConversation, channelId: channel.id })
-      .run();
   });
 
   it('sets hasLoadedMessages on channel', async () => {

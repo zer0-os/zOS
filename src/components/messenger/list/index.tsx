@@ -2,7 +2,7 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
-import { setactiveConversationId } from '../../../store/chat';
+import { openConversation } from '../../../store/channels';
 import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -70,10 +70,10 @@ export interface Properties extends PublicProperties {
   startCreateConversation: () => void;
   startGroup: () => void;
   back: () => void;
-  openConversation: (channelId: string) => void;
   fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  onConversationClick: (payload: { conversationId: string }) => void;
   enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
@@ -126,7 +126,7 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      openConversation: setactiveConversationId,
+      onConversationClick: openConversation,
       fetchConversations,
       createConversation,
       startCreateConversation,
@@ -269,7 +269,7 @@ export class Container extends React.Component<Properties, State> {
               search={this.usersInMyNetworks}
               conversations={this.props.conversations}
               onCreateConversation={this.createOneOnOneConversation}
-              onConversationClick={this.props.openConversation}
+              onConversationClick={this.props.onConversationClick}
               startConversation={this.props.startCreateConversation}
               myUserId={this.props.myUserId}
               activeConversationId={this.props.activeConversationId}

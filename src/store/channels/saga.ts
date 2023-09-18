@@ -5,10 +5,9 @@ import { SagaActionTypes, receive, schema, removeAll } from '.';
 import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
-import { activeChannelIdSelector } from '../chat/selectors';
+import { setActiveChannelId, setactiveConversationId } from '../chat';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -45,35 +44,42 @@ export function* markAllMessagesAsRead(channelId, userId) {
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
-export function* markChannelAsReadIfActive(channelId) {
-  const activeChannelId = yield select(activeChannelIdSelector);
-  if (channelId !== activeChannelId) {
-    return;
-  }
-
+export function* markChannelAsRead(channelId) {
   const currentUser = yield select(currentUserSelector());
   const isMessengerFullScreen = yield select((state) => state.layout.value.isMessengerFullScreen);
-  const activeChannelInfo = activeChannelId ? yield select(rawChannelSelector(activeChannelId)) : null;
+  const channelInfo = yield select(rawChannelSelector(channelId));
 
   // just ensure first that you're not in full screen mode before marking all messages as read in a "channel"
-  if (!isMessengerFullScreen && activeChannelId && activeChannelInfo?.unreadCount > 0) {
-    yield call(markAllMessagesAsRead, activeChannelId, currentUser.id);
+  if (!isMessengerFullScreen && channelInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, channelId, currentUser.id);
   }
 }
 
 // mark all messages in read in current active conversation
-export function* markConversationAsReadIfActive(channelId) {
-  const activeConversationId = yield select((state) => state.chat.activeConversationId);
-  if (channelId !== activeConversationId) {
+export function* markConversationAsRead(conversationId) {
+  const currentUser = yield select(currentUserSelector());
+  const conversationInfo = yield select(rawChannelSelector(conversationId));
+  if (conversationInfo?.unreadCount > 0) {
+    yield call(markAllMessagesAsRead, conversationId, currentUser.id);
+  }
+}
+
+export function* openChannel(channelId) {
+  if (!channelId) {
     return;
   }
 
-  const currentUser = yield select(currentUserSelector());
-  const activeConversationInfo = activeConversationId ? yield select(rawChannelSelector(activeConversationId)) : null;
+  yield put(setActiveChannelId(channelId));
+  yield spawn(markChannelAsRead, channelId);
+}
 
-  if (activeConversationId && activeConversationInfo?.unreadCount > 0) {
-    yield call(markAllMessagesAsRead, activeConversationId, currentUser.id);
+export function* openConversation(conversationId) {
+  if (!conversationId) {
+    return;
   }
+
+  yield put(setactiveConversationId(conversationId));
+  yield spawn(markConversationAsRead, conversationId);
 }
 
 export function* unreadCountUpdated(action) {
@@ -102,14 +108,9 @@ export function* clearChannels() {
 }
 
 export function* saga() {
-  yield takeEveryFromBus(yield call(conversationsChannel), ChannelEvents.MessagesLoadedForChannel, (event) =>
-    markChannelAsReadIfActive(event.channelId)
-  );
-  yield takeEveryFromBus(yield call(conversationsChannel), ChannelEvents.MessagesLoadedForConversation, (event) =>
-    markConversationAsReadIfActive(event.channelId)
-  );
-
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
+  yield takeLatest(SagaActionTypes.OpenChannel, ({ payload }: any) => openChannel(payload.channelId));
+  yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

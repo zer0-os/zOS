@@ -48,6 +48,14 @@ export class FeatureFlags {
   set enableRewards(value: boolean) {
     this._setBoolean('enableRewards', value);
   }
+
+  get enableMatrix() {
+    return this._getBoolean('enableMatrix');
+  }
+
+  set enableMatrix(value: boolean) {
+    this._setBoolean('enableMatrix', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

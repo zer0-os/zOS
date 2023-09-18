@@ -4,18 +4,13 @@ import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { config as appConfig } from '../../config';
 import { ParentMessage } from './types';
+import { config } from '../../config';
 
 enum ConnectionStatus {
   Connected = 'connected',
   Connecting = 'connecting',
   Disconnected = 'disconnected',
-}
-
-class MatrixConfig {
-  userId: string;
-  accessToken: string;
 }
 
 export class MatrixClient implements IChatClient {
@@ -29,12 +24,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }, config: MatrixConfig = appConfig.matrix) {
-    if (config.userId && config.accessToken) {
-      this.accessToken = config.accessToken;
-      this.userId = config.userId;
-    }
-  }
+  constructor(private sdk = { createClient }) {}
 
   init(events: RealtimeChatEvents) {
     this.events = events;
@@ -130,7 +120,7 @@ export class MatrixClient implements IChatClient {
   private async initializeClient(userId: string, accessToken: string) {
     if (!this.matrix) {
       this.matrix = this.sdk.createClient({
-        baseUrl: 'http://localhost:8008',
+        baseUrl: config.matrix.homeServerUrl,
         accessToken,
         userId,
       });

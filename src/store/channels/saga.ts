@@ -70,7 +70,7 @@ export function* openChannel(channelId) {
   }
 
   yield put(setActiveChannelId(channelId));
-  yield call(markChannelAsRead, channelId);
+  yield spawn(markChannelAsRead, channelId);
 }
 
 export function* openConversation(conversationId) {
@@ -79,7 +79,7 @@ export function* openConversation(conversationId) {
   }
 
   yield put(setactiveConversationId(conversationId));
-  yield call(markConversationAsRead, conversationId);
+  yield spawn(markConversationAsRead, conversationId);
 }
 
 export function* unreadCountUpdated(action) {

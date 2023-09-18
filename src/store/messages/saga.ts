@@ -402,7 +402,7 @@ export function* receiveNewMessage(action) {
   if (yield select(_isActive(channelId))) {
     const isChannel = yield select(_isChannel(channelId));
     const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
-    yield call(markAllAsReadAction, channelId);
+    yield spawn(markAllAsReadAction, channelId);
   }
 }
 

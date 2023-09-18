@@ -71,6 +71,10 @@ export class SendbirdClient implements IChatClient {
     }
   }
 
+  async getConversations() {
+    return [];
+  }
+
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {
     const filter: any = {};
 

@@ -64,7 +64,41 @@ export class MatrixClient implements IChatClient {
       await this.waitForConnection();
     }
 
-    return this.matrix.getRooms().map(this.mapChannel);
+    const accountData = await this.getAccountData('m.direct');
+    const rooms = this.matrix.getRooms();
+    const dmConversationIds = Object.values(accountData.event.content).flat();
+    const filteredRooms = rooms.filter((r) => !dmConversationIds.includes(r.roomId));
+    console.log('FILTEREDCHANNELS', filteredRooms);
+    return filteredRooms.map(this.mapChannel);
+  }
+
+  async getAccountData(eventType: string) {
+    if (this.isDisconnected) {
+      throw new Error('Matrix client is disconnected');
+    }
+
+    if (this.isConnecting) {
+      await this.waitForConnection();
+    }
+
+    return this.matrix.getAccountData(eventType);
+  }
+
+  async getConversations() {
+    if (this.isDisconnected) {
+      return [];
+    }
+
+    if (this.isConnecting) {
+      await this.waitForConnection();
+    }
+
+    const accountData = await this.getAccountData('m.direct');
+    const rooms = this.matrix.getRooms();
+    const dmConversationIds = Object.values(accountData.event.content).flat();
+    const filteredRooms = rooms.filter((r) => dmConversationIds.includes(r.roomId));
+    console.log('FILTERED', filteredRooms);
+    return filteredRooms.map(this.mapConversation);
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -168,6 +202,22 @@ export class MatrixClient implements IChatClient {
     name: channel.name,
     icon: channel.getAvatarUrl(),
     isChannel: true,
+    isOneOnOne: false,
+    otherMembers: [],
+    lastMessage: null,
+    groupChannelType: GroupChannelType.Public,
+    category: '',
+    unreadCount: 0,
+    hasJoined: true,
+    createdAt: 0,
+    conversationStatus: ConversationStatus.CREATED,
+  });
+
+  private mapConversation = (channel): Partial<Channel> => ({
+    id: channel.roomId,
+    name: channel.name,
+    icon: channel.getAvatarUrl(),
+    isChannel: false,
     isOneOnOne: false,
     otherMembers: [],
     lastMessage: null,

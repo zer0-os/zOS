@@ -56,8 +56,14 @@ export function* fetchChannels(action) {
 }
 
 export function* fetchConversations() {
-  const conversations = yield call(fetchConversationsMessagesApi);
-  const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
+  const chatClient = yield call(chat.get);
+  const conversations = yield call([
+    chatClient,
+    chatClient.getConversations,
+  ]);
+
+  // const conversations = yield call(fetchConversationsMessagesApi);
+  // const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -69,7 +75,7 @@ export function* fetchConversations() {
     receive([
       ...channelsList,
       ...optimisticConversationIds,
-      ...conversationsList,
+      ...conversations,
     ])
   );
 

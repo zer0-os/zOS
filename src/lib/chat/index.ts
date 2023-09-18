@@ -5,6 +5,7 @@ import { SendbirdClient } from './sendbird-client';
 import { config } from '../../config';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage } from './types';
+import { MatrixEvent } from 'matrix-js-sdk';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -26,6 +27,7 @@ export interface IChatClient {
   supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
+  getConversations?: () => Promise<Partial<Channel>[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -35,6 +37,7 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
+  getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
 }
 
 export class Chat {
@@ -54,8 +57,16 @@ export class Chat {
     return this.client.getChannels(id);
   }
 
+  async getConversations() {
+    return this.client.getConversations();
+  }
+
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async getAccountData(eventType: string) {
+    return this.client.getAccountData(eventType);
   }
 
   async sendMessagesByChannelId(

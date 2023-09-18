@@ -39,8 +39,6 @@ export function* editProfile(action) {
       return;
     }
   } catch (e) {
-    console.log('e', e);
-
     yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
   }
 

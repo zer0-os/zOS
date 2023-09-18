@@ -15,19 +15,13 @@ const getSdkClient = (sdkClient = {}) => ({
   ...sdkClient,
 });
 
-const subject = (props = {}, config = {}) => {
+const subject = (props = {}) => {
   const allProps: any = {
     createClient: (_opts: any) => getSdkClient(),
     ...props,
   };
 
-  const allConfig = {
-    userId: undefined,
-    accessToken: undefined,
-    ...config,
-  };
-
-  return new MatrixClient(allProps, allConfig);
+  return new MatrixClient(allProps);
 };
 
 describe('matrix client', () => {
@@ -44,24 +38,6 @@ describe('matrix client', () => {
         expect.objectContaining({
           userId: 'username',
           accessToken: 'token',
-        })
-      );
-    });
-
-    it('uses default credentials if they are provided', () => {
-      const sdkClient = getSdkClient();
-      const createClient = jest.fn(() => sdkClient);
-
-      const userId = 'the-default-user-id';
-      const accessToken = 'the-default-access-token';
-      const client = subject({ createClient }, { userId, accessToken });
-
-      client.connect('username', 'token');
-
-      expect(createClient).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId,
-          accessToken,
         })
       );
     });

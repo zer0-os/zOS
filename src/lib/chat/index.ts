@@ -2,9 +2,9 @@ import { Message, MessagesResponse } from '../../store/messages';
 import { Channel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
-import { config } from '../../config';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage } from './types';
+import { featureFlags } from '../feature-flags';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -84,8 +84,7 @@ export class Chat {
 
 const ClientFactory = {
   get() {
-    const matrix = config.matrix;
-    if (matrix.userId && matrix.accessToken) {
+    if (featureFlags.enableMatrix) {
       return new MatrixClient();
     }
 

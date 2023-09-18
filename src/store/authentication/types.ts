@@ -36,6 +36,8 @@ export interface User {
   updatedAt: string;
   profileSummary: ProfileSummary;
   wallets: Wallet[];
+  matrixId?: string;
+  matrixAccessToken?: string;
 }
 
 export interface AuthenticationState {

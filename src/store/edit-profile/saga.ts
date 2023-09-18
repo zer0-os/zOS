@@ -1,9 +1,6 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, State, setErrors, setState } from '.';
-import {
-  editUserProfile as apiEditUserProfile,
-  saveUserMatrixCredentials as apiSaveUserMatrixCredentials,
-} from './api';
+import { editUserProfile as apiEditUserProfile } from './api';
 import { ProfileDetailsErrors } from '../registration';
 import { uploadImage } from '../registration/api';
 import cloneDeep from 'lodash/cloneDeep';
@@ -51,10 +48,13 @@ export function* editProfile(action) {
 
 export function* saveUserMatrixCredentials(payload) {
   const { matrixId, matrixAccessToken } = payload;
-  const response = yield call(apiSaveUserMatrixCredentials, {
-    matrixId,
-    matrixAccessToken,
-  });
+  // const response = yield call(apiSaveUserMatrixCredentials, {
+  //   matrixId,
+  //   matrixAccessToken,
+  // });
+
+  // Temporarily store in localStorage
+  const response = saveMatrixCredentialsInLocalStorage({ matrixId, matrixAccessToken });
 
   if (response.success) {
     let currentUser = cloneDeep(yield select(currentUserSelector()));
@@ -62,6 +62,12 @@ export function* saveUserMatrixCredentials(payload) {
     yield put(setUser({ data: currentUser }));
     return;
   }
+}
+
+function saveMatrixCredentialsInLocalStorage({ matrixId, matrixAccessToken }) {
+  localStorage.setItem('matrixId', matrixId);
+  localStorage.setItem('matrixAccessToken', matrixAccessToken);
+  return { success: true };
 }
 
 export function* updateUserProfile(payload) {

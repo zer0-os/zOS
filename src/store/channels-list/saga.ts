@@ -57,6 +57,9 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
 
+  // const conversations = yield call(fetchConversationsMessagesApi);
+  // const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
+
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
     .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)

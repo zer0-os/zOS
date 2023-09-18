@@ -5,6 +5,7 @@ import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage } from './types';
 import { featureFlags } from '../feature-flags';
+import { MatrixEvent } from 'matrix-js-sdk';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -26,8 +27,7 @@ export interface IChatClient {
   supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
-  getConversations: () => Promise<Partial<Channel>[]>;
-
+  getConversations?: () => Promise<Partial<Channel>[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   createConversation: (
     userIds: string[],
@@ -43,10 +43,11 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
+  getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null) {}
+  constructor(private client: IChatClient = null) { }
 
   supportsOptimisticSend = () => this.client.supportsOptimisticSend();
 
@@ -70,8 +71,8 @@ export class Chat {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
   }
 
-  async createConversation(userIds: string[], name: string, image: File, optimisticId: string) {
-    return this.client.createConversation(userIds, name, image, optimisticId);
+  async getAccountData(eventType: string) {
+    return this.client.getAccountData(eventType);
   }
 
   async sendMessagesByChannelId(

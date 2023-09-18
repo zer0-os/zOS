@@ -72,7 +72,13 @@ export class SendbirdClient implements IChatClient {
   }
 
   async getConversations() {
-    return [];
+    try {
+      const conversations = await get<any>('/directMessages/mine');
+      return (conversations.body || []).map((currentChannel) => toLocalChannel(currentChannel));
+    } catch (error: any) {
+      console.log('Error occured while fetching conversations ', error?.response ?? error); // eg. error.code = ENOTFOUND
+      return [];
+    }
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {

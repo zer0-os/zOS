@@ -20,6 +20,8 @@ export interface Properties {
   };
   currentDisplayName: string;
   currentProfileImage: string;
+  currentMatrixId: string;
+  currentMatrixAccessToken: string;
   onEdit: (data: { name: string; image: File; matrixId: string; matrixAccessToken: string }) => void;
   onClose?: () => void;
 }
@@ -35,8 +37,8 @@ export class EditProfile extends React.Component<Properties, State> {
   state = {
     name: this.props.currentDisplayName,
     image: null,
-    matrixId: '',
-    matrixAccessToken: '',
+    matrixId: this.props.currentMatrixId,
+    matrixAccessToken: this.props.currentMatrixAccessToken,
   };
 
   handleEdit = () => {

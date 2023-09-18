@@ -1,4 +1,4 @@
-import { patch } from '../../lib/api/rest';
+import { patch, post } from '../../lib/api/rest';
 
 export async function editUserProfile({
   profileId,
@@ -24,9 +24,8 @@ export async function saveUserMatrixCredentials({
   matrixAccessToken: string;
 }) {
   console.log(matrixId, matrixAccessToken);
-  // const _response = await post('/api/matrix/link-zero-user').send({ matrixId, matrixAccessToken });
+  await post('/matrix/link-zero-user').send({ matrixId, matrixAccessToken });
   return {
     success: true,
-    response: [],
   };
 }

@@ -154,6 +154,7 @@ export class EditProfile extends React.Component<Properties, State> {
             Your changes have been saved
           </Alert>
         )}
+
         <div className={c('footer')}>
           <Button
             className={c('zui-button-large')}

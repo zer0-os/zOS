@@ -27,7 +27,8 @@ export interface IChatClient {
   supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
-  getConversations?: () => Promise<Partial<Channel>[]>;
+  getConversations: () => Promise<Partial<Channel>[]>;
+  getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -37,7 +38,6 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
-  getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
 }
 
 export class Chat {
@@ -61,12 +61,12 @@ export class Chat {
     return this.client.getConversations();
   }
 
-  async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
-    return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
-  }
-
   async getAccountData(eventType: string) {
     return this.client.getAccountData(eventType);
+  }
+
+  async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
+    return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
   }
 
   async sendMessagesByChannelId(

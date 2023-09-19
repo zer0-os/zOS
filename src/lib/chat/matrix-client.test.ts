@@ -86,7 +86,7 @@ describe('matrix client', () => {
 
     it('gets rooms', async () => {
       const rooms = [getRoom({ roomId: 'room-id' })];
-      const getAccountData = getMockAccountData({});
+      const getAccountData = getMockAccountData();
 
       const getRooms = jest.fn(() => {
         return rooms;
@@ -105,7 +105,7 @@ describe('matrix client', () => {
 
     it('waits for sync to get rooms', async () => {
       const rooms = [getRoom({ roomId: 'room-id' })];
-      const getAccountData = getMockAccountData({});
+      const getAccountData = getMockAccountData();
       let syncCallback: any;
 
       const on = (topic, callback) => {
@@ -134,9 +134,49 @@ describe('matrix client', () => {
 
       expect(getRooms).toHaveBeenCalledOnce();
     });
+  });
 
+  describe('getChannels', () => {
+    it('returns only non-direct rooms as channels', async () => {
+      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+
+      const getRooms = jest.fn(() => rooms);
+      const getAccountData = getMockAccountData({ id: 'dm-id' });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+      const channels = await client.getChannels('network-id');
+
+      expect(channels).toHaveLength(1);
+      expect(channels[0].id).toEqual('channel-id');
+    });
+  });
+
+  describe('getConversations', () => {
+    it('returns only direct rooms as conversations', async () => {
+      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+
+      const getRooms = jest.fn(() => rooms);
+      const getAccountData = getMockAccountData({ id: 'dm-id' });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+      const conversations = await client.getConversations();
+
+      expect(conversations).toHaveLength(1);
+      expect(conversations[0].id).toEqual('dm-id');
+    });
+  });
+
+  describe('getAccountData', () => {
     it('get account data', async () => {
-      const getAccountData = getMockAccountData({});
+      const getAccountData = getMockAccountData([{ id: '!abcdefg' }, { id: '!hijklmn' }]);
 
       const client = subject({
         createClient: jest.fn(() => getSdkClient({ getAccountData })),
@@ -147,6 +187,35 @@ describe('matrix client', () => {
       await client.getConversations();
 
       expect(getAccountData).toHaveBeenCalledWith('m.direct');
+    });
+
+    it('waits for connection if matrix client is connecting to get account data', async () => {
+      const sdkClient = getSdkClient();
+      const createClient = jest.fn(() => sdkClient);
+
+      const client = subject({ createClient });
+      client.connect('username', 'token');
+
+      const accountDataFetch = client.getAccountData('m.direct');
+      expect(sdkClient.getAccountData).not.toHaveBeenCalled();
+
+      await new Promise((resolve) => setImmediate(resolve));
+
+      await accountDataFetch;
+
+      expect(sdkClient.getAccountData).toHaveBeenCalledWith('m.direct');
+    });
+
+    it('fetches and returns correct account data when type is "m.direct"', async () => {
+      const getAccountData = getMockAccountData([{ id: '!abcdefg' }, { id: '!hijklmn' }]);
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+
+      const result = await client.getAccountData('m.direct');
+      expect(result).toEqual({ event: { content: [{ id: '!abcdefg' }, { id: '!hijklmn' }] } });
     });
   });
 });

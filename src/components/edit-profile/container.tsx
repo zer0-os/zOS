@@ -17,6 +17,8 @@ export interface Properties extends PublicProperties {
   editProfileState: State;
   currentDisplayName: string;
   currentProfileImage: string;
+  currentMatrixId: string;
+  currentMatrixAccessToken: string;
   editProfile: (data: { name: string; image: File; matrixId: string; matrixAccessToken: string }) => void;
   startProfileEdit: () => void;
 }
@@ -31,6 +33,8 @@ export class Container extends React.Component<Properties> {
       errors: RegistrationContainer.mapErrors(editProfile.errors),
       currentDisplayName: user?.data?.profileSummary.firstName,
       currentProfileImage: user?.data?.profileSummary.profileImage,
+      currentMatrixId: user?.data?.matrixId,
+      currentMatrixAccessToken: user?.data?.matrixAccessToken,
       editProfileState: editProfile.state,
     };
   }
@@ -52,6 +56,8 @@ export class Container extends React.Component<Properties> {
         editProfileState={this.props.editProfileState}
         currentDisplayName={this.props.currentDisplayName}
         currentProfileImage={this.props.currentProfileImage}
+        currentMatrixId={this.props.currentMatrixId}
+        currentMatrixAccessToken={this.props.currentMatrixAccessToken}
       />
     );
   }

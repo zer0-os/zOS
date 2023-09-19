@@ -13,6 +13,8 @@ describe('EditProfile', () => {
       errors: {},
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
+      currentMatrixId: '',
+      currentMatrixAccessToken: '',
       onEdit: () => null,
       onClose: () => null,
       ...props,

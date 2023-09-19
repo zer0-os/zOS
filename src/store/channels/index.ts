@@ -57,9 +57,13 @@ export interface Channel {
 export enum SagaActionTypes {
   JoinChannel = 'channels/saga/joinChannel',
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
+  OpenChannel = 'channels/saga/openChannel',
+  OpenConversation = 'channels/saga/openConversation',
 }
 
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
+const openChannel = createAction<Payload>(SagaActionTypes.OpenChannel);
+const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 
 const slice = createNormalizedSlice({
@@ -72,4 +76,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { joinChannel, unreadCountUpdated, removeAll };
+export { joinChannel, unreadCountUpdated, removeAll, openChannel, openConversation };

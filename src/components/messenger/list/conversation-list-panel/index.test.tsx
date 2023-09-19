@@ -21,9 +21,9 @@ describe('ConversationListPanel', () => {
   };
 
   it('handle member click', function () {
-    const handleMemberClick = jest.fn();
+    const onConversationClick = jest.fn();
     const wrapper = subject({
-      onConversationClick: handleMemberClick,
+      onConversationClick,
       conversations: [
         {
           id: 'test-conversation-id',
@@ -34,7 +34,7 @@ describe('ConversationListPanel', () => {
 
     wrapper.find('ConversationItem').simulate('click', 'test-conversation-id');
 
-    expect(handleMemberClick).toHaveBeenCalledWith('test-conversation-id');
+    expect(onConversationClick).toHaveBeenCalledWith({ conversationId: 'test-conversation-id' });
   });
 
   it('renders filtered conversation list', function () {
@@ -183,7 +183,7 @@ describe('ConversationListPanel', () => {
     const filteredConversations = wrapper.find('ConversationItem');
     filteredConversations.at(0).simulate('click', 'convo-id-2');
 
-    expect(onConversationClick).toHaveBeenCalledWith('convo-id-2');
+    expect(onConversationClick).toHaveBeenCalledWith({ conversationId: 'convo-id-2' });
   });
 
   it('selecting an existing conversation clears the filtered state', async function () {

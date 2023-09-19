@@ -17,7 +17,7 @@ export interface Properties extends PublicProperties {
   editProfileState: State;
   currentDisplayName: string;
   currentProfileImage: string;
-  editProfile: (data: { name: string; image: File }) => void;
+  editProfile: (data: { name: string; image: File; matrixId: string; matrixAccessToken: string }) => void;
   startProfileEdit: () => void;
 }
 

@@ -8,7 +8,7 @@ import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
 
 export function* editProfile(action) {
-  const { name, image } = action.payload;
+  const { name, image, matrixId, matrixAccessToken } = action.payload;
 
   yield put(setState(State.INPROGRESS));
   try {
@@ -21,6 +21,10 @@ export function* editProfile(action) {
         yield put(setErrors([ProfileDetailsErrors.FILE_UPLOAD_ERROR]));
         return;
       }
+    }
+
+    if (matrixId && matrixAccessToken) {
+      yield call(saveUserMatrixCredentials, { matrixId, matrixAccessToken });
     }
 
     const { profileId } = yield select((state) => state.authentication.user.data);
@@ -40,6 +44,30 @@ export function* editProfile(action) {
 
   yield put(setState(State.LOADED));
   return;
+}
+
+export function* saveUserMatrixCredentials(payload) {
+  const { matrixId, matrixAccessToken } = payload;
+  // const response = yield call(apiSaveUserMatrixCredentials, {
+  //   matrixId,
+  //   matrixAccessToken,
+  // });
+
+  // Temporarily store in localStorage
+  const response = saveMatrixCredentialsInLocalStorage({ matrixId, matrixAccessToken });
+
+  if (response.success) {
+    let currentUser = cloneDeep(yield select(currentUserSelector()));
+    currentUser = { ...currentUser, matrixId, matrixAccessToken };
+    yield put(setUser({ data: currentUser }));
+    return;
+  }
+}
+
+function saveMatrixCredentialsInLocalStorage({ matrixId, matrixAccessToken }) {
+  localStorage.setItem('matrixId', matrixId);
+  localStorage.setItem('matrixAccessToken', matrixAccessToken);
+  return { success: true };
 }
 
 export function* updateUserProfile(payload) {

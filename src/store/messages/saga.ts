@@ -13,7 +13,7 @@ import {
 } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
-import { markChannelAsReadIfActive, markConversationAsReadIfActive, rawChannelSelector } from '../channels/saga';
+import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { deleteMessageApi, editMessageApi, getLinkPreviews } from './api';
@@ -22,7 +22,6 @@ import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { ChannelEvents, conversationsChannel } from '../channels-list/channels';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
@@ -85,6 +84,10 @@ const messageSelector = (messageId) => (state) => {
 export const _isChannel = (channelId) => (state) =>
   getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
 
+const _isActive = (channelId) => (state) => {
+  return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;
+};
+
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* fetch(action) {
@@ -122,14 +125,6 @@ export function* fetch(action) {
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })
     );
-
-    // Publish a system message across the channel
-    const channel = yield call(conversationsChannel);
-    const isChannel = yield select(_isChannel(channelId));
-    yield put(channel, {
-      type: isChannel ? ChannelEvents.MessagesLoadedForChannel : ChannelEvents.MessagesLoadedForConversation,
-      channelId,
-    });
   } catch (error) {
     yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
   }
@@ -454,10 +449,11 @@ export function* receiveNewMessage(action) {
   yield put(receive({ id: channelId, messages: newMessages }));
   yield spawn(sendBrowserNotification, channelId, message);
 
-  const isChannel = yield select(_isChannel(channelId));
-  const markAllAsReadAction = isChannel ? markChannelAsReadIfActive : markConversationAsReadIfActive;
-
-  yield call(markAllAsReadAction, channelId);
+  if (yield select(_isActive(channelId))) {
+    const isChannel = yield select(_isChannel(channelId));
+    const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
+    yield spawn(markAllAsReadAction, channelId);
+  }
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

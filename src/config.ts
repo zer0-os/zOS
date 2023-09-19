@@ -36,8 +36,7 @@ export const config = {
   inviteUrl: process.env.REACT_APP_MESSENGER_INVITE_PATH,
   assetsPath: process.env.REACT_APP_ASSETS_PATH,
   matrix: {
-    userId: process.env.REACT_APP_MATRIX_USER_ID,
-    accessToken: process.env.REACT_APP_MATRIX_ACCESS_TOKEN,
+    homeServerUrl: process.env.REACT_APP_MATRIX_HOME_SERVER_URL,
   },
   androidStorePath: process.env.REACT_APP_ANDROID_STORE_PATH,
 };

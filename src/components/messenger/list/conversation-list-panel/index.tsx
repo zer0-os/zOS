@@ -25,7 +25,7 @@ export interface Properties {
   search: (input: string) => any;
   startConversation: () => void;
   onCreateConversation: (userId: string) => void;
-  onConversationClick: (conversationId: string) => void;
+  onConversationClick: (payload: { conversationId: string }) => void;
 }
 
 interface State {
@@ -114,7 +114,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   };
 
   openExistingConversation = (id: string) => {
-    this.props.onConversationClick(id);
+    this.props.onConversationClick({ conversationId: id });
     this.setState({ filter: '' });
   };
 

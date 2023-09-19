@@ -26,6 +26,7 @@ describe('ChannelsContainer', () => {
       fetchChannels: () => undefined,
       stopSyncChannels: () => undefined,
       setActiveChannelId: () => undefined,
+      openChannel: () => undefined,
       channelId: '',
       match: { url: '' },
       user: {
@@ -58,14 +59,14 @@ describe('ChannelsContainer', () => {
     expect(fetchChannels).toHaveBeenCalledWith(domainId);
   });
 
-  it('sets the active channel ID on mount', () => {
+  it('calls openChannel on mount', () => {
     const domainId = '0x000000000000000000000000000000000000000A';
     const channelId = '31029_140322eaa6b07f4a94d5fa3c6ced27cde50b6ebd';
-    const setActiveChannelId = jest.fn();
+    const openChannel = jest.fn();
 
-    subject({ domainId, channelId, setActiveChannelId, channels: [] });
+    subject({ domainId, channelId, openChannel, channels: [] });
 
-    expect(setActiveChannelId).toHaveBeenCalledWith(channelId);
+    expect(openChannel).toHaveBeenCalledWith({ channelId });
   });
 
   it('sets the active channel ID to null on unmount', () => {
@@ -81,18 +82,18 @@ describe('ChannelsContainer', () => {
     const domainId = '0x000000000000000000000000000000000000000A';
     const currentChannel = '31029_140322eaa6b07f4a94d5fa3c6ced27cde50b6ebd';
     const nextChannel = '31029_219f6599b591e5d3a8a059d91e0074ef8ad086e0';
-    const setActiveChannelId = jest.fn();
+    const openChannel = jest.fn();
 
     const wrapper = subject({
       domainId,
       channelId: currentChannel,
-      setActiveChannelId,
+      openChannel,
       channels: [],
     });
-    expect(setActiveChannelId).toHaveBeenCalledWith(currentChannel);
+    expect(openChannel).toHaveBeenCalledWith({ channelId: currentChannel });
 
     wrapper.setProps({ channelId: nextChannel }); // change to next channel
-    expect(setActiveChannelId).toHaveBeenCalledWith(nextChannel);
+    expect(openChannel).toHaveBeenCalledWith({ channelId: nextChannel });
   });
 
   it('wraps ChannelList in AppContextPanel', () => {

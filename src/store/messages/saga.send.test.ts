@@ -441,7 +441,8 @@ describe(performSend, () => {
 
     await expectSaga(performSend, channelId, '', [], {}, optimisticId)
       .provide([
-        stubResponse(matchers.call.fn(sendMessagesByChannelId), throwError(new Error('simulated error'))),
+        stubResponse(matchers.call.fn(chat.get), chatClient),
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), throwError(new Error('simulated error'))),
         stubResponse(matchers.call.fn(messageSendFailed), null),
       ])
       .call(messageSendFailed, optimisticId)

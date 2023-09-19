@@ -44,7 +44,7 @@ describe('messenger-list', () => {
       myUserId: '',
       showRewardsInTooltip: false,
       showRewardsInPopup: false,
-      openConversation: jest.fn(),
+      onConversationClick: jest.fn(),
       fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       startCreateConversation: () => null,

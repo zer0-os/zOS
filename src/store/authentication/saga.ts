@@ -35,12 +35,6 @@ export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }
   yield put(setChatAccessToken({ value: chatAccessToken, isLoading: false }));
 }
 
-function getMatrixCredentialsInLocalStorage() {
-  const matrixId = localStorage.getItem('matrixId') ?? '';
-  const matrixAccessToken = localStorage.getItem('matrixAccessToken') ?? '';
-  return { matrixId, matrixAccessToken };
-}
-
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
   const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
@@ -63,9 +57,10 @@ export function* completeUserLogin(user = null) {
     yield call(completePendingUserProfile, user);
     return;
   }
-  // Temporary until the credentials come back with the user record
-  const matrixCredentials = getMatrixCredentialsInLocalStorage();
-  yield put(setUser({ data: { ...user, ...matrixCredentials } }));
+
+  console.log('USER ', user);
+
+  yield put(setUser({ data: user }));
   yield call(initializeUserState, user);
   yield call(publishUserLogin, user);
 }

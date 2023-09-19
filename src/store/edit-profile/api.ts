@@ -23,9 +23,8 @@ export async function saveUserMatrixCredentials({
   matrixId: string;
   matrixAccessToken: string;
 }) {
-  console.log(matrixId, matrixAccessToken);
-  await post('/matrix/link-zero-user').send({ matrixId, matrixAccessToken });
+  const response = await post('/matrix/link-zero-user').send({ matrixId, matrixAccessToken });
   return {
-    success: true,
+    success: response.status === 200,
   };
 }

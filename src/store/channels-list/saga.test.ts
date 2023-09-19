@@ -1,7 +1,6 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { fetchConversations as fetchConversationsApi } from './api';
 import { chat } from '../../lib/chat';
 
 import {
@@ -20,7 +19,6 @@ import { AsyncListStatus } from '../normalized';
 import { conversationsChannel } from './channels';
 import { multicastChannel } from 'redux-saga';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
-import { stubResponse } from '../../test/saga';
 import { StoreBuilder } from '../test/store';
 
 const MOCK_CHANNELS = [
@@ -29,8 +27,28 @@ const MOCK_CHANNELS = [
   { name: 'channel 3', id: 'channel_0003', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
 ];
 
+const MOCK_CONVERSATIONS = [
+  {
+    name: 'conversation 1',
+    id: 'conversation_0001',
+    url: 'conversation_0001',
+    icon: 'conversation-icon',
+    hasJoined: true,
+    isChannel: false,
+  },
+  {
+    name: 'conversation 2',
+    id: 'conversation_0002',
+    url: 'conversation_0002',
+    icon: 'conversation-icon',
+    hasJoined: true,
+    isChannel: false,
+  },
+];
+
 const chatClient = {
   getChannels: () => MOCK_CHANNELS,
+  getConversations: () => MOCK_CONVERSATIONS,
 };
 
 describe('channels list saga', () => {
@@ -191,7 +209,10 @@ describe('channels list saga', () => {
           [channel],
         ],
         [
-          matchers.call.fn(fetchConversationsApi),
+          matchers.call([
+            chatClient,
+            chatClient.getConversations,
+          ]),
           [conversation],
         ],
         [
@@ -307,12 +328,20 @@ describe(fetchConversations, () => {
     await expectSaga(fetchConversations)
       .provide([
         [
-          matchers.call.fn(fetchConversationsApi),
-          MOCK_CHANNELS,
+          matchers.call(chat.get),
+          chatClient,
+        ],
+        [
+          matchers.call([
+            chatClient,
+            chatClient.getConversations,
+          ]),
+          MOCK_CONVERSATIONS,
         ],
       ])
       .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-      .call(fetchConversationsApi)
+      .call(chat.get)
+      .call([chatClient, chatClient.getConversations])
       .run();
   });
 
@@ -322,8 +351,15 @@ describe(fetchConversations, () => {
     await expectSaga(fetchConversations)
       .provide([
         [
-          matchers.call.fn(fetchConversationsApi),
-          MOCK_CHANNELS,
+          matchers.call(chat.get),
+          chatClient,
+        ],
+        [
+          matchers.call([
+            chatClient,
+            chatClient.getConversations,
+          ]),
+          MOCK_CONVERSATIONS,
         ],
         [
           matchers.call.fn(conversationsChannel),
@@ -343,7 +379,10 @@ describe(fetchConversations, () => {
     const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
     const { storeState } = await expectSaga(fetchConversations)
-      .provide([stubResponse(matchers.call.fn(fetchConversationsApi), [fetchedChannel])])
+      .provide([
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
+      ])
       .withReducer(rootReducer, initialState)
       .run();
 

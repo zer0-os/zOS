@@ -58,8 +58,6 @@ export function* completeUserLogin(user = null) {
     return;
   }
 
-  console.log('USER ', user);
-
   yield put(setUser({ data: user }));
   yield call(initializeUserState, user);
   yield call(publishUserLogin, user);

@@ -21,30 +21,23 @@ import { multicastChannel } from 'redux-saga';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 
-const MOCK_CHANNELS = [
-  { name: 'channel 1', id: 'channel_0001', url: 'channel_0001', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 2', id: 'channel_0002', url: 'channel_0002', icon: 'channel-icon', hasJoined: false },
-  { name: 'channel 3', id: 'channel_0003', url: 'channel_0003', icon: 'channel-icon', hasJoined: false },
-];
+const mockChannel = (id: string) => ({
+  id: `channel_${id}`,
+  name: `channel ${id}`,
+  icon: 'channel-icon',
+  hasJoined: false,
+});
 
-const MOCK_CONVERSATIONS = [
-  {
-    name: 'conversation 1',
-    id: 'conversation_0001',
-    url: 'conversation_0001',
-    icon: 'conversation-icon',
-    hasJoined: true,
-    isChannel: false,
-  },
-  {
-    name: 'conversation 2',
-    id: 'conversation_0002',
-    url: 'conversation_0002',
-    icon: 'conversation-icon',
-    hasJoined: true,
-    isChannel: false,
-  },
-];
+const mockConversation = (id: string) => ({
+  id: `conversation_${id}`,
+  name: `conversation ${id}`,
+  icon: 'conversation-icon',
+  hasJoined: true,
+  isChannel: false,
+});
+
+const MOCK_CHANNELS = [mockChannel('0001'), mockChannel('0002'), mockChannel('0003')];
+const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
 
 const chatClient = {
   getChannels: () => MOCK_CHANNELS,

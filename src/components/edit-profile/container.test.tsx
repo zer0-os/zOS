@@ -12,6 +12,8 @@ describe('Container', () => {
       editProfileState: 0, // Set the initial editProfileState to State.NONE
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
+      currentMatrixId: '',
+      currentMatrixAccessToken: '',
       editProfile: () => null,
       startProfileEdit: () => null,
       ...props,

@@ -6,6 +6,19 @@ const getRoom = (props: any = {}) => ({
   ...props,
 });
 
+const getMockAccountData = (data = {}) => {
+  return jest.fn((eventType) => {
+    if (eventType === 'm.direct') {
+      return {
+        event: {
+          content: data,
+        },
+      };
+    }
+    return {};
+  });
+};
+
 const getSdkClient = (sdkClient = {}) => ({
   startClient: jest.fn(async () => undefined),
   on: jest.fn((topic, callback) => {
@@ -73,13 +86,14 @@ describe('matrix client', () => {
 
     it('gets rooms', async () => {
       const rooms = [getRoom({ roomId: 'room-id' })];
+      const getAccountData = getMockAccountData({});
 
       const getRooms = jest.fn(() => {
         return rooms;
       });
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms })),
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
       });
 
       await client.connect('username', 'token');
@@ -91,6 +105,7 @@ describe('matrix client', () => {
 
     it('waits for sync to get rooms', async () => {
       const rooms = [getRoom({ roomId: 'room-id' })];
+      const getAccountData = getMockAccountData({});
       let syncCallback: any;
 
       const on = (topic, callback) => {
@@ -102,7 +117,7 @@ describe('matrix client', () => {
       });
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ on, getRooms })),
+        createClient: jest.fn(() => getSdkClient({ on, getRooms, getAccountData })),
       });
 
       client.connect('username', 'token');
@@ -118,6 +133,20 @@ describe('matrix client', () => {
       await channelFetch;
 
       expect(getRooms).toHaveBeenCalledOnce();
+    });
+
+    it('get account data', async () => {
+      const getAccountData = getMockAccountData({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+
+      await client.getConversations();
+
+      expect(getAccountData).toHaveBeenCalledWith('m.direct');
     });
   });
 });

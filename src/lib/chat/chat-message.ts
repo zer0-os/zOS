@@ -128,7 +128,7 @@ export function mapMatrixMessage(matrixMessage) {
     parentMessageText: '',
     parentMessageId: parent ? parent['m.in_reply_to'].event_id : null,
     createdAt: matrixMessage.origin_server_ts,
-    updatedAt: matrixMessage.origin_server_ts,
+    updatedAt: null,
     sender: {},
     isAdmin: false,
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },

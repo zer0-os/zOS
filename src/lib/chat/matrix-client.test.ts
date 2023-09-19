@@ -12,6 +12,7 @@ const getSdkClient = (sdkClient = {}) => ({
     if (topic === 'sync') callback('PREPARED');
   }),
   getRooms: jest.fn(),
+  getAccountData: jest.fn(),
   ...sdkClient,
 });
 
@@ -83,7 +84,7 @@ describe('matrix client', () => {
 
       await client.connect('username', 'token');
 
-      client.getChannels('network-id');
+      await client.getChannels('network-id');
 
       expect(getRooms).toHaveBeenCalledOnce();
     });

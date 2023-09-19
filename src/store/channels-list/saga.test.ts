@@ -40,6 +40,25 @@ const mockConversation = (id: string) => ({
 const MOCK_CHANNELS = [mockChannel('0001'), mockChannel('0002'), mockChannel('0003')];
 const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
 
+const MOCK_CONVERSATIONS = [
+  {
+    name: 'conversation 1',
+    id: 'conversation_0001',
+    url: 'conversation_0001',
+    icon: 'conversation-icon',
+    hasJoined: true,
+    isChannel: false,
+  },
+  {
+    name: 'conversation 2',
+    id: 'conversation_0002',
+    url: 'conversation_0002',
+    icon: 'conversation-icon',
+    hasJoined: true,
+    isChannel: false,
+  },
+];
+
 const chatClient = {
   getChannels: () => MOCK_CHANNELS,
   getConversations: () => MOCK_CONVERSATIONS,

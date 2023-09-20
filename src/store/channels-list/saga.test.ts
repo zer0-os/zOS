@@ -26,6 +26,7 @@ const mockChannel = (id: string) => ({
   name: `channel ${id}`,
   icon: 'channel-icon',
   hasJoined: false,
+  isChannel: true,
 });
 
 const mockConversation = (id: string) => ({

@@ -10,9 +10,7 @@ const getMockAccountData = (data = {}) => {
   return jest.fn((eventType) => {
     if (eventType === 'm.direct') {
       return {
-        event: {
-          content: data,
-        },
+        event: { content: data },
       };
     }
     return {};
@@ -176,7 +174,10 @@ describe('matrix client', () => {
 
   describe('getAccountData', () => {
     it('get account data', async () => {
-      const getAccountData = getMockAccountData([{ id: '!abcdefg' }, { id: '!hijklmn' }]);
+      const getAccountData = getMockAccountData({
+        '@mockuser1': ['!abcdefg'],
+        '@mockuser2:': ['!hijklmn', '!opqrstuv'],
+      });
 
       const client = subject({
         createClient: jest.fn(() => getSdkClient({ getAccountData })),
@@ -207,7 +208,11 @@ describe('matrix client', () => {
     });
 
     it('fetches and returns correct account data when type is "m.direct"', async () => {
-      const getAccountData = getMockAccountData([{ id: '!abcdefg' }, { id: '!hijklmn' }]);
+      const getAccountData = getMockAccountData({
+        '@mockuser1': ['!abcdefg'],
+        '@mockuser2:': ['!hijklmn', '!opqrstuv'],
+      });
+
       const client = subject({
         createClient: jest.fn(() => getSdkClient({ getAccountData })),
       });
@@ -215,7 +220,14 @@ describe('matrix client', () => {
       await client.connect('username', 'token');
 
       const result = await client.getAccountData('m.direct');
-      expect(result).toEqual({ event: { content: [{ id: '!abcdefg' }, { id: '!hijklmn' }] } });
+      expect(result).toEqual({
+        event: {
+          content: {
+            '@mockuser1': ['!abcdefg'],
+            '@mockuser2:': ['!hijklmn', '!opqrstuv'],
+          },
+        },
+      });
     });
   });
 });

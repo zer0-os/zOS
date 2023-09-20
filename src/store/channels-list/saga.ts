@@ -152,7 +152,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
   return conversation;
 }
 
-export function* receiveCreatedConversation(conversation, optimisticConversation = { id: null, optimisticId: null }) {
+export function* receiveCreatedConversation(conversation, optimisticConversation = { id: '', optimisticId: '' }) {
   const existingConversationsList = yield select(rawConversationsList());
   const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
 

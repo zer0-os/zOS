@@ -170,7 +170,7 @@ describe(createOptimisticConversation, () => {
 
 describe(receiveCreatedConversation, () => {
   it('replaces the optimistic conversation', async () => {
-    const optimistic = { id: 'optimistic-id' };
+    const optimistic = { id: 'optimistic-id', optimisticId: 'optimistic-id' };
 
     const initialState = new StoreBuilder().withConversationList(optimistic).build();
 
@@ -182,7 +182,11 @@ describe(receiveCreatedConversation, () => {
   });
 
   it('sets hasLoadedMessages to true and fetch status to success', async () => {
-    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo', messages: [{}] }, {})
+    const { storeState } = await expectSaga(
+      receiveCreatedConversation,
+      { id: 'new-convo', messages: [{}] },
+      { id: '', optimisticId: '' }
+    )
       .withReducer(rootReducer)
       .run();
 
@@ -194,7 +198,7 @@ describe(receiveCreatedConversation, () => {
   it('sets the active conversation', async () => {
     const {
       storeState: { chat },
-    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id', messages: [{}] }, {})
+    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id', messages: [{}] })
       .withReducer(rootReducer)
       .run();
 
@@ -202,13 +206,13 @@ describe(receiveCreatedConversation, () => {
   });
 
   it('sets the active conversation if the conversation already exists', async () => {
-    const conversation = { id: 'existing-id' };
+    const conversation = { id: 'existing-id', optimisticId: '' };
 
     const initialState = new StoreBuilder().withConversationList(conversation).build();
 
     const {
       storeState: { channelsList, chat },
-    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' }, {})
+    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' })
       .withReducer(rootReducer, initialState)
       .run();
 

@@ -12,16 +12,6 @@ export async function fetchChannels(id: string) {
   }
 }
 
-export async function fetchConversations(): Promise<Channel[]> {
-  try {
-    const directMessages = await get<Channel[]>('/directMessages/mine');
-    return directMessages.body;
-  } catch (error: any) {
-    console.log('Error occured while fetching conversations ', error?.response ?? error);
-    return [];
-  }
-}
-
 export async function createConversation(
   userIds: string[],
   name: string = '',

@@ -24,7 +24,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) { }
+  constructor(private sdk = { createClient }) {}
 
   init(events: RealtimeChatEvents) {
     this.events = events;
@@ -65,6 +65,19 @@ export class MatrixClient implements IChatClient {
   async getConversations() {
     const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => dmConversationIds.includes(roomId));
     return rooms.map(this.mapConversation);
+  }
+
+  async searchMyNetworksByName(filter: string) {
+    const users = await this.matrix.searchUserDirectory({
+      term: filter,
+      limit: 50,
+    });
+
+    return users.results.map((user) => ({
+      id: user.user_id, // note: this is "matrix user id", and not the ZERO user id
+      name: user.display_name,
+      profileImage: user.avatar_url,
+    }));
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {

@@ -3,7 +3,7 @@ import { Channel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage } from './types';
+import { ParentMessage, User } from './types';
 import { featureFlags } from '../feature-flags';
 
 export interface RealtimeChatEvents {
@@ -30,7 +30,7 @@ export interface IChatClient {
 
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   createConversation: (
-    userIds: string[],
+    users: User[],
     name: string,
     image: File,
     optimisticId: string
@@ -70,8 +70,8 @@ export class Chat {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
   }
 
-  async createConversation(userIds: string[], name: string, image: File, optimisticId: string) {
-    return this.client.createConversation(userIds, name, image, optimisticId);
+  async createConversation(users: User[], name: string, image: File, optimisticId: string) {
+    return this.client.createConversation(users, name, image, optimisticId);
   }
 
   async sendMessagesByChannelId(

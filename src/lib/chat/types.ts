@@ -25,3 +25,7 @@ export interface ParentMessage {
   optimisticId?: string;
   rootMessageId?: string;
 }
+
+export interface User {
+  userId: string;
+}

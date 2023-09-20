@@ -7,7 +7,7 @@ import { FileUploadResult } from '../../store/messages/saga';
 import { config } from '../../config';
 import { get } from '../../lib/api/rest';
 import { toLocalChannel } from '../../store/channels-list/utils';
-import { ParentMessage } from './types';
+import { ParentMessage, User } from './types';
 
 import { RealtimeChatEvents, IChatClient } from './';
 import { uploadImage, createConversation as createConversationMessageApi } from '../../store/channels-list/api';
@@ -94,7 +94,7 @@ export class SendbirdClient implements IChatClient {
     return response.body;
   }
 
-  async createConversation(userIds: string[], name: string = null, image: File = null, optimisticId: string) {
+  async createConversation(users: User[], name: string = null, image: File = null, optimisticId: string) {
     let coverUrl = '';
     if (image) {
       try {
@@ -106,6 +106,7 @@ export class SendbirdClient implements IChatClient {
       }
     }
 
+    const userIds = users.map((user) => user.userId);
     const response: DirectMessage = await createConversationMessageApi(userIds, name, coverUrl, optimisticId);
 
     const result = toLocalChannel(response);

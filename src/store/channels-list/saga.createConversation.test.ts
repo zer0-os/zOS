@@ -5,6 +5,7 @@ import {
   createOptimisticConversation,
   receiveCreatedConversation,
   handleCreateConversationError,
+  userSelector,
 } from './saga';
 
 import { rootReducer } from '../reducer';
@@ -43,7 +44,9 @@ describe(createConversation, () => {
       .next(stubOptimisticConversation)
       .put(setactiveConversationId(stubOptimisticConversation.id))
       .next()
-      .call([chatClient, chatClient.createConversation], otherUserIds, name, image, 'optimistic-id')
+      .select(userSelector, otherUserIds)
+      .next([{ userId: 'user-1' }])
+      .call([chatClient, chatClient.createConversation], [{ userId: 'user-1' }], name, image, 'optimistic-id')
       .next(stubReceivedConversation)
       .call(receiveCreatedConversation, stubReceivedConversation, stubOptimisticConversation)
       .next()

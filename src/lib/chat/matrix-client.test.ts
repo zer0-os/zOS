@@ -1,3 +1,4 @@
+import { EventType } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
 
 const getRoom = (props: any = {}) => ({
@@ -8,7 +9,7 @@ const getRoom = (props: any = {}) => ({
 
 const getMockAccountData = (data = {}) => {
   return jest.fn((eventType) => {
-    if (eventType === 'm.direct') {
+    if (eventType === EventType.Direct) {
       return {
         event: { content: data },
       };
@@ -187,7 +188,7 @@ describe('matrix client', () => {
 
       await client.getConversations();
 
-      expect(getAccountData).toHaveBeenCalledWith('m.direct');
+      expect(getAccountData).toHaveBeenCalledWith(EventType.Direct);
     });
 
     it('waits for connection if matrix client is connecting to get account data', async () => {
@@ -197,14 +198,14 @@ describe('matrix client', () => {
       const client = subject({ createClient });
       client.connect('username', 'token');
 
-      const accountDataFetch = client.getAccountData('m.direct');
+      const accountDataFetch = client.getAccountData(EventType.Direct);
       expect(sdkClient.getAccountData).not.toHaveBeenCalled();
 
       await new Promise((resolve) => setImmediate(resolve));
 
       await accountDataFetch;
 
-      expect(sdkClient.getAccountData).toHaveBeenCalledWith('m.direct');
+      expect(sdkClient.getAccountData).toHaveBeenCalledWith(EventType.Direct);
     });
 
     it('fetches and returns correct account data when type is "m.direct"', async () => {
@@ -219,7 +220,7 @@ describe('matrix client', () => {
 
       await client.connect('username', 'token');
 
-      const result = await client.getAccountData('m.direct');
+      const result = await client.getAccountData(EventType.Direct);
       expect(result).toEqual({
         event: {
           content: {

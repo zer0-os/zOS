@@ -155,6 +155,35 @@ describe('matrix client', () => {
       expect(channels).toHaveLength(1);
       expect(channels[0].id).toEqual('channel-id');
     });
+
+    it('returns empty array if no rooms exist', async () => {
+      const getRooms = jest.fn(() => []);
+      const getAccountData = getMockAccountData();
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+      const channels = await client.getChannels('network-id');
+
+      expect(channels).toHaveLength(0);
+    });
+
+    it('returns all rooms as channels if no direct room data exists', async () => {
+      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+      const getRooms = jest.fn(() => rooms);
+      const getAccountData = getMockAccountData();
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+      const channels = await client.getChannels('network-id');
+
+      expect(channels).toHaveLength(2);
+    });
   });
 
   describe('getConversations', () => {
@@ -173,6 +202,20 @@ describe('matrix client', () => {
 
       expect(conversations).toHaveLength(1);
       expect(conversations[0].id).toEqual('dm-id');
+    });
+
+    it('returns empty array if no direct rooms exist', async () => {
+      const getRooms = jest.fn(() => []);
+      const getAccountData = getMockAccountData();
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
+      });
+
+      await client.connect('username', 'token');
+      const conversations = await client.getConversations();
+
+      expect(conversations).toHaveLength(0);
     });
   });
 

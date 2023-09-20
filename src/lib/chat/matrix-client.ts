@@ -206,7 +206,7 @@ export class MatrixClient implements IChatClient {
 
     const accountData = await this.getAccountData(EventType.Direct);
     const rooms = this.matrix.getRooms() || [];
-    const dmConversationIds = Object.values(accountData?.event?.content).flat();
+    const dmConversationIds = Object.values(accountData?.getContent()).flat() as string[];
     return rooms.filter((r) => filterFunc(r.roomId, dmConversationIds));
   }
 }

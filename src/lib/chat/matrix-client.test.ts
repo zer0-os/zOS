@@ -12,9 +12,12 @@ const getMockAccountData = (data = {}) => {
     if (eventType === EventType.Direct) {
       return {
         event: { content: data },
+        getContent: () => data,
       };
     }
-    return {};
+    return {
+      getContent: () => ({}),
+    };
   });
 };
 
@@ -221,7 +224,7 @@ describe('matrix client', () => {
       await client.connect('username', 'token');
 
       const result = await client.getAccountData(EventType.Direct);
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         event: {
           content: {
             '@mockuser1': ['!abcdefg'],

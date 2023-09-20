@@ -4,7 +4,6 @@ import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage } from './types';
-import { MatrixEvent } from 'matrix-js-sdk';
 import { featureFlags } from '../feature-flags';
 
 export interface RealtimeChatEvents {
@@ -28,7 +27,7 @@ export interface IChatClient {
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
-  getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
+
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -59,10 +58,6 @@ export class Chat {
 
   async getConversations() {
     return this.client.getConversations();
-  }
-
-  async getAccountData(eventType: string) {
-    return this.client.getAccountData(eventType);
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

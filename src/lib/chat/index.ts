@@ -6,6 +6,7 @@ import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage } from './types';
 import { featureFlags } from '../feature-flags';
 import { MatrixEvent } from 'matrix-js-sdk';
+import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -28,6 +29,7 @@ export interface IChatClient {
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
+  searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
   getAccountData?: (eventType: string) => Promise<MatrixEvent | undefined>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   createConversation: (
@@ -47,7 +49,7 @@ export interface IChatClient {
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null) { }
+  constructor(private client: IChatClient = null) {}
 
   supportsOptimisticSend = () => this.client.supportsOptimisticSend();
 
@@ -65,6 +67,10 @@ export class Chat {
 
   async getConversations() {
     return this.client.getConversations();
+  }
+
+  async searchMyNetworksByName(filter: string) {
+    return this.client.searchMyNetworksByName(filter);
   }
 
   async getAccountData(eventType: string) {

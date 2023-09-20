@@ -47,74 +47,32 @@ const chatClient = {
 
 describe('channels list saga', () => {
   it('sets status to fetching', async () => {
-    await expectSaga(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
+    await subject(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
       .put(setStatus(AsyncListStatus.Fetching))
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          chatClient,
-        ],
-      ])
       .run();
   });
 
   it('fetches channels', async () => {
     const id = '0x000000000000000000000000000000000000000A';
 
-    await expectSaga(fetchChannels, { payload: id })
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          chatClient,
-        ],
-      ])
-      .call(
-        [
-          chatClient,
-          chatClient.getChannels,
-        ],
-        id
-      )
-      .run();
+    await subject(fetchChannels, { payload: id }).call(chat.get).call([chatClient, chatClient.getChannels], id).run();
   });
 
   it('sets status to Idle', async () => {
     const id = '0x000000000000000000000000000000000000000A';
 
-    const {
-      storeState: { channelsList },
-    } = await expectSaga(fetchChannels, { payload: id })
-      .withReducer(rootReducer)
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          chatClient,
-        ],
-      ])
-      .run();
+    const { storeState } = await subject(fetchChannels, { payload: id }).withReducer(rootReducer).run();
 
-    expect(channelsList.status).toBe(AsyncListStatus.Idle);
+    expect(storeState.channelsList.status).toBe(AsyncListStatus.Idle);
   });
 
   it('adds channel ids to channelsList state', async () => {
-    const ids = [
-      'channel_0001',
-      'channel_0002',
-      'channel_0003',
-    ];
-    const {
-      storeState: { channelsList },
-    } = await expectSaga(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
-      .withReducer(rootReducer)
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          chatClient,
-        ],
-      ])
-      .run();
+    const id = '0x000000000000000000000000000000000000000A';
+    const ids = ['channel_0001', 'channel_0002', 'channel_0003'];
 
-    expect(channelsList.value).toStrictEqual(ids);
+    const { storeState } = await subject(fetchChannels, { payload: id }).withReducer(rootReducer).run();
+
+    expect(storeState.channelsList.value).toStrictEqual(ids);
   });
 
   it('adds channels to normalized state', async () => {
@@ -126,23 +84,13 @@ describe('channels list saga', () => {
     const hasJoined = true;
     const isChannel = true;
 
-    const {
-      storeState: { normalized },
-    } = await expectSaga(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
-      .provide([
-        [
-          matchers.call.fn(chat.get),
-          chatClient,
-        ],
-        [
-          matchers.call.fn(chatClient.getChannels),
-          [{ id, name, icon, category, unreadCount, hasJoined, isChannel }],
-        ],
-      ])
+    const { storeState } = await subject(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' }, [
+      [matchers.call.fn(chatClient.getChannels), [{ id, name, icon, category, unreadCount, hasJoined, isChannel }]],
+    ])
       .withReducer(rootReducer)
       .run();
 
-    expect(normalized.channels[id]).toEqual(
+    expect(storeState.normalized.channels[id]).toEqual(
       expect.objectContaining({
         id,
         name,
@@ -186,34 +134,14 @@ describe('channels list saga', () => {
       groupChannelType: '',
     };
 
-    const { storeState } = await expectSaga(fetchChannelsAndConversations)
-      .provide([
-        [
-          matchers.call(chat.get),
-          chatClient,
-        ],
-        [
-          matchers.call(
-            [
-              chatClient,
-              chatClient.getChannels,
-            ],
-            rootDomainId
-          ),
-          [channel],
-        ],
-        [
-          matchers.call([
-            chatClient,
-            chatClient.getConversations,
-          ]),
-          [conversation],
-        ],
-        [
-          matchers.call.fn(delay),
-          null,
-        ],
-      ])
+    const additionalProviders = [
+      [matchers.call(chat.get), chatClient],
+      [matchers.call([chatClient, chatClient.getChannels], rootDomainId), [channel]],
+      [matchers.call([chatClient, chatClient.getConversations]), [conversation]],
+      [matchers.call.fn(delay), null],
+    ];
+
+    const { storeState } = await subject(fetchChannelsAndConversations, {}, additionalProviders)
       .withReducer(rootReducer)
       .withState({ zns: { value: { rootDomainId } } })
       .run();
@@ -319,20 +247,7 @@ describe(userLeftChannel, () => {
 
 describe(fetchConversations, () => {
   it('fetches direct messages', async () => {
-    await expectSaga(fetchConversations)
-      .provide([
-        [
-          matchers.call(chat.get),
-          chatClient,
-        ],
-        [
-          matchers.call([
-            chatClient,
-            chatClient.getConversations,
-          ]),
-          MOCK_CONVERSATIONS,
-        ],
-      ])
+    await subject(fetchConversations, undefined)
       .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
       .call(chat.get)
       .call([chatClient, chatClient.getConversations])
@@ -342,24 +257,10 @@ describe(fetchConversations, () => {
   it('announces conversations loaded', async () => {
     const conversationsChannelStub = multicastChannel();
 
-    await expectSaga(fetchConversations)
-      .provide([
-        [
-          matchers.call(chat.get),
-          chatClient,
-        ],
-        [
-          matchers.call([
-            chatClient,
-            chatClient.getConversations,
-          ]),
-          MOCK_CONVERSATIONS,
-        ],
-        [
-          matchers.call.fn(conversationsChannel),
-          conversationsChannelStub,
-        ],
-      ])
+    await subject(fetchConversations, undefined, [
+      [matchers.call.fn(conversationsChannel), conversationsChannelStub],
+      [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+    ])
       .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
       .put(conversationsChannelStub, { loaded: true })
       .run();
@@ -372,11 +273,10 @@ describe(fetchConversations, () => {
 
     const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
-    const { storeState } = await expectSaga(fetchConversations)
-      .provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
-      ])
+    const { storeState } = await subject(fetchConversations, undefined, [
+      [matchers.call.fn(chat.get), chatClient],
+      [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
+    ])
       .withReducer(rootReducer, initialState)
       .run();
 
@@ -387,3 +287,12 @@ describe(fetchConversations, () => {
     ]);
   });
 });
+
+function subject(sagaFunction: any, args?: any, additionalProviders = []) {
+  return expectSaga(sagaFunction, args).provide([
+    ...additionalProviders,
+    [matchers.call.fn(chat.get), chatClient],
+    [matchers.call.fn(chatClient.getChannels), MOCK_CHANNELS],
+    [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+  ]);
+}

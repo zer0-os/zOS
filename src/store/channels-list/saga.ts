@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ChannelType, DirectMessage } from './types';
+import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 
-import { createConversation as createConversationMessageApi, uploadImage as uploadImageApi } from './api';
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
@@ -78,10 +77,22 @@ export function* fetchConversations() {
 }
 
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
-  const optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
-  yield put(setactiveConversationId(optimisticConversation.id));
+  const chatClient = yield call(chat.get);
+
+  let optimisticConversation = null;
+  if (yield call(chatClient.supportsOptimisticSend)) {
+    optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
+    yield put(setactiveConversationId(optimisticConversation.id));
+  }
+
   try {
-    const conversation = yield call(sendCreateConversationRequest, userIds, name, image, optimisticConversation.id);
+    const conversation = yield call(
+      [chatClient, chatClient.createConversation],
+      userIds,
+      name,
+      image,
+      optimisticConversation.id
+    );
     yield call(receiveCreatedConversation, conversation, optimisticConversation);
     return conversation;
   } catch {
@@ -141,7 +152,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
   return conversation;
 }
 
-export function* receiveCreatedConversation(conversation, optimisticConversation) {
+export function* receiveCreatedConversation(conversation, optimisticConversation = { id: '', optimisticId: '' }) {
   const existingConversationsList = yield select(rawConversationsList());
   const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
 
@@ -170,32 +181,6 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
   );
 
   yield put(setactiveConversationId(conversation.id));
-}
-
-export function* sendCreateConversationRequest(
-  userIds: string[],
-  name: string = null,
-  image: File = null,
-  optimisticId: string
-) {
-  let coverUrl = '';
-  if (image) {
-    try {
-      const uploadResult = yield call(uploadImageApi, image);
-      coverUrl = uploadResult.url;
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-
-  const response: DirectMessage = yield call(createConversationMessageApi, userIds, name, coverUrl, optimisticId);
-
-  const result = toLocalChannel(response);
-  if (response.messages) {
-    result.messages = response.messages;
-  }
-  return result;
 }
 
 export function* clearChannelsAndConversations() {

@@ -29,6 +29,12 @@ export interface IChatClient {
   getConversations: () => Promise<Partial<Channel>[]>;
 
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
+  createConversation: (
+    userIds: string[],
+    name: string,
+    image: File,
+    optimisticId: string
+  ) => Promise<Partial<Channel> | null>;
   sendMessagesByChannelId: (
     channelId: string,
     message: string,
@@ -62,6 +68,10 @@ export class Chat {
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async createConversation(userIds: string[], name: string, image: File, optimisticId: string) {
+    return this.client.createConversation(userIds, name, image, optimisticId);
   }
 
   async sendMessagesByChannelId(

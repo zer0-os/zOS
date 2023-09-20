@@ -75,6 +75,10 @@ export class MatrixClient implements IChatClient {
     return { messages: messages as any, hasMore: false };
   }
 
+  async createConversation(_userIds: string[], _name: string = null, _image: File = null, _optimisticId: string) {
+    return null;
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,

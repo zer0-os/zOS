@@ -1,4 +1,4 @@
-import { createClient, Direction, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { createClient, Direction, EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
@@ -45,16 +45,26 @@ export class MatrixClient implements IChatClient {
   disconnect: () => void;
   reconnect: () => void;
 
-  async getChannels(_id: string) {
+  async getAccountData(eventType: string) {
     if (this.isDisconnected) {
-      return [];
+      throw new Error('Matrix client is disconnected');
     }
 
     if (this.isConnecting) {
       await this.waitForConnection();
     }
 
-    return this.matrix.getRooms().map(this.mapChannel);
+    return this.matrix.getAccountData(eventType);
+  }
+
+  async getChannels(_id: string) {
+    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => !dmConversationIds.includes(roomId));
+    return rooms.map(this.mapChannel);
+  }
+
+  async getConversations() {
+    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => dmConversationIds.includes(roomId));
+    return rooms.map(this.mapConversation);
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -168,4 +178,35 @@ export class MatrixClient implements IChatClient {
     createdAt: 0,
     conversationStatus: ConversationStatus.CREATED,
   });
+
+  private mapConversation = (channel): Partial<Channel> => ({
+    id: channel.roomId,
+    name: channel.name,
+    icon: channel.getAvatarUrl(),
+    isChannel: false,
+    isOneOnOne: false,
+    otherMembers: [],
+    lastMessage: null,
+    groupChannelType: GroupChannelType.Public,
+    category: '',
+    unreadCount: 0,
+    hasJoined: true,
+    createdAt: 0,
+    conversationStatus: ConversationStatus.CREATED,
+  });
+
+  private async getFilteredRooms(filterFunc: (roomId: string, dmConversationIds: string[]) => boolean) {
+    if (this.isDisconnected) {
+      return [];
+    }
+
+    if (this.isConnecting) {
+      await this.waitForConnection();
+    }
+
+    const accountData = await this.getAccountData(EventType.Direct);
+    const rooms = this.matrix.getRooms() || [];
+    const dmConversationIds = Object.values(accountData?.getContent()).flat() as string[];
+    return rooms.filter((r) => filterFunc(r.roomId, dmConversationIds));
+  }
 }

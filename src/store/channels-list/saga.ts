@@ -6,11 +6,7 @@ import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-sag
 import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 
-import {
-  fetchConversations as fetchConversationsMessagesApi,
-  createConversation as createConversationMessageApi,
-  uploadImage as uploadImageApi,
-} from './api';
+import { createConversation as createConversationMessageApi, uploadImage as uploadImageApi } from './api';
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';
@@ -56,8 +52,11 @@ export function* fetchChannels(action) {
 }
 
 export function* fetchConversations() {
-  const conversations = yield call(fetchConversationsMessagesApi);
-  const conversationsList = conversations.map((currentChannel) => toLocalChannel(currentChannel));
+  const chatClient = yield call(chat.get);
+  const conversations = yield call([
+    chatClient,
+    chatClient.getConversations,
+  ]);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -69,7 +68,7 @@ export function* fetchConversations() {
     receive([
       ...channelsList,
       ...optimisticConversationIds,
-      ...conversationsList,
+      ...conversations,
     ])
   );
 

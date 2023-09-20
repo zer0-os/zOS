@@ -26,6 +26,8 @@ export interface IChatClient {
   supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
+  getConversations: () => Promise<Partial<Channel>[]>;
+
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -52,6 +54,10 @@ export class Chat {
 
   async getChannels(id: string) {
     return this.client.getChannels(id);
+  }
+
+  async getConversations() {
+    return this.client.getConversations();
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

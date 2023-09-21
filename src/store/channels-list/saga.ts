@@ -76,6 +76,10 @@ export function* fetchConversations() {
   yield put(channel, { loaded: true });
 }
 
+export function userSelector(state, userIds) {
+  return userIds.map((id) => (state.normalized.users || {})[id]);
+}
+
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
   const chatClient = yield call(chat.get);
 
@@ -86,9 +90,10 @@ export function* createConversation(userIds: string[], name: string = null, imag
   }
 
   try {
+    const users = yield select(userSelector, userIds);
     const conversation = yield call(
       [chatClient, chatClient.createConversation],
-      userIds,
+      users,
       name,
       image,
       optimisticConversation.id

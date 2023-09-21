@@ -4,7 +4,7 @@ import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage } from './types';
+import { ParentMessage, User } from './types';
 import { config } from '../../config';
 
 enum ConnectionStatus {
@@ -75,7 +75,7 @@ export class MatrixClient implements IChatClient {
     return { messages: messages as any, hasMore: false };
   }
 
-  async createConversation(_userIds: string[], _name: string = null, _image: File = null, _optimisticId: string) {
+  async createConversation(_users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
     return null;
   }
 

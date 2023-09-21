@@ -114,7 +114,7 @@ export class Container extends React.Component<Properties, State> {
       return '';
     }
 
-    if (this.isOneOnOne()) {
+    if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
       return this.props.directMessage.otherMembers[0].profileImage;
     }
 

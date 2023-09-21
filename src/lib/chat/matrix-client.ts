@@ -69,19 +69,6 @@ export class MatrixClient implements IChatClient {
     return rooms.map(this.mapConversation);
   }
 
-  // async _searchMyNetworksByName(filter: string) {
-  //   const users = await this.matrix.searchUserDirectory({
-  //     term: filter,
-  //     limit: 50,
-  //   });
-
-  //   return users.results.map((user) => ({
-  //     id: user.user_id, // note: this is "matrix user id", and not the ZERO user id
-  //     name: user.display_name,
-  //     profileImage: user.avatar_url,
-  //   }));
-  // }
-
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
       .catch((_error) => null)

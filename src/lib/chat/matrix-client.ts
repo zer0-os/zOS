@@ -215,12 +215,14 @@ export class MatrixClient implements IChatClient {
     conversationStatus: ConversationStatus.CREATED,
   });
 
-  private mapConversation = (channel): Partial<Channel> => ({
-    id: channel.roomId,
-    name: channel.name,
-    icon: channel.getAvatarUrl(),
+  private mapConversation = (room): Partial<Channel> => ({
+    id: room.roomId,
+    name: room.name,
+    icon: room.getAvatarUrl(),
     isChannel: false,
-    isOneOnOne: false,
+    // Even if a member leaves they stay in the member list so this will still be correct
+    // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
+    isOneOnOne: room.getMembers().length === 2,
     otherMembers: [],
     lastMessage: null,
     groupChannelType: GroupChannelType.Public,

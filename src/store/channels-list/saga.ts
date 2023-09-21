@@ -83,7 +83,7 @@ export function userSelector(state, userIds) {
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
   const chatClient = yield call(chat.get);
 
-  let optimisticConversation = null;
+  let optimisticConversation = { id: '', optimisticId: '' };
   if (yield call(chatClient.supportsOptimisticSend)) {
     optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
     yield put(setactiveConversationId(optimisticConversation.id));
@@ -106,7 +106,9 @@ export function* createConversation(userIds: string[], name: string = null, imag
 }
 
 export function* handleCreateConversationError(optimisticConversation) {
-  yield put(receiveChannel({ id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR }));
+  if (optimisticConversation) {
+    yield put(receiveChannel({ id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR }));
+  }
 }
 
 export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {

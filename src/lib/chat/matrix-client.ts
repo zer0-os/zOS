@@ -1,4 +1,13 @@
-import { createClient, Direction, EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import {
+  createClient,
+  Direction,
+  EventType,
+  GuestAccess,
+  ICreateRoomOpts,
+  Preset,
+  MatrixClient as SDKMatrixClient,
+  Visibility,
+} from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
@@ -8,6 +17,7 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
+import { setAsDM } from './matrix/utils';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -83,8 +93,22 @@ export class MatrixClient implements IChatClient {
     return { messages: messages as any, hasMore: false };
   }
 
-  async createConversation(_users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
-    return null;
+  async createConversation(users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
+    const initial_state = [
+      { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+    ];
+    const options: ICreateRoomOpts = {
+      preset: Preset.TrustedPrivateChat,
+      visibility: Visibility.Private,
+      invite: users.map((u) => u.matrixId),
+      is_direct: true,
+      initial_state,
+    };
+
+    const result = await this.matrix.createRoom(options);
+    // Any room is only set as a DM based on a single user. We'll use the first one.
+    await setAsDM(this.matrix, result.room_id, users[0].matrixId);
+    return this.mapConversation(this.matrix.getRoom(result.room_id));
   }
 
   async sendMessagesByChannelId(

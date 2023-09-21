@@ -1,5 +1,9 @@
-import { EventType } from 'matrix-js-sdk';
+import { EventType, GuestAccess, Preset, Visibility } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
+import { when } from 'jest-when';
+import { setAsDM } from './matrix/utils';
+
+jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
 const getRoom = (props: any = {}) => ({
   id: 'the-id',
@@ -276,5 +280,93 @@ describe('matrix client', () => {
         },
       });
     });
+  });
+
+  describe('createConversation', () => {
+    const subject = async (stubs = {}) => {
+      const allStubs = {
+        createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
+        getRoom: jest.fn().mockReturnValue(stubRoom({})),
+        ...stubs,
+      };
+      const allProps: any = {
+        createClient: (_opts: any) => getSdkClient(allStubs),
+      };
+
+      const client = new MatrixClient(allProps);
+      await client.connect('@somebody', 'token');
+      return client;
+    };
+
+    it('disallows guest access', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initial_state: [
+            { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+          ],
+        })
+      );
+    });
+
+    it('sets default conversation settings', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          preset: Preset.TrustedPrivateChat,
+          visibility: Visibility.Private,
+          is_direct: true,
+        })
+      );
+    });
+
+    it('specifies the invited users', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const users = [
+        { userId: 'id-1', matrixId: '@first.user' },
+        { userId: 'id-2', matrixId: '@second.user' },
+      ];
+      const client = await subject({ createRoom });
+
+      await client.createConversation(users, null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: ['@first.user', '@second.user'] }));
+    });
+
+    it('returns the created conversation', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'a-new-room' });
+      const getRoom = jest.fn();
+      when(getRoom)
+        .calledWith('a-new-room')
+        .mockReturnValue(stubRoom({ roomId: 'a-new-room' }));
+      const users = [{ userId: 'id-1', matrixId: '@first.user' }];
+      const client = await subject({ createRoom, getRoom });
+
+      const conversation = await client.createConversation(users, null, null, null);
+
+      expect(conversation.id).toEqual('a-new-room');
+    });
+
+    it('sets the conversation as a Matrix direct message', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'test-room' });
+      const users = [{ userId: 'id-1', matrixId: '@first.user' }];
+      const client = await subject({ createRoom });
+
+      await client.createConversation(users, null, null, null);
+
+      expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
+    });
+
+    function stubRoom(attrs = {}): any {
+      return { roomId: 'some-id', getAvatarUrl: () => '', ...attrs };
+    }
   });
 });

@@ -28,4 +28,5 @@ export interface ParentMessage {
 
 export interface User {
   userId: string;
+  matrixId: string;
 }

@@ -58,7 +58,7 @@ export class ConversationItem extends React.Component<Properties> {
   };
 
   renderAvatar() {
-    if (this.props.conversation.isOneOnOne) {
+    if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
       return (
         <Avatar
           size={'regular'}

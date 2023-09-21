@@ -1,5 +1,5 @@
+import { chat } from '../../../lib/chat';
 import { searchMentionableUsers } from '../../../store/channels/api';
-import { searchMyNetworksByName as searchMyNetworksByNameApi } from '../../../store/users/api';
 
 export async function searchMentionableUsersForChannel(
   channelId: string,
@@ -10,6 +10,7 @@ export async function searchMentionableUsersForChannel(
   return results.map((u) => ({ id: u.id, display: u.name, profileImage: u.profileImage }));
 }
 
-export async function searchMyNetworksByName(search: string, apiSearch = searchMyNetworksByNameApi) {
-  return await apiSearch(search);
+export async function searchMyNetworksByName(search: string) {
+  const chatClient = chat.get();
+  return await chatClient.searchMyNetworksByName(search);
 }

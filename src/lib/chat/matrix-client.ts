@@ -6,6 +6,8 @@ import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
+import { get } from '../api/rest';
+import { MemberNetworks } from '../../store/users/types';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -65,6 +67,12 @@ export class MatrixClient implements IChatClient {
   async getConversations() {
     const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => dmConversationIds.includes(roomId));
     return rooms.map(this.mapConversation);
+  }
+
+  async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
+    return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
+      .catch((_error) => null)
+      .then((response) => response?.body || []);
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {

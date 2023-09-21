@@ -5,6 +5,7 @@ import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { featureFlags } from '../feature-flags';
+import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {
   reconnectStart: () => void;
@@ -27,7 +28,7 @@ export interface IChatClient {
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
-
+  searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   createConversation: (
     users: User[],
@@ -72,6 +73,10 @@ export class Chat {
 
   async createConversation(users: User[], name: string, image: File, optimisticId: string) {
     return this.client.createConversation(users, name, image, optimisticId);
+  }
+
+  async searchMyNetworksByName(filter: string) {
+    return this.client.searchMyNetworksByName(filter);
   }
 
   async sendMessagesByChannelId(

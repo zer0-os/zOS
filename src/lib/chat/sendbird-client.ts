@@ -11,6 +11,7 @@ import { ParentMessage, User } from './types';
 
 import { RealtimeChatEvents, IChatClient } from './';
 import { uploadImage, createConversation as createConversationMessageApi } from '../../store/channels-list/api';
+import { MemberNetworks } from '../../store/users/types';
 import { DirectMessage } from '../../store/channels-list/types';
 
 export class SendbirdClient implements IChatClient {
@@ -81,6 +82,12 @@ export class SendbirdClient implements IChatClient {
       console.log('Error occured while fetching conversations ', error?.response ?? error); // eg. error.code = ENOTFOUND
       return [];
     }
+  }
+
+  async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
+    return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50 })
+      .catch((_error) => null)
+      .then((response) => response?.body || []);
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {

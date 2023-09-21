@@ -10,7 +10,9 @@ import { toLocalChannel } from '../../store/channels-list/utils';
 import { ParentMessage } from './types';
 
 import { RealtimeChatEvents, IChatClient } from './';
+import { uploadImage, createConversation as createConversationMessageApi } from '../../store/channels-list/api';
 import { MemberNetworks } from '../../store/users/types';
+import { DirectMessage } from '../../store/channels-list/types';
 
 export class SendbirdClient implements IChatClient {
   sendbird: SendbirdGroupChat = null;
@@ -75,7 +77,7 @@ export class SendbirdClient implements IChatClient {
   async getConversations() {
     try {
       const conversations = await get<any>('/directMessages/mine');
-      return (conversations.body || []).map((currentChannel) => toLocalChannel(currentChannel));
+      return (conversations.body || []).map(toLocalChannel);
     } catch (error: any) {
       console.log('Error occured while fetching conversations ', error?.response ?? error); // eg. error.code = ENOTFOUND
       return [];

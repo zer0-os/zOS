@@ -1,4 +1,4 @@
-import { createClient, Direction, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { createClient, Direction, EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
@@ -221,9 +221,12 @@ export class MatrixClient implements IChatClient {
       await this.waitForConnection();
     }
 
-    const accountData = await this.getAccountData('m.direct');
+    const accountData = await this.getAccountData(EventType.Direct);
+    const content = accountData?.getContent();
+
+    const dmConversationIds = content ? (Object.values(content).flat() as string[]) : [];
+
     const rooms = this.matrix.getRooms() || [];
-    const dmConversationIds = Object.values(accountData?.event?.content).flat();
     return rooms.filter((r) => filterFunc(r.roomId, dmConversationIds));
   }
 }

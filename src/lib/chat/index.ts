@@ -67,6 +67,14 @@ export class Chat {
     return this.client.getConversations();
   }
 
+  async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
+    return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async createConversation(userIds: string[], name: string, image: File, optimisticId: string) {
+    return this.client.createConversation(userIds, name, image, optimisticId);
+  }
+
   async searchMyNetworksByName(filter: string) {
     return this.client.searchMyNetworksByName(filter);
   }

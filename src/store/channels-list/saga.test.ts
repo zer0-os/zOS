@@ -116,6 +116,58 @@ describe('channels list saga', () => {
     });
   });
 
+  describe(fetchConversations, () => {
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+      ]);
+    }
+
+    it('fetches direct messages', async () => {
+      await subject(fetchConversations, undefined)
+        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+        .call(chat.get)
+        .call([chatClient, chatClient.getConversations])
+        .run();
+    });
+
+    it('announces conversations loaded', async () => {
+      const conversationsChannelStub = multicastChannel();
+
+      await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+        ])
+        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+        .put(conversationsChannelStub, { loaded: true })
+        .run();
+    });
+
+    it('retains conversations that are not CREATED', async () => {
+      const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
+      const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
+      const fetchedChannel = { id: 'conversation-id' };
+
+      const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
+
+      const { storeState } = await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
+        ])
+        .withReducer(rootReducer, initialState)
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers([
+        'optimistic-id-1',
+        'optimistic-id-2',
+        'conversation-id',
+      ]);
+    });
+  });
+
   describe(fetchChannelsAndConversations, () => {
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
@@ -218,58 +270,6 @@ describe('channels list saga', () => {
         .run();
 
       expect(storeState.chat.activeConversationId).toEqual('conversation-2');
-    });
-  });
-
-  describe(fetchConversations, () => {
-    function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args).provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-      ]);
-    }
-
-    it('fetches direct messages', async () => {
-      await subject(fetchConversations, undefined)
-        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-        .call(chat.get)
-        .call([chatClient, chatClient.getConversations])
-        .run();
-    });
-
-    it('announces conversations loaded', async () => {
-      const conversationsChannelStub = multicastChannel();
-
-      await subject(fetchConversations, undefined)
-        .provide([
-          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
-          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-        ])
-        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-        .put(conversationsChannelStub, { loaded: true })
-        .run();
-    });
-
-    it('retains conversations that are not CREATED', async () => {
-      const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
-      const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
-      const fetchedChannel = { id: 'conversation-id' };
-
-      const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
-
-      const { storeState } = await subject(fetchConversations, undefined)
-        .provide([
-          [matchers.call.fn(chat.get), chatClient],
-          [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
-        ])
-        .withReducer(rootReducer, initialState)
-        .run();
-
-      expect(storeState.channelsList.value).toIncludeSameMembers([
-        'optimistic-id-1',
-        'optimistic-id-2',
-        'conversation-id',
-      ]);
     });
   });
 

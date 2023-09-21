@@ -35,7 +35,5 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
   // prevent unnecessary calls to setAccountData
   if (!modified) return;
 
-  console.log('setting account data for room', roomId);
-  console.log('setting account data', dmRoomMap);
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }

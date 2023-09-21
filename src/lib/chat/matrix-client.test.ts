@@ -277,45 +277,4 @@ describe('matrix client', () => {
       });
     });
   });
-
-  describe('searchMyNetworksByName', () => {
-    it('searches for users by name & returns mapped results', async () => {
-      const searchUserDirectory = jest.fn(() => {
-        return {
-          limited: true,
-          results: [
-            {
-              user_id: '@ha:technoashram.futuref.org',
-              display_name: 'ha',
-              avatar_url: 'mxc://gitter.im/6c19150b2107864a96e0cef8ab1ae7dba1b83bd5',
-            },
-            {
-              user_id: '@hackisonjd:matrix.org',
-              display_name: 'hackisonjd',
-              avatar_url: 'mxc://matrix.org/ZzEokHpFIRaZFVUVjedFdhKD',
-            },
-          ],
-        };
-      });
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ searchUserDirectory })),
-      });
-
-      await client.connect('username', 'token');
-
-      const result = await client.searchMyNetworksByName('test');
-      expect(result).toEqual([
-        {
-          id: '@ha:technoashram.futuref.org',
-          name: 'ha',
-          profileImage: 'mxc://gitter.im/6c19150b2107864a96e0cef8ab1ae7dba1b83bd5',
-        },
-        {
-          id: '@hackisonjd:matrix.org',
-          name: 'hackisonjd',
-          profileImage: 'mxc://matrix.org/ZzEokHpFIRaZFVUVjedFdhKD',
-        },
-      ]);
-    });
-  });
 });

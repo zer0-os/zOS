@@ -1,4 +1,3 @@
-import { EventType } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
 
 const getRoom = (props: any = {}) => ({

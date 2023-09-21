@@ -6,7 +6,6 @@ import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-sag
 import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 
-import { createConversation as createConversationMessageApi, uploadImage as uploadImageApi } from './api';
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList } from './utils';
 import { setactiveConversationId } from '../chat';

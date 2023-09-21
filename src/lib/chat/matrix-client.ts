@@ -1,4 +1,4 @@
-import { createClient, Direction, EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { createClient, Direction, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';

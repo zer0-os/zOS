@@ -5,10 +5,11 @@ import { setAsDM } from './matrix/utils';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
-const getRoom = (props: any = {}) => ({
-  id: 'the-id',
+const stubRoom = (attrs = {}) => ({
+  roomId: 'some-id',
   getAvatarUrl: () => '',
-  ...props,
+  getMembers: () => [],
+  ...attrs,
 });
 
 const getMockAccountData = (data = {}) => {
@@ -91,7 +92,7 @@ describe('matrix client', () => {
     });
 
     it('gets rooms', async () => {
-      const rooms = [getRoom({ roomId: 'room-id' })];
+      const rooms = [stubRoom({ roomId: 'room-id' })];
       const getAccountData = getMockAccountData();
 
       const getRooms = jest.fn(() => {
@@ -110,7 +111,7 @@ describe('matrix client', () => {
     });
 
     it('waits for sync to get rooms', async () => {
-      const rooms = [getRoom({ roomId: 'room-id' })];
+      const rooms = [stubRoom({ roomId: 'room-id' })];
       const getAccountData = getMockAccountData();
       let syncCallback: any;
 
@@ -144,7 +145,7 @@ describe('matrix client', () => {
 
   describe('getChannels', () => {
     it('returns only non-direct rooms as channels', async () => {
-      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
 
       const getRooms = jest.fn(() => rooms);
       const getAccountData = getMockAccountData({ id: 'dm-id' });
@@ -175,7 +176,7 @@ describe('matrix client', () => {
     });
 
     it('returns all rooms as channels if no direct room data exists', async () => {
-      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
       const getRooms = jest.fn(() => rooms);
       const getAccountData = getMockAccountData();
 
@@ -192,7 +193,7 @@ describe('matrix client', () => {
 
   describe('getConversations', () => {
     it('returns only direct rooms as conversations', async () => {
-      const rooms = [getRoom({ roomId: 'channel-id' }), getRoom({ roomId: 'dm-id' })];
+      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
 
       const getRooms = jest.fn(() => rooms);
       const getAccountData = getMockAccountData({ id: 'dm-id' });
@@ -364,9 +365,5 @@ describe('matrix client', () => {
 
       expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
     });
-
-    function stubRoom(attrs = {}): any {
-      return { roomId: 'some-id', getAvatarUrl: () => '', ...attrs };
-    }
   });
 });

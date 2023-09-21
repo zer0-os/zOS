@@ -11,7 +11,9 @@ export function* receiveSearchResults(searchResults) {
 
   const mappedUsers = searchResults
     .filter((r) => !existingUserIds.includes(r.id))
-    .map((r) => ({ userId: r.id, firstName: r.name, profileImage: r.profileImage }));
+    .map((r) => {
+      return { userId: r.id, firstName: r.name, profileImage: r.profileImage, matrixId: r.matrixId };
+    });
   yield put(receive(mappedUsers));
 }
 

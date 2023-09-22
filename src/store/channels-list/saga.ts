@@ -18,6 +18,7 @@ import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -246,7 +247,11 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, Events.UserLogin);
-    // Note: not sure why these were tied together. They're separate portions of the application.
+    if (featureFlags.enableMatrix) {
+      // Do not poll when in Matrix mode just fetch once
+      return yield call(fetchChannelsAndConversations);
+    }
+
     yield startChannelsAndConversationsRefresh();
   }
 }

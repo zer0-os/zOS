@@ -9,6 +9,7 @@ const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',
   getMembers: () => [],
+  getDMInviter: () => undefined,
   ...attrs,
 });
 
@@ -145,7 +146,11 @@ describe('matrix client', () => {
 
   describe('getChannels', () => {
     it('returns only non-direct rooms as channels', async () => {
-      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
+      const rooms = [
+        stubRoom({ roomId: 'channel-id' }),
+        stubRoom({ roomId: 'dm-id' }),
+        stubRoom({ roomId: 'dm-id-without-account-data', getDMInviter: () => 'somebody' }),
+      ];
 
       const getRooms = jest.fn(() => rooms);
       const getAccountData = getMockAccountData({ id: 'dm-id' });
@@ -192,17 +197,38 @@ describe('matrix client', () => {
   });
 
   describe('getConversations', () => {
+    const subject = async (stubs = {}) => {
+      const allStubs = {
+        createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
+        getRoom: jest.fn().mockReturnValue(stubRoom({})),
+        ...stubs,
+      };
+      const allProps: any = {
+        createClient: (_opts: any) => getSdkClient(allStubs),
+      };
+
+      const client = new MatrixClient(allProps);
+      await client.connect('@somebody', 'token');
+      return client;
+    };
+
     it('returns only direct rooms as conversations', async () => {
       const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
-
       const getRooms = jest.fn(() => rooms);
       const getAccountData = getMockAccountData({ id: 'dm-id' });
+      const client = await subject({ getRooms, getAccountData });
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
+      const conversations = await client.getConversations();
 
-      await client.connect('username', 'token');
+      expect(conversations).toHaveLength(1);
+      expect(conversations[0].id).toEqual('dm-id');
+    });
+
+    it('returns rooms that do not have account data yet but do have a DM inviter', async () => {
+      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id', getDMInviter: () => 'somebody' })];
+      const getRooms = jest.fn(() => rooms);
+      const client = await subject({ getRooms });
+
       const conversations = await client.getConversations();
 
       expect(conversations).toHaveLength(1);
@@ -212,12 +238,8 @@ describe('matrix client', () => {
     it('returns empty array if no direct rooms exist', async () => {
       const getRooms = jest.fn(() => []);
       const getAccountData = getMockAccountData();
+      const client = await subject({ getRooms, getAccountData });
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
-
-      await client.connect('username', 'token');
       const conversations = await client.getConversations();
 
       expect(conversations).toHaveLength(0);

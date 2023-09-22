@@ -6,6 +6,7 @@ import {
   ICreateRoomOpts,
   Preset,
   Room,
+  RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
   Visibility,
 } from 'matrix-js-sdk';
@@ -48,8 +49,9 @@ export class MatrixClient implements IChatClient {
   }
 
   async connect(userId: string, accessToken: string) {
+    this.userId = userId;
     this.setConnectionStatus(ConnectionStatus.Connecting);
-    await this.initializeClient(this.userId || userId, this.accessToken || accessToken);
+    await this.initializeClient(this.userId, this.accessToken || accessToken);
     await this.initializeEventHandlers();
 
     this.setConnectionStatus(ConnectionStatus.Connected);
@@ -168,6 +170,12 @@ export class MatrixClient implements IChatClient {
 
       if (event.type === 'm.room.message') {
         this.events.receiveNewMessage(event.room_id, this.mapMessage(event));
+      }
+    });
+    this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
+      if (member.membership === 'invite' && member.userId === this.userId) {
+        await this.matrix.joinRoom(member.roomId);
+        this.events.onUserReceivedInvitation(member.roomId);
       }
     });
   }

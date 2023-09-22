@@ -5,6 +5,7 @@ import {
   GuestAccess,
   ICreateRoomOpts,
   Preset,
+  Room,
   MatrixClient as SDKMatrixClient,
   Visibility,
 } from 'matrix-js-sdk';
@@ -70,14 +71,22 @@ export class MatrixClient implements IChatClient {
   }
 
   async getChannels(_id: string) {
-    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => !dmConversationIds.includes(roomId));
+    const rooms = await this.getFilteredRooms(this.isChannel);
     return rooms.map(this.mapChannel);
   }
 
   async getConversations() {
-    const rooms = await this.getFilteredRooms((roomId, dmConversationIds) => dmConversationIds.includes(roomId));
+    const rooms = await this.getFilteredRooms(this.isConversation);
     return rooms.map(this.mapConversation);
   }
+
+  private isChannel = (room: Room, dmConversationIds: string[]) => {
+    return !this.isConversation(room, dmConversationIds);
+  };
+
+  private isConversation = (room: Room, dmConversationIds: string[]) => {
+    return dmConversationIds.includes(room.roomId) || !!room.getDMInviter();
+  };
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
@@ -233,7 +242,7 @@ export class MatrixClient implements IChatClient {
     conversationStatus: ConversationStatus.CREATED,
   });
 
-  private async getFilteredRooms(filterFunc: (roomId: string, dmConversationIds: string[]) => boolean) {
+  private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
     if (this.isDisconnected) {
       return [];
     }
@@ -248,6 +257,6 @@ export class MatrixClient implements IChatClient {
     const dmConversationIds = content ? (Object.values(content).flat() as string[]) : [];
 
     const rooms = this.matrix.getRooms() || [];
-    return rooms.filter((r) => filterFunc(r.roomId, dmConversationIds));
+    return rooms.filter((r) => filterFunc(r, dmConversationIds));
   }
 }

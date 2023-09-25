@@ -10,6 +10,10 @@ import {
   MatrixClient as SDKMatrixClient,
   MsgType,
   Visibility,
+  RoomEvent,
+  ClientEvent,
+  MatrixEventEvent,
+  RoomStateEvent,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
@@ -192,6 +196,27 @@ export class MatrixClient implements IChatClient {
         this.events.onUserReceivedInvitation(member.roomId);
       }
     });
+
+    // Log events during development to help with understanding which events are happening
+    Object.keys(ClientEvent).forEach((key) => {
+      this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
+    });
+    Object.keys(RoomEvent).forEach((key) => {
+      this.matrix.on(RoomEvent[key], this.debugEvent(`RoomEvent.${key}`));
+    });
+    Object.keys(MatrixEventEvent).forEach((key) => {
+      this.matrix.on(MatrixEventEvent[key], this.debugEvent(`MatrixEventEvent.${key}`));
+    });
+    Object.keys(RoomStateEvent).forEach((key) => {
+      this.matrix.on(RoomStateEvent[key], this.debugEvent(`RoomStateEvent.${key}`));
+    });
+    Object.keys(RoomMemberEvent).forEach((key) => {
+      this.matrix.on(RoomMemberEvent[key], this.debugEvent(`RoomMemberEvent.${key}`));
+    });
+  }
+
+  private debugEvent(name) {
+    return (data) => console.log('Received Event', name, data);
   }
 
   private async initializeClient(userId: string, accessToken: string) {

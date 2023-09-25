@@ -14,6 +14,7 @@ import {
   ClientEvent,
   MatrixEventEvent,
   RoomStateEvent,
+  MatrixEvent,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
@@ -200,6 +201,8 @@ export class MatrixClient implements IChatClient {
       }
     });
 
+    this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
+
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
       this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
@@ -259,6 +262,13 @@ export class MatrixClient implements IChatClient {
 
   private async roomCreated(event) {
     this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
+  }
+
+  private async publishConversationListChange(event: MatrixEvent) {
+    if (event.getType() === EventType.Direct) {
+      const content = event.getContent();
+      this.events.onConversationListChanged(Object.values(content ?? {}).flat());
+    }
   }
 
   private mapToGeneralChannel(room: Room) {

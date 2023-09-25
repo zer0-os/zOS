@@ -18,6 +18,7 @@ export interface RealtimeChatEvents {
   onUserJoinedChannel: (conversation) => void;
   invalidChatAccessToken: () => void;
   onUserLeft: (channelId: string, userId: string) => void;
+  onConversationListChanged: (conversationIds: string[]) => void;
 }
 
 export interface IChatClient {

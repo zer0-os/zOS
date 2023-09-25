@@ -1,4 +1,4 @@
-import { get, post, put } from '../../lib/api/rest';
+import { post, put } from '../../lib/api/rest';
 
 export async function joinChannel(channelId: string): Promise<number> {
   const response = await post<any>(`/chatChannels/${channelId}/join`);
@@ -17,9 +17,3 @@ export type MentionableUser = {
   name: string;
   profileImage: string;
 };
-
-export async function searchMentionableUsers(channelId: string, search: string): Promise<MentionableUser[]> {
-  return await get<MentionableUser[]>(`/chatChannels/${channelId}/mentionable-users`, search)
-    .catch((_error) => null)
-    .then((response) => response?.body || []);
-}

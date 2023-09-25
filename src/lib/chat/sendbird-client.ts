@@ -13,6 +13,7 @@ import { RealtimeChatEvents, IChatClient } from './';
 import { uploadImage, createConversation as createConversationMessageApi } from '../../store/channels-list/api';
 import { MemberNetworks } from '../../store/users/types';
 import { DirectMessage } from '../../store/channels-list/types';
+import { MentionableUser } from '../../store/channels/api';
 
 export class SendbirdClient implements IChatClient {
   sendbird: SendbirdGroupChat = null;
@@ -88,6 +89,14 @@ export class SendbirdClient implements IChatClient {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50 })
       .catch((_error) => null)
       .then((response) => response?.body || []);
+  }
+
+  async searchMentionableUsersForChannel(channelId: string, search: string) {
+    const results = await get<MentionableUser[]>(`/chatChannels/${channelId}/mentionable-users`, search)
+      .catch((_error) => null)
+      .then((response) => response?.body || []);
+
+    return results.map((u) => ({ id: u.id, display: u.name, profileImage: u.profileImage }));
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {

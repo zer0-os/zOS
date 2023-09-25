@@ -29,6 +29,7 @@ export interface IChatClient {
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
+  searchMentionableUsersForChannel: (channelId: string, search: string) => Promise<any[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
   createConversation: (
     users: User[],
@@ -77,6 +78,10 @@ export class Chat {
 
   async searchMyNetworksByName(filter: string) {
     return this.client.searchMyNetworksByName(filter);
+  }
+
+  async searchMentionableUsersForChannel(channelId: string, search: string) {
+    return this.client.searchMentionableUsersForChannel(channelId, search);
   }
 
   async sendMessagesByChannelId(

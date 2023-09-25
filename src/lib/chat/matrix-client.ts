@@ -97,6 +97,10 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
+  async searchMentionableUsersForChannel(_channelId: string, _search: string) {
+    return [];
+  }
+
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
     const messages = chunk.filter((m) => m.type === 'm.room.message');

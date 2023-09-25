@@ -39,7 +39,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) { }
+  constructor(private sdk = { createClient }) {}
 
   init(events: RealtimeChatEvents) {
     this.events = events;

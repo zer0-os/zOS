@@ -12,7 +12,7 @@ import {
   Visibility,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapMatrixMessage } from './chat-message';
+import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';

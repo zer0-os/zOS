@@ -8,6 +8,7 @@ import {
   Room,
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
+  MsgType,
   Visibility,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
@@ -97,11 +98,14 @@ export class MatrixClient implements IChatClient {
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
-    const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 30, Direction.Forward);
+    const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
+    const messages = chunk.filter((m) => m.type === 'm.room.message');
+    const mappedMessages = [];
+    for (const message of messages) {
+      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
+    }
 
-    const messages = chunk.filter((m) => m.type === 'm.room.message').map(mapMatrixMessage);
-
-    return { messages: messages as any, hasMore: false };
+    return { messages: mappedMessages as any, hasMore: false };
   }
 
   async createConversation(users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
@@ -126,17 +130,27 @@ export class MatrixClient implements IChatClient {
     channelId: string,
     message: string,
     _mentionedUserIds: string[],
-    _parentMessage?: ParentMessage,
+    parentMessage?: ParentMessage,
     _file?: FileUploadResult,
     optimisticId?: string
   ): Promise<any> {
-    const messageResult = await this.matrix.sendTextMessage(channelId, message);
+    let content = {
+      body: message,
+      msgtype: MsgType.Text,
+    };
+
+    if (parentMessage) {
+      content['m.relates_to'] = {
+        'm.in_reply_to': {
+          event_id: parentMessage.messageId,
+        },
+      };
+    }
+
+    const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
-
-    console.log('message: ', newMessage);
-
     return {
-      ...mapMatrixMessage(newMessage),
+      ...(await mapMatrixMessage(newMessage, this.matrix)),
       optimisticId,
     };
   }
@@ -162,14 +176,14 @@ export class MatrixClient implements IChatClient {
   }
 
   private async initializeEventHandlers() {
-    this.matrix.on('event' as any, ({ event }) => {
+    this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);
       if (event.type === 'm.room.encrypted') {
         console.log('encryped message: ', event);
       }
 
       if (event.type === 'm.room.message') {
-        this.events.receiveNewMessage(event.room_id, this.mapMessage(event));
+        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
       }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
@@ -215,7 +229,6 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private mapMessage = (message): any => mapMatrixMessage(message);
   private mapChannel = (channel): Partial<Channel> => ({
     id: channel.roomId,
     name: channel.name,

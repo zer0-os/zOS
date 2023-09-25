@@ -8,6 +8,7 @@ import {
   Room,
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
+  MsgType,
   Visibility,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
@@ -38,7 +39,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) {}
+  constructor(private sdk = { createClient }) { }
 
   init(events: RealtimeChatEvents) {
     this.events = events;
@@ -135,7 +136,7 @@ export class MatrixClient implements IChatClient {
   ): Promise<any> {
     let content = {
       body: message,
-      msgtype: 'm.text',
+      msgtype: MsgType.Text,
     };
 
     if (parentMessage) {

@@ -11,6 +11,8 @@ import {
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
+  addChannel,
+  setConversations,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -315,5 +317,71 @@ describe('channels list saga', () => {
     });
 
     expect(channelsListResult).toEqual({ value: [] });
+  });
+
+  describe(addChannel, () => {
+    it('adds channel to list', async () => {
+      const initialState = new StoreBuilder()
+        .withConversationList({ id: 'conversation-id' })
+        .withChannelList({ id: 'channel-id' });
+
+      const { storeState } = await expectSaga(addChannel, { id: 'new-convo' })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers(['conversation-id', 'channel-id', 'new-convo']);
+    });
+
+    it('does not duplicate the conversation', async () => {
+      const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
+
+      const { storeState } = await expectSaga(addChannel, { id: 'existing-conversation-id' })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers(['existing-conversation-id']);
+    });
+  });
+
+  describe(setConversations, () => {
+    it('changes channels to conversation', async () => {
+      const initialState = new StoreBuilder().withChannelList(
+        { id: 'channel-1', isChannel: true },
+        { id: 'channel-2', isChannel: true },
+        { id: 'channel-3', isChannel: true }
+      );
+
+      const { storeState } = await expectSaga(setConversations, ['channel-1', 'channel-3'])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const channel1 = denormalizeChannel('channel-1', storeState);
+      expect(channel1.isChannel).toEqual(false);
+      const channel3 = denormalizeChannel('channel-3', storeState);
+      expect(channel3.isChannel).toEqual(false);
+
+      const channel2 = denormalizeChannel('channel-2', storeState);
+      expect(channel2.isChannel).toEqual(true);
+    });
+
+    it('changes conversations to channels', async () => {
+      const initialState = new StoreBuilder().withChannelList(
+        { id: 'channel-1', isChannel: false },
+        { id: 'channel-2', isChannel: false },
+        { id: 'channel-3', isChannel: false }
+      );
+
+      const { storeState } = await expectSaga(setConversations, ['channel-2'])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const channel1 = denormalizeChannel('channel-1', storeState);
+      expect(channel1.isChannel).toEqual(true);
+      const channel3 = denormalizeChannel('channel-3', storeState);
+      expect(channel3.isChannel).toEqual(true);
+
+      const channel2 = denormalizeChannel('channel-2', storeState);
+      expect(channel2.isChannel).toEqual(false);
+    });
   });
 });

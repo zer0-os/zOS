@@ -308,4 +308,20 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.UserLeftChannel, ({ payload }) =>
     userLeftChannel(payload.channelId, payload.userId)
   );
+  yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
+}
+
+function* userJoinedChannelAction({ payload }) {
+  yield addChannel(payload.channel);
+}
+
+export function* addChannel(channel) {
+  const conversationsList = yield select(rawConversationsList());
+  const channelsList = yield select(rawChannelsList());
+
+  yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
+}
+
+function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[]): any {
+  return uniqBy(objectsAndIds, (c) => c.id ?? c);
 }

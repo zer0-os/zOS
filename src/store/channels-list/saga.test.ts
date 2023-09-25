@@ -11,6 +11,7 @@ import {
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
+  addChannel,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -315,5 +316,29 @@ describe('channels list saga', () => {
     });
 
     expect(channelsListResult).toEqual({ value: [] });
+  });
+
+  describe(addChannel, () => {
+    it('adds channel to list', async () => {
+      const initialState = new StoreBuilder()
+        .withConversationList({ id: 'conversation-id' })
+        .withChannelList({ id: 'channel-id' });
+
+      const { storeState } = await expectSaga(addChannel, { id: 'new-convo' })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers(['conversation-id', 'channel-id', 'new-convo']);
+    });
+
+    it('does not duplicate the conversation', async () => {
+      const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
+
+      const { storeState } = await expectSaga(addChannel, { id: 'existing-conversation-id' })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers(['existing-conversation-id']);
+    });
   });
 });

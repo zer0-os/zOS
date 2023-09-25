@@ -127,7 +127,6 @@ export class MatrixClient implements IChatClient {
     const result = await this.matrix.createRoom(options);
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
-    return this.mapConversation(this.matrix.getRoom(result.room_id));
   }
 
   async sendMessagesByChannelId(
@@ -188,6 +187,10 @@ export class MatrixClient implements IChatClient {
 
       if (event.type === 'm.room.message') {
         this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+      }
+
+      if (event.type === 'm.room.create') {
+        this.roomCreated(event);
       }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
@@ -254,6 +257,10 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  private async roomCreated(event) {
+    this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
+  }
+
   private mapToGeneralChannel(room: Room) {
     return {
       id: room.roomId,
@@ -291,12 +298,15 @@ export class MatrixClient implements IChatClient {
       await this.waitForConnection();
     }
 
+    const dmConversationIds = await this.getConversationIds();
+    const rooms = this.matrix.getRooms() || [];
+    return rooms.filter((r) => filterFunc(r, dmConversationIds));
+  }
+
+  private async getConversationIds() {
     const accountData = await this.getAccountData(EventType.Direct);
     const content = accountData?.getContent();
 
-    const dmConversationIds = content ? (Object.values(content).flat() as string[]) : [];
-
-    const rooms = this.matrix.getRooms() || [];
-    return rooms.filter((r) => filterFunc(r, dmConversationIds));
+    return Object.values(content ?? {}).flat();
   }
 }

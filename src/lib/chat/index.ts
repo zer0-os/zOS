@@ -15,6 +15,7 @@ export interface RealtimeChatEvents {
   onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   onUserReceivedInvitation: (channel) => void;
+  onUserJoinedChannel: (conversation) => void;
   invalidChatAccessToken: () => void;
   onUserLeft: (channelId: string, userId: string) => void;
 }
@@ -35,7 +36,7 @@ export interface IChatClient {
     name: string,
     image: File,
     optimisticId: string
-  ) => Promise<Partial<Channel> | null>;
+  ) => Promise<Partial<Channel> | void>;
   sendMessagesByChannelId: (
     channelId: string,
     message: string,

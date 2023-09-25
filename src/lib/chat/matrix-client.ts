@@ -264,12 +264,12 @@ export class MatrixClient implements IChatClient {
     this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
   }
 
-  private async publishConversationListChange(event: MatrixEvent) {
+  private publishConversationListChange = (event: MatrixEvent) => {
     if (event.getType() === EventType.Direct) {
       const content = event.getContent();
       this.events.onConversationListChanged(Object.values(content ?? {}).flat());
     }
-  }
+  };
 
   private mapToGeneralChannel(room: Room) {
     return {

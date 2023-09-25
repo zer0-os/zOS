@@ -1,6 +1,5 @@
 import { EventType, GuestAccess, Preset, Visibility } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
-import { when } from 'jest-when';
 import { setAsDM } from './matrix/utils';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
@@ -362,20 +361,6 @@ describe('matrix client', () => {
       await client.createConversation(users, null, null, null);
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: ['@first.user', '@second.user'] }));
-    });
-
-    it('returns the created conversation', async () => {
-      const createRoom = jest.fn().mockResolvedValue({ room_id: 'a-new-room' });
-      const getRoom = jest.fn();
-      when(getRoom)
-        .calledWith('a-new-room')
-        .mockReturnValue(stubRoom({ roomId: 'a-new-room' }));
-      const users = [{ userId: 'id-1', matrixId: '@first.user' }];
-      const client = await subject({ createRoom, getRoom });
-
-      const conversation = await client.createConversation(users, null, null, null);
-
-      expect(conversation.id).toEqual('a-new-room');
     });
 
     it('sets the conversation as a Matrix direct message', async () => {

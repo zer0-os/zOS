@@ -254,39 +254,33 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private mapChannel = (channel): Partial<Channel> => ({
-    id: channel.roomId,
-    name: channel.name,
-    icon: channel.getAvatarUrl(),
-    isChannel: true,
-    isOneOnOne: false,
-    otherMembers: [],
-    lastMessage: null,
-    groupChannelType: GroupChannelType.Private,
-    category: '',
-    unreadCount: 0,
-    hasJoined: true,
-    createdAt: 0,
-    conversationStatus: ConversationStatus.CREATED,
-  });
+  private mapToGeneralChannel(room: Room) {
+    return {
+      id: room.roomId,
+      name: room.name,
+      icon: null,
+      isChannel: true,
+      // Even if a member leaves they stay in the member list so this will still be correct
+      // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
+      isOneOnOne: room.getMembers().length === 2,
+      otherMembers: [],
+      lastMessage: null,
+      groupChannelType: GroupChannelType.Private,
+      category: '',
+      unreadCount: 0,
+      hasJoined: true,
+      createdAt: 0,
+      conversationStatus: ConversationStatus.CREATED,
+    };
+  }
 
-  private mapConversation = (room): Partial<Channel> => ({
-    id: room.roomId,
-    name: room.name,
-    icon: room.getAvatarUrl(),
-    isChannel: false,
-    // Even if a member leaves they stay in the member list so this will still be correct
-    // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
-    isOneOnOne: room.getMembers().length === 2,
-    otherMembers: [],
-    lastMessage: null,
-    groupChannelType: GroupChannelType.Private,
-    category: '',
-    unreadCount: 0,
-    hasJoined: true,
-    createdAt: 0,
-    conversationStatus: ConversationStatus.CREATED,
-  });
+  private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
+  private mapConversation = (room: Room): Partial<Channel> => {
+    return {
+      ...this.mapToGeneralChannel(room),
+      isChannel: false,
+    };
+  };
 
   private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
     if (this.isDisconnected) {

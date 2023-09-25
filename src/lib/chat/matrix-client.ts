@@ -9,7 +9,9 @@ import {
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
   MsgType,
+  User as SDKMatrixUser,
   Visibility,
+  RoomMember,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
@@ -61,6 +63,11 @@ export class MatrixClient implements IChatClient {
   disconnect: () => void;
   reconnect: () => void;
 
+  async getUser(userId: string): Promise<SDKMatrixUser> {
+    const user = this.matrix.getUser(userId);
+    return user;
+  }
+
   async getAccountData(eventType: string) {
     if (this.isDisconnected) {
       throw new Error('Matrix client is disconnected');
@@ -80,7 +87,14 @@ export class MatrixClient implements IChatClient {
 
   async getConversations() {
     const rooms = await this.getFilteredRooms(this.isConversation);
-    return rooms.map(this.mapConversation);
+    const conversations = rooms.map(this.mapConversation);
+
+    // resolve promises for each conversation
+    for (let conversation of conversations) {
+      conversation.otherMembers = await Promise.all(conversation.otherMembers);
+    }
+
+    return conversations;
   }
 
   private isChannel = (room: Room, dmConversationIds: string[]) => {
@@ -163,6 +177,10 @@ export class MatrixClient implements IChatClient {
     return this.connectionStatus === ConnectionStatus.Connecting;
   }
 
+  get currentUserId() {
+    return this.userId;
+  }
+
   private setConnectionStatus(connectionStatus: ConnectionStatus) {
     if (this.isDisconnected && connectionStatus === ConnectionStatus.Connecting) {
       this.addConnectionAwaiter();
@@ -229,6 +247,20 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  private mapMemberToUser = async (member: RoomMember) => {
+    const user = await this.getUser(member?.userId);
+
+    return {
+      userId: user.userId,
+      firstName: '',
+      lastName: '',
+      profileId: '',
+      isOnline: user.presence === 'online',
+      profileImage: '',
+      lastSeenAt: '',
+    };
+  };
+
   private mapChannel = (channel): Partial<Channel> => ({
     id: channel.roomId,
     name: channel.name,
@@ -245,23 +277,28 @@ export class MatrixClient implements IChatClient {
     conversationStatus: ConversationStatus.CREATED,
   });
 
-  private mapConversation = (room): Partial<Channel> => ({
-    id: room.roomId,
-    name: room.name,
-    icon: room.getAvatarUrl(),
-    isChannel: false,
-    // Even if a member leaves they stay in the member list so this will still be correct
-    // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
-    isOneOnOne: room.getMembers().length === 2,
-    otherMembers: [],
-    lastMessage: null,
-    groupChannelType: GroupChannelType.Private,
-    category: '',
-    unreadCount: 0,
-    hasJoined: true,
-    createdAt: 0,
-    conversationStatus: ConversationStatus.CREATED,
-  });
+  private mapConversation = (room): Partial<Channel> => {
+    const currentUserId = this.currentUserId;
+    const otherMembersList = room.getMembers().filter((member) => member.userId !== currentUserId);
+
+    return {
+      id: room.roomId,
+      name: room.name,
+      icon: room.getAvatarUrl(),
+      isChannel: false,
+      // Even if a member leaves they stay in the member list so this will still be correct
+      // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
+      isOneOnOne: room.getMembers().length === 2,
+      otherMembers: otherMembersList.map(this.mapMemberToUser),
+      lastMessage: null,
+      groupChannelType: GroupChannelType.Private,
+      category: '',
+      unreadCount: 0,
+      hasJoined: true,
+      createdAt: 0,
+      conversationStatus: ConversationStatus.CREATED,
+    };
+  };
 
   private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
     if (this.isDisconnected) {

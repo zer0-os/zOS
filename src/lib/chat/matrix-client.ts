@@ -294,13 +294,16 @@ export class MatrixClient implements IChatClient {
 
   private mapUser(userId: string): ChannelUser {
     const user = this.matrix.getUser(userId);
+    const avatarMxc = user?.avatarUrl;
+    const httpAvatarUrl = this.matrix.mxcUrlToHttp(avatarMxc);
+
     return {
       userId: user?.userId,
       firstName: '',
       lastName: '',
       profileId: '',
       isOnline: user?.presence === 'online',
-      profileImage: '',
+      profileImage: httpAvatarUrl,
       lastSeenAt: '',
     };
   }

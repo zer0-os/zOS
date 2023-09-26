@@ -7,6 +7,7 @@ import { Payload, UnreadCountUpdatedPayload } from './types';
 
 export interface User {
   userId: string;
+  matrixId: string;
   firstName: string;
   lastName: string;
   profileId: string;

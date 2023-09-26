@@ -19,7 +19,7 @@ import {
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
-import { ConversationStatus, GroupChannelType, Channel, User as ChannelUser } from '../../store/channels';
+import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
@@ -212,6 +212,7 @@ export class MatrixClient implements IChatClient {
     });
 
     this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
+    this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -281,7 +282,21 @@ export class MatrixClient implements IChatClient {
     }
   };
 
+  private publishUserPresenceChange = (event: MatrixEvent) => {
+    if (event.getType() === EventType.Presence) {
+      const content = event.getContent();
+      this.events.onUserPresenceChanged(
+        event.getSender(),
+        content.presence === 'online',
+        content.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
+      );
+    }
+  };
+
   private mapToGeneralChannel(room: Room) {
+    const otherMembersList = this.getOtherMembersFromRoom(room);
+    const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
+
     return {
       id: room.roomId,
       name: room.name,
@@ -290,7 +305,7 @@ export class MatrixClient implements IChatClient {
       // Even if a member leaves they stay in the member list so this will still be correct
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
-      otherMembers: [],
+      otherMembers: otherMembers,
       lastMessage: null,
       groupChannelType: GroupChannelType.Private,
       category: '',
@@ -304,19 +319,17 @@ export class MatrixClient implements IChatClient {
   private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
 
   private mapConversation = (room: Room): Partial<Channel> => {
-    const otherMembersList = this.getOtherMembersFromRoom(room);
-    const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
     return {
       ...this.mapToGeneralChannel(room),
       isChannel: false,
-      otherMembers: otherMembers,
     };
   };
 
-  private mapUser(userId: string): ChannelUser {
+  private mapUser(userId: string): UserModel {
     const user = this.matrix.getUser(userId);
     return {
       userId: user?.userId,
+      matrixId: user?.userId,
       firstName: '',
       lastName: '',
       profileId: '',

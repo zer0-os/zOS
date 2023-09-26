@@ -71,10 +71,6 @@ export class MatrixClient implements IChatClient {
     return user;
   }
 
-  async getUserPresence(userId: string) {
-    return this.matrix.getPresence(userId);
-  }
-
   async getAccountData(eventType: string) {
     if (this.isDisconnected) {
       throw new Error('Matrix client is disconnected');
@@ -175,10 +171,6 @@ export class MatrixClient implements IChatClient {
 
   get isConnecting() {
     return this.connectionStatus === ConnectionStatus.Connecting;
-  }
-
-  get currentUserId() {
-    return this.userId;
   }
 
   private setConnectionStatus(connectionStatus: ConnectionStatus) {
@@ -289,6 +281,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
+
   private mapConversation = (room: Room): Partial<Channel> => {
     const otherMembersList = this.getOtherMembersFromRoom(room);
     const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));

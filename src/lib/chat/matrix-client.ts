@@ -9,6 +9,7 @@ import {
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
   MsgType,
+  User as SDKMatrixUser,
   Visibility,
   RoomEvent,
   ClientEvent,
@@ -18,7 +19,7 @@ import {
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
-import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
+import { ConversationStatus, GroupChannelType, Channel, User as ChannelUser } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
@@ -65,6 +66,11 @@ export class MatrixClient implements IChatClient {
 
   disconnect: () => void;
   reconnect: () => void;
+
+  async getUser(userId: string): Promise<SDKMatrixUser> {
+    const user = this.matrix.getUser(userId);
+    return user;
+  }
 
   async getAccountData(eventType: string) {
     if (this.isDisconnected) {
@@ -296,12 +302,36 @@ export class MatrixClient implements IChatClient {
   }
 
   private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
+
   private mapConversation = (room: Room): Partial<Channel> => {
+    const otherMembersList = this.getOtherMembersFromRoom(room);
+    const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
     return {
       ...this.mapToGeneralChannel(room),
       isChannel: false,
+      otherMembers: otherMembers,
     };
   };
+
+  private mapUser(userId: string): ChannelUser {
+    const user = this.matrix.getUser(userId);
+    return {
+      userId: user?.userId,
+      firstName: '',
+      lastName: '',
+      profileId: '',
+      isOnline: user?.presence === 'online',
+      profileImage: '',
+      lastSeenAt: '',
+    };
+  }
+
+  private getOtherMembersFromRoom(room: Room): string[] {
+    return room
+      .getMembers()
+      .filter((member) => member.userId !== this.userId)
+      .map((member) => member.userId);
+  }
 
   private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
     if (this.isDisconnected) {

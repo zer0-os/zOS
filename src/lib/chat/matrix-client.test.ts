@@ -304,6 +304,43 @@ describe('matrix client', () => {
     });
   });
 
+  describe('getUser', () => {
+    it('returns user data for given userId', async () => {
+      const matrixUser = {
+        userId: '@john:matrix.org',
+        displayName: 'John Doe',
+        avatarUrl: 'https://example.com/avatar.jpg',
+        presence: 'online',
+        currentlyActive: true,
+        lastPresenceTs: 123456789,
+      };
+
+      const getUser = jest.fn().mockReturnValue(matrixUser);
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getUser })),
+      });
+
+      await client.connect('username', 'token');
+      const user = await client.getUser('@john:matrix.org');
+
+      expect(getUser).toHaveBeenCalledWith('@john:matrix.org');
+      expect(user).toEqual(matrixUser);
+    });
+
+    it('returns null if user does not exist', async () => {
+      const getUser = jest.fn().mockReturnValue(null);
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getUser })),
+      });
+
+      await client.connect('username', 'token');
+      const user = await client.getUser('@unknown:matrix.org');
+
+      expect(getUser).toHaveBeenCalledWith('@unknown:matrix.org');
+      expect(user).toBeNull();
+    });
+  });
+
   describe('createConversation', () => {
     const subject = async (stubs = {}) => {
       const allStubs = {

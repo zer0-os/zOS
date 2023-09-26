@@ -11,11 +11,14 @@ import {
   MsgType,
   User as SDKMatrixUser,
   Visibility,
-  RoomMember,
+  RoomEvent,
+  ClientEvent,
+  MatrixEventEvent,
+  RoomStateEvent,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
-import { ConversationStatus, GroupChannelType, Channel } from '../../store/channels';
+import { ConversationStatus, GroupChannelType, Channel, User as ChannelUser } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
@@ -68,6 +71,10 @@ export class MatrixClient implements IChatClient {
     return user;
   }
 
+  async getUserPresence(userId: string) {
+    return this.matrix.getPresence(userId);
+  }
+
   async getAccountData(eventType: string) {
     if (this.isDisconnected) {
       throw new Error('Matrix client is disconnected');
@@ -87,14 +94,7 @@ export class MatrixClient implements IChatClient {
 
   async getConversations() {
     const rooms = await this.getFilteredRooms(this.isConversation);
-    const conversations = rooms.map(this.mapConversation);
-
-    // resolve promises for each conversation
-    for (let conversation of conversations) {
-      conversation.otherMembers = await Promise.all(conversation.otherMembers);
-    }
-
-    return conversations;
+    return rooms.map(this.mapConversation);
   }
 
   private isChannel = (room: Room, dmConversationIds: string[]) => {
@@ -210,6 +210,27 @@ export class MatrixClient implements IChatClient {
         this.events.onUserReceivedInvitation(member.roomId);
       }
     });
+
+    // Log events during development to help with understanding which events are happening
+    Object.keys(ClientEvent).forEach((key) => {
+      this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
+    });
+    Object.keys(RoomEvent).forEach((key) => {
+      this.matrix.on(RoomEvent[key], this.debugEvent(`RoomEvent.${key}`));
+    });
+    Object.keys(MatrixEventEvent).forEach((key) => {
+      this.matrix.on(MatrixEventEvent[key], this.debugEvent(`MatrixEventEvent.${key}`));
+    });
+    Object.keys(RoomStateEvent).forEach((key) => {
+      this.matrix.on(RoomStateEvent[key], this.debugEvent(`RoomStateEvent.${key}`));
+    });
+    Object.keys(RoomMemberEvent).forEach((key) => {
+      this.matrix.on(RoomMemberEvent[key], this.debugEvent(`RoomMemberEvent.${key}`));
+    });
+  }
+
+  private debugEvent(name) {
+    return (data) => console.log('Received Event', name, data);
   }
 
   private async initializeClient(userId: string, accessToken: string) {
@@ -247,49 +268,16 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private mapMemberToUser = async (member: RoomMember) => {
-    const user = await this.getUser(member?.userId);
-
-    return {
-      userId: user.userId,
-      firstName: '',
-      lastName: '',
-      profileId: '',
-      isOnline: user.presence === 'online',
-      profileImage: '',
-      lastSeenAt: '',
-    };
-  };
-
-  private mapChannel = (channel): Partial<Channel> => ({
-    id: channel.roomId,
-    name: channel.name,
-    icon: channel.getAvatarUrl(),
-    isChannel: true,
-    isOneOnOne: false,
-    otherMembers: [],
-    lastMessage: null,
-    groupChannelType: GroupChannelType.Private,
-    category: '',
-    unreadCount: 0,
-    hasJoined: true,
-    createdAt: 0,
-    conversationStatus: ConversationStatus.CREATED,
-  });
-
-  private mapConversation = (room): Partial<Channel> => {
-    const currentUserId = this.currentUserId;
-    const otherMembersList = room.getMembers().filter((member) => member.userId !== currentUserId);
-
+  private mapToGeneralChannel(room: Room) {
     return {
       id: room.roomId,
       name: room.name,
-      icon: room.getAvatarUrl(),
-      isChannel: false,
+      icon: null,
+      isChannel: true,
       // Even if a member leaves they stay in the member list so this will still be correct
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
-      otherMembers: otherMembersList.map(this.mapMemberToUser),
+      otherMembers: [],
       lastMessage: null,
       groupChannelType: GroupChannelType.Private,
       category: '',
@@ -298,7 +286,38 @@ export class MatrixClient implements IChatClient {
       createdAt: 0,
       conversationStatus: ConversationStatus.CREATED,
     };
+  }
+
+  private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
+  private mapConversation = (room: Room): Partial<Channel> => {
+    const otherMembersList = this.getOtherMembersFromRoom(room);
+    const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
+    return {
+      ...this.mapToGeneralChannel(room),
+      isChannel: false,
+      otherMembers: otherMembers,
+    };
   };
+
+  private mapUser(userId: string): ChannelUser {
+    const user = this.matrix.getUser(userId);
+    return {
+      userId: user?.userId,
+      firstName: '',
+      lastName: '',
+      profileId: '',
+      isOnline: user?.presence === 'online',
+      profileImage: '',
+      lastSeenAt: '',
+    };
+  }
+
+  private getOtherMembersFromRoom(room: Room): string[] {
+    return room
+      .getMembers()
+      .filter((member) => member.userId !== this.userId)
+      .map((member) => member.userId);
+  }
 
   private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
     if (this.isDisconnected) {

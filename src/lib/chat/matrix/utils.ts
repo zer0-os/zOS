@@ -37,3 +37,25 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
 
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }
+
+export async function getFilteredMembersForAutoComplete(
+  roomMembers: { [userId: string]: { avatar_url?: string; display_name?: string } },
+  filter: string
+) {
+  const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
+
+  const filteredResults = [];
+  for (let matrixId of Object.keys(roomMembers)) {
+    let displayName = roomMembers[matrixId]['display_name'] || matrixId.match(/@([^:]+)/)[1] || '';
+    if (displayName.includes(normalizedFilter)) {
+      filteredResults.push({
+        matrixId,
+        // should we prioritize the display_name, avatar_url from matrix OR our own db?
+        displayName,
+        avatar_url: roomMembers[matrixId]['avatar_url'] || '', // this will likely be '' for now
+      });
+    }
+  }
+
+  return filteredResults;
+}

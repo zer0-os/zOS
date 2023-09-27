@@ -15,10 +15,12 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { ConversationStatus, GroupChannelType, MessagesFetchState, receive as receiveChannel } from '../channels';
+import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
+import { userByMatrixId } from '../users/selectors';
+import { rawChannel } from '../channels/selectors';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -311,6 +313,8 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
   yield takeEveryFromBus(chatBus, ChatEvents.ConversationListChanged, conversationListChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.RoomNameChanged, roomNameChangedAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.OtherUserJoinedChannel, otherUserJoinedChannelAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.OtherUserLeftChannel, otherUserLeftChannelAction);
 }
 
 function* userJoinedChannelAction({ payload }) {
@@ -323,6 +327,14 @@ function* conversationListChangedAction({ payload }) {
 
 function* roomNameChangedAction(action) {
   yield roomNameChanged(action.payload.id, action.payload.name);
+}
+
+function* otherUserJoinedChannelAction({ payload }) {
+  yield otherUserJoinedChannel(payload.channelId, payload.user);
+}
+
+function* otherUserLeftChannelAction({ payload }) {
+  yield otherUserLeftChannel(payload.channelId, payload.user);
 }
 
 export function* addChannel(channel) {
@@ -342,6 +354,42 @@ export function* setConversations(conversationIds: string[]) {
 
 export function* roomNameChanged(id: string, name: string) {
   yield put(receiveChannel({ id, name }));
+}
+
+export function* otherUserJoinedChannel(roomId: string, user: User) {
+  const channel = yield select(rawChannel, roomId);
+  if (!channel) {
+    return;
+  }
+
+  // TODO: Fetch user from zOS if we don't know about them yet
+  if (!channel.otherMembers.includes(user.userId)) {
+    yield put(
+      receiveChannel({
+        id: channel.id,
+        otherMembers: [...channel.otherMembers, user],
+      })
+    );
+  }
+}
+
+export function* otherUserLeftChannel(roomId: string, user: User) {
+  const channel = yield select(rawChannel, roomId);
+  if (!channel) {
+    return;
+  }
+
+  const existingUser = yield select(userByMatrixId, user.matrixId);
+  if (!existingUser) {
+    return;
+  }
+
+  yield put(
+    receiveChannel({
+      id: channel.id,
+      otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
+    })
+  );
 }
 
 function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[]): any {

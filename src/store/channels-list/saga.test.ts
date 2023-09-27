@@ -13,6 +13,8 @@ import {
   userLeftChannel,
   addChannel,
   setConversations,
+  otherUserJoinedChannel,
+  otherUserLeftChannel,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -382,6 +384,53 @@ describe('channels list saga', () => {
 
       const channel2 = denormalizeChannel('channel-2', storeState);
       expect(channel2.isChannel).toEqual(false);
+    });
+  });
+
+  describe(otherUserJoinedChannel, () => {
+    it('adds the user to the otherMember list', async () => {
+      const existingMembers = [
+        { userId: 'user-1', matrixId: 'user-1' },
+        { userId: 'user-2', matrixId: 'user-2' },
+      ] as any;
+      const initialState = new StoreBuilder().withConversationList({
+        id: 'conversation-id',
+        otherMembers: existingMembers,
+      });
+
+      const { storeState } = await expectSaga(otherUserJoinedChannel, 'conversation-id', {
+        userId: 'new-user',
+        matrixId: 'new-user',
+      })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const conversation = denormalizeChannel('conversation-id', storeState);
+      expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-2', 'new-user']);
+    });
+  });
+
+  describe(otherUserLeftChannel, () => {
+    it('removes the user from the otherMember list', async () => {
+      const existingMembers = [
+        { userId: 'user-1', matrixId: 'user-1' },
+        { userId: 'user-2', matrixId: 'user-2' },
+        { userId: 'user-3', matrixId: 'user-3' },
+      ] as any;
+      const initialState = new StoreBuilder().withConversationList({
+        id: 'conversation-id',
+        otherMembers: existingMembers,
+      });
+
+      const { storeState } = await expectSaga(otherUserLeftChannel, 'conversation-id', {
+        userId: 'user-2',
+        matrixId: 'user-2',
+      })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const conversation = denormalizeChannel('conversation-id', storeState);
+      expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-3']);
     });
   });
 });

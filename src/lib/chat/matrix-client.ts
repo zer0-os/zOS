@@ -214,7 +214,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
-    this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
+    this.matrix.on(RoomEvent.Name, this.publishChannelNameChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -295,13 +295,13 @@ export class MatrixClient implements IChatClient {
     }
   };
 
-  private publishRoomNameChange = (room: Room) => {
+  private publishChannelNameChange = (room: Room) => {
     const event = room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(EventType.RoomName, '');
 
     if (event && event.getType() === EventType.RoomName) {
       const content = event.getContent();
       if (content && content.name) {
-        this.events.onRoomNameChanged(room.roomId, content.name);
+        this.events.onChannelNameChanged(room.roomId, content.name);
       }
     }
   };

@@ -15,7 +15,7 @@ export enum Events {
   UserJoinedChannel = 'chat/channel/userJoined',
   ConversationListChanged = 'chat/conversationListChanged',
   UserPresenceChanged = 'chat/user/presenceChanged',
-  ChannelNameChanged = 'chat/channelNameChanged',
+  RoomNameChanged = 'chat/roomNameChanged',
 }
 
 let theBus;
@@ -49,8 +49,7 @@ export function createChatConnection(userId, chatAccessToken) {
       emit({ type: Events.ConversationListChanged, payload: { conversationIds } });
     const onUserPresenceChanged = (matrixId, isOnline, lastSeenAt) =>
       emit({ type: Events.UserPresenceChanged, payload: { matrixId, isOnline, lastSeenAt } });
-    const onChannelNameChanged = (channelId, name) =>
-      emit({ type: Events.ChannelNameChanged, payload: { id: channelId, name } });
+    const onRoomNameChanged = (roomId, name) => emit({ type: Events.RoomNameChanged, payload: { id: roomId, name } });
 
     chatClient.initChat({
       reconnectStart,
@@ -65,7 +64,7 @@ export function createChatConnection(userId, chatAccessToken) {
       onUserJoinedChannel,
       onConversationListChanged,
       onUserPresenceChanged,
-      onChannelNameChanged,
+      onRoomNameChanged,
     });
     chatClient.connect(userId, chatAccessToken);
 

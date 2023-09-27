@@ -310,7 +310,7 @@ export function* saga() {
   );
   yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
   yield takeEveryFromBus(chatBus, ChatEvents.ConversationListChanged, conversationListChangedAction);
-  yield takeEveryFromBus(chatBus, ChatEvents.ChannelNameChanged, channelNameChangedAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.RoomNameChanged, roomNameChangedAction);
 }
 
 function* userJoinedChannelAction({ payload }) {
@@ -321,8 +321,8 @@ function* conversationListChangedAction({ payload }) {
   yield setConversations(payload.conversationIds);
 }
 
-function* channelNameChangedAction(action) {
-  yield channelNameChanged(action.payload.id, action.payload.name);
+function* roomNameChangedAction(action) {
+  yield roomNameChanged(action.payload.id, action.payload.name);
 }
 
 export function* addChannel(channel) {
@@ -340,7 +340,7 @@ export function* setConversations(conversationIds: string[]) {
   }
 }
 
-export function* channelNameChanged(id: string, name: string) {
+export function* roomNameChanged(id: string, name: string) {
   yield put(receiveChannel({ id, name }));
 }
 

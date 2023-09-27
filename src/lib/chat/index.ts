@@ -20,7 +20,7 @@ export interface RealtimeChatEvents {
   onUserLeft: (channelId: string, userId: string) => void;
   onConversationListChanged: (conversationIds: string[]) => void;
   onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
-  onChannelNameChanged: (channelId: string, name: string) => void;
+  onRoomNameChanged: (channelId: string, name: string) => void;
 }
 
 export interface IChatClient {

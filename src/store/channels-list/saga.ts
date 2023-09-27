@@ -310,6 +310,7 @@ export function* saga() {
   );
   yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
   yield takeEveryFromBus(chatBus, ChatEvents.ConversationListChanged, conversationListChangedAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.RoomNameChanged, roomNameChangedAction);
 }
 
 function* userJoinedChannelAction({ payload }) {
@@ -318,6 +319,10 @@ function* userJoinedChannelAction({ payload }) {
 
 function* conversationListChangedAction({ payload }) {
   yield setConversations(payload.conversationIds);
+}
+
+function* roomNameChangedAction(action) {
+  yield roomNameChanged(action.payload.id, action.payload.name);
 }
 
 export function* addChannel(channel) {
@@ -333,6 +338,21 @@ export function* setConversations(conversationIds: string[]) {
     const isChannel = !conversationIds.includes(id);
     yield put(receiveChannel({ id, isChannel }));
   }
+}
+
+export function* roomNameChanged(id: string, name: string) {
+  const allRooms = yield select((state) => Object.values(state.normalized.channels));
+  const roomToUpdate = allRooms.find((room) => room.id === id);
+
+  if (!roomToUpdate) {
+    console.error(`Room with id: ${id} not found.`);
+    return;
+  }
+
+  const updatedRoom = { ...roomToUpdate, name };
+  const updatedRoomsList = allRooms.map((room) => (room.id === id ? updatedRoom : room));
+
+  yield put(receive(updatedRoomsList));
 }
 
 function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[]): any {

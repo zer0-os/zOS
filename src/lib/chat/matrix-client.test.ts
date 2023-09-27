@@ -9,6 +9,7 @@ const stubRoom = (attrs = {}) => ({
   getAvatarUrl: () => '',
   getMembers: () => [],
   getDMInviter: () => undefined,
+  loadMembersIfNeeded: () => undefined,
   ...attrs,
 });
 

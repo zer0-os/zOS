@@ -97,6 +97,10 @@ export class MatrixClient implements IChatClient {
     const rooms = await this.getFilteredRooms(this.isConversation);
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
+      const membership = room.getMyMembership();
+      if (membership === 'invite') {
+        await this.matrix.joinRoom(room.roomId);
+      }
     }
     return rooms.map(this.mapConversation);
   }

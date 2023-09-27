@@ -11,6 +11,7 @@ const stubRoom = (attrs = {}) => ({
   getDMInviter: () => undefined,
   loadMembersIfNeeded: () => undefined,
   getLiveTimeline: () => stubTimeline(),
+  getMyMembership: () => 'join',
   ...attrs,
 });
 

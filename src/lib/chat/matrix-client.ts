@@ -328,9 +328,18 @@ export class MatrixClient implements IChatClient {
     const otherMembersList = this.getOtherMembersFromRoom(room);
     const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
 
+    let name = '';
+    const roomNameEvent = room
+      .getLiveTimeline()
+      .getState(EventTimeline.FORWARDS)
+      .getStateEvents(EventType.RoomName, '');
+    if (roomNameEvent && roomNameEvent.getType() === EventType.RoomName) {
+      name = roomNameEvent.getContent().name;
+    }
+
     return {
       id: room.roomId,
-      name: '',
+      name,
       icon: null,
       isChannel: true,
       // Even if a member leaves they stay in the member list so this will still be correct

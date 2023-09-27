@@ -10,8 +10,17 @@ const stubRoom = (attrs = {}) => ({
   getMembers: () => [],
   getDMInviter: () => undefined,
   loadMembersIfNeeded: () => undefined,
+  getLiveTimeline: () => stubTimeline(),
   ...attrs,
 });
+
+function stubTimeline() {
+  return {
+    getState: () => ({
+      getStateEvents: () => null,
+    }),
+  };
+}
 
 const getMockAccountData = (data = {}) => {
   return jest.fn((eventType) => {

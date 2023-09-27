@@ -87,11 +87,17 @@ export class MatrixClient implements IChatClient {
 
   async getChannels(_id: string) {
     const rooms = await this.getFilteredRooms(this.isChannel);
+    for (const room of rooms) {
+      await room.loadMembersIfNeeded();
+    }
     return rooms.map(this.mapChannel);
   }
 
   async getConversations() {
     const rooms = await this.getFilteredRooms(this.isConversation);
+    for (const room of rooms) {
+      await room.loadMembersIfNeeded();
+    }
     return rooms.map(this.mapConversation);
   }
 
@@ -215,6 +221,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
+    this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -304,13 +311,26 @@ export class MatrixClient implements IChatClient {
     }
   };
 
+  private publishMembershipChange = (event: MatrixEvent) => {
+    if (event.getType() === EventType.RoomMember) {
+      const user = this.mapUser(event.getStateKey());
+      if (event.getStateKey() !== this.userId) {
+        if (event.getContent().membership === 'leave') {
+          this.events.onOtherUserLeftChannel(event.getRoomId(), user);
+        } else {
+          this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
+        }
+      }
+    }
+  };
+
   private mapToGeneralChannel(room: Room) {
     const otherMembersList = this.getOtherMembersFromRoom(room);
     const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
 
     return {
       id: room.roomId,
-      name: room.name,
+      name: '',
       icon: null,
       isChannel: true,
       // Even if a member leaves they stay in the member list so this will still be correct
@@ -339,9 +359,9 @@ export class MatrixClient implements IChatClient {
   private mapUser(userId: string): UserModel {
     const user = this.matrix.getUser(userId);
     return {
-      userId: user?.userId,
-      matrixId: user?.userId,
-      firstName: '',
+      userId: userId,
+      matrixId: userId,
+      firstName: user?.displayName,
       lastName: '',
       profileId: '',
       isOnline: user?.presence === 'online',
@@ -353,6 +373,7 @@ export class MatrixClient implements IChatClient {
   private getOtherMembersFromRoom(room: Room): string[] {
     return room
       .getMembers()
+      .filter((member) => member.membership === 'join' || member.membership === 'invite')
       .filter((member) => member.userId !== this.userId)
       .map((member) => member.userId);
   }

@@ -86,7 +86,10 @@ export class StoreBuilder {
       channelsList: { value: channelsList },
       normalized: {
         ...channelEntitities,
-        users: normalizedUsers,
+        users: {
+          ...channelEntitities.users,
+          ...normalizedUsers,
+        },
       } as any,
       chat: {
         activeChannelId: this.activeChannel.id || null,

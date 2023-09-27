@@ -1,5 +1,5 @@
 import { Message, MessagesResponse } from '../../store/messages';
-import { Channel } from '../../store/channels/index';
+import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -21,6 +21,8 @@ export interface RealtimeChatEvents {
   onConversationListChanged: (conversationIds: string[]) => void;
   onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
+  onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
+  onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
 }
 
 export interface IChatClient {

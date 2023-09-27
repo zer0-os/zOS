@@ -371,10 +371,9 @@ export class MatrixClient implements IChatClient {
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {
-    // This is actually wrong...we need the current active list
-    console.log('XXX room: ', room.getMembers());
     return room
       .getMembers()
+      .filter((member) => member.membership === 'join' || member.membership === 'invite')
       .filter((member) => member.userId !== this.userId)
       .map((member) => member.userId);
   }

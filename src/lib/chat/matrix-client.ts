@@ -16,6 +16,7 @@ import {
   MatrixEventEvent,
   RoomStateEvent,
   MatrixEvent,
+  EventTimeline,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
@@ -213,6 +214,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
+    this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -290,6 +292,15 @@ export class MatrixClient implements IChatClient {
         content.presence === 'online',
         content.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
       );
+    }
+  };
+
+  private publishRoomNameChange = (room: Room) => {
+    const event = room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(EventType.RoomName, '');
+    if (event && event.getType() === EventType.RoomName) {
+      const content = event.getContent();
+
+      this.events.onRoomNameChanged(room.roomId, content.name);
     }
   };
 

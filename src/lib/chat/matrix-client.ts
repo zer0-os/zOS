@@ -298,9 +298,11 @@ export class MatrixClient implements IChatClient {
   private publishRoomNameChange = (room: Room) => {
     const event = room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(EventType.RoomName, '');
 
-    if (event) {
+    if (event && event.getType() === EventType.RoomName) {
       const content = event.getContent();
-      this.events.onRoomNameChanged(room.roomId, content.name);
+      if (content && content.name) {
+        this.events.onRoomNameChanged(room.roomId, content.name);
+      }
     }
   };
 

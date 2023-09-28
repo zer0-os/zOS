@@ -1,17 +1,21 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { createConversation, groupMembersSelected, reset, startConversation } from './saga';
+import {
+  createConversation,
+  groupMembersSelected,
+  performGroupMembersSelected,
+  reset,
+  startConversation,
+} from './saga';
 import { setGroupCreating, reducer, Stage, setFetchingConversations, setStage } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setactiveConversationId } from '../chat';
-import { select } from 'redux-saga/effects';
 import { currentUserSelector } from '../authentication/selectors';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
-import { createECDH } from 'crypto';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -63,8 +67,19 @@ describe('create conversation saga', () => {
   });
 
   describe(groupMembersSelected, () => {
-    function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], payload = { users: [] }) {
-      return expectSaga(groupMembersSelected, { payload }).provide([
+    it('manages loading state', async () => {
+      return testSaga(groupMembersSelected, { payload: {} })
+        .next()
+        .put(setFetchingConversations(true))
+        .next()
+        .next()
+        .put(setFetchingConversations(false));
+    });
+  });
+
+  describe(performGroupMembersSelected, () => {
+    function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], users = []) {
+      return expectSaga(performGroupMembersSelected, users).provide([
         [matchers.select(currentUserSelector), { id: 'stub-user-id' }],
         [matchers.call.fn(fetchConversationsWithUsers), channels],
         [matchers.call.fn(channelsReceived), null],
@@ -73,7 +88,7 @@ describe('create conversation saga', () => {
 
     it('includes current user when fetching conversations', async () => {
       const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
-      return expectSaga(groupMembersSelected, { payload: { users: [{ value: 'other-user-id' }] } })
+      return expectSaga(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
         .provide([
           [matchers.call.fn(fetchConversationsWithUsers), []],
         ])
@@ -108,21 +123,13 @@ describe('create conversation saga', () => {
       expect(returnValue).toEqual(Stage.None);
     });
 
-    it('manages loading state', async () => {
-      return testSaga(groupMembersSelected, { payload: {} })
-        .next()
-        .put(setFetchingConversations(true))
-        .next()
-        .next()
-        .put(setFetchingConversations(false));
-    });
-
     it('moves to group details stage if no existing conversations found', async () => {
       const initialState = defaultState({ stage: Stage.StartGroupChat });
 
-      const { returnValue, storeState: state } = await expectSaga(groupMembersSelected, {
-        payload: { users: [{ value: 'user-1' }, { value: 'user-2' }] },
-      })
+      const { returnValue, storeState: state } = await expectSaga(performGroupMembersSelected, [
+        { value: 'user-1' },
+        { value: 'user-2' },
+      ] as any)
         .provide([
           [matchers.select(currentUserSelector), {}],
           [matchers.call.fn(fetchConversationsWithUsers), []],

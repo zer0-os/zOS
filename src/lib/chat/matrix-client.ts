@@ -199,6 +199,10 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async fetchConversationsWithUsers(_userIds: string[]) {
+    return [];
+  }
+
   get isDisconnected() {
     return this.connectionStatus === ConnectionStatus.Disconnected;
   }

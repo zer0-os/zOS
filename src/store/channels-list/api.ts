@@ -27,11 +27,6 @@ export async function createConversation(
   return directMessages.body;
 }
 
-export async function fetchConversationsWithUsers(userIds: string[]): Promise<any[]> {
-  const response = await get<Channel[]>('/conversations', { userIds });
-  return response.body;
-}
-
 interface ImageApiUploadResponse {
   apiUrl: string;
   query: string;

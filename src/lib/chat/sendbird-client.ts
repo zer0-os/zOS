@@ -14,6 +14,7 @@ import { uploadImage, createConversation as createConversationMessageApi } from 
 import { MemberNetworks } from '../../store/users/types';
 import { DirectMessage } from '../../store/channels-list/types';
 import { MentionableUser } from '../../store/channels/api';
+import { Channel } from '../../store/channels';
 
 export class SendbirdClient implements IChatClient {
   sendbird: SendbirdGroupChat = null;
@@ -141,6 +142,11 @@ export class SendbirdClient implements IChatClient {
     optimisticId?: string
   ): Promise<any> {
     return sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
+  }
+
+  async fetchConversationsWithUsers(userIds: string[]): Promise<any[]> {
+    const response = await get<Channel[]>('/conversations', { userIds });
+    return response.body;
   }
 
   private initSessionHandler(events: RealtimeChatEvents) {

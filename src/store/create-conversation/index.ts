@@ -26,7 +26,11 @@ export enum Stage {
 
 type CreateConversationState = {
   stage: Stage;
-  groupUsers: [];
+  groupUsers: {
+    value: string;
+    label: string;
+    image?: string;
+  }[];
   startGroupChat: {
     isLoading: boolean;
   };
@@ -59,7 +63,7 @@ const slice = createSlice({
     setGroupCreating: (state, action: PayloadAction<boolean>) => {
       state.groupDetails.isCreating = action.payload;
     },
-    setGroupUsers: (state, action: PayloadAction<[]>) => {
+    setGroupUsers: (state, action: PayloadAction<CreateConversationState['groupUsers']>) => {
       state.groupUsers = action.payload;
     },
   },

@@ -128,7 +128,7 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === 'm.room.message');
     const mappedMessages = [];
     for (const message of messages) {
-      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
+      mappedMessages.push(await mapMatrixMessage(message, this.matrix, this.userId));
     }
 
     return { messages: mappedMessages as any, hasMore: false };
@@ -175,7 +175,7 @@ export class MatrixClient implements IChatClient {
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
     return {
-      ...(await mapMatrixMessage(newMessage, this.matrix)),
+      ...(await mapMatrixMessage(newMessage, this.matrix, this.userId)),
       optimisticId,
     };
   }
@@ -208,7 +208,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === 'm.room.message') {
-        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix, this.userId)) as any);
       }
 
       if (event.type === 'm.room.create') {

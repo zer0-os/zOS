@@ -22,13 +22,22 @@ async function extractParentMessageData(matrixMessage, sdkMatrixClient: SDKMatri
   return parentMessageData;
 }
 
-export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient, currentMatrixUserId: string) {
+  const { event_id, content, origin_server_ts, sender } = matrixMessage;
+  const senderData = sdkMatrixClient.getUser(sender);
+
   return {
-    id: matrixMessage.event_id,
-    message: matrixMessage.content.body,
-    createdAt: matrixMessage.origin_server_ts,
+    id: event_id,
+    message: content.body,
+    createdAt: origin_server_ts,
     updatedAt: null,
-    sender: {},
+    sender: {
+      userId: sender,
+      firstName: sender === currentMatrixUserId ? 'You' : senderData.displayName,
+      lastName: '',
+      profileImage: '',
+      profileId: '',
+    },
     isAdmin: false,
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
     ...(await extractParentMessageData(matrixMessage, sdkMatrixClient)),

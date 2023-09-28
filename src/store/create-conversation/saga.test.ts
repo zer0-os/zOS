@@ -8,7 +8,10 @@ import { channelsReceived, createConversation as performCreateConversation } fro
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setactiveConversationId } from '../chat';
 import { select } from 'redux-saga/effects';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
+import { rootReducer } from '../reducer';
+import { StoreBuilder } from '../test/store';
+import { createECDH } from 'crypto';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -62,17 +65,19 @@ describe('create conversation saga', () => {
   describe(groupMembersSelected, () => {
     function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], payload = { users: [] }) {
       return expectSaga(groupMembersSelected, { payload }).provide([
+        [matchers.select(currentUserSelector), { id: 'stub-user-id' }],
         [matchers.call.fn(fetchConversationsWithUsers), channels],
         [matchers.call.fn(channelsReceived), null],
       ]);
     }
 
     it('includes current user when fetching conversations', async () => {
+      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
       return expectSaga(groupMembersSelected, { payload: { users: [{ value: 'other-user-id' }] } })
         .provide([
-          [select(currentUserSelector), { id: 'current-user-id' }],
           [matchers.call.fn(fetchConversationsWithUsers), []],
         ])
+        .withReducer(rootReducer, initialState.build())
         .call(fetchConversationsWithUsers, ['current-user-id', 'other-user-id'])
         .run();
     });
@@ -93,10 +98,11 @@ describe('create conversation saga', () => {
     });
 
     it('returns to initial state when existing conversation selected', async () => {
-      const initialState = defaultState({ stage: Stage.StartGroupChat });
+      const createConversationState = defaultState({ stage: Stage.StartGroupChat });
+      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
 
       const { returnValue } = await expectWithExistingChannels([{ id: 'convo-1' }])
-        .withReducer(reducer, initialState)
+        .withReducer(rootReducer, { ...initialState.build(), createConversation: createConversationState } as any)
         .run();
 
       expect(returnValue).toEqual(Stage.None);
@@ -118,6 +124,7 @@ describe('create conversation saga', () => {
         payload: { users: [{ value: 'user-1' }, { value: 'user-2' }] },
       })
         .provide([
+          [matchers.select(currentUserSelector), {}],
           [matchers.call.fn(fetchConversationsWithUsers), []],
         ])
         .withReducer(reducer, initialState)

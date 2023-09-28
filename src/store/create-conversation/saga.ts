@@ -3,8 +3,8 @@ import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, set
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setactiveConversationId } from '../chat';
-import { currentUserSelector } from '../authentication/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
+import { currentUserSelector } from '../authentication/selectors';
 
 export function* reset() {
   yield put(setGroupUsers([]));

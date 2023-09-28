@@ -79,10 +79,9 @@ describe('create conversation saga', () => {
   });
 
   describe(performGroupMembersSelected, () => {
-    function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], users = []) {
-      return expectSaga(performGroupMembersSelected, users).provide([
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
         [matchers.select(currentUserSelector), { id: 'stub-user-id' }],
-        [matchers.call.fn(fetchConversationsWithUsers), channels],
         [matchers.call.fn(channelsReceived), null],
       ]);
     }
@@ -99,16 +98,15 @@ describe('create conversation saga', () => {
     });
 
     it('saves first existing conversation', async () => {
-      await expectWithExistingChannels([
-        { id: 'convo-1' },
-        { id: 'convo-2' },
-      ])
+      await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }, { id: 'convo-2' }]]])
         .call(channelsReceived, { payload: { channels: [{ id: 'convo-1' }] } })
         .run();
     });
 
     it('opens the existing conversation', async () => {
-      await expectWithExistingChannels([{ id: 'convo-1' }])
+      await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
         .put(setactiveConversationId('convo-1'))
         .run();
     });
@@ -117,7 +115,8 @@ describe('create conversation saga', () => {
       const createConversationState = defaultState({ stage: Stage.StartGroupChat });
       const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
 
-      const { returnValue } = await expectWithExistingChannels([{ id: 'convo-1' }])
+      const { returnValue } = await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
         .withReducer(rootReducer, { ...initialState.build(), createConversation: createConversationState } as any)
         .run();
 

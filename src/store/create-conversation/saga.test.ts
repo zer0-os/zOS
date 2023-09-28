@@ -59,36 +59,21 @@ describe('create conversation saga', () => {
     });
   });
 
-  describe('groupMembersSelected', () => {
+  describe(groupMembersSelected, () => {
     function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], payload = { users: [] }) {
       return expectSaga(groupMembersSelected, { payload }).provide([
-        [
-          matchers.call.fn(fetchConversationsWithUsers),
-          channels,
-        ],
-        [
-          matchers.call.fn(channelsReceived),
-          null,
-        ],
+        [matchers.call.fn(fetchConversationsWithUsers), channels],
+        [matchers.call.fn(channelsReceived), null],
       ]);
     }
 
     it('includes current user when fetching conversations', async () => {
       return expectSaga(groupMembersSelected, { payload: { users: [{ value: 'other-user-id' }] } })
         .provide([
-          [
-            select(currentUserSelector),
-            { id: 'current-user-id' },
-          ],
-          [
-            matchers.call.fn(fetchConversationsWithUsers),
-            [],
-          ],
+          [select(currentUserSelector), { id: 'current-user-id' }],
+          [matchers.call.fn(fetchConversationsWithUsers), []],
         ])
-        .call(fetchConversationsWithUsers, [
-          'current-user-id',
-          'other-user-id',
-        ])
+        .call(fetchConversationsWithUsers, ['current-user-id', 'other-user-id'])
         .run();
     });
 
@@ -130,30 +115,15 @@ describe('create conversation saga', () => {
       const initialState = defaultState({ stage: Stage.StartGroupChat });
 
       const { returnValue, storeState: state } = await expectSaga(groupMembersSelected, {
-        payload: {
-          users: [
-            { value: 'user-1' },
-            { value: 'user-2' },
-          ],
-        },
+        payload: { users: [{ value: 'user-1' }, { value: 'user-2' }] },
       })
         .provide([
-          [
-            matchers.call.fn(fetchConversationsWithUsers),
-            [],
-          ],
+          [matchers.call.fn(fetchConversationsWithUsers), []],
         ])
         .withReducer(reducer, initialState)
         .run();
 
-      expect(state).toEqual(
-        expect.objectContaining({
-          groupUsers: [
-            { value: 'user-1' },
-            { value: 'user-2' },
-          ],
-        })
-      );
+      expect(state).toEqual(expect.objectContaining({ groupUsers: [{ value: 'user-1' }, { value: 'user-2' }] }));
       expect(returnValue).toEqual(Stage.GroupDetails);
     });
   });

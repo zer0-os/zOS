@@ -86,10 +86,9 @@ describe('create conversation saga', () => {
 
     it('includes current user when fetching conversations', async () => {
       const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
+
       return expectSaga(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
-        .provide([
-          [matchers.call.fn(fetchConversationsWithUsers), []],
-        ])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
         .withReducer(rootReducer, initialState.build())
         .call(fetchConversationsWithUsers, ['current-user-id', 'other-user-id'])
         .run();
@@ -130,9 +129,7 @@ describe('create conversation saga', () => {
         .withReducer(rootReducer, initialState)
         .run();
 
-      expect(storeState.createConversation).toEqual(
-        expect.objectContaining({ groupUsers: [{ value: 'user-1' }, { value: 'user-2' }] })
-      );
+      expect(storeState.createConversation).toEqual(expect.objectContaining({ groupUsers: users }));
       expect(returnValue).toEqual(Stage.GroupDetails);
     });
   });

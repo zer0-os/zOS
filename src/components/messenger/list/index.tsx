@@ -99,7 +99,6 @@ export class Container extends React.Component<Properties, State> {
     const hasWallet = user?.data?.wallets?.length > 0;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
-    console.log('CONVERSATIONS', conversations);
 
     return {
       conversations,
@@ -307,7 +306,7 @@ export class Container extends React.Component<Properties, State> {
 function addLastMessageMeta(state: RootState): any {
   return (conversation) => {
     const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
-    console.log('SORTED MESSAGES', sortedMessages);
+
     let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
     return {
       ...conversation,

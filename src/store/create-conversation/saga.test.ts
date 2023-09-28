@@ -13,7 +13,6 @@ import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
-import { currentUserSelector } from '../authentication/selectors';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 

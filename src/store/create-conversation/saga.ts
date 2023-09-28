@@ -3,8 +3,8 @@ import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, set
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
 import { setactiveConversationId } from '../chat';
-import { currentUserSelector } from '../authentication/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
+import { currentUserSelector } from '../authentication/selectors';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -18,15 +18,13 @@ export const getStage = (state) => state.createConversation.stage;
 export function* groupMembersSelected(action) {
   try {
     yield put(setFetchingConversations(true));
-    return yield call(performGroupMembersSelected, action);
+    return yield call(performGroupMembersSelected, action.payload.users);
   } finally {
     yield put(setFetchingConversations(false));
   }
 }
 
-export function* performGroupMembersSelected(action) {
-  const { users } = action.payload;
-
+export function* performGroupMembersSelected(users: { value: string; label: string; image?: string }[]) {
   const currentUser = yield select(currentUserSelector);
   const userIds = [
     currentUser.id,

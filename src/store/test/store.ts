@@ -23,6 +23,7 @@ export class StoreBuilder {
   activeConversation: Partial<Channel> = {};
   isFullScreenMessenger: boolean = true;
   currentUser: Partial<AuthenticatedUser> = { ...DEFAULT_USER_ATTRS };
+  otherState: any = {};
 
   withActiveChannel(channel: Partial<Channel>) {
     this.activeChannel = channel;
@@ -68,6 +69,11 @@ export class StoreBuilder {
     return this;
   }
 
+  withOtherState(data: any) {
+    this.otherState = data;
+    return this;
+  }
+
   build() {
     const { result: channelsList, entities: channelEntitities } = normalizeChannel(
       [
@@ -103,6 +109,7 @@ export class StoreBuilder {
       authentication: {
         user: { data: this.currentUser },
       },
+      ...this.otherState,
     } as RootState;
   }
 }

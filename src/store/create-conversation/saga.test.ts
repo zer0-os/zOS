@@ -9,11 +9,10 @@ import {
   reset,
   startConversation,
 } from './saga';
-import { setGroupCreating, reducer, Stage, setFetchingConversations, setStage } from '.';
+import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
-import { setactiveConversationId } from '../chat';
 import { currentUserSelector } from '../authentication/selectors';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
@@ -80,10 +79,9 @@ describe('create conversation saga', () => {
 
   describe(performGroupMembersSelected, () => {
     function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args).provide([
-        [matchers.select(currentUserSelector), { id: 'stub-user-id' }],
-        [matchers.call.fn(channelsReceived), null],
-      ]);
+      return expectSaga(...args)
+        .provide([[matchers.call.fn(channelsReceived), null]])
+        .withReducer(rootReducer, defaultState());
     }
 
     it('includes current user when fetching conversations', async () => {
@@ -105,39 +103,36 @@ describe('create conversation saga', () => {
     });
 
     it('opens the existing conversation', async () => {
-      await subject(performGroupMembersSelected, [])
+      const { storeState } = await subject(performGroupMembersSelected, [])
         .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
-        .put(setactiveConversationId('convo-1'))
         .run();
+
+      expect(storeState.chat.activeConversationId).toBe('convo-1');
     });
 
     it('returns to initial state when existing conversation selected', async () => {
-      const createConversationState = defaultState({ stage: Stage.StartGroupChat });
-      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
+      const initialState = defaultState({ stage: Stage.StartGroupChat });
 
       const { returnValue } = await subject(performGroupMembersSelected, [])
         .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
-        .withReducer(rootReducer, { ...initialState.build(), createConversation: createConversationState } as any)
+        .withReducer(rootReducer, initialState)
         .run();
 
       expect(returnValue).toEqual(Stage.None);
     });
 
     it('moves to group details stage if no existing conversations found', async () => {
+      const users = [{ value: 'user-1' }, { value: 'user-2' }];
       const initialState = defaultState({ stage: Stage.StartGroupChat });
 
-      const { returnValue, storeState: state } = await expectSaga(performGroupMembersSelected, [
-        { value: 'user-1' },
-        { value: 'user-2' },
-      ] as any)
-        .provide([
-          [matchers.select(currentUserSelector), {}],
-          [matchers.call.fn(fetchConversationsWithUsers), []],
-        ])
-        .withReducer(reducer, initialState)
+      const { returnValue, storeState } = await subject(performGroupMembersSelected, users)
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
+        .withReducer(rootReducer, initialState)
         .run();
 
-      expect(state).toEqual(expect.objectContaining({ groupUsers: [{ value: 'user-1' }, { value: 'user-2' }] }));
+      expect(storeState.createConversation).toEqual(
+        expect.objectContaining({ groupUsers: [{ value: 'user-1' }, { value: 'user-2' }] })
+      );
       expect(returnValue).toEqual(Stage.GroupDetails);
     });
   });
@@ -151,7 +146,9 @@ describe('create conversation saga', () => {
         groupDetails: { isCreating: true },
       });
 
-      const { storeState: state } = await expectSaga(reset).withReducer(reducer, initialState).run();
+      const {
+        storeState: { createConversation: state },
+      } = await expectSaga(reset).withReducer(rootReducer, initialState).run();
 
       expect(state).toEqual({
         stage: Stage.None,
@@ -182,11 +179,16 @@ describe('create conversation saga', () => {
 });
 
 function defaultState(attrs = {}) {
-  return {
-    stage: Stage.None,
-    groupUsers: [] as any,
-    startGroupChat: { isLoading: false },
-    groupDetails: { isCreating: false },
-    ...attrs,
-  };
+  return new StoreBuilder()
+    .withCurrentUser({ id: 'current-user-id' })
+    .withOtherState({
+      createConversation: {
+        stage: Stage.None,
+        groupUsers: [] as any,
+        startGroupChat: { isLoading: false },
+        groupDetails: { isCreating: false },
+        ...attrs,
+      },
+    })
+    .build();
 }

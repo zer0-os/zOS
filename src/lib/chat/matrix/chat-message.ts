@@ -23,8 +23,8 @@ async function extractParentMessageData(matrixMessage, sdkMatrixClient: SDKMatri
 }
 
 export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient, currentMatrixUserId: string) {
-  const { event_id, content, origin_server_ts, sender } = matrixMessage;
-  const senderData = sdkMatrixClient.getUser(sender);
+  const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
+  const senderData = sdkMatrixClient.getUser(senderId);
 
   return {
     id: event_id,
@@ -32,8 +32,9 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     createdAt: origin_server_ts,
     updatedAt: null,
     sender: {
-      userId: sender,
-      firstName: sender === currentMatrixUserId ? 'You' : senderData.displayName,
+      userId: senderId,
+      // remove condition when matrix maps to zos user
+      firstName: senderId === currentMatrixUserId ? 'You' : senderData.displayName,
       lastName: '',
       profileImage: '',
       profileId: '',

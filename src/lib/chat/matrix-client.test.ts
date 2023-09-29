@@ -12,6 +12,7 @@ const stubRoom = (attrs = {}) => ({
   loadMembersIfNeeded: () => undefined,
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
+  getEvents: () => stubTimeline(),
   ...attrs,
 });
 
@@ -20,6 +21,7 @@ function stubTimeline() {
     getState: () => ({
       getStateEvents: () => null,
     }),
+    getEvents: () => [],
   };
 }
 

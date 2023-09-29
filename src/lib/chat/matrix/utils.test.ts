@@ -2,16 +2,28 @@
 import { getFilteredMembersForAutoComplete } from './utils';
 
 // Example room members data
-const roomMembers = {
-  '@ratik21:zero-synapse-development.zer0.io': {
-    avatar_url: null,
-    display_name: 'ratik21',
+const roomMembers = [
+  {
+    userId: '@domw:zero-synapse-development.zer0.io',
+    matrixId: '@domw:zero-synapse-development.zer0.io',
+    firstName: 'domw',
+    lastName: '',
+    profileId: '',
+    isOnline: false,
+    profileImage: '',
+    lastSeenAt: '',
   },
-  '@dale.fukami:zero-synapse-development.zer0.io': {
-    avatar_url: null,
-    display_name: 'dale.fukami',
+  {
+    userId: '@dale.fukami:zero-synapse-development.zer0.io',
+    matrixId: '@dale.fukami:zero-synapse-development.zer0.io',
+    firstName: 'dale.fukami',
+    lastName: '',
+    profileId: '',
+    isOnline: false,
+    profileImage: '',
+    lastSeenAt: '',
   },
-};
+];
 
 describe('getFilteredMembersForAutoComplete', () => {
   it('should return empty array if no matching members', async () => {
@@ -33,37 +45,14 @@ describe('getFilteredMembersForAutoComplete', () => {
     ]);
   });
 
-  it('should return filtered members based on matrix ID if display name is NOT set', async () => {
-    const filter = 'ratik21';
-    const result = await getFilteredMembersForAutoComplete(
-      {
-        ...roomMembers,
-        '@ratik21:zero-synapse-development.zer0.io': {
-          avatar_url: null,
-          display_name: '',
-        },
-      },
-      filter
-    );
-
-    // Expect members with 'ratik21' in matrix ID
-    expect(result).toEqual([
-      {
-        matrixId: '@ratik21:zero-synapse-development.zer0.io',
-        displayName: 'ratik21',
-        avatar_url: '',
-      },
-    ]);
-  });
-
   it('should return case-insensitive results', async () => {
-    const filter = 'RaTiK21'; // Case-insensitive filter
+    const filter = 'dOmW'; // Case-insensitive filter
     const result = await getFilteredMembersForAutoComplete(roomMembers, filter);
     // Expect members with 'ratik21' in display name
     expect(result).toEqual([
       {
-        matrixId: '@ratik21:zero-synapse-development.zer0.io',
-        displayName: 'ratik21',
+        matrixId: '@domw:zero-synapse-development.zer0.io',
+        displayName: 'domw',
         avatar_url: '',
       },
     ]);
@@ -75,8 +64,8 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect all members
     expect(result).toEqual([
       {
-        matrixId: '@ratik21:zero-synapse-development.zer0.io',
-        displayName: 'ratik21',
+        matrixId: '@domw:zero-synapse-development.zer0.io',
+        displayName: 'domw',
         avatar_url: '',
       },
       {

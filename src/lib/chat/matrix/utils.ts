@@ -1,4 +1,5 @@
 import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { User as ChannelMember } from '../../../store/channels';
 
 // Copied from the matrix-react-sdk
 export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: string): Promise<void> {
@@ -38,21 +39,18 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }
 
-export async function getFilteredMembersForAutoComplete(
-  roomMembers: { [userId: string]: { avatar_url?: string; display_name?: string } },
-  filter: string
-) {
+// TODO: follow up to use zOS user instead of matrix user
+export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
   const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
 
   const filteredResults = [];
-  for (let matrixId of Object.keys(roomMembers)) {
-    let displayName = roomMembers[matrixId]['display_name'] || matrixId.match(/@([^:]+)/)[1] || '';
+  for (const member of roomMembers) {
+    let displayName = member.matrixId?.match(/@([^:]+)/)[1] || '';
     if (displayName.includes(normalizedFilter)) {
       filteredResults.push({
-        matrixId,
-        // should we prioritize the display_name, avatar_url from matrix OR our own db?
+        matrixId: member.matrixId,
         displayName,
-        avatar_url: roomMembers[matrixId]['avatar_url'] || '', // this will likely be '' for now
+        avatar_url: '',
       });
     }
   }

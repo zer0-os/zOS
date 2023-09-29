@@ -218,7 +218,7 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(this.props.id, search);
+    return await searchMentionableUsersForChannel(this.props.id, search, this.props.otherMembers);
   };
 
   get failureMessage() {

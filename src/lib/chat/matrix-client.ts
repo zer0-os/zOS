@@ -119,9 +119,8 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
-  async searchMentionableUsersForChannel(channelId: string, search: string) {
-    const roomMembers = await this.matrix.getJoinedRoomMembers(channelId);
-    const searchResults = await getFilteredMembersForAutoComplete(roomMembers.joined, search);
+  async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
+    const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
     return searchResults.map((u) => ({ id: u.matrixId, display: u.displayName, profileImage: u.avatar_url }));
   }
 

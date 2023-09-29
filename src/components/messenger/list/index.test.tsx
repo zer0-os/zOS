@@ -45,7 +45,6 @@ describe('messenger-list', () => {
       showRewardsInTooltip: false,
       showRewardsInPopup: false,
       onConversationClick: jest.fn(),
-      fetchConversations: jest.fn(),
       createConversation: jest.fn(),
       startCreateConversation: () => null,
       membersSelected: () => null,
@@ -68,14 +67,6 @@ describe('messenger-list', () => {
     const wrapper = subject({});
 
     expect(wrapper.find('.direct-message-members').exists()).toBe(true);
-  });
-
-  it('start sync direct messages', function () {
-    const fetchConversations = jest.fn();
-
-    subject({ fetchConversations });
-
-    expect(fetchConversations).toHaveBeenCalledOnce();
   });
 
   it('publishes close event when titlebar X clicked', function () {

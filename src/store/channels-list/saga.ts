@@ -303,7 +303,6 @@ export function* saga() {
   yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
-  yield takeLatest(SagaActionTypes.FetchConversations, fetchConversations);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);

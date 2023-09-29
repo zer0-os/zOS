@@ -3,7 +3,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
 import { openConversation } from '../../../store/channels';
-import { denormalizeConversations, fetchConversations } from '../../../store/channels-list';
+import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -70,7 +70,6 @@ export interface Properties extends PublicProperties {
   startCreateConversation: () => void;
   startGroup: () => void;
   back: () => void;
-  fetchConversations: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
@@ -127,7 +126,6 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       onConversationClick: openConversation,
-      fetchConversations,
       createConversation,
       startCreateConversation,
       back,
@@ -147,7 +145,6 @@ export class Container extends React.Component<Properties, State> {
   };
 
   componentDidMount(): void {
-    this.props.fetchConversations();
     this.props.fetchRewards({});
   }
 

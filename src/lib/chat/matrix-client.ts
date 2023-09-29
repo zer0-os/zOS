@@ -330,26 +330,9 @@ export class MatrixClient implements IChatClient {
   };
 
   private mapToGeneralChannel(room: Room) {
-    const otherMembersList = this.getOtherMembersFromRoom(room);
-    const otherMembers = otherMembersList.map((userId) => this.mapUser(userId));
-
-    let name = '';
-    const roomNameEvent = room
-      .getLiveTimeline()
-      .getState(EventTimeline.FORWARDS)
-      .getStateEvents(EventType.RoomName, '');
-    if (roomNameEvent && roomNameEvent.getType() === EventType.RoomName) {
-      name = roomNameEvent.getContent().name;
-    }
-
-    let lastMessageEvent = null;
-    const timelineEvents = room.getLiveTimeline().getEvents();
-    for (let i = timelineEvents.length - 1; i >= 0; i--) {
-      if (timelineEvents[i].getType() === EventType.RoomMessage) {
-        lastMessageEvent = timelineEvents[i];
-        break;
-      }
-    }
+    const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
+    const name = this.getRoomName(room);
+    const lastMessageEvent = this.getLastMessageEvent(room);
     const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
 
     return {
@@ -421,6 +404,31 @@ export class MatrixClient implements IChatClient {
       preview: null,
       sendStatus: null,
     };
+  }
+
+  private getRoomName(room: Room): string {
+    const roomNameEvent = room
+      .getLiveTimeline()
+      .getState(EventTimeline.FORWARDS)
+      .getStateEvents(EventType.RoomName, '');
+
+    if (roomNameEvent && roomNameEvent.getType() === EventType.RoomName) {
+      return roomNameEvent.getContent().name;
+    }
+
+    return '';
+  }
+
+  private getLastMessageEvent(room: Room) {
+    const timelineEvents = room.getLiveTimeline().getEvents();
+
+    for (let i = timelineEvents.length - 1; i >= 0; i--) {
+      if (timelineEvents[i].getType() === EventType.RoomMessage) {
+        return timelineEvents[i];
+      }
+    }
+
+    return null;
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

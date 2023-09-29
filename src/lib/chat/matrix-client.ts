@@ -95,6 +95,7 @@ export class MatrixClient implements IChatClient {
 
   async getConversations() {
     const rooms = await this.getFilteredRooms(this.isConversation);
+
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
@@ -129,7 +130,7 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === 'm.room.message');
     const mappedMessages = [];
     for (const message of messages) {
-      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
+      mappedMessages.push(await mapMatrixMessage(message, this.matrix, this.userId));
     }
 
     return { messages: mappedMessages as any, hasMore: false };
@@ -176,7 +177,7 @@ export class MatrixClient implements IChatClient {
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
     return {
-      ...(await mapMatrixMessage(newMessage, this.matrix)),
+      ...(await mapMatrixMessage(newMessage, this.matrix, this.userId)),
       optimisticId,
     };
   }
@@ -209,7 +210,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === 'm.room.message') {
-        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix, this.userId)) as any);
       }
 
       if (event.type === 'm.room.create') {
@@ -342,6 +343,16 @@ export class MatrixClient implements IChatClient {
       name = roomNameEvent.getContent().name;
     }
 
+    let lastMessageEvent = null;
+    const timelineEvents = room.getLiveTimeline().getEvents();
+    for (let i = timelineEvents.length - 1; i >= 0; i--) {
+      if (timelineEvents[i].getType() === EventType.RoomMessage) {
+        lastMessageEvent = timelineEvents[i];
+        break;
+      }
+    }
+    const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
+
     return {
       id: room.roomId,
       name,
@@ -351,7 +362,7 @@ export class MatrixClient implements IChatClient {
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
       otherMembers: otherMembers,
-      lastMessage: null,
+      lastMessage: lastMessage,
       groupChannelType: GroupChannelType.Private,
       category: '',
       unreadCount: 0,
@@ -384,6 +395,35 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  private mapMatrixEventToMessage(matrixEvent) {
+    if (!matrixEvent || matrixEvent.getType() !== EventType.RoomMessage) return null;
+
+    const { body: message } = matrixEvent.getContent();
+    const senderId = matrixEvent.getSender();
+    const timestamp = matrixEvent.getTs();
+    const eventId = matrixEvent.getId();
+
+    return {
+      id: eventId,
+      message,
+      isAdmin: false,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      sender: {
+        userId: senderId,
+        // remove condition when matrix maps to zos user
+        firstName: senderId === this.userId ? 'You' : matrixEvent.sender?.name,
+        lastName: '',
+        profileImage: '',
+        profileId: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      preview: null,
+      sendStatus: null,
+    };
+  }
+
   private getOtherMembersFromRoom(room: Room): string[] {
     return room
       .getMembers()
@@ -403,6 +443,7 @@ export class MatrixClient implements IChatClient {
 
     const dmConversationIds = await this.getConversationIds();
     const rooms = this.matrix.getRooms() || [];
+
     return rooms.filter((r) => filterFunc(r, dmConversationIds));
   }
 

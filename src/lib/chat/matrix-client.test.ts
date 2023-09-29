@@ -12,6 +12,7 @@ const stubRoom = (attrs = {}) => ({
   loadMembersIfNeeded: () => undefined,
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
+  getEvents: () => stubTimeline(),
   ...attrs,
 });
 
@@ -20,6 +21,7 @@ function stubTimeline() {
     getState: () => ({
       getStateEvents: () => null,
     }),
+    getEvents: () => [],
   };
 }
 
@@ -44,6 +46,7 @@ const getSdkClient = (sdkClient = {}) => ({
   }),
   getRooms: jest.fn(),
   getAccountData: jest.fn(),
+  getUser: jest.fn(),
   ...sdkClient,
 });
 
@@ -443,8 +446,14 @@ describe('matrix client', () => {
         })
       );
 
+      const getSenderData = jest.fn(() =>
+        Promise.resolve({
+          displayName: 'Joe Bloggs',
+        })
+      );
+
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent })),
+        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
       });
 
       await client.connect('username', 'token');
@@ -482,8 +491,14 @@ describe('matrix client', () => {
         })
       );
 
+      const getSenderData = jest.fn(() =>
+        Promise.resolve({
+          displayName: 'Joe Bloggs',
+        })
+      );
+
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent })),
+        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
       });
 
       await client.connect('username', 'token');

@@ -306,6 +306,7 @@ export class Container extends React.Component<Properties, State> {
 function addLastMessageMeta(state: RootState): any {
   return (conversation) => {
     const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+
     let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
     return {
       ...conversation,

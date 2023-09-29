@@ -1,14 +1,20 @@
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { createConversation, groupMembersSelected, reset, startConversation } from './saga';
-import { setGroupCreating, reducer, Stage, setFetchingConversations, setStage } from '.';
+import { expectSaga } from '../../test/saga';
+import {
+  createConversation,
+  groupMembersSelected,
+  performGroupMembersSelected,
+  reset,
+  startConversation,
+} from './saga';
+import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { fetchConversationsWithUsers } from '../channels-list/api';
-import { setactiveConversationId } from '../chat';
-import { select } from 'redux-saga/effects';
-import { currentUserSelector } from '../authentication/saga';
+import { rootReducer } from '../reducer';
+import { StoreBuilder } from '../test/store';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -59,64 +65,7 @@ describe('create conversation saga', () => {
     });
   });
 
-  describe('groupMembersSelected', () => {
-    function expectWithExistingChannels(channels = [{ id: 'stub-convo' }], payload = { users: [] }) {
-      return expectSaga(groupMembersSelected, { payload }).provide([
-        [
-          matchers.call.fn(fetchConversationsWithUsers),
-          channels,
-        ],
-        [
-          matchers.call.fn(channelsReceived),
-          null,
-        ],
-      ]);
-    }
-
-    it('includes current user when fetching conversations', async () => {
-      return expectSaga(groupMembersSelected, { payload: { users: [{ value: 'other-user-id' }] } })
-        .provide([
-          [
-            select(currentUserSelector),
-            { id: 'current-user-id' },
-          ],
-          [
-            matchers.call.fn(fetchConversationsWithUsers),
-            [],
-          ],
-        ])
-        .call(fetchConversationsWithUsers, [
-          'current-user-id',
-          'other-user-id',
-        ])
-        .run();
-    });
-
-    it('saves first existing conversation', async () => {
-      await expectWithExistingChannels([
-        { id: 'convo-1' },
-        { id: 'convo-2' },
-      ])
-        .call(channelsReceived, { payload: { channels: [{ id: 'convo-1' }] } })
-        .run();
-    });
-
-    it('opens the existing conversation', async () => {
-      await expectWithExistingChannels([{ id: 'convo-1' }])
-        .put(setactiveConversationId('convo-1'))
-        .run();
-    });
-
-    it('returns to initial state when existing conversation selected', async () => {
-      const initialState = defaultState({ stage: Stage.StartGroupChat });
-
-      const { returnValue } = await expectWithExistingChannels([{ id: 'convo-1' }])
-        .withReducer(reducer, initialState)
-        .run();
-
-      expect(returnValue).toEqual(Stage.None);
-    });
-
+  describe(groupMembersSelected, () => {
     it('manages loading state', async () => {
       return testSaga(groupMembersSelected, { payload: {} })
         .next()
@@ -125,35 +74,61 @@ describe('create conversation saga', () => {
         .next()
         .put(setFetchingConversations(false));
     });
+  });
 
-    it('moves to group details stage if no existing conversations found', async () => {
-      const initialState = defaultState({ stage: Stage.StartGroupChat });
+  describe(performGroupMembersSelected, () => {
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args)
+        .provide([[matchers.call.fn(channelsReceived), null]])
+        .withReducer(rootReducer, defaultState());
+    }
 
-      const { returnValue, storeState: state } = await expectSaga(groupMembersSelected, {
-        payload: {
-          users: [
-            { value: 'user-1' },
-            { value: 'user-2' },
-          ],
-        },
-      })
-        .provide([
-          [
-            matchers.call.fn(fetchConversationsWithUsers),
-            [],
-          ],
-        ])
-        .withReducer(reducer, initialState)
+    it('includes current user when fetching conversations', async () => {
+      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
+
+      return expectSaga(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
+        .withReducer(rootReducer, initialState.build())
+        .call(fetchConversationsWithUsers, ['current-user-id', 'other-user-id'])
+        .run();
+    });
+
+    it('saves first existing conversation', async () => {
+      await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }, { id: 'convo-2' }]]])
+        .call(channelsReceived, { payload: { channels: [{ id: 'convo-1' }] } })
+        .run();
+    });
+
+    it('opens the existing conversation', async () => {
+      const { storeState } = await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
         .run();
 
-      expect(state).toEqual(
-        expect.objectContaining({
-          groupUsers: [
-            { value: 'user-1' },
-            { value: 'user-2' },
-          ],
-        })
-      );
+      expect(storeState.chat.activeConversationId).toBe('convo-1');
+    });
+
+    it('returns to initial state when existing conversation selected', async () => {
+      const initialState = defaultState({ stage: Stage.StartGroupChat });
+
+      const { returnValue } = await subject(performGroupMembersSelected, [])
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
+        .withReducer(rootReducer, initialState)
+        .run();
+
+      expect(returnValue).toEqual(Stage.None);
+    });
+
+    it('moves to group details stage if no existing conversations found', async () => {
+      const users = [{ value: 'user-1' }, { value: 'user-2' }];
+      const initialState = defaultState({ stage: Stage.StartGroupChat });
+
+      const { returnValue, storeState } = await subject(performGroupMembersSelected, users)
+        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
+        .withReducer(rootReducer, initialState)
+        .run();
+
+      expect(storeState.createConversation).toEqual(expect.objectContaining({ groupUsers: users }));
       expect(returnValue).toEqual(Stage.GroupDetails);
     });
   });
@@ -167,7 +142,9 @@ describe('create conversation saga', () => {
         groupDetails: { isCreating: true },
       });
 
-      const { storeState: state } = await expectSaga(reset).withReducer(reducer, initialState).run();
+      const {
+        storeState: { createConversation: state },
+      } = await expectSaga(reset).withReducer(rootReducer, initialState).run();
 
       expect(state).toEqual({
         stage: Stage.None,
@@ -198,11 +175,16 @@ describe('create conversation saga', () => {
 });
 
 function defaultState(attrs = {}) {
-  return {
-    stage: Stage.None,
-    groupUsers: [] as any,
-    startGroupChat: { isLoading: false },
-    groupDetails: { isCreating: false },
-    ...attrs,
-  };
+  return new StoreBuilder()
+    .withCurrentUser({ id: 'current-user-id' })
+    .withOtherState({
+      createConversation: {
+        stage: Stage.None,
+        groupUsers: [] as any,
+        startGroupChat: { isLoading: false },
+        groupDetails: { isCreating: false },
+        ...attrs,
+      },
+    })
+    .build();
 }

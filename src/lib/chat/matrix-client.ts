@@ -27,7 +27,7 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { setAsDM } from './matrix/utils';
+import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -120,8 +120,9 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
-  async searchMentionableUsersForChannel(_channelId: string, _search: string) {
-    return [];
+  async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
+    const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
+    return searchResults.map((u) => ({ id: u.matrixId, display: u.displayName, profileImage: u.avatar_url }));
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -333,6 +334,16 @@ export class MatrixClient implements IChatClient {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const lastMessageEvent = this.getLastMessageEvent(room);
+    const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
+
+    let lastMessageEvent = null;
+    const timelineEvents = room.getLiveTimeline().getEvents();
+    for (let i = timelineEvents.length - 1; i >= 0; i--) {
+      if (timelineEvents[i].getType() === EventType.RoomMessage) {
+        lastMessageEvent = timelineEvents[i];
+        break;
+      }
+    }
     const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
 
     return {

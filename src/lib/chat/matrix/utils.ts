@@ -1,4 +1,5 @@
 import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { User as ChannelMember } from '../../../store/channels';
 
 // Copied from the matrix-react-sdk
 export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: string): Promise<void> {
@@ -36,4 +37,23 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
   if (!modified) return;
 
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
+}
+
+// TODO: follow up to use zOS user instead of matrix user
+export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
+  const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
+
+  const filteredResults = [];
+  for (const member of roomMembers) {
+    let displayName = member.matrixId?.match(/@([^:]+)/)[1] || '';
+    if (displayName.includes(normalizedFilter)) {
+      filteredResults.push({
+        matrixId: member.matrixId,
+        displayName,
+        avatar_url: '',
+      });
+    }
+  }
+
+  return filteredResults;
 }

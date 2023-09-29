@@ -343,7 +343,7 @@ describe('ChatView', () => {
 
     await input.prop('getUsersForMentions')('bob');
 
-    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob');
+    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', []);
   });
 
   describe('formatDayHeader', () => {

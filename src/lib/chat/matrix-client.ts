@@ -46,7 +46,9 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) {}
+  constructor(private sdk = { createClient }) {
+    this.addConnectionAwaiter();
+  }
 
   init(events: RealtimeChatEvents) {
     this.events = events;
@@ -69,23 +71,18 @@ export class MatrixClient implements IChatClient {
   reconnect: () => void;
 
   async getUser(userId: string): Promise<SDKMatrixUser> {
+    await this.waitForConnection();
     const user = this.matrix.getUser(userId);
     return user;
   }
 
   async getAccountData(eventType: string) {
-    if (this.isDisconnected) {
-      throw new Error('Matrix client is disconnected');
-    }
-
-    if (this.isConnecting) {
-      await this.waitForConnection();
-    }
-
+    await this.waitForConnection();
     return this.matrix.getAccountData(eventType);
   }
 
   async getChannels(_id: string) {
+    await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isChannel);
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
@@ -94,6 +91,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async getConversations() {
+    await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isConversation);
 
     for (const room of rooms) {
@@ -126,6 +124,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
+    await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
     const messages = chunk.filter((m) => m.type === 'm.room.message');
     const mappedMessages = [];
@@ -137,6 +136,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async createConversation(users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
+    await this.waitForConnection();
     const initial_state = [
       { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
     ];
@@ -161,6 +161,7 @@ export class MatrixClient implements IChatClient {
     _file?: FileUploadResult,
     optimisticId?: string
   ): Promise<any> {
+    await this.waitForConnection();
     let content = {
       body: message,
       msgtype: MsgType.Text,
@@ -191,10 +192,6 @@ export class MatrixClient implements IChatClient {
   }
 
   private setConnectionStatus(connectionStatus: ConnectionStatus) {
-    if (this.isDisconnected && connectionStatus === ConnectionStatus.Connecting) {
-      this.addConnectionAwaiter();
-    }
-
     if (this.isConnecting && connectionStatus === ConnectionStatus.Connected) {
       this.connectionResolver();
     }
@@ -265,10 +262,6 @@ export class MatrixClient implements IChatClient {
   }
 
   private waitForConnection = async () => {
-    if (!this.connectionAwaiter) {
-      this.addConnectionAwaiter();
-    }
-
     return this.connectionAwaiter;
   };
 
@@ -440,13 +433,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private async getFilteredRooms(filterFunc: (room: Room, dmConversationIds: string[]) => boolean) {
-    if (this.isDisconnected) {
-      return [];
-    }
-
-    if (this.isConnecting) {
-      await this.waitForConnection();
-    }
+    await this.waitForConnection();
 
     const dmConversationIds = await this.getConversationIds();
     const rooms = this.matrix.getRooms() || [];

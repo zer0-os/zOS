@@ -130,7 +130,7 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === 'm.room.message');
     const mappedMessages = [];
     for (const message of messages) {
-      mappedMessages.push(await mapMatrixMessage(message, this.matrix, this.userId));
+      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
     }
 
     return { messages: mappedMessages as any, hasMore: false };
@@ -177,7 +177,7 @@ export class MatrixClient implements IChatClient {
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
     return {
-      ...(await mapMatrixMessage(newMessage, this.matrix, this.userId)),
+      ...(await mapMatrixMessage(newMessage, this.matrix)),
       optimisticId,
     };
   }
@@ -210,7 +210,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === 'm.room.message') {
-        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix, this.userId)) as any);
+        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
       }
 
       if (event.type === 'm.room.create') {
@@ -336,16 +336,6 @@ export class MatrixClient implements IChatClient {
     const lastMessageEvent = this.getLastMessageEvent(room);
     const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
 
-    let lastMessageEvent = null;
-    const timelineEvents = room.getLiveTimeline().getEvents();
-    for (let i = timelineEvents.length - 1; i >= 0; i--) {
-      if (timelineEvents[i].getType() === EventType.RoomMessage) {
-        lastMessageEvent = timelineEvents[i];
-        break;
-      }
-    }
-    const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
-
     return {
       id: room.roomId,
       name,
@@ -404,8 +394,7 @@ export class MatrixClient implements IChatClient {
       updatedAt: timestamp,
       sender: {
         userId: senderId,
-        // remove condition when matrix maps to zos user
-        firstName: senderId === this.userId ? 'You' : matrixEvent.sender?.name,
+        firstName: matrixEvent.sender?.name,
         lastName: '',
         profileImage: '',
         profileId: '',

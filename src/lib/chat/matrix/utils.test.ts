@@ -2,26 +2,16 @@
 import { getFilteredMembersForAutoComplete } from './utils';
 
 // Example room members data
-const roomMembers = [
+const roomMembers: any[] = [
   {
     userId: '@domw:zero-synapse-development.zer0.io',
     matrixId: '@domw:zero-synapse-development.zer0.io',
     firstName: 'domw',
-    lastName: '',
-    profileId: '',
-    isOnline: false,
-    profileImage: '',
-    lastSeenAt: '',
   },
   {
     userId: '@dale.fukami:zero-synapse-development.zer0.io',
     matrixId: '@dale.fukami:zero-synapse-development.zer0.io',
     firstName: 'dale.fukami',
-    lastName: '',
-    profileId: '',
-    isOnline: false,
-    profileImage: '',
-    lastSeenAt: '',
   },
 ];
 

@@ -88,7 +88,7 @@ export class MatrixClient implements IChatClient {
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
     }
-    return rooms.map(this.mapChannel);
+    const channels = rooms.map(this.mapChannel);
   }
 
   async getConversations() {

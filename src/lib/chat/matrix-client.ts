@@ -326,8 +326,8 @@ export class MatrixClient implements IChatClient {
   private mapToGeneralChannel(room: Room) {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
-    const lastMessageEvent = this.getLastMessageEvent(room);
-    const lastMessage = this.mapMatrixEventToMessage(lastMessageEvent);
+
+    const messages = this.getAllMessagesFromRoom(room);
 
     return {
       id: room.roomId,
@@ -338,7 +338,8 @@ export class MatrixClient implements IChatClient {
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
       otherMembers: otherMembers,
-      lastMessage: lastMessage,
+      lastMessage: null,
+      messages,
       groupChannelType: GroupChannelType.Private,
       category: '',
       unreadCount: 0,
@@ -412,16 +413,12 @@ export class MatrixClient implements IChatClient {
     return '';
   }
 
-  private getLastMessageEvent(room: Room) {
-    const timelineEvents = room.getLiveTimeline().getEvents();
-
-    for (let i = timelineEvents.length - 1; i >= 0; i--) {
-      if (timelineEvents[i].getType() === EventType.RoomMessage) {
-        return timelineEvents[i];
-      }
-    }
-
-    return null;
+  private getAllMessagesFromRoom(room: Room) {
+    const timeline = room.getLiveTimeline().getEvents();
+    const messages = timeline
+      .filter((event) => event.getType() === EventType.RoomMessage)
+      .map(this.mapMatrixEventToMessage);
+    return messages;
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

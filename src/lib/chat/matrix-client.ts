@@ -94,14 +94,30 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isConversation);
 
+    const failedToJoin = [];
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
       if (membership === 'invite') {
-        await this.matrix.joinRoom(room.roomId);
+        if (!(await this.autoJoinRoom(room.roomId))) {
+          failedToJoin.push(room.roomId);
+        }
       }
     }
-    return rooms.map(this.mapConversation);
+    return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
+  }
+
+  private async autoJoinRoom(roomId: string) {
+    try {
+      await this.matrix.joinRoom(roomId);
+      return true;
+    } catch (e) {
+      // Matrix does not provide a way to know if a room has become invalid
+      // so we'll just ignore the error and assume it's because the room is invalid
+      // A room can become invalid if all the members have left before one member has joined
+      console.warn(`Could not auto join room ${roomId}`);
+      return false;
+    }
   }
 
   private isChannel = (room: Room, dmConversationIds: string[]) => {
@@ -216,8 +232,9 @@ export class MatrixClient implements IChatClient {
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === 'invite' && member.userId === this.userId) {
-        await this.matrix.joinRoom(member.roomId);
-        this.events.onUserReceivedInvitation(member.roomId);
+        if (await this.autoJoinRoom(member.roomId)) {
+          this.events.onUserReceivedInvitation(member.roomId);
+        }
       }
     });
 

@@ -12,9 +12,9 @@ import {
 import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
-import { fetchConversationsWithUsers } from '../channels-list/api';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -77,32 +77,45 @@ describe('create conversation saga', () => {
   });
 
   describe(performGroupMembersSelected, () => {
+    const chatClient = {
+      fetchConversationsWithUsers: () => [],
+    };
+
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args)
-        .provide([[matchers.call.fn(channelsReceived), null]])
+        .provide([
+          [matchers.call.fn(channelsReceived), null],
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.fetchConversationsWithUsers), []],
+        ])
         .withReducer(rootReducer, defaultState());
     }
 
-    it('includes current user when fetching conversations', async () => {
-      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
+    it('calls the chat api with all users', async () => {
+      const initialState = new StoreBuilder()
+        .withCurrentUser({ id: 'current-user-id' })
+        .withUsers({ userId: 'other-user-id' });
 
-      return expectSaga(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
+      return subject(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
         .withReducer(rootReducer, initialState.build())
-        .call(fetchConversationsWithUsers, ['current-user-id', 'other-user-id'])
+        .call.like({
+          context: chatClient,
+          fn: chatClient.fetchConversationsWithUsers,
+          args: [[{ userId: 'current-user-id' }, { userId: 'other-user-id' }]],
+        })
         .run();
     });
 
     it('saves first existing conversation', async () => {
       await subject(performGroupMembersSelected, [])
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }, { id: 'convo-2' }]]])
+        .provide([[matchers.call.fn(chatClient.fetchConversationsWithUsers), [{ id: 'convo-1' }, { id: 'convo-2' }]]])
         .call(channelsReceived, { payload: { channels: [{ id: 'convo-1' }] } })
         .run();
     });
 
     it('opens the existing conversation', async () => {
       const { storeState } = await subject(performGroupMembersSelected, [])
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
+        .provide([[matchers.call.fn(chatClient.fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
         .run();
 
       expect(storeState.chat.activeConversationId).toBe('convo-1');
@@ -112,7 +125,7 @@ describe('create conversation saga', () => {
       const initialState = defaultState({ stage: Stage.StartGroupChat });
 
       const { returnValue } = await subject(performGroupMembersSelected, [])
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
+        .provide([[matchers.call.fn(chatClient.fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
         .withReducer(rootReducer, initialState)
         .run();
 
@@ -124,7 +137,7 @@ describe('create conversation saga', () => {
       const initialState = defaultState({ stage: Stage.StartGroupChat });
 
       const { returnValue, storeState } = await subject(performGroupMembersSelected, users)
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
+        .provide([[matchers.call.fn(chatClient.fetchConversationsWithUsers), []]])
         .withReducer(rootReducer, initialState)
         .run();
 

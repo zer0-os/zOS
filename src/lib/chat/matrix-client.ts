@@ -199,6 +199,32 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async fetchConversationsWithUsers(users: User[]) {
+    const userMatrixIds = users.map((u) => u.matrixId);
+    const rooms = await this.getFilteredRooms(this.isConversation);
+    const matches = [];
+    for (const room of rooms) {
+      const roomMembers = room
+        .getMembers()
+        .filter((m) => m.membership === 'join' || m.membership === 'invite')
+        .map((m) => m.userId);
+      if (this.arraysMatch(roomMembers, userMatrixIds)) {
+        matches.push(room);
+      }
+    }
+    return matches.map(this.mapConversation);
+  }
+
+  arraysMatch(a, b) {
+    if (a.length !== b.length) {
+      return false;
+    }
+
+    a.sort();
+    b.sort();
+    return a.every((val, idx) => val === b[idx]);
+  }
+
   get isDisconnected() {
     return this.connectionStatus === ConnectionStatus.Disconnected;
   }

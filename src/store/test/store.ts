@@ -52,6 +52,7 @@ export class StoreBuilder {
 
   withCurrentUser(user: Partial<AuthenticatedUser>) {
     this.currentUser = { ...DEFAULT_USER_ATTRS, ...user };
+    this.users.push({ userId: user.id });
     return this;
   }
 

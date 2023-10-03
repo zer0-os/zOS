@@ -151,12 +151,13 @@ export class MatrixClient implements IChatClient {
     return { messages: mappedMessages as any, hasMore: false };
   }
 
-  async createConversation(users: User[], _name: string = null, _image: File = null, _optimisticId: string) {
+  async createConversation(users: User[], name: string = null, _image: File = null, _optimisticId: string) {
     await this.waitForConnection();
     const initial_state = [
       { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
     ];
     const options: ICreateRoomOpts = {
+      name,
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
       invite: users.map((u) => u.matrixId),

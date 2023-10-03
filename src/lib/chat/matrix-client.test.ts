@@ -423,6 +423,15 @@ describe('matrix client', () => {
 
       expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
     });
+
+    it('sets the conversatio name', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], 'room-name', null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ name: 'room-name' }));
+    });
   });
 
   describe('sendMessagesByChannelId', () => {

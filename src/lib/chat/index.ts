@@ -51,7 +51,7 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
-  fetchConversationsWithUsers: (userIds: string[]) => Promise<Channel[]>;
+  fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
 }
 
 export class Chat {
@@ -102,8 +102,8 @@ export class Chat {
     return this.client.sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
   }
 
-  async fetchConversationsWithUsers(userIds: string[]): Promise<any[]> {
-    return this.client.fetchConversationsWithUsers(userIds);
+  async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
+    return this.client.fetchConversationsWithUsers(users);
   }
 
   initChat(events: RealtimeChatEvents): void {

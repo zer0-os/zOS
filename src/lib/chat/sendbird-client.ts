@@ -144,7 +144,8 @@ export class SendbirdClient implements IChatClient {
     return sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
   }
 
-  async fetchConversationsWithUsers(userIds: string[]): Promise<any[]> {
+  async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
+    const userIds = users.map((u) => u.userId);
     const response = await get<Channel[]>('/conversations', { userIds });
     return response.body;
   }

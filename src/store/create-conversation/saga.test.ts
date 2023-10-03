@@ -91,12 +91,18 @@ describe('create conversation saga', () => {
         .withReducer(rootReducer, defaultState());
     }
 
-    it('includes current user when fetching conversations', async () => {
-      const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user-id' });
+    it('calls the chat api with all users', async () => {
+      const initialState = new StoreBuilder()
+        .withCurrentUser({ id: 'current-user-id' })
+        .withUsers({ userId: 'other-user-id' });
 
       return subject(performGroupMembersSelected, [{ value: 'other-user-id' }] as any)
         .withReducer(rootReducer, initialState.build())
-        .call([chatClient, chatClient.fetchConversationsWithUsers], ['current-user-id', 'other-user-id'])
+        .call.like({
+          context: chatClient,
+          fn: chatClient.fetchConversationsWithUsers,
+          args: [[{ userId: 'current-user-id' }, { userId: 'other-user-id' }]],
+        })
         .run();
     });
 

@@ -5,6 +5,7 @@ import { setactiveConversationId } from '../chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
 import { Chat, chat } from '../../lib/chat';
+import { denormalize as denormalizeUsers } from '../users';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -24,17 +25,19 @@ export function* groupMembersSelected(action) {
   }
 }
 
-export function* performGroupMembersSelected(users: { value: string; label: string; image?: string }[]) {
+export function* performGroupMembersSelected(userSelections: { value: string; label: string; image?: string }[]) {
   const currentUser = yield select(currentUserSelector);
   const userIds = [
     currentUser.id,
-    ...users.map((o) => o.value),
+    ...userSelections.map((o) => o.value),
   ];
+  const users = yield select((state) => denormalizeUsers(userIds, state));
+
   const chatClient: Chat = yield call(chat.get);
-  const existingConversations = yield call([chatClient, chatClient.fetchConversationsWithUsers], userIds);
+  const existingConversations = yield call([chatClient, chatClient.fetchConversationsWithUsers], users);
 
   if (existingConversations.length === 0) {
-    yield put(setGroupUsers(users));
+    yield put(setGroupUsers(userSelections));
     return Stage.GroupDetails;
   } else {
     const selectedConversation = existingConversations[0];

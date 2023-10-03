@@ -28,6 +28,7 @@ import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
+import { uploadImage } from '../../store/channels-list/api';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -151,11 +152,17 @@ export class MatrixClient implements IChatClient {
     return { messages: mappedMessages as any, hasMore: false };
   }
 
-  async createConversation(users: User[], name: string = null, _image: File = null, _optimisticId: string) {
+  async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
     await this.waitForConnection();
-    const initial_state = [
+    const coverUrl = await this.uploadCoverImage(image);
+
+    const initial_state: any[] = [
       { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
     ];
+    if (coverUrl) {
+      initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
+    }
+
     const options: ICreateRoomOpts = {
       name,
       preset: Preset.TrustedPrivateChat,
@@ -256,6 +263,9 @@ export class MatrixClient implements IChatClient {
       if (event.type === 'm.room.create') {
         this.roomCreated(event);
       }
+      if (event.type === EventType.RoomAvatar) {
+        this.publishRoomAvatarChange(event);
+      }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === 'invite' && member.userId === this.userId) {
@@ -354,6 +364,10 @@ export class MatrixClient implements IChatClient {
     }
   };
 
+  private publishRoomAvatarChange = (event) => {
+    this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
+  };
+
   private publishMembershipChange = (event: MatrixEvent) => {
     if (event.getType() === EventType.RoomMember) {
       const user = this.mapUser(event.getStateKey());
@@ -370,13 +384,14 @@ export class MatrixClient implements IChatClient {
   private mapToGeneralChannel(room: Room) {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
+    const avatarUrl = this.getRoomAvatar(room);
 
     const messages = this.getAllMessagesFromRoom(room);
 
     return {
       id: room.roomId,
       name,
-      icon: null,
+      icon: avatarUrl,
       isChannel: true,
       // Even if a member leaves they stay in the member list so this will still be correct
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
@@ -457,6 +472,15 @@ export class MatrixClient implements IChatClient {
     return '';
   }
 
+  private getRoomAvatar(room: Room): string {
+    const roomAvatarEvent = room
+      .getLiveTimeline()
+      .getState(EventTimeline.FORWARDS)
+      .getStateEvents(EventType.RoomAvatar, '');
+
+    return roomAvatarEvent?.getContent()?.url;
+  }
+
   private getAllMessagesFromRoom(room: Room) {
     const timeline = room.getLiveTimeline().getEvents();
     const messages = timeline
@@ -487,5 +511,18 @@ export class MatrixClient implements IChatClient {
     const content = accountData?.getContent();
 
     return Object.values(content ?? {}).flat();
+  }
+
+  private async uploadCoverImage(image) {
+    if (image) {
+      try {
+        return (await uploadImage(image)).url;
+      } catch (error) {
+        // For now, we will just ignore the error and continue to create the room
+        // No reason for the image upload to block the room creation
+        console.error(error);
+      }
+    }
+    return null;
   }
 }

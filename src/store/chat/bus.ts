@@ -16,6 +16,7 @@ export enum Events {
   ConversationListChanged = 'chat/conversationListChanged',
   UserPresenceChanged = 'chat/user/presenceChanged',
   RoomNameChanged = 'chat/roomNameChanged',
+  RoomAvatarChanged = 'chat/roomAvatarChanged',
   OtherUserJoinedChannel = 'chat/channel/otherUserJoined',
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
 }
@@ -52,6 +53,7 @@ export function createChatConnection(userId, chatAccessToken) {
     const onUserPresenceChanged = (matrixId, isOnline, lastSeenAt) =>
       emit({ type: Events.UserPresenceChanged, payload: { matrixId, isOnline, lastSeenAt } });
     const onRoomNameChanged = (roomId, name) => emit({ type: Events.RoomNameChanged, payload: { id: roomId, name } });
+    const onRoomAvatarChanged = (roomId, url) => emit({ type: Events.RoomAvatarChanged, payload: { id: roomId, url } });
     const onOtherUserJoinedChannel = (channelId, user) =>
       emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, user } });
     const onOtherUserLeftChannel = (channelId, user) =>
@@ -71,6 +73,7 @@ export function createChatConnection(userId, chatAccessToken) {
       onConversationListChanged,
       onUserPresenceChanged,
       onRoomNameChanged,
+      onRoomAvatarChanged,
       onOtherUserJoinedChannel,
       onOtherUserLeftChannel,
     });

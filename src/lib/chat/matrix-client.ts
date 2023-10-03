@@ -29,6 +29,7 @@ import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
+import { union } from 'lodash';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -89,6 +90,9 @@ export class MatrixClient implements IChatClient {
       await room.loadMembersIfNeeded();
     }
     const channels = rooms.map(this.mapChannel);
+    await this.mapRoomMembers(channels);
+
+    return channels;
   }
 
   async getConversations() {
@@ -105,7 +109,9 @@ export class MatrixClient implements IChatClient {
         }
       }
     }
-    return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
+    const mappedRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
+    await this.mapRoomMembers(mappedRooms);
+    return mappedRooms;
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -137,7 +143,7 @@ export class MatrixClient implements IChatClient {
 
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
     const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
-    return searchResults.map((u) => ({ id: u.matrixId, display: u.displayName, profileImage: u.avatar_url }));
+    return searchResults.map((u) => ({ id: u.id, display: u.displayName, profileImage: u.profileImage }));
   }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -408,7 +414,10 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  private mapChannel = (room: Room): Partial<Channel> => this.mapToGeneralChannel(room);
+  private mapChannel = (room: Room): Partial<Channel> => {
+    console.log('i was called!');
+    return this.mapToGeneralChannel(room);
+  };
 
   private mapConversation = (room: Room): Partial<Channel> => {
     return {
@@ -417,18 +426,31 @@ export class MatrixClient implements IChatClient {
     };
   };
 
-  private mapUser(userId: string): UserModel {
-    const user = this.matrix.getUser(userId);
-    return {
-      userId: userId,
-      matrixId: userId,
+  private mapUser(matrixId: string, zeroUser?): UserModel {
+    const user = this.matrix.getUser(matrixId);
+    let mappedUser = {
+      userId: matrixId,
+      matrixId,
       firstName: user?.displayName,
       lastName: '',
       profileId: '',
       isOnline: user?.presence === 'online',
-      profileImage: '',
+      profileImage: user?.avatarUrl,
       lastSeenAt: '',
     };
+
+    if (zeroUser && zeroUser?.profileSummary) {
+      mappedUser = {
+        ...mappedUser,
+        userId: zeroUser.id,
+        profileId: zeroUser.profileSummary.id,
+        firstName: zeroUser.profileSummary.firstName,
+        lastName: zeroUser.profileSummary.lastName,
+        profileImage: zeroUser.profileSummary.profileImage,
+      };
+    }
+
+    return mappedUser;
   }
 
   private mapMatrixEventToMessage(matrixEvent) {
@@ -524,5 +546,31 @@ export class MatrixClient implements IChatClient {
       }
     }
     return null;
+  }
+
+  private async getZEROUsers(matrixIds: string[]) {
+    return await get('/matrix/users/zero', { matrixIds })
+      .catch((_error) => null)
+      .then((response) => response?.body || []);
+  }
+
+  private async mapRoomMembers(rooms) {
+    let allMatrixIds = [];
+    for (const room of rooms) {
+      const matrixIds = room.otherMembers.map((u) => u.matrixId);
+      allMatrixIds = union(allMatrixIds, matrixIds);
+    }
+
+    const zeroUsers = await this.getZEROUsers(allMatrixIds);
+    const zeroUsersMap = {};
+    for (const user of zeroUsers) {
+      zeroUsersMap[user.matrixId] = user;
+    }
+
+    for (const room of rooms) {
+      room.otherMembers = room.otherMembers.map((member) =>
+        this.mapUser(member.matrixId, zeroUsersMap[member.matrixId])
+      );
+    }
   }
 }

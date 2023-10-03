@@ -21,6 +21,7 @@ export interface RealtimeChatEvents {
   onConversationListChanged: (conversationIds: string[]) => void;
   onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
+  onRoomAvatarChanged: (roomId: string, url: string) => void;
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
 }

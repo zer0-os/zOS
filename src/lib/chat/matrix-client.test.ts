@@ -1,8 +1,15 @@
 import { EventType, GuestAccess, Preset, Visibility } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
 import { setAsDM } from './matrix/utils';
+import { uploadImage as _uploadImage } from '../../store/channels-list/api';
+import { when } from 'jest-when';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
+
+const mockUploadImage = jest.fn();
+jest.mock('../../store/channels-list/api', () => {
+  return { uploadImage: (...args) => mockUploadImage(...args) };
+});
 
 const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
@@ -424,13 +431,34 @@ describe('matrix client', () => {
       expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
     });
 
-    it('sets the conversatio name', async () => {
+    it('sets the conversation name', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], 'room-name', null, null);
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ name: 'room-name' }));
+    });
+
+    it('uploads the image', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
+      const client = await subject({ createRoom });
+
+      await client.createConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        null,
+        { name: 'test file' } as File,
+        null
+      );
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initial_state: expect.arrayContaining([
+            { type: EventType.RoomAvatar, state_key: '', content: { url: 'upload-url' } },
+          ]),
+        })
+      );
     });
   });
 

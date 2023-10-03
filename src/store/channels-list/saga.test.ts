@@ -170,6 +170,19 @@ describe('channels list saga', () => {
         'conversation-id',
       ]);
     });
+
+    it('removes channels that are duplicates of the newly fetched conversations', async () => {
+      const fetchedConversations = [{ id: 'previously-a-channel' }];
+
+      const initialState = new StoreBuilder().withChannelList({ id: 'previously-a-channel' });
+
+      const { storeState } = await subject(fetchConversations, undefined)
+        .provide([[matchers.call([chatClient, chatClient.getConversations]), fetchedConversations]])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.channelsList.value).toIncludeSameMembers(['previously-a-channel']);
+    });
   });
 
   describe(fetchChannelsAndConversations, () => {

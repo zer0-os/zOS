@@ -45,12 +45,12 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
 
   const filteredResults = [];
   for (const member of roomMembers) {
-    let displayName = member.matrixId?.match(/@([^:]+)/)[1] || '';
+    let displayName = `${member.firstName || ''} ${member.lastName || ''}`;
     if (displayName.includes(normalizedFilter)) {
       filteredResults.push({
-        matrixId: member.matrixId,
+        id: member.userId || member.matrixId,
         displayName,
-        avatar_url: '',
+        profileImage: member.profileImage,
       });
     }
   }

@@ -7,11 +7,15 @@ const roomMembers: any[] = [
     userId: '@domw:zero-synapse-development.zer0.io',
     matrixId: '@domw:zero-synapse-development.zer0.io',
     firstName: 'domw',
+    profileImage: '',
   },
   {
-    userId: '@dale.fukami:zero-synapse-development.zer0.io',
+    userId: '6fec1869-4608-4f7e-ab32-e50376b58e30',
     matrixId: '@dale.fukami:zero-synapse-development.zer0.io',
     firstName: 'dale.fukami',
+    lastName: '',
+    profileId: 'a9d1b1a5-dc43-4860-93b6-fb63ee3ca911',
+    profileImage: '',
   },
 ];
 
@@ -28,9 +32,9 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect members with 'da' in display name
     expect(result).toEqual([
       {
-        matrixId: '@dale.fukami:zero-synapse-development.zer0.io',
-        displayName: 'dale.fukami',
-        avatar_url: '',
+        id: '6fec1869-4608-4f7e-ab32-e50376b58e30',
+        displayName: 'dale.fukami ',
+        profileImage: '',
       },
     ]);
   });
@@ -41,9 +45,9 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect members with 'ratik21' in display name
     expect(result).toEqual([
       {
-        matrixId: '@domw:zero-synapse-development.zer0.io',
-        displayName: 'domw',
-        avatar_url: '',
+        id: '@domw:zero-synapse-development.zer0.io',
+        displayName: 'domw ',
+        profileImage: '',
       },
     ]);
   });
@@ -54,14 +58,14 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect all members
     expect(result).toEqual([
       {
-        matrixId: '@domw:zero-synapse-development.zer0.io',
-        displayName: 'domw',
-        avatar_url: '',
+        id: '@domw:zero-synapse-development.zer0.io',
+        displayName: 'domw ',
+        profileImage: '',
       },
       {
-        matrixId: '@dale.fukami:zero-synapse-development.zer0.io',
-        displayName: 'dale.fukami',
-        avatar_url: '',
+        id: '6fec1869-4608-4f7e-ab32-e50376b58e30',
+        displayName: 'dale.fukami ',
+        profileImage: '',
       },
     ]);
   });

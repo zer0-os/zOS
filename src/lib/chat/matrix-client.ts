@@ -415,7 +415,6 @@ export class MatrixClient implements IChatClient {
   }
 
   private mapChannel = (room: Room): Partial<Channel> => {
-    console.log('i was called!');
     return this.mapToGeneralChannel(room);
   };
 

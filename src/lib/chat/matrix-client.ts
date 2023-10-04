@@ -22,6 +22,7 @@ import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
+import { User as ZeroUser } from '../../store/authentication/types';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -43,7 +44,7 @@ export class MatrixClient implements IChatClient {
 
   private accessToken: string;
   private userId: string;
-  private zeroUsersMap: Map<string, any>;
+  private zeroUsersMap: Map<string, ZeroUser>;
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;

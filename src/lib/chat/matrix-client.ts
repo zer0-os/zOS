@@ -44,12 +44,14 @@ export class MatrixClient implements IChatClient {
 
   private accessToken: string;
   private userId: string;
+  private zeroUsersMap: Map<string, any>;
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
   constructor(private sdk = { createClient }) {
     this.addConnectionAwaiter();
+    this.zeroUsersMap = new Map();
   }
 
   init(events: RealtimeChatEvents) {
@@ -89,10 +91,9 @@ export class MatrixClient implements IChatClient {
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
     }
-    const channels = rooms.map(this.mapChannel);
-    await this.mapRoomMembers(channels);
 
-    return channels;
+    await this.setZeroUserMap(rooms);
+    return rooms.map(this.mapChannel);
   }
 
   async getConversations() {
@@ -109,9 +110,10 @@ export class MatrixClient implements IChatClient {
         }
       }
     }
-    const mappedRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
-    await this.mapRoomMembers(mappedRooms);
-    return mappedRooms;
+
+    const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+    await this.setZeroUserMap(filteredRooms);
+    return filteredRooms.map(this.mapConversation);
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -425,7 +427,7 @@ export class MatrixClient implements IChatClient {
     };
   };
 
-  private mapUser(matrixId: string, zeroUser?): UserModel {
+  private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);
     let mappedUser = {
       userId: matrixId,
@@ -438,6 +440,7 @@ export class MatrixClient implements IChatClient {
       lastSeenAt: '',
     };
 
+    const zeroUser = this.zeroUsersMap.get(matrixId);
     if (zeroUser && zeroUser?.profileSummary) {
       mappedUser = {
         ...mappedUser,
@@ -553,23 +556,16 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
-  private async mapRoomMembers(rooms) {
+  private async setZeroUserMap(rooms: Room[]) {
     let allMatrixIds = [];
     for (const room of rooms) {
-      const matrixIds = room.otherMembers.map((u) => u.matrixId);
-      allMatrixIds = union(allMatrixIds, matrixIds);
+      const otherMemberMatrixIds = this.getOtherMembersFromRoom(room);
+      allMatrixIds = union(allMatrixIds, otherMemberMatrixIds);
     }
 
     const zeroUsers = await this.getZEROUsers(allMatrixIds);
-    const zeroUsersMap = {};
     for (const user of zeroUsers) {
-      zeroUsersMap[user.matrixId] = user;
-    }
-
-    for (const room of rooms) {
-      room.otherMembers = room.otherMembers.map((member) =>
-        this.mapUser(member.matrixId, zeroUsersMap[member.matrixId])
-      );
+      this.zeroUsersMap.set(user.matrixId, user);
     }
   }
 }

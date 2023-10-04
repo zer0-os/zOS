@@ -43,12 +43,14 @@ export class MatrixClient implements IChatClient {
 
   private accessToken: string;
   private userId: string;
+  private zeroUsersMap: Map<string, any>;
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
   constructor(private sdk = { createClient }) {
     this.addConnectionAwaiter();
+    this.zeroUsersMap = new Map();
   }
 
   init(events: RealtimeChatEvents) {

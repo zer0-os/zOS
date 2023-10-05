@@ -56,10 +56,6 @@ export class MatrixClient implements IChatClient {
     this.events = events;
   }
 
-  supportsOptimisticSend() {
-    return false;
-  }
-
   async connect(userId: string, accessToken: string) {
     this.userId = userId;
     this.setConnectionStatus(ConnectionStatus.Connecting);
@@ -191,6 +187,7 @@ export class MatrixClient implements IChatClient {
     _file?: FileUploadResult,
     optimisticId?: string
   ): Promise<any> {
+    // throw new Error('Method not implemented.');
     await this.waitForConnection();
     let content = {
       body: message,
@@ -205,6 +202,8 @@ export class MatrixClient implements IChatClient {
       };
     }
 
+    // set custom metadata (optimisticId)
+    // send message docs
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
     return {
@@ -263,6 +262,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === 'm.room.message') {
+        // rendering two messages
         this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
       }
 

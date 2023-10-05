@@ -25,6 +25,8 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
+import { featureFlags } from '../../lib/feature-flags';
+import { User } from '../channels';
 
 export interface Payload {
   channelId: string;
@@ -90,6 +92,45 @@ const _isActive = (channelId) => (state) => {
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
+function* getZeroUsersMap() {
+  const users = yield select((state) => state.normalized.users);
+  const zeroUsersMap: { [matrixId: string]: User } = {};
+  for (const user of Object.values(users)) {
+    zeroUsersMap[(user as User).matrixId] = user as User;
+  }
+  // map current user as well
+  const currentUser = yield select(currentUserSelector());
+  zeroUsersMap[currentUser.matrixId] = {
+    userId: currentUser.id,
+    profileId: currentUser.profileSummary.id,
+    firstName: currentUser.profileSummary.firstName,
+    lastName: currentUser.profileSummary.lastName,
+    profileImage: currentUser.profileSummary.profileImage,
+  } as User;
+
+  return zeroUsersMap;
+}
+
+export function* mapMessageSenders(messages) {
+  if (!featureFlags.enableMatrix) {
+    return;
+  }
+
+  const zeroUsersMap = yield call(getZeroUsersMap);
+  messages.forEach((message) => {
+    const zeroUser = zeroUsersMap[message.sender.userId];
+    if (zeroUser) {
+      message.sender = {
+        userId: zeroUser.userId,
+        profileId: zeroUser.profileId,
+        firstName: zeroUser.firstName,
+        lastName: zeroUser.lastName,
+        profileImage: zeroUser.profileImage,
+      };
+    }
+  });
+}
+
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
@@ -106,11 +147,13 @@ export function* fetch(action) {
     if (referenceTimestamp) {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
+      yield call(mapMessageSenders, messagesResponse.messages);
       const existingMessages = yield select(rawMessagesSelector(channelId));
       messages = [...messagesResponse.messages, ...existingMessages];
     } else {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
+      yield call(mapMessageSenders, messagesResponse.messages);
       const existingMessages = yield select(rawMessagesSelector(channelId));
       messages = [...existingMessages, ...messagesResponse.messages];
     }

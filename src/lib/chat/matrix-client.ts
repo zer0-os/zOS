@@ -22,7 +22,6 @@ import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { MessagesResponse } from '../../store/messages';
-import { User as ZeroUser } from '../../store/authentication/types';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -30,7 +29,6 @@ import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
-import { union } from 'lodash';
 
 enum ConnectionStatus {
   Connected = 'connected',
@@ -45,14 +43,12 @@ export class MatrixClient implements IChatClient {
 
   private accessToken: string;
   private userId: string;
-  private zeroUsersMap: Map<string, ZeroUser>;
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
   constructor(private sdk = { createClient }) {
     this.addConnectionAwaiter();
-    this.zeroUsersMap = new Map();
   }
 
   init(events: RealtimeChatEvents) {
@@ -93,7 +89,6 @@ export class MatrixClient implements IChatClient {
       await room.loadMembersIfNeeded();
     }
 
-    await this.setZeroUserMap(rooms);
     return rooms.map(this.mapChannel);
   }
 
@@ -112,9 +107,7 @@ export class MatrixClient implements IChatClient {
       }
     }
 
-    const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
-    await this.setZeroUserMap(filteredRooms);
-    return filteredRooms.map(this.mapConversation);
+    return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -430,7 +423,7 @@ export class MatrixClient implements IChatClient {
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);
-    let mappedUser = {
+    return {
       userId: matrixId,
       matrixId,
       firstName: user?.displayName,
@@ -440,20 +433,6 @@ export class MatrixClient implements IChatClient {
       profileImage: user?.avatarUrl,
       lastSeenAt: '',
     };
-
-    const zeroUser = this.zeroUsersMap.get(matrixId);
-    if (zeroUser && zeroUser?.profileSummary) {
-      mappedUser = {
-        ...mappedUser,
-        userId: zeroUser.id,
-        profileId: zeroUser.profileSummary.id,
-        firstName: zeroUser.profileSummary.firstName,
-        lastName: zeroUser.profileSummary.lastName,
-        profileImage: zeroUser.profileSummary.profileImage,
-      };
-    }
-
-    return mappedUser;
   }
 
   private mapMatrixEventToMessage(matrixEvent) {
@@ -549,24 +528,5 @@ export class MatrixClient implements IChatClient {
       }
     }
     return null;
-  }
-
-  private async getZEROUsers(matrixIds: string[]) {
-    return await get('/matrix/users/zero', { matrixIds })
-      .catch((_error) => null)
-      .then((response) => response?.body || []);
-  }
-
-  private async setZeroUserMap(rooms: Room[]) {
-    let allMatrixIds = [];
-    for (const room of rooms) {
-      const otherMemberMatrixIds = this.getOtherMembersFromRoom(room);
-      allMatrixIds = union(allMatrixIds, otherMemberMatrixIds);
-    }
-
-    const zeroUsers = await this.getZEROUsers(allMatrixIds);
-    for (const user of zeroUsers) {
-      this.zeroUsersMap.set(user.matrixId, user);
-    }
   }
 }

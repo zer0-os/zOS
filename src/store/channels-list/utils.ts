@@ -2,6 +2,7 @@ import { ChannelType } from './types';
 import { Channel, ConversationStatus } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
+import { User } from '../authentication/types';
 
 export function filterChannelsList(state, filter: ChannelType) {
   const channelIdList = getDeepProperty(state, 'channelsList.value', []);
@@ -35,4 +36,19 @@ export const toLocalChannel = (input): Partial<Channel> => {
     conversationStatus: ConversationStatus.CREATED,
     isOneOnOne: !isChannel && input.isDistinct && otherMembers.length === 1,
   };
+};
+
+export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
+  for (const channel of channels) {
+    for (const member of channel.otherMembers) {
+      const zeroUser = zeroUsersMap[member.matrixId];
+      if (zeroUser && zeroUser?.profileSummary) {
+        member.userId = zeroUser.id;
+        member.profileId = zeroUser.profileSummary.id;
+        member.firstName = zeroUser.profileSummary.firstName;
+        member.lastName = zeroUser.profileSummary.lastName;
+        member.profileImage = zeroUser.profileSummary.profileImage;
+      }
+    }
+  }
 };

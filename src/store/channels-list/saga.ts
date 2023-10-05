@@ -7,7 +7,7 @@ import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.
 import { chat } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
-import { toLocalChannel, filterChannelsList } from './utils';
+import { toLocalChannel, filterChannelsList, mapOtherMembers as mapOtherMembersOfChannel } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
@@ -21,6 +21,8 @@ import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga'
 import { featureFlags } from '../../lib/feature-flags';
 import { userByMatrixId } from '../users/selectors';
 import { rawChannel } from '../channels/selectors';
+import { getZEROUsers } from './api';
+import { union } from 'lodash';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -28,6 +30,27 @@ const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
 export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+export async function mapToZeroUsers(channels: any[]) {
+  if (!featureFlags.enableMatrix) {
+    return;
+  }
+
+  let allMatrixIds = [];
+  for (const channel of channels) {
+    const matrixIds = channel.otherMembers.map((u) => u.matrixId);
+    allMatrixIds = union(allMatrixIds, matrixIds);
+  }
+
+  const zeroUsers = await getZEROUsers(allMatrixIds);
+  const zeroUsersMap = {};
+  for (const user of zeroUsers) {
+    zeroUsersMap[user.matrixId] = user;
+  }
+
+  mapOtherMembersOfChannel(channels, zeroUsersMap);
+  return;
+}
 
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
@@ -40,6 +63,7 @@ export function* fetchChannels(action) {
     ],
     action.payload
   );
+  yield call(mapToZeroUsers, channelsList);
 
   const conversationsList = yield select(rawConversationsList());
 
@@ -59,6 +83,7 @@ export function* fetchConversations() {
     chatClient,
     chatClient.getConversations,
   ]);
+  yield call(mapToZeroUsers, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList

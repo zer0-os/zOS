@@ -170,13 +170,15 @@ export class MatrixClient implements IChatClient {
     }
 
     const options: ICreateRoomOpts = {
-      name,
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
       invite: users.map((u) => u.matrixId),
       is_direct: true,
       initial_state,
     };
+    if (name) {
+      options.name = name;
+    }
 
     const result = await this.matrix.createRoom(options);
     // Any room is only set as a DM based on a single user. We'll use the first one.

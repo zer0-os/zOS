@@ -468,6 +468,7 @@ export function* receiveDelete(action) {
 
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
+  yield call(mapMessageSenders, [message]);
 
   const channel = yield select(rawChannelSelector(channelId));
   const currentMessages = channel?.messages || [];

@@ -353,6 +353,7 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
+    yield call(mapMessageSenders, messagesResponse.messages);
 
     yield put(
       receive({

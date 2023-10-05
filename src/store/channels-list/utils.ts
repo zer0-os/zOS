@@ -52,3 +52,18 @@ export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string
     }
   }
 };
+
+export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
+  for (const channel of channels) {
+    for (const message of channel.messages) {
+      const zeroUser = zeroUsersMap[message.sender.userId];
+      if (zeroUser && zeroUser?.profileSummary) {
+        message.sender.userId = zeroUser.id;
+        message.sender.profileId = zeroUser.profileSummary.id;
+        message.sender.firstName = zeroUser.profileSummary.firstName;
+        message.sender.lastName = zeroUser.profileSummary.lastName;
+        message.sender.profileImage = zeroUser.profileSummary.profileImage;
+      }
+    }
+  }
+};

@@ -7,7 +7,12 @@ import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.
 import { chat } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
-import { toLocalChannel, filterChannelsList, mapOtherMembers as mapOtherMembersOfChannel } from './utils';
+import {
+  toLocalChannel,
+  filterChannelsList,
+  mapOtherMembers as mapOtherMembersOfChannel,
+  mapChannelMessages,
+} from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { conversationsChannel } from './channels';
@@ -31,7 +36,7 @@ const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.C
 export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-export async function mapToZeroUsers(channels: any[]) {
+export function* mapToZeroUsers(channels: any[]) {
   if (!featureFlags.enableMatrix) {
     return;
   }
@@ -42,13 +47,16 @@ export async function mapToZeroUsers(channels: any[]) {
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
-  const zeroUsers = await getZEROUsers(allMatrixIds);
+  const zeroUsers = yield call(getZEROUsers, allMatrixIds);
   const zeroUsersMap = {};
   for (const user of zeroUsers) {
     zeroUsersMap[user.matrixId] = user;
   }
+  const currentUser = yield select(currentUserSelector());
+  zeroUsersMap[currentUser.matrixId] = currentUser;
 
   mapOtherMembersOfChannel(channels, zeroUsersMap);
+  mapChannelMessages(channels, zeroUsersMap);
   return;
 }
 

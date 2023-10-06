@@ -442,7 +442,6 @@ export function* replaceOptimisticMessage(currentMessages, message) {
     preview: message.preview || optimisticMessage.preview,
     sendStatus: MessageSendStatus.SUCCESS,
   };
-  console.log('HERE', messages);
   return messages;
 }
 

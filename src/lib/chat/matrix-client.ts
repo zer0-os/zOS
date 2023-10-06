@@ -360,12 +360,7 @@ export class MatrixClient implements IChatClient {
   };
 
   private publishRoomNameChange = (room: Room) => {
-    const event = room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(EventType.RoomName, '');
-    if (event && event.getType() === EventType.RoomName) {
-      const content = event.getContent();
-
-      this.events.onRoomNameChanged(room.roomId, content.name);
-    }
+    this.events.onRoomNameChanged(room.roomId, this.getRoomName(room));
   };
 
   private publishRoomAvatarChange = (event) => {
@@ -467,25 +462,13 @@ export class MatrixClient implements IChatClient {
   }
 
   private getRoomName(room: Room): string {
-    const roomNameEvent = room
-      .getLiveTimeline()
-      .getState(EventTimeline.FORWARDS)
-      .getStateEvents(EventType.RoomName, '');
-
-    if (roomNameEvent && roomNameEvent.getType() === EventType.RoomName) {
-      return roomNameEvent.getContent().name;
-    }
-
-    return '';
+    const roomNameEvent = this.getLatestEvent(room, EventType.RoomName);
+    return roomNameEvent?.getContent()?.name || '';
   }
 
   private getRoomAvatar(room: Room): string {
-    const roomAvatarEvent = room
-      .getLiveTimeline()
-      .getState(EventTimeline.FORWARDS)
-      .getStateEvents(EventType.RoomAvatar, '');
-
-    return roomAvatarEvent?.getContent()?.url;
+    const roomAvatarEvent = this.getLatestEvent(room, EventType.RoomAvatar);
+    return roomAvatarEvent?.getContent()?.url || '';
   }
 
   private getRoomCreatedAt(room: Room): number {

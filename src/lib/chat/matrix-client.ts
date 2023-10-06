@@ -466,7 +466,7 @@ export class MatrixClient implements IChatClient {
       message,
       isAdmin: false,
       createdAt: timestamp,
-      updatedAt: timestamp,
+      updatedAt: null,
       sender: {
         userId: senderId,
         firstName: matrixEvent.sender?.name,

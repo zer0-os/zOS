@@ -194,7 +194,7 @@ export class MatrixClient implements IChatClient {
     let content = {
       body: message,
       msgtype: MsgType.Text,
-      // optimisticId: optimisticId,
+      optimisticId: optimisticId,
     };
 
     if (parentMessage) {
@@ -262,11 +262,11 @@ export class MatrixClient implements IChatClient {
         console.log('encryped message: ', event);
       }
 
-      if (event.type === 'm.room.message') {
-        !event.content.optimisticId &&
+      if (event.type === EventType.RoomMessage) {
+        if (!event.content.optimisticId) {
           this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+        }
       }
-
       if (event.type === 'm.room.create') {
         this.roomCreated(event);
       }

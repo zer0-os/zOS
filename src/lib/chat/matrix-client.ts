@@ -389,6 +389,7 @@ export class MatrixClient implements IChatClient {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
+    const createdAt = this.getRoomCreatedAt(room);
 
     const messages = this.getAllMessagesFromRoom(room);
 
@@ -407,7 +408,7 @@ export class MatrixClient implements IChatClient {
       category: '',
       unreadCount: 0,
       hasJoined: true,
-      createdAt: 0,
+      createdAt,
       conversationStatus: ConversationStatus.CREATED,
     };
   }
@@ -487,6 +488,10 @@ export class MatrixClient implements IChatClient {
     return roomAvatarEvent?.getContent()?.url;
   }
 
+  private getRoomCreatedAt(room: Room): number {
+    return this.getLatestEvent(room, EventType.RoomCreate)?.getTs() || 0;
+  }
+
   private getAllMessagesFromRoom(room: Room) {
     const timeline = room.getLiveTimeline().getEvents();
     const messages = timeline
@@ -530,5 +535,9 @@ export class MatrixClient implements IChatClient {
       }
     }
     return null;
+  }
+
+  private getLatestEvent(room: Room, type: EventType) {
+    return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
   }
 }

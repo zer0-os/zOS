@@ -57,8 +57,6 @@ export interface IChatClient {
 export class Chat {
   constructor(private client: IChatClient = null) {}
 
-  supportsOptimisticSend = () => this.client.supportsOptimisticSend();
-
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {
       return;

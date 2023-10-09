@@ -27,7 +27,7 @@ import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { featureFlags } from '../../lib/feature-flags';
 import { User } from '../channels';
-import { getZEROUsers } from '../channels-list/api';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 
 export interface Payload {
   channelId: string;
@@ -129,23 +129,20 @@ export function* mapMessageSenders(messages) {
   }
 
   if (!matrixIds.length) {
-    const zeroUsers = yield call(getZEROUsers, matrixIds);
+    const zeroUsers = yield call(getZEROUsersAPI, matrixIds);
     for (const user of zeroUsers) {
-      zeroUsersMap[user.matrixId] = user;
+      zeroUsersMap[user.matrixId] = {
+        userId: user.id,
+        profileId: user.profileSummary?.id,
+        firstName: user.profileSummary?.firstName,
+        lastName: user.profileSummary?.lastName,
+        profileImage: user.profileSummary?.profileImage,
+      };
     }
   }
 
   messages.forEach((message) => {
-    const zeroUser = zeroUsersMap[message.sender.userId];
-    if (zeroUser) {
-      message.sender = {
-        userId: zeroUser.userId,
-        profileId: zeroUser.profileId,
-        firstName: zeroUser.firstName,
-        lastName: zeroUser.lastName,
-        profileImage: zeroUser.profileImage,
-      };
-    }
+    message.sender = zeroUsersMap[message.sender?.userId] || message.sender;
   });
 }
 

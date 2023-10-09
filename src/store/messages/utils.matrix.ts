@@ -35,6 +35,6 @@ export function* mapMessageSenders(messages) {
   }
 
   messages.forEach((message) => {
-    message.sender = zeroUsersMap[message.sender?.userId] || message.sender;
+    message.sender = zeroUsersMap[message.sender?.userId] || message.sender; // note: message.sender.userId is the matrixId
   });
 }

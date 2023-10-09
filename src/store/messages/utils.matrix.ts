@@ -1,8 +1,10 @@
-import { call } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 import { featureFlags } from '../../lib/feature-flags';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { getZeroUsersMap } from './saga';
+import { getZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
+import { userByMatrixId } from '../users/selectors';
+import { currentUserSelector } from '../authentication/saga';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   const chatClient = yield call(chat.get);
@@ -64,4 +66,31 @@ export function* mapMessageSenders(messages, channelId) {
   });
 
   yield call(mapParentForMessages, messages, channelId, zeroUsersMap);
+}
+
+// maps a newly sent/received message sender + parentMessage to a ZERO user
+export function* mapReceivedMessage(message) {
+  if (!featureFlags.enableMatrix) {
+    return;
+  }
+  const matrixId = message.sender?.userId;
+
+  const currentUser = yield select(currentUserSelector());
+  if (matrixId === currentUser.matrixId) {
+    message.sender = {
+      userId: currentUser.id,
+      profileId: currentUser.profileSummary?.id,
+      firstName: currentUser.profileSummary?.firstName,
+      lastName: currentUser.profileSummary?.lastName,
+      profileImage: currentUser.profileSummary?.profileImage,
+    };
+  } else {
+    const user = yield select(userByMatrixId, matrixId);
+    message.sender = user || message.sender;
+  }
+
+  if (message.parentMessageId) {
+    const parentMessage = yield select(messageSelector(message.parentMessageId));
+    message.parentMessage = parentMessage || {};
+  }
 }

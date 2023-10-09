@@ -26,7 +26,7 @@ import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
-import { mapMessageSenders } from './utils.matrix';
+import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 
 export interface Payload {
   channelId: string;
@@ -79,7 +79,7 @@ export const rawMessagesSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}'].messages`, []);
 };
 
-const messageSelector = (messageId) => (state) => {
+export const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
@@ -418,7 +418,7 @@ export function* receiveDelete(action) {
 
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
-  yield call(mapMessageSenders, [message], channelId);
+  yield call(mapReceivedMessage, message);
 
   const channel = yield select(rawChannelSelector(channelId));
   const currentMessages = channel?.messages || [];

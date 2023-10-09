@@ -267,9 +267,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        if (!event.content.optimisticId) {
-          this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
-        }
+        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
       }
       if (event.type === 'm.room.create') {
         this.roomCreated(event);

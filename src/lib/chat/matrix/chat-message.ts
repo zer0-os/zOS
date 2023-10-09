@@ -39,6 +39,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
       profileId: '',
     },
     isAdmin: false,
+    optimisticId: content.optimisticId,
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
     ...(await extractParentMessageData(matrixMessage, sdkMatrixClient)),
   };

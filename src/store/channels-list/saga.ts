@@ -90,7 +90,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
   const chatClient = yield call(chat.get);
 
   let optimisticConversation = { id: '', optimisticId: '' };
-  if (yield call(chatClient.supportsOptimisticSend)) {
+  if (yield call(chatClient.supportsOptimisticCreateConversation)) {
     optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
     yield put(setactiveConversationId(optimisticConversation.id));
   }

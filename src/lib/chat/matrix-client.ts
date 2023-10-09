@@ -56,7 +56,7 @@ export class MatrixClient implements IChatClient {
     this.events = events;
   }
 
-  supportsOptimisticSend() {
+  supportsOptimisticCreateConversation() {
     return false;
   }
 

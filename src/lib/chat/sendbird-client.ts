@@ -36,7 +36,7 @@ export class SendbirdClient implements IChatClient {
     }, 10 * 1000);
   }
 
-  supportsOptimisticSend() {
+  supportsOptimisticCreateConversation() {
     return true;
   }
 

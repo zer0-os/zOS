@@ -56,6 +56,10 @@ export class MatrixClient implements IChatClient {
     this.events = events;
   }
 
+  supportsOptimisticSend() {
+    return true;
+  }
+
   async connect(userId: string, accessToken: string) {
     this.userId = userId;
     this.setConnectionStatus(ConnectionStatus.Connecting);

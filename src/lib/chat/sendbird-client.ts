@@ -111,6 +111,10 @@ export class SendbirdClient implements IChatClient {
     return response.body;
   }
 
+  async getMessageByChannelId(_channelId: string, _messageId: string) {
+    return [];
+  }
+
   async createConversation(users: User[], name: string = null, image: File = null, optimisticId: string) {
     let coverUrl = '';
     if (image) {

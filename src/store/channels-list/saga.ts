@@ -106,7 +106,6 @@ export function* createConversation(userIds: string[], name: string = null, imag
     yield call(receiveCreatedConversation, conversation, optimisticConversation);
     return conversation;
   } catch {
-    console.log('ERROR');
     yield call(handleCreateConversationError, optimisticConversation);
   }
 }

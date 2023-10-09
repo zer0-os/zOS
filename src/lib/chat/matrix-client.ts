@@ -27,20 +27,9 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
+import { ConnectionStatus, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
-
-enum ConnectionStatus {
-  Connected = 'connected',
-  Connecting = 'connecting',
-  Disconnected = 'disconnected',
-}
-
-enum MembershipStateType {
-  Invite = 'invite',
-  Join = 'join',
-  Leave = 'leave',
-}
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;

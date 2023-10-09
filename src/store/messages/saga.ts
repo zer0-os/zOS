@@ -27,6 +27,7 @@ import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { featureFlags } from '../../lib/feature-flags';
 import { User } from '../channels';
+import { getZEROUsers } from '../channels-list/api';
 
 export interface Payload {
   channelId: string;
@@ -117,6 +118,23 @@ export function* mapMessageSenders(messages) {
   }
 
   const zeroUsersMap = yield call(getZeroUsersMap);
+
+  const matrixIds = [];
+  for (const m of messages) {
+    // it's possible that our "cache" doesn't have the sender because (s)he has left the room
+    // in that case we need to record the Id, and fetch it's profile using the API
+    if (m.sender?.userId && !zeroUsersMap[m.sender.userId]) {
+      matrixIds.push(m.sender.userId);
+    }
+  }
+
+  if (!matrixIds.length) {
+    const zeroUsers = yield call(getZEROUsers, matrixIds);
+    for (const user of zeroUsers) {
+      zeroUsersMap[user.matrixId] = user;
+    }
+  }
+
   messages.forEach((message) => {
     const zeroUser = zeroUsersMap[message.sender.userId];
     if (zeroUser) {

@@ -30,7 +30,6 @@ describe(createConversation, () => {
     const stubReceivedConversation = { id: 'new-convo-id' };
 
     const chatClient = {
-      supportsOptimisticSend: () => undefined,
       createConversation: () => undefined,
     };
 
@@ -38,8 +37,6 @@ describe(createConversation, () => {
       .next()
       .call(chat.get)
       .next(chatClient)
-      .call(chatClient.supportsOptimisticSend)
-      .next(true)
       .call(createOptimisticConversation, otherUserIds, name, image)
       .next(stubOptimisticConversation)
       .put(setactiveConversationId(stubOptimisticConversation.id))
@@ -61,7 +58,6 @@ describe(createConversation, () => {
     const stubOptimisticConversation = { id: 'optimistic-id' };
 
     const chatClient = {
-      supportsOptimisticSend: () => undefined,
       createConversation: () => undefined,
     };
 
@@ -69,8 +65,6 @@ describe(createConversation, () => {
       .next()
       .call(chat.get)
       .next(chatClient)
-      .call(chatClient.supportsOptimisticSend)
-      .next(true)
       // .call(createOptimisticConversation)
       .next(stubOptimisticConversation)
       // .put(setactiveConversationId)

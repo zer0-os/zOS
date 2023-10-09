@@ -36,10 +36,6 @@ export class SendbirdClient implements IChatClient {
     }, 10 * 1000);
   }
 
-  supportsOptimisticSend() {
-    return true;
-  }
-
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {
       return;

@@ -31,7 +31,6 @@ export interface IChatClient {
   connect: (userId: string, accessToken: string) => Promise<void>;
   disconnect: () => void;
   reconnect: () => void;
-  supportsOptimisticSend: () => boolean;
 
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;

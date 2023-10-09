@@ -56,6 +56,10 @@ export class MatrixClient implements IChatClient {
     this.events = events;
   }
 
+  supportsOptimisticSend() {
+    return true;
+  }
+
   async connect(userId: string, accessToken: string) {
     this.userId = userId;
     this.setConnectionStatus(ConnectionStatus.Connecting);
@@ -67,10 +71,6 @@ export class MatrixClient implements IChatClient {
 
   disconnect: () => void;
   reconnect: () => void;
-
-  supportsOptimisticSend() {
-    return true;
-  }
 
   async getUser(userId: string): Promise<SDKMatrixUser> {
     await this.waitForConnection();

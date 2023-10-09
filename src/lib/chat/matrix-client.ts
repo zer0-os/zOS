@@ -68,6 +68,10 @@ export class MatrixClient implements IChatClient {
   disconnect: () => void;
   reconnect: () => void;
 
+  supportsOptimisticSend() {
+    return true;
+  }
+
   async getUser(userId: string): Promise<SDKMatrixUser> {
     await this.waitForConnection();
     const user = this.matrix.getUser(userId);

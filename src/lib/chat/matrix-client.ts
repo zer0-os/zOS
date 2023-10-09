@@ -57,7 +57,7 @@ export class MatrixClient implements IChatClient {
   }
 
   supportsOptimisticSend() {
-    return true;
+    return false;
   }
 
   async connect(userId: string, accessToken: string) {

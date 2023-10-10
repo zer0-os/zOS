@@ -154,7 +154,7 @@ export class MatrixClient implements IChatClient {
     return { messages: mappedMessages as any, hasMore: false };
   }
 
-  async getMessageByChannelId(channelId: string, messageId: string) {
+  async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
     return await mapMatrixMessage(newMessage, this.matrix);
@@ -210,7 +210,7 @@ export class MatrixClient implements IChatClient {
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
-    const newMessage = await this.getMessageByChannelId(channelId, messageResult.event_id);
+    const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
     return {
       ...newMessage,
       optimisticId,

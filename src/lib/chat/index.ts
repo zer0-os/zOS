@@ -32,7 +32,7 @@ export interface IChatClient {
   disconnect: () => void;
   reconnect: () => void;
   supportsOptimisticCreateConversation: () => boolean;
-
+  getUserPresence: (userId: string) => Promise<any>;
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
@@ -70,6 +70,10 @@ export class Chat {
 
   async getChannels(id: string) {
     return this.client.getChannels(id);
+  }
+
+  async getUserPresence(userId: string) {
+    return this.client.getUserPresence(userId);
   }
 
   async getConversations() {

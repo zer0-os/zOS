@@ -77,6 +77,11 @@ export class MatrixClient implements IChatClient {
     return this.matrix.getAccountData(eventType);
   }
 
+  async getUserPresence(userId: string) {
+    await this.waitForConnection();
+    return await this.matrix.getPresence(userId);
+  }
+
   async getChannels(_id: string) {
     await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isChannel);
@@ -418,6 +423,7 @@ export class MatrixClient implements IChatClient {
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);
+
     return {
       userId: matrixId,
       matrixId,

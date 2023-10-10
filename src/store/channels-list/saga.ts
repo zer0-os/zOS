@@ -60,6 +60,24 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
+export function* updateOtherMembersLastSeenAt(conversations) {
+  if (!featureFlags.enableMatrix) {
+    return;
+  }
+
+  const chatClient = yield call(chat.get);
+  for (let conversation of conversations) {
+    const matrixId = conversation?.otherMembers?.[0]?.matrixId;
+
+    if (conversation.isOneOnOne && matrixId) {
+      const userPresenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
+      if (userPresenceData?.last_active_ago) {
+        conversation.otherMembers[0].lastSeenAt = new Date(Date.now() - userPresenceData.last_active_ago).toISOString();
+      }
+    }
+  }
+}
+
 export function* fetchChannels(action) {
   yield put(setStatus(AsyncListStatus.Fetching));
 
@@ -92,6 +110,7 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
   yield call(mapToZeroUsers, conversations);
+  yield call(updateOtherMembersLastSeenAt, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList

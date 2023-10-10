@@ -76,7 +76,7 @@ interface MediaInfo {
 }
 
 export const rawMessagesSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
+  return getDeepProperty(state, `normalized.channels['${channelId}'].messages`, []);
 };
 
 const messageSelector = (messageId) => (state) => {
@@ -84,7 +84,7 @@ const messageSelector = (messageId) => (state) => {
 };
 
 export const _isChannel = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
+  getDeepProperty(state, `normalized.channels['${channelId}'].isChannel`, null);
 
 const _isActive = (channelId) => (state) => {
   return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;
@@ -154,38 +154,7 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const chatClient = yield call(chat.get);
-
-  if (yield call(chatClient.supportsOptimisticSend)) {
-    yield call(sendOptimistically, action.payload);
-    return;
-  }
-
-  yield call(sendPessimistically, action.payload);
-}
-
-export function* sendPessimistically(payload) {
-  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
-
-  const uploadableFiles: Uploadable[] = files.map(createUploadableFile);
-
-  let rootMessageId = '';
-  if (message?.trim()) {
-    const textMessage = yield call(performSend, channelId, message, mentionedUserIds, parentMessage, '0');
-
-    if (textMessage) {
-      rootMessageId = textMessage.id;
-    } else {
-      // If the text message failed, we'll leave the first file as unsent
-      uploadableFiles.shift();
-    }
-  }
-
-  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
-}
-
-export function* sendOptimistically(payload) {
-  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = payload;
+  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
 
   const processedFiles: Uploadable[] = files.map(createUploadableFile);
 

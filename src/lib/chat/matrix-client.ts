@@ -185,9 +185,11 @@ export class MatrixClient implements IChatClient {
     optimisticId?: string
   ): Promise<any> {
     await this.waitForConnection();
+
     let content = {
       body: message,
       msgtype: MsgType.Text,
+      optimisticId: optimisticId,
     };
 
     if (parentMessage) {
@@ -441,7 +443,7 @@ export class MatrixClient implements IChatClient {
       message,
       isAdmin: false,
       createdAt: timestamp,
-      updatedAt: timestamp,
+      updatedAt: null,
       sender: {
         userId: senderId,
         firstName: matrixEvent.sender?.name,

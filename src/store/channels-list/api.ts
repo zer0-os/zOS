@@ -53,3 +53,9 @@ export async function uploadImage(file: File): Promise<FileResult> {
   const url: string = body.secure_url || body.url;
   return { url };
 }
+
+export async function getZEROUsers(matrixIds: string[]) {
+  return await get('/matrix/users/zero', { matrixIds })
+    .catch((_error) => null)
+    .then((response) => response?.body || []);
+}

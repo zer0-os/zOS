@@ -38,6 +38,7 @@ export interface IChatClient {
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
   searchMentionableUsersForChannel: (channelId: string, search: string, channelMembers?: UserModel[]) => Promise<any[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
+  getMessageByRoomId: (channelId: string, messageId: string) => Promise<any>;
   createConversation: (
     users: User[],
     name: string,
@@ -78,6 +79,10 @@ export class Chat {
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async getMessageByRoomId(channelId: string, messageId: string) {
+    return this.client.getMessageByRoomId(channelId, messageId);
   }
 
   async createConversation(users: User[], name: string, image: File, optimisticId: string) {

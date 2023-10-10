@@ -127,13 +127,13 @@ export function* fetch(action) {
     if (referenceTimestamp) {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
-      yield call(mapMessageSenders, messagesResponse.messages);
+      yield call(mapMessageSenders, messagesResponse.messages, channelId);
       const existingMessages = yield select(rawMessagesSelector(channelId));
       messages = [...messagesResponse.messages, ...existingMessages];
     } else {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
-      yield call(mapMessageSenders, messagesResponse.messages);
+      yield call(mapMessageSenders, messagesResponse.messages, channelId);
       const existingMessages = yield select(rawMessagesSelector(channelId));
       messages = [...existingMessages, ...messagesResponse.messages];
     }
@@ -302,7 +302,7 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
-    yield call(mapMessageSenders, messagesResponse.messages);
+    yield call(mapMessageSenders, messagesResponse.messages, channelId);
 
     yield put(
       receive({
@@ -418,7 +418,7 @@ export function* receiveDelete(action) {
 
 export function* receiveNewMessage(action) {
   let { channelId, message } = action.payload;
-  yield call(mapMessageSenders, [message]);
+  yield call(mapMessageSenders, [message], channelId);
 
   const channel = yield select(rawChannelSelector(channelId));
   const currentMessages = channel?.messages || [];

@@ -27,14 +27,9 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
+import { ConnectionStatus, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
-
-enum ConnectionStatus {
-  Connected = 'connected',
-  Connecting = 'connecting',
-  Disconnected = 'disconnected',
-}
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -100,7 +95,7 @@ export class MatrixClient implements IChatClient {
     for (const room of rooms) {
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
-      if (membership === 'invite') {
+      if (membership === MembershipStateType.Invite) {
         if (!(await this.autoJoinRoom(room.roomId))) {
           failedToJoin.push(room.roomId);
         }
@@ -145,7 +140,7 @@ export class MatrixClient implements IChatClient {
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((m) => m.type === 'm.room.message');
+    const messages = chunk.filter((m) => m.type === EventType.RoomMessage);
     const mappedMessages = [];
     for (const message of messages) {
       mappedMessages.push(await mapMatrixMessage(message, this.matrix));
@@ -159,7 +154,7 @@ export class MatrixClient implements IChatClient {
     const coverUrl = await this.uploadCoverImage(image);
 
     const initial_state: any[] = [
-      { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+      { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
     ];
     if (coverUrl) {
       initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
@@ -218,7 +213,7 @@ export class MatrixClient implements IChatClient {
     for (const room of rooms) {
       const roomMembers = room
         .getMembers()
-        .filter((m) => m.membership === 'join' || m.membership === 'invite')
+        .filter((m) => m.membership === MembershipStateType.Join || m.membership === MembershipStateType.Invite)
         .map((m) => m.userId);
       if (this.arraysMatch(roomMembers, userMatrixIds)) {
         matches.push(room);
@@ -256,15 +251,15 @@ export class MatrixClient implements IChatClient {
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);
-      if (event.type === 'm.room.encrypted') {
+      if (event.type === EventType.RoomEncryption) {
         console.log('encryped message: ', event);
       }
 
-      if (event.type === 'm.room.message') {
+      if (event.type === EventType.RoomMessage) {
         this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
       }
 
-      if (event.type === 'm.room.create') {
+      if (event.type === EventType.RoomCreate) {
         this.roomCreated(event);
       }
       if (event.type === EventType.RoomAvatar) {
@@ -272,7 +267,7 @@ export class MatrixClient implements IChatClient {
       }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
-      if (member.membership === 'invite' && member.userId === this.userId) {
+      if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
         if (await this.autoJoinRoom(member.roomId)) {
           this.events.onUserReceivedInvitation(member.roomId);
         }
@@ -376,7 +371,7 @@ export class MatrixClient implements IChatClient {
     if (event.getType() === EventType.RoomMember) {
       const user = this.mapUser(event.getStateKey());
       if (event.getStateKey() !== this.userId) {
-        if (event.getContent().membership === 'leave') {
+        if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
@@ -503,7 +498,9 @@ export class MatrixClient implements IChatClient {
   private getOtherMembersFromRoom(room: Room): string[] {
     return room
       .getMembers()
-      .filter((member) => member.membership === 'join' || member.membership === 'invite')
+      .filter(
+        (member) => member.membership === MembershipStateType.Join || member.membership === MembershipStateType.Invite
+      )
       .filter((member) => member.userId !== this.userId)
       .map((member) => member.userId);
   }

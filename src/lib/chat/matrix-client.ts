@@ -9,7 +9,6 @@ import {
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
   MsgType,
-  User as SDKMatrixUser,
   Visibility,
   RoomEvent,
   ClientEvent,
@@ -65,12 +64,6 @@ export class MatrixClient implements IChatClient {
 
   disconnect: () => void;
   reconnect: () => void;
-
-  async getUser(userId: string): Promise<SDKMatrixUser> {
-    await this.waitForConnection();
-    const user = this.matrix.getUser(userId);
-    return user;
-  }
 
   async getAccountData(eventType: string) {
     await this.waitForConnection();

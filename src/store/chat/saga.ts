@@ -37,11 +37,9 @@ function* connectOnLogin() {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogin);
   let userId, chatAccessToken;
   if (featureFlags.enableMatrix) {
-    // const user = yield select(currentUserSelector());
-    // userId = user.matrixId;
-    userId = 'joel';
+    const user = yield select(currentUserSelector());
+    userId = user.matrixId;
     const token = yield call(getSSOToken);
-    console.log('token: ', token);
     chatAccessToken = token.token;
   } else {
     userId = yield select((state) => getDeepProperty(state, 'authentication.user.data.id', null));

@@ -100,13 +100,15 @@ export function* getZeroUsersMap() {
   }
   // map current user as well
   const currentUser = yield select(currentUserSelector());
-  zeroUsersMap[currentUser.matrixId] = {
-    userId: currentUser.id,
-    profileId: currentUser.profileSummary.id,
-    firstName: currentUser.profileSummary.firstName,
-    lastName: currentUser.profileSummary.lastName,
-    profileImage: currentUser.profileSummary.profileImage,
-  } as User;
+  if (currentUser) {
+    zeroUsersMap[currentUser.matrixId] = {
+      userId: currentUser.id,
+      profileId: currentUser.profileSummary.id,
+      firstName: currentUser.profileSummary.firstName,
+      lastName: currentUser.profileSummary.lastName,
+      profileImage: currentUser.profileSummary.profileImage,
+    } as User;
+  }
 
   return zeroUsersMap;
 }

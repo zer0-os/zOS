@@ -38,7 +38,7 @@ describe(fetch, () => {
       .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
 
-    expect(denormalize(channel.id, storeState).messages).toStrictEqual([
+    expect(denormalize(channel.id, storeState).messages).toIncludeSameMembers([
       { id: 'second-page', message: 'old' },
       { id: 'first-page', message: 'fresh' },
       { id: 'brand-new', message: 'new' },

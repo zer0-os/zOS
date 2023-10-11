@@ -76,7 +76,7 @@ interface MediaInfo {
 }
 
 export const rawMessagesSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels[${channelId}].messages`, []);
+  return getDeepProperty(state, `normalized.channels['${channelId}'].messages`, []);
 };
 
 export const messageSelector = (messageId) => (state) => {
@@ -84,7 +84,7 @@ export const messageSelector = (messageId) => (state) => {
 };
 
 export const _isChannel = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels[${channelId}].isChannel`, null);
+  getDeepProperty(state, `normalized.channels['${channelId}'].isChannel`, null);
 
 const _isActive = (channelId) => (state) => {
   return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;

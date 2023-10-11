@@ -155,7 +155,6 @@ export class MatrixClient implements IChatClient {
 
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
-      { type: 'm.room.encryption', state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
     ];
 
     if (coverUrl) {
@@ -166,7 +165,7 @@ export class MatrixClient implements IChatClient {
     const options: ICreateRoomOpts = {
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
-      invite: users.map((u) => '@joel:zos-dev.zer0.io'),
+      invite: users.map((u) => u.matrixId),
       is_direct: true,
       initial_state,
     };

@@ -17,15 +17,15 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   for (const message of messages) {
     if (message.parentMessageId) {
       let parentMessage = messagesById[message.parentMessageId];
-      if (parentMessage) {
-        message.parentMessage = parentMessage;
-      } else {
+      if (!parentMessage) {
         // if we don't have the parent message in our list, we need to fetch it
         // this can happen when a message is a reply to a message which is not in the current page/list
         parentMessage = yield call([chatClient, chatClient.getMessageByRoomId], channelId, message.parentMessageId);
         parentMessage.sender = zeroUsersMap[parentMessage.sender?.userId] || parentMessage.sender;
-        message.parentMessage = parentMessage;
       }
+
+      message.parentMessage = parentMessage;
+      message.parentMessageText = parentMessage.message;
     }
   }
 }
@@ -92,5 +92,6 @@ export function* mapReceivedMessage(message) {
   if (message.parentMessageId) {
     const parentMessage = yield select(messageSelector(message.parentMessageId));
     message.parentMessage = parentMessage || {};
+    message.parentMessageText = parentMessage.message;
   }
 }

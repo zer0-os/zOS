@@ -136,7 +136,7 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === EventType.RoomMessage);
     const mappedMessages = [];
     for (const message of messages) {
-      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
+      mappedMessages.push(mapMatrixMessage(message, this.matrix));
     }
 
     return { messages: mappedMessages as any, hasMore: false };
@@ -145,7 +145,7 @@ export class MatrixClient implements IChatClient {
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
-    return await mapMatrixMessage(newMessage, this.matrix);
+    return mapMatrixMessage(newMessage, this.matrix);
   }
 
   async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
@@ -257,7 +257,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+        this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
       }
 
       if (event.type === EventType.RoomCreate) {

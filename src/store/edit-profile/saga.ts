@@ -26,8 +26,8 @@ export function* editProfile(action) {
       }
     }
 
-    if (matrixId && matrixAccessToken) {
-      yield call(saveUserMatrixCredentials, { matrixId, matrixAccessToken });
+    if (matrixId) {
+      yield call(saveUserMatrixCredentials, matrixId, matrixAccessToken);
     }
 
     const { profileId } = yield select((state) => state.authentication.user.data);
@@ -49,8 +49,7 @@ export function* editProfile(action) {
   return;
 }
 
-export function* saveUserMatrixCredentials(payload) {
-  const { matrixId, matrixAccessToken } = payload;
+export function* saveUserMatrixCredentials(matrixId, matrixAccessToken) {
   const response = yield call(apiSaveUserMatrixCredentials, {
     matrixId,
     matrixAccessToken,

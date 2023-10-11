@@ -32,7 +32,8 @@ export function* getChatBus() {
 export function createChatConnection(userId, chatAccessToken) {
   const chatClient = chat.get();
 
-  return eventChannel((emit) => {
+  let connectionPromise;
+  const chatConnection = eventChannel((emit) => {
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
     const onMessageUpdated = (channelId, message) =>
@@ -77,11 +78,14 @@ export function createChatConnection(userId, chatAccessToken) {
       onOtherUserJoinedChannel,
       onOtherUserLeftChannel,
     });
-    chatClient.connect(userId, chatAccessToken);
+
+    connectionPromise = chatClient.connect(userId, chatAccessToken);
 
     const unsubscribe = () => {
       chatClient.disconnect();
     };
     return unsubscribe;
   });
+
+  return { chatConnection, connectionPromise };
 }

@@ -42,12 +42,13 @@ export class SendbirdClient implements IChatClient {
 
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {
-      return;
+      return null;
     }
 
     await this.sendbird.connect(userId, accessToken);
 
     this.accessToken = accessToken;
+    return null;
   }
 
   disconnect() {

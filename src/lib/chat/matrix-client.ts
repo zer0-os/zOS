@@ -61,6 +61,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async connect(userId: string, accessToken: string) {
+    console.log('connecting');
     this.userId = userId;
     this.setConnectionStatus(ConnectionStatus.Connecting);
     await this.initializeClient(this.userId, this.accessToken || accessToken);
@@ -164,15 +165,18 @@ export class MatrixClient implements IChatClient {
 
     const initial_state: any[] = [
       { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+      { type: 'm.room.encryption', state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
     ];
+
     if (coverUrl) {
       initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
     }
 
+    console.log('users: ', users);
     const options: ICreateRoomOpts = {
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
-      invite: users.map((u) => u.matrixId),
+      invite: users.map((u) => '@joel:zos-dev.zer0.io'),
       is_direct: true,
       initial_state,
     };
@@ -310,13 +314,19 @@ export class MatrixClient implements IChatClient {
     return (data) => console.log('Received Event', name, data);
   }
 
-  private async initializeClient(userId: string, accessToken: string) {
+  private async initializeClient(_userId: string, accessToken: string) {
     if (!this.matrix) {
       this.matrix = this.sdk.createClient({
         baseUrl: config.matrix.homeServerUrl,
-        accessToken,
-        userId,
       });
+
+      console.log('logging in ', accessToken);
+
+      const loginResult = await this.matrix.login('org.matrix.login.jwt', { token: accessToken, displayName: 'carl' });
+
+      this.matrix.deviceId = loginResult.device_id;
+
+      await this.matrix.initCrypto();
 
       await this.matrix.startClient();
       await this.waitForSync();
@@ -524,7 +534,9 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const dmConversationIds = await this.getConversationIds();
+    console.log('conversationIds: ', dmConversationIds);
     const rooms = this.matrix.getRooms() || [];
+    console.log('rooms: ', dmConversationIds);
 
     return rooms.filter((r) => filterFunc(r, dmConversationIds));
   }

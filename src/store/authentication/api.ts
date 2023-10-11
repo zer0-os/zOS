@@ -48,6 +48,12 @@ export async function updateImageProfile(profileId: string, profileImage: File):
   return await post(`/upload/avatar?profileId=${profileId}`).attach('file', profileImage);
 }
 
+export async function getSSOToken(): Promise<{ token: string }> {
+  const { body } = await get('/accounts/ssoToken');
+
+  return body;
+}
+
 export async function fetchChatAccessToken(): Promise<{ chatAccessToken: string }> {
   const { body } = await get('/accounts/chatAccessToken');
 

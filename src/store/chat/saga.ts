@@ -6,6 +6,7 @@ import { setActiveChannelId, setReconnecting, setactiveConversationId } from '.'
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { getSSOToken } from '../authentication/api';
 import { featureFlags } from '../../lib/feature-flags';
 import { currentUserSelector } from '../authentication/saga';
 
@@ -36,9 +37,12 @@ function* connectOnLogin() {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogin);
   let userId, chatAccessToken;
   if (featureFlags.enableMatrix) {
-    const user = yield select(currentUserSelector());
-    userId = user.matrixId;
-    chatAccessToken = user.matrixAccessToken;
+    // const user = yield select(currentUserSelector());
+    // userId = user.matrixId;
+    userId = 'joel';
+    const token = yield call(getSSOToken);
+    console.log('token: ', token);
+    chatAccessToken = token.token;
   } else {
     userId = yield select((state) => getDeepProperty(state, 'authentication.user.data.id', null));
     chatAccessToken = yield select((state) => getDeepProperty(state, 'chat.chatAccessToken.value', null));

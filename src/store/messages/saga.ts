@@ -127,16 +127,17 @@ export function* fetch(action) {
     if (referenceTimestamp) {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
-      yield call(mapMessageSenders, messagesResponse.messages, channelId);
-      const existingMessages = yield select(rawMessagesSelector(channelId));
-      messages = [...messagesResponse.messages, ...existingMessages];
     } else {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
-      yield call(mapMessageSenders, messagesResponse.messages, channelId);
-      const existingMessages = yield select(rawMessagesSelector(channelId));
-      messages = [...existingMessages, ...messagesResponse.messages];
     }
+
+    yield call(mapMessageSenders, messagesResponse.messages, channelId);
+    const existingMessages = yield select(rawMessagesSelector(channelId));
+
+    // we prefer this order (new messages first), so that if any new message has an updated property
+    // (eg. parentMessage), then it gets written to state
+    messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
 
     yield put(

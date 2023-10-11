@@ -9,6 +9,7 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 import { getSSOToken } from '../authentication/api';
 import { featureFlags } from '../../lib/feature-flags';
 import { currentUserSelector } from '../authentication/saga';
+import { saveUserMatrixCredentials } from '../edit-profile/saga';
 
 function* listenForReconnectStart(_action) {
   yield put(setReconnecting(true));
@@ -22,7 +23,11 @@ function* listenForReconnectStop(_action) {
 }
 
 function* initChat(userId, chatAccessToken) {
-  const chatConnection = createChatConnection(userId, chatAccessToken);
+  const { chatConnection, connectionPromise } = createChatConnection(userId, chatAccessToken);
+  const id = yield connectionPromise;
+  if (featureFlags.enableMatrix && id !== userId) {
+    yield call(saveUserMatrixCredentials, id, 'not-used');
+  }
   yield takeEvery(chatConnection, convertToBusEvents);
 
   yield spawn(closeConnectionOnLogout, chatConnection);

@@ -53,14 +53,13 @@ export class MatrixClient implements IChatClient {
     return false;
   }
 
-  async connect(userId: string, accessToken: string) {
-    console.log('connecting');
-    this.userId = userId;
+  async connect(_userId: string, accessToken: string) {
     this.setConnectionStatus(ConnectionStatus.Connecting);
-    await this.initializeClient(this.userId, this.accessToken || accessToken);
+    this.userId = await this.initializeClient(this.userId, this.accessToken || accessToken);
     await this.initializeEventHandlers();
 
     this.setConnectionStatus(ConnectionStatus.Connected);
+    return this.userId;
   }
 
   disconnect: () => void;
@@ -161,7 +160,6 @@ export class MatrixClient implements IChatClient {
       initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
     }
 
-    console.log('users: ', users);
     const options: ICreateRoomOpts = {
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
@@ -311,16 +309,15 @@ export class MatrixClient implements IChatClient {
         baseUrl: config.matrix.homeServerUrl,
       });
 
-      console.log('logging in ', accessToken);
-
-      const loginResult = await this.matrix.login('org.matrix.login.jwt', { token: accessToken, displayName: 'carl' });
+      const loginResult = await this.matrix.login('org.matrix.login.jwt', { token: accessToken });
 
       this.matrix.deviceId = loginResult.device_id;
-
       await this.matrix.initCrypto();
 
       await this.matrix.startClient();
       await this.waitForSync();
+
+      return loginResult.user_id;
     }
   }
 
@@ -502,9 +499,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const dmConversationIds = await this.getConversationIds();
-    console.log('conversationIds: ', dmConversationIds);
     const rooms = this.matrix.getRooms() || [];
-    console.log('rooms: ', dmConversationIds);
 
     return rooms.filter((r) => filterFunc(r, dmConversationIds));
   }

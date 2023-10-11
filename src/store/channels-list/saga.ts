@@ -54,13 +54,12 @@ export function* mapToZeroUsers(channels: any[]) {
   }
 
   const currentUser = yield select(currentUserSelector());
-
   if (currentUser && currentUser.matrixId) {
     zeroUsersMap[currentUser.matrixId] = currentUser;
   }
 
-  mapOtherMembersOfChannel(channels, zeroUsersMap);
-  mapChannelMessages(channels, zeroUsersMap);
+  yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);
+  yield call(mapChannelMessages, channels, zeroUsersMap);
   return;
 }
 

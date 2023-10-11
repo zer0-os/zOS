@@ -43,7 +43,7 @@ export function* mapToZeroUsers(channels: any[]) {
 
   let allMatrixIds = [];
   for (const channel of channels) {
-    const matrixIds = channel.otherMembers.map((u) => u.matrixId);
+    const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
@@ -52,8 +52,12 @@ export function* mapToZeroUsers(channels: any[]) {
   for (const user of zeroUsers) {
     zeroUsersMap[user.matrixId] = user;
   }
+
   const currentUser = yield select(currentUserSelector());
-  zeroUsersMap[currentUser.matrixId] = currentUser;
+
+  if (currentUser && currentUser.matrixId) {
+    zeroUsersMap[currentUser.matrixId] = currentUser;
+  }
 
   mapOtherMembersOfChannel(channels, zeroUsersMap);
   mapChannelMessages(channels, zeroUsersMap);

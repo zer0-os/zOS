@@ -543,28 +543,6 @@ describe('channels list saga', () => {
         .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
         .call(mapOtherMembers, channels, expectedMap)
         .run();
-      //   'matrix-id-1': {
-      //     userId: 'user-1',
-      //     profileId: 'profile-1',
-      //     firstName: 'first-1',
-      //     lastName: 'last-1',
-      //     profileImage: undefined,
-      //   },
-      //   'matrix-id-2': {
-      //     userId: 'user-2',
-      //     profileId: 'profile-2',
-      //     firstName: 'first-2',
-      //     lastName: 'last-2',
-      //     profileImage: undefined,
-      //   },
-      //   'matrix-id-3': {
-      //     userId: 'user-3',
-      //     profileId: 'profile-3',
-      //     firstName: 'first-3',
-      //     lastName: 'last-3',
-      //     profileImage: undefined,
-      //   },
-      // });
     });
 
     it('maps Other Members of channels to ZERO Users and save normalized state', async () => {

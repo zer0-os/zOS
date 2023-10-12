@@ -101,7 +101,7 @@ export class SendbirdClient implements IChatClient {
     return results.map((u) => ({ id: u.id, display: u.name, profileImage: u.profileImage }));
   }
 
-  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<void> {
+  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<any> {
     try {
       await del<any>(`/chatChannels/${channelId}/message`).send({ message: { id: messageId } });
     } catch (error: any) {

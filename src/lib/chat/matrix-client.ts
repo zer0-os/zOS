@@ -209,7 +209,7 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<void> {
+  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<any> {
     await this.matrix.redactEvent(channelId, messageId.toString(), null);
   }
 

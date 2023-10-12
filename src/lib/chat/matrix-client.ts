@@ -155,6 +155,7 @@ export class MatrixClient implements IChatClient {
 
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+      { type: EventType.RoomEncryption, state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
     ];
 
     if (coverUrl) {
@@ -338,6 +339,11 @@ export class MatrixClient implements IChatClient {
       this.matrix = this.sdk.createClient(opts);
 
       await this.matrix.initCrypto();
+
+      // suppsedly the setter is deprecated, but the direct property set doesn't seem to work.
+      // this is hopefully only a short-term setting anyway, so just leaving for now.
+      // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
+      this.matrix.setGlobalErrorOnUnknownDevices(false);
 
       await this.matrix.startClient();
       await this.waitForSync();

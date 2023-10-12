@@ -6,8 +6,10 @@ import { setActiveChannelId, setReconnecting, setactiveConversationId } from '.'
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { getSSOToken } from '../authentication/api';
 import { featureFlags } from '../../lib/feature-flags';
 import { currentUserSelector } from '../authentication/saga';
+import { saveUserMatrixCredentials } from '../edit-profile/saga';
 
 function* listenForReconnectStart(_action) {
   yield put(setReconnecting(true));
@@ -21,7 +23,11 @@ function* listenForReconnectStop(_action) {
 }
 
 function* initChat(userId, chatAccessToken) {
-  const chatConnection = createChatConnection(userId, chatAccessToken);
+  const { chatConnection, connectionPromise } = createChatConnection(userId, chatAccessToken);
+  const id = yield connectionPromise;
+  if (featureFlags.enableMatrix && id !== userId) {
+    yield call(saveUserMatrixCredentials, id, 'not-used');
+  }
   yield takeEvery(chatConnection, convertToBusEvents);
 
   yield spawn(closeConnectionOnLogout, chatConnection);
@@ -38,7 +44,8 @@ function* connectOnLogin() {
   if (featureFlags.enableMatrix) {
     const user = yield select(currentUserSelector());
     userId = user.matrixId;
-    chatAccessToken = user.matrixAccessToken;
+    const token = yield call(getSSOToken);
+    chatAccessToken = token.token;
   } else {
     userId = yield select((state) => getDeepProperty(state, 'authentication.user.data.id', null));
     chatAccessToken = yield select((state) => getDeepProperty(state, 'chat.chatAccessToken.value', null));

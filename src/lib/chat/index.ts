@@ -28,7 +28,7 @@ export interface RealtimeChatEvents {
 
 export interface IChatClient {
   init: (events: RealtimeChatEvents) => void;
-  connect: (userId: string, accessToken: string) => Promise<void>;
+  connect: (userId: string, accessToken: string) => Promise<string | null>;
   disconnect: () => void;
   reconnect: () => void;
   supportsOptimisticCreateConversation: () => boolean;
@@ -38,6 +38,7 @@ export interface IChatClient {
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
   searchMentionableUsersForChannel: (channelId: string, search: string, channelMembers?: UserModel[]) => Promise<any[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
+  getMessageByRoomId: (channelId: string, messageId: string) => Promise<any>;
   createConversation: (
     users: User[],
     name: string,
@@ -61,11 +62,11 @@ export class Chat {
   supportsOptimisticCreateConversation = () => this.client.supportsOptimisticCreateConversation();
 
   async connect(userId: string, accessToken: string) {
-    if (!accessToken || !userId) {
+    if (!accessToken) {
       return;
     }
 
-    await this.client.connect(userId, accessToken);
+    return await this.client.connect(userId, accessToken);
   }
 
   async getChannels(id: string) {
@@ -82,6 +83,10 @@ export class Chat {
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async getMessageByRoomId(channelId: string, messageId: string) {
+    return this.client.getMessageByRoomId(channelId, messageId);
   }
 
   async createConversation(users: User[], name: string, image: File, optimisticId: string) {

@@ -42,12 +42,13 @@ export class SendbirdClient implements IChatClient {
 
   async connect(userId: string, accessToken: string) {
     if (!accessToken || !userId) {
-      return;
+      return null;
     }
 
     await this.sendbird.connect(userId, accessToken);
 
     this.accessToken = accessToken;
+    return null;
   }
 
   disconnect() {
@@ -114,6 +115,10 @@ export class SendbirdClient implements IChatClient {
 
     const response = await get<any>(`/chatChannels/${channelId}/messages`, filter);
     return response.body;
+  }
+
+  async getMessageByRoomId(_channelId: string, _messageId: string) {
+    return {};
   }
 
   async createConversation(users: User[], name: string = null, image: File = null, optimisticId: string) {

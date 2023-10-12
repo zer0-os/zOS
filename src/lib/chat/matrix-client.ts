@@ -9,7 +9,6 @@ import {
   RoomMemberEvent,
   MatrixClient as SDKMatrixClient,
   MsgType,
-  User as SDKMatrixUser,
   Visibility,
   RoomEvent,
   ClientEvent,
@@ -54,23 +53,17 @@ export class MatrixClient implements IChatClient {
     return false;
   }
 
-  async connect(userId: string, accessToken: string) {
-    this.userId = userId;
+  async connect(_userId: string, accessToken: string) {
     this.setConnectionStatus(ConnectionStatus.Connecting);
-    await this.initializeClient(this.userId, this.accessToken || accessToken);
+    this.userId = await this.initializeClient(this.userId, this.accessToken || accessToken);
     await this.initializeEventHandlers();
 
     this.setConnectionStatus(ConnectionStatus.Connected);
+    return this.userId;
   }
 
   disconnect: () => void;
   reconnect: () => void;
-
-  async getUser(userId: string): Promise<SDKMatrixUser> {
-    await this.waitForConnection();
-    const user = this.matrix.getUser(userId);
-    return user;
-  }
 
   async getAccountData(eventType: string) {
     await this.waitForConnection();
@@ -148,10 +141,16 @@ export class MatrixClient implements IChatClient {
     const messages = chunk.filter((m) => m.type === EventType.RoomMessage);
     const mappedMessages = [];
     for (const message of messages) {
-      mappedMessages.push(await mapMatrixMessage(message, this.matrix));
+      mappedMessages.push(mapMatrixMessage(message, this.matrix));
     }
 
     return { messages: mappedMessages as any, hasMore: false };
+  }
+
+  async getMessageByRoomId(channelId: string, messageId: string) {
+    await this.waitForConnection();
+    const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
+    return mapMatrixMessage(newMessage, this.matrix);
   }
 
   async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
@@ -161,6 +160,7 @@ export class MatrixClient implements IChatClient {
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
     ];
+
     if (coverUrl) {
       initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
     }
@@ -206,9 +206,9 @@ export class MatrixClient implements IChatClient {
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
-    const newMessage = await this.matrix.fetchRoomEvent(channelId, messageResult.event_id);
+    const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
     return {
-      ...(await mapMatrixMessage(newMessage, this.matrix)),
+      ...newMessage,
       optimisticId,
     };
   }
@@ -263,7 +263,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
+        this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
       }
 
       if (event.type === EventType.RoomCreate) {
@@ -308,16 +308,21 @@ export class MatrixClient implements IChatClient {
     return (data) => console.log('Received Event', name, data);
   }
 
-  private async initializeClient(userId: string, accessToken: string) {
+  private async initializeClient(_userId: string, accessToken: string) {
     if (!this.matrix) {
       this.matrix = this.sdk.createClient({
         baseUrl: config.matrix.homeServerUrl,
-        accessToken,
-        userId,
       });
+
+      const loginResult = await this.matrix.login('org.matrix.login.jwt', { token: accessToken });
+
+      this.matrix.deviceId = loginResult.device_id;
+      await this.matrix.initCrypto();
 
       await this.matrix.startClient();
       await this.waitForSync();
+
+      return loginResult.user_id;
     }
   }
 

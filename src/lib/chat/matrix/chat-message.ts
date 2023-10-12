@@ -1,29 +1,8 @@
 import { MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 
-async function extractParentMessageData(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const parentMessageData = {
-    parentMessageId: null,
-    parentMessageText: '',
-  };
-
-  const parent = matrixMessage.content['m.relates_to'];
-  if (parent && parent['m.in_reply_to']) {
-    parentMessageData.parentMessageId = parent['m.in_reply_to'].event_id;
-
-    const parentMessage = await sdkMatrixClient.fetchRoomEvent(
-      matrixMessage.room_id,
-      parentMessageData.parentMessageId
-    );
-    if (parentMessage) {
-      parentMessageData.parentMessageText = parentMessage.content.body;
-    }
-  }
-
-  return parentMessageData;
-}
-
-export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
+  const parent = matrixMessage.content['m.relates_to'];
   const senderData = sdkMatrixClient.getUser(senderId);
 
   return {
@@ -41,6 +20,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     isAdmin: false,
     optimisticId: content.optimisticId,
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
-    ...(await extractParentMessageData(matrixMessage, sdkMatrixClient)),
+    parentMessageText: '',
+    parentMessageId: parent ? parent['m.in_reply_to'].event_id : null,
   };
 }

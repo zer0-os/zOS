@@ -3,6 +3,7 @@ import { MatrixClient } from './matrix-client';
 import { setAsDM } from './matrix/utils';
 import { uploadImage as _uploadImage } from '../../store/channels-list/api';
 import { when } from 'jest-when';
+import { config } from '../../config';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -47,6 +48,8 @@ const getMockAccountData = (data = {}) => {
 };
 
 const getSdkClient = (sdkClient = {}) => ({
+  login: async () => ({}),
+  initCrypto: async () => null,
   startClient: jest.fn(async () => undefined),
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
@@ -74,23 +77,18 @@ describe('matrix client', () => {
 
       const client = subject({ createClient });
 
-      client.connect('username', 'token');
+      client.connect(null, 'token');
 
-      expect(createClient).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId: 'username',
-          accessToken: 'token',
-        })
-      );
+      expect(createClient).toHaveBeenCalledWith(expect.objectContaining({ baseUrl: config.matrix.homeServerUrl }));
     });
 
-    it('starts client on connect', () => {
+    it('starts client on connect', async () => {
       const sdkClient = getSdkClient();
       const createClient = jest.fn(() => sdkClient);
 
       const client = subject({ createClient });
 
-      client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       expect(sdkClient.startClient).toHaveBeenCalledOnce();
     });
@@ -107,7 +105,7 @@ describe('matrix client', () => {
 
       const client = subject({ createClient });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       expect(on).toHaveBeenNthCalledWith(1, 'sync', expect.any(Function));
     });
@@ -124,7 +122,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       await client.getChannels('network-id');
 
@@ -148,7 +146,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ on, getRooms, getAccountData })),
       });
 
-      client.connect('username', 'token');
+      client.connect(null, 'token');
 
       const channelFetch = client.getChannels('network-id');
 
@@ -179,7 +177,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
       const channels = await client.getChannels('network-id');
 
       expect(channels).toHaveLength(1);
@@ -194,7 +192,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
       const channels = await client.getChannels('network-id');
 
       expect(channels).toHaveLength(0);
@@ -209,7 +207,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
       const channels = await client.getChannels('network-id');
 
       expect(channels).toHaveLength(2);
@@ -228,7 +226,7 @@ describe('matrix client', () => {
       };
 
       const client = new MatrixClient(allProps);
-      await client.connect('@somebody', 'token');
+      await client.connect(null, 'token');
       return client;
     };
 
@@ -277,7 +275,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       await client.getConversations();
 
@@ -289,7 +287,7 @@ describe('matrix client', () => {
       const createClient = jest.fn(() => sdkClient);
 
       const client = subject({ createClient });
-      client.connect('username', 'token');
+      client.connect(null, 'token');
 
       const accountDataFetch = client.getAccountData(EventType.Direct);
       expect(sdkClient.getAccountData).not.toHaveBeenCalled();
@@ -311,7 +309,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ getAccountData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       const result = await client.getAccountData(EventType.Direct);
       expect(result).toMatchObject({
@@ -322,43 +320,6 @@ describe('matrix client', () => {
           },
         },
       });
-    });
-  });
-
-  describe('getUser', () => {
-    it('returns user data for given userId', async () => {
-      const matrixUser = {
-        userId: '@john:matrix.org',
-        displayName: 'John Doe',
-        avatarUrl: 'https://example.com/avatar.jpg',
-        presence: 'online',
-        currentlyActive: true,
-        lastPresenceTs: 123456789,
-      };
-
-      const getUser = jest.fn().mockReturnValue(matrixUser);
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getUser })),
-      });
-
-      await client.connect('username', 'token');
-      const user = await client.getUser('@john:matrix.org');
-
-      expect(getUser).toHaveBeenCalledWith('@john:matrix.org');
-      expect(user).toEqual(matrixUser);
-    });
-
-    it('returns null if user does not exist', async () => {
-      const getUser = jest.fn().mockReturnValue(null);
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getUser })),
-      });
-
-      await client.connect('username', 'token');
-      const user = await client.getUser('@unknown:matrix.org');
-
-      expect(getUser).toHaveBeenCalledWith('@unknown:matrix.org');
-      expect(user).toBeNull();
     });
   });
 
@@ -374,7 +335,7 @@ describe('matrix client', () => {
       };
 
       const client = new MatrixClient(allProps);
-      await client.connect('@somebody', 'token');
+      await client.connect(null, 'token');
       return client;
     };
 
@@ -493,7 +454,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       const result = await client.sendMessagesByChannelId('channel-id', 'message', []);
       expect(result).toMatchObject({
@@ -538,7 +499,7 @@ describe('matrix client', () => {
         createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
       });
 
-      await client.connect('username', 'token');
+      await client.connect(null, 'token');
 
       const result = await client.sendMessagesByChannelId('channel-id', 'message', []);
 

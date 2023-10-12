@@ -48,7 +48,7 @@ export function* mapMessageSenders(messages, channelId) {
     }
   }
 
-  if (!matrixIds.length) {
+  if (matrixIds.length) {
     const zeroUsers = yield call(getZEROUsersAPI, matrixIds);
     for (const user of zeroUsers) {
       zeroUsersMap[user.matrixId] = {
@@ -76,7 +76,7 @@ export function* mapReceivedMessage(message) {
   const matrixId = message.sender?.userId;
 
   const currentUser = yield select(currentUserSelector());
-  if (matrixId === currentUser.matrixId) {
+  if (currentUser && matrixId === currentUser.matrixId) {
     message.sender = {
       userId: currentUser.id,
       profileId: currentUser.profileSummary?.id,

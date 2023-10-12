@@ -260,7 +260,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+        this.publishMessageEvent(event);
       }
 
       if (event.type === EventType.RoomCreate) {
@@ -275,6 +275,13 @@ export class MatrixClient implements IChatClient {
         if (await this.autoJoinRoom(member.roomId)) {
           this.events.onUserReceivedInvitation(member.roomId);
         }
+      }
+    });
+
+    this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
+      const event = decryptedEvent.getEffectiveEvent();
+      if (event.type === EventType.RoomMessage) {
+        this.publishMessageEvent(event);
       }
     });
 
@@ -372,6 +379,10 @@ export class MatrixClient implements IChatClient {
 
   private async roomCreated(event) {
     this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
+  }
+
+  private publishMessageEvent(event) {
+    this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
 
   private publishConversationListChange = (event: MatrixEvent) => {

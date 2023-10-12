@@ -3,10 +3,14 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { deleteMessage } from './saga';
 import { rootReducer } from '../reducer';
-import { deleteMessageApi } from './api';
 import { denormalize as denormalizeChannel } from '../channels';
 import { stubResponse } from '../../test/saga';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
+
+const chatClient = {
+  deleteMessageByRoomId: (_channelId: string, _messageId: string) => ({}),
+};
 
 describe(deleteMessage, () => {
   it('delete message', async () => {
@@ -48,9 +52,9 @@ describe(deleteMessage, () => {
     await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
       .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
-      .call(deleteMessageApi, channelId, 'root-message')
-      .call(deleteMessageApi, channelId, 'child-message-1')
-      .call(deleteMessageApi, channelId, 'child-message-2')
+      .call([chatClient, chatClient.deleteMessageByRoomId], channelId, 'root-message')
+      .call([chatClient, chatClient.deleteMessageByRoomId], channelId, 'child-message-1')
+      .call([chatClient, chatClient.deleteMessageByRoomId], channelId, 'child-message-2')
       .run();
   });
 
@@ -92,7 +96,7 @@ describe(deleteMessage, () => {
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'optimistic-root' } })
       .withReducer(rootReducer, initialState.build())
       .provide(successResponses())
-      .not.call.like({ fn: deleteMessageApi })
+      .not.call.like({ fn: chatClient.deleteMessageByRoomId })
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -105,6 +109,7 @@ describe(deleteMessage, () => {
 
 function successResponses() {
   return [
-    stubResponse(matchers.call.fn(deleteMessageApi), 200),
+    stubResponse(matchers.call.fn(chat.get), chatClient),
+    stubResponse(matchers.call.fn(chatClient.deleteMessageByRoomId), 200),
   ];
 }

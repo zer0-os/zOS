@@ -60,26 +60,108 @@ const getSdkClient = (sdkClient = {}) => ({
   ...sdkClient,
 });
 
-const subject = (props = {}) => {
+const subject = (props = {}, sessionStorage = {}) => {
   const allProps: any = {
     createClient: (_opts: any) => getSdkClient(),
     ...props,
   };
 
-  return new MatrixClient(allProps);
+  const mockSessionStorage = {
+    get: () => ({ deviceId: '', accessToken: '', userId: '' }),
+    set: (_session) => undefined,
+    ...sessionStorage,
+  };
+
+  return new MatrixClient(allProps, mockSessionStorage);
 };
+
+function resolveWith<T>(valueToResolve: T) {
+  let theResolve;
+  const promise = new Promise((resolve) => {
+    theResolve = async () => {
+      resolve(valueToResolve);
+      await new Promise((resolve) => setImmediate(resolve));
+      await promise;
+    };
+  });
+
+  return { resolve: theResolve, mock: () => promise };
+}
 
 describe('matrix client', () => {
   describe('createclient', () => {
-    it('creates SDK client on connect', () => {
+    it('creates SDK client with existing session on connect', async () => {
       const sdkClient = getSdkClient();
       const createClient = jest.fn(() => sdkClient);
+      const matrixSession = {
+        deviceId: 'abc123',
+        accessToken: 'token-4321',
+        userId: '@bob:zos-matrix',
+      };
 
-      const client = subject({ createClient });
+      const client = subject({ createClient }, { get: () => matrixSession });
 
       client.connect(null, 'token');
 
-      expect(createClient).toHaveBeenCalledWith(expect.objectContaining({ baseUrl: config.matrix.homeServerUrl }));
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(createClient).toHaveBeenCalledWith({
+        baseUrl: config.matrix.homeServerUrl,
+        ...matrixSession,
+      });
+    });
+
+    it('logs in and creates SDK client with new session if none exists', async () => {
+      const matrixSession = {
+        deviceId: 'abc123',
+        accessToken: 'token-4321',
+        userId: '@bob:zos-matrix',
+      };
+
+      const { resolve, mock } = resolveWith({
+        device_id: matrixSession.deviceId,
+        user_id: matrixSession.userId,
+        access_token: matrixSession.accessToken,
+      });
+
+      const createClient = jest.fn(() => getSdkClient({ login: mock }));
+
+      const client = subject({ createClient }, { get: () => null });
+
+      client.connect(null, 'token');
+
+      await resolve();
+
+      expect(createClient).toHaveBeenNthCalledWith(2, {
+        baseUrl: config.matrix.homeServerUrl,
+        ...matrixSession,
+      });
+    });
+
+    it('saves session if none exists', async () => {
+      const matrixSession = {
+        deviceId: 'abc123',
+        accessToken: 'token-4321',
+        userId: '@bob:zos-matrix',
+      };
+
+      const setSession = jest.fn();
+
+      const { resolve, mock } = resolveWith({
+        device_id: matrixSession.deviceId,
+        user_id: matrixSession.userId,
+        access_token: matrixSession.accessToken,
+      });
+
+      const createClient = jest.fn(() => getSdkClient({ login: mock }));
+
+      const client = subject({ createClient }, { get: () => null, set: setSession });
+
+      client.connect(null, 'token');
+
+      await resolve();
+
+      expect(setSession).toHaveBeenCalledWith(matrixSession);
     });
 
     it('starts client on connect', async () => {

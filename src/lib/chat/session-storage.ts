@@ -7,6 +7,14 @@ export interface ChatSession {
 export class SessionStorage {
   constructor(private storage = localStorage) {}
 
+  clear() {
+    const deviceId = this.storage.getItem('mxz_device_id');
+
+    this.storage.removeItem('mxz_device_id');
+    this.storage.removeItem(`mxz_access_token_${deviceId}`);
+    this.storage.removeItem('mxz_user_id');
+  }
+
   set(session: ChatSession) {
     this.storage.setItem('mxz_device_id', session.deviceId);
     this.storage.setItem(`mxz_access_token_${session.deviceId}`, session.accessToken);

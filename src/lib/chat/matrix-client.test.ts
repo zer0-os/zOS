@@ -51,6 +51,7 @@ const getSdkClient = (sdkClient = {}) => ({
   login: async () => ({}),
   initCrypto: async () => null,
   startClient: jest.fn(async () => undefined),
+  stopClient: jest.fn(),
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
   }),
@@ -70,6 +71,7 @@ const subject = (props = {}, sessionStorage = {}) => {
   const mockSessionStorage: any = {
     get: () => ({ deviceId: '', accessToken: '', userId: '' }),
     set: (_session) => undefined,
+    clear: () => undefined,
     ...sessionStorage,
   };
 
@@ -90,6 +92,50 @@ function resolveWith<T>(valueToResolve: T) {
 }
 
 describe('matrix client', () => {
+  describe('disconnect', () => {
+    it('stops client on disconnect', async () => {
+      const sdkClient = getSdkClient();
+      const createClient = jest.fn(() => sdkClient);
+      const matrixSession = {
+        deviceId: 'abc123',
+        accessToken: 'token-4321',
+        userId: '@bob:zos-matrix',
+      };
+
+      const client = subject({ createClient }, { get: () => matrixSession });
+
+      // initializes underlying matrix client
+      await client.connect(null, 'token');
+
+      client.disconnect();
+
+      expect(sdkClient.stopClient).toHaveBeenCalledOnce();
+    });
+
+    it('clears session storage on disconnect', async () => {
+      const sdkClient = getSdkClient();
+      const createClient = jest.fn(() => sdkClient);
+      const matrixSession = {
+        deviceId: 'abc123',
+        accessToken: 'token-4321',
+        userId: '@bob:zos-matrix',
+      };
+
+      const clearSession = jest.fn();
+
+      const client = subject({ createClient }, { clear: clearSession, get: () => matrixSession });
+
+      // initializes underlying matrix client
+      await client.connect(null, 'token');
+
+      expect(clearSession).not.toHaveBeenCalled();
+
+      client.disconnect();
+
+      expect(clearSession).toHaveBeenCalledOnce();
+    });
+  });
+
   describe('createclient', () => {
     it('creates SDK client with existing session on connect', async () => {
       const sdkClient = getSdkClient();

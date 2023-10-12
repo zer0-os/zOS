@@ -88,7 +88,7 @@ export class SendbirdClient implements IChatClient {
 
   async getUserPresence() {
     console.warn('getUserPresence method is not implemented for SendbirdClient.');
-    return Promise.resolve(null);
+    return null;
   }
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {

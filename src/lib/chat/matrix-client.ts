@@ -134,7 +134,6 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
     const messages = chunk.filter((m) => m.type === EventType.RoomMessage && !m?.unsigned?.redacted_because);
-
     const mappedMessages = [];
     for (const message of messages) {
       mappedMessages.push(mapMatrixMessage(message, this.matrix));
@@ -210,7 +209,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async deleteMessageByRoomId(channelId: string, messageId: number): Promise<any> {
-    await this.matrix.redactEvent(channelId, messageId.toString(), null);
+    await this.matrix.redactEvent(channelId, messageId.toString());
   }
 
   async fetchConversationsWithUsers(users: User[]) {

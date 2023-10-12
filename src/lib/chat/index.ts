@@ -54,6 +54,7 @@ export interface IChatClient {
     optimisticId?: string
   ) => Promise<MessagesResponse>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
+  deleteMessageByRoomId: (channelId: string, messageId: number) => Promise<void>;
 }
 
 export class Chat {
@@ -87,6 +88,10 @@ export class Chat {
 
   async createConversation(users: User[], name: string, image: File, optimisticId: string) {
     return this.client.createConversation(users, name, image, optimisticId);
+  }
+
+  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<void> {
+    return this.client.deleteMessageByRoomId(channelId, messageId);
   }
 
   async searchMyNetworksByName(filter: string) {

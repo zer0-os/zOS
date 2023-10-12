@@ -208,6 +208,10 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<void> {
+    await this.matrix.redactEvent(channelId, messageId.toString(), null);
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getFilteredRooms(this.isConversation);

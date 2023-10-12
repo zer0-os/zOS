@@ -5,7 +5,7 @@ import { Message, MessagesResponse } from '../../store/messages';
 import { sendMessagesByChannelId } from '../../store/messages/api';
 import { FileUploadResult } from '../../store/messages/saga';
 import { config } from '../../config';
-import { get } from '../../lib/api/rest';
+import { del, get } from '../../lib/api/rest';
 import { toLocalChannel } from '../../store/channels-list/utils';
 import { ParentMessage, User } from './types';
 
@@ -99,6 +99,14 @@ export class SendbirdClient implements IChatClient {
       .then((response) => response?.body || []);
 
     return results.map((u) => ({ id: u.id, display: u.name, profileImage: u.profileImage }));
+  }
+
+  async deleteMessageByRoomId(channelId: string, messageId: number): Promise<void> {
+    try {
+      await del<any>(`/chatChannels/${channelId}/message`).send({ message: { id: messageId } });
+    } catch (error: any) {
+      console.log('Error occurred while deleting message', error?.response ?? error);
+    }
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {

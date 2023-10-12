@@ -16,7 +16,7 @@ import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
-import { deleteMessageApi, editMessageApi, getLinkPreviews } from './api';
+import { editMessageApi, getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -326,9 +326,7 @@ export function* deleteMessage(action) {
   const existingMessageIds = yield select(rawMessagesSelector(channelId));
   const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
 
-  const messageIdsToDelete = fullMessages
-    .filter((m) => m.rootMessageId === messageId.toString()) // toString() because message ids are currently a number
-    .map((m) => m.id);
+  const messageIdsToDelete = fullMessages.filter((m) => m.rootMessageId === messageId.toString()).map((m) => m.id);
   messageIdsToDelete.unshift(messageId);
 
   yield put(
@@ -343,12 +341,14 @@ export function* deleteMessage(action) {
     .filter((m) => m.id !== m.optimisticId)
     .map((m) => m.id);
 
+  const chatClient = yield call(chat.get);
+
   // In the future we'd prefer that the api did this so that the front-ends
   // could treat these as independent messages. However, given that we have
   // multiple front ends and they don't all support treating these messages
   // as a single entity yet, this is how we'll do it for now.
   for (let id of nonOptimisticMessagesIds) {
-    yield call(deleteMessageApi, channelId, id);
+    yield call([chatClient, chatClient.deleteMessageByRoomId], channelId, id);
   }
 }
 

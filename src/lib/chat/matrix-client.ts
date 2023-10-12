@@ -133,7 +133,8 @@ export class MatrixClient implements IChatClient {
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((m) => m.type === EventType.RoomMessage);
+    const messages = chunk.filter((m) => m.type === EventType.RoomMessage && !m?.unsigned?.redacted_because);
+
     const mappedMessages = [];
     for (const message of messages) {
       mappedMessages.push(mapMatrixMessage(message, this.matrix));
@@ -491,7 +492,7 @@ export class MatrixClient implements IChatClient {
   private getAllMessagesFromRoom(room: Room) {
     const timeline = room.getLiveTimeline().getEvents();
     const messages = timeline
-      .filter((event) => event.getType() === EventType.RoomMessage)
+      .filter((event) => event.getType() === EventType.RoomMessage && !event.isRedacted())
       .map(this.mapMatrixEventToMessage);
     return messages;
   }

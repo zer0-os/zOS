@@ -72,7 +72,19 @@ export class MatrixClient implements IChatClient {
 
   async getUserPresence(userId: string) {
     await this.waitForConnection();
-    return await this.matrix.getPresence(userId);
+
+    try {
+      const userPresenceData = await this.matrix.getPresence(userId);
+      const isOnline = userPresenceData?.currently_active || false;
+      const lastSeenAt = userPresenceData?.last_active_ago
+        ? new Date(Date.now() - userPresenceData.last_active_ago).toISOString()
+        : null;
+
+      return { lastSeenAt, isOnline };
+    } catch (error) {
+      console.error(error);
+      return { lastSeenAt: null, isOnline: false };
+    }
   }
 
   async getChannels(_id: string) {

@@ -73,9 +73,9 @@ export function* updateOtherMembersLastSeenAt(conversations) {
     const matrixId = conversation?.otherMembers?.[0]?.matrixId;
 
     if (conversation.isOneOnOne && matrixId) {
-      const userPresenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
-      if (userPresenceData?.last_active_ago) {
-        conversation.otherMembers[0].lastSeenAt = new Date(Date.now() - userPresenceData.last_active_ago).toISOString();
+      const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
+      if (presenceData && presenceData.lastSeenAt) {
+        conversation.otherMembers[0].lastSeenAt = presenceData.lastSeenAt;
       }
     }
   }

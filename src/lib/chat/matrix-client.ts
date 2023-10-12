@@ -271,6 +271,9 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomAvatar) {
         this.publishRoomAvatarChange(event);
       }
+      if (event.type === EventType.RoomRedaction) {
+        this.receiveDeleteMessage(event);
+      }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
@@ -346,6 +349,10 @@ export class MatrixClient implements IChatClient {
   private async roomCreated(event) {
     this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
   }
+
+  private receiveDeleteMessage = (event) => {
+    this.events.receiveDeleteMessage(event.room_id, event.redacts);
+  };
 
   private publishConversationListChange = (event: MatrixEvent) => {
     if (event.getType() === EventType.Direct) {

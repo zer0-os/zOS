@@ -57,6 +57,7 @@ const getSdkClient = (sdkClient = {}) => ({
   getRooms: jest.fn(),
   getAccountData: jest.fn(),
   getUser: jest.fn(),
+  setGlobalErrorOnUnknownDevices: () => undefined,
   ...sdkClient,
 });
 
@@ -66,7 +67,7 @@ const subject = (props = {}, sessionStorage = {}) => {
     ...props,
   };
 
-  const mockSessionStorage = {
+  const mockSessionStorage: any = {
     get: () => ({ deviceId: '', accessToken: '', userId: '' }),
     set: (_session) => undefined,
     ...sessionStorage,
@@ -429,9 +430,24 @@ describe('matrix client', () => {
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
-          initial_state: [
+          initial_state: expect.arrayContaining([
             { type: 'm.room.guest_access', state_key: '', content: { guest_access: GuestAccess.Forbidden } },
-          ],
+          ]),
+        })
+      );
+    });
+
+    it('creates encrypted room', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initial_state: expect.arrayContaining([
+            { type: 'm.room.encryption', state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
+          ]),
         })
       );
     });

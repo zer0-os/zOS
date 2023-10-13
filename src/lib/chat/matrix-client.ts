@@ -124,6 +124,10 @@ export class MatrixClient implements IChatClient {
     return dmConversationIds.includes(room.roomId) || !!room.getDMInviter();
   };
 
+  private isDeleted(event) {
+    return event?.unsigned?.redacted_because;
+  }
+
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
       .catch((_error) => null)
@@ -138,7 +142,7 @@ export class MatrixClient implements IChatClient {
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((m) => m.type === EventType.RoomMessage);
+    const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
     const mappedMessages = [];
     for (const message of messages) {
       mappedMessages.push(mapMatrixMessage(message, this.matrix));
@@ -214,6 +218,10 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
+    await this.matrix.redactEvent(roomId, messageId);
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getFilteredRooms(this.isConversation);
@@ -272,6 +280,9 @@ export class MatrixClient implements IChatClient {
       }
       if (event.type === EventType.RoomAvatar) {
         this.publishRoomAvatarChange(event);
+      }
+      if (event.type === EventType.RoomRedaction) {
+        this.receiveDeleteMessage(event);
       }
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
@@ -384,6 +395,10 @@ export class MatrixClient implements IChatClient {
   private async roomCreated(event) {
     this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
   }
+
+  private receiveDeleteMessage = (event) => {
+    this.events.receiveDeleteMessage(event.room_id, event.redacts);
+  };
 
   private publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
@@ -526,7 +541,7 @@ export class MatrixClient implements IChatClient {
   private getAllMessagesFromRoom(room: Room) {
     const timeline = room.getLiveTimeline().getEvents();
     const messages = timeline
-      .filter((event) => event.getType() === EventType.RoomMessage)
+      .filter((event) => event.getType() === EventType.RoomMessage && !event.isRedacted())
       .map(this.mapMatrixEventToMessage);
     return messages;
   }

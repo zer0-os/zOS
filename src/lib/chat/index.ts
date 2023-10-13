@@ -11,7 +11,7 @@ export interface RealtimeChatEvents {
   reconnectStart: () => void;
   reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
-  receiveDeleteMessage: (channelId: string, messageId: number) => void;
+  receiveDeleteMessage: (roomId: string, messageId: string) => void;
   onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
   onUserReceivedInvitation: (channel) => void;
@@ -54,6 +54,7 @@ export interface IChatClient {
     optimisticId?: string
   ) => Promise<MessagesResponse>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
+  deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
 }
 
 export class Chat {
@@ -87,6 +88,10 @@ export class Chat {
 
   async createConversation(users: User[], name: string, image: File, optimisticId: string) {
     return this.client.createConversation(users, name, image, optimisticId);
+  }
+
+  async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
+    return this.client.deleteMessageByRoomId(roomId, messageId);
   }
 
   async searchMyNetworksByName(filter: string) {

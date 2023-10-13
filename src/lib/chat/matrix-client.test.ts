@@ -654,4 +654,98 @@ describe('matrix client', () => {
       });
     });
   });
+
+  describe('deleteMessageByRoomId', () => {
+    it('deletes a message by room ID and message ID', async () => {
+      const messageId = '123456';
+      const channelId = '!abcdefg';
+      const redactEvent = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ redactEvent })),
+      });
+
+      await client.connect(null, 'token');
+      await client.deleteMessageByRoomId(channelId, messageId);
+
+      expect(redactEvent).toHaveBeenCalledWith(channelId, messageId);
+    });
+  });
+
+  describe('getMessagesByChannelId', () => {
+    it('filters out redacted messages', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const createMessagesRequest = jest.fn().mockResolvedValue({
+        chunk: [
+          {
+            type: 'm.room.message',
+            content: { body: 'message 1', msgtype: 'm.text' },
+            event_id: 'message-id-1',
+            unsigned: { redacted_because: {} }, // Indicates the message has been redacted.
+          },
+          {
+            type: 'm.room.message',
+            content: { body: 'message 2', msgtype: 'm.text' },
+            event_id: 'message-id-2',
+          },
+        ],
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ createMessagesRequest, getUser })),
+      });
+
+      await client.connect(null, 'token');
+      const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
+
+      expect(fetchedMessages).toHaveLength(1);
+      expect(fetchedMessages[0].message).toEqual('message 2');
+    });
+
+    it('fetches messages successfully', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const createMessagesRequest = jest.fn().mockResolvedValue({
+        chunk: [
+          {
+            type: 'm.room.message',
+            content: { body: 'message 1', msgtype: 'm.text' },
+            event_id: 'message-id-1',
+          },
+          {
+            type: 'm.room.message',
+            content: { body: 'message 2', msgtype: 'm.text' },
+            event_id: 'message-id-2',
+          },
+          {
+            type: 'm.room.message',
+            content: { body: 'message 3', msgtype: 'm.text' },
+            event_id: 'message-id-3',
+          },
+        ],
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ createMessagesRequest, getUser })),
+      });
+
+      await client.connect(null, 'token');
+      const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
+
+      expect(fetchedMessages).toHaveLength(3);
+    });
+
+    it('returns an empty array if no messages are found', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const createMessagesRequest = jest.fn().mockResolvedValue({ chunk: [] });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ createMessagesRequest, getUser })),
+      });
+
+      await client.connect(null, 'token');
+      const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
+
+      expect(fetchedMessages).toHaveLength(0);
+    });
+  });
 });

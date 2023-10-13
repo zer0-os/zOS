@@ -1,5 +1,5 @@
 import { AttachmentResponse } from '../../lib/api/attachment';
-import { del, get, post, put } from '../../lib/api/rest';
+import { get, post, put } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
 import { AttachmentUploadResult, EditMessageOptions } from './index';
@@ -33,12 +33,6 @@ export async function sendMessagesByChannelId(
   const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
 
   return response.body;
-}
-
-export async function deleteMessageApi(channelId: string, messageId: number): Promise<number> {
-  const response = await del<any>(`/chatChannels/${channelId}/message`).send({ message: { id: messageId } });
-
-  return response.status;
 }
 
 export async function editMessageApi(

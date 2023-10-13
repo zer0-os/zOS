@@ -29,6 +29,7 @@ import { MemberNetworks } from '../../store/users/types';
 import { ConnectionStatus, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
+import { SessionStorage } from './session-storage';
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -41,7 +42,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
 
-  constructor(private sdk = { createClient }) {
+  constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
   }
 
@@ -62,7 +63,11 @@ export class MatrixClient implements IChatClient {
     return this.userId;
   }
 
-  disconnect: () => void;
+  disconnect() {
+    this.matrix.stopClient();
+    this.sessionStorage.clear();
+  }
+
   reconnect: () => void;
 
   async getAccountData(eventType: string) {
@@ -158,6 +163,7 @@ export class MatrixClient implements IChatClient {
 
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+      { type: EventType.RoomEncryption, state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
     ];
 
     if (coverUrl) {
@@ -266,7 +272,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+        this.publishMessageEvent(event);
       }
 
       if (event.type === EventType.RoomCreate) {
@@ -284,6 +290,13 @@ export class MatrixClient implements IChatClient {
         if (await this.autoJoinRoom(member.roomId)) {
           this.events.onUserReceivedInvitation(member.roomId);
         }
+      }
+    });
+
+    this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
+      const event = decryptedEvent.getEffectiveEvent();
+      if (event.type === EventType.RoomMessage) {
+        this.publishMessageEvent(event);
       }
     });
 
@@ -314,21 +327,50 @@ export class MatrixClient implements IChatClient {
     return (data) => console.log('Received Event', name, data);
   }
 
-  private async initializeClient(_userId: string, accessToken: string) {
+  private async getCredentials(accessToken: string) {
+    const credentials = this.sessionStorage.get();
+
+    if (credentials) {
+      return credentials;
+    }
+
+    return await this.login(accessToken);
+  }
+
+  private async login(token: string) {
+    const tempClient = this.sdk.createClient({ baseUrl: config.matrix.homeServerUrl });
+
+    const { user_id, device_id, access_token } = await tempClient.login('org.matrix.login.jwt', { token });
+
+    this.sessionStorage.set({
+      userId: user_id,
+      deviceId: device_id,
+      accessToken: access_token,
+    });
+
+    return { accessToken: access_token, userId: user_id, deviceId: device_id };
+  }
+
+  private async initializeClient(_userId: string, ssoToken: string) {
     if (!this.matrix) {
-      this.matrix = this.sdk.createClient({
+      const opts: any = {
         baseUrl: config.matrix.homeServerUrl,
-      });
+        ...(await this.getCredentials(ssoToken)),
+      };
 
-      const loginResult = await this.matrix.login('org.matrix.login.jwt', { token: accessToken });
+      this.matrix = this.sdk.createClient(opts);
 
-      this.matrix.deviceId = loginResult.device_id;
       await this.matrix.initCrypto();
+
+      // suppsedly the setter is deprecated, but the direct property set doesn't seem to work.
+      // this is hopefully only a short-term setting anyway, so just leaving for now.
+      // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
+      this.matrix.setGlobalErrorOnUnknownDevices(false);
 
       await this.matrix.startClient();
       await this.waitForSync();
 
-      return loginResult.user_id;
+      return opts.userId;
     }
   }
 
@@ -357,6 +399,10 @@ export class MatrixClient implements IChatClient {
   private receiveDeleteMessage = (event) => {
     this.events.receiveDeleteMessage(event.room_id, event.redacts);
   };
+
+  private publishMessageEvent(event) {
+    this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+  }
 
   private publishConversationListChange = (event: MatrixEvent) => {
     if (event.getType() === EventType.Direct) {

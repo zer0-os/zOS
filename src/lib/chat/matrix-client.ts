@@ -75,7 +75,7 @@ export class MatrixClient implements IChatClient {
 
     try {
       const userPresenceData = await this.matrix.getPresence(userId);
-      const isOnline = userPresenceData?.currently_active || false;
+      const isOnline = userPresenceData?.presence === 'online';
       const lastSeenAt = userPresenceData?.last_active_ago
         ? new Date(Date.now() - userPresenceData.last_active_ago).toISOString()
         : null;

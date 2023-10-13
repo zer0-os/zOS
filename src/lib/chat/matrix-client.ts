@@ -75,6 +75,23 @@ export class MatrixClient implements IChatClient {
     return this.matrix.getAccountData(eventType);
   }
 
+  async getUserPresence(userId: string) {
+    await this.waitForConnection();
+
+    try {
+      const userPresenceData = await this.matrix.getPresence(userId);
+      const isOnline = userPresenceData?.presence === 'online';
+      const lastSeenAt = userPresenceData?.last_active_ago
+        ? new Date(Date.now() - userPresenceData.last_active_ago).toISOString()
+        : null;
+
+      return { lastSeenAt, isOnline };
+    } catch (error) {
+      console.error(error);
+      return { lastSeenAt: null, isOnline: false };
+    }
+  }
+
   async getChannels(_id: string) {
     await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isChannel);
@@ -484,6 +501,7 @@ export class MatrixClient implements IChatClient {
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);
+
     return {
       userId: matrixId,
       matrixId,

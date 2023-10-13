@@ -413,6 +413,7 @@ export class MessageInput extends React.Component<Properties, State> {
                   noClick
                   accept={this.mimeTypes}
                   maxSize={config.cloudinary.max_file_size}
+                  disabled={!this.allowFileAttachment}
                 >
                   {({ getRootProps }) => (
                     <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>

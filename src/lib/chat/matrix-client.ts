@@ -124,8 +124,8 @@ export class MatrixClient implements IChatClient {
     return dmConversationIds.includes(room.roomId) || !!room.getDMInviter();
   };
 
-  private isDeleted(m) {
-    return m?.unsigned?.redacted_because;
+  private isDeleted(event) {
+    return event?.unsigned?.redacted_because;
   }
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
@@ -142,7 +142,7 @@ export class MatrixClient implements IChatClient {
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((m) => m.type === EventType.RoomMessage && !this.isDeleted(m));
+    const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
     const mappedMessages = [];
     for (const message of messages) {
       mappedMessages.push(mapMatrixMessage(message, this.matrix));

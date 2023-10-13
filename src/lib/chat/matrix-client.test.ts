@@ -513,7 +513,7 @@ describe('matrix client', () => {
 
   describe('deleteMessageByRoomId', () => {
     it('deletes a message by room ID and message ID', async () => {
-      const messageId = 123456;
+      const messageId = '123456';
       const channelId = '!abcdefg';
       const redactEvent = jest.fn().mockResolvedValue({});
 
@@ -524,7 +524,7 @@ describe('matrix client', () => {
       await client.connect(null, 'token');
       await client.deleteMessageByRoomId(channelId, messageId);
 
-      expect(redactEvent).toHaveBeenCalledWith(channelId, messageId.toString());
+      expect(redactEvent).toHaveBeenCalledWith(channelId, messageId);
     });
   });
 

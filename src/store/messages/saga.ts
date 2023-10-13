@@ -326,7 +326,7 @@ export function* deleteMessage(action) {
   const existingMessageIds = yield select(rawMessagesSelector(channelId));
   const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
 
-  const messageIdsToDelete = fullMessages.filter((m) => m.rootMessageId === messageId.toString()).map((m) => m.id); // toString() because message ids are currently a number
+  const messageIdsToDelete = fullMessages.filter((m) => m.rootMessageId === messageId).map((m) => m.id);
   messageIdsToDelete.unshift(messageId);
 
   yield put(

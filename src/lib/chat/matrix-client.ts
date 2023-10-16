@@ -508,7 +508,7 @@ export class MatrixClient implements IChatClient {
       firstName: user?.displayName,
       lastName: '',
       profileId: '',
-      isOnline: user?.presence === 'online',
+      isOnline: false,
       profileImage: user?.avatarUrl,
       lastSeenAt: '',
     };

@@ -20,7 +20,7 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -156,14 +156,39 @@ export class MatrixClient implements IChatClient {
     return searchResults.map((u) => ({ id: u.id, display: u.displayName, profileImage: u.profileImage }));
   }
 
+  // async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
+  //   await this.waitForConnection();
+  //   const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
+  //   const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
+  //   const mappedMessages = [];
+  //   for (const message of messages) {
+  //     mappedMessages.push(mapMatrixMessage(message, this.matrix));
+  //   }
+
+  //   return { messages: mappedMessages as any, hasMore: false };
+  // }
+
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
-    const mappedMessages = [];
-    for (const message of messages) {
-      mappedMessages.push(mapMatrixMessage(message, this.matrix));
-    }
+
+    const editedMessageOriginalIds = chunk
+      .filter(
+        (event) =>
+          event.content && event.content['m.relates_to'] && event.content['m.relates_to'].rel_type === 'm.replace'
+      )
+      .map((event) => event.content['m.relates_to'].event_id);
+
+    const messages = chunk.filter(
+      (event) =>
+        event.type === EventType.RoomMessage &&
+        !this.isDeleted(event) &&
+        !editedMessageOriginalIds.includes(event.event_id)
+    );
+
+    console.log('messages', messages);
+
+    const mappedMessages = messages.map((message) => mapMatrixMessage(message, this.matrix));
 
     return { messages: mappedMessages as any, hasMore: false };
   }
@@ -171,6 +196,7 @@ export class MatrixClient implements IChatClient {
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
+    console.log('GET MESSAGE BY ROOM ID');
     return mapMatrixMessage(newMessage, this.matrix);
   }
 
@@ -289,7 +315,15 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        this.publishMessageEvent(event);
+        // this.publishMessageEvent(event);
+
+        // Check if the message has been edited
+        const relatesTo = event.content['m.relates_to'];
+        if (relatesTo && relatesTo.rel_type === 'm.replace') {
+          this.onMessageUpdated(event);
+        } else {
+          this.publishMessageEvent(event);
+        }
       }
 
       if (event.type === EventType.RoomCreate) {
@@ -417,6 +451,11 @@ export class MatrixClient implements IChatClient {
     this.events.receiveDeleteMessage(event.room_id, event.redacts);
   };
 
+  private onMessageUpdated = (event) => {
+    console.log('EVENT', event);
+    this.events.onMessageUpdated(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+  };
+
   private publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
@@ -508,7 +547,7 @@ export class MatrixClient implements IChatClient {
       firstName: user?.displayName,
       lastName: '',
       profileId: '',
-      isOnline: user?.presence === 'online',
+      isOnline: false,
       profileImage: user?.avatarUrl,
       lastSeenAt: '',
     };
@@ -605,5 +644,32 @@ export class MatrixClient implements IChatClient {
 
   private getLatestEvent(room: Room, type: EventType) {
     return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
+  }
+
+  async editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): Promise<any> {
+    await this.waitForConnection();
+
+    const content = {
+      body: message,
+      msgtype: MsgType.Text,
+      'm.relates_to': {
+        rel_type: 'm.replace',
+        event_id: messageId,
+      },
+    };
+
+    const editResult = await this.matrix.sendMessage(roomId, content);
+    console.log('editResult', editResult);
+
+    const editedMessage = await this.getMessageByRoomId(roomId, editResult.event_id);
+    console.log('editedMessage', editedMessage);
+
+    return editedMessage;
   }
 }

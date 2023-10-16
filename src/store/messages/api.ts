@@ -1,8 +1,8 @@
 import { AttachmentResponse } from '../../lib/api/attachment';
-import { get, post, put } from '../../lib/api/rest';
+import { get, post } from '../../lib/api/rest';
 import { ParentMessage } from '../../lib/chat/types';
 import { LinkPreview } from '../../lib/link-preview';
-import { AttachmentUploadResult, EditMessageOptions } from './index';
+import { AttachmentUploadResult } from './index';
 import { FileUploadResult, SendPayload } from './saga';
 
 import axios from 'axios';
@@ -33,22 +33,6 @@ export async function sendMessagesByChannelId(
   const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
 
   return response.body;
-}
-
-export async function editMessageApi(
-  channelId: string,
-  messageId: number,
-  message: string,
-  mentionedUserIds: string[],
-  data?: Partial<EditMessageOptions>
-): Promise<number> {
-  // Note: this is actually wrong. The api endpoint does not take the `mentionedUsersId`
-  // parameter at all.
-  const response = await put<any>(`/chatChannels/${channelId}/message`).send({
-    message: { id: messageId, message, mentionedUserIds, data },
-  });
-
-  return response.status;
 }
 
 export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {

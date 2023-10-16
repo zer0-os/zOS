@@ -16,7 +16,7 @@ import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
-import { editMessageApi, getLinkPreviews } from './api';
+import { getLinkPreviews } from './api';
 import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
@@ -374,7 +374,16 @@ export function* editMessage(action) {
     })
   );
 
-  const messagesResponse = yield call(editMessageApi, channelId, messageId, message, mentionedUserIds, data);
+  const chatClient = yield call(chat.get);
+  const messagesResponse = yield call(
+    [chatClient, chatClient.editMessage],
+    channelId,
+    messageId,
+    message,
+    mentionedUserIds,
+    data
+  );
+
   const isMessageSent = messagesResponse === 200;
 
   if (!isMessageSent) {

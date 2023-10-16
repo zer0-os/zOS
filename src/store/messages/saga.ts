@@ -375,20 +375,26 @@ export function* editMessage(action) {
   );
 
   const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.editMessage], channelId, messageId, message, mentionedUserIds, data);
-
-  // const isMessageSent = messagesResponse === 200;
-
-  console.log('Reach HERE');
-  // if (!isMessageSent) {
-  yield put(
-    receive({
-      id: channelId,
-      messages: [...existingMessages],
-    })
+  const messagesResponse = yield call(
+    [chatClient, chatClient.editMessage],
+    channelId,
+    messageId,
+    message,
+    mentionedUserIds,
+    data
   );
+
+  const isMessageSent = messagesResponse === 200;
+
+  if (!isMessageSent) {
+    yield put(
+      receive({
+        id: channelId,
+        messages: [...existingMessages],
+      })
+    );
+  }
 }
-// }
 
 export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
   // Opportunities for parallelization here.
@@ -478,9 +484,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
 }
 
 export function* receiveUpdateMessage(action) {
-  console.log('ACTION', action);
   let { message } = action.payload;
-  console.log('MESSAGE', message);
 
   const preview = yield call(getPreview, message.message);
   message.preview = preview;

@@ -156,47 +156,45 @@ export class MatrixClient implements IChatClient {
     return searchResults.map((u) => ({ id: u.id, display: u.displayName, profileImage: u.profileImage }));
   }
 
-  // async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
-  //   await this.waitForConnection();
-  //   const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-  //   const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
-  //   const mappedMessages = [];
-  //   for (const message of messages) {
-  //     mappedMessages.push(mapMatrixMessage(message, this.matrix));
-  //   }
+  private isEditEvent(event) {
+    return event.content && event.content['m.relates_to'] && event.content['m.relates_to'].rel_type === 'm.replace';
+  }
 
-  //   return { messages: mappedMessages as any, hasMore: false };
-  // }
+  private something(events) {
+    const messages = events.filter(
+      (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
+    );
+
+    events
+      .filter(this.isEditEvent)
+      .reverse()
+      .forEach((event) => {
+        const message = messages.find(
+          (originalEvent) => originalEvent.event_id === event.content['m.relates_to'].event_id
+        );
+
+        if (message && event.content['m.new_content']) {
+          message.content.body = event.content['m.new_content'].body;
+          message.updatedAt = event.origin_server_ts;
+        }
+      });
+
+    const mappedMessages = messages.map((message) => mapMatrixMessage(message, this.matrix));
+
+    return mappedMessages;
+  }
 
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
+    const messages = this.something(chunk);
 
-    const editedMessageOriginalIds = chunk
-      .filter(
-        (event) =>
-          event.content && event.content['m.relates_to'] && event.content['m.relates_to'].rel_type === 'm.replace'
-      )
-      .map((event) => event.content['m.relates_to'].event_id);
-
-    const messages = chunk.filter(
-      (event) =>
-        event.type === EventType.RoomMessage &&
-        !this.isDeleted(event) &&
-        !editedMessageOriginalIds.includes(event.event_id)
-    );
-
-    console.log('messages', messages);
-
-    const mappedMessages = messages.map((message) => mapMatrixMessage(message, this.matrix));
-
-    return { messages: mappedMessages as any, hasMore: false };
+    return { messages, hasMore: false };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
-    console.log('GET MESSAGE BY ROOM ID');
     return mapMatrixMessage(newMessage, this.matrix);
   }
 
@@ -315,9 +313,6 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomMessage) {
-        // this.publishMessageEvent(event);
-
-        // Check if the message has been edited
         const relatesTo = event.content['m.relates_to'];
         if (relatesTo && relatesTo.rel_type === 'm.replace') {
           this.onMessageUpdated(event);
@@ -451,10 +446,15 @@ export class MatrixClient implements IChatClient {
     this.events.receiveDeleteMessage(event.room_id, event.redacts);
   };
 
-  private onMessageUpdated = (event) => {
-    console.log('EVENT', event);
-    this.events.onMessageUpdated(event.room_id, mapMatrixMessage(event, this.matrix) as any);
-  };
+  private async onMessageUpdated(event) {
+    console.log('THIS EVENT', event);
+    const originalMessage = await this.getMessageByRoomId(event.room_id, event.content['m.relates_to'].event_id);
+    if (originalMessage && event.content['m.new_content']) {
+      originalMessage.message = event.content['m.new_content'].body;
+      originalMessage.updatedAt = event.origin_server_ts;
+    }
+    this.events.onMessageUpdated(event.room_id, originalMessage as any);
+  }
 
   private publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
@@ -596,11 +596,13 @@ export class MatrixClient implements IChatClient {
   }
 
   private getAllMessagesFromRoom(room: Room) {
-    const timeline = room.getLiveTimeline().getEvents();
-    const messages = timeline
-      .filter((event) => event.getType() === EventType.RoomMessage && !event.isRedacted())
-      .map(this.mapMatrixEventToMessage);
-    return messages;
+    const events = room
+      .getLiveTimeline()
+      .getEvents()
+      .reverse()
+      .map((matrixEvent) => matrixEvent.event);
+
+    return this.something(events);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {
@@ -650,14 +652,18 @@ export class MatrixClient implements IChatClient {
     roomId: string,
     messageId: string,
     message: string,
-    mentionedUserIds: string[],
-    data?: Partial<EditMessageOptions>
+    _mentionedUserIds: string[],
+    _data?: Partial<EditMessageOptions>
   ): Promise<any> {
     await this.waitForConnection();
 
     const content = {
       body: message,
       msgtype: MsgType.Text,
+      'm.new_content': {
+        msgtype: MsgType.Text,
+        body: message,
+      },
       'm.relates_to': {
         rel_type: 'm.replace',
         event_id: messageId,

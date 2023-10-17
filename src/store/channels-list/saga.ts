@@ -63,20 +63,25 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
-export function* updateOtherMembersLastSeenAt(conversations) {
+export function* updateUserPresence(conversations) {
   if (!featureFlags.enableMatrix) {
     return;
   }
 
   const chatClient = yield call(chat.get);
   for (let conversation of conversations) {
-    const matrixId = conversation?.otherMembers?.[0]?.matrixId;
+    const { otherMembers } = conversation;
 
-    if (conversation.isOneOnOne && matrixId) {
+    for (let member of otherMembers) {
+      const matrixId = member?.matrixId;
+      if (!matrixId) continue;
+
       const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
-      if (presenceData && presenceData.lastSeenAt) {
-        conversation.otherMembers[0].lastSeenAt = presenceData.lastSeenAt;
-      }
+      if (!presenceData) continue;
+
+      const { lastSeenAt, isOnline } = presenceData;
+      member.lastSeenAt = lastSeenAt;
+      member.isOnline = isOnline;
     }
   }
 }
@@ -113,7 +118,7 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
   yield call(mapToZeroUsers, conversations);
-  yield call(updateOtherMembersLastSeenAt, conversations);
+  yield call(updateUserPresence, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList

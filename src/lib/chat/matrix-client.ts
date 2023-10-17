@@ -596,34 +596,6 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  private mapMatrixEventToMessage(matrixEvent) {
-    if (!matrixEvent || matrixEvent.getType() !== EventType.RoomMessage) return null;
-
-    const { body: message } = matrixEvent.getContent();
-    const senderId = matrixEvent.getSender();
-    const timestamp = matrixEvent.getTs();
-    const eventId = matrixEvent.getId();
-
-    return {
-      id: eventId,
-      message,
-      isAdmin: false,
-      createdAt: timestamp,
-      updatedAt: null,
-      sender: {
-        userId: senderId,
-        firstName: matrixEvent.sender?.name,
-        lastName: '',
-        profileImage: '',
-        profileId: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      preview: null,
-      sendStatus: null,
-    };
-  }
-
   private getRoomName(room: Room): string {
     const roomNameEvent = this.getLatestEvent(room, EventType.RoomName);
     return roomNameEvent?.getContent()?.name || '';

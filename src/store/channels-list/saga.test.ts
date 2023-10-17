@@ -16,6 +16,7 @@ import {
   otherUserJoinedChannel,
   otherUserLeftChannel,
   mapToZeroUsers,
+  updateUserPresence,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -56,6 +57,7 @@ const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
 const chatClient = {
   getChannels: () => MOCK_CHANNELS,
   getConversations: () => MOCK_CONVERSATIONS,
+  getUserPresence: () => {},
 };
 
 describe('channels list saga', () => {
@@ -623,6 +625,50 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         profileImage: undefined,
       });
+    });
+  });
+
+  describe(updateUserPresence, () => {
+    function subject(conversations, provide = []) {
+      return expectSaga(updateUserPresence, conversations).provide([
+        [matchers.call.fn(chat.get), chatClient],
+        ...provide,
+      ]);
+    }
+
+    const mockOtherMembers = [{ matrixId: 'member_001' }, { matrixId: 'member_002' }, { matrixId: 'member_003' }];
+    const mockConversations = [{ otherMembers: mockOtherMembers }];
+
+    it('exits early if feature flag is not enabled', async () => {
+      featureFlags.enableMatrix = false;
+      await subject(mockConversations).not.call(chat.get).run();
+    });
+
+    it('fetches and updates user presence data', async () => {
+      featureFlags.enableMatrix = true;
+
+      const mockPresenceData = {
+        lastSeenAt: '2023-01-01T00:00:00.000Z',
+        isOnline: true,
+      };
+
+      await subject(mockConversations, [
+        [matchers.call([chatClient, chatClient.getUserPresence], 'member_001'), mockPresenceData],
+        [matchers.call([chatClient, chatClient.getUserPresence], 'member_002'), mockPresenceData],
+        [matchers.call([chatClient, chatClient.getUserPresence], 'member_003'), mockPresenceData],
+      ])
+        .call(chat.get)
+        .call([chatClient, chatClient.getUserPresence], 'member_001')
+        .call([chatClient, chatClient.getUserPresence], 'member_002')
+        .call([chatClient, chatClient.getUserPresence], 'member_003')
+        .run();
+    });
+
+    it('does not fail if member does not have matrixId', async () => {
+      featureFlags.enableMatrix = true;
+      const conversationsWithMissingMatrixId = [{ otherMembers: [{ matrixId: null }] }];
+
+      await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();
     });
   });
 });

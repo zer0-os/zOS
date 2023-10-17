@@ -80,13 +80,8 @@ export function* updateUserPresence(conversations) {
       if (!presenceData) continue;
 
       const { lastSeenAt, isOnline } = presenceData;
-
-      if (lastSeenAt) {
-        member.lastSeenAt = lastSeenAt;
-      }
-      if (isOnline) {
-        member.isOnline = isOnline;
-      }
+      member.lastSeenAt = lastSeenAt;
+      member.isOnline = isOnline;
     }
   }
 }

@@ -101,6 +101,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isChannel);
     for (const room of rooms) {
+      await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
     }
 
@@ -113,6 +114,7 @@ export class MatrixClient implements IChatClient {
 
     const failedToJoin = [];
     for (const room of rooms) {
+      await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
       if (membership === MembershipStateType.Invite) {

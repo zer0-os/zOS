@@ -18,6 +18,7 @@ const stubRoom = (attrs = {}) => ({
   getMembers: () => [],
   getDMInviter: () => undefined,
   loadMembersIfNeeded: () => undefined,
+  decryptAllEvents: () => undefined,
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
   getEvents: () => stubTimeline(),

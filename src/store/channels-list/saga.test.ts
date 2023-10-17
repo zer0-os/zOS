@@ -670,5 +670,63 @@ describe('channels list saga', () => {
 
       await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();
     });
+
+    it('should set lastSeenAt, and isOnline to true if user is online', () => {
+      const mockConversations = [
+        {
+          id: 'conversation_0001',
+          otherMembers: [
+            {
+              userId: 'user_1',
+              matrixId: 'matrix_1',
+              lastSeenAt: '',
+              isOnline: false,
+            },
+          ],
+        },
+      ];
+
+      const mockPresenceData1 = { lastSeenAt: '2023-10-17T10:00:00.000Z', isOnline: true };
+
+      testSaga(updateUserPresence, mockConversations)
+        .next()
+        .call(chat.get)
+        .next(chatClient)
+        .call([chatClient, chatClient.getUserPresence], 'matrix_1')
+        .next(mockPresenceData1)
+        .isDone();
+
+      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
+      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
+    });
+
+    it('should set lastSeenAt to null and isOnline to false if user is offline', () => {
+      const mockConversations = [
+        {
+          id: 'conversation_0001',
+          otherMembers: [
+            {
+              userId: 'user_1',
+              matrixId: 'matrix_1',
+              lastSeenAt: '',
+              isOnline: false,
+            },
+          ],
+        },
+      ];
+
+      const mockPresenceData1 = { lastSeenAt: null, isOnline: false };
+
+      testSaga(updateUserPresence, mockConversations)
+        .next()
+        .call(chat.get)
+        .next(chatClient)
+        .call([chatClient, chatClient.getUserPresence], 'matrix_1')
+        .next(mockPresenceData1)
+        .isDone();
+
+      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
+      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
+    });
   });
 });

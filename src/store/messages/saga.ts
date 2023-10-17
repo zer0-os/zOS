@@ -486,12 +486,6 @@ export function* replaceOptimisticMessage(currentMessages, message) {
 export function* receiveUpdateMessage(action) {
   let { message } = action.payload;
 
-  // Check if the message already exists in the state
-  const existingMessage = yield select(messageSelector(message.id));
-  if (existingMessage && existingMessage.message === message.message) {
-    return;
-  }
-
   const preview = yield call(getPreview, message.message);
   message.preview = preview;
 

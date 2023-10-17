@@ -216,30 +216,7 @@ describe('messages saga', () => {
 });
 
 describe(receiveUpdateMessage, () => {
-  it('does not update the message if already updated', async () => {
-    const originalMessage = {
-      id: 8667728016,
-      message: 'edited message',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 1678861290000,
-    };
-
-    const messages = { 8667728016: originalMessage };
-
-    const { storeState } = await expectSaga(receiveUpdateMessage, {
-      payload: { channelId: 'channel-1', message: originalMessage },
-    })
-      .provide([
-        ...successResponses(),
-      ])
-      .withReducer(rootReducer, { normalized: { messages } as any } as RootState)
-      .run();
-
-    expect(storeState.normalized.messages).toEqual({ 8667728016: originalMessage });
-  });
-
-  it('updates the message if not already updated', async () => {
+  it('updates the messages', async () => {
     const message = {
       id: 8667728016,
       message: 'original message',
@@ -247,7 +224,6 @@ describe(receiveUpdateMessage, () => {
       createdAt: 1678861267433,
       updatedAt: 0,
     };
-
     const editedMessage = {
       id: 8667728016,
       message: 'edited message',

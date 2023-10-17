@@ -441,7 +441,7 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
     yield put(
       receiveChannel({
         id: channel.id,
-        isOneOnOne: otherMembers.length === 1,
+        isOneOnOne: channel.isChannel === true ? false : otherMembers.length === 1,
         otherMembers,
       })
     );

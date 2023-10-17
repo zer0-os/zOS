@@ -70,19 +70,22 @@ export function* updateUserPresence(conversations) {
 
   const chatClient = yield call(chat.get);
   for (let conversation of conversations) {
-    const { isOneOnOne, otherMembers } = conversation;
-    const matrixId = otherMembers?.[0]?.matrixId;
+    const { otherMembers } = conversation;
 
-    if (isOneOnOne && matrixId) {
+    for (let member of otherMembers) {
+      const matrixId = member?.matrixId;
+      if (!matrixId) continue;
+
       const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
+      if (!presenceData) continue;
 
-      if (presenceData) {
-        if (presenceData.lastSeenAt) {
-          conversation.otherMembers[0].lastSeenAt = presenceData.lastSeenAt;
-        }
-        if (presenceData.isOnline) {
-          conversation.otherMembers[0].isOnline = presenceData.isOnline;
-        }
+      const { lastSeenAt, isOnline } = presenceData;
+
+      if (lastSeenAt) {
+        member.lastSeenAt = lastSeenAt;
+      }
+      if (isOnline) {
+        member.isOnline = isOnline;
       }
     }
   }

@@ -26,7 +26,7 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -84,10 +84,15 @@ export class MatrixClient implements IChatClient {
 
     try {
       const userPresenceData = await this.matrix.getPresence(userId);
-      const isOnline = userPresenceData?.presence === 'online';
-      const lastSeenAt = userPresenceData?.last_active_ago
-        ? new Date(Date.now() - userPresenceData.last_active_ago).toISOString()
-        : null;
+
+      if (!userPresenceData) {
+        return { lastSeenAt: null, isOnline: false };
+      }
+
+      const { presence, last_active_ago } = userPresenceData;
+
+      const isOnline = presence === 'online';
+      const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 
       return { lastSeenAt, isOnline };
     } catch (error) {
@@ -100,6 +105,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const rooms = await this.getFilteredRooms(this.isChannel);
     for (const room of rooms) {
+      await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
     }
 
@@ -112,6 +118,7 @@ export class MatrixClient implements IChatClient {
 
     const failedToJoin = [];
     for (const room of rooms) {
+      await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
       if (membership === MembershipStateType.Invite) {
@@ -150,8 +157,8 @@ export class MatrixClient implements IChatClient {
   }
 
   private isEditEvent(event): boolean {
-    const relatesTo = event.content && event.content[MatrixClient.RELATES_TO];
-    return relatesTo && relatesTo.rel_type === MatrixClient.REPLACE;
+    const relatesTo = event.content && event.content[MatrixConstants.RELATES_TO];
+    return relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE;
   }
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
@@ -166,11 +173,11 @@ export class MatrixClient implements IChatClient {
   }
 
   private getRelatedEventId(event): string {
-    return event.content[MatrixClient.RELATES_TO]?.event_id;
+    return event.content[MatrixConstants.RELATES_TO]?.event_id;
   }
 
   private getNewContent(event): any {
-    return event.content[MatrixClient.NEW_CONTENT];
+    return event.content[MatrixConstants.NEW_CONTENT];
   }
 
   private processRawEventsToMessages(events): any[] {
@@ -281,12 +288,12 @@ export class MatrixClient implements IChatClient {
     const content = {
       body: message,
       msgtype: MsgType.Text,
-      [MatrixClient.NEW_CONTENT]: {
+      [MatrixConstants.NEW_CONTENT]: {
         msgtype: MsgType.Text,
         body: message,
       },
-      [MatrixClient.RELATES_TO]: {
-        rel_type: MatrixClient.REPLACE,
+      [MatrixConstants.RELATES_TO]: {
+        rel_type: MatrixConstants.REPLACE,
         event_id: messageId,
       },
     };
@@ -356,8 +363,8 @@ export class MatrixClient implements IChatClient {
 
   processMessageEvent(event): void {
     if (event.type === EventType.RoomMessage) {
-      const relatesTo = event.content[MatrixClient.RELATES_TO];
-      if (relatesTo && relatesTo.rel_type === MatrixClient.REPLACE) {
+      const relatesTo = event.content[MatrixConstants.RELATES_TO];
+      if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
       } else {
         this.publishMessageEvent(event);
@@ -372,8 +379,6 @@ export class MatrixClient implements IChatClient {
         console.log('encryped message: ', event);
       }
 
-      this.processMessageEvent(event);
-
       if (event.type === EventType.RoomCreate) {
         this.roomCreated(event);
       }
@@ -383,6 +388,8 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomRedaction) {
         this.receiveDeleteMessage(event);
       }
+
+      this.processMessageEvent(event);
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
@@ -395,7 +402,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
-        this.publishMessageEvent(event);
+        this.processMessageEvent(event);
       }
     });
 
@@ -492,7 +499,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private async roomCreated(event) {
-    this.events.onUserJoinedChannel(this.mapChannel(this.matrix.getRoom(event.room_id)));
+    this.events.onUserJoinedChannel(this.mapConversation(this.matrix.getRoom(event.room_id)));
   }
 
   private receiveDeleteMessage = (event) => {
@@ -590,7 +597,7 @@ export class MatrixClient implements IChatClient {
       firstName: user?.displayName,
       lastName: '',
       profileId: '',
-      isOnline: user?.presence === 'online',
+      isOnline: false,
       profileImage: user?.avatarUrl,
       lastSeenAt: '',
     };
@@ -611,11 +618,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private getAllMessagesFromRoom(room: Room): any[] {
-    const events = room
-      .getLiveTimeline()
-      .getEvents()
-      .reverse()
-      .map((matrixEvent) => matrixEvent.event);
+    const events = [...room.getLiveTimeline().getEvents()].reverse().map((matrixEvent) => matrixEvent.event);
     return this.processRawEventsToMessages(events);
   }
 

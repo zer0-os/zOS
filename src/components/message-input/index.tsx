@@ -25,6 +25,7 @@ import classNames from 'classnames';
 import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 import { bem, bemClassName } from '../../lib/bem';
+import { featureFlags } from '../../lib/feature-flags';
 
 const c = bem('message-input');
 const cn = bemClassName('message-input');
@@ -347,6 +348,18 @@ export class MessageInput extends React.Component<Properties, State> {
     return <div {...cn('disabled-tooltip')}>{this.props.sendDisabledMessage}</div>;
   }
 
+  get allowGiphy() {
+    return !featureFlags.enableMatrix && !this.props.isEditing;
+  }
+
+  get allowFileAttachment() {
+    return !featureFlags.enableMatrix && !this.props.isEditing;
+  }
+
+  get allowLeftIcons() {
+    return this.allowGiphy || this.allowFileAttachment;
+  }
+
   renderInput() {
     const hasInputValue = this.state.value?.length > 0;
     const reply = this.props.reply;
@@ -369,21 +382,25 @@ export class MessageInput extends React.Component<Properties, State> {
             'message-input__container--editing': this.props.isEditing,
           })}
         >
-          {!this.props.isEditing && (
+          {this.allowLeftIcons && (
             <div className='message-input__icon-outer'>
               <div className='message-input__icon-wrapper'>
-                <IconButton
-                  className={classNames('message-input__icon', 'message-input__icon--giphy')}
-                  onClick={this.openGiphy}
-                  Icon={IconStickerCircle}
-                  size='small'
-                />
+                {this.allowGiphy && (
+                  <IconButton
+                    className={classNames('message-input__icon', 'message-input__icon--giphy')}
+                    onClick={this.openGiphy}
+                    Icon={IconStickerCircle}
+                    size='small'
+                  />
+                )}
 
-                <Menu
-                  onSelected={this.mediaSelected}
-                  mimeTypes={this.mimeTypes}
-                  maxSize={config.cloudinary.max_file_size}
-                />
+                {this.allowFileAttachment && (
+                  <Menu
+                    onSelected={this.mediaSelected}
+                    mimeTypes={this.mimeTypes}
+                    maxSize={config.cloudinary.max_file_size}
+                  />
+                )}
               </div>
             </div>
           )}
@@ -396,6 +413,7 @@ export class MessageInput extends React.Component<Properties, State> {
                   noClick
                   accept={this.mimeTypes}
                   maxSize={config.cloudinary.max_file_size}
+                  disabled={!this.allowFileAttachment}
                 >
                   {({ getRootProps }) => (
                     <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>

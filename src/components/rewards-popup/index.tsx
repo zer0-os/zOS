@@ -65,7 +65,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
               onClick={this.abort}
             />
             <ZeroSymbol height={32} width={32} />
-            <span className={c('heading')}>$ZERO</span>
+            <span className={c('heading')}>$MEOW</span>
             <div className={c('rewards-zero')}>
               <SkeletonText
                 asyncText={{

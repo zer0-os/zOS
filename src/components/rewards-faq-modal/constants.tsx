@@ -9,17 +9,17 @@ const link = (text: string, href: string) => (
 export const rewardsFaq = [
   {
     content:
-      'A product does not exist without the people who use it. You — the user — are inherently valuable, as is the content you create, private or public. Big Tech social media recognizes that and exploits you for it, leaving you with nothing. At ZERO, we recognize the wealth of your content by rewarding you with $ZERO tokens. Your social interactions are valuable; you deserve to share that value.',
-    title: 'Earning $ZERO for just chatting? What’s the catch? This seems too good to be true.',
+      'A product does not exist without the people who use it. You — the user — are inherently valuable, as is the content you create, private or public. Big Tech social media recognizes that and exploits you for it, leaving you with nothing. At ZERO, we recognize the wealth of your content by rewarding you with $MEOW tokens. Your social interactions are valuable; you deserve to share that value.',
+    title: 'Earning $MEOW for just chatting? What’s the catch? This seems too good to be true.',
   },
   {
     content: (
       <div>
         <div>
-          $ZERO is a cryptocurrency token (
+          $MEOW is a cryptocurrency token (
           {link('ERC-20', 'https://etherscan.io/token/0x0eC78ED49C2D27b315D462d43B5BAB94d2C79bf8')}) that is built on
           the Ethereum (ETH) blockchain. It is the native currency of the ZERO ecosystem where it powers our suite of
-          native zApps, including our powerful domain ownership platform, ZNS (ZERO Naming System). $ZERO can also be
+          native zApps, including our powerful domain ownership platform, ZNS (ZERO Naming System). $MEOW can also be
           swapped for fiat currencies (like the USD-backed $USDC) at major DeFI exchanges, like{' '}
           {link(
             'Uniswap',
@@ -29,14 +29,14 @@ export const rewardsFaq = [
         </div>
         <br />
         <div>
-          As a Web3 token, $ZERO also represents voting power within the ZERO network. Holding $ZERO allows you to vote
-          to shape the future of the ZERO Messenger and broader ecosystem; holding more $ZERO gives you more voting
+          As a Web3 token, $MEOW also represents voting power within the ZERO network. Holding $MEOW allows you to vote
+          to shape the future of the ZERO Messenger and broader ecosystem; holding more $MEOW gives you more voting
           power. If you’re interested viewing an early application of ZERO technology in action, check out the{' '}
           {link('Wilder World Metaverse', 'https://www.wilderworld.com/')} and DAO.
         </div>
       </div>
     ),
-    title: 'So what is $ZERO?',
+    title: 'So what is $MEOW?',
   },
   {
     content:
@@ -45,12 +45,12 @@ export const rewardsFaq = [
   },
   {
     content:
-      'By chatting! In a DM, in a group, wherever, in-app. The more meaningful conversations you have with other users, the more rewards you’ll reap. Every 24 hours, or epoch, you will be awarded an appropriate amount of $ZERO derived from the previous day’s activities. The precise formula for determining how much you’ll make is ever-changing to combat botting and accommodate a growing user base.',
-    title: 'How do I earn $ZERO tokens?',
+      'By chatting! In a DM, in a group, wherever, in-app. The more meaningful conversations you have with other users, the more rewards you’ll reap. Every 24 hours, or epoch, you will be awarded an appropriate amount of $MEOW derived from the previous day’s activities. The precise formula for determining how much you’ll make is ever-changing to combat botting and accommodate a growing user base.',
+    title: 'How do I earn $MEOW tokens?',
   },
   {
     content:
-      'The ability to withdraw your $ZERO to an external wallet will be introduced at a future date, to support the release of our ZNS (ZERO Naming System) domain functionality. Until then, sit tight and enjoy watching numba go up!',
-    title: 'How can I withdraw/redeem my $ZERO?',
+      'The ability to withdraw your $MEOW to an external wallet will be introduced at a future date, to support the release of our ZNS (ZERO Naming System) domain functionality. Until then, sit tight and enjoy watching numba go up!',
+    title: 'How can I withdraw/redeem my $MEOW?',
   },
 ];

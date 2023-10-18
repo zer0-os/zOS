@@ -25,12 +25,13 @@ const stubRoom = (attrs = {}) => ({
   ...attrs,
 });
 
-function stubTimeline() {
+function stubTimeline(stubs = {}) {
   return {
     getState: () => ({
       getStateEvents: () => null,
     }),
     getEvents: () => [],
+    ...stubs,
   };
 }
 
@@ -57,10 +58,12 @@ const getSdkClient = (sdkClient = {}) => ({
     if (topic === 'sync') callback('PREPARED');
   }),
   getRooms: jest.fn(),
+  getRoom: jest.fn().mockReturnValue(stubRoom()),
   getAccountData: jest.fn(),
   getUser: jest.fn(),
   setGlobalErrorOnUnknownDevices: () => undefined,
   fetchRoomEvent: jest.fn(),
+  paginateEventTimeline: () => true,
   ...sdkClient,
 });
 
@@ -677,25 +680,26 @@ describe('matrix client', () => {
   describe('getMessagesByChannelId', () => {
     it('filters out redacted messages', async () => {
       const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
-      const createMessagesRequest = jest.fn().mockResolvedValue({
-        chunk: [
-          {
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getEffectiveEvent: () => ({
             type: 'm.room.message',
             content: { body: 'message 1', msgtype: 'm.text' },
             event_id: 'message-id-1',
             unsigned: { redacted_because: {} }, // Indicates the message has been redacted.
-          },
-          {
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
             type: 'm.room.message',
             content: { body: 'message 2', msgtype: 'm.text' },
             event_id: 'message-id-2',
-          },
-        ],
-      });
+          }),
+        },
+      ]);
+      const getRoom = jest.fn().mockReturnValue(stubRoom({ getLiveTimeline: () => stubTimeline({ getEvents }) }));
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ createMessagesRequest, getUser })),
-      });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
 
       await client.connect(null, 'token');
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
@@ -706,29 +710,32 @@ describe('matrix client', () => {
 
     it('fetches messages successfully', async () => {
       const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
-      const createMessagesRequest = jest.fn().mockResolvedValue({
-        chunk: [
-          {
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getEffectiveEvent: () => ({
             type: 'm.room.message',
             content: { body: 'message 1', msgtype: 'm.text' },
             event_id: 'message-id-1',
-          },
-          {
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
             type: 'm.room.message',
             content: { body: 'message 2', msgtype: 'm.text' },
             event_id: 'message-id-2',
-          },
-          {
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
             type: 'm.room.message',
             content: { body: 'message 3', msgtype: 'm.text' },
             event_id: 'message-id-3',
-          },
-        ],
-      });
+          }),
+        },
+      ]);
+      const getRoom = jest.fn().mockReturnValue(stubRoom({ getLiveTimeline: () => stubTimeline({ getEvents }) }));
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ createMessagesRequest, getUser })),
-      });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
 
       await client.connect(null, 'token');
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');

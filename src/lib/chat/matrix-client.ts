@@ -1,6 +1,5 @@
 import {
   createClient,
-  Direction,
   EventType,
   GuestAccess,
   ICreateRoomOpts,
@@ -181,28 +180,29 @@ export class MatrixClient implements IChatClient {
       (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
     );
 
-    events
-      .filter(this.isEditEvent)
-      .reverse()
-      .forEach((event) => {
-        const relatedEventId = this.getRelatedEventId(event);
-        const message = messages.find((originalEvent) => originalEvent.event_id === relatedEventId);
-        const newContent = this.getNewContent(event);
+    events.filter(this.isEditEvent).forEach((event) => {
+      const relatedEventId = this.getRelatedEventId(event);
+      const message = messages.find((originalEvent) => originalEvent.event_id === relatedEventId);
+      const newContent = this.getNewContent(event);
 
-        if (message && newContent) {
-          message.content.body = newContent.body;
-          message.updatedAt = event.origin_server_ts;
-        }
-      });
+      if (message && newContent) {
+        message.content.body = newContent.body;
+        message.updatedAt = event.origin_server_ts;
+      }
+    });
 
     return messages.map((message) => mapMatrixMessage(message, this.matrix));
   }
 
-  async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
+  async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
-    const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = this.processRawEventsToMessages(chunk);
-    return { messages, hasMore: false };
+    const room = this.matrix.getRoom(roomId);
+    const liveTimeline = room.getLiveTimeline();
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 100 });
+
+    // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
+    const messages = this.getAllMessagesFromRoom(room);
+    return { messages, hasMore };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -614,7 +614,10 @@ export class MatrixClient implements IChatClient {
   }
 
   private getAllMessagesFromRoom(room: Room): any[] {
-    const events = [...room.getLiveTimeline().getEvents()].reverse().map((matrixEvent) => matrixEvent.event);
+    const events = room
+      .getLiveTimeline()
+      .getEvents()
+      .map((event) => event.getEffectiveEvent());
     return this.processRawEventsToMessages(events);
   }
 

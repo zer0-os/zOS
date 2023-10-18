@@ -65,7 +65,7 @@ describe('rewards-button', () => {
     });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBe(true);
-    expect(wrapper.find(TooltipPopup).prop('content')).toEqual('You’ve earned 9 ZERO today');
+    expect(wrapper.find(TooltipPopup).prop('content')).toEqual('You’ve earned 9 MEOW today');
   });
 
   it('calls closeRewardsTooltip if TooltipPopup is closed', function () {

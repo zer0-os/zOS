@@ -91,7 +91,6 @@ export class MatrixClient implements IChatClient {
 
       return { lastSeenAt, isOnline };
     } catch (error) {
-      console.error(error);
       return { lastSeenAt: null, isOnline: false };
     }
   }

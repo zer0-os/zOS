@@ -92,6 +92,6 @@ export function* mapReceivedMessage(message) {
   if (message.parentMessageId) {
     const parentMessage = yield select(messageSelector(message.parentMessageId));
     message.parentMessage = parentMessage || {};
-    message.parentMessageText = parentMessage.message;
+    message.parentMessageText = parentMessage?.message;
   }
 }

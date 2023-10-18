@@ -368,8 +368,6 @@ export class MatrixClient implements IChatClient {
         console.log('encryped message: ', event);
       }
 
-      this.processMessageEvent(event);
-
       if (event.type === EventType.RoomCreate) {
         this.roomCreated(event);
       }
@@ -379,6 +377,8 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomRedaction) {
         this.receiveDeleteMessage(event);
       }
+
+      this.processMessageEvent(event);
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
@@ -391,7 +391,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
-        this.publishMessageEvent(event);
+        this.processMessageEvent(event);
       }
     });
 

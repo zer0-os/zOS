@@ -20,13 +20,13 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -152,6 +152,11 @@ export class MatrixClient implements IChatClient {
     return event?.unsigned?.redacted_because;
   }
 
+  private isEditEvent(event): boolean {
+    const relatesTo = event.content && event.content[MatrixConstants.RELATES_TO];
+    return relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE;
+  }
+
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
       .catch((_error) => null)
@@ -163,16 +168,41 @@ export class MatrixClient implements IChatClient {
     return searchResults.map((u) => ({ id: u.id, display: u.displayName, profileImage: u.profileImage }));
   }
 
+  private getRelatedEventId(event): string {
+    return event.content[MatrixConstants.RELATES_TO]?.event_id;
+  }
+
+  private getNewContent(event): any {
+    return event.content[MatrixConstants.NEW_CONTENT];
+  }
+
+  private processRawEventsToMessages(events): any[] {
+    const messages = events.filter(
+      (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
+    );
+
+    events
+      .filter(this.isEditEvent)
+      .reverse()
+      .forEach((event) => {
+        const relatedEventId = this.getRelatedEventId(event);
+        const message = messages.find((originalEvent) => originalEvent.event_id === relatedEventId);
+        const newContent = this.getNewContent(event);
+
+        if (message && newContent) {
+          message.content.body = newContent.body;
+          message.updatedAt = event.origin_server_ts;
+        }
+      });
+
+    return messages.map((message) => mapMatrixMessage(message, this.matrix));
+  }
+
   async getMessagesByChannelId(channelId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const { chunk } = await this.matrix.createMessagesRequest(channelId, null, 50, Direction.Backward);
-    const messages = chunk.filter((event) => event.type === EventType.RoomMessage && !this.isDeleted(event));
-    const mappedMessages = [];
-    for (const message of messages) {
-      mappedMessages.push(mapMatrixMessage(message, this.matrix));
-    }
-
-    return { messages: mappedMessages as any, hasMore: false };
+    const messages = this.processRawEventsToMessages(chunk);
+    return { messages, hasMore: false };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -242,6 +272,45 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    _mentionedUserIds: string[],
+    _data?: Partial<EditMessageOptions>
+  ): Promise<any> {
+    await this.waitForConnection();
+
+    const content = {
+      body: message,
+      msgtype: MsgType.Text,
+      [MatrixConstants.NEW_CONTENT]: {
+        msgtype: MsgType.Text,
+        body: message,
+      },
+      [MatrixConstants.RELATES_TO]: {
+        rel_type: MatrixConstants.REPLACE,
+        event_id: messageId,
+      },
+    };
+
+    const editResult = await this.matrix.sendMessage(roomId, content);
+    return await this.getMessageByRoomId(roomId, editResult.event_id);
+  }
+
+  private async onMessageUpdated(event): Promise<void> {
+    const relatedEventId = this.getRelatedEventId(event);
+    const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
+    const newContent = this.getNewContent(event);
+
+    if (originalMessage && newContent) {
+      originalMessage.message = newContent.body;
+      originalMessage.updatedAt = event.origin_server_ts;
+    }
+
+    this.events.onMessageUpdated(event.room_id, originalMessage as any);
+  }
+
   async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
     await this.matrix.redactEvent(roomId, messageId);
   }
@@ -288,15 +357,22 @@ export class MatrixClient implements IChatClient {
     this.connectionStatus = connectionStatus;
   }
 
+  processMessageEvent(event): void {
+    if (event.type === EventType.RoomMessage) {
+      const relatesTo = event.content[MatrixConstants.RELATES_TO];
+      if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
+        this.onMessageUpdated(event);
+      } else {
+        this.publishMessageEvent(event);
+      }
+    }
+  }
+
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);
       if (event.type === EventType.RoomEncryption) {
         console.log('encryped message: ', event);
-      }
-
-      if (event.type === EventType.RoomMessage) {
-        this.publishMessageEvent(event);
       }
 
       if (event.type === EventType.RoomCreate) {
@@ -308,6 +384,8 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomRedaction) {
         this.receiveDeleteMessage(event);
       }
+
+      this.processMessageEvent(event);
     });
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
@@ -320,7 +398,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
-        this.publishMessageEvent(event);
+        this.processMessageEvent(event);
       }
     });
 
@@ -521,34 +599,6 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  private mapMatrixEventToMessage(matrixEvent) {
-    if (!matrixEvent || matrixEvent.getType() !== EventType.RoomMessage) return null;
-
-    const { body: message } = matrixEvent.getContent();
-    const senderId = matrixEvent.getSender();
-    const timestamp = matrixEvent.getTs();
-    const eventId = matrixEvent.getId();
-
-    return {
-      id: eventId,
-      message,
-      isAdmin: false,
-      createdAt: timestamp,
-      updatedAt: null,
-      sender: {
-        userId: senderId,
-        firstName: matrixEvent.sender?.name,
-        lastName: '',
-        profileImage: '',
-        profileId: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      preview: null,
-      sendStatus: null,
-    };
-  }
-
   private getRoomName(room: Room): string {
     const roomNameEvent = this.getLatestEvent(room, EventType.RoomName);
     return roomNameEvent?.getContent()?.name || '';
@@ -563,12 +613,9 @@ export class MatrixClient implements IChatClient {
     return this.getLatestEvent(room, EventType.RoomCreate)?.getTs() || 0;
   }
 
-  private getAllMessagesFromRoom(room: Room) {
-    const timeline = room.getLiveTimeline().getEvents();
-    const messages = timeline
-      .filter((event) => event.getType() === EventType.RoomMessage && !event.isRedacted())
-      .map(this.mapMatrixEventToMessage);
-    return messages;
+  private getAllMessagesFromRoom(room: Room): any[] {
+    const events = [...room.getLiveTimeline().getEvents()].reverse().map((matrixEvent) => matrixEvent.event);
+    return this.processRawEventsToMessages(events);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

@@ -1,4 +1,4 @@
-import { Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
@@ -55,6 +55,13 @@ export interface IChatClient {
   ) => Promise<MessagesResponse>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
+  editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): Promise<any>;
 }
 
 export class Chat {
@@ -96,6 +103,16 @@ export class Chat {
 
   async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
     return this.client.deleteMessageByRoomId(roomId, messageId);
+  }
+
+  async editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): Promise<any> {
+    return this.client.editMessage(roomId, messageId, message, mentionedUserIds, data);
   }
 
   async searchMyNetworksByName(filter: string) {

@@ -1,11 +1,11 @@
 import { GroupChannelHandler, GroupChannelModule, SendbirdGroupChat } from '@sendbird/chat/groupChannel';
 import SendbirdChat, { ConnectionHandler, ConnectionState, SessionHandler } from '@sendbird/chat';
 import { map as mapMessage } from './chat-message';
-import { Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { sendMessagesByChannelId } from '../../store/messages/api';
 import { FileUploadResult } from '../../store/messages/saga';
 import { config } from '../../config';
-import { del, get } from '../../lib/api/rest';
+import { del, get, put } from '../../lib/api/rest';
 import { toLocalChannel } from '../../store/channels-list/utils';
 import { ParentMessage, User } from './types';
 
@@ -108,6 +108,22 @@ export class SendbirdClient implements IChatClient {
 
   async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
     await del<any>(`/chatChannels/${roomId}/message`).send({ message: { id: messageId } });
+  }
+
+  async editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): Promise<any> {
+    // Note: this is actually wrong. The api endpoint does not take the `mentionedUsersId`
+    // parameter at all.
+    const response = await put<any>(`/chatChannels/${roomId}/message`).send({
+      message: { id: messageId, message, mentionedUserIds, data },
+    });
+
+    return response.status;
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number): Promise<MessagesResponse> {

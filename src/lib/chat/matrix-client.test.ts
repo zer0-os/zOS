@@ -60,6 +60,7 @@ const getSdkClient = (sdkClient = {}) => ({
   getAccountData: jest.fn(),
   getUser: jest.fn(),
   setGlobalErrorOnUnknownDevices: () => undefined,
+  fetchRoomEvent: jest.fn(),
   ...sdkClient,
 });
 
@@ -747,6 +748,54 @@ describe('matrix client', () => {
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
 
       expect(fetchedMessages).toHaveLength(0);
+    });
+  });
+
+  describe('editMessage', () => {
+    it('edits a message successfully', async () => {
+      const originalMessageId = 'orig-message-id';
+      const roomId = '!testRoomId';
+      const editedMessage = 'edited message content';
+
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'edited-message-id',
+        })
+      );
+
+      const fetchRoomEvent = jest.fn(() =>
+        Promise.resolve({
+          type: 'm.room.message',
+          content: {
+            body: editedMessage,
+            msgtype: 'm.text',
+            'm.relates_to': {
+              rel_type: 'm.replace',
+              event_id: originalMessageId,
+            },
+          },
+          event_id: 'edited-message-id',
+          user_id: '@testUser:zero-synapse-development.zer0.io',
+        })
+      );
+
+      const getSenderData = jest.fn(() =>
+        Promise.resolve({
+          displayName: 'Test User',
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.editMessage(roomId, originalMessageId, editedMessage, []);
+
+      expect(result).toMatchObject({
+        id: 'edited-message-id',
+        message: editedMessage,
+      });
     });
   });
 });

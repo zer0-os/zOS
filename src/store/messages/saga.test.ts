@@ -1,7 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { editMessageApi } from './api';
 import {
   receiveDelete,
   editMessage,
@@ -17,6 +16,11 @@ import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
 import { MessageSendStatus } from '.';
+import { chat } from '../../lib/chat';
+
+const chatClient = {
+  editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
+};
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {
@@ -139,13 +143,11 @@ describe('messages saga', () => {
 
     await expectSaga(editMessage, { payload: { channelId, messageId: messageIdToEdit, message, mentionedUserIds } })
       .provide([
-        [
-          matchers.call.fn(editMessageApi),
-          { status: 200 },
-        ],
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.editMessage), { status: 200 }],
       ])
       .withReducer(rootReducer)
-      .call(editMessageApi, channelId, messageIdToEdit, message, mentionedUserIds, undefined)
+      .call([chatClient, chatClient.editMessage], channelId, messageIdToEdit, message, mentionedUserIds, undefined)
       .run();
   });
 

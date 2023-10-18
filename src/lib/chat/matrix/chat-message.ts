@@ -1,15 +1,16 @@
 import { MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 
 export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
+
   const senderData = sdkMatrixClient.getUser(senderId);
 
   return {
     id: event_id,
     message: content.body,
     createdAt: origin_server_ts,
-    updatedAt: null,
+    updatedAt: updatedAt,
     sender: {
       userId: senderId,
       firstName: senderData.displayName,
@@ -21,6 +22,6 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
     optimisticId: content.optimisticId,
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
     parentMessageText: '',
-    parentMessageId: parent ? parent['m.in_reply_to'].event_id : null,
+    parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
   };
 }

@@ -35,7 +35,7 @@ export class RewardsButton extends React.Component<Properties> {
         open={!this.props.isRewardsLoading && this.props.showRewardsInTooltip && this.props.isMessengerFullScreen}
         align='center'
         side='right'
-        content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} ZERO today`}
+        content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} MEOW today`}
         onClose={this.props.closeRewardsTooltip}
       >
         <div className={c('')}>

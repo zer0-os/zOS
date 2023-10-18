@@ -607,11 +607,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private getAllMessagesFromRoom(room: Room): any[] {
-    const events = room
-      .getLiveTimeline()
-      .getEvents()
-      .reverse()
-      .map((matrixEvent) => matrixEvent.event);
+    const events = [...room.getLiveTimeline().getEvents()].reverse().map((matrixEvent) => matrixEvent.event);
     return this.processRawEventsToMessages(events);
   }
 

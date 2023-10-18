@@ -74,8 +74,23 @@ export class MatrixClient implements IChatClient {
     return this.matrix.getAccountData(eventType);
   }
 
+  private hasSharedJoinedRoom(userId: string): boolean {
+    const rooms = this.matrix.getRooms();
+
+    return !!rooms.find((room) => {
+      const myMember = room.getMember(this.matrix.getUserId());
+      const targetMember = room.getMember(userId);
+
+      return myMember && myMember.membership === 'join' && targetMember && targetMember.membership === 'join';
+    });
+  }
+
   async getUserPresence(userId: string) {
     await this.waitForConnection();
+
+    if (!this.hasSharedJoinedRoom(userId)) {
+      return { lastSeenAt: null, isOnline: false };
+    }
 
     try {
       const userPresenceData = await this.matrix.getPresence(userId);
@@ -85,7 +100,6 @@ export class MatrixClient implements IChatClient {
       }
 
       const { presence, last_active_ago } = userPresenceData;
-
       const isOnline = presence === 'online';
       const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 

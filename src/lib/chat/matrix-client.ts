@@ -36,10 +36,6 @@ export class MatrixClient implements IChatClient {
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
 
-  private static readonly RELATES_TO = 'm.relates_to';
-  private static readonly NEW_CONTENT = 'm.new_content';
-  private static readonly REPLACE = 'm.replace';
-
   private accessToken: string;
   private userId: string;
 

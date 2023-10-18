@@ -26,7 +26,7 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -35,10 +35,6 @@ export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
-
-  private static readonly RELATES_TO = 'm.relates_to';
-  private static readonly NEW_CONTENT = 'm.new_content';
-  private static readonly REPLACE = 'm.replace';
 
   private accessToken: string;
   private userId: string;
@@ -150,8 +146,8 @@ export class MatrixClient implements IChatClient {
   }
 
   private isEditEvent(event): boolean {
-    const relatesTo = event.content && event.content[MatrixClient.RELATES_TO];
-    return relatesTo && relatesTo.rel_type === MatrixClient.REPLACE;
+    const relatesTo = event.content && event.content[MatrixConstants.RELATES_TO];
+    return relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE;
   }
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
@@ -166,11 +162,11 @@ export class MatrixClient implements IChatClient {
   }
 
   private getRelatedEventId(event): string {
-    return event.content[MatrixClient.RELATES_TO]?.event_id;
+    return event.content[MatrixConstants.RELATES_TO]?.event_id;
   }
 
   private getNewContent(event): any {
-    return event.content[MatrixClient.NEW_CONTENT];
+    return event.content[MatrixConstants.NEW_CONTENT];
   }
 
   private processRawEventsToMessages(events): any[] {
@@ -281,12 +277,12 @@ export class MatrixClient implements IChatClient {
     const content = {
       body: message,
       msgtype: MsgType.Text,
-      [MatrixClient.NEW_CONTENT]: {
+      [MatrixConstants.NEW_CONTENT]: {
         msgtype: MsgType.Text,
         body: message,
       },
-      [MatrixClient.RELATES_TO]: {
-        rel_type: MatrixClient.REPLACE,
+      [MatrixConstants.RELATES_TO]: {
+        rel_type: MatrixConstants.REPLACE,
         event_id: messageId,
       },
     };
@@ -356,8 +352,8 @@ export class MatrixClient implements IChatClient {
 
   processMessageEvent(event): void {
     if (event.type === EventType.RoomMessage) {
-      const relatesTo = event.content[MatrixClient.RELATES_TO];
-      if (relatesTo && relatesTo.rel_type === MatrixClient.REPLACE) {
+      const relatesTo = event.content[MatrixConstants.RELATES_TO];
+      if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
       } else {
         this.publishMessageEvent(event);

@@ -9,3 +9,9 @@ export enum MembershipStateType {
   Join = 'join',
   Leave = 'leave',
 }
+
+export enum MatrixConstants {
+  RELATES_TO = 'm.relates_to',
+  NEW_CONTENT = 'm.new_content',
+  REPLACE = 'm.replace',
+}

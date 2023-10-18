@@ -226,6 +226,10 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
 }
 
 export function* receiveCreatedConversation(conversation, optimisticConversation = { id: '', optimisticId: '' }) {
+  if (!conversation) {
+    return;
+  }
+
   const existingConversationsList = yield select(rawConversationsList());
   const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
 
@@ -433,12 +437,17 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
     return;
   }
 
-  // TODO: Fetch user from zOS if we don't know about them yet
+  if (user.userId === user.matrixId) {
+    user = yield select(userByMatrixId, user.matrixId);
+  }
+
   if (!channel.otherMembers.includes(user.userId)) {
+    const otherMembers = [...channel.otherMembers, user];
     yield put(
       receiveChannel({
         id: channel.id,
-        otherMembers: [...channel.otherMembers, user],
+        isOneOnOne: channel.isChannel === true ? false : otherMembers.length === 1,
+        otherMembers,
       })
     );
   }

@@ -430,15 +430,17 @@ describe('channels list saga', () => {
   });
 
   describe(otherUserJoinedChannel, () => {
-    it('adds the user to the otherMember list', async () => {
+    it('finds the zOS user and adds the user to the otherMember list', async () => {
       const existingMembers = [
         { userId: 'user-1', matrixId: 'user-1' },
         { userId: 'user-2', matrixId: 'user-2' },
       ] as any;
-      const initialState = new StoreBuilder().withConversationList({
-        id: 'conversation-id',
-        otherMembers: existingMembers,
-      });
+      const initialState = new StoreBuilder()
+        .withConversationList({
+          id: 'conversation-id',
+          otherMembers: existingMembers,
+        })
+        .withUsers({ userId: 'new-user', matrixId: 'new-user', firstName: 'Jane', lastName: 'doe' });
 
       const { storeState } = await expectSaga(otherUserJoinedChannel, 'conversation-id', {
         userId: 'new-user',

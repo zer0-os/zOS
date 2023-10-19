@@ -281,6 +281,10 @@ export class MessageInput extends React.Component<Properties, State> {
       return;
     }
 
+    if (featureFlags.enableMatrix) {
+      return;
+    }
+
     const items = event.clipboardData.items;
 
     const newImages: any[] = Array.from(items)

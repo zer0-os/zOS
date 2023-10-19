@@ -6,6 +6,7 @@ import './styles.scss';
 import { IconBell1, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { NotificationPopup } from '../notification/popup';
 import { UserMenuPopup } from './user-menu-popup';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
   userAddress: string;
@@ -71,16 +72,18 @@ export class UserActions extends React.Component<Properties, State> {
               <div className='user-actions__badge'>{this.unreadConversationCount}</div>
             )}
           </button>
-          <button
-            className='user-actions__icon-button'
-            ref={this.notificationIconRef}
-            onClick={this.toggleNotificationState}
-          >
-            <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
-            {this.props.unreadNotificationCount > 0 && (
-              <div className='user-actions__badge'>{this.unreadNotificationCount}</div>
-            )}
-          </button>
+          {!featureFlags.enableMatrix && (
+            <button
+              className='user-actions__icon-button'
+              ref={this.notificationIconRef}
+              onClick={this.toggleNotificationState}
+            >
+              <IconBell1 isFilled={this.state.isNotificationPopupOpen} />
+              {this.props.unreadNotificationCount > 0 && (
+                <div className='user-actions__badge'>{this.unreadNotificationCount}</div>
+              )}
+            </button>
+          )}
           <button onClick={this.toggleUserPopupState}>
             <Avatar type='circle' size='regular' imageURL={this.props.userImageUrl} statusType={this.userStatus} />
           </button>

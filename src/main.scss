@@ -115,6 +115,7 @@ $border-color-hover: theme-zui.$color-primary-7;
     top: $platform-padding;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 16px;
     padding: 0 16px;
 

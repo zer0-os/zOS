@@ -19,6 +19,7 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import { ParentMessage } from './parent-message';
+import { featureFlags } from '../../lib/feature-flags';
 
 const cn = bemClassName('message');
 
@@ -264,13 +265,19 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
+  get canRemovePreview(): boolean {
+    return !featureFlags.enableMatrix && this.props.isOwner;
+  }
+
   renderLinkPreview() {
-    const { preview, isOwner, hidePreview, media, parentMessageText } = this.props;
+    const { preview, hidePreview, media, parentMessageText } = this.props;
     if (!preview || hidePreview || media || parentMessageText) {
       return;
     }
 
-    return <LinkPreview url={preview.url} {...preview} allowRemove={isOwner} onRemove={this.onRemovePreview} />;
+    return (
+      <LinkPreview url={preview.url} {...preview} allowRemove={this.canRemovePreview} onRemove={this.onRemovePreview} />
+    );
   }
 
   renderBody() {

@@ -45,11 +45,11 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
 
   const filteredResults = [];
   for (const member of roomMembers) {
-    let displayName = `${member.firstName || ''} ${member.lastName || ''}`;
+    let displayName = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
     if (displayName.includes(normalizedFilter)) {
       filteredResults.push({
         id: member.userId || member.matrixId,
-        displayName,
+        displayName: `${member.firstName || ''} ${member.lastName || ''}`,
         profileImage: member.profileImage,
       });
     }

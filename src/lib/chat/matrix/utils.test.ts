@@ -69,4 +69,19 @@ describe('getFilteredMembersForAutoComplete', () => {
       },
     ]);
   });
+
+  it('should match the filter being case insensitive', async () => {
+    roomMembers[0].firstName = 'DOMW';
+
+    const filter = 'dom';
+    const result = await getFilteredMembersForAutoComplete(roomMembers, filter);
+    // Expect members with 'do' in display name
+    expect(result).toEqual([
+      {
+        id: '@domw:zero-synapse-development.zer0.io',
+        displayName: 'DOMW ',
+        profileImage: '',
+      },
+    ]);
+  });
 });

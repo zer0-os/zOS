@@ -360,8 +360,19 @@ export class MessageInput extends React.Component<Properties, State> {
     return this.allowGiphy || this.allowFileAttachment;
   }
 
+  get allowVoiceMessage() {
+    return !featureFlags.enableMatrix && !this.hasInputValue;
+  }
+
+  get displaySendButton() {
+    return featureFlags.enableMatrix || this.hasInputValue;
+  }
+
+  get hasInputValue() {
+    return this.state.value?.length > 0;
+  }
+
   renderInput() {
-    const hasInputValue = this.state.value?.length > 0;
     const reply = this.props.reply;
 
     return (
@@ -488,14 +499,24 @@ export class MessageInput extends React.Component<Properties, State> {
             <div className='message-input__icon-outer'>
               <div className='message-input__icon-wrapper'>
                 <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
-                  <IconButton
-                    className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                      'message-input__icon--highlighted': this.sendHighlighted(),
-                    })}
-                    onClick={hasInputValue ? this.onSend : this.startMic}
-                    Icon={hasInputValue ? IconSend3 : IconMicrophone2}
-                    size='small'
-                  />
+                  {this.displaySendButton && (
+                    <IconButton
+                      className={classNames('message-input__icon', 'message-input__icon--end-action', {
+                        'message-input__icon--highlighted': this.sendHighlighted(),
+                      })}
+                      onClick={this.onSend}
+                      Icon={IconSend3}
+                      size='small'
+                    />
+                  )}
+                  {this.allowVoiceMessage && (
+                    <IconButton
+                      className={classNames('message-input__icon', 'message-input__icon--end-action')}
+                      onClick={this.startMic}
+                      Icon={IconMicrophone2}
+                      size='small'
+                    />
+                  )}
                 </Tooltip>
               </div>
             </div>

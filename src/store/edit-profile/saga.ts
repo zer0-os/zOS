@@ -11,7 +11,7 @@ import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
 
 export function* editProfile(action) {
-  const { name, image, matrixId, matrixAccessToken } = action.payload;
+  const { name, image } = action.payload;
 
   yield put(setState(State.INPROGRESS));
   try {
@@ -24,10 +24,6 @@ export function* editProfile(action) {
         yield put(setErrors([ProfileDetailsErrors.FILE_UPLOAD_ERROR]));
         return;
       }
-    }
-
-    if (matrixId) {
-      yield call(saveUserMatrixCredentials, matrixId, matrixAccessToken);
     }
 
     const { profileId } = yield select((state) => state.authentication.user.data);

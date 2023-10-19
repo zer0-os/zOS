@@ -7,7 +7,6 @@ import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2, IconXClose } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
-import { FeatureFlag } from '../feature-flag';
 
 const c = bem('edit-profile');
 
@@ -20,40 +19,30 @@ export interface Properties {
   };
   currentDisplayName: string;
   currentProfileImage: string;
-  currentMatrixId: string;
-  currentMatrixAccessToken: string;
-  onEdit: (data: { name: string; image: File; matrixId: string; matrixAccessToken: string }) => void;
+  onEdit: (data: { name: string; image: File }) => void;
   onClose?: () => void;
 }
 
 interface State {
   name: string;
   image: File | null;
-  matrixId: string;
-  matrixAccessToken: string;
 }
 
 export class EditProfile extends React.Component<Properties, State> {
   state = {
     name: this.props.currentDisplayName,
     image: null,
-    matrixId: this.props.currentMatrixId,
-    matrixAccessToken: this.props.currentMatrixAccessToken,
   };
 
   handleEdit = () => {
     this.props.onEdit({
       name: this.state.name,
       image: this.state.image,
-      matrixId: this.state.matrixId,
-      matrixAccessToken: this.state.matrixAccessToken,
     });
   };
 
   trackName = (value) => this.setState({ name: value });
   trackImage = (image) => this.setState({ image });
-  trackMatrixId = (matrixId) => this.setState({ matrixId });
-  trackMatrixAccessToken = (matrixAccessToken) => this.setState({ matrixAccessToken });
 
   get isValid() {
     return this.state.name.trim().length > 0;
@@ -83,10 +72,6 @@ export class EditProfile extends React.Component<Properties, State> {
   }
 
   get isDisabled() {
-    if (this.state.matrixId !== '' && this.state.matrixAccessToken !== '') {
-      return false;
-    }
-
     return (
       !!this.nameError ||
       this.isLoading ||
@@ -123,23 +108,6 @@ export class EditProfile extends React.Component<Properties, State> {
             alert={this.nameError}
             className={c('body-input')}
           />
-
-          <FeatureFlag featureFlag='enableMatrix'>
-            <Input
-              label='Matrix ID'
-              name='matrix_id'
-              value={this.state.matrixId}
-              onChange={this.trackMatrixId}
-              className={c('body-input')}
-            />
-            <Input
-              label='Matrix Access Token'
-              name='access_token'
-              value={this.state.matrixAccessToken}
-              onChange={this.trackMatrixAccessToken}
-              className={c('body-input')}
-            />
-          </FeatureFlag>
         </div>
         {this.imageError && (
           <Alert className={c('alert-large')} variant='error'>

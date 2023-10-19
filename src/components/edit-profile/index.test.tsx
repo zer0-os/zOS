@@ -13,8 +13,6 @@ describe('EditProfile', () => {
       errors: {},
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
-      currentMatrixId: '',
-      currentMatrixAccessToken: '',
       onEdit: () => null,
       onClose: () => null,
       ...props,
@@ -53,8 +51,6 @@ describe('EditProfile', () => {
     expect(onEditMock).toHaveBeenCalledWith({
       name: 'John Doe',
       image: null,
-      matrixId: '',
-      matrixAccessToken: '',
     });
   });
 
@@ -90,8 +86,6 @@ describe('EditProfile', () => {
     const formData = {
       name: 'Jane Smith',
       image: 'new-image.jpg', // note: this is actually supposed to be a nodejs FILE object
-      matrixId: '',
-      matrixAccessToken: '',
     };
 
     wrapper.find('Input[name="name"]').simulate('change', formData.name);

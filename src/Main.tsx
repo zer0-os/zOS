@@ -14,6 +14,7 @@ import { withContext as withAuthenticationContext } from './components/authentic
 import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
+import { featureFlags } from './lib/feature-flags';
 
 export interface Properties {
   hasContextPanel: boolean;
@@ -78,9 +79,11 @@ export class Container extends React.Component<Properties> {
         </div>
         {!this.props.isMessengerFullScreen && (
           <div className='main__header'>
-            <div className='main__address-bar-wrapper'>
-              <AddressBarContainer className='main__address-bar' />
-            </div>
+            {!featureFlags.enableMatrix && (
+              <div className='main__address-bar-wrapper'>
+                <AddressBarContainer className='main__address-bar' />
+              </div>
+            )}
             <div className='main__wallet-manager-wrapper'>
               <WalletManager className='main__wallet-manager' />
             </div>

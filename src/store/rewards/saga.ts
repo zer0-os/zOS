@@ -16,7 +16,7 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 import { featureFlags } from '../../lib/feature-flags';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
-const SYNC_ZERO_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
+const SYNC_MEOW_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
 
 const lastDayRewardsKey = 'last_viewed_day_rewards';
 const totalRewardsKey = 'last_viewed_total_rewards';
@@ -59,7 +59,7 @@ export function* syncMEOWPrice() {
   while (true) {
     yield call(fetchCurrentMeowPriceInUSD);
 
-    yield delay(SYNC_ZERO_TOKEN_PRICE_INTERVAL);
+    yield delay(SYNC_MEOW_TOKEN_PRICE_INTERVAL);
   }
 }
 

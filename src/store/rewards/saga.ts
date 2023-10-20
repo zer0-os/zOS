@@ -10,7 +10,7 @@ import {
   setMeowPreviousDay,
   setShowRewardsInPopup,
 } from '.';
-import { RewardsResp, fetchCurrentZeroPriceInUSD as fetchCurrentZeroPriceInUSDAPI, fetchRewards } from './api';
+import { RewardsResp, fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI, fetchRewards } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { featureFlags } from '../../lib/feature-flags';
@@ -23,7 +23,7 @@ const totalRewardsKey = 'last_viewed_total_rewards';
 
 export function* fetchCurrentMeowPriceInUSD() {
   try {
-    const result = yield call(fetchCurrentZeroPriceInUSDAPI);
+    const result = yield call(fetchCurrentMeowPriceInUSDAPI);
     if (result.success) {
       yield put(setMeowInUSD(result.response.price));
     }

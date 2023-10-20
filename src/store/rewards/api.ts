@@ -17,7 +17,7 @@ export async function fetchRewards(_obj: any): Promise<RewardsResp> {
   };
 }
 
-export async function fetchCurrentZeroPriceInUSD() {
+export async function fetchCurrentMeowPriceInUSD() {
   const response = await get('/api/tokens/zero');
   return {
     success: true,

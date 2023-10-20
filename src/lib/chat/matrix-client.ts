@@ -269,8 +269,10 @@ export class MatrixClient implements IChatClient {
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
     this.recordMessageSent(channelId, newMessage.createdAt);
+
+    // Don't return a full message, only the pertinent attributes that changed.
     return {
-      ...newMessage,
+      id: messageResult.event_id,
       optimisticId,
     };
   }

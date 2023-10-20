@@ -66,7 +66,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
             />
             <ZeroSymbol height={32} width={32} />
             <span className={c('heading')}>$MEOW</span>
-            <div className={c('rewards-meow')}>
+            <div className={c('rewards-zero')}>
               <SkeletonText
                 asyncText={{
                   isLoading: this.props.isLoading,

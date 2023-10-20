@@ -23,7 +23,7 @@ import { EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
-import { get } from '../api/rest';
+import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
 import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
@@ -266,10 +266,20 @@ export class MatrixClient implements IChatClient {
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
     const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
+    this.recordMessageSent(channelId, newMessage.createdAt);
     return {
       ...newMessage,
       optimisticId,
     };
+  }
+
+  async recordMessageSent(roomId: string, sentAt: number): Promise<void> {
+    const data = { roomId, sentAt };
+
+    await post<any>('/matrix/message')
+      .send(data)
+      .catch((_error) => null)
+      .then((response) => response?.body || []);
   }
 
   async editMessage(

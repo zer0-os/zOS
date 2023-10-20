@@ -8,7 +8,7 @@ describe('rewards-button', () => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
       isMessengerFullScreen: false,
-      zeroPreviousDay: '',
+      meowPreviousDay: '',
       isRewardsLoading: false,
       showRewardsInTooltip: false,
       showRewardsInPopup: false,
@@ -30,14 +30,14 @@ describe('rewards-button', () => {
   });
 
   it('rewards tooltip popup is not rendered if messenger not fullscreen', function () {
-    const wrapper = subject({ zeroPreviousDay: '9000000000000000000' });
+    const wrapper = subject({ meowPreviousDay: '9000000000000000000' });
     const tooltipPopup = wrapper.find(TooltipPopup);
     expect(tooltipPopup.prop('open')).toBe(false);
   });
 
   it('rewards tooltip popup is not rendered if first time log in', function () {
     const wrapper = subject({
-      zeroPreviousDay: '9000000000000000000',
+      meowPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
       isFirstTimeLogin: true,
     });
@@ -47,7 +47,7 @@ describe('rewards-button', () => {
 
   it('does not render rewards tooltip popup if not in full screen', function () {
     const wrapper = subject({
-      zeroPreviousDay: '9000000000000000000',
+      meowPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
       showRewardsInTooltip: true,
       isMessengerFullScreen: false,
@@ -58,7 +58,7 @@ describe('rewards-button', () => {
 
   it('rewards tooltip popup is rendered upon load', function () {
     const wrapper = subject({
-      zeroPreviousDay: '9000000000000000000',
+      meowPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
       showRewardsInTooltip: true,
       isMessengerFullScreen: true,
@@ -71,7 +71,7 @@ describe('rewards-button', () => {
   it('calls closeRewardsTooltip if TooltipPopup is closed', function () {
     const closeRewardsTooltip = jest.fn();
     const wrapper = subject({
-      zeroPreviousDay: '1000000000000000000',
+      meowPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
       showRewardsInTooltip: true,
       isMessengerFullScreen: true,

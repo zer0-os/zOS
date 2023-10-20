@@ -55,7 +55,7 @@ export class RewardsContainer extends React.Component<Properties, State> {
         <RewardsButton
           openRewards={this.openRewards}
           closeRewardsTooltip={this.closeRewardsTooltip}
-          zeroPreviousDay={this.props.meowPreviousDay}
+          meowPreviousDay={this.props.meowPreviousDay}
           isRewardsLoading={this.props.isRewardsLoading}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           isRewardsPopupOpen={this.state.isRewardsPopupOpen}

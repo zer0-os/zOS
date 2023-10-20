@@ -116,7 +116,7 @@ export class Container extends React.Component<Properties, State> {
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
-      zeroPreviousDay: rewards.zeroPreviousDay,
+      zeroPreviousDay: rewards.meowPreviousDay,
       isRewardsLoading: rewards.loading,
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,

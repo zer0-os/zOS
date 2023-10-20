@@ -20,7 +20,7 @@ describe('fetch', () => {
       .call(fetchRewards, {})
       .run();
 
-    expect(storeState.rewards.zero).toEqual('517');
+    expect(storeState.rewards.meow).toEqual('517');
   });
 });
 

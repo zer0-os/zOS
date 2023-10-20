@@ -57,7 +57,7 @@ export interface Properties extends PublicProperties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
-  zeroPreviousDay: string;
+  meowPreviousDay: string;
   includeUserSettings: boolean;
   isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
@@ -116,7 +116,7 @@ export class Container extends React.Component<Properties, State> {
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
-      zeroPreviousDay: rewards.meowPreviousDay,
+      meowPreviousDay: rewards.meowPreviousDay,
       isRewardsLoading: rewards.loading,
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
@@ -237,7 +237,7 @@ export class Container extends React.Component<Properties, State> {
         <FeatureFlag featureFlag='enableRewards'>
           <div {...cnMessageList('rewards-container', !this.props.includeUserSettings && 'center')}>
             <RewardsContainer
-              meowPreviousDay={this.props.zeroPreviousDay}
+              meowPreviousDay={this.props.meowPreviousDay}
               isRewardsLoading={this.props.isRewardsLoading}
               isMessengerFullScreen={this.props.isMessengerFullScreen}
               showRewardsInTooltip={this.props.showRewardsInTooltip}

@@ -38,7 +38,7 @@ describe('messenger-list', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      zeroPreviousDay: '',
+      meowPreviousDay: '',
       isRewardsLoading: false,
       isInviteNotificationOpen: false,
       myUserId: '',

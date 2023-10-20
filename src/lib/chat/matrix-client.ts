@@ -267,16 +267,17 @@ export class MatrixClient implements IChatClient {
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
-    const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
-    this.recordMessageSent(channelId, newMessage.createdAt);
+    this.recordMessageSent(channelId);
+
+    // Don't return a full message, only the pertinent attributes that changed.
     return {
-      ...newMessage,
+      id: messageResult.event_id,
       optimisticId,
     };
   }
 
-  async recordMessageSent(roomId: string, sentAt: number): Promise<void> {
-    const data = { roomId, sentAt };
+  async recordMessageSent(roomId: string): Promise<void> {
+    const data = { roomId, sentAt: new Date().valueOf() };
 
     await post<any>('/matrix/message')
       .send(data)

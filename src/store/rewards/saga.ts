@@ -5,7 +5,7 @@ import {
   SagaActionTypes,
   setShowRewardsInTooltip,
   setLoading,
-  setZero,
+  setMeow,
   setZeroInUSD,
   setZeroPreviousDay,
   setShowRewardsInPopup,
@@ -35,7 +35,7 @@ export function* fetch(_action) {
   try {
     const result: RewardsResp = yield call(fetchRewards, {});
     if (result.success) {
-      yield put(setZero(result.response.zero.toString()));
+      yield put(setMeow(result.response.zero.toString()));
       yield put(setZeroPreviousDay(result.response.zeroPreviousDay.toString()));
 
       yield call(checkNewRewardsLoaded);
@@ -109,7 +109,7 @@ export function* rewardsTooltipClosed() {
 
 function* clearOnLogout() {
   yield put(setLoading(false));
-  yield put(setZero('0'));
+  yield put(setMeow('0'));
   yield put(setZeroPreviousDay('0'));
   yield put(setZeroInUSD(0.0));
   yield put(setShowRewardsInTooltip(false));

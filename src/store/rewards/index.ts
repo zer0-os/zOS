@@ -35,7 +35,7 @@ const slice = createSlice({
     setLoading: (state, action: PayloadAction<RewardsState['loading']>) => {
       state.loading = action.payload;
     },
-    setZero: (state, action: PayloadAction<RewardsState['meow']>) => {
+    setMeow: (state, action: PayloadAction<RewardsState['meow']>) => {
       state.meow = action.payload;
     },
     setZeroInUSD: (state, action: PayloadAction<RewardsState['meowInUSD']>) => {
@@ -53,6 +53,6 @@ const slice = createSlice({
   },
 });
 
-export const { setLoading, setZero, setZeroPreviousDay, setZeroInUSD, setShowRewardsInTooltip, setShowRewardsInPopup } =
+export const { setLoading, setMeow, setZeroPreviousDay, setZeroInUSD, setShowRewardsInTooltip, setShowRewardsInPopup } =
   slice.actions;
 export const { reducer } = slice;

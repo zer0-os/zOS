@@ -90,7 +90,7 @@ export class MatrixClient implements IChatClient {
 
       return { lastSeenAt, isOnline };
     } catch (error: any) {
-      if (error && typeof error === 'object' && error.errcode !== 'M_FORBIDDEN') {
+      if (error.errcode !== 'M_FORBIDDEN') {
         console.error(error);
       }
 

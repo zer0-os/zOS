@@ -12,7 +12,7 @@ const c = bem('rewards-popup');
 
 export interface Properties {
   usd: string;
-  zero: string;
+  meow: string;
   isLoading: boolean;
   isFullScreen: boolean;
   withTitleBar: boolean;
@@ -70,7 +70,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
               <SkeletonText
                 asyncText={{
                   isLoading: this.props.isLoading,
-                  text: this.props.zero,
+                  text: this.props.meow,
                 }}
                 skeletonOptions={{
                   width: 50,

@@ -16,8 +16,8 @@ describe('Container', () => {
       isLoading: false,
       isFullScreen: false,
       withTitleBar: true,
-      zero: '',
-      zeroInUSD: 0,
+      meow: '',
+      meowInUSD: 0,
       fetchRewards: () => {},
       onClose: () => {},
       openRewardsFAQModal: () => {},
@@ -28,17 +28,17 @@ describe('Container', () => {
   };
 
   it('parses token number to renderable string', function () {
-    const wrapper = subject({ zero: '9123456789111315168' });
-    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('9.12');
+    const wrapper = subject({ meow: '9123456789111315168' });
+    expect(wrapper.find(RewardsPopup).prop('meow')).toEqual('9.12');
 
-    wrapper.setProps({ zero: '9123000000000000000' });
-    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('9.12');
+    wrapper.setProps({ meow: '9123000000000000000' });
+    expect(wrapper.find(RewardsPopup).prop('meow')).toEqual('9.12');
 
-    wrapper.setProps({ zero: '23456789111315168' });
-    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('0.02');
+    wrapper.setProps({ meow: '23456789111315168' });
+    expect(wrapper.find(RewardsPopup).prop('meow')).toEqual('0.02');
 
-    wrapper.setProps({ zero: '0' });
-    expect(wrapper.find(RewardsPopup).prop('zero')).toEqual('0');
+    wrapper.setProps({ meow: '0' });
+    expect(wrapper.find(RewardsPopup).prop('meow')).toEqual('0');
   });
 
   describe('mapState', () => {
@@ -66,20 +66,20 @@ describe('Container', () => {
       expect(state.isFullScreen).toEqual(true);
     });
 
-    test('zero', async () => {
+    test('meow', async () => {
       let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
-      expect(state.zero).toEqual('');
+      expect(state.meow).toEqual('');
 
       state = Container.mapState({ ...baseState(), ...rewardState({ zero: '99999999' }) } as RootState);
-      expect(state.zero).toEqual('99999999');
+      expect(state.meow).toEqual('99999999');
     });
 
-    test('zeroInUSD', async () => {
+    test('meowInUSD', async () => {
       let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
-      expect(state.zeroInUSD).toEqual(0);
+      expect(state.meowInUSD).toEqual(0);
 
       state = Container.mapState({ ...baseState(), ...rewardState({ zeroInUSD: 0.0454243368 }) } as RootState);
-      expect(state.zeroInUSD).toEqual(0.0454243368);
+      expect(state.meowInUSD).toEqual(0.0454243368);
     });
   });
 });

@@ -6,7 +6,7 @@ describe('RewardsPopup', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       usd: '1',
-      zero: '1',
+      meow: '1',
       isLoading: false,
       isFullScreen: false,
       withTitleBar: true,
@@ -18,8 +18,8 @@ describe('RewardsPopup', () => {
     return shallow(<RewardsPopup {...allProps} />);
   };
 
-  it('renders your rewards count in ZERO', function () {
-    const wrapper = subject({ zero: '360.12K' });
+  it('renders your rewards count in MEOW', function () {
+    const wrapper = subject({ meow: '360.12K' });
 
     let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
     expect((skeleton.prop('asyncText') as any).text).toEqual('360.12K');

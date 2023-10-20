@@ -85,13 +85,15 @@ export class MatrixClient implements IChatClient {
       }
 
       const { presence, last_active_ago } = userPresenceData;
-
       const isOnline = presence === 'online';
       const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 
       return { lastSeenAt, isOnline };
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error && typeof error === 'object' && error.errcode !== 'M_FORBIDDEN') {
+        console.error(error);
+      }
+
       return { lastSeenAt: null, isOnline: false };
     }
   }

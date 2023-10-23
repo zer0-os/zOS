@@ -489,6 +489,8 @@ export function* receiveUpdateMessage(action) {
   const preview = yield call(getPreview, message.message);
   message.preview = preview;
 
+  yield call(mapReceivedMessage, message);
+
   yield put(receiveMessage(message));
 }
 

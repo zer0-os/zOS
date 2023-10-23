@@ -73,17 +73,17 @@ export function* syncRewardsAndTokenPrice() {
 }
 
 export function* checkNewRewardsLoaded() {
-  const zeroPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.zeroPreviousDay'));
-  const zeroTotal = yield select((state) => getDeepProperty(state, 'rewards.zero'));
+  const meowPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.meowPreviousDay'));
+  const meowTotal = yield select((state) => getDeepProperty(state, 'rewards.meow'));
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
   const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
 
-  if (isMessengerFullScreen && !isFirstTimeLogin && zeroPreviousDay !== '0') {
-    if (localStorage.getItem(lastDayRewardsKey) !== zeroPreviousDay) {
+  if (isMessengerFullScreen && !isFirstTimeLogin && meowPreviousDay !== '0') {
+    if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
     }
 
-    if (localStorage.getItem(totalRewardsKey) !== zeroTotal) {
+    if (localStorage.getItem(totalRewardsKey) !== meowTotal) {
       yield put(setShowRewardsInPopup(true));
     }
   }
@@ -91,18 +91,18 @@ export function* checkNewRewardsLoaded() {
 
 export function* rewardsPopupClosed() {
   // set last viewed "total" rewards to the current rewards when the popup is closed
-  const { zero, showRewardsInPopup } = yield select((state) => state.rewards);
+  const { meow, showRewardsInPopup } = yield select((state) => state.rewards);
   if (showRewardsInPopup) {
-    localStorage.setItem(totalRewardsKey, zero);
+    localStorage.setItem(totalRewardsKey, meow);
     yield put(setShowRewardsInPopup(false));
   }
 }
 
 export function* rewardsTooltipClosed() {
   // set last viewed "daily" rewards to the current rewards when the popup is closed
-  const { zeroPreviousDay, showRewardsInTooltip } = yield select((state) => state.rewards);
+  const { meowPreviousDay, showRewardsInTooltip } = yield select((state) => state.rewards);
   if (showRewardsInTooltip) {
-    localStorage.setItem(lastDayRewardsKey, zeroPreviousDay);
+    localStorage.setItem(lastDayRewardsKey, meowPreviousDay);
     yield put(setShowRewardsInTooltip(false));
   }
 }

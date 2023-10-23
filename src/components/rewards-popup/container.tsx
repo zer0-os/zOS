@@ -34,8 +34,8 @@ export class Container extends React.Component<Properties> {
     return {
       withTitleBar: !!user?.data?.isAMemberOfWorlds,
       isFullScreen: layout.value.isMessengerFullScreen,
-      meow: rewards.zero,
-      meowInUSD: rewards.zeroInUSD,
+      meow: rewards.meow,
+      meowInUSD: rewards.meowInUSD,
     };
   }
 

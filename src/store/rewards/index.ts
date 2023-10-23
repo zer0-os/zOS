@@ -8,18 +8,18 @@ export enum SagaActionTypes {
 
 export type RewardsState = {
   loading: boolean;
-  zero: string;
-  zeroInUSD: number;
-  zeroPreviousDay: string;
+  meow: string;
+  meowInUSD: number;
+  meowPreviousDay: string;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
 };
 
 export const initialState: RewardsState = {
   loading: false,
-  zero: '0',
-  zeroInUSD: 0.0,
-  zeroPreviousDay: '0',
+  meow: '0',
+  meowInUSD: 0.0,
+  meowPreviousDay: '0',
   showRewardsInTooltip: false,
   showRewardsInPopup: false,
 };
@@ -35,14 +35,14 @@ const slice = createSlice({
     setLoading: (state, action: PayloadAction<RewardsState['loading']>) => {
       state.loading = action.payload;
     },
-    setZero: (state, action: PayloadAction<RewardsState['zero']>) => {
-      state.zero = action.payload;
+    setZero: (state, action: PayloadAction<RewardsState['meow']>) => {
+      state.meow = action.payload;
     },
-    setZeroInUSD: (state, action: PayloadAction<RewardsState['zeroInUSD']>) => {
-      state.zeroInUSD = action.payload;
+    setZeroInUSD: (state, action: PayloadAction<RewardsState['meowInUSD']>) => {
+      state.meowInUSD = action.payload;
     },
-    setZeroPreviousDay: (state, action: PayloadAction<RewardsState['zeroPreviousDay']>) => {
-      state.zeroPreviousDay = action.payload;
+    setZeroPreviousDay: (state, action: PayloadAction<RewardsState['meowPreviousDay']>) => {
+      state.meowPreviousDay = action.payload;
     },
     setShowRewardsInTooltip: (state, action: PayloadAction<RewardsState['showRewardsInTooltip']>) => {
       state.showRewardsInTooltip = action.payload;

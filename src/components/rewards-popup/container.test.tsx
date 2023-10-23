@@ -70,7 +70,7 @@ describe('Container', () => {
       let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
       expect(state.meow).toEqual('');
 
-      state = Container.mapState({ ...baseState(), ...rewardState({ zero: '99999999' }) } as RootState);
+      state = Container.mapState({ ...baseState(), ...rewardState({ meow: '99999999' }) } as RootState);
       expect(state.meow).toEqual('99999999');
     });
 
@@ -78,7 +78,7 @@ describe('Container', () => {
       let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);
       expect(state.meowInUSD).toEqual(0);
 
-      state = Container.mapState({ ...baseState(), ...rewardState({ zeroInUSD: 0.0454243368 }) } as RootState);
+      state = Container.mapState({ ...baseState(), ...rewardState({ meowInUSD: 0.0454243368 }) } as RootState);
       expect(state.meowInUSD).toEqual(0.0454243368);
     });
   });
@@ -111,8 +111,8 @@ function layoutState(layout = {}) {
 function rewardState(reward = {}) {
   return {
     rewards: {
-      zero: '',
-      zeroInUSD: 0,
+      meow: '',
+      meowInUSD: 0,
       ...reward,
     },
   };

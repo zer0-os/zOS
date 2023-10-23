@@ -311,6 +311,7 @@ export class MatrixClient implements IChatClient {
     const newMessage = await this.matrix.fetchRoomEvent(roomId, editResult.event_id);
 
     return {
+      id: editResult.event_id,
       message: newMessage.content.body,
       updatedAt: newMessage.origin_server_ts,
     };

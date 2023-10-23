@@ -85,7 +85,7 @@ export function* mapReceivedMessage(message) {
       profileImage: currentUser.profileSummary?.profileImage,
     };
   } else {
-    const user = yield select(userByMatrixId, matrixId);
+    const user = yield call(userByMatrixId, matrixId);
     message.sender = user || message.sender;
   }
 

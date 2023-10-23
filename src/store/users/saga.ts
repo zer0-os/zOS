@@ -21,7 +21,7 @@ export function* receiveSearchResults(searchResults) {
 }
 
 export function* userPresenceChanged(matrixId: string, isOnline: boolean, lastSeenAt: string) {
-  const user = yield select(userByMatrixId, matrixId);
+  const user = yield call(userByMatrixId, matrixId);
 
   if (!user) {
     return;

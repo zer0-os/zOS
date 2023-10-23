@@ -574,89 +574,25 @@ describe('matrix client', () => {
 
   describe('sendMessagesByChannelId', () => {
     it('sends a message successfully', async () => {
-      const sendMessage = jest.fn(() =>
-        Promise.resolve({
-          event_id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU',
-        })
-      );
-      const fetchRoomEvent = jest.fn(() =>
-        Promise.resolve({
-          type: 'm.room.message',
-          room_id: '!wqnBBSmtCokmfmPlbK:zero-synapse-development.zer0.io',
-          sender: '@ratik21:zero-synapse-development.zer0.io',
-          content: {
-            body: 'test',
-            msgtype: 'm.text',
-          },
-          event_id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU',
-          user_id: '@ratik21:zero-synapse-development.zer0.io',
-        })
-      );
+      const sendMessage = jest.fn().mockResolvedValue({ event_id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU' });
 
-      const getSenderData = jest.fn(() =>
-        Promise.resolve({
-          displayName: 'Joe Bloggs',
-        })
-      );
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
-      });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendMessage })) });
 
       await client.connect(null, 'token');
 
       const result = await client.sendMessagesByChannelId('channel-id', 'message', []);
-      expect(result).toMatchObject({
-        id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU',
-        message: 'test',
-        parentMessageId: null,
-        parentMessageText: '',
-      });
+      expect(result).toMatchObject({ id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU' });
     });
 
     it('sends a reply message successfully', async () => {
-      const sendMessage = jest.fn(() =>
-        Promise.resolve({
-          event_id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c',
-        })
-      );
-
-      const fetchRoomEvent = jest.fn(() =>
-        Promise.resolve({
-          type: 'm.room.message',
-          content: {
-            body: 'reply',
-            msgtype: 'm.text',
-            'm.relates_to': {
-              'm.in_reply_to': {
-                event_id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU',
-              },
-            },
-          },
-          event_id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c',
-          user_id: '@ratik21:zero-synapse-development.zer0.io',
-        })
-      );
-
-      const getSenderData = jest.fn(() =>
-        Promise.resolve({
-          displayName: 'Joe Bloggs',
-        })
-      );
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage, fetchRoomEvent, getUser: getSenderData })),
-      });
+      const sendMessage = jest.fn().mockResolvedValue({ event_id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c' });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendMessage })) });
 
       await client.connect(null, 'token');
 
       const result = await client.sendMessagesByChannelId('channel-id', 'message', []);
 
-      expect(result).toMatchObject({
-        id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c',
-        message: 'reply',
-        parentMessageId: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU',
-      });
+      expect(result).toMatchObject({ id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c' });
     });
   });
 

@@ -10,7 +10,7 @@ describe('rewards-container', () => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
       isMessengerFullScreen: false,
-      zeroPreviousDay: '',
+      meowPreviousDay: '',
       isRewardsLoading: false,
       showRewardsInTooltip: false,
       showRewardsInPopup: false,

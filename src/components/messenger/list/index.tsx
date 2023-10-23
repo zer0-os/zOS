@@ -237,7 +237,7 @@ export class Container extends React.Component<Properties, State> {
         <FeatureFlag featureFlag='enableRewards'>
           <div {...cnMessageList('rewards-container', !this.props.includeUserSettings && 'center')}>
             <RewardsContainer
-              zeroPreviousDay={this.props.zeroPreviousDay}
+              meowPreviousDay={this.props.zeroPreviousDay}
               isRewardsLoading={this.props.isRewardsLoading}
               isMessengerFullScreen={this.props.isMessengerFullScreen}
               showRewardsInTooltip={this.props.showRewardsInTooltip}

@@ -9,7 +9,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   hasLoadedConversation: boolean;
 
-  zeroPreviousDay: string;
+  meowPreviousDay: string;
   isRewardsLoading: boolean;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
@@ -55,7 +55,7 @@ export class RewardsContainer extends React.Component<Properties, State> {
         <RewardsButton
           openRewards={this.openRewards}
           closeRewardsTooltip={this.closeRewardsTooltip}
-          zeroPreviousDay={this.props.zeroPreviousDay}
+          zeroPreviousDay={this.props.meowPreviousDay}
           isRewardsLoading={this.props.isRewardsLoading}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           isRewardsPopupOpen={this.state.isRewardsPopupOpen}

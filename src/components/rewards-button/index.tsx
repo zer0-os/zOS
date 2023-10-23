@@ -19,7 +19,7 @@ export interface Properties {
   isMessengerFullScreen: boolean;
   hasLoadedConversation: boolean;
 
-  zeroPreviousDay: string;
+  meowPreviousDay: string;
   isRewardsLoading: boolean;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
@@ -35,7 +35,7 @@ export class RewardsButton extends React.Component<Properties> {
         open={!this.props.isRewardsLoading && this.props.showRewardsInTooltip && this.props.isMessengerFullScreen}
         align='center'
         side='right'
-        content={`You’ve earned ${formatWeiAmount(this.props.zeroPreviousDay)} MEOW today`}
+        content={`You’ve earned ${formatWeiAmount(this.props.meowPreviousDay)} MEOW today`}
         onClose={this.props.closeRewardsTooltip}
       >
         <div className={c('')}>

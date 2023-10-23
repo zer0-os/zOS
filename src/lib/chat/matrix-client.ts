@@ -85,13 +85,15 @@ export class MatrixClient implements IChatClient {
       }
 
       const { presence, last_active_ago } = userPresenceData;
-
       const isOnline = presence === 'online';
       const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 
       return { lastSeenAt, isOnline };
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error.errcode !== 'M_FORBIDDEN') {
+        console.error(error);
+      }
+
       return { lastSeenAt: null, isOnline: false };
     }
   }
@@ -265,16 +267,17 @@ export class MatrixClient implements IChatClient {
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
-    const newMessage = await this.getMessageByRoomId(channelId, messageResult.event_id);
-    this.recordMessageSent(channelId, newMessage.createdAt);
+    this.recordMessageSent(channelId);
+
+    // Don't return a full message, only the pertinent attributes that changed.
     return {
-      ...newMessage,
+      id: messageResult.event_id,
       optimisticId,
     };
   }
 
-  async recordMessageSent(roomId: string, sentAt: number): Promise<void> {
-    const data = { roomId, sentAt };
+  async recordMessageSent(roomId: string): Promise<void> {
+    const data = { roomId, sentAt: new Date().valueOf() };
 
     await post<any>('/matrix/message')
       .send(data)

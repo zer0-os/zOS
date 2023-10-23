@@ -21,7 +21,7 @@ const SYNC_ZERO_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
 const lastDayRewardsKey = 'last_viewed_day_rewards';
 const totalRewardsKey = 'last_viewed_total_rewards';
 
-export function* fetchCurrentZeroPriceInUSD() {
+export function* fetchCurrentMeowPriceInUSD() {
   try {
     const result = yield call(fetchCurrentZeroPriceInUSDAPI);
     if (result.success) {
@@ -55,9 +55,9 @@ export function* syncFetchRewards() {
   }
 }
 
-export function* syncZEROPrice() {
+export function* syncMEOWPrice() {
   while (true) {
-    yield call(fetchCurrentZeroPriceInUSD);
+    yield call(fetchCurrentMeowPriceInUSD);
 
     yield delay(SYNC_ZERO_TOKEN_PRICE_INTERVAL);
   }
@@ -69,7 +69,7 @@ export function* syncRewardsAndTokenPrice() {
   }
 
   yield spawn(syncFetchRewards);
-  yield spawn(syncZEROPrice);
+  yield spawn(syncMEOWPrice);
 }
 
 export function* checkNewRewardsLoaded() {

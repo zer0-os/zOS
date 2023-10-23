@@ -5,9 +5,9 @@ import {
   SagaActionTypes,
   setShowRewardsInTooltip,
   setLoading,
-  setZero,
-  setZeroInUSD,
-  setZeroPreviousDay,
+  setMeow,
+  setMeowInUSD,
+  setMeowPreviousDay,
   setShowRewardsInPopup,
 } from '.';
 import { RewardsResp, fetchCurrentZeroPriceInUSD as fetchCurrentZeroPriceInUSDAPI, fetchRewards } from './api';
@@ -25,7 +25,7 @@ export function* fetchCurrentZeroPriceInUSD() {
   try {
     const result = yield call(fetchCurrentZeroPriceInUSDAPI);
     if (result.success) {
-      yield put(setZeroInUSD(result.response.price));
+      yield put(setMeowInUSD(result.response.price));
     }
   } catch (e) {}
 }
@@ -35,8 +35,8 @@ export function* fetch(_action) {
   try {
     const result: RewardsResp = yield call(fetchRewards, {});
     if (result.success) {
-      yield put(setZero(result.response.zero.toString()));
-      yield put(setZeroPreviousDay(result.response.zeroPreviousDay.toString()));
+      yield put(setMeow(result.response.zero.toString()));
+      yield put(setMeowPreviousDay(result.response.zeroPreviousDay.toString()));
 
       yield call(checkNewRewardsLoaded);
     } else {
@@ -109,9 +109,9 @@ export function* rewardsTooltipClosed() {
 
 function* clearOnLogout() {
   yield put(setLoading(false));
-  yield put(setZero('0'));
-  yield put(setZeroPreviousDay('0'));
-  yield put(setZeroInUSD(0.0));
+  yield put(setMeow('0'));
+  yield put(setMeowPreviousDay('0'));
+  yield put(setMeowInUSD(0.0));
   yield put(setShowRewardsInTooltip(false));
   yield put(setShowRewardsInPopup(false));
 }

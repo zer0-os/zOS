@@ -21,7 +21,7 @@ describe('RewardsPopup', () => {
   it('renders your rewards count in MEOW', function () {
     const wrapper = subject({ meow: '360.12K' });
 
-    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
+    let skeleton = wrapper.find('.rewards-popup__rewards-meow SkeletonText');
     expect((skeleton.prop('asyncText') as any).text).toEqual('360.12K');
   });
 
@@ -34,11 +34,11 @@ describe('RewardsPopup', () => {
   it('sets the skeleton loading attribute', function () {
     const wrapper = subject({ isLoading: true });
 
-    let skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
+    let skeleton = wrapper.find('.rewards-popup__rewards-meow SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(true);
 
     wrapper.setProps({ isLoading: false });
-    skeleton = wrapper.find('.rewards-popup__rewards-zero SkeletonText');
+    skeleton = wrapper.find('.rewards-popup__rewards-meow SkeletonText');
     expect((skeleton.prop('asyncText') as any).isLoading).toEqual(false);
   });
 

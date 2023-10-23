@@ -476,8 +476,8 @@ export function* replaceOptimisticMessage(currentMessages, message) {
 
   const messages = [...currentMessages];
   messages[messageIndex] = {
+    ...optimisticMessage,
     ...message,
-    preview: message.preview || optimisticMessage.preview,
     sendStatus: MessageSendStatus.SUCCESS,
   };
   return messages;

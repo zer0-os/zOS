@@ -17,8 +17,8 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   isFullScreen: boolean;
   withTitleBar: boolean;
-  zero: string;
-  zeroInUSD: number;
+  meow: string;
+  meowInUSD: number;
 
   fetchRewards: () => void;
 }
@@ -34,8 +34,8 @@ export class Container extends React.Component<Properties> {
     return {
       withTitleBar: !!user?.data?.isAMemberOfWorlds,
       isFullScreen: layout.value.isMessengerFullScreen,
-      zero: rewards.zero,
-      zeroInUSD: rewards.zeroInUSD,
+      meow: rewards.zero,
+      meowInUSD: rewards.zeroInUSD,
     };
   }
 
@@ -45,11 +45,11 @@ export class Container extends React.Component<Properties> {
 
   get totalPriceInUSD() {
     // if there is an error fetching the price, don't show the usd value
-    if (this.props.zeroInUSD === 0) {
+    if (this.props.meowInUSD === 0) {
       return '';
     }
 
-    return calculateTotalPriceInUSD(this.props.zero, this.props.zeroInUSD);
+    return calculateTotalPriceInUSD(this.props.meow, this.props.meowInUSD);
   }
 
   render() {
@@ -58,7 +58,7 @@ export class Container extends React.Component<Properties> {
         {createPortal(
           <RewardsPopup
             usd={this.totalPriceInUSD}
-            zero={formatWeiAmount(this.props.zero)}
+            meow={formatWeiAmount(this.props.meow)}
             onClose={this.props.onClose}
             openRewardsFAQModal={this.props.openRewardsFAQModal}
             isLoading={this.props.isLoading}

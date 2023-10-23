@@ -417,7 +417,6 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
@@ -520,13 +519,6 @@ export class MatrixClient implements IChatClient {
   private publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
-
-  private publishConversationListChange = (event: MatrixEvent) => {
-    if (event.getType() === EventType.Direct) {
-      const content = event.getContent();
-      this.events.onConversationListChanged(Object.values(content ?? {}).flat());
-    }
-  };
 
   private publishUserPresenceChange = (event: MatrixEvent) => {
     if (event.getType() === EventType.Presence) {

@@ -18,7 +18,6 @@ export interface RealtimeChatEvents {
   onUserJoinedChannel: (conversation) => void;
   invalidChatAccessToken: () => void;
   onUserLeft: (channelId: string, userId: string) => void;
-  onConversationListChanged: (conversationIds: string[]) => void;
   onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
   onRoomAvatarChanged: (roomId: string, url: string) => void;

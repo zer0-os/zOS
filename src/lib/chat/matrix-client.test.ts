@@ -22,6 +22,7 @@ const stubRoom = (attrs = {}) => ({
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
   getEvents: () => stubTimeline(),
+  getUnreadNotificationCount: () => 0,
   ...attrs,
 });
 

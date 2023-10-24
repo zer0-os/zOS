@@ -18,6 +18,7 @@ import { rootReducer } from '../reducer';
 import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -131,6 +132,29 @@ describe('channels list saga', () => {
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
+    });
+
+    it('calls chatClient.markRoomAsRead', async () => {
+      const channelId = 'channel-id';
+      const state = new StoreBuilder()
+        .withCurrentUserId(userId)
+        .withActiveConversation({ id: channelId, unreadCount: 3 })
+        .build();
+
+      const mockChatClient = {
+        markRoomAsRead: jest.fn(),
+      };
+
+      await expectSaga(markConversationAsRead, channelId)
+        .provide([
+          stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200),
+          [matchers.call.fn(chat.get), mockChatClient],
+        ])
+        .withReducer(rootReducer, state)
+        .call([mockChatClient, mockChatClient.markRoomAsRead], channelId)
+        .run();
+
+      expect(mockChatClient.markRoomAsRead).toHaveBeenCalledWith(channelId);
     });
   });
 });

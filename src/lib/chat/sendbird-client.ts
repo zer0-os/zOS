@@ -92,6 +92,10 @@ export class SendbirdClient implements IChatClient {
     return null;
   }
 
+  async markRoomAsRead() {
+    return null;
+  }
+
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50 })
       .catch((_error) => null)

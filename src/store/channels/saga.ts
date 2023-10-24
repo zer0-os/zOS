@@ -8,6 +8,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { fetch as fetchMessages } from '../messages/saga';
 import { setActiveChannelId, setactiveConversationId } from '../chat';
+import { chat } from '../../lib/chat';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -61,6 +62,8 @@ export function* markConversationAsRead(conversationId) {
   const conversationInfo = yield select(rawChannelSelector(conversationId));
   if (conversationInfo?.unreadCount > 0) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
+    const chatClient = yield call(chat.get);
+    yield call([chatClient, chatClient.markRoomAsRead], conversationId);
   }
 }
 

@@ -597,8 +597,6 @@ export class MatrixClient implements IChatClient {
     const messages = this.getAllMessagesFromRoom(room);
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
-    console.log('unreadCount: ', unreadCount);
-
     return {
       id: room.roomId,
       name,

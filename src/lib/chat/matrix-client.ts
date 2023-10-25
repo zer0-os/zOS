@@ -543,6 +543,10 @@ export class MatrixClient implements IChatClient {
   private publishMessageEvent(event) {
     const room = this.matrix.getRoom(event.room_id);
 
+    if (!room) {
+      return;
+    }
+
     if (event.sender !== this.userId) {
       this.events.receiveUnreadCount(event.room_id, room.getUnreadNotificationCount(NotificationCountType.Total));
     }

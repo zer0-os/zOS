@@ -310,7 +310,13 @@ export class MatrixClient implements IChatClient {
     };
 
     const editResult = await this.matrix.sendMessage(roomId, content);
-    return await this.getMessageByRoomId(roomId, editResult.event_id);
+    const newMessage = await this.matrix.fetchRoomEvent(roomId, editResult.event_id);
+
+    return {
+      id: editResult.event_id,
+      message: newMessage.content.body,
+      updatedAt: newMessage.origin_server_ts,
+    };
   }
 
   private async onMessageUpdated(event): Promise<void> {

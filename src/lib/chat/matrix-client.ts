@@ -527,10 +527,10 @@ export class MatrixClient implements IChatClient {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
 
-  private publishConversationListChange = (event: MatrixEvent) => {
+  private publishConversationListChange = async (event: MatrixEvent) => {
     if (event.getType() === EventType.Direct) {
-      const content = event.getContent();
-      this.events.onConversationListChanged(Object.values(content ?? {}).flat());
+      const rooms = await this.getFilteredRooms(this.isConversation);
+      this.events.onConversationListChanged(rooms.map((r) => r.roomId));
     }
   };
 

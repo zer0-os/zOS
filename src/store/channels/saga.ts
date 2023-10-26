@@ -2,7 +2,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
 
-import { joinChannel as joinChannelAPI, markAllMessagesAsReadInChannel as markAllMessagesAsReadAPI } from './api';
+import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
@@ -32,7 +32,8 @@ export function* markAllMessagesAsRead(channelId, userId) {
     return;
   }
 
-  const status = yield call(markAllMessagesAsReadAPI, channelId, userId);
+  const chatClient = yield call(chat.get);
+  const status = yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
 
   if (status === 200) {
     yield put(
@@ -62,8 +63,6 @@ export function* markConversationAsRead(conversationId) {
   const conversationInfo = yield select(rawChannelSelector(conversationId));
   if (conversationInfo?.unreadCount > 0) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
-    const chatClient = yield call(chat.get);
-    yield call([chatClient, chatClient.markRoomAsRead], conversationId);
   }
 }
 

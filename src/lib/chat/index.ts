@@ -62,7 +62,7 @@ export interface IChatClient {
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
-  markRoomAsRead: (roomId: string) => Promise<void>;
+  markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
 }
 
 export class Chat {
@@ -139,8 +139,8 @@ export class Chat {
     return this.client.fetchConversationsWithUsers(users);
   }
 
-  async markRoomAsRead(roomId: string): Promise<void> {
-    return this.client.markRoomAsRead(roomId);
+  async markRoomAsRead(roomId: string, userId?: string): Promise<void> {
+    return this.client.markRoomAsRead(roomId, userId);
   }
 
   initChat(events: RealtimeChatEvents): void {

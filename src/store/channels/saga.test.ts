@@ -1,10 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import {
-  joinChannel as joinChannelAPI,
-  markAllMessagesAsReadInChannel as markAllMessagesAsReadInChannelAPI,
-} from './api';
+import { joinChannel as joinChannelAPI } from './api';
 import {
   joinChannel,
   markAllMessagesAsRead,
@@ -21,6 +18,10 @@ import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
 
 const userId = 'user-id';
+
+const mockChatClient = {
+  markRoomAsRead: jest.fn().mockReturnValue(200),
+};
 
 describe('channels list saga', () => {
   it('join channel and add hasJoined to channel state', async () => {
@@ -51,8 +52,12 @@ describe('channels list saga', () => {
     const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
 
     await expectSaga(markAllMessagesAsRead, channelId, userId)
-      .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
-      .call(markAllMessagesAsReadInChannelAPI, channelId, userId)
+      .provide([
+        [matchers.call.fn(chat.get), mockChatClient],
+        [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+      ])
+      .call(chat.get)
+      .call([mockChatClient, mockChatClient.markRoomAsRead], channelId, userId)
       .run();
   });
 
@@ -68,7 +73,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -83,7 +91,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -98,7 +109,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -114,7 +128,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markConversationAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -128,33 +145,13 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markConversationAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
-    });
-
-    it('calls chatClient.markRoomAsRead', async () => {
-      const channelId = 'channel-id';
-      const state = new StoreBuilder()
-        .withCurrentUserId(userId)
-        .withActiveConversation({ id: channelId, unreadCount: 3 })
-        .build();
-
-      const mockChatClient = {
-        markRoomAsRead: jest.fn(),
-      };
-
-      await expectSaga(markConversationAsRead, channelId)
-        .provide([
-          stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200),
-          [matchers.call.fn(chat.get), mockChatClient],
-        ])
-        .withReducer(rootReducer, state)
-        .call([mockChatClient, mockChatClient.markRoomAsRead], channelId)
-        .run();
-
-      expect(mockChatClient.markRoomAsRead).toHaveBeenCalledWith(channelId);
     });
   });
 });

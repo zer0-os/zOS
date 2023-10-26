@@ -92,8 +92,14 @@ export class SendbirdClient implements IChatClient {
     return null;
   }
 
-  async markRoomAsRead() {
-    return null;
+  async markRoomAsRead(roomId: string, userId: string): Promise<void> {
+    try {
+      const response = await put<any>(`/chatChannels/${roomId}/messages/mark-as-read`).send({ id: userId });
+      return response.status;
+    } catch (error: any) {
+      console.log('Error occurred while marking room as read: ', error?.response ?? error);
+      return null;
+    }
   }
 
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {

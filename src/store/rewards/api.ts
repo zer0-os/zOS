@@ -3,8 +3,8 @@ import { get } from '../../lib/api/rest';
 export interface RewardsResp {
   success: boolean;
   response: {
-    zero: string;
-    zeroPreviousDay: string;
+    meow: string;
+    meowPreviousDay: string;
     decimals: number;
   };
 }
@@ -18,7 +18,7 @@ export async function fetchRewards(_obj: any): Promise<RewardsResp> {
 }
 
 export async function fetchCurrentMeowPriceInUSD() {
-  const response = await get('/api/tokens/zero');
+  const response = await get('/api/tokens/meow');
   return {
     success: true,
     response: response.body,

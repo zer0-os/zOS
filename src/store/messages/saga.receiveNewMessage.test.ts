@@ -3,7 +3,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { call } from 'redux-saga/effects';
 
 import { getLinkPreviews } from './api';
-import { getPreview, receiveNewMessage, sendBrowserNotification } from './saga';
+import { batchedReceiveNewMessage, getPreview, receiveNewMessage, sendBrowserNotification } from './saga';
 import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
@@ -170,5 +170,64 @@ describe(receiveNewMessage, () => {
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].id).toEqual('optimistic-id-1');
     expect(channel.messages[1].id).toEqual('system-provided-id');
+  });
+
+  describe(batchedReceiveNewMessage, () => {
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(getLinkPreviews), null],
+        [matchers.spawn.fn(sendBrowserNotification), undefined],
+        [matchers.call.fn(markConversationAsRead), undefined],
+      ]);
+    }
+
+    it('adds all messages to the channel', async () => {
+      const channelId = 'channel-id';
+      const eventPayloads = [
+        { channelId, message: { id: 'new-message', message: 'a new message' } },
+        { channelId, message: { id: 'second-new-message', message: 'another' } },
+      ];
+
+      const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
+      const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
+
+      const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const channel = denormalizeChannel(channelId, storeState);
+      expect(channel.messages[0].id).toEqual('message-1');
+      expect(channel.messages[1].id).toEqual('new-message');
+      expect(channel.messages[2].id).toEqual('second-new-message');
+    });
+
+    it('adds all messages to multiple channels', async () => {
+      const channelId1 = 'channel-1';
+      const channelId2 = 'channel-2';
+      const eventPayloads = [
+        { channelId: channelId1, message: { id: '1-1', message: 'a new message' } },
+        { channelId: channelId1, message: { id: '1-2', message: 'another' } },
+        { channelId: channelId2, message: { id: '2-1', message: 'another' } },
+        { channelId: channelId2, message: { id: '2-2', message: 'another' } },
+      ];
+
+      const initialState = new StoreBuilder().withConversationList(
+        { id: channelId1, messages: [{ id: 'message-1', message: 'message_0001' }] as any },
+        { id: channelId2, messages: [{ id: 'message-2', message: 'message_0002' }] as any }
+      );
+
+      const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const channel1 = denormalizeChannel(channelId1, storeState);
+      expect(channel1.messages[0].id).toEqual('message-1');
+      expect(channel1.messages[1].id).toEqual('1-1');
+      expect(channel1.messages[2].id).toEqual('1-2');
+      const channel2 = denormalizeChannel(channelId2, storeState);
+      expect(channel2.messages[0].id).toEqual('message-2');
+      expect(channel2.messages[1].id).toEqual('2-1');
+      expect(channel2.messages[2].id).toEqual('2-2');
+    });
   });
 });

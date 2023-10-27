@@ -440,6 +440,10 @@ export function* receiveNewMessage(action) {
   // Clone and empty so follow up events can debounce again
   const batchedPayloads = [...savedMessages];
   savedMessages = [];
+  return yield call(batchedReceiveNewMessage, batchedPayloads);
+}
+
+export function* batchedReceiveNewMessage(batchedPayloads) {
   const byChannelId = {};
   batchedPayloads.forEach((m) => {
     byChannelId[m.channelId] = byChannelId[m.channelId] || [];

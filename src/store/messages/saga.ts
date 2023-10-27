@@ -429,38 +429,67 @@ export function* receiveDelete(action) {
   );
 }
 
+let savedMessages = [];
 export function* receiveNewMessage(action) {
-  let { channelId, message } = action.payload;
-  yield call(mapReceivedMessage, message);
-
-  const channel = yield select(rawChannelSelector(channelId));
-  const currentMessages = channel?.messages || [];
-  if (!channel || currentMessages.includes(message.id)) {
+  savedMessages.push(action.payload);
+  if (savedMessages.length > 1) {
+    // we already have a leading event that's awaiting the debounce delay
     return;
   }
+  yield delay(500);
+  // Clone and empty so follow up events can debounce again
+  const batchedPayloads = [...savedMessages];
+  savedMessages = [];
+  return yield call(batchedReceiveNewMessage, batchedPayloads);
+}
 
-  const preview = yield call(getPreview, message.message);
+export function* batchedReceiveNewMessage(batchedPayloads) {
+  const byChannelId = {};
+  batchedPayloads.forEach((m) => {
+    byChannelId[m.channelId] = byChannelId[m.channelId] || [];
+    byChannelId[m.channelId].push(m.message);
+  });
 
-  if (preview) {
-    message = { ...message, preview };
+  for (const channelId of Object.keys(byChannelId)) {
+    const channel = yield select(rawChannelSelector(channelId));
+    let currentMessages = channel?.messages || [];
+    let modified = false;
+    for (let message of byChannelId[channelId]) {
+      yield call(mapReceivedMessage, message);
+
+      if (!channel || currentMessages.includes(message.id)) {
+        continue;
+      }
+      modified = true;
+
+      const preview = yield call(getPreview, message.message);
+
+      if (preview) {
+        message = { ...message, preview };
+      }
+
+      let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+      if (!newMessages) {
+        newMessages = [
+          ...currentMessages,
+          message,
+        ];
+      }
+      currentMessages = newMessages;
+    }
+    if (modified) {
+      yield put(receive({ id: channelId, messages: currentMessages }));
+    }
+    if (yield select(_isActive(channelId))) {
+      const isChannel = yield select(_isChannel(channelId));
+      const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
+      yield spawn(markAllAsReadAction, channelId);
+    }
   }
 
-  let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
-  if (!newMessages) {
-    newMessages = [
-      ...currentMessages,
-      message,
-    ];
-  }
-
-  yield put(receive({ id: channelId, messages: newMessages }));
-  yield spawn(sendBrowserNotification, channelId, message);
-
-  if (yield select(_isActive(channelId))) {
-    const isChannel = yield select(_isChannel(channelId));
-    const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
-    yield spawn(markAllAsReadAction, channelId);
-  }
+  // Since the conversation load happens via these events now, this can't just happen. We need to figure out if this is a bullk load or a
+  // "fresh" message
+  // yield spawn(sendBrowserNotification, channelId, message);
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

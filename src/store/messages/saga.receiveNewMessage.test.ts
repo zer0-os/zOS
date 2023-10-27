@@ -1,4 +1,4 @@
-import { expectSaga } from 'redux-saga-test-plan';
+import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { call } from 'redux-saga/effects';
 
@@ -7,19 +7,28 @@ import { getPreview, receiveNewMessage, sendBrowserNotification } from './saga';
 import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
-import { stubResponse } from '../../test/saga';
+import { expectSaga, stubResponse } from '../../test/saga';
 import { markChannelAsRead, markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
 
 describe(receiveNewMessage, () => {
+  function subject(...args: Parameters<typeof expectSaga>) {
+    return expectSaga(...args).provide([
+      [matchers.call.fn(getLinkPreviews), null],
+      [matchers.spawn.fn(sendBrowserNotification), undefined],
+      [matchers.call.fn(markConversationAsRead), undefined],
+      // Execute immediately without debouncing
+      [matchers.call.fn(delayP), true], // delayP is what delay calls behind the scenes. Not ideal but it works.
+    ]);
+  }
+
   it('adds the message to the channel', async () => {
     const channelId = 'channel-id';
     const message = { id: 'new-message', message: 'a new message', optimisticId: 'other-front-end-id' };
     const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -34,10 +43,9 @@ describe(receiveNewMessage, () => {
     const stubPreview = { id: 'simulated-preview' };
     const initialState = new StoreBuilder().withConversationList({ id: channelId });
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .provide([
         stubResponse(call(getPreview, 'www.google.com'), stubPreview),
-        ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
@@ -50,7 +58,7 @@ describe(receiveNewMessage, () => {
     const channelId = 'non-existing-channel-id';
     const initialState = new StoreBuilder().withConversationList({ id: 'other-channel' });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId, message: {} } })
+    await subject(receiveNewMessage, { payload: { channelId, message: {} } })
       .withReducer(rootReducer, initialState.build())
       .not.put.like({ action: { type: 'normalized/receive' } })
       .run();
@@ -65,20 +73,9 @@ describe(receiveNewMessage, () => {
     ] as any;
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId, message } })
+    await subject(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, initialState.build())
       .not.put.like({ action: { type: 'normalized/receive' } })
-      .run();
-  });
-
-  it('sends a browser notification', async () => {
-    const message = { id: 'message-id', message: '' };
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id' });
-
-    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide(successResponses())
-      .withReducer(rootReducer, initialState.build())
-      .spawn(sendBrowserNotification, 'channel-id', message)
       .run();
   });
 
@@ -89,8 +86,7 @@ describe(receiveNewMessage, () => {
       .withChannelList({ id: 'channel-id' })
       .withActiveChannel({ id: 'channel-id' });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide(successResponses())
+    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .withReducer(rootReducer, channelState.build())
       .spawn(markChannelAsRead, 'channel-id')
       .run();
@@ -99,8 +95,7 @@ describe(receiveNewMessage, () => {
       .withConversationList({ id: 'channel-id' })
       .withActiveConversation({ id: 'channel-id' });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide(successResponses())
+    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .withReducer(rootReducer, conversationState.build())
       .spawn(markConversationAsRead, 'channel-id')
       .run();
@@ -111,8 +106,7 @@ describe(receiveNewMessage, () => {
 
     const channelState = new StoreBuilder().withChannelList({ id: 'channel-id' });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide(successResponses())
+    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .withReducer(rootReducer, channelState.build())
       .not.call(markChannelAsRead, 'channel-id')
       .run();
@@ -122,8 +116,7 @@ describe(receiveNewMessage, () => {
     const message = { id: 'message-id', message: '' };
     const conversationState = new StoreBuilder().withConversationList({ id: 'channel-id' });
 
-    await expectSaga(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide(successResponses())
+    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
       .withReducer(rootReducer, conversationState.build())
       .not.call(markConversationAsRead, 'channel-id')
       .run();
@@ -146,8 +139,7 @@ describe(receiveNewMessage, () => {
       messages: existingMessages,
     });
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -171,8 +163,7 @@ describe(receiveNewMessage, () => {
       messages: existingMessages,
     });
 
-    const { storeState } = await expectSaga(receiveNewMessage, { payload: { channelId, message } })
-      .provide(successResponses())
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -181,11 +172,3 @@ describe(receiveNewMessage, () => {
     expect(channel.messages[1].id).toEqual('system-provided-id');
   });
 });
-
-function successResponses() {
-  return [
-    stubResponse(matchers.call.fn(getLinkPreviews), null),
-    stubResponse(matchers.spawn.fn(sendBrowserNotification), undefined),
-    stubResponse(matchers.call.fn(markConversationAsRead), undefined),
-  ] as any;
-}

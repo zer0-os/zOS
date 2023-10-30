@@ -124,9 +124,23 @@ export class MatrixClient implements IChatClient {
           failedToJoin.push(room.roomId);
         }
       }
+      // figure out where to register the event
+      if (room.roomId === '!gYnYrvCHcXMcoJkJUn:zero-synapse-development.zer0.io') {
+        room.on(RoomEvent.UnreadNotifications, (event) => this.logRoom(room));
+        room.on(RoomEvent.Receipt, (event) => this.logRoom(room));
+        room.on(RoomEvent.MyMembership, (event) => this.logRoom(room));
+        room.on(RoomEvent.LocalEchoUpdated, (event) => this.logRoom(room));
+        room.on(RoomEvent.Timeline, (event) => this.logRoom(room));
+        room.on(RoomEvent.Redaction, (event) => this.logRoom(room));
+      }
     }
 
     return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
+  }
+
+  private logRoom(room) {
+    console.log('GET_COVNVO_UNREAD-TOTAL', room.getRoomUnreadNotificationCount(NotificationCountType.Total));
+    console.log('GET_COVNVO_UNREAD-HIGHLIGHT', room.getRoomUnreadNotificationCount(NotificationCountType.Highlight));
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -407,6 +421,17 @@ export class MatrixClient implements IChatClient {
   }
 
   private async initializeEventHandlers() {
+    this.matrix.on('sync' as any, (state, _prevState) => {
+      const room = this.matrix.getRoom('!gYnYrvCHcXMcoJkJUn:zero-synapse-development.zer0.io');
+
+      if (!room) {
+        return;
+      } else {
+        console.log('SYNC_ROOM', room);
+        console.log('SYNC_UNREAD-TOTAL', room.getRoomUnreadNotificationCount(NotificationCountType.Total));
+        console.log('SYNC_UNREAD-HIGHLIGHT', room.getRoomUnreadNotificationCount(NotificationCountType.Highlight));
+      }
+    });
     this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);
       if (event.type === EventType.RoomEncryption) {
@@ -423,6 +448,15 @@ export class MatrixClient implements IChatClient {
       }
 
       this.processMessageEvent(event);
+
+      const room = this.matrix.getRoom(event.room_id);
+      if (!room) {
+        return;
+      } else {
+        console.log('ROOM', room);
+        console.log('UNREAD-TOTAL', room.getRoomUnreadNotificationCount(NotificationCountType.Total));
+        console.log('UNREAD-HIGHLIGHT', room.getRoomUnreadNotificationCount(NotificationCountType.Highlight));
+      }
     });
 
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
@@ -432,6 +466,13 @@ export class MatrixClient implements IChatClient {
         }
       }
     });
+
+    // this.matrix.on(RoomEvent.Receipt, async ({ event }) => {
+    //   const room = this.matrix.getRoom(event.room_id);
+    //   console.log('ROOM', room);
+    //   console.log('UNREAD', room.getUnreadNotificationCount(NotificationCountType.Total));
+    //   this.events.receiveUnreadCount(event.room_id, room.getUnreadNotificationCount(NotificationCountType.Total));
+    // });
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
@@ -524,6 +565,32 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  // private processUnreadNotifications(data) {
+  //   console.log('DATA', data);
+  //   const rooms = data?.rooms?.join || {};
+  //   Object.keys(rooms).forEach((roomId) => {
+  //     const room = rooms[roomId];
+  //     if (room.unread_notifications) {
+  //       const count = room.unread_notifications.notification_count || 0;
+  //       this.events.receiveUnreadCount(roomId, count);
+  //     }
+  //   });
+  // }
+
+  // private async waitForSync() {
+  //   await new Promise<void>((resolve) => {
+  //     this.matrix.on('sync' as any, (state, _prevState, data) => {
+  //       if (state === 'PREPARED') {
+  //         resolve();
+  //       }
+
+  //       if (state === 'PREPARED' || state === 'SYNCING') {
+  //         this.processUnreadNotifications(data);
+  //       }
+  //     });
+  //   });
+  // }
+
   private async waitForSync() {
     await new Promise<void>((resolve) => {
       this.matrix.on('sync' as any, (state, _prevState) => {
@@ -541,15 +608,15 @@ export class MatrixClient implements IChatClient {
   };
 
   private publishMessageEvent(event) {
-    const room = this.matrix.getRoom(event.room_id);
+    // const room = this.matrix.getRoom(event.room_id);
 
-    if (!room) {
-      return;
-    }
+    // if (!room) {
+    //   return;
+    // }
 
-    if (event.sender !== this.userId) {
-      this.events.receiveUnreadCount(event.room_id, room.getUnreadNotificationCount(NotificationCountType.Total));
-    }
+    // if (event.sender !== this.userId) {
+    //   this.events.receiveUnreadCount(event.room_id, room.getUnreadNotificationCount(NotificationCountType.Total));
+    // }
 
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
@@ -599,7 +666,9 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const messages = this.getAllMessagesFromRoom(room);
-    const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
+    console.log('GENERALCHANNEL_ROOM', room);
+    const unreadCount = room.getRoomUnreadNotificationCount(NotificationCountType.Total);
+    console.log('NEWCOMP', unreadCount);
 
     return {
       id: room.roomId,

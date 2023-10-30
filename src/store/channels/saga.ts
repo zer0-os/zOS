@@ -100,9 +100,9 @@ export function* unreadCountUpdated(action) {
     })
   );
 
-  if (!channel.hasLoadedMessages && unreadCount > 0) {
-    yield spawn(fetchMessages, { payload: { channelId } });
-  }
+  // if (!channel.hasLoadedMessages && unreadCount > 0) {
+  //   yield spawn(fetchMessages, { payload: { channelId } });
+  // }
 }
 
 export function* clearChannels() {

@@ -325,7 +325,13 @@ export class MatrixClient implements IChatClient {
     };
 
     const editResult = await this.matrix.sendMessage(roomId, content);
-    return await this.getMessageByRoomId(roomId, editResult.event_id);
+    const newMessage = await this.matrix.fetchRoomEvent(roomId, editResult.event_id);
+
+    return {
+      id: editResult.event_id,
+      message: newMessage.content.body,
+      updatedAt: newMessage.origin_server_ts,
+    };
   }
 
   async markRoomAsRead(roomId: string): Promise<void> {
@@ -621,10 +627,10 @@ export class MatrixClient implements IChatClient {
     this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
   }
 
-  private publishConversationListChange = (event: MatrixEvent) => {
+  private publishConversationListChange = async (event: MatrixEvent) => {
     if (event.getType() === EventType.Direct) {
-      const content = event.getContent();
-      this.events.onConversationListChanged(Object.values(content ?? {}).flat());
+      const rooms = await this.getFilteredRooms(this.isConversation);
+      this.events.onConversationListChanged(rooms.map((r) => r.roomId));
     }
   };
 

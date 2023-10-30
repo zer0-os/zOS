@@ -13,7 +13,7 @@ describe('fetch', () => {
       .provide([
         [
           call(fetchRewards, {}),
-          { success: true, response: { zero: '517' } },
+          { success: true, response: { meow: '517' } },
         ],
       ])
       .withReducer(rootReducer, initialState({}))

@@ -35,8 +35,8 @@ export function* fetch(_action) {
   try {
     const result: RewardsResp = yield call(fetchRewards, {});
     if (result.success) {
-      yield put(setMeow(result.response.zero.toString()));
-      yield put(setMeowPreviousDay(result.response.zeroPreviousDay.toString()));
+      yield put(setMeow(result.response.meow.toString()));
+      yield put(setMeowPreviousDay(result.response.meowPreviousDay.toString()));
 
       yield call(checkNewRewardsLoaded);
     } else {

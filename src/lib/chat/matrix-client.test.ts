@@ -700,6 +700,7 @@ describe('matrix client', () => {
       const originalMessageId = 'orig-message-id';
       const roomId = '!testRoomId';
       const editedMessage = 'edited message content';
+      const updatedAtTimestamp = Date.now();
 
       const sendMessage = jest.fn(() =>
         Promise.resolve({
@@ -720,6 +721,7 @@ describe('matrix client', () => {
           },
           event_id: 'edited-message-id',
           user_id: '@testUser:zero-synapse-development.zer0.io',
+          origin_server_ts: updatedAtTimestamp,
         })
       );
 
@@ -739,6 +741,7 @@ describe('matrix client', () => {
       expect(result).toMatchObject({
         id: 'edited-message-id',
         message: editedMessage,
+        updatedAt: updatedAtTimestamp,
       });
     });
   });

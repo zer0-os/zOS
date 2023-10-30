@@ -36,6 +36,22 @@ export class SendbirdClient implements IChatClient {
     }, 10 * 1000);
   }
 
+  async getSecureBackup() {
+    return null;
+  }
+
+  async generateSecureBackup() {
+    return null;
+  }
+
+  async saveSecureBackup(_backup) {
+    return null;
+  }
+
+  async restoreSecureBackup() {
+    return null;
+  }
+
   supportsOptimisticCreateConversation() {
     return true;
   }

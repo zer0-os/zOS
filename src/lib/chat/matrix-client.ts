@@ -128,6 +128,39 @@ export class MatrixClient implements IChatClient {
     return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
   }
 
+  async getSecureBackup() {
+    return await this.matrix.checkKeyBackup();
+  }
+
+  async generateSecureBackup() {
+    return await this.matrix.prepareKeyBackupVersion();
+  }
+
+  async saveSecureBackup(backup) {
+    // Clone the backup object because the save mutates it.
+    const cleanBackup = {
+      algorithm: backup.algorithm,
+      auth_data: { ...backup.auth_data },
+      recovery_key: backup.recovery_key,
+    };
+    return await this.matrix.createKeyBackupVersion(cleanBackup);
+  }
+
+  async restoreSecureBackup(recoveryKey: string) {
+    const backup = await this.matrix.checkKeyBackup();
+    if (!backup.backupInfo) {
+      throw new Error('Backup broken or not there');
+    }
+
+    try {
+      if (!backup.trustInfo.usable) {
+        await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   private async autoJoinRoom(roomId: string) {
     try {
       await this.matrix.joinRoom(roomId);

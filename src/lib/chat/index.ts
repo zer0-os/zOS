@@ -62,6 +62,10 @@ export interface IChatClient {
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
+  getSecureBackup: () => Promise<any>;
+  generateSecureBackup: () => Promise<any>;
+  saveSecureBackup: (any) => Promise<any>;
+  restoreSecureBackup: (recoveryKey: string) => Promise<any>;
 }
 
 export class Chat {
@@ -136,6 +140,22 @@ export class Chat {
 
   async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
     return this.client.fetchConversationsWithUsers(users);
+  }
+
+  async getSecureBackup(): Promise<any> {
+    return this.client.getSecureBackup();
+  }
+
+  async generateSecureBackup(): Promise<any> {
+    return this.client.generateSecureBackup();
+  }
+
+  async saveSecureBackup(backup: any): Promise<any> {
+    return this.client.saveSecureBackup(backup);
+  }
+
+  async restoreSecureBackup(recoveryKey: string): Promise<any> {
+    return this.client.restoreSecureBackup(recoveryKey);
   }
 
   initChat(events: RealtimeChatEvents): void {

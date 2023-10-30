@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import { EditProfileContainer } from '../edit-profile/container';
-import { IconLogOut3, IconUser1 } from '@zero-tech/zui/icons';
+import { IconLock1, IconLogOut3, IconUser1 } from '@zero-tech/zui/icons';
 import { Address, Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { SecureBackupContainer } from '../secure-backup/container';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
   userName: string;
@@ -19,6 +21,7 @@ export interface Properties {
 interface State {
   isDropdownOpen: boolean;
   editProfileDialogOpen: boolean;
+  backupDialogOpen: boolean;
 }
 
 export class SettingsMenu extends React.Component<Properties, State> {
@@ -27,6 +30,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
     this.state = {
       isDropdownOpen: false,
       editProfileDialogOpen: false,
+      backupDialogOpen: false,
     };
   }
 
@@ -67,10 +71,25 @@ export class SettingsMenu extends React.Component<Properties, State> {
     this.setState({ editProfileDialogOpen: false });
   };
 
+  openBackupDialog = (): void => {
+    this.setState({ backupDialogOpen: true });
+  };
+  closeBackupDialog = (): void => {
+    this.setState({ backupDialogOpen: false });
+  };
+
   renderEditProfileDialog = (): JSX.Element => {
     return (
       <Modal open={this.state.editProfileDialogOpen} onOpenChange={this.closeEditProfileDialog}>
         <EditProfileContainer onClose={this.closeEditProfileDialog} />
+      </Modal>
+    );
+  };
+
+  renderBackupDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.backupDialogOpen} onOpenChange={this.closeBackupDialog}>
+        <SecureBackupContainer onClose={this.closeBackupDialog} />
       </Modal>
     );
   };
@@ -83,36 +102,53 @@ export class SettingsMenu extends React.Component<Properties, State> {
     );
   }
 
+  get menuItems() {
+    const options = [
+      {
+        className: 'edit_profile',
+        id: 'edit_profile',
+        label: this.renderSettingsOption(<IconUser1 />, 'Edit Profile'),
+        onSelect: this.openEditProfileDialog,
+      },
+    ];
+
+    if (featureFlags.enableMatrix) {
+      options.push({
+        className: 'secure_backup',
+        id: 'secure_backup',
+        label: this.renderSettingsOption(<IconLock1 />, 'Secure Backup'),
+        onSelect: this.openBackupDialog,
+      });
+    }
+
+    return [
+      {
+        id: 'header',
+        label: this.renderSettingsHeader(),
+        onSelect: () => {},
+      },
+      ...options,
+      {
+        className: 'divider',
+        id: 'divider',
+        label: <div />,
+        onSelect: () => {},
+      },
+      {
+        className: 'logout',
+        id: 'logout',
+        label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
+        onSelect: () => this.handleLogout(),
+      },
+    ];
+  }
+
   render() {
     return (
       <>
         <DropdownMenu
           menuClassName={'settings-menu'}
-          items={[
-            {
-              id: 'header',
-              label: this.renderSettingsHeader(),
-              onSelect: () => {},
-            },
-            {
-              className: 'edit_profile',
-              id: 'edit_profile',
-              label: this.renderSettingsOption(<IconUser1 />, 'Edit Profile'),
-              onSelect: this.openEditProfileDialog,
-            },
-            {
-              className: 'divider',
-              id: 'divider',
-              label: <div />,
-              onSelect: () => {},
-            },
-            {
-              className: 'logout',
-              id: 'logout',
-              label: this.renderSettingsOption(<IconLogOut3 />, 'Log Out'),
-              onSelect: () => this.handleLogout(),
-            },
-          ]}
+          items={this.menuItems}
           side='right'
           alignMenu='start'
           onOpenChange={this.handleOpenChange}
@@ -126,6 +162,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
           }
         />
         {this.renderEditProfileDialog()}
+        {this.renderBackupDialog()}
       </>
     );
   }

@@ -124,12 +124,6 @@ export class MatrixClient implements IChatClient {
           failedToJoin.push(room.roomId);
         }
       }
-      // figure out where to register the event
-      if (room.roomId === '!gYnYrvCHcXMcoJkJUn:zero-synapse-development.zer0.io') {
-        room.on(RoomEvent.UnreadNotifications, (unreadNotifications) =>
-          console.log('EVENT-UNREAD', unreadNotifications)
-        );
-      }
     }
 
     return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
@@ -452,6 +446,13 @@ export class MatrixClient implements IChatClient {
       }
     });
 
+    this.matrix.on(RoomEvent.Timeline, async (decryptedEvent: MatrixEvent) => {
+      const event = decryptedEvent.getEffectiveEvent();
+      if (event.type === EventType.RoomMessage) {
+        this.processMessageEvent(event);
+      }
+    });
+
     this.matrix.on(ClientEvent.AccountData, this.publishConversationListChange);
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
@@ -523,7 +524,7 @@ export class MatrixClient implements IChatClient {
 
       await this.waitForSync();
 
-      this.matrix.once('sync' as any, (state, prevState, res) => {
+      this.matrix.once('sync' as any, (state) => {
         if (state === 'PREPARED' || state === 'SYNCING') {
           let rooms = this.matrix.getRooms();
           rooms.forEach((room) => {
@@ -615,9 +616,7 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const messages = this.getAllMessagesFromRoom(room);
-
     const unreadCount = room.getRoomUnreadNotificationCount(NotificationCountType.Total);
-    console.log('GENERAL', unreadCount);
 
     return {
       id: room.roomId,

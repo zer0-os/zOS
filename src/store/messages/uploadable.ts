@@ -1,8 +1,9 @@
 import { CallEffect, call } from 'redux-saga/effects';
 
 import { FileType, getFileType } from './utils';
-import { sendFileMessage, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
+import { sendFileMessage, uploadAttachment } from './api';
 import { Message } from '.';
+import { chat } from '../../lib/chat';
 
 export const createUploadableFile = (file): Uploadable => {
   if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
@@ -17,7 +18,7 @@ export const createUploadableFile = (file): Uploadable => {
 export interface Uploadable {
   file: any;
   optimisticMessage: Message;
-  upload: (channelId, rootMessageId) => Generator<CallEffect<Message>>;
+  upload: (channelId, rootMessageId) => Generator<CallEffect<Message | unknown>>;
 }
 
 export class UploadableMedia implements Uploadable {
@@ -25,8 +26,13 @@ export class UploadableMedia implements Uploadable {
 
   constructor(public file) {}
   *upload(channelId, rootMessageId) {
+    const chatClient = yield call(chat.get);
+
     return yield call(
-      uploadFileMessageApi,
+      [
+        chatClient,
+        chatClient.uploadFileMessage,
+      ],
       channelId,
       this.file.nativeFile,
       rootMessageId,

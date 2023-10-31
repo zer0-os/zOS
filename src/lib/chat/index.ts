@@ -53,6 +53,12 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
+  uploadFileMessage: (
+    channelId: string,
+    media: File,
+    rootMessageId?: string,
+    optimisticId?: string
+  ) => Promise<MessagesResponse>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
   editMessage(
@@ -121,6 +127,10 @@ export class Chat {
 
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
     return this.client.searchMentionableUsersForChannel(channelId, search, channelMembers);
+  }
+
+  uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+    return this.client.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
   }
 
   async sendMessagesByChannelId(

@@ -5,7 +5,7 @@ import { EditMessageOptions, Message, MessagesResponse } from '../../store/messa
 import { sendMessagesByChannelId } from '../../store/messages/api';
 import { FileUploadResult } from '../../store/messages/saga';
 import { config } from '../../config';
-import { del, get, put } from '../../lib/api/rest';
+import { del, get, post, put } from '../../lib/api/rest';
 import { toLocalChannel } from '../../store/channels-list/utils';
 import { ParentMessage, User } from './types';
 
@@ -96,6 +96,15 @@ export class SendbirdClient implements IChatClient {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50 })
       .catch((_error) => null)
       .then((response) => response?.body || []);
+  }
+
+  async uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+    const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
+      .field('rootMessageId', rootMessageId)
+      .field('optimisticId', optimisticId)
+      .attach('file', media);
+
+    return response.body;
   }
 
   async searchMentionableUsersForChannel(channelId: string, search: string) {

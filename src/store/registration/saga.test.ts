@@ -35,6 +35,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
+import { createConversation } from '../channels-list/saga';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -284,10 +285,14 @@ describe('updateProfile', () => {
       .provide([
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
-          { success: true },
+          { success: true, response: { inviterId: 'inviter-id' } },
         ],
         [
           call(completeUserLogin),
+          null,
+        ],
+        [
+          call(createConversation, ['abc', 'inviter-id']),
           null,
         ],
         [
@@ -319,10 +324,14 @@ describe('updateProfile', () => {
         ],
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: 'image-url' }),
-          { success: true },
+          { success: true, response: { inviterId: 'inviter-id' } },
         ],
         [
           call(completeUserLogin),
+          null,
+        ],
+        [
+          call(createConversation, ['abc', 'inviter-id']),
           null,
         ],
         [
@@ -439,6 +448,72 @@ describe('updateProfile', () => {
       .run();
 
     expect(registration.isFirstTimeLogin).toEqual(true);
+  });
+
+  it('handles conversation creation if inviterId is returned', async () => {
+    const name = 'john';
+
+    const {
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .provide([
+        [
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
+          { success: true, response: { inviterId: 'inviter-id' } },
+        ],
+        [
+          call(completeUserLogin),
+          null,
+        ],
+        [
+          call(createConversation, ['abc', 'inviter-id']),
+          null,
+        ],
+        [
+          spawn(clearRegistrationStateOnLogout),
+          null,
+        ],
+      ])
+      .withReducer(
+        rootReducer,
+        initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
+      )
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.Done);
+  });
+
+  it('logs error if conversation creation fails', async () => {
+    const name = 'john';
+
+    const {
+      storeState: { registration },
+    } = await expectSaga(updateProfile, { payload: { name } })
+      .provide([
+        [
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
+          { success: true, response: { inviterId: 'inviter-id' } },
+        ],
+        [
+          call(completeUserLogin),
+          null,
+        ],
+        [
+          call(createConversation, ['abc', 'inviter-id']),
+          throwError(new Error('Stub conversation creation error')),
+        ],
+        [
+          spawn(clearRegistrationStateOnLogout),
+          null,
+        ],
+      ])
+      .withReducer(
+        rootReducer,
+        initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
+      )
+      .run();
+
+    expect(registration.stage).toEqual(RegistrationStage.Done);
   });
 });
 

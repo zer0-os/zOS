@@ -24,7 +24,10 @@ describe(getBackup, () => {
   it('fetches the existing backup', async () => {
     const { storeState } = await subject(getBackup)
       .provide([
-        [call([chatClient, chatClient.getSecureBackup]), { trustInfo: { usable: true, trusted_locally: true } }],
+        [
+          call([chatClient, chatClient.getSecureBackup]),
+          { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true } },
+        ],
       ])
       .withReducer(rootReducer)
       .run();
@@ -39,6 +42,19 @@ describe(getBackup, () => {
   it('clears the backup if none found', async () => {
     const { storeState } = await subject(getBackup)
       .provide([[call([chatClient, chatClient.getSecureBackup]), undefined]])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix).toEqual({
+      backup: null,
+      isLoaded: true,
+      trustInfo: null,
+    });
+  });
+
+  it('clears the backup if backupInfo not found', async () => {
+    const { storeState } = await subject(getBackup)
+      .provide([[call([chatClient, chatClient.getSecureBackup]), { backupInfo: undefined }]])
       .withReducer(rootReducer)
       .run();
 

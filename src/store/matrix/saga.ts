@@ -15,7 +15,7 @@ export function* getBackup() {
   yield put(setLoaded(false));
   const chatClient = yield call(chat.get);
   const existingBackup = yield call([chatClient, chatClient.getSecureBackup]);
-  if (!existingBackup) {
+  if (!existingBackup || !existingBackup.backupInfo) {
     yield put(setTrustInfo(null));
   } else {
     yield put(

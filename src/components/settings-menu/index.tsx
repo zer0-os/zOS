@@ -10,6 +10,8 @@ import './styles.scss';
 import { SecureBackupContainer } from '../secure-backup/container';
 import { featureFlags } from '../../lib/feature-flags';
 
+const cn = bemClassName('settings-menu');
+
 export interface Properties {
   userName: string;
   userHandle: string;
@@ -88,7 +90,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
 
   renderBackupDialog = (): JSX.Element => {
     return (
-      <Modal open={this.state.backupDialogOpen} onOpenChange={this.closeBackupDialog}>
+      <Modal open={this.state.backupDialogOpen} onOpenChange={this.closeBackupDialog} {...cn('secure-backup-modal')}>
         <SecureBackupContainer onClose={this.closeBackupDialog} />
       </Modal>
     );

@@ -58,4 +58,10 @@
   .zui-dropdown-item.logout {
     color: theme.$color-failure-11;
   }
+
+  &__secure-backup-modal {
+    &:focus-visible {
+      outline: none;
+    }
+  }
 }

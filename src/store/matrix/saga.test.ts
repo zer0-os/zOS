@@ -107,6 +107,14 @@ describe(restoreBackup, () => {
       .call([chatClient, chatClient.restoreSecureBackup], 'recovery-key')
       .run();
   });
+
+  it('resets the state when restoring is successsful', async () => {
+    await subject(restoreBackup, { payload: 'recovery-key' })
+      .provide([[call([chatClient, chatClient.restoreSecureBackup], 'recovery-key'), undefined]])
+      .withReducer(rootReducer)
+      .call(getBackup)
+      .run();
+  });
 });
 
 describe(clearBackupState, () => {

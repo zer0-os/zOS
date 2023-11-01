@@ -47,7 +47,8 @@ export function* saveBackup() {
 export function* restoreBackup(action) {
   const chatClient = yield call(chat.get);
   const recoveryKey = action.payload;
-  return yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+  yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+  yield call(getBackup);
 }
 
 export function* clearBackupState() {

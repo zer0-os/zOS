@@ -39,4 +39,14 @@
     justify-content: flex-end;
     gap: 16px;
   }
+
+  &__recovery-key {
+    padding: 16px;
+    border: 1px solid var(--color-greyscale-6);
+    background: var(--color-greyscale-2);
+    border-radius: 8px;
+    color: var(--color-greyscale-11);
+    font-weight: 400;
+    font-size: 16px;
+  }
 }

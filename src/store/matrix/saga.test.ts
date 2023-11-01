@@ -1,33 +1,115 @@
-import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { throwError } from 'redux-saga-test-plan/providers';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { start } from './saga';
-import { apiCall } from './api';
-import { MatrixState, initialState as initialMatrixState } from '.';
+import { expectSaga } from '../../test/saga';
+import { chat } from '../../lib/chat';
+import { clearBackupState, generateBackup, getBackup, restoreBackup, saveBackup } from './saga';
 
 import { rootReducer } from '../reducer';
 
-describe('start', () => {
-  it('makes api call', async () => {
-    await expectSaga(start, { payload: {} })
+const chatClient = {
+  getSecureBackup: () => null,
+  generateSecureBackup: () => null,
+  restoreSecureBackup: (_key) => null,
+  saveSecureBackup: (_backup) => null,
+};
+
+function subject(...args: Parameters<typeof expectSaga>) {
+  return expectSaga(...args).provide([
+    [matchers.call.fn(chat.get), chatClient],
+  ]);
+}
+
+describe(getBackup, () => {
+  it('fetches the existing backup', async () => {
+    const { storeState } = await subject(getBackup)
       .provide([
-        [
-          call(apiCall, {}),
-          { success: true, response: {} },
-        ],
+        [call([chatClient, chatClient.getSecureBackup]), { trustInfo: { usable: true, trusted_locally: true } }],
       ])
-      .withReducer(rootReducer, initialState({}))
-      .call(apiCall, {})
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix).toEqual({
+      backup: null,
+      isLoaded: true,
+      trustInfo: { usable: true, trustedLocally: true },
+    });
+  });
+
+  it('clears the backup if none found', async () => {
+    const { storeState } = await subject(getBackup)
+      .provide([[call([chatClient, chatClient.getSecureBackup]), undefined]])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix).toEqual({
+      backup: null,
+      isLoaded: true,
+      trustInfo: null,
+    });
+  });
+});
+
+describe(generateBackup, () => {
+  it('generates a new backup', async () => {
+    const { storeState } = await subject(generateBackup)
+      .provide([[call([chatClient, chatClient.generateSecureBackup]), { data: 'here' }]])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix.backup).toEqual({ data: 'here' });
+  });
+});
+
+describe(saveBackup, () => {
+  it('clears the generated backup', async () => {
+    const initialState = { matrix: { backup: { generated: 'backup' } } };
+
+    const { storeState } = await subject(saveBackup)
+      .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(storeState.matrix.backup).toEqual(null);
+  });
+
+  it('fetches the saved backup', async () => {
+    const initialState = { matrix: { backup: { generated: 'backup' } } };
+
+    await subject(saveBackup)
+      .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
+      .withReducer(rootReducer, initialState as any)
+      .call(getBackup)
       .run();
   });
 });
 
-function initialState(attrs: Partial<MatrixState> = {}) {
-  return {
-    matrix: {
-      ...initialMatrixState,
-      ...attrs,
-    },
-  } as any;
-}
+describe(restoreBackup, () => {
+  it('tries to restore a backup', async () => {
+    await subject(restoreBackup, { payload: 'recovery-key' })
+      .withReducer(rootReducer)
+      .call([chatClient, chatClient.restoreSecureBackup], 'recovery-key')
+      .run();
+  });
+});
+
+describe(clearBackupState, () => {
+  it('clears the state', async () => {
+    const initialState = {
+      matrix: {
+        isLoaded: true,
+        backup: { data: 'here' },
+        trustInfo: { trustData: 'here' },
+      },
+    };
+    const { storeState } = await subject(clearBackupState)
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(storeState.matrix).toEqual({
+      backup: null,
+      isLoaded: false,
+      trustInfo: null,
+    });
+  });
+});

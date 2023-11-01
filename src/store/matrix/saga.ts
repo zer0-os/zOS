@@ -1,4 +1,4 @@
-import { put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { SagaActionTypes, setBackup, setLoaded, setTrustInfo } from '.';
 import { chat } from '../../lib/chat';
@@ -12,7 +12,9 @@ export function* saga() {
 }
 
 export function* getBackup() {
-  const existingBackup = yield chat.get().getSecureBackup();
+  yield put(setLoaded(false));
+  const chatClient = yield call(chat.get);
+  const existingBackup = yield call([chatClient, chatClient.getSecureBackup]);
   if (!existingBackup) {
     yield put(setTrustInfo(null));
   } else {
@@ -27,20 +29,25 @@ export function* getBackup() {
 }
 
 export function* generateBackup() {
-  const newBackup = yield chat.get().generateSecureBackup();
+  const chatClient = yield call(chat.get);
+  const newBackup = yield call([chatClient, chatClient.generateSecureBackup]);
   yield put(setBackup(newBackup));
 }
 
 export function* saveBackup() {
   const backup = yield select((state) => state.matrix.backup);
-  yield chat.get().saveSecureBackup(backup);
-  yield put(setBackup(null));
-  yield getBackup();
+  const chatClient = yield call(chat.get);
+  const result = yield call([chatClient, chatClient.saveSecureBackup], backup);
+  if (result.version) {
+    yield put(setBackup(null));
+    yield call(getBackup);
+  }
 }
 
 export function* restoreBackup(action) {
+  const chatClient = yield call(chat.get);
   const recoveryKey = action.payload;
-  return yield chat.get().restoreSecureBackup(recoveryKey);
+  return yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
 }
 
 export function* clearBackupState() {

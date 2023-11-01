@@ -2,7 +2,8 @@ import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { schema, removeAll, receive, SagaActionTypes } from '.';
 import { Events, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
-import { userByMatrixId } from './selectors';
+import { userByMatrixIdSelector } from './selectors';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
@@ -21,7 +22,7 @@ export function* receiveSearchResults(searchResults) {
 }
 
 export function* userPresenceChanged(matrixId: string, isOnline: boolean, lastSeenAt: string) {
-  const user = yield call(userByMatrixId, matrixId);
+  const user = yield select(userByMatrixIdSelector, matrixId);
 
   if (!user) {
     return;
@@ -43,4 +44,12 @@ function* userPresenceChangedAction(action) {
 
 export function* receiveSearchResultsAction(action) {
   return yield receiveSearchResults(action.payload);
+}
+
+export function* getUserByMatrixId(matrixId: string) {
+  let user = yield select(userByMatrixIdSelector, matrixId);
+  if (!user) {
+    user = (yield call(getZEROUsersAPI, [matrixId]) ?? [])[0];
+  }
+  return user;
 }

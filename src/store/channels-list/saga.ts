@@ -24,7 +24,7 @@ import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
-import { userByMatrixId } from '../users/selectors';
+import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
@@ -438,7 +438,7 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
   }
 
   if (user.userId === user.matrixId) {
-    user = yield call(userByMatrixId, user.matrixId) || user;
+    user = yield call(getUserByMatrixId, user.matrixId) || user;
   }
 
   if (!channel?.otherMembers.includes(user.userId)) {
@@ -459,7 +459,7 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
     return;
   }
 
-  const existingUser = yield call(userByMatrixId, user.matrixId);
+  const existingUser = yield call(getUserByMatrixId, user.matrixId);
   if (!existingUser) {
     return;
   }

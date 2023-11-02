@@ -1,4 +1,5 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { MatrixKeyBackupInfo } from '../../lib/chat';
 
 export enum SagaActionTypes {
   GetBackup = 'chat/get-backup',
@@ -11,7 +12,7 @@ export enum SagaActionTypes {
 export type MatrixState = {
   isLoaded: boolean;
   trustInfo: { trustedLocally: boolean; usable: boolean } | null;
-  backup: any | null;
+  backup: MatrixKeyBackupInfo | null;
   successMessage: string;
   errorMessage: string;
 };

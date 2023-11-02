@@ -1,6 +1,6 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { SagaActionTypes, setBackup, setLoaded, setTrustInfo } from '.';
+import { SagaActionTypes, setBackup, setErrorMessage, setLoaded, setSuccessMessage, setTrustInfo } from '.';
 import { chat } from '../../lib/chat';
 
 export function* saga() {
@@ -35,24 +35,38 @@ export function* generateBackup() {
 }
 
 export function* saveBackup() {
+  yield put(setSuccessMessage(''));
+  yield put(setErrorMessage(''));
   const backup = yield select((state) => state.matrix.backup);
   const chatClient = yield call(chat.get);
-  const result = yield call([chatClient, chatClient.saveSecureBackup], backup);
-  if (result.version) {
+  try {
+    yield call([chatClient, chatClient.saveSecureBackup], backup);
     yield put(setBackup(null));
     yield call(getBackup);
+    yield put(setSuccessMessage('Backup saved successfully'));
+  } catch {
+    yield put(setErrorMessage('Backup save failed'));
   }
 }
 
 export function* restoreBackup(action) {
+  yield put(setSuccessMessage(''));
+  yield put(setErrorMessage(''));
   const chatClient = yield call(chat.get);
   const recoveryKey = action.payload;
-  yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
-  yield call(getBackup);
+  try {
+    yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+    yield call(getBackup);
+    yield put(setSuccessMessage('Backup restored successfully'));
+  } catch (e) {
+    yield put(setErrorMessage('Failed to restore backup: Check your recovery key and try again'));
+  }
 }
 
 export function* clearBackupState() {
   yield put(setLoaded(false));
   yield put(setTrustInfo(null));
   yield put(setBackup(null));
+  yield put(setSuccessMessage(''));
+  yield put(setErrorMessage(''));
 }

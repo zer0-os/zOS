@@ -6,6 +6,7 @@ import { chat } from '../../lib/chat';
 import { clearBackupState, generateBackup, getBackup, restoreBackup, saveBackup } from './saga';
 
 import { rootReducer } from '../reducer';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 const chatClient = {
   getSecureBackup: () => null,
@@ -36,6 +37,8 @@ describe(getBackup, () => {
       backup: null,
       isLoaded: true,
       trustInfo: { usable: true, trustedLocally: true },
+      successMessage: '',
+      errorMessage: '',
     });
   });
 
@@ -49,6 +52,8 @@ describe(getBackup, () => {
       backup: null,
       isLoaded: true,
       trustInfo: null,
+      successMessage: '',
+      errorMessage: '',
     });
   });
 
@@ -62,6 +67,8 @@ describe(getBackup, () => {
       backup: null,
       isLoaded: true,
       trustInfo: null,
+      successMessage: '',
+      errorMessage: '',
     });
   });
 });
@@ -78,25 +85,47 @@ describe(generateBackup, () => {
 });
 
 describe(saveBackup, () => {
-  it('clears the generated backup', async () => {
-    const initialState = { matrix: { backup: { generated: 'backup' } } };
+  describe('success', () => {
+    function successSubject() {
+      const initialState = { matrix: { backup: { generated: 'backup' } } };
 
-    const { storeState } = await subject(saveBackup)
-      .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
-      .withReducer(rootReducer, initialState as any)
-      .run();
+      return subject(saveBackup)
+        .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
+        .withReducer(rootReducer, initialState as any);
+    }
+    it('clears the generated backup', async () => {
+      const { storeState } = await successSubject().run();
 
-    expect(storeState.matrix.backup).toEqual(null);
+      expect(storeState.matrix.backup).toEqual(null);
+    });
+
+    it('fetches the saved backup', async () => {
+      await successSubject().call(getBackup).run();
+    });
+
+    it('sets a success message', async () => {
+      const { storeState } = await successSubject().run();
+
+      expect(storeState.matrix.successMessage).toEqual('Backup saved successfully');
+    });
   });
 
-  it('fetches the saved backup', async () => {
-    const initialState = { matrix: { backup: { generated: 'backup' } } };
+  describe('failure', () => {
+    it('sets a failure message', async () => {
+      const initialState = { matrix: { backup: {} } };
 
-    await subject(saveBackup)
-      .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
-      .withReducer(rootReducer, initialState as any)
-      .call(getBackup)
-      .run();
+      const { storeState } = await subject(saveBackup)
+        .provide([
+          [
+            matchers.call.like({ context: chatClient, fn: chatClient.saveSecureBackup }),
+            throwError(new Error('simulated error')),
+          ],
+        ])
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.errorMessage).toEqual('Backup save failed');
+    });
   });
 });
 
@@ -115,6 +144,30 @@ describe(restoreBackup, () => {
       .call(getBackup)
       .run();
   });
+
+  it('sets success message when restoring is successful', async () => {
+    const { storeState } = await subject(restoreBackup, { payload: 'recovery-key' })
+      .provide([[call([chatClient, chatClient.restoreSecureBackup], 'recovery-key'), undefined]])
+      .withReducer(rootReducer)
+      .call(getBackup)
+      .run();
+
+    expect(storeState.matrix.successMessage).toEqual('Backup restored successfully');
+  });
+
+  it('sets failure state if restoring fails', async () => {
+    const { storeState } = await subject(restoreBackup, { payload: 'recovery-key' })
+      .provide([
+        [
+          matchers.call.like({ context: chatClient, fn: chatClient.restoreSecureBackup }),
+          throwError(new Error('simulated error')),
+        ],
+      ])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix.errorMessage).toEqual('Failed to restore backup: Check your recovery key and try again');
+  });
 });
 
 describe(clearBackupState, () => {
@@ -124,6 +177,8 @@ describe(clearBackupState, () => {
         isLoaded: true,
         backup: { data: 'here' },
         trustInfo: { trustData: 'here' },
+        successMessage: 'Stuff happened',
+        errorMessage: 'An error',
       },
     };
     const { storeState } = await subject(clearBackupState)
@@ -134,6 +189,8 @@ describe(clearBackupState, () => {
       backup: null,
       isLoaded: false,
       trustInfo: null,
+      successMessage: '',
+      errorMessage: '',
     });
   });
 });

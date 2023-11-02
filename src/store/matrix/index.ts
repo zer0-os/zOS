@@ -12,12 +12,16 @@ export type MatrixState = {
   isLoaded: boolean;
   trustInfo: { trustedLocally: boolean; usable: boolean } | null;
   backup: any | null;
+  successMessage: string;
+  errorMessage: string;
 };
 
 export const initialState: MatrixState = {
   isLoaded: false,
   trustInfo: null,
   backup: null,
+  successMessage: '',
+  errorMessage: '',
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -39,8 +43,14 @@ const slice = createSlice({
     setTrustInfo: (state, action: PayloadAction<MatrixState['trustInfo']>) => {
       state.trustInfo = action.payload;
     },
+    setSuccessMessage: (state, action: PayloadAction<MatrixState['successMessage']>) => {
+      state.successMessage = action.payload;
+    },
+    setErrorMessage: (state, action: PayloadAction<MatrixState['errorMessage']>) => {
+      state.errorMessage = action.payload;
+    },
   },
 });
 
-export const { setLoaded, setBackup, setTrustInfo } = slice.actions;
+export const { setLoaded, setBackup, setTrustInfo, setSuccessMessage, setErrorMessage } = slice.actions;
 export const { reducer } = slice;

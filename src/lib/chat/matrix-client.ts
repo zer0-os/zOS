@@ -513,19 +513,6 @@ export class MatrixClient implements IChatClient {
 
       await this.waitForSync();
 
-      this.matrix.once('sync' as any, (state) => {
-        if (state === 'PREPARED' || state === 'SYNCING') {
-          let rooms = this.matrix.getRooms();
-          rooms.forEach((room) => {
-            room.on(RoomEvent.UnreadNotifications, (unreadNotifications) => {
-              console.log('Unread notifications for room:', room.roomId, 'UNREAD:', unreadNotifications);
-
-              this.events.receiveUnreadCount(room.roomId, unreadNotifications?.total || 0);
-            });
-          });
-        }
-      });
-
       return opts.userId;
     }
   }
@@ -605,7 +592,7 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const messages = this.getAllMessagesFromRoom(room);
-    const unreadCount = room.getRoomUnreadNotificationCount(NotificationCountType.Total);
+    const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
     return {
       id: room.roomId,

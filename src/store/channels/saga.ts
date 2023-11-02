@@ -97,6 +97,10 @@ export function* unreadCountUpdated(action) {
       unreadCount: unreadCount,
     })
   );
+
+  if (!channel.hasLoadedMessages && unreadCount > 0) {
+    yield spawn(fetchMessages, { payload: { channelId } });
+  }
 }
 
 export function* clearChannels() {

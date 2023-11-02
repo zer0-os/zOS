@@ -73,13 +73,11 @@ export async function completeAccount({
   name,
   inviteCode,
   profileImage,
-  useMatrixClient = true,
 }: {
   userId: string;
   name: string;
   inviteCode: string;
   profileImage?: string;
-  useMatrixClient?: boolean;
 }) {
   try {
     const response = await post('/api/v2/accounts/finalize').send({
@@ -87,7 +85,6 @@ export async function completeAccount({
       inviteCode,
       name,
       profileImage,
-      useMatrixClient,
     });
     return {
       success: true,

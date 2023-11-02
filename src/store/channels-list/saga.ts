@@ -143,6 +143,8 @@ export function* fetchConversations() {
 }
 
 export function userSelector(state, userIds) {
+  console.log('USERSELCET', userIds);
+  console.log('STATE', state);
   return userIds.map((id) => (state.normalized.users || {})[id]);
 }
 
@@ -152,11 +154,15 @@ export function* createConversation(userIds: string[], name: string = null, imag
   let optimisticConversation = { id: '', optimisticId: '' };
   if (yield call(chatClient.supportsOptimisticCreateConversation)) {
     optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
+    console.log('OPTIMISTIC', optimisticConversation);
     yield put(setactiveConversationId(optimisticConversation.id));
   }
+  console.log('USERIDS', userIds);
+  console.log('NAME', name);
 
   try {
     const users = yield select(userSelector, userIds);
+    console.log('USERS', users);
     const conversation = yield call(
       [chatClient, chatClient.createConversation],
       users,
@@ -164,7 +170,9 @@ export function* createConversation(userIds: string[], name: string = null, imag
       image,
       optimisticConversation.id
     );
+    console.log('CONVERSATION-BEFORE-CALL', conversation);
     yield call(receiveCreatedConversation, conversation, optimisticConversation);
+    console.log('CONVERSATION-AFTER-CALL', conversation);
     return conversation;
   } catch {
     yield call(handleCreateConversationError, optimisticConversation);

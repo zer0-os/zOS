@@ -30,7 +30,10 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
-import { createConversation } from '../channels-list/saga';
+import { createConversation } from '../create-conversation/saga';
+import { setUser } from '../authentication';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
+import { receive } from '../normalized';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -144,6 +147,75 @@ export function validateAccountInfo({ email, password }) {
   return validationErrors;
 }
 
+// export function* updateProfile(action) {
+//   const { name, image } = action.payload;
+//   yield put(setLoading(true));
+//   try {
+//     if (!name.trim()) {
+//       yield put(setErrors([ProfileDetailsErrors.NAME_REQUIRED]));
+//       return false;
+//     }
+
+//     let profileImage = '';
+//     if (image) {
+//       try {
+//         const uploadResult = yield call(uploadImage, image);
+//         profileImage = uploadResult.url;
+//       } catch (error) {
+//         yield put(setErrors([ProfileDetailsErrors.FILE_UPLOAD_ERROR]));
+//         return false;
+//       }
+//     }
+
+//     const { userId, inviteCode } = yield select((state) => state.registration);
+//     const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage });
+//     if (response.success) {
+//       yield put(setFirstTimeLogin(true));
+//       yield call(completeUserLogin);
+//       yield put(setStage(RegistrationStage.Done));
+//       yield take(setUser.type);
+
+//       const matrixId = response.response.inviter.matrixId; // Assuming the matrixId is part of the response
+//       const inviterId = response.response.inviter.id;
+//       const userData = yield call(getZEROUsersAPI, [matrixId]);
+//       console.log('USERDATA-----', userData);
+//       const normalizeUserData = (userData) => {
+//         return {
+//           userId: userData.id,
+//           firstName: userData.profileSummary.firstName,
+//           profileImage: userData.profileImage,
+//           matrixId: userData.matrixId,
+//         };
+//       };
+
+//       if (userData && userData.length > 0) {
+//         yield put(receive({ users: { [inviterId]: normalizeUserData(userData[0]) } }));
+//       }
+
+//       // console.log('RESPONSE-RESPONSE', response.response);
+//       if (inviterId) {
+//         // console.log('INVITER ID', inviterId);
+//         // try {
+//         yield call(createConversation, [inviterId], '', null);
+//         // } catch (error) {
+//         //   // do we want to throw error here?
+//         //   console.error('Error creating conversation:', error);
+//         // }
+//       }
+
+//       yield spawn(clearRegistrationStateOnLogout);
+//       return true;
+//     } else {
+//       yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
+//     }
+//   } catch (e) {
+//     yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
+//   } finally {
+//     yield put(setLoading(false));
+//   }
+//   return false;
+// }
+
 export function* updateProfile(action) {
   const { name, image } = action.payload;
   yield put(setLoading(true));
@@ -171,15 +243,26 @@ export function* updateProfile(action) {
       yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
 
-      const inviterId = response.response.inviterId;
-      if (inviterId) {
-        try {
-          yield call(createConversation, [userId, inviterId]);
-        } catch (error) {
-          // do we want to throw error here?
-          console.error('Error creating conversation:', error);
+      const matrixId = response.response.inviter.matrixId; // Assuming the matrixId is part of the response
+      const inviterId = response.response.inviter.id;
+      const userData = yield call(getZEROUsersAPI, [matrixId]);
+      console.log('USERDATA-----', userData);
+
+      if (userData && userData.length > 0) {
+        // This will merge the user into the normalized users state
+        yield put(receive({ users: { [inviterId]: userData[0] } }));
+        console.log('RESPONSE-RESPONSE', response.response);
+        if (inviterId) {
+          console.log('INVITER ID', inviterId);
+          try {
+            yield call(createConversation, { payload: { userIds: [inviterId], name: '', image: null } });
+          } catch (error) {
+            // do we want to throw error here?
+            console.error('Error creating conversation:', error);
+          }
         }
       }
+      yield take(setUser.type);
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;

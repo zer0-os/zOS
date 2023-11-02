@@ -216,7 +216,7 @@ export class MatrixClient implements IChatClient {
   async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
-
+    console.log('MAKING IT HERE?', users);
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
       { type: EventType.RoomEncryption, state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
@@ -236,8 +236,10 @@ export class MatrixClient implements IChatClient {
     if (name) {
       options.name = name;
     }
-
+    console.log('CLIENTUSERS - ', users);
+    console.log('OPTIONS', options);
     const result = await this.matrix.createRoom(options);
+    console.log('CLIENT - RESULT - ', result);
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 

@@ -143,7 +143,12 @@ export class MatrixClient implements IChatClient {
       auth_data: { ...backup.auth_data },
       recovery_key: backup.recovery_key,
     };
-    return await this.matrix.createKeyBackupVersion(cleanBackup);
+
+    try {
+      await this.matrix.createKeyBackupVersion(cleanBackup);
+    } catch (e) {
+      throw new Error('Error creating key backup');
+    }
   }
 
   async restoreSecureBackup(recoveryKey: string) {
@@ -157,7 +162,7 @@ export class MatrixClient implements IChatClient {
         await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
       }
     } catch (e) {
-      console.error(e);
+      throw new Error('Error while restoring backup');
     }
   }
 

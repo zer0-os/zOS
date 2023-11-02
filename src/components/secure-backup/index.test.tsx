@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { SecureBackup, Properties } from '.';
-import { Button, Input } from '@zero-tech/zui/components';
+import { Alert, Button, Input } from '@zero-tech/zui/components';
 import { bem } from '../../lib/bem';
 
 const c = bem('.secure-backup');
@@ -12,6 +12,8 @@ describe('SecureBackup', () => {
       recoveryKey: 'stub-key',
       backupExists: false,
       isBackupRecovered: false,
+      successMessage: '',
+      errorMessage: '',
       onGenerate: () => null,
       onRestore: () => null,
       onSave: () => null,
@@ -93,6 +95,20 @@ describe('SecureBackup', () => {
     const wrapper = subject({ onRestore, backupExists: true, isBackupRecovered: true, recoveryKey: '' });
 
     expect(wrapper).toHaveElement(c('backed-up'));
+  });
+
+  it('renders success message', function () {
+    const wrapper = subject({ successMessage: 'It worked!' });
+
+    expect(wrapper.find(Alert).prop('variant')).toEqual('success');
+    expect(wrapper.find(Alert).childAt(0).text()).toEqual('It worked!');
+  });
+
+  it('renders error message', function () {
+    const wrapper = subject({ errorMessage: 'It failed!' });
+
+    expect(wrapper.find(Alert).prop('variant')).toEqual('error');
+    expect(wrapper.find(Alert).childAt(0).text()).toEqual('It failed!');
   });
 });
 

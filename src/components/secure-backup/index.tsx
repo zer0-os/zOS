@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, IconButton, Input } from '@zero-tech/zui/components';
+import { Alert, Button, IconButton, Input } from '@zero-tech/zui/components';
 
 import { clipboard } from '../../lib/clipboard';
 
@@ -18,6 +18,8 @@ export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
   isBackupRecovered: boolean;
+  successMessage: string;
+  errorMessage: string;
 
   clipboard?: Clipboard;
 
@@ -116,7 +118,15 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   }
 
   renderButtons = (buttons) => {
-    return <div {...cn('footer')}>{buttons}</div>;
+    return (
+      <>
+        <div {...cn('messages')}>
+          {this.props.successMessage && <Alert variant='success'>{this.props.successMessage}</Alert>}
+          {this.props.errorMessage && <Alert variant='error'>{this.props.errorMessage}</Alert>}
+        </div>
+        <div {...cn('footer')}>{buttons}</div>
+      </>
+    );
   };
 
   render() {

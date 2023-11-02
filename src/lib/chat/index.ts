@@ -26,6 +26,15 @@ export interface RealtimeChatEvents {
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
 }
 
+export interface MatrixKeyBackupInfo {
+  algorithm: string;
+  auth_data: any;
+  count?: number;
+  etag?: string;
+  version?: string; // number contained within
+  recovery_key?: string;
+}
+
 export interface IChatClient {
   init: (events: RealtimeChatEvents) => void;
   connect: (userId: string, accessToken: string) => Promise<string | null>;
@@ -64,8 +73,8 @@ export interface IChatClient {
   ): Promise<any>;
   getSecureBackup: () => Promise<any>;
   generateSecureBackup: () => Promise<any>;
-  saveSecureBackup: (any) => Promise<any>;
-  restoreSecureBackup: (recoveryKey: string) => Promise<any>;
+  saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
+  restoreSecureBackup: (recoveryKey: string) => Promise<void>;
 }
 
 export class Chat {
@@ -150,8 +159,8 @@ export class Chat {
     return this.client.generateSecureBackup();
   }
 
-  async saveSecureBackup(backup: any): Promise<any> {
-    return this.client.saveSecureBackup(backup);
+  async saveSecureBackup(backup: MatrixKeyBackupInfo): Promise<void> {
+    this.client.saveSecureBackup(backup);
   }
 
   async restoreSecureBackup(recoveryKey: string): Promise<any> {

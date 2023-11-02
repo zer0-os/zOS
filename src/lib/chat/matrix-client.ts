@@ -334,12 +334,8 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
-    try {
-      await this.matrix.sendReadReceipt(latestEvent);
-      await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
-    } catch (error) {
-      console.error(`Failed to mark room with ID: ${roomId} as read. Error:`, error);
-    }
+    await this.matrix.sendReadReceipt(latestEvent);
+    await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
   }
 
   private async onMessageUpdated(event): Promise<void> {
@@ -440,13 +436,6 @@ export class MatrixClient implements IChatClient {
     });
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
-      const event = decryptedEvent.getEffectiveEvent();
-      if (event.type === EventType.RoomMessage) {
-        this.processMessageEvent(event);
-      }
-    });
-
-    this.matrix.on(RoomEvent.Timeline, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
         this.processMessageEvent(event);

@@ -124,6 +124,16 @@ export class MatrixClient implements IChatClient {
           failedToJoin.push(room.roomId);
         }
       }
+      // XXX: This may not be the exact right place to register for this event but it seems to prove
+      //      that it works.
+      console.log('XXX: registering listener', room.roomId);
+      room.on(RoomEvent.UnreadNotifications, (event) => {
+        console.log('XXX: Got event for ', room.roomId);
+        console.log('XXX', event);
+        if (event) {
+          this.events.receiveUnreadCount(room.roomId, event.total);
+        }
+      });
     }
 
     return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);

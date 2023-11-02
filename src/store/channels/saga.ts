@@ -98,9 +98,11 @@ export function* unreadCountUpdated(action) {
     })
   );
 
-  if (!channel.hasLoadedMessages && unreadCount > 0) {
-    yield spawn(fetchMessages, { payload: { channelId } });
-  }
+  // XXX: Not sure why we're doing this. Unread counts should be unrelated to whether
+  //      messages are loaded or not.
+  // if (!channel.hasLoadedMessages && unreadCount > 0) {
+  //   yield spawn(fetchMessages, { payload: { channelId } });
+  // }
 }
 
 export function* clearChannels() {

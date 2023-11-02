@@ -14,6 +14,11 @@ import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { IconSend3 } from '@zero-tech/zui/icons';
 
+const featureFlags = { enableMatrix: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {

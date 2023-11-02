@@ -8,6 +8,11 @@ import { StoreBuilder } from '../test/store';
 import { call } from 'redux-saga/effects';
 import { expectSaga } from '../../test/saga';
 
+const featureFlags = { enableMatrix: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 const chatClient = {
   getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),
 };

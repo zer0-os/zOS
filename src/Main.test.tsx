@@ -7,7 +7,12 @@ import { ThemeEngine } from './components/theme-engine';
 import { AddressBarContainer } from './components/address-bar/container';
 import { MessengerChat } from './components/messenger/chat';
 
-describe('Main', () => {
+const featureFlags = { enableMatrix: false };
+jest.mock('./lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
+describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
       isSidekickOpen: false,

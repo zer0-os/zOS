@@ -429,11 +429,7 @@ export class MatrixClient implements IChatClient {
       }
     }
 
-    const mappedRooms = [];
-    for (const room of matches) {
-      mappedRooms.push(await this.mapConversation(room));
-    }
-    return mappedRooms;
+    return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
   arraysMatch(a, b) {

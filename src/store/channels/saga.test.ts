@@ -9,10 +9,8 @@ import {
   markConversationAsRead,
   unreadCountUpdated,
 } from './saga';
-import { fetch as fetchMessages } from '../messages/saga';
 
 import { rootReducer } from '../reducer';
-import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
@@ -165,39 +163,10 @@ describe(unreadCountUpdated, () => {
     const { storeState } = await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: updatedUnreadCount },
     })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.unreadCount).toEqual(updatedUnreadCount);
-  });
-
-  it('fetches messages for channel if they have not been fetched previously', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: false }).build();
-
-    await expectSaga(unreadCountUpdated, {
-      payload: { channelId, unreadCount: 2 },
-    })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
-      .withReducer(rootReducer, initialState)
-      .spawn(fetchMessages, { payload: { channelId } })
-      .run();
-  });
-
-  it('does not fetch messages if the channel has already loaded once', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: true }).build();
-
-    await expectSaga(unreadCountUpdated, {
-      payload: { channelId, unreadCount: 2 },
-    })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
-      .withReducer(rootReducer, initialState)
-      .not.spawn.fn(fetchMessages)
-      .run();
   });
 });

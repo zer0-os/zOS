@@ -119,10 +119,13 @@ export class MatrixClient implements IChatClient {
       await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
-      if (membership === MembershipStateType.Invite) {
-        if (!(await this.autoJoinRoom(room.roomId))) {
-          failedToJoin.push(room.roomId);
-        }
+      if (
+        membership === MembershipStateType.Join ||
+        (membership === MembershipStateType.Invite && (await this.autoJoinRoom(room.roomId)))
+      ) {
+        this.initializeRoomEventHandlers(room);
+      } else if (membership === MembershipStateType.Invite) {
+        failedToJoin.push(room.roomId);
       }
     }
 
@@ -406,6 +409,12 @@ export class MatrixClient implements IChatClient {
         this.publishMessageEvent(event);
       }
     }
+  }
+
+  private initializeRoomEventHandlers(room) {
+    room.on(RoomEvent.UnreadNotifications, (unreadNotifications) => {
+      this.events.receiveUnreadCount(room.roomId, unreadNotifications?.total || 0);
+    });
   }
 
   private async initializeEventHandlers() {

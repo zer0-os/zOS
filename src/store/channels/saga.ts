@@ -6,7 +6,6 @@ import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { fetch as fetchMessages } from '../messages/saga';
 import { setActiveChannelId, setactiveConversationId } from '../chat';
 import { chat } from '../../lib/chat';
 
@@ -33,14 +32,16 @@ export function* markAllMessagesAsRead(channelId, userId) {
   }
 
   const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
+  try {
+    yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
 
-  yield put(
-    receive({
-      id: channelId,
-      unreadCount: 0,
-    })
-  );
+    yield put(
+      receive({
+        id: channelId,
+        unreadCount: 0,
+      })
+    );
+  } catch (error) {}
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
@@ -97,10 +98,6 @@ export function* unreadCountUpdated(action) {
       unreadCount: unreadCount,
     })
   );
-
-  if (!channel.hasLoadedMessages && unreadCount > 0) {
-    yield spawn(fetchMessages, { payload: { channelId } });
-  }
 }
 
 export function* clearChannels() {

@@ -316,6 +316,12 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async uploadFileMessage(channelId: string, media: File, _rootMessageId: string = '', _optimisticId = '') {
+    //console.log('calling upload file message api in mATRIX', channelId, media, rootMessageId, optimisticId);
+
+    return [] as any;
+  }
+
   async recordMessageSent(roomId: string): Promise<void> {
     const data = { roomId, sentAt: new Date().valueOf() };
 

@@ -19,13 +19,13 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { EditMessageOptions, MessagesResponse } from '../../store/messages';
+import { AdminMessageType, EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -216,7 +216,7 @@ export class MatrixClient implements IChatClient {
   async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
-    console.log('MAKING IT HERE?', users);
+
     const initial_state: any[] = [
       { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
       { type: EventType.RoomEncryption, state_key: '', content: { algorithm: 'm.megolm.v1.aes-sha2' } },
@@ -236,12 +236,17 @@ export class MatrixClient implements IChatClient {
     if (name) {
       options.name = name;
     }
-    console.log('CLIENTUSERS - ', users);
-    console.log('OPTIONS', options);
+
     const result = await this.matrix.createRoom(options);
-    console.log('CLIENT - RESULT - ', result);
+
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
+
+    await this.matrix.sendEvent(result.room_id, CustomEventType.USER_INVITED, {
+      type: AdminMessageType.JOINED_ZERO,
+      inviterId: users[0].userId,
+      body: 'You have joined a conversation.',
+    });
 
     return this.mapConversation(this.matrix.getRoom(result.room_id));
   }
@@ -381,7 +386,7 @@ export class MatrixClient implements IChatClient {
   }
 
   processMessageEvent(event): void {
-    if (event.type === EventType.RoomMessage) {
+    if (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_INVITED) {
       const relatesTo = event.content[MatrixConstants.RELATES_TO];
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
@@ -420,7 +425,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
-      if (event.type === EventType.RoomMessage) {
+      if (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_INVITED) {
         this.processMessageEvent(event);
       }
     });

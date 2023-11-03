@@ -1,10 +1,19 @@
 import { MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { CustomEventType } from './types';
 
 export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender: senderId, updatedAt, type } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
-
+  const isAdminEvent = type === CustomEventType.USER_INVITED;
   const senderData = sdkMatrixClient.getUser(senderId);
+
+  const adminData = isAdminEvent
+    ? {
+        type: content.type,
+        inviterId: content.inviterId,
+        inviteeId: senderData.displayName,
+      }
+    : {};
 
   return {
     id: event_id,
@@ -18,9 +27,15 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
       profileImage: '',
       profileId: '',
     },
-    isAdmin: false,
+    isAdmin: isAdminEvent,
+    admin: adminData,
     optimisticId: content.optimisticId,
-    ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
+    ...{
+      mentionedUsers: [],
+      hidePreview: false,
+      media: null,
+      image: null,
+    },
     parentMessageText: '',
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
   };

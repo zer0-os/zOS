@@ -353,7 +353,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowFileAttachment() {
-    return true;
+    return !this.props.isEditing;
   }
 
   get allowLeftIcons() {

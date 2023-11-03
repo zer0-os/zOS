@@ -27,8 +27,6 @@ async function parseMediaData(matrixMessage) {
 }
 
 export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  console.log('trying to map original message: ', matrixMessage);
-
   const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
 

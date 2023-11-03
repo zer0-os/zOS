@@ -1,0 +1,56 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.secure-backup {
+  max-width: 350px;
+
+  &__header {
+    display: flex;
+    height: 52px;
+    border-bottom: 1px solid theme.$color-primary-4;
+    margin-bottom: 40px;
+
+    color: theme.$color-greyscale-12;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__close {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__messages {
+    margin-top: 40px;
+  }
+
+  &__footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+
+  &__recovery-key {
+    padding: 16px;
+    border: 1px solid var(--color-greyscale-6);
+    background: var(--color-greyscale-2);
+    border-radius: 8px;
+    color: var(--color-greyscale-11);
+    font-weight: 400;
+    font-size: 16px;
+  }
+}

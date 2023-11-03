@@ -3,6 +3,12 @@ import { shallow } from 'enzyme';
 import { Properties, SettingsMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
 import { EditProfileContainer } from '../edit-profile/container';
+import { SecureBackupContainer } from '../secure-backup/container';
+
+const featureFlags = { enableMatrix: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
 
 describe('settings-menu', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -31,8 +37,18 @@ describe('settings-menu', () => {
     const editProfileItem = dropdownMenu.prop('items').find((item) => item.id === 'edit_profile');
     editProfileItem.onSelect();
 
-    // Verify that the EditProfileContainer component is rendered
-    expect(wrapper.find(EditProfileContainer).exists()).toBe(true);
+    expect(wrapper.find(EditProfileContainer).parent().prop('open')).toBe(true);
+  });
+
+  it('opens secure backup dialog', function () {
+    featureFlags.enableMatrix = true;
+
+    const wrapper = subject({});
+    const dropdownMenu = wrapper.find(DropdownMenu);
+    const menuItem = dropdownMenu.prop('items').find((item) => item.id === 'secure_backup');
+    menuItem.onSelect();
+
+    expect(wrapper.find(SecureBackupContainer).parent().prop('open')).toBe(true);
   });
 
   it('calls onLogout prop when logout item is selected', function () {

@@ -3,7 +3,7 @@ import { featureFlags } from '../../lib/feature-flags';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
-import { userByMatrixId } from '../users/selectors';
+import { userByMatrixIdSelector } from '../users/selectors';
 import { currentUserSelector } from '../authentication/saga';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
@@ -85,7 +85,7 @@ export function* mapReceivedMessage(message) {
       profileImage: currentUser.profileSummary?.profileImage,
     };
   } else {
-    const user = yield call(userByMatrixId, matrixId);
+    const user = yield select(userByMatrixIdSelector, matrixId);
     message.sender = user || message.sender;
   }
 

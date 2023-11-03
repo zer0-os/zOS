@@ -11,6 +11,7 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
     ? {
         type: content.type,
         inviterId: content.inviterId,
+        // need to fix this properly
         inviteeId: senderData.displayName,
       }
     : {};

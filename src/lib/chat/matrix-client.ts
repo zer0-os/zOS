@@ -242,13 +242,18 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    await this.matrix.sendEvent(result.room_id, CustomEventType.USER_INVITED, {
-      type: AdminMessageType.JOINED_ZERO,
-      inviterId: users[0].userId,
-      body: 'You have joined a conversation.',
-    });
+    // Only send the admin message if part of the registration flow.
+    await this.sendAdminMessage(result, users[0]);
 
     return this.mapConversation(this.matrix.getRoom(result.room_id));
+  }
+
+  private async sendAdminMessage(result: { room_id: string }, user: User) {
+    await this.matrix.sendEvent(result.room_id, CustomEventType.USER_INVITED, {
+      type: AdminMessageType.JOINED_ZERO,
+      inviterId: user.userId,
+      body: 'You have joined a conversation.',
+    });
   }
 
   async sendMessagesByChannelId(

@@ -1,8 +1,17 @@
 import window from 'global/window';
 
 export class FeatureFlags {
-  _getBoolean(propName: string) {
-    return window.localStorage.getItem('FEATURE_FLAGS.' + propName) === 'true';
+  _getBoolean(propName: string, defaultValue = false) {
+    const savedValue = window.localStorage.getItem('FEATURE_FLAGS.' + propName);
+
+    switch (savedValue) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return defaultValue;
+    }
   }
 
   _setBoolean(propName: string, value: boolean) {
@@ -50,7 +59,7 @@ export class FeatureFlags {
   }
 
   get enableMatrix() {
-    return this._getBoolean('enableMatrix');
+    return this._getBoolean('enableMatrix', true);
   }
 
   set enableMatrix(value: boolean) {

@@ -475,7 +475,8 @@ describe('matrix client', () => {
 
     it('disallows guest access', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      const client = await subject({ createRoom });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
 
@@ -490,7 +491,9 @@ describe('matrix client', () => {
 
     it('creates encrypted room', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      const client = await subject({ createRoom });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
+
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
 
@@ -505,7 +508,8 @@ describe('matrix client', () => {
 
     it('sets default conversation settings', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      const client = await subject({ createRoom });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
 
@@ -520,11 +524,12 @@ describe('matrix client', () => {
 
     it('specifies the invited users', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
       const users = [
         { userId: 'id-1', matrixId: '@first.user' },
         { userId: 'id-2', matrixId: '@second.user' },
       ];
-      const client = await subject({ createRoom });
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation(users, null, null, null);
 
@@ -533,8 +538,9 @@ describe('matrix client', () => {
 
     it('sets the conversation as a Matrix direct message', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'test-room' });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
       const users = [{ userId: 'id-1', matrixId: '@first.user' }];
-      const client = await subject({ createRoom });
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation(users, null, null, null);
 
@@ -543,7 +549,8 @@ describe('matrix client', () => {
 
     it('sets the conversation name', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      const client = await subject({ createRoom });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], 'room-name', null, null);
 
@@ -552,8 +559,9 @@ describe('matrix client', () => {
 
     it('uploads the image', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const sendEvent = jest.fn().mockResolvedValue(undefined);
       when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
-      const client = await subject({ createRoom });
+      const client = await subject({ createRoom, sendEvent });
 
       await client.createConversation(
         [{ userId: 'id', matrixId: '@somebody.else' }],

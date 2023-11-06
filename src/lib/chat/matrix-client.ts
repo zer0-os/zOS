@@ -254,12 +254,7 @@ export class MatrixClient implements IChatClient {
     return this.mapConversation(this.matrix.getRoom(result.room_id));
   }
 
-  private async sendAdminMessage(
-    roomId: string,
-    inviterId: string,
-    currentUserId: string,
-    type: AdminMessageType = AdminMessageType.CONVERSATION_STARTED
-  ) {
+  private async sendAdminMessage(roomId: string, inviterId: string, currentUserId: string, type: AdminMessageType) {
     let content: any = {
       type,
       body: 'You have joined a conversation.',

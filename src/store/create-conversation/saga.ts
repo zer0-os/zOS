@@ -6,6 +6,7 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
 import { Chat, chat } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
+import { AdminMessageType } from '../messages';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -48,10 +49,11 @@ export function* performGroupMembersSelected(userSelections: { value: string; la
 }
 
 export function* createConversation(action) {
+  const currentUser = yield select(currentUserSelector);
   const { userIds, name, image } = action.payload;
   try {
     yield put(setGroupCreating(true));
-    yield call(performCreateConversation, userIds, name, image);
+    yield call(performCreateConversation, userIds, name, image, AdminMessageType.CONVERSATION_STARTED, currentUser.id);
   } finally {
     yield put(setGroupCreating(false));
   }

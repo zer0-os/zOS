@@ -25,6 +25,8 @@ describe(createConversation, () => {
     const otherUserIds = ['user-1'];
     const name = 'name';
     const image = { name: 'file' } as File;
+    const adminMessageType = AdminMessageType.CONVERSATION_STARTED;
+    const currentUser = 'current-user';
 
     const stubOptimisticConversation = { id: 'optimistic-id' };
     const stubReceivedConversation = { id: 'new-convo-id' };
@@ -34,7 +36,7 @@ describe(createConversation, () => {
       createConversation: () => undefined,
     };
 
-    testSaga(createConversation, otherUserIds, name, image)
+    testSaga(createConversation, otherUserIds, name, image, adminMessageType, currentUser)
       .next()
       .call(chat.get)
       .next(chatClient)
@@ -46,7 +48,15 @@ describe(createConversation, () => {
       .next()
       .select(userSelector, otherUserIds)
       .next([{ userId: 'user-1' }])
-      .call([chatClient, chatClient.createConversation], [{ userId: 'user-1' }], name, image, 'optimistic-id')
+      .call(
+        [chatClient, chatClient.createConversation],
+        [{ userId: 'user-1' }],
+        name,
+        image,
+        'optimistic-id',
+        adminMessageType,
+        currentUser
+      )
       .next(stubReceivedConversation)
       .call(receiveCreatedConversation, stubReceivedConversation, stubOptimisticConversation)
       .next()

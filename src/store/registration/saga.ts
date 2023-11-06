@@ -34,6 +34,7 @@ import { createConversation } from '../channels-list/saga';
 import { setUser } from '../authentication';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { receive } from '../normalized';
+import { AdminMessageType } from '../messages';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -175,9 +176,9 @@ export function* updateProfile(action) {
       yield put(setStage(RegistrationStage.Done));
       yield take(setUser.type);
 
-      const matrixId = response.response.inviter.matrixId;
-      const inviterId = response.response.inviter.id;
-      const userData = yield call(getZEROUsersAPI, [matrixId]);
+      const inviterMatrixId = response.response.inviter.matrixId;
+      const inviterUserId = response.response.inviter.id;
+      const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
       const normalizeUserData = (userData) => {
         return {
@@ -189,12 +190,12 @@ export function* updateProfile(action) {
       };
 
       if (userData && userData.length > 0) {
-        yield put(receive({ users: { [inviterId]: normalizeUserData(userData[0]) } }));
+        yield put(receive({ users: { [inviterUserId]: normalizeUserData(userData[0]) } }));
       }
 
-      if (inviterId) {
+      if (inviterUserId) {
         try {
-          yield call(createConversation, [inviterId], '', null);
+          yield call(createConversation, [inviterUserId], '', null, AdminMessageType.JOINED_ZERO, userId);
         } catch (error) {}
       }
 

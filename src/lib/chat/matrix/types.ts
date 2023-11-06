@@ -17,5 +17,5 @@ export enum MatrixConstants {
 }
 
 export enum CustomEventType {
-  USER_INVITED = 'm.custom.user_invited',
+  SEND_ADMIN_MESSAGE = 'm.custom.send_admin_message',
 }

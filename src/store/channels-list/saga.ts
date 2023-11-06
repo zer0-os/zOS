@@ -146,7 +146,13 @@ export function userSelector(state, userIds) {
   return userIds.map((id) => (state.normalized.users || {})[id]);
 }
 
-export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+export function* createConversation(
+  userIds: string[],
+  name: string = null,
+  image: File = null,
+  adminMessageType?: AdminMessageType,
+  currentUserId: string = null
+) {
   const chatClient = yield call(chat.get);
 
   let optimisticConversation = { id: '', optimisticId: '' };
@@ -162,7 +168,9 @@ export function* createConversation(userIds: string[], name: string = null, imag
       users,
       name,
       image,
-      optimisticConversation.id
+      optimisticConversation.id,
+      adminMessageType,
+      currentUserId
     );
     yield call(receiveCreatedConversation, conversation, optimisticConversation);
     return conversation;

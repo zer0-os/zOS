@@ -4,15 +4,15 @@ import { CustomEventType } from './types';
 export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId, updatedAt, type } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
-  const isAdminEvent = type === CustomEventType.USER_INVITED;
+  const isAdmin = type === CustomEventType.SEND_ADMIN_MESSAGE;
   const senderData = sdkMatrixClient.getUser(senderId);
 
-  const adminData = isAdminEvent
+  const adminData = isAdmin
     ? {
         type: content.type,
         inviterId: content.inviterId,
-        // need to fix this properly
-        inviteeId: senderData.displayName,
+        inviteeId: content.inviteeId,
+        creatorId: content.creatorId,
       }
     : {};
 
@@ -28,7 +28,7 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
       profileImage: '',
       profileId: '',
     },
-    isAdmin: isAdminEvent,
+    isAdmin: isAdmin,
     admin: adminData,
     optimisticId: content.optimisticId,
     ...{

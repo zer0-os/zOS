@@ -213,7 +213,14 @@ export class MatrixClient implements IChatClient {
     return mapMatrixMessage(newMessage, this.matrix);
   }
 
-  async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
+  async createConversation(
+    users: User[],
+    name: string = null,
+    image: File = null,
+    _optimisticId: string,
+    adminMessageType?: AdminMessageType,
+    currentUserId?: string
+  ) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
 
@@ -242,18 +249,30 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    // Only send the admin message if part of the registration flow.
-    await this.sendAdminMessage(result, users[0]);
+    await this.sendAdminMessage(result.room_id, users[0].userId, currentUserId, adminMessageType);
 
     return this.mapConversation(this.matrix.getRoom(result.room_id));
   }
 
-  private async sendAdminMessage(result: { room_id: string }, user: User) {
-    await this.matrix.sendEvent(result.room_id, CustomEventType.USER_INVITED, {
-      type: AdminMessageType.JOINED_ZERO,
-      inviterId: user.userId,
+  private async sendAdminMessage(
+    roomId: string,
+    inviterId: string,
+    currentUserId: string,
+    type: AdminMessageType = AdminMessageType.CONVERSATION_STARTED
+  ) {
+    let content: any = {
+      type,
       body: 'You have joined a conversation.',
-    });
+    };
+
+    if (type === AdminMessageType.JOINED_ZERO) {
+      content.inviteeId = currentUserId;
+      content.inviterId = inviterId;
+    } else if (type === AdminMessageType.CONVERSATION_STARTED) {
+      content.creatorId = currentUserId;
+    }
+
+    await this.matrix.sendEvent(roomId, CustomEventType.SEND_ADMIN_MESSAGE, content);
   }
 
   async sendMessagesByChannelId(
@@ -391,7 +410,7 @@ export class MatrixClient implements IChatClient {
   }
 
   processMessageEvent(event): void {
-    if (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_INVITED) {
+    if (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) {
       const relatesTo = event.content[MatrixConstants.RELATES_TO];
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
@@ -430,7 +449,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
-      if (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_INVITED) {
+      if (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) {
         this.processMessageEvent(event);
       }
     });

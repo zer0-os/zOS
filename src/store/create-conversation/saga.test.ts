@@ -15,8 +15,6 @@ import { channelsReceived, createConversation as performCreateConversation } fro
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
-import { AdminMessageType } from '../messages';
-import { currentUserSelector } from '../authentication/selectors';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -176,26 +174,13 @@ describe('create conversation saga', () => {
         userIds: ['test'],
         name: 'test name',
         image: {},
-        adminMessageType: AdminMessageType.CONVERSATION_STARTED,
-        currentUserId: 'current-user-id',
       };
-
-      const currentUser = { id: 'current-user-id' };
 
       return testSaga(createConversation, { payload: testPayload })
         .next()
-        .select(currentUserSelector)
-        .next(currentUser)
         .put(setGroupCreating(true))
         .next()
-        .call(
-          performCreateConversation,
-          ['test'],
-          'test name',
-          {},
-          AdminMessageType.CONVERSATION_STARTED,
-          'current-user-id'
-        )
+        .call(performCreateConversation, ['test'], 'test name', {})
         .next()
         .put(setGroupCreating(false));
     });

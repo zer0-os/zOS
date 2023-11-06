@@ -31,7 +31,6 @@ import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
-import { setUser } from '../authentication';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { receive } from '../normalized';
 import { AdminMessageType } from '../messages';
@@ -174,7 +173,6 @@ export function* updateProfile(action) {
       yield put(setFirstTimeLogin(true));
       yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
-      yield take(setUser.type);
 
       const inviterMatrixId = response.response.inviter.matrixId;
       const inviterUserId = response.response.inviter.id;

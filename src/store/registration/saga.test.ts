@@ -18,6 +18,7 @@ import {
   completeAccount as apiCompleteAccount,
   uploadImage,
 } from './api';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { call, spawn } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
@@ -36,6 +37,7 @@ import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
+import { AdminMessageType } from '../messages';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -285,14 +287,33 @@ describe('updateProfile', () => {
       .provide([
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
-          { success: true, response: { inviterId: 'inviter-id' } },
+          {
+            success: true,
+            response: {
+              inviter: {
+                id: 'inviter-id',
+                matrixId: 'inviter-matrix-id',
+              },
+            },
+          },
         ],
         [
           call(completeUserLogin),
           null,
         ],
         [
-          call(createConversation, ['abc', 'inviter-id']),
+          call(getZEROUsersAPI, ['inviter-matrix-id']),
+          [
+            {
+              id: 'user-id',
+              profileSummary: { firstName: 'Inviter' },
+              profileImage: 'inviter-image-url',
+              matrixId: 'inviter-matrix-id',
+            },
+          ],
+        ],
+        [
+          call(createConversation, ['inviter-id'], '', null, AdminMessageType.JOINED_ZERO, 'abc'),
           null,
         ],
         [
@@ -324,15 +345,34 @@ describe('updateProfile', () => {
         ],
         [
           call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: 'image-url' }),
-          { success: true, response: { inviterId: 'inviter-id' } },
+          {
+            success: true,
+            response: {
+              inviter: {
+                id: 'inviter-id',
+                matrixId: 'inviter-matrix-id',
+              },
+            },
+          },
         ],
         [
           call(completeUserLogin),
           null,
         ],
         [
-          call(createConversation, ['abc', 'inviter-id']),
+          call(createConversation, ['inviter-id'], '', null, AdminMessageType.JOINED_ZERO, 'abc'),
           null,
+        ],
+        [
+          call(getZEROUsersAPI, ['inviter-matrix-id']),
+          [
+            {
+              id: 'user-id',
+              profileSummary: { firstName: 'Inviter' },
+              profileImage: 'inviter-image-url',
+              matrixId: 'inviter-matrix-id',
+            },
+          ],
         ],
         [
           spawn(clearRegistrationStateOnLogout),

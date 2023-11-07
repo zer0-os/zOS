@@ -67,7 +67,7 @@ export interface IChatClient {
     media: File,
     rootMessageId?: string,
     optimisticId?: string
-  ) => Promise<MessagesResponse>;
+  ) => Promise<Message>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
   editMessage(

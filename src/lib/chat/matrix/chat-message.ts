@@ -1,6 +1,32 @@
-import { MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { decryptFile } from './media';
 
-export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+async function parseMediaData(matrixMessage) {
+  const { content } = matrixMessage;
+
+  let media: any = {};
+  try {
+    if (content?.msgtype === MsgType.Image) {
+      const { file, info } = content;
+      const blob = await decryptFile(file, info);
+      media = {
+        url: URL.createObjectURL(blob),
+        type: 'image',
+        ...info,
+      };
+    }
+  } catch (e) {
+    // ingore for now
+    console.log('error ocurred while parsing media data: ', e);
+  }
+
+  return {
+    media,
+    image: content?.msgtype === MsgType.Image ? media : undefined,
+  };
+}
+
+export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
 
@@ -23,5 +49,6 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
     ...{ mentionedUsers: [], hidePreview: false, media: null, image: null, admin: {} },
     parentMessageText: '',
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
+    ...(await parseMediaData(matrixMessage)),
   };
 }

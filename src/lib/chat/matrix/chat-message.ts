@@ -28,7 +28,7 @@ export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient
       profileImage: '',
       profileId: '',
     },
-    isAdmin: isAdmin,
+    isAdmin,
     admin: adminData,
     optimisticId: content.optimisticId,
     ...{

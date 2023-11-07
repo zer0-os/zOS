@@ -4,7 +4,7 @@ import { CustomEventType } from './types';
 export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId, updatedAt, type } = matrixMessage;
   const parent = matrixMessage.content['m.relates_to'];
-  const isAdmin = type === CustomEventType.SEND_ADMIN_MESSAGE;
+  const isAdmin = type === CustomEventType.ADMIN_MESSAGE;
   const senderData = sdkMatrixClient.getUser(senderId);
 
   const adminData = isAdmin

@@ -180,7 +180,7 @@ export class MatrixClient implements IChatClient {
   private processRawEventsToMessages(events): any[] {
     const messages = events.filter(
       (event) =>
-        (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) &&
+        (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) &&
         !this.isDeleted(event) &&
         !this.isEditEvent(event)
     );
@@ -275,7 +275,7 @@ export class MatrixClient implements IChatClient {
       content.creatorId = currentUserId;
     }
 
-    await this.matrix.sendEvent(roomId, CustomEventType.SEND_ADMIN_MESSAGE, content);
+    await this.matrix.sendEvent(roomId, CustomEventType.ADMIN_MESSAGE, content);
   }
 
   async sendMessagesByChannelId(
@@ -413,7 +413,7 @@ export class MatrixClient implements IChatClient {
   }
 
   processMessageEvent(event): void {
-    if (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) {
+    if (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) {
       const relatesTo = event.content[MatrixConstants.RELATES_TO];
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
@@ -452,7 +452,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
-      if (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) {
+      if (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) {
         this.processMessageEvent(event);
       }
     });

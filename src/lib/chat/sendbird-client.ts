@@ -10,9 +10,7 @@ import { toLocalChannel } from '../../store/channels-list/utils';
 import { ParentMessage, User } from './types';
 
 import { RealtimeChatEvents, IChatClient } from './';
-import { uploadImage, createConversation as createConversationMessageApi } from '../../store/channels-list/api';
 import { MemberNetworks } from '../../store/users/types';
-import { DirectMessage } from '../../store/channels-list/types';
 import { MentionableUser } from '../../store/channels/api';
 import { Channel } from '../../store/channels';
 
@@ -166,26 +164,8 @@ export class SendbirdClient implements IChatClient {
     return {};
   }
 
-  async createConversation(users: User[], name: string = null, image: File = null, optimisticId: string) {
-    let coverUrl = '';
-    if (image) {
-      try {
-        const uploadResult = await uploadImage(image);
-        coverUrl = uploadResult.url;
-      } catch (error) {
-        console.error(error);
-        return;
-      }
-    }
-
-    const userIds = users.map((user) => user.userId);
-    const response: DirectMessage = await createConversationMessageApi(userIds, name, coverUrl, optimisticId);
-
-    const result = toLocalChannel(response);
-    if (response.messages) {
-      result.messages = response.messages;
-    }
-    return result;
+  async createConversation() {
+    return {};
   }
 
   async sendMessagesByChannelId(

@@ -1,7 +1,5 @@
 import * as Request from 'superagent';
-import { Channel } from './../channels/index';
-import { get, post } from '../../lib/api/rest';
-import { DirectMessage } from './types';
+import { get } from '../../lib/api/rest';
 
 export async function fetchChannels(id: string) {
   try {
@@ -10,21 +8,6 @@ export async function fetchChannels(id: string) {
   } catch (error: any) {
     console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
   }
-}
-
-export async function createConversation(
-  userIds: string[],
-  name: string = '',
-  coverUrl = '',
-  optimisticId: string
-): Promise<DirectMessage> {
-  const directMessages = await post<Channel[]>('/directMessages').send({
-    name,
-    userIds,
-    coverUrl,
-    optimisticId,
-  });
-  return directMessages.body;
 }
 
 interface ImageApiUploadResponse {

@@ -7,6 +7,7 @@ import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2, IconXClose } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
+import { featureFlags } from '../../lib/feature-flags';
 
 const c = bem('edit-profile');
 
@@ -21,6 +22,9 @@ export interface Properties {
   currentProfileImage: string;
   onEdit: (data: { name: string; image: File }) => void;
   onClose?: () => void;
+
+  onLeaveGlobal: () => void;
+  onJoinGlobal: () => void;
 }
 
 interface State {
@@ -124,7 +128,19 @@ export class EditProfile extends React.Component<Properties, State> {
             Your changes have been saved
           </Alert>
         )}
+
         <div className={c('footer')}>
+          {featureFlags.internalUsage && (
+            <>
+              <Button className={c('zui-button-large')} onPress={this.props.onLeaveGlobal}>
+                Leave Global
+              </Button>
+              <Button className={c('zui-button-large')} onPress={this.props.onJoinGlobal}>
+                Join Global
+              </Button>
+            </>
+          )}
+
           <Button
             className={c('zui-button-large')}
             isLoading={this.isLoading}

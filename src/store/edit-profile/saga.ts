@@ -3,6 +3,8 @@ import { SagaActionTypes, State, setErrors, setState } from '.';
 import {
   editUserProfile as apiEditUserProfile,
   saveUserMatrixCredentials as apiSaveUserMatrixCredentials,
+  joinGlobalNetwork as joinGlobalNetworkApi,
+  leaveGlobalNetwork as leaveGlobalNetworkApi,
 } from './api';
 import { ProfileDetailsErrors } from '../registration';
 import { uploadImage } from '../registration/api';
@@ -69,6 +71,16 @@ export function* updateUserProfile(payload) {
   yield put(setUser({ data: currentUser }));
 }
 
+export function* leaveGlobalNetwork() {
+  yield leaveGlobalNetworkApi();
+}
+
+export function* joinGlobalNetwork() {
+  yield joinGlobalNetworkApi();
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.EditProfile, editProfile);
+  yield takeLatest(SagaActionTypes.LeaveGlobal, leaveGlobalNetwork);
+  yield takeLatest(SagaActionTypes.JoinGlobal, joinGlobalNetwork);
 }

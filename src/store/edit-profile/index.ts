@@ -2,6 +2,8 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   EditProfile = 'profile/edit',
+  LeaveGlobal = 'profile/edit/leaveGlobal',
+  JoinGlobal = 'profile/edit/joinGlobal',
 }
 
 export enum State {
@@ -25,6 +27,9 @@ export const editProfile = createAction<{
   name: string;
   image: File | null;
 }>(SagaActionTypes.EditProfile);
+
+export const leaveGlobalNetwork = createAction(SagaActionTypes.LeaveGlobal);
+export const joinGlobalNetwork = createAction(SagaActionTypes.JoinGlobal);
 
 const slice = createSlice({
   name: 'edit-profile',

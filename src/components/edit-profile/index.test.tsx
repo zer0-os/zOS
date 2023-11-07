@@ -1,10 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { EditProfile, Properties } from './index';
-import { IconButton, Alert, Button } from '@zero-tech/zui/components';
+import { IconButton, Alert } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { ImageUpload } from '../../components/image-upload';
 import { State as EditProfileState } from '../../store/edit-profile';
+import { buttonLabelled } from '../../test/utils';
+
+const featureFlags = { internalUsage: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
 
 describe('EditProfile', () => {
   const subject = (props: Partial<Properties>) => {
@@ -15,6 +21,8 @@ describe('EditProfile', () => {
       currentProfileImage: 'profile.jpg',
       onEdit: () => null,
       onClose: () => null,
+      onLeaveGlobal: () => null,
+      onJoinGlobal: () => null,
       ...props,
     };
 
@@ -47,7 +55,7 @@ describe('EditProfile', () => {
     const onEditMock = jest.fn();
     const wrapper = subject({ onEdit: onEditMock });
 
-    wrapper.find(Button).simulate('press');
+    saveButton(wrapper).simulate('press');
     expect(onEditMock).toHaveBeenCalledWith({
       name: 'John Doe',
       image: null,
@@ -57,26 +65,26 @@ describe('EditProfile', () => {
   it('disables Save Changes button when name is empty', () => {
     const wrapper = subject({ currentDisplayName: '', currentProfileImage: null });
 
-    expect(wrapper.find(Button).prop('isDisabled')).toEqual(true);
+    expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
   });
 
   it('disables Save Changes button when editProfileState is INPROGRESS', () => {
     const wrapper = subject({ editProfileState: EditProfileState.INPROGRESS });
 
-    expect(wrapper.find(Button).prop('isDisabled')).toEqual(true);
+    expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
   });
 
   it('disables Save Changes button when no changes are made', () => {
     const wrapper = subject({ currentDisplayName: 'John Doe', currentProfileImage: 'profile.jpg' });
 
-    expect(wrapper.find(Button).prop('isDisabled')).toEqual(true);
+    expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
   });
 
   it('enables Save Changes button when changes are made', () => {
     const wrapper = subject({ currentDisplayName: 'John Doe', currentProfileImage: null });
 
     wrapper.find('Input[name="name"]').simulate('change', 'Jane Smith');
-    expect(wrapper.find(Button).prop('isDisabled')).toEqual(false);
+    expect(saveButton(wrapper).prop('isDisabled')).toEqual(false);
   });
 
   it('calls onEdit with correct data when Save Changes button is clicked', () => {
@@ -90,7 +98,7 @@ describe('EditProfile', () => {
 
     wrapper.find('Input[name="name"]').simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
-    wrapper.find(Button).simulate('press');
+    saveButton(wrapper).simulate('press');
 
     expect(onEditMock).toHaveBeenCalledWith(formData);
   });
@@ -133,4 +141,45 @@ describe('EditProfile', () => {
 
     expect(wrapper.find(Alert).exists()).toBe(false);
   });
+
+  describe('internal features', () => {
+    it('calls onLeaveGlobal when Leave Global pressed', () => {
+      featureFlags.internalUsage = true;
+      const onLeaveGlobal = jest.fn();
+      const wrapper = subject({ onLeaveGlobal });
+
+      leaveGlobalButton(wrapper).simulate('press');
+      expect(onLeaveGlobal).toHaveBeenCalledWith();
+    });
+
+    it('calls onJoinGlobal when Join Global pressed', () => {
+      featureFlags.internalUsage = true;
+      const onJoinGlobal = jest.fn();
+      const wrapper = subject({ onJoinGlobal });
+
+      joinGlobalButton(wrapper).simulate('press');
+      expect(onJoinGlobal).toHaveBeenCalledWith();
+    });
+
+    it('hides Global buttons if feature flag is disabled', () => {
+      featureFlags.internalUsage = false;
+      const onLeaveGlobal = jest.fn();
+      const wrapper = subject({ onLeaveGlobal });
+
+      expect(leaveGlobalButton(wrapper).exists()).toBe(false);
+      expect(joinGlobalButton(wrapper).exists()).toBe(false);
+    });
+  });
 });
+
+function saveButton(wrapper) {
+  return buttonLabelled(wrapper, 'Save Changes');
+}
+
+function leaveGlobalButton(wrapper) {
+  return buttonLabelled(wrapper, 'Leave Global');
+}
+
+function joinGlobalButton(wrapper) {
+  return buttonLabelled(wrapper, 'Join Global');
+}

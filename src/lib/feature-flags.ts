@@ -65,6 +65,14 @@ export class FeatureFlags {
   set enableMatrix(value: boolean) {
     this._setBoolean('enableMatrix', value);
   }
+
+  get internalUsage() {
+    return this._getBoolean('internalUsage', false);
+  }
+
+  set internalUsage(value: boolean) {
+    this._setBoolean('internalUsage', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

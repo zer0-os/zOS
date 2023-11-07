@@ -155,7 +155,7 @@ export class Chat {
   async markRoomAsRead(roomId: string, userId?: string): Promise<void> {
     return this.client.markRoomAsRead(roomId, userId);
   }
-  
+
   async getSecureBackup(): Promise<any> {
     return this.client.getSecureBackup();
   }

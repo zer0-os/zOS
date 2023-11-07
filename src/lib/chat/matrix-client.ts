@@ -450,10 +450,15 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private initializeRoomEventHandlers(room) {
-    room.on(RoomEvent.UnreadNotifications, (unreadNotifications) => {
+  private initializeRoomEventHandlers(room: Room) {
+    const handleUnreadNotifications = (unreadNotifications) => {
       this.events.receiveUnreadCount(room.roomId, unreadNotifications?.total || 0);
-    });
+    };
+
+    // Removing the event handler if it already exists to prevent duplicates.
+    room.off(RoomEvent.UnreadNotifications, handleUnreadNotifications);
+
+    room.on(RoomEvent.UnreadNotifications, handleUnreadNotifications);
   }
 
   private async initializeEventHandlers() {

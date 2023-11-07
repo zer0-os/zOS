@@ -24,6 +24,7 @@ const stubRoom = (attrs = {}) => ({
   getEvents: () => stubTimeline(),
   getUnreadNotificationCount: () => 0,
   on: () => undefined,
+  off: () => undefined,
   ...attrs,
 });
 
@@ -59,6 +60,7 @@ const getSdkClient = (sdkClient = {}) => ({
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
   }),
+  off: jest.fn(),
   getRooms: jest.fn(),
   getRoom: jest.fn().mockReturnValue(stubRoom()),
   getAccountData: jest.fn(),

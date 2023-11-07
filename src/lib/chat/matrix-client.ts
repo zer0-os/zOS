@@ -179,7 +179,10 @@ export class MatrixClient implements IChatClient {
 
   private processRawEventsToMessages(events): any[] {
     const messages = events.filter(
-      (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
+      (event) =>
+        (event.type === EventType.RoomMessage || event.type === CustomEventType.SEND_ADMIN_MESSAGE) &&
+        !this.isDeleted(event) &&
+        !this.isEditEvent(event)
     );
 
     events.filter(this.isEditEvent).forEach((event) => {

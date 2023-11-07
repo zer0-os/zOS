@@ -44,8 +44,8 @@ export interface IChatClient {
     name: string,
     image: File,
     optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
+    adminMessageType: AdminMessageType,
+    currentUserId: string
   ) => Promise<Partial<Channel> | void>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -104,8 +104,8 @@ export class Chat {
     name: string,
     image: File,
     optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
+    adminMessageType: AdminMessageType,
+    currentUserId: string
   ) {
     return this.client.createConversation(users, name, image, optimisticId, adminMessageType, currentUserId);
   }

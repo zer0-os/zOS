@@ -4,6 +4,7 @@ import { setAsDM } from './matrix/utils';
 import { uploadImage as _uploadImage } from '../../store/channels-list/api';
 import { when } from 'jest-when';
 import { config } from '../../config';
+import { AdminMessageType } from '../../store/messages';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -478,7 +479,14 @@ describe('matrix client', () => {
       const sendEvent = jest.fn().mockResolvedValue(undefined);
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+      await client.createConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        null,
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -495,7 +503,14 @@ describe('matrix client', () => {
 
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+      await client.createConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        null,
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -511,7 +526,14 @@ describe('matrix client', () => {
       const sendEvent = jest.fn().mockResolvedValue(undefined);
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+      await client.createConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        null,
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -531,7 +553,14 @@ describe('matrix client', () => {
       ];
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation(users, null, null, null);
+      await client.createConversation(
+        users,
+        null,
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: ['@first.user', '@second.user'] }));
     });
@@ -542,7 +571,14 @@ describe('matrix client', () => {
       const users = [{ userId: 'id-1', matrixId: '@first.user' }];
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation(users, null, null, null);
+      await client.createConversation(
+        users,
+        null,
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
     });
@@ -552,7 +588,14 @@ describe('matrix client', () => {
       const sendEvent = jest.fn().mockResolvedValue(undefined);
       const client = await subject({ createRoom, sendEvent });
 
-      await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], 'room-name', null, null);
+      await client.createConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        'room-name',
+        null,
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
+      );
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ name: 'room-name' }));
     });
@@ -567,7 +610,9 @@ describe('matrix client', () => {
         [{ userId: 'id', matrixId: '@somebody.else' }],
         null,
         { name: 'test file' } as File,
-        null
+        null,
+        AdminMessageType.CONVERSATION_STARTED,
+        'current-user-id'
       );
 
       expect(createRoom).toHaveBeenCalledWith(

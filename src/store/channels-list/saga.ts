@@ -150,7 +150,7 @@ export function* createConversation(
   userIds: string[],
   name: string = null,
   image: File = null,
-  adminMessageType?: AdminMessageType,
+  adminMessageType: AdminMessageType,
   currentUserId: string = null
 ) {
   const chatClient = yield call(chat.get);

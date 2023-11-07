@@ -221,8 +221,8 @@ export class MatrixClient implements IChatClient {
     name: string = null,
     image: File = null,
     _optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
+    adminMessageType: AdminMessageType,
+    currentUserId: string
   ) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);

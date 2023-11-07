@@ -14,6 +14,8 @@ describe('Container', () => {
       currentProfileImage: 'profile.jpg',
       editProfile: () => null,
       startProfileEdit: () => null,
+      leaveGlobalNetwork: () => null,
+      joinGlobalNetwork: () => null,
       ...props,
     };
 

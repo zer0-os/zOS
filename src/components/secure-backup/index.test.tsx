@@ -1,8 +1,9 @@
 import { shallow } from 'enzyme';
 
 import { SecureBackup, Properties } from '.';
-import { Alert, Button, Input } from '@zero-tech/zui/components';
+import { Alert, Input } from '@zero-tech/zui/components';
 import { bem } from '../../lib/bem';
+import { buttonLabelled } from '../../test/utils';
 
 const c = bem('.secure-backup');
 
@@ -114,10 +115,6 @@ describe('SecureBackup', () => {
 
 function pressButton(wrapper, label: string) {
   buttonLabelled(wrapper, label).simulate('press');
-}
-
-function buttonLabelled(wrapper, label) {
-  return wrapper.findWhere((node) => node.type() === Button && node.children().text() === label);
 }
 
 function changeRecoveryKeyInput(wrapper, value) {

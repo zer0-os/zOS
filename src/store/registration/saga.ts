@@ -182,7 +182,7 @@ export function* updateProfile(action) {
         return {
           userId: userData.id,
           firstName: userData.profileSummary.firstName,
-          profileImage: userData.profileImage,
+          profileImage: userData.profileSummary.profileImage,
           matrixId: userData.matrixId,
         };
       };

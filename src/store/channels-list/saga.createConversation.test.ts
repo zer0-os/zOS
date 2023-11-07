@@ -67,6 +67,8 @@ describe(createConversation, () => {
     const otherUserIds = ['user-1'];
     const name = 'name';
     const image = { name: 'file' } as File;
+    const adminMessageType = AdminMessageType.CONVERSATION_STARTED;
+    const currentUser = 'current-user';
 
     const stubOptimisticConversation = { id: 'optimistic-id' };
 
@@ -75,7 +77,7 @@ describe(createConversation, () => {
       createConversation: () => undefined,
     };
 
-    testSaga(createConversation, otherUserIds, name, image)
+    testSaga(createConversation, otherUserIds, name, image, adminMessageType, currentUser)
       .next()
       .call(chat.get)
       .next(chatClient)

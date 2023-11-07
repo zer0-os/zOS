@@ -102,14 +102,15 @@ export class MessageInput extends React.Component<Properties, State> {
     this.clipboard.removePasteListener(this.clipboardEvent);
   }
 
+  // NOTE: commenting other types of media for now since we don't support them yet (in matrix)
   get mimeTypes() {
     return {
       'image/*': [],
-      'text/*': [],
-      'video/*': [],
-      'application/pdf': [],
-      'application/zip': [],
-      'application/msword': [],
+      // 'text/*': [],
+      // 'video/*': [],
+      // 'application/pdf': [],
+      // 'application/zip': [],
+      // 'application/msword': [],
     };
   }
 

@@ -194,18 +194,18 @@ export function* updateProfile(action) {
         yield put(receiveUser(user));
       }
 
-       try {
-          const createdConversation = yield call(createConversation, [inviterUserId], '', null);
-          const createdConversationId = createdConversation.id;
+      try {
+        const createdConversation = yield call(createConversation, [inviterUserId], '', null);
+        const createdConversationId = createdConversation.id;
 
-          const chatClient = yield call(chat.get);
-          yield call(
-            [chatClient, chatClient.userJoinedInviterOnZero],
-            createdConversationId,
-            inviterZeroUserData[0].id,
-            userId
-          );
-        } catch (error) {}
+        const chatClient = yield call(chat.get);
+        yield call(
+          [chatClient, chatClient.userJoinedInviterOnZero],
+          createdConversationId,
+          inviterZeroUserData[0].id,
+          userId
+        );
+      } catch (error) {}
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;

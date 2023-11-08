@@ -178,7 +178,6 @@ export function* updateProfile(action) {
       const inviterMatrixId = response.response.inviter.matrixId;
       const inviterUserId = response.response.inviter.id;
       const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
-      console.log('USER DATA', userData);
 
       const normalizeUserData = (userData) => {
         return {

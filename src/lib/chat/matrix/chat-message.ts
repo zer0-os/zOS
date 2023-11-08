@@ -27,7 +27,7 @@ async function parseMediaData(matrixMessage) {
   };
 }
 
-export function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId, updatedAt, type } = matrixMessage;
 
   const parent = matrixMessage.content['m.relates_to'];

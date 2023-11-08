@@ -184,7 +184,6 @@ export class MatrixClient implements IChatClient {
         !this.isDeleted(event) &&
         !this.isEditEvent(event)
     );
-    console.log('MESSAGES', messages);
 
     events.filter(this.isEditEvent).forEach((event) => {
       const relatedEventId = this.getRelatedEventId(event);

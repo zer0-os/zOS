@@ -135,6 +135,13 @@ export function* fetch(action) {
     }
 
     yield call(mapMessageSenders, messagesResponse.messages, channelId);
+    for (const message of messagesResponse.messages) {
+      const preview = yield call(getPreview, message.message);
+      if (preview) {
+        message.preview = preview;
+      }
+    }
+
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property
@@ -306,6 +313,12 @@ export function* fetchNewMessages(channelId: string) {
       channelId
     );
     yield call(mapMessageSenders, messagesResponse.messages, channelId);
+    for (const message of messagesResponse.messages) {
+      const preview = yield call(getPreview, message.message);
+      if (preview) {
+        message.preview = preview;
+      }
+    }
 
     yield put(
       receive({

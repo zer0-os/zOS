@@ -1,4 +1,4 @@
-import { AdminMessageType, EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { SendbirdClient } from './sendbird-client';
@@ -43,9 +43,7 @@ export interface IChatClient {
     users: User[],
     name: string,
     image: File,
-    optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
+    optimisticId: string
   ) => Promise<Partial<Channel> | void>;
   sendMessagesByChannelId: (
     channelId: string,
@@ -99,15 +97,8 @@ export class Chat {
     return this.client.getMessageByRoomId(channelId, messageId);
   }
 
-  async createConversation(
-    users: User[],
-    name: string,
-    image: File,
-    optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
-  ) {
-    return this.client.createConversation(users, name, image, optimisticId, adminMessageType, currentUserId);
+  async createConversation(users: User[], name: string, image: File, optimisticId: string) {
+    return this.client.createConversation(users, name, image, optimisticId);
   }
 
   async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {

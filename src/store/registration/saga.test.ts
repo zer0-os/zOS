@@ -37,7 +37,6 @@ import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
-import { AdminMessageType } from '../messages';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -313,7 +312,7 @@ describe('updateProfile', () => {
           ],
         ],
         [
-          call(createConversation, ['inviter-id'], '', null, AdminMessageType.JOINED_ZERO, 'abc'),
+          call(createConversation, ['inviter-id'], '', null),
           null,
         ],
         [
@@ -360,7 +359,7 @@ describe('updateProfile', () => {
           null,
         ],
         [
-          call(createConversation, ['inviter-id'], '', null, AdminMessageType.JOINED_ZERO, 'abc'),
+          call(createConversation, ['inviter-id'], '', null),
           null,
         ],
         [

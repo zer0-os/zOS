@@ -15,7 +15,3 @@ export enum MatrixConstants {
   NEW_CONTENT = 'm.new_content',
   REPLACE = 'm.replace',
 }
-
-export enum CustomEventType {
-  ADMIN_MESSAGE = 'admin_message',
-}

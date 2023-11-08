@@ -19,13 +19,13 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { AdminMessageType, EditMessageOptions, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -179,10 +179,7 @@ export class MatrixClient implements IChatClient {
 
   private processRawEventsToMessages(events): any[] {
     const messages = events.filter(
-      (event) =>
-        (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) &&
-        !this.isDeleted(event) &&
-        !this.isEditEvent(event)
+      (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
     );
 
     events.filter(this.isEditEvent).forEach((event) => {
@@ -216,14 +213,7 @@ export class MatrixClient implements IChatClient {
     return mapMatrixMessage(newMessage, this.matrix);
   }
 
-  async createConversation(
-    users: User[],
-    name: string = null,
-    image: File = null,
-    _optimisticId: string,
-    adminMessageType?: AdminMessageType,
-    currentUserId?: string
-  ) {
+  async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
 
@@ -252,30 +242,7 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    await this.sendAdminMessage(result.room_id, users[0].userId, currentUserId, adminMessageType);
-
     return this.mapConversation(this.matrix.getRoom(result.room_id));
-  }
-
-  private async sendAdminMessage(
-    roomId: string,
-    inviterId: string,
-    currentUserId: string,
-    type: AdminMessageType = AdminMessageType.CONVERSATION_STARTED
-  ) {
-    let content: any = {
-      type,
-      body: 'You have joined a conversation.',
-    };
-
-    if (type === AdminMessageType.JOINED_ZERO) {
-      content.inviteeId = currentUserId;
-      content.inviterId = inviterId;
-    } else if (type === AdminMessageType.CONVERSATION_STARTED) {
-      content.creatorId = currentUserId;
-    }
-
-    await this.matrix.sendEvent(roomId, CustomEventType.ADMIN_MESSAGE, content);
   }
 
   async sendMessagesByChannelId(
@@ -413,7 +380,7 @@ export class MatrixClient implements IChatClient {
   }
 
   processMessageEvent(event): void {
-    if (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) {
+    if (event.type === EventType.RoomMessage) {
       const relatesTo = event.content[MatrixConstants.RELATES_TO];
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         this.onMessageUpdated(event);
@@ -452,7 +419,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
-      if (event.type === EventType.RoomMessage || event.type === CustomEventType.ADMIN_MESSAGE) {
+      if (event.type === EventType.RoomMessage) {
         this.processMessageEvent(event);
       }
     });

@@ -248,9 +248,7 @@ export class SendbirdClient implements IChatClient {
 
         events.receiveUnreadCount(channelId, (channel as any).unreadMessageCount);
       },
-      onUserReceivedInvitation: (channel) => {
-        events.onUserReceivedInvitation(this.getChannelId(channel));
-      },
+
       onUserLeft: (channel, user) => {
         events.onUserLeft(this.getChannelId(channel), user.userId);
       },

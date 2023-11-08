@@ -32,7 +32,7 @@ import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { receive } from '../normalized';
+import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -175,26 +175,27 @@ export function* updateProfile(action) {
 
       const inviterMatrixId = response.response.inviter.matrixId;
       const inviterUserId = response.response.inviter.id;
+
+      if (!inviterUserId || !inviterMatrixId) {
+        return false;
+      }
+
       const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
-      const normalizeUserData = (userData) => {
-        return {
-          userId: userData.id,
-          firstName: userData.profileSummary.firstName,
-          profileImage: userData.profileSummary.profileImage,
-          matrixId: userData.matrixId,
-        };
-      };
-
       if (userData && userData.length > 0) {
-        yield put(receive({ users: { [inviterUserId]: normalizeUserData(userData[0]) } }));
+        const user = {
+          userId: userData[0].id,
+          firstName: userData[0].profileSummary.firstName,
+          profileImage: userData[0].profileSummary.profileImage,
+          matrixId: userData[0].matrixId,
+        };
+
+        yield put(receiveUser(user));
       }
 
-      if (inviterUserId) {
-        try {
-          yield call(createConversation, [inviterUserId], '', null);
-        } catch (error) {}
-      }
+      try {
+        yield call(createConversation, [inviterUserId], '', null);
+      } catch (error) {}
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;

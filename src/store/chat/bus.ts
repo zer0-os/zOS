@@ -45,8 +45,7 @@ export function createChatConnection(userId, chatAccessToken) {
     const reconnectStart = () => emit({ type: Events.ReconnectStart, payload: {} });
     const reconnectStop = () => emit({ type: Events.ReconnectStop, payload: {} });
     const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
-    const onUserReceivedInvitation = (channelId) =>
-      emit({ type: Events.ChannelInvitationReceived, payload: { channelId } });
+    const onUserReceivedInvitation = (event) => emit({ type: Events.ChannelInvitationReceived, payload: { event } });
     const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
     const onUserJoinedChannel = (channel) => emit({ type: Events.UserJoinedChannel, payload: { channel } });
     const onConversationListChanged = (conversationIds) =>

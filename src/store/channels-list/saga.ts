@@ -21,7 +21,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
-import { AdminMessageType } from '../messages';
+import { AdminMessageType, MessageSendStatus } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
@@ -333,9 +333,55 @@ function* listenForUserLogout() {
   }
 }
 
-export function* currentUserAddedToChannel(_action) {
-  // For now, just force a fetch of conversations to refresh the list.
+export function* currentUserAddedToChannel({ payload }) {
   yield fetchConversations();
+
+  const userData = yield call(getZEROUsers, [payload.event.sender]);
+
+  const adminMessage = {
+    id: payload.event.event_id,
+    isAdmin: true,
+    createdAt: payload.event.origin_server_ts,
+    updatedAt: null,
+    message: 'Conversation was started',
+    sender: {
+      userId: userData[0].id,
+      firstName: userData[0].profileSummary.firstName,
+      profileImage: userData[0].profileSummary.profileImage,
+      lastName: '',
+      profileId: userData[0].profileId,
+    },
+    mentionedUsers: [],
+    hidePreview: true,
+    preview: {},
+    admin: {
+      type: AdminMessageType.CONVERSATION_STARTED,
+      creatorId: userData[0].id,
+    },
+    sendStatus: MessageSendStatus.SUCCESS,
+    image: null,
+    media: null,
+    optimisticId: undefined,
+  };
+
+  const conversations = yield select((state) => getDeepProperty(state, 'normalized.channels', {}));
+  const conversationId = payload.event.room_id;
+  const existingConversation = conversations[conversationId];
+
+  if (existingConversation) {
+    const updatedConversation = {
+      ...existingConversation,
+      messages: [...existingConversation.messages, adminMessage],
+    };
+
+    const updatedConversations = {
+      ...conversations,
+      [conversationId]: updatedConversation,
+    };
+
+    const newConversationsList = Object.values(updatedConversations).filter(Boolean);
+    yield put(receive(newConversationsList));
+  }
 }
 
 export function* userLeftChannel(channelId, userId) {

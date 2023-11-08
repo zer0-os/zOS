@@ -488,10 +488,11 @@ export class MatrixClient implements IChatClient {
 
       this.processMessageEvent(event);
     });
-    this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
+
+    this.matrix.on(RoomMemberEvent.Membership, async (event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
         if (await this.autoJoinRoom(member.roomId)) {
-          this.events.onUserReceivedInvitation(member.roomId);
+          this.events.onUserReceivedInvitation(event.event);
         }
       }
     });

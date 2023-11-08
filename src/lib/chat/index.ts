@@ -14,7 +14,7 @@ export interface RealtimeChatEvents {
   receiveDeleteMessage: (roomId: string, messageId: string) => void;
   onMessageUpdated: (channelId: string, message: Message) => void;
   receiveUnreadCount: (channelId: string, unreadCount: number) => void;
-  onUserReceivedInvitation: (channel) => void;
+  onUserReceivedInvitation: (event) => void;
   onUserJoinedChannel: (conversation) => void;
   invalidChatAccessToken: () => void;
   onUserLeft: (channelId: string, userId: string) => void;

@@ -336,12 +336,12 @@ function* listenForUserLogout() {
 export function* currentUserAddedToChannel({ payload }) {
   yield fetchConversations();
 
-  const userData = yield call(getZEROUsers, [payload.event.sender]);
+  const userData = yield call(getZEROUsers, [payload.inviterId]);
 
   const adminMessage = {
-    id: payload.event.event_id,
+    id: uuidv4(),
     isAdmin: true,
-    createdAt: payload.event.origin_server_ts,
+    createdAt: Date.now(),
     updatedAt: null,
     message: 'Conversation was started',
     sender: {
@@ -365,7 +365,7 @@ export function* currentUserAddedToChannel({ payload }) {
   };
 
   const conversations = yield select((state) => getDeepProperty(state, 'normalized.channels', {}));
-  const conversationId = payload.event.room_id;
+  const conversationId = payload.channelId;
   const existingConversation = conversations[conversationId];
 
   if (existingConversation) {

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { call, delay, put, race, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
@@ -34,7 +33,6 @@ import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { receive } from '../normalized';
-import { AdminMessageType, MessageSendStatus } from '../messages';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -194,43 +192,7 @@ export function* updateProfile(action) {
 
       if (inviterUserId) {
         try {
-          const createdConversation = yield call(createConversation, [inviterUserId], '', null);
-          const newConversationId = createdConversation.id;
-
-          const adminMessage = {
-            id: uuidv4(),
-            isAdmin: true,
-            createdAt: Date.now(),
-            updatedAt: null,
-            message: 'Conversation was started',
-            sender: {
-              userId: userData[0].id,
-              firstName: userData[0].profileSummary.firstName,
-              profileImage: userData[0].profileSummary.profileImage,
-              lastName: '',
-              profileId: userData[0].profileId,
-            },
-            mentionedUsers: [],
-            hidePreview: true,
-            preview: {},
-            admin: {
-              type: AdminMessageType.JOINED_ZERO,
-              inviterId: userData[0].id,
-              inviteeId: userId,
-            },
-            sendStatus: MessageSendStatus.SUCCESS,
-            image: null,
-            media: null,
-            optimisticId: undefined,
-          };
-
-          const updatedConversation = {
-            ...createdConversation,
-            messages: [adminMessage, ...createdConversation.messages],
-            otherMembers: [userData[0].id],
-          };
-
-          yield put(receive({ channels: { [newConversationId]: updatedConversation } }));
+          yield call(createConversation, [inviterUserId], '', null);
         } catch (error) {}
       }
 

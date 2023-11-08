@@ -19,13 +19,13 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { EditMessageOptions, MessagesResponse } from '../../store/messages';
+import { AdminMessageType, EditMessageOptions, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, MatrixConstants, MembershipStateType } from './matrix/types';
+import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType } from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -179,8 +179,12 @@ export class MatrixClient implements IChatClient {
 
   private processRawEventsToMessages(events): any[] {
     const messages = events.filter(
-      (event) => event.type === EventType.RoomMessage && !this.isDeleted(event) && !this.isEditEvent(event)
+      (event) =>
+        (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) &&
+        !this.isDeleted(event) &&
+        !this.isEditEvent(event)
     );
+    console.log('MESSAGES', messages);
 
     events.filter(this.isEditEvent).forEach((event) => {
       const relatedEventId = this.getRelatedEventId(event);
@@ -242,6 +246,14 @@ export class MatrixClient implements IChatClient {
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
     return this.mapConversation(this.matrix.getRoom(result.room_id));
+  }
+
+  async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
+    this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO, {
+      inviterId,
+      inviteeId,
+      type: AdminMessageType.JOINED_ZERO,
+    });
   }
 
   async sendMessagesByChannelId(

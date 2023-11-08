@@ -33,6 +33,7 @@ import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { receive } from '../normalized';
+import { chat } from '../../lib/chat';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -175,7 +176,7 @@ export function* updateProfile(action) {
 
       const inviterMatrixId = response.response.inviter.matrixId;
       const inviterUserId = response.response.inviter.id;
-      const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
+      const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
       const normalizeUserData = (userData) => {
         return {
@@ -186,13 +187,22 @@ export function* updateProfile(action) {
         };
       };
 
-      if (userData && userData.length > 0) {
-        yield put(receive({ users: { [inviterUserId]: normalizeUserData(userData[0]) } }));
+      if (inviterZeroUserData && inviterZeroUserData.length > 0) {
+        yield put(receive({ users: { [inviterUserId]: normalizeUserData(inviterZeroUserData[0]) } }));
       }
 
       if (inviterUserId) {
         try {
-          yield call(createConversation, [inviterUserId], '', null);
+          const createdConversation = yield call(createConversation, [inviterUserId], '', null);
+          const createdConversationId = createdConversation.id;
+
+          const chatClient = yield call(chat.get);
+          yield call(
+            [chatClient, chatClient.userJoinedInviterOnZero],
+            createdConversationId,
+            inviterZeroUserData[0].id,
+            userId
+          );
         } catch (error) {}
       }
 

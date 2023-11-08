@@ -110,6 +110,8 @@ export class SendbirdClient implements IChatClient {
     await del<any>(`/chatChannels/${roomId}/message`).send({ message: { id: messageId } });
   }
 
+  async userJoinedInviterOnZero() {}
+
   async editMessage(
     roomId: string,
     messageId: string,

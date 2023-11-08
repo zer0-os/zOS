@@ -21,7 +21,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
-import { AdminMessageType } from '../messages';
+import { AdminMessageType, MessageSendStatus } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
@@ -385,7 +385,40 @@ export function* saga() {
 }
 
 function* userJoinedChannelAction({ payload }) {
-  yield addChannel(payload.channel);
+  const currentUser = yield select(currentUserSelector());
+
+  const adminMessage = {
+    id: uuidv4(),
+    isAdmin: true,
+    createdAt: Date.now(),
+    updatedAt: null,
+    message: 'Conversation was started',
+    sender: {
+      userId: currentUser.id,
+      firstName: currentUser.profileSummary.firstName,
+      profileImage: currentUser.profileSummary.profileImage,
+      lastName: '',
+      profileId: currentUser.profileId,
+    },
+    mentionedUsers: [],
+    hidePreview: true,
+    preview: {},
+    admin: {
+      type: AdminMessageType.CONVERSATION_STARTED,
+      creatorId: currentUser.id,
+    },
+    sendStatus: MessageSendStatus.SUCCESS,
+    image: null,
+    media: null,
+    optimisticId: undefined,
+  };
+
+  const updatedChannel = {
+    ...payload.channel,
+    messages: [adminMessage, ...payload.channel.messages],
+  };
+
+  yield addChannel(updatedChannel);
 }
 
 function* conversationListChangedAction({ payload }) {

@@ -490,7 +490,6 @@ describe('matrix client', () => {
 
     it('creates encrypted room', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-
       const client = await subject({ createRoom });
 
       await client.createConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);

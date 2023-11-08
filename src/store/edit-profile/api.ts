@@ -28,3 +28,11 @@ export async function saveUserMatrixCredentials({
     success: response.status === 200,
   };
 }
+
+export async function leaveGlobalNetwork() {
+  await post('/networks/global/leave').send();
+}
+
+export async function joinGlobalNetwork() {
+  await post('/networks/global/join').send();
+}

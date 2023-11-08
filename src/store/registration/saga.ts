@@ -32,8 +32,8 @@ import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { receive } from '../normalized';
 import { chat } from '../../lib/chat';
+import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -176,23 +176,25 @@ export function* updateProfile(action) {
 
       const inviterMatrixId = response.response.inviter.matrixId;
       const inviterUserId = response.response.inviter.id;
-      const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
-      const normalizeUserData = (userData) => {
-        return {
-          userId: userData.id,
-          firstName: userData.profileSummary.firstName,
-          profileImage: userData.profileSummary.profileImage,
-          matrixId: userData.matrixId,
-        };
-      };
-
-      if (inviterZeroUserData && inviterZeroUserData.length > 0) {
-        yield put(receive({ users: { [inviterUserId]: normalizeUserData(inviterZeroUserData[0]) } }));
+      if (!inviterUserId || !inviterMatrixId) {
+        return false;
       }
 
-      if (inviterUserId) {
-        try {
+      const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
+
+      if (inviterZeroUserData && inviterZeroUserData.length > 0) {
+        const user = {
+          userId: inviterZeroUserData[0].id,
+          firstName: inviterZeroUserData[0].profileSummary.firstName,
+          profileImage: inviterZeroUserData[0].profileSummary.profileImage,
+          matrixId: inviterZeroUserData[0].matrixId,
+        };
+
+        yield put(receiveUser(user));
+      }
+
+       try {
           const createdConversation = yield call(createConversation, [inviterUserId], '', null);
           const createdConversationId = createdConversation.id;
 
@@ -204,7 +206,6 @@ export function* updateProfile(action) {
             userId
           );
         } catch (error) {}
-      }
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;

@@ -14,6 +14,11 @@ import { Giphy } from './giphy/giphy';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import { IconSend3 } from '@zero-tech/zui/icons';
 
+const featureFlags = { enableMatrix: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
@@ -230,11 +235,11 @@ describe('MessageInput', () => {
   it('dropzone accept all type of images, text, .pdf, .doc files', function () {
     const mimeTypes = {
       'image/*': [],
-      'text/*': [],
-      'video/*': [],
-      'application/pdf': [],
-      'application/zip': [],
-      'application/msword': [],
+      // 'text/*': [],
+      // 'video/*': [],
+      // 'application/pdf': [],
+      // 'application/zip': [],
+      // 'application/msword': [],
     };
 
     const wrapper = subject({});

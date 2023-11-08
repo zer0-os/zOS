@@ -19,7 +19,7 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { AdminMessageType, EditMessageOptions, MessagesResponse } from '../../store/messages';
+import { AdminMessageType, EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -29,6 +29,8 @@ import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
+import { encryptFile } from './matrix/media';
+import { uploadAttachment } from '../../store/messages/api';
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -106,7 +108,7 @@ export class MatrixClient implements IChatClient {
       await room.loadMembersIfNeeded();
     }
 
-    return rooms.map(this.mapChannel);
+    return await Promise.all(rooms.map((r) => this.mapChannel(r)));
   }
 
   async getConversations() {
@@ -125,7 +127,46 @@ export class MatrixClient implements IChatClient {
       }
     }
 
-    return rooms.filter((r) => !failedToJoin.includes(r.roomId)).map(this.mapConversation);
+    const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+    return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+  }
+
+  async getSecureBackup() {
+    return await this.matrix.checkKeyBackup();
+  }
+
+  async generateSecureBackup() {
+    return await this.matrix.prepareKeyBackupVersion();
+  }
+
+  async saveSecureBackup(backup) {
+    // Clone the backup object because the save mutates it.
+    const cleanBackup = {
+      algorithm: backup.algorithm,
+      auth_data: { ...backup.auth_data },
+      recovery_key: backup.recovery_key,
+    };
+
+    try {
+      await this.matrix.createKeyBackupVersion(cleanBackup);
+    } catch (e) {
+      throw new Error('Error creating key backup');
+    }
+  }
+
+  async restoreSecureBackup(recoveryKey: string) {
+    const backup = await this.matrix.checkKeyBackup();
+    if (!backup.backupInfo) {
+      throw new Error('Backup broken or not there');
+    }
+
+    try {
+      if (!backup.trustInfo.usable) {
+        await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
+      }
+    } catch (e) {
+      throw new Error('Error while restoring backup');
+    }
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -177,7 +218,7 @@ export class MatrixClient implements IChatClient {
     return event.content[MatrixConstants.NEW_CONTENT];
   }
 
-  private processRawEventsToMessages(events): any[] {
+  private async processRawEventsToMessages(events): Promise<any[]> {
     const messages = events.filter(
       (event) =>
         (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) &&
@@ -196,7 +237,7 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    return messages.map((message) => mapMatrixMessage(message, this.matrix));
+    return await Promise.all(messages.map((m) => mapMatrixMessage(m, this.matrix)));
   }
 
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -206,14 +247,14 @@ export class MatrixClient implements IChatClient {
     const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 100 });
 
     // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
-    const messages = this.getAllMessagesFromRoom(room);
+    const messages = await this.getAllMessagesFromRoom(room);
     return { messages, hasMore };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
-    return mapMatrixMessage(newMessage, this.matrix);
+    return await mapMatrixMessage(newMessage, this.matrix);
   }
 
   async createConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
@@ -289,6 +330,44 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+    if (!this.matrix.isRoomEncrypted(roomId)) {
+      console.warn('uploadFileMessage called for non-encrypted room', roomId);
+      return;
+    }
+
+    const encrypedFileInfo = await encryptFile(media);
+    const uploadedFile = await uploadAttachment(encrypedFileInfo.file);
+
+    // https://spec.matrix.org/v1.8/client-server-api/#extensions-to-mroommessage-msgtypes
+    const file = {
+      url: uploadedFile.key,
+      ...encrypedFileInfo.info,
+    };
+
+    const content = {
+      body: null,
+      msgtype: MsgType.Image,
+      file,
+      info: {
+        mimetype: media.type,
+        size: media.size,
+        name: media.name,
+        optimisticId,
+        rootMessageId,
+      },
+      optimisticId,
+    };
+
+    const messageResult = await this.matrix.sendMessage(roomId, content);
+
+    // Don't return a full message, only the pertinent attributes that changed.
+    return {
+      id: messageResult.event_id,
+      optimisticId,
+    } as unknown as Message;
+  }
+
   async recordMessageSent(roomId: string): Promise<void> {
     const data = { roomId, sentAt: new Date().valueOf() };
 
@@ -360,7 +439,8 @@ export class MatrixClient implements IChatClient {
         matches.push(room);
       }
     }
-    return matches.map(this.mapConversation);
+
+    return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
   arraysMatch(a, b) {
@@ -534,8 +614,8 @@ export class MatrixClient implements IChatClient {
     this.events.receiveDeleteMessage(event.room_id, event.redacts);
   };
 
-  private publishMessageEvent(event) {
-    this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+  private async publishMessageEvent(event) {
+    this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
   }
 
   private publishConversationListChange = async (event: MatrixEvent) => {
@@ -577,13 +657,13 @@ export class MatrixClient implements IChatClient {
     }
   };
 
-  private mapToGeneralChannel(room: Room) {
+  private async mapToGeneralChannel(room: Room) {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
 
-    const messages = this.getAllMessagesFromRoom(room);
+    const messages = await this.getAllMessagesFromRoom(room);
 
     return {
       id: room.roomId,
@@ -605,13 +685,13 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  private mapChannel = (room: Room): Partial<Channel> => {
-    return this.mapToGeneralChannel(room);
+  private mapChannel = async (room: Room): Promise<Partial<Channel>> => {
+    return await this.mapToGeneralChannel(room);
   };
 
-  private mapConversation = (room: Room): Partial<Channel> => {
+  private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     return {
-      ...this.mapToGeneralChannel(room),
+      ...(await this.mapToGeneralChannel(room)),
       isChannel: false,
     };
   };
@@ -645,12 +725,12 @@ export class MatrixClient implements IChatClient {
     return this.getLatestEvent(room, EventType.RoomCreate)?.getTs() || 0;
   }
 
-  private getAllMessagesFromRoom(room: Room): any[] {
+  private async getAllMessagesFromRoom(room: Room): Promise<any[]> {
     const events = room
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
-    return this.processRawEventsToMessages(events);
+    return await this.processRawEventsToMessages(events);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

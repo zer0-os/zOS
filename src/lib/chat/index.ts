@@ -26,6 +26,15 @@ export interface RealtimeChatEvents {
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
 }
 
+export interface MatrixKeyBackupInfo {
+  algorithm: string;
+  auth_data: any;
+  count?: number;
+  etag?: string;
+  version?: string; // number contained within
+  recovery_key?: string;
+}
+
 export interface IChatClient {
   init: (events: RealtimeChatEvents) => void;
   connect: (userId: string, accessToken: string) => Promise<string | null>;
@@ -53,6 +62,12 @@ export interface IChatClient {
     file?: FileUploadResult,
     optimisticId?: string
   ) => Promise<MessagesResponse>;
+  uploadFileMessage: (
+    channelId: string,
+    media: File,
+    rootMessageId?: string,
+    optimisticId?: string
+  ) => Promise<Message>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
   editMessage(
@@ -63,6 +78,10 @@ export interface IChatClient {
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
   userJoinedInviterOnZero: (channelId: string, inviterId: string, inviteeId: string) => Promise<any>;
+  getSecureBackup: () => Promise<any>;
+  generateSecureBackup: () => Promise<any>;
+  saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
+  restoreSecureBackup: (recoveryKey: string) => Promise<void>;
 }
 
 export class Chat {
@@ -128,6 +147,10 @@ export class Chat {
     return this.client.searchMentionableUsersForChannel(channelId, search, channelMembers);
   }
 
+  uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+    return this.client.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,
@@ -141,6 +164,22 @@ export class Chat {
 
   async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
     return this.client.fetchConversationsWithUsers(users);
+  }
+
+  async getSecureBackup(): Promise<any> {
+    return this.client.getSecureBackup();
+  }
+
+  async generateSecureBackup(): Promise<any> {
+    return this.client.generateSecureBackup();
+  }
+
+  async saveSecureBackup(backup: MatrixKeyBackupInfo): Promise<void> {
+    this.client.saveSecureBackup(backup);
+  }
+
+  async restoreSecureBackup(recoveryKey: string): Promise<any> {
+    return this.client.restoreSecureBackup(recoveryKey);
   }
 
   initChat(events: RealtimeChatEvents): void {

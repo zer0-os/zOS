@@ -1,8 +1,7 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
-.edit-profile {
-  width: 608px;
-  padding: 10px;
+.secure-backup {
+  max-width: 350px;
 
   &__header {
     display: flex;
@@ -34,19 +33,8 @@
     }
   }
 
-  &__body {
-    //margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 32px;
-    margin: 40px 0px;
-  }
-
-  &__body-input {
-    width: 240px;
-    gap: 4px;
-    line-height: 24px;
+  &__messages {
+    margin-top: 40px;
   }
 
   &__footer {
@@ -56,13 +44,13 @@
     gap: 16px;
   }
 
-  // TODO: pass 'large' as a prop to the zUI button component
-  &__zui-button-large {
-    height: 40px;
-    width: 144px;
-  }
-
-  &__alert-large {
-    height: 56px;
+  &__recovery-key {
+    padding: 16px;
+    border: 1px solid var(--color-greyscale-6);
+    background: var(--color-greyscale-2);
+    border-radius: 8px;
+    color: var(--color-greyscale-11);
+    font-weight: 400;
+    font-size: 16px;
   }
 }

@@ -9,6 +9,17 @@ module.exports = {
       'react-router-dom': path.resolve('./node_modules/react-router-dom'),
       '@zer0-os/zos-component-library': path.resolve('./node_modules/@zer0-os/zos-component-library'),
     },
+    configure: {
+      module: {
+        rules: [
+          {
+            test: /\.mjs/,
+            include: /node_modules/,
+            type: 'javascript/auto',
+          },
+        ],
+      },
+    },
   },
   devServer: {
     watchOptions: {

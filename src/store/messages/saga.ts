@@ -113,6 +113,18 @@ export function* getZeroUsersMap() {
   return zeroUsersMap;
 }
 
+function* mapMessagesAndPreview(messagesResponse, channelId) {
+  yield call(mapMessageSenders, messagesResponse.messages, channelId);
+  for (const message of messagesResponse.messages) {
+    const preview = yield call(getPreview, message.message);
+    if (preview) {
+      message.preview = preview;
+    }
+  }
+
+  return messagesResponse.messages;
+}
+
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
@@ -134,7 +146,7 @@ export function* fetch(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    yield call(mapMessageSenders, messagesResponse.messages, channelId);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property
@@ -305,7 +317,7 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
-    yield call(mapMessageSenders, messagesResponse.messages, channelId);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
 
     yield put(
       receive({

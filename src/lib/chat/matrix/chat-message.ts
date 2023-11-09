@@ -4,7 +4,7 @@ import { decryptFile } from './media';
 async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
 
-  let media: any = {};
+  let media = null;
   try {
     if (content?.msgtype === MsgType.Image) {
       const { file, info } = content;

@@ -17,9 +17,9 @@ import {
   EventTimeline,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapMatrixMessage } from './matrix/chat-message';
+import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { AdminMessageType, EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -219,25 +219,38 @@ export class MatrixClient implements IChatClient {
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
-    const messages = events.filter(
-      (event) =>
-        (event.type === EventType.RoomMessage || event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) &&
-        !this.isDeleted(event) &&
-        !this.isEditEvent(event)
-    );
+    const messages = [];
 
-    events.filter(this.isEditEvent).forEach((event) => {
-      const relatedEventId = this.getRelatedEventId(event);
-      const message = messages.find((originalEvent) => originalEvent.event_id === relatedEventId);
-      const newContent = this.getNewContent(event);
-
-      if (message && newContent) {
-        message.content.body = newContent.body;
-        message.updatedAt = event.origin_server_ts;
+    for (const event of events) {
+      if (this.isDeleted(event) || this.isEditEvent(event)) {
+        continue;
       }
-    });
 
-    return await Promise.all(messages.map((m) => mapMatrixMessage(m, this.matrix)));
+      if (event.type === EventType.RoomMessage) {
+        messages.push(mapMatrixMessage(event, this.matrix));
+      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) {
+        const adminMessage = mapEventToAdminMessage(event);
+        messages.push(Promise.resolve(adminMessage));
+      }
+    }
+
+    const editEvents = events.filter(this.isEditEvent);
+    for (const editEvent of editEvents) {
+      const relatedEventId = this.getRelatedEventId(editEvent);
+      const index = messages.findIndex((promise) => promise.then((message) => message.id === relatedEventId));
+      if (index > -1) {
+        messages[index] = messages[index].then((message) => {
+          const newContent = this.getNewContent(editEvent);
+          return {
+            ...message,
+            content: { ...message.content, body: newContent.body },
+            updatedAt: editEvent.origin_server_ts,
+          };
+        });
+      }
+    }
+
+    return await Promise.all(messages);
   }
 
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -292,7 +305,6 @@ export class MatrixClient implements IChatClient {
     this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO, {
       inviterId,
       inviteeId,
-      type: AdminMessageType.JOINED_ZERO,
     });
   }
 

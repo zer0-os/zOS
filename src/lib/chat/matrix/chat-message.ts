@@ -1,6 +1,7 @@
 import { CustomEventType } from './types';
 import { MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
+import { AdminMessageType } from '../../../store/messages';
 
 async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
@@ -28,20 +29,10 @@ async function parseMediaData(matrixMessage) {
 }
 
 export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const { event_id, content, origin_server_ts, sender: senderId, updatedAt, type } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
 
   const parent = matrixMessage.content['m.relates_to'];
-  const isAdmin = type === CustomEventType.USER_JOINED_INVITER_ON_ZERO;
   const senderData = sdkMatrixClient.getUser(senderId);
-
-  const adminData = isAdmin
-    ? {
-        type: content.type,
-        inviterId: content.inviterId,
-        inviteeId: content.inviteeId,
-        creatorId: content.creatorId,
-      }
-    : {};
 
   return {
     id: event_id,
@@ -55,10 +46,10 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
       profileImage: '',
       profileId: '',
     },
-    isAdmin,
-    admin: adminData,
+    isAdmin: false,
     optimisticId: content.optimisticId,
     ...{
+      admin: {},
       mentionedUsers: [],
       hidePreview: false,
       media: null,
@@ -67,5 +58,25 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     parentMessageText: '',
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
     ...(await parseMediaData(matrixMessage)),
+  };
+}
+
+export function mapEventToAdminMessage(matrixMessage) {
+  const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
+
+  const adminMessageType =
+    type === CustomEventType.USER_JOINED_INVITER_ON_ZERO
+      ? AdminMessageType.JOINED_ZERO
+      : AdminMessageType.CONVERSATION_STARTED;
+
+  return {
+    id: event_id,
+    message: 'Conversation was started',
+    createdAt: origin_server_ts,
+    isAdmin: true,
+    sender: {
+      userId: senderId,
+    },
+    admin: { type: adminMessageType, inviterId: content.inviterId, inviteeId: content.inviteeId, creatorId: senderId },
   };
 }

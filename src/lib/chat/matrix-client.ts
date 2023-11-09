@@ -285,7 +285,7 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    return this.mapConversation(this.matrix.getRoom(result.room_id));
+    return await this.mapConversation(this.matrix.getRoom(result.room_id));
   }
 
   async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
@@ -488,7 +488,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === EventType.RoomCreate) {
-        this.roomCreated(event);
+        await this.roomCreated(event);
       }
       if (event.type === EventType.RoomAvatar) {
         this.publishRoomAvatarChange(event);
@@ -607,7 +607,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private async roomCreated(event) {
-    this.events.onUserJoinedChannel(this.mapConversation(this.matrix.getRoom(event.room_id)));
+    this.events.onUserJoinedChannel(await this.mapConversation(this.matrix.getRoom(event.room_id)));
   }
 
   private receiveDeleteMessage = (event) => {

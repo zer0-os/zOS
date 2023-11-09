@@ -219,38 +219,36 @@ export class MatrixClient implements IChatClient {
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
-    const messages = [];
-
-    for (const event of events) {
+    const messagesPromises = events.map(async (event) => {
       if (this.isDeleted(event) || this.isEditEvent(event)) {
-        continue;
+        return null;
       }
 
       if (event.type === EventType.RoomMessage) {
-        messages.push(mapMatrixMessage(event, this.matrix));
+        return mapMatrixMessage(event, this.matrix);
       } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) {
-        const adminMessage = mapEventToAdminMessage(event);
-        messages.push(Promise.resolve(adminMessage));
+        return mapEventToAdminMessage(event);
       }
-    }
+      return null;
+    });
 
-    const editEvents = events.filter(this.isEditEvent);
-    for (const editEvent of editEvents) {
+    let messages = await Promise.all(messagesPromises);
+    messages = messages.filter((message) => message !== null);
+
+    events.filter(this.isEditEvent).forEach((editEvent) => {
       const relatedEventId = this.getRelatedEventId(editEvent);
-      const index = messages.findIndex((promise) => promise.then((message) => message.id === relatedEventId));
-      if (index > -1) {
-        messages[index] = messages[index].then((message) => {
-          const newContent = this.getNewContent(editEvent);
-          return {
-            ...message,
-            content: { ...message.content, body: newContent.body },
-            updatedAt: editEvent.origin_server_ts,
-          };
-        });
+      const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
+      if (messageIndex > -1) {
+        const newContent = this.getNewContent(editEvent);
+        messages[messageIndex] = {
+          ...messages[messageIndex],
+          content: { ...messages[messageIndex].content, body: newContent.body },
+          updatedAt: editEvent.origin_server_ts,
+        };
       }
-    }
+    });
 
-    return await Promise.all(messages);
+    return messages;
   }
 
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {

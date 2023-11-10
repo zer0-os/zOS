@@ -1,6 +1,6 @@
 {
   "name": "zOS",
-  "version": "0.78.0",
+  "version": "0.79.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {

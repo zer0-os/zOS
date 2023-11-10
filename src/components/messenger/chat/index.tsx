@@ -14,6 +14,7 @@ import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { IconButton } from '@zero-tech/zui/components';
+import { featureFlags } from '../../../lib/feature-flags';
 
 export interface PublicProperties {}
 
@@ -43,11 +44,15 @@ export class Container extends React.Component<Properties, State> {
 
     const directMessage = denormalize(activeConversationId, state);
 
+    let allowCollapse = false;
+    if (featureFlags.internalUsage) {
+      allowCollapse = layout.value?.isMessengerFullScreen && user?.data?.isAMemberOfWorlds;
+    }
     return {
       activeConversationId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
-      allowCollapse: layout.value?.isMessengerFullScreen && user?.data?.isAMemberOfWorlds,
+      allowCollapse,
     };
   }
 

@@ -267,7 +267,9 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    return await this.mapConversation(this.matrix.getRoom(result.room_id));
+    const room = this.matrix.getRoom(result.room_id);
+    this.initializeRoomEventHandlers(room);
+    return await this.mapConversation(room);
   }
 
   async sendMessagesByChannelId(

@@ -15,6 +15,7 @@ import {
   RoomStateEvent,
   MatrixEvent,
   EventTimeline,
+  NotificationCountType,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapMatrixMessage } from './matrix/chat-message';
@@ -42,6 +43,7 @@ export class MatrixClient implements IChatClient {
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
+  private unreadNotificationHandlers = [];
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -108,6 +110,9 @@ export class MatrixClient implements IChatClient {
       await room.decryptAllEvents();
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
+
+      this.initializeRoomEventHandlers(room);
+
       if (membership === MembershipStateType.Invite) {
         if (!(await this.autoJoinRoom(room.roomId))) {
           failedToJoin.push(room.roomId);
@@ -262,7 +267,9 @@ export class MatrixClient implements IChatClient {
     // Any room is only set as a DM based on a single user. We'll use the first one.
     await setAsDM(this.matrix, result.room_id, users[0].matrixId);
 
-    return await this.mapConversation(this.matrix.getRoom(result.room_id));
+    const room = this.matrix.getRoom(result.room_id);
+    this.initializeRoomEventHandlers(room);
+    return await this.mapConversation(room);
   }
 
   async sendMessagesByChannelId(
@@ -378,6 +385,24 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  async markRoomAsRead(roomId: string): Promise<void> {
+    const room = this.matrix.getRoom(roomId);
+
+    if (!room) {
+      return;
+    }
+
+    const events = room.getLiveTimeline().getEvents();
+    const latestEvent = events[events.length - 1];
+
+    if (!latestEvent) {
+      return;
+    }
+
+    await this.matrix.sendReadReceipt(latestEvent);
+    await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
+  }
+
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
@@ -449,13 +474,28 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  private initializeRoomEventHandlers(room: Room) {
+    if (this.unreadNotificationHandlers[room.roomId]) {
+      return;
+    }
+
+    this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
+      this.handleUnreadNotifications(room.roomId, unreadNotification);
+    room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
+  }
+
+  private handleUnreadNotifications = (roomId, unreadNotifications) => {
+    if (unreadNotifications) {
+      this.events.receiveUnreadCount(roomId, unreadNotifications?.total || 0);
+    }
+  };
+
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);
       if (event.type === EventType.RoomEncryption) {
         console.log('encryped message: ', event);
       }
-
       if (event.type === EventType.RoomCreate) {
         await this.roomCreated(event);
       }
@@ -468,6 +508,7 @@ export class MatrixClient implements IChatClient {
 
       this.processMessageEvent(event);
     });
+
     this.matrix.on(RoomMemberEvent.Membership, async (_event, member) => {
       if (member.membership === MembershipStateType.Invite && member.userId === this.userId) {
         if (await this.autoJoinRoom(member.roomId)) {
@@ -550,6 +591,7 @@ export class MatrixClient implements IChatClient {
       this.matrix.setGlobalErrorOnUnknownDevices(false);
 
       await this.matrix.startClient();
+
       await this.waitForSync();
 
       return opts.userId;
@@ -575,7 +617,9 @@ export class MatrixClient implements IChatClient {
   }
 
   private async roomCreated(event) {
-    this.events.onUserJoinedChannel(await this.mapConversation(this.matrix.getRoom(event.room_id)));
+    const room = this.matrix.getRoom(event.room_id);
+    this.initializeRoomEventHandlers(room);
+    this.events.onUserJoinedChannel(await this.mapConversation(room));
   }
 
   private receiveDeleteMessage = (event) => {
@@ -623,8 +667,8 @@ export class MatrixClient implements IChatClient {
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
-
     const messages = await this.getAllMessagesFromRoom(room);
+    const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
     return {
       id: room.roomId,
@@ -639,7 +683,7 @@ export class MatrixClient implements IChatClient {
       messages,
       groupChannelType: GroupChannelType.Private,
       category: '',
-      unreadCount: 0,
+      unreadCount,
       hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,

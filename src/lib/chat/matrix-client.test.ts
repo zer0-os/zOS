@@ -32,6 +32,9 @@ const stubRoom = (attrs = {}) => ({
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
   getEvents: () => stubTimeline(),
+  getUnreadNotificationCount: () => 0,
+  on: () => undefined,
+  off: () => undefined,
   ...attrs,
 });
 
@@ -53,6 +56,7 @@ const getSdkClient = (sdkClient = {}) => ({
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
   }),
+  off: jest.fn(),
   getRooms: jest.fn(),
   getRoom: jest.fn().mockReturnValue(stubRoom()),
   getUser: jest.fn(),
@@ -655,6 +659,35 @@ describe('matrix client', () => {
         id: 'new-message-id',
         optimisticId: optimisticId,
       });
+    });
+  });
+
+  describe('markRoomAsRead', () => {
+    it('marks room as read successfully', async () => {
+      const roomId = '!testRoomId';
+      const latestEventId = 'latest-event-id';
+      const latestEvent = {
+        event: { event_id: latestEventId },
+      };
+
+      const sendReadReceipt = jest.fn().mockResolvedValue(undefined);
+      const setRoomReadMarkers = jest.fn().mockResolvedValue(undefined);
+      const getLiveTimelineEvents = jest.fn().mockReturnValue([latestEvent]);
+      const getRoom = jest.fn().mockReturnValue(
+        stubRoom({
+          getLiveTimeline: jest.fn().mockReturnValue(stubTimeline({ getEvents: getLiveTimelineEvents })),
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendReadReceipt, setRoomReadMarkers, getRoom })),
+      });
+
+      await client.connect(null, 'token');
+      await client.markRoomAsRead(roomId);
+
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent);
+      expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });
 });

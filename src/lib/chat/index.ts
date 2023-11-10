@@ -76,6 +76,7 @@ export interface IChatClient {
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
+  markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
   getSecureBackup: () => Promise<any>;
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
@@ -158,6 +159,10 @@ export class Chat {
 
   async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
     return this.client.fetchConversationsWithUsers(users);
+  }
+
+  async markRoomAsRead(roomId: string, userId?: string): Promise<void> {
+    return this.client.markRoomAsRead(roomId, userId);
   }
 
   async getSecureBackup(): Promise<any> {

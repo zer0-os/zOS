@@ -40,5 +40,12 @@ export async function uploadImage(file: File): Promise<FileResult> {
 export async function getZEROUsers(matrixIds: string[]) {
   return await get('/matrix/users/zero', { matrixIds })
     .catch((_error) => null)
-    .then((response) => response?.body || []);
+    .then((response) => {
+      if (!response?.body) {
+        return [];
+      }
+
+      // The api endpoint does not return the standard user object, so we need to map it
+      return response.body.map((u) => ({ ...u, userId: u.id }));
+    });
 }

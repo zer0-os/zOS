@@ -37,7 +37,7 @@ export function* updateSidekick(action) {
 
 export function* initializeUserLayout(user: { id: string; isAMemberOfWorlds: boolean }) {
   const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
-  const isMessengerFullScreen = !user.isAMemberOfWorlds;
+  const isMessengerFullScreen = true; // The main app view of zOS is no longer used
 
   yield put(
     update({
@@ -51,7 +51,7 @@ export function* initializePublicLayout() {
   yield put(
     update({
       isSidekickOpen: false,
-      isMessengerFullScreen: false,
+      isMessengerFullScreen: true,
     })
   );
 }
@@ -60,7 +60,7 @@ export function* clearUserLayout() {
   yield put(
     update({
       isSidekickOpen: false,
-      isMessengerFullScreen: false,
+      isMessengerFullScreen: true,
     })
   );
 }

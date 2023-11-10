@@ -406,7 +406,8 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
-
+  yield call(mapToZeroUsers, [channel]);
+  yield call(updateUserPresence, [channel]);
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
 }
 

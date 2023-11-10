@@ -3,6 +3,11 @@ import { shallow } from 'enzyme';
 
 import { Properties, UserActions } from '.';
 
+const featureFlags = { enableMatrix: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('UserActions', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {

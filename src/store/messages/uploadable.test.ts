@@ -1,10 +1,16 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import { FileUploadResult } from './saga';
+import * as matchers from 'redux-saga-test-plan/matchers';
+import { chat } from '../../lib/chat';
 
-import { sendFileMessage, uploadAttachment, uploadFileMessage as uploadFileMessageApi } from './api';
+import { sendFileMessage, uploadAttachment } from './api';
 import { stubResponse } from '../../test/saga';
 import { UploadableAttachment, UploadableGiphy, UploadableMedia } from './uploadable';
+
+const chatClient = {
+  uploadFileMessage: () => {},
+};
 
 describe(UploadableMedia, () => {
   it('uploads the media file', async () => {
@@ -15,9 +21,8 @@ describe(UploadableMedia, () => {
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, 'root-id'))
       .provide([
-        stubResponse(call(uploadFileMessageApi, channelId, imageFile.nativeFile, 'root-id', 'optimistic-id'), {
-          id: 'new-id',
-        }),
+        [matchers.call.fn(chat.get), chatClient],
+        [matchers.call.fn(chatClient.uploadFileMessage), { id: 'new-id' }],
       ])
       .run();
 

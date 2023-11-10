@@ -25,10 +25,10 @@ describe('Menu', () => {
   it('dropzone accept all type of images, text, .pdf, .doc files', function () {
     const mimeTypes = {
       'image/*': [],
-      'text/*': [],
-      'application/pdf': [],
-      'application/zip': [],
-      'application/msword': [],
+      // 'text/*': [],
+      // 'application/pdf': [],
+      // 'application/zip': [],
+      // 'application/msword': [],
     };
 
     const wrapper = subject({ mimeTypes });

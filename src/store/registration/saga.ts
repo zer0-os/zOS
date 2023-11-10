@@ -30,6 +30,9 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 import { completeUserLogin, setAuthentication } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
+import { createConversation } from '../channels-list/saga';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
+import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -169,6 +172,31 @@ export function* updateProfile(action) {
       yield put(setFirstTimeLogin(true));
       yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
+
+      const inviterMatrixId = response.response.inviter.matrixId;
+      const inviterUserId = response.response.inviter.id;
+
+      if (!inviterUserId || !inviterMatrixId) {
+        return false;
+      }
+
+      const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
+
+      if (userData && userData.length > 0) {
+        const user = {
+          userId: userData[0].id,
+          firstName: userData[0].profileSummary.firstName,
+          profileImage: userData[0].profileSummary.profileImage,
+          matrixId: userData[0].matrixId,
+        };
+
+        yield put(receiveUser(user));
+      }
+
+      try {
+        yield call(createConversation, [inviterUserId], '', null);
+      } catch (error) {}
+
       yield spawn(clearRegistrationStateOnLogout);
       return true;
     } else {

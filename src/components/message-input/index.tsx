@@ -102,14 +102,15 @@ export class MessageInput extends React.Component<Properties, State> {
     this.clipboard.removePasteListener(this.clipboardEvent);
   }
 
+  // NOTE: commenting other types of media for now since we don't support them yet (in matrix)
   get mimeTypes() {
     return {
       'image/*': [],
-      'text/*': [],
-      'video/*': [],
-      'application/pdf': [],
-      'application/zip': [],
-      'application/msword': [],
+      // 'text/*': [],
+      // 'video/*': [],
+      // 'application/pdf': [],
+      // 'application/zip': [],
+      // 'application/msword': [],
     };
   }
 
@@ -281,10 +282,6 @@ export class MessageInput extends React.Component<Properties, State> {
       return;
     }
 
-    if (featureFlags.enableMatrix) {
-      return;
-    }
-
     const items = event.clipboardData.items;
 
     const newImages: any[] = Array.from(items)
@@ -357,7 +354,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowFileAttachment() {
-    return !featureFlags.enableMatrix && !this.props.isEditing;
+    return !this.props.isEditing;
   }
 
   get allowLeftIcons() {

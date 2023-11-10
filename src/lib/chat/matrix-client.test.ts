@@ -12,6 +12,16 @@ jest.mock('../../store/channels-list/api', () => {
   return { uploadImage: (...args) => mockUploadImage(...args) };
 });
 
+const mockEncryptFile = jest.fn();
+jest.mock('./matrix/media', () => {
+  return { encryptFile: (...args) => mockEncryptFile(...args) };
+});
+
+const mockUploadAttachment = jest.fn();
+jest.mock('../../store/messages/api', () => {
+  return { uploadAttachment: (...args) => mockUploadAttachment(...args) };
+});
+
 const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',
@@ -68,6 +78,7 @@ const getSdkClient = (sdkClient = {}) => ({
   setGlobalErrorOnUnknownDevices: () => undefined,
   fetchRoomEvent: jest.fn(),
   paginateEventTimeline: () => true,
+  isRoomEncrypted: () => true,
   ...sdkClient,
 });
 
@@ -745,6 +756,97 @@ describe('matrix client', () => {
         id: 'edited-message-id',
         message: editedMessage,
         updatedAt: updatedAtTimestamp,
+      });
+    });
+  });
+
+  describe('uploadFileMessage', () => {
+    it('logs warning if room is not encrypted and returns ', async () => {
+      const roomId = '!testRoomId';
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+
+      const isRoomEncrypted = jest.fn(() => false);
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted })),
+      });
+
+      await client.connect(null, 'token');
+      client.uploadFileMessage(roomId, {} as File, rootMessageId, optimisticId);
+
+      expect(mockEncryptFile).not.toHaveBeenCalled();
+    });
+
+    it('sends a file message successfully', async () => {
+      // const originalMessageId = 'orig-message-id';
+      const roomId = '!testRoomId';
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+      const media = {
+        name: 'test-file',
+        size: 1000,
+        type: 'image/png',
+      };
+
+      when(mockEncryptFile)
+        .calledWith(expect.anything())
+        .mockResolvedValue({
+          file: { ...media },
+          info: {
+            hashes: { sha256: 'wfewfe' },
+            iv: 'XH0bn67qTPsAAAAAAAAAAA',
+            key: {},
+            v: 'v2',
+          },
+        });
+
+      when(mockUploadAttachment).calledWith(expect.anything()).mockResolvedValue({
+        name: 'test-file',
+        key: 'attachments/../test.jpg',
+        url: 'attachments/../test.jpg',
+        type: 'file',
+      });
+
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'new-message-id',
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendMessage })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.uploadFileMessage(roomId, media as File, rootMessageId, optimisticId);
+
+      expect(sendMessage).toBeCalledWith(
+        roomId,
+        expect.objectContaining({
+          body: null,
+          msgtype: 'm.image',
+          file: {
+            url: 'attachments/../test.jpg',
+            hashes: { sha256: 'wfewfe' },
+            iv: 'XH0bn67qTPsAAAAAAAAAAA',
+            key: {},
+            v: 'v2',
+          },
+          info: {
+            mimetype: 'image/png',
+            size: 1000,
+            name: 'test-file',
+            optimisticId: 'optimistic-id',
+            rootMessageId: 'root-message-id',
+          },
+          optimisticId: 'optimistic-id',
+        })
+      );
+
+      expect(result).toMatchObject({
+        id: 'new-message-id',
+        optimisticId: optimisticId,
       });
     });
   });

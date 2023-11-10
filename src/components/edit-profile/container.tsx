@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { EditProfile } from '.';
-import { State, editProfile, startProfileEdit } from '../../store/edit-profile';
+import { State, editProfile, joinGlobalNetwork, leaveGlobalNetwork, startProfileEdit } from '../../store/edit-profile';
 import { Container as RegistrationContainer } from '../../authentication/create-account-details/container';
 export interface PublicProperties {
   onClose?: () => void;
@@ -19,6 +19,8 @@ export interface Properties extends PublicProperties {
   currentProfileImage: string;
   editProfile: (data: { name: string; image: File }) => void;
   startProfileEdit: () => void;
+  leaveGlobalNetwork: () => void;
+  joinGlobalNetwork: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -36,7 +38,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { editProfile, startProfileEdit };
+    return { editProfile, startProfileEdit, joinGlobalNetwork, leaveGlobalNetwork };
   }
 
   componentDidMount(): void {
@@ -52,6 +54,8 @@ export class Container extends React.Component<Properties> {
         editProfileState={this.props.editProfileState}
         currentDisplayName={this.props.currentDisplayName}
         currentProfileImage={this.props.currentProfileImage}
+        onLeaveGlobal={this.props.leaveGlobalNetwork}
+        onJoinGlobal={this.props.joinGlobalNetwork}
       />
     );
   }

@@ -80,7 +80,12 @@ export async function completeAccount({
   profileImage?: string;
 }) {
   try {
-    const response = await post('/api/v2/accounts/finalize').send({ userId, inviteCode, name, profileImage });
+    const response = await post('/api/v2/accounts/finalize').send({
+      userId,
+      inviteCode,
+      name,
+      profileImage,
+    });
     return {
       success: true,
       response: response.body,

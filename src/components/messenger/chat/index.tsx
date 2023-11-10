@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconExpand1, IconMinus, IconUsers1, IconXClose, IconCollapse1 } from '@zero-tech/zui/icons';
+import { IconExpand1, IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { setactiveConversationId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
@@ -14,7 +14,6 @@ import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { IconButton } from '@zero-tech/zui/components';
-import { featureFlags } from '../../../lib/feature-flags';
 
 export interface PublicProperties {}
 
@@ -23,7 +22,6 @@ export interface Properties extends PublicProperties {
   setactiveConversationId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
   isFullScreen: boolean;
-  allowCollapse: boolean;
   enterFullScreenMessenger: () => void;
   exitFullScreenMessenger: () => void;
 }
@@ -39,20 +37,14 @@ export class Container extends React.Component<Properties, State> {
     const {
       chat: { activeConversationId },
       layout,
-      authentication: { user },
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
 
-    let allowCollapse = false;
-    if (featureFlags.internalUsage) {
-      allowCollapse = layout.value?.isMessengerFullScreen && user?.data?.isAMemberOfWorlds;
-    }
     return {
       activeConversationId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
-      allowCollapse,
     };
   }
 
@@ -186,12 +178,6 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-
-            {this.props.allowCollapse && (
-              <div>
-                <IconButton onClick={this.handleDockRight} Icon={IconCollapse1} size='small' />
-              </div>
-            )}
           </div>
 
           <ChatViewContainer

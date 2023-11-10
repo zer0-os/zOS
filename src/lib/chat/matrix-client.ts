@@ -617,7 +617,9 @@ export class MatrixClient implements IChatClient {
   }
 
   private async roomCreated(event) {
-    this.events.onUserJoinedChannel(await this.mapConversation(this.matrix.getRoom(event.room_id)));
+    const room = this.matrix.getRoom(event.room_id);
+    this.initializeRoomEventHandlers(room);
+    this.events.onUserJoinedChannel(await this.mapConversation(room));
   }
 
   private receiveDeleteMessage = (event) => {

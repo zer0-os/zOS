@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Image, Skeleton, Alert, IconButton } from '@zero-tech/zui/components';
+import { Image, Skeleton, IconButton } from '@zero-tech/zui/components';
 import { IconXClose, IconGift1 } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
@@ -23,7 +23,6 @@ export interface Properties {
   maxUses: number;
   inviteUrl: string;
   assetsPath: string;
-  isUserAMemberOfWorlds: boolean;
   isLoading: boolean;
   clipboard?: Clipboard;
 
@@ -81,12 +80,6 @@ export class InviteDialog extends React.Component<Properties, State> {
             alt='Hands reaching out to connect'
             {...cn('image')}
           />
-
-          {this.props.isUserAMemberOfWorlds && (
-            <Alert variant='info' {...cn('network-alert')}>
-              This invite will add someone to your direct messages, <b>not</b> your current network.
-            </Alert>
-          )}
 
           <div {...cn('heading')}>Invite a friend. Chat on ZERO. Earn rewards.</div>
           <div {...cn('byline')}>

@@ -5,7 +5,6 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
 import { MessageInput } from '../message-input/container';
@@ -246,7 +245,12 @@ export class ChatView extends React.Component<Properties, State> {
       >
         {isLightboxOpen && (
           <Lightbox
-            provider={getProvider()}
+            // since we are displaying images from a local blob url (instead of a cloudinary url),
+            // we need to provide a custom provider which just returns the src directly.
+            provider={{
+              fitWithinBox: () => {},
+              getSource: ({ src }) => src,
+            }}
             items={lightboxMedia}
             startingIndex={lightboxStartIndex}
             onClose={this.closeLightBox}

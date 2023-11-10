@@ -43,6 +43,7 @@ export class MatrixClient implements IChatClient {
 
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
+  private unreadNotificationHandlers = [];
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -472,15 +473,20 @@ export class MatrixClient implements IChatClient {
   }
 
   private initializeRoomEventHandlers(room: Room) {
-    const handleUnreadNotifications = (unreadNotifications) => {
-      this.events.receiveUnreadCount(room.roomId, unreadNotifications?.total || 0);
-    };
+    if (this.unreadNotificationHandlers[room.roomId]) {
+      return;
+    }
 
-    // Removing the event handler if it already exists to prevent duplicates.
-    room.off(RoomEvent.UnreadNotifications, handleUnreadNotifications);
-
-    room.on(RoomEvent.UnreadNotifications, handleUnreadNotifications);
+    this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
+      this.handleUnreadNotifications(room.roomId, unreadNotification);
+    room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
   }
+
+  private handleUnreadNotifications = (roomId, unreadNotifications) => {
+    if (unreadNotifications) {
+      this.events.receiveUnreadCount(roomId, unreadNotifications?.total || 0);
+    }
+  };
 
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {

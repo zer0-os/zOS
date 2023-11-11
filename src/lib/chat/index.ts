@@ -18,7 +18,6 @@ export interface RealtimeChatEvents {
   onUserJoinedChannel: (conversation) => void;
   invalidChatAccessToken: () => void;
   onUserLeft: (channelId: string, userId: string) => void;
-  onConversationListChanged: (conversationIds: string[]) => void;
   onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
   onRoomAvatarChanged: (roomId: string, url: string) => void;
@@ -78,6 +77,7 @@ export interface IChatClient {
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
   userJoinedInviterOnZero: (channelId: string, inviterId: string, inviteeId: string) => Promise<any>;
+  markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
   getSecureBackup: () => Promise<any>;
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
@@ -164,6 +164,10 @@ export class Chat {
 
   async fetchConversationsWithUsers(users: User[]): Promise<any[]> {
     return this.client.fetchConversationsWithUsers(users);
+  }
+
+  async markRoomAsRead(roomId: string, userId?: string): Promise<void> {
+    return this.client.markRoomAsRead(roomId, userId);
   }
 
   async getSecureBackup(): Promise<any> {

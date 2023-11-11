@@ -93,3 +93,14 @@ hr.glow:before {
   border: none;
   display: inline-block;
 }
+
+// This ensures the DropdownMenu is always on top of everything else
+// Note: This is not a great way to do this because it implies that we know exactly
+// what zUI is doing under the hood and that this is exactly what radix will always do
+// (we shouldn't even know it's radix). I think the better solution is to expose an
+// attribute on the DropdownMenu that allows us to set the "popup" container node,
+// and add a permanent node at the root level and set it as the popup container.
+// Using this method for now due to time constraints.
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}

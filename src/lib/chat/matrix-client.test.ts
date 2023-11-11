@@ -32,6 +32,9 @@ const stubRoom = (attrs = {}) => ({
   getLiveTimeline: () => stubTimeline(),
   getMyMembership: () => 'join',
   getEvents: () => stubTimeline(),
+  getUnreadNotificationCount: () => 0,
+  on: () => undefined,
+  off: () => undefined,
   ...attrs,
 });
 
@@ -45,20 +48,6 @@ function stubTimeline(stubs = {}) {
   };
 }
 
-const getMockAccountData = (data = {}) => {
-  return jest.fn((eventType) => {
-    if (eventType === EventType.Direct) {
-      return {
-        event: { content: data },
-        getContent: () => data,
-      };
-    }
-    return {
-      getContent: () => ({}),
-    };
-  });
-};
-
 const getSdkClient = (sdkClient = {}) => ({
   login: async () => ({}),
   initCrypto: async () => null,
@@ -67,9 +56,9 @@ const getSdkClient = (sdkClient = {}) => ({
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
   }),
+  off: jest.fn(),
   getRooms: jest.fn(),
   getRoom: jest.fn().mockReturnValue(stubRoom()),
-  getAccountData: jest.fn(),
   getUser: jest.fn(),
   setGlobalErrorOnUnknownDevices: () => undefined,
   fetchRoomEvent: jest.fn(),
@@ -254,109 +243,6 @@ describe('matrix client', () => {
 
       expect(on).toHaveBeenNthCalledWith(1, 'sync', expect.any(Function));
     });
-
-    it('gets rooms', async () => {
-      const rooms = [stubRoom({ roomId: 'room-id' })];
-      const getAccountData = getMockAccountData();
-
-      const getRooms = jest.fn(() => {
-        return rooms;
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-
-      await client.getChannels('network-id');
-
-      expect(getRooms).toHaveBeenCalledOnce();
-    });
-
-    it('waits for sync to get rooms', async () => {
-      const rooms = [stubRoom({ roomId: 'room-id' })];
-      const getAccountData = getMockAccountData();
-      let syncCallback: any;
-
-      const on = (topic, callback) => {
-        if (topic === 'sync') syncCallback = callback;
-      };
-
-      const getRooms = jest.fn(() => {
-        return rooms;
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ on, getRooms, getAccountData })),
-      });
-
-      client.connect(null, 'token');
-
-      const channelFetch = client.getChannels('network-id');
-
-      await new Promise((resolve) => setImmediate(resolve));
-
-      expect(getRooms).not.toHaveBeenCalled();
-
-      syncCallback('PREPARED');
-
-      await channelFetch;
-
-      expect(getRooms).toHaveBeenCalledOnce();
-    });
-  });
-
-  describe('getChannels', () => {
-    it('returns only non-direct rooms as channels', async () => {
-      const rooms = [
-        stubRoom({ roomId: 'channel-id' }),
-        stubRoom({ roomId: 'dm-id' }),
-        stubRoom({ roomId: 'dm-id-without-account-data', getDMInviter: () => 'somebody' }),
-      ];
-
-      const getRooms = jest.fn(() => rooms);
-      const getAccountData = getMockAccountData({ id: 'dm-id' });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-      const channels = await client.getChannels('network-id');
-
-      expect(channels).toHaveLength(1);
-      expect(channels[0].id).toEqual('channel-id');
-    });
-
-    it('returns empty array if no rooms exist', async () => {
-      const getRooms = jest.fn(() => []);
-      const getAccountData = getMockAccountData();
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-      const channels = await client.getChannels('network-id');
-
-      expect(channels).toHaveLength(0);
-    });
-
-    it('returns all rooms as channels if no direct room data exists', async () => {
-      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
-      const getRooms = jest.fn(() => rooms);
-      const getAccountData = getMockAccountData();
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRooms, getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-      const channels = await client.getChannels('network-id');
-
-      expect(channels).toHaveLength(2);
-    });
   });
 
   describe('getConversations', () => {
@@ -375,96 +261,25 @@ describe('matrix client', () => {
       return client;
     };
 
-    it('returns only direct rooms as conversations', async () => {
+    it('returns all rooms as conversations', async () => {
       const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
-      const getRooms = jest.fn(() => rooms);
-      const getAccountData = getMockAccountData({ id: 'dm-id' });
-      const client = await subject({ getRooms, getAccountData });
-
-      const conversations = await client.getConversations();
-
-      expect(conversations).toHaveLength(1);
-      expect(conversations[0].id).toEqual('dm-id');
-    });
-
-    it('returns rooms that do not have account data yet but do have a DM inviter', async () => {
-      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id', getDMInviter: () => 'somebody' })];
       const getRooms = jest.fn(() => rooms);
       const client = await subject({ getRooms });
 
       const conversations = await client.getConversations();
 
-      expect(conversations).toHaveLength(1);
-      expect(conversations[0].id).toEqual('dm-id');
+      expect(conversations).toHaveLength(2);
+      expect(conversations[0].id).toEqual('channel-id');
+      expect(conversations[1].id).toEqual('dm-id');
     });
 
     it('returns empty array if no direct rooms exist', async () => {
       const getRooms = jest.fn(() => []);
-      const getAccountData = getMockAccountData();
-      const client = await subject({ getRooms, getAccountData });
+      const client = await subject({ getRooms });
 
       const conversations = await client.getConversations();
 
       expect(conversations).toHaveLength(0);
-    });
-  });
-
-  describe('getAccountData', () => {
-    it('get account data', async () => {
-      const getAccountData = getMockAccountData({
-        '@mockuser1': ['!abcdefg'],
-        '@mockuser2:': ['!hijklmn', '!opqrstuv'],
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-
-      await client.getConversations();
-
-      expect(getAccountData).toHaveBeenCalledWith(EventType.Direct);
-    });
-
-    it('waits for connection if matrix client is connecting to get account data', async () => {
-      const sdkClient = getSdkClient();
-      const createClient = jest.fn(() => sdkClient);
-
-      const client = subject({ createClient });
-      client.connect(null, 'token');
-
-      const accountDataFetch = client.getAccountData(EventType.Direct);
-      expect(sdkClient.getAccountData).not.toHaveBeenCalled();
-
-      await new Promise((resolve) => setImmediate(resolve));
-
-      await accountDataFetch;
-
-      expect(sdkClient.getAccountData).toHaveBeenCalledWith(EventType.Direct);
-    });
-
-    it('fetches and returns correct account data when type is "m.direct"', async () => {
-      const getAccountData = getMockAccountData({
-        '@mockuser1': ['!abcdefg'],
-        '@mockuser2:': ['!hijklmn', '!opqrstuv'],
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-
-      const result = await client.getAccountData(EventType.Direct);
-      expect(result).toMatchObject({
-        event: {
-          content: {
-            '@mockuser1': ['!abcdefg'],
-            '@mockuser2:': ['!hijklmn', '!opqrstuv'],
-          },
-        },
-      });
     });
   });
 
@@ -844,6 +659,35 @@ describe('matrix client', () => {
         id: 'new-message-id',
         optimisticId: optimisticId,
       });
+    });
+  });
+
+  describe('markRoomAsRead', () => {
+    it('marks room as read successfully', async () => {
+      const roomId = '!testRoomId';
+      const latestEventId = 'latest-event-id';
+      const latestEvent = {
+        event: { event_id: latestEventId },
+      };
+
+      const sendReadReceipt = jest.fn().mockResolvedValue(undefined);
+      const setRoomReadMarkers = jest.fn().mockResolvedValue(undefined);
+      const getLiveTimelineEvents = jest.fn().mockReturnValue([latestEvent]);
+      const getRoom = jest.fn().mockReturnValue(
+        stubRoom({
+          getLiveTimeline: jest.fn().mockReturnValue(stubTimeline({ getEvents: getLiveTimelineEvents })),
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendReadReceipt, setRoomReadMarkers, getRoom })),
+      });
+
+      await client.connect(null, 'token');
+      await client.markRoomAsRead(roomId);
+
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent);
+      expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });
 });

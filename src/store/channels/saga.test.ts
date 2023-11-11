@@ -1,10 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import {
-  joinChannel as joinChannelAPI,
-  markAllMessagesAsReadInChannel as markAllMessagesAsReadInChannelAPI,
-} from './api';
+import { joinChannel as joinChannelAPI } from './api';
 import {
   joinChannel,
   markAllMessagesAsRead,
@@ -12,14 +9,17 @@ import {
   markConversationAsRead,
   unreadCountUpdated,
 } from './saga';
-import { fetch as fetchMessages } from '../messages/saga';
 
 import { rootReducer } from '../reducer';
-import { stubResponse } from '../../test/saga';
 import { denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 const userId = 'user-id';
+
+const mockChatClient = {
+  markRoomAsRead: jest.fn().mockReturnValue(200),
+};
 
 describe('channels list saga', () => {
   it('join channel and add hasJoined to channel state', async () => {
@@ -50,8 +50,12 @@ describe('channels list saga', () => {
     const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
 
     await expectSaga(markAllMessagesAsRead, channelId, userId)
-      .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
-      .call(markAllMessagesAsReadInChannelAPI, channelId, userId)
+      .provide([
+        [matchers.call.fn(chat.get), mockChatClient],
+        [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+      ])
+      .call(chat.get)
+      .call([mockChatClient, mockChatClient.markRoomAsRead], channelId, userId)
       .run();
   });
 
@@ -67,7 +71,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -82,7 +89,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -97,7 +107,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markChannelAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -113,7 +126,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markConversationAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -127,7 +143,10 @@ describe('channels list saga', () => {
         .build();
 
       await expectSaga(markConversationAsRead, channelId)
-        .provide([stubResponse(matchers.call.fn(markAllMessagesAsReadInChannelAPI), 200)])
+        .provide([
+          [matchers.call.fn(chat.get), mockChatClient],
+          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+        ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)
         .run();
@@ -144,39 +163,10 @@ describe(unreadCountUpdated, () => {
     const { storeState } = await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: updatedUnreadCount },
     })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.unreadCount).toEqual(updatedUnreadCount);
-  });
-
-  it('fetches messages for channel if they have not been fetched previously', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: false }).build();
-
-    await expectSaga(unreadCountUpdated, {
-      payload: { channelId, unreadCount: 2 },
-    })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
-      .withReducer(rootReducer, initialState)
-      .spawn(fetchMessages, { payload: { channelId } })
-      .run();
-  });
-
-  it('does not fetch messages if the channel has already loaded once', async () => {
-    const channelId = 'channel-id';
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasLoadedMessages: true }).build();
-
-    await expectSaga(unreadCountUpdated, {
-      payload: { channelId, unreadCount: 2 },
-    })
-      .provide([stubResponse(matchers.spawn.fn(fetchMessages), null)])
-      .withReducer(rootReducer, initialState)
-      .not.spawn.fn(fetchMessages)
-      .run();
   });
 });

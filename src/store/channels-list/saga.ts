@@ -377,7 +377,6 @@ export function* saga() {
     userLeftChannel(payload.channelId, payload.userId)
   );
   yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
-  yield takeEveryFromBus(chatBus, ChatEvents.ConversationListChanged, conversationListChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.RoomNameChanged, roomNameChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.RoomAvatarChanged, roomAvatarChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.OtherUserJoinedChannel, otherUserJoinedChannelAction);
@@ -386,10 +385,6 @@ export function* saga() {
 
 function* userJoinedChannelAction({ payload }) {
   yield addChannel(payload.channel);
-}
-
-function* conversationListChangedAction({ payload }) {
-  yield setConversations(payload.conversationIds);
 }
 
 function* roomNameChangedAction(action) {
@@ -411,16 +406,9 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
-
+  yield call(mapToZeroUsers, [channel]);
+  yield call(updateUserPresence, [channel]);
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
-}
-
-export function* setConversations(conversationIds: string[]) {
-  const allChannelIds = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
-  for (const id of allChannelIds) {
-    const isChannel = !conversationIds.includes(id);
-    yield put(receiveChannel({ id, isChannel }));
-  }
 }
 
 export function* roomNameChanged(id: string, name: string) {

@@ -63,6 +63,27 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
+export function* mapCreatorIdToZeroUserId(channels) {
+  const currentUser = yield select(currentUserSelector());
+  if (!currentUser || !currentUser.matrixId) {
+    return;
+  }
+
+  const currentUserId = currentUser.id;
+
+  for (const channel of channels) {
+    for (const message of channel.messages) {
+      if (message.isAdmin) {
+        if (message.admin.creatorId === currentUser.matrixId) {
+          message.admin.creatorId = currentUserId;
+        } else {
+          message.admin.creatorId = message.sender.userId;
+        }
+      }
+    }
+  }
+}
+
 export function* updateUserPresence(conversations) {
   if (!featureFlags.enableMatrix) {
     return;
@@ -119,6 +140,7 @@ export function* fetchConversations() {
   ]);
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);
+  yield call(mapCreatorIdToZeroUserId, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -408,6 +430,8 @@ export function* addChannel(channel) {
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
   yield call(updateUserPresence, [channel]);
+  yield call(mapCreatorIdToZeroUserId, [channel]);
+
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
 }
 

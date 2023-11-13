@@ -278,6 +278,7 @@ export class Container extends React.Component<Properties, State> {
               search={this.usersInMyNetworks}
               onCreate={this.createOneOnOneConversation}
               onStartGroupChat={this.props.startGroup}
+              conversations={this.props.conversations}
             />
           )}
           {this.props.stage === SagaStage.StartGroupChat && (

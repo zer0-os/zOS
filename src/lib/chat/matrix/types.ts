@@ -15,3 +15,7 @@ export enum MatrixConstants {
   NEW_CONTENT = 'm.new_content',
   REPLACE = 'm.replace',
 }
+
+export enum CustomEventType {
+  USER_JOINED_INVITER_ON_ZERO = 'user_joined_inviter_on_zero',
+}

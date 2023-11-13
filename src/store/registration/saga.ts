@@ -32,6 +32,7 @@ import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
+import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {
@@ -180,21 +181,30 @@ export function* updateProfile(action) {
         return false;
       }
 
-      const userData = yield call(getZEROUsersAPI, [inviterMatrixId]);
+      const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
-      if (userData && userData.length > 0) {
+      if (inviterZeroUserData && inviterZeroUserData.length > 0) {
         const user = {
-          userId: userData[0].id,
-          firstName: userData[0].profileSummary.firstName,
-          profileImage: userData[0].profileSummary.profileImage,
-          matrixId: userData[0].matrixId,
+          userId: inviterZeroUserData[0].id,
+          firstName: inviterZeroUserData[0].profileSummary.firstName,
+          profileImage: inviterZeroUserData[0].profileSummary.profileImage,
+          matrixId: inviterZeroUserData[0].matrixId,
         };
 
         yield put(receiveUser(user));
       }
 
       try {
-        yield call(createConversation, [inviterUserId], '', null);
+        const createdConversation = yield call(createConversation, [inviterUserId], '', null);
+        const createdConversationId = createdConversation.id;
+
+        const chatClient = yield call(chat.get);
+        yield call(
+          [chatClient, chatClient.userJoinedInviterOnZero],
+          createdConversationId,
+          inviterZeroUserData[0].id,
+          userId
+        );
       } catch (error) {}
 
       yield spawn(clearRegistrationStateOnLogout);

@@ -242,6 +242,13 @@ export class MatrixClient implements IChatClient {
           updatedAt: editEvent.origin_server_ts,
         };
       }
+
+      if (event.type === EventType.RoomMessage) {
+        return mapMatrixMessage(event, this.matrix);
+      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) {
+        return mapEventToAdminMessage(event);
+      }
+      return null;
     });
 
     return messages;
@@ -368,6 +375,7 @@ export class MatrixClient implements IChatClient {
     };
 
     const messageResult = await this.matrix.sendMessage(roomId, content);
+    this.recordMessageSent(roomId);
 
     // Don't return a full message, only the pertinent attributes that changed.
     return {

@@ -27,6 +27,7 @@ import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
 import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
+import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 
 export interface Payload {
   channelId: string;
@@ -147,6 +148,7 @@ export function* fetch(action) {
     }
 
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
+    yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property

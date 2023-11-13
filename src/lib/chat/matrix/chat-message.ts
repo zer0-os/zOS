@@ -61,13 +61,13 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
   };
 }
 
-export function mapEventToAdminMessage(matrixMessage) {
+export function mapEventToAdminMessage(matrixMessage, currentUserId) {
   const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
 
-  const adminMessageType =
+  const adminData =
     type === CustomEventType.USER_JOINED_INVITER_ON_ZERO
-      ? AdminMessageType.JOINED_ZERO
-      : AdminMessageType.CONVERSATION_STARTED;
+      ? { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId }
+      : { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUserId };
 
   return {
     id: event_id,
@@ -77,6 +77,6 @@ export function mapEventToAdminMessage(matrixMessage) {
     sender: {
       userId: senderId,
     },
-    admin: { type: adminMessageType, inviterId: content.inviterId, inviteeId: content.inviteeId, creatorId: senderId },
+    admin: adminData,
   };
 }

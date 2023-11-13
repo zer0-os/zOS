@@ -9,6 +9,7 @@ import { Properties } from './';
 describe('autocomplete-members', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      conversations: [],
       search: () => undefined,
       onSelect: () => undefined,
       ...props,
@@ -61,6 +62,74 @@ describe('autocomplete-members', () => {
 
     // Ensure that the selected option is not displayed in the component
     expect(wrapper.find('.autocomplete-members__search-results').text()).not.toContain('Result 1');
+  });
+
+  it('excludes the option from final search results, if there is an existing conversation with that user', async () => {
+    const search = jest.fn();
+    when(search)
+      .calledWith('name')
+      .mockResolvedValue([
+        { name: 'Lionel Messi', id: 'result-1' },
+        { name: 'Cristiano Ronaldo', id: 'result-2' },
+      ]);
+
+    // Define existing conversations
+    const conversations = [
+      { otherMembers: [{ id: 'result-1', firstName: 'Lionel', lastName: 'Messi' }] },
+    ] as any[];
+
+    const wrapper = subject({ search, conversations });
+
+    // Simulate a non-empty search
+    await searchFor(wrapper, 'name');
+
+    // Ensure that state.results is correctly updated with filtered results
+    expect(wrapper.state('results')).toEqual([
+      { value: 'result-2', label: 'Cristiano Ronaldo', image: undefined },
+    ]);
+
+    // Ensure that the component renders the filtered result
+    expect(wrapper.find('.autocomplete-members__search-results')).toHaveLength(1);
+    expect(wrapper.find('.autocomplete-members__search-results').text()).toContain('Cristiano Ronaldo');
+
+    // Ensure that the selected option is not displayed in the component
+    expect(wrapper.find('.autocomplete-members__search-results').text()).not.toContain('Lionel Messi');
+  });
+
+  it('does not exclude the options from the search results if user is in group conversation', async () => {
+    const search = jest.fn();
+    when(search)
+      .calledWith('name')
+      .mockResolvedValue([
+        { name: 'Lionel Messi', id: 'result-1' },
+        { name: 'Cristiano Ronaldo', id: 'result-2' },
+      ]);
+
+    // Define existing conversations (note: this is a group conversation)
+    const conversations = [
+      {
+        otherMembers: [
+          { id: 'result-1', firstName: 'Lionel', lastName: 'Messi' },
+          { id: 'result-2', firstName: 'Cristiano', lastName: 'Ronaldo' },
+        ],
+      },
+    ] as any[];
+
+    const wrapper = subject({ search, conversations });
+
+    // Simulate a non-empty search
+    await searchFor(wrapper, 'name');
+
+    // Ensure that state.results is correctly updated with filtered results
+    expect(wrapper.state('results')).toEqual([
+      { value: 'result-1', label: 'Lionel Messi', image: undefined }, // this is returned as we didn't had a one2one conversation with this user
+      { value: 'result-2', label: 'Cristiano Ronaldo', image: undefined },
+    ]);
+
+    // Ensure that the component renders the filtered result
+    expect(wrapper.find('.autocomplete-members__search-results')).toHaveLength(1);
+    expect(wrapper.find('.autocomplete-members__search-results').text()).toContain('Lionel Messi');
+    expect(wrapper.find('.autocomplete-members__search-results').text()).toContain('Cristiano Ronaldo');
   });
 
   it('excludes the selected option from search results', async () => {

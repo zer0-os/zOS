@@ -211,8 +211,8 @@ export class MatrixClient implements IChatClient {
 
       if (event.type === EventType.RoomMessage) {
         return mapMatrixMessage(event, this.matrix);
-      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) {
-        return mapEventToAdminMessage(event, this.userId);
+      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO || event.type === EventType.RoomCreate) {
+        return mapEventToAdminMessage(event);
       }
       return null;
     });

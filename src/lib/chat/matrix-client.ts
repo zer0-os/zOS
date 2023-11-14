@@ -745,7 +745,13 @@ export class MatrixClient implements IChatClient {
     const timelineEvents = this.getTimelineEvents(room);
     const roomCreationEvent = this.getRoomCreationEvent(room);
 
-    if (roomCreationEvent) {
+    // Check if roomCreationEvent is already in timelineEvents
+    const isRoomCreationEventInTimeline = timelineEvents.some(
+      (event) => event.event_id === roomCreationEvent?.event_id
+    );
+
+    // Only add roomCreationEvent if it's not already in the timeline
+    if (roomCreationEvent && !isRoomCreationEventInTimeline) {
       timelineEvents.unshift(roomCreationEvent);
     }
 

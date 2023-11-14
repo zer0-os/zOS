@@ -20,7 +20,7 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
-import { AdminMessageType, EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { config } from '../../config';
@@ -219,17 +219,6 @@ export class MatrixClient implements IChatClient {
 
     let messages = await Promise.all(messagesPromises);
     messages = messages.filter((message) => message !== null);
-
-    const customAdminMessageExists = messages.some(
-      (message) => message.isAdmin && message.admin.type === AdminMessageType.JOINED_ZERO
-    );
-
-    // If a custom admin message exists, remove the admin message for RoomCreate
-    if (customAdminMessageExists) {
-      messages = messages.filter(
-        (message) => !(message.isAdmin && message.admin.type === AdminMessageType.CONVERSATION_STARTED)
-      );
-    }
 
     events.filter(this.isEditEvent).forEach((editEvent) => {
       const relatedEventId = this.getRelatedEventId(editEvent);

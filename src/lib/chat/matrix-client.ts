@@ -607,6 +607,29 @@ export class MatrixClient implements IChatClient {
 
       await this.matrix.initCrypto();
 
+      // Check if notification permissions are already granted
+      if (Notification.permission === 'granted') {
+        // You have permission to show notifications.
+        // Continue with other initialization logic.
+      } else if (Notification.permission === 'denied') {
+        // The user has denied permission.
+        // You can inform the user to enable notifications in the browser settings.
+        // Optionally, you can handle this situation accordingly.
+      } else {
+        // Permission is not granted.
+        // You can request permission using Notification.requestPermission().
+        const permission = await Notification.requestPermission();
+
+        // Check the permission status after requesting it.
+        if (permission === 'granted') {
+          // Permission has been granted.
+          // Continue with other initialization logic.
+        } else {
+          // Permission was not granted.
+          // You can inform the user or adjust your application's behavior accordingly.
+          // Optionally, you can handle this situation accordingly.
+        }
+      }
       // suppsedly the setter is deprecated, but the direct property set doesn't seem to work.
       // this is hopefully only a short-term setting anyway, so just leaving for now.
       // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;

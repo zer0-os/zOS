@@ -742,11 +742,38 @@ export class MatrixClient implements IChatClient {
   }
 
   private async getAllMessagesFromRoom(room: Room): Promise<any[]> {
-    const events = room
+    const timelineEvents = this.getTimelineEvents(room);
+    const roomCreationEvent = this.getRoomCreationEvent(room);
+
+    if (roomCreationEvent) {
+      timelineEvents.unshift(roomCreationEvent);
+    }
+
+    return await this.processRawEventsToMessages(timelineEvents);
+  }
+
+  private getTimelineEvents(room: Room) {
+    return room
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
-    return await this.processRawEventsToMessages(events);
+  }
+
+  private getRoomCreationEvent(room: Room) {
+    const liveTimeline = room.getLiveTimeline();
+    const roomCreationEvent = liveTimeline.getState(EventTimeline.FORWARDS).getStateEvents(EventType.RoomCreate, '');
+
+    if (roomCreationEvent) {
+      return {
+        event_id: roomCreationEvent.getId(),
+        type: roomCreationEvent.getType(),
+        content: roomCreationEvent.getContent(),
+        sender: roomCreationEvent.getSender(),
+        origin_server_ts: roomCreationEvent.getTs(),
+        unsigned: roomCreationEvent.getUnsigned(),
+      };
+    }
+    return null;
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

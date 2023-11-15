@@ -445,6 +445,8 @@ export function* receiveDelete(action) {
 
 let savedMessages = [];
 export function* receiveNewMessage(action) {
+  console.log('REAL TIME RECEIVE NEW MESSAGE');
+  console.log('ACTION', action);
   savedMessages.push(action.payload);
   if (savedMessages.length > 1) {
     // we already have a leading event that's awaiting the debounce delay
@@ -457,7 +459,6 @@ export function* receiveNewMessage(action) {
   return yield call(batchedReceiveNewMessage, batchedPayloads);
 }
 
-let lastNotificationTimestamp = null;
 export function* batchedReceiveNewMessage(batchedPayloads) {
   const byChannelId = {};
   batchedPayloads.forEach((m) => {
@@ -484,6 +485,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
 
       let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+
       if (!newMessages) {
         newMessages = [
           ...currentMessages,
@@ -492,14 +494,19 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
       currentMessages = newMessages;
 
-      if (!lastNotificationTimestamp || message.createdAt > lastNotificationTimestamp) {
-        // This is a "fresh" message. Trigger a notification.
-        yield call(sendBrowserNotification, channelId, message);
+      const getLastNewMessage = newMessages[newMessages.length - 1];
+      const currentUser = yield select(currentUserSelector());
+      const chatClient = yield call(chat.get);
+      const presenceData = yield call([chatClient, chatClient.getUserPresence], currentUser.matrixId);
+      const { lastSeenAt } = presenceData;
+      const lastSeenAtDate = new Date(lastSeenAt);
+      const lastActiveTimestamp = lastSeenAtDate.getTime();
 
-        // Update the lastNotificationTimestamp to the current message's timestamp.
-        lastNotificationTimestamp = message.createdAt;
+      if (lastActiveTimestamp > getLastNewMessage.createdAt && !message.isOwner && channel.unreadCount > 0) {
+        yield call(sendBrowserNotification, channelId, message);
       }
     }
+
     if (modified) {
       yield put(receive({ id: channelId, messages: currentMessages }));
     }
@@ -513,11 +520,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
   // Since the conversation load happens via these events now, this can't just happen. We need to figure out if this is a bullk load or a
   // "fresh" message
   // yield spawn(sendBrowserNotification, channelId, message);
-}
-
-function shouldShowNotification(channelId, message) {
-  console.log('NOTIFICATIN');
-  return true; // Modify this condition accordingly
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

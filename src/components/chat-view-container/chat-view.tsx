@@ -19,7 +19,7 @@ import { AdminMessageContainer } from '../admin-message/container';
 import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
-import { createMessageGroups, getMessageRenderProps } from './utils';
+import { createMessageGroups, filterAdminMessages, getMessageRenderProps } from './utils';
 import { MessagesFetchState } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 
@@ -201,10 +201,16 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderMessages() {
     const messagesByDay = this.getMessagesByDay();
-    const groupDays = Object.keys(messagesByDay).sort((a, b) => (a > b ? 1 : -1));
+    const filteredMessagesByDay = filterAdminMessages(messagesByDay);
 
     return (
-      <div className='messages__container'>{groupDays.map((day: string) => this.renderDay(day, messagesByDay))}</div>
+      <div className='messages__container'>
+        {Object.keys(filteredMessagesByDay)
+          .sort((a, b) => (a > b ? 1 : -1))
+          .map((day) => {
+            return this.renderDay(day, { [day]: filteredMessagesByDay[day] });
+          })}
+      </div>
     );
   }
 

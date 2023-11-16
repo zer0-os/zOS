@@ -8,7 +8,6 @@ jest.mock('../../autocomplete-members');
 describe('CreateConversationPanel', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      conversations: [],
       onBack: () => {},
       search: () => {},
       onCreate: () => {},

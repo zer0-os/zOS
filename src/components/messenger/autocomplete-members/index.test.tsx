@@ -9,7 +9,6 @@ import { Properties } from './';
 describe('autocomplete-members', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      conversations: [],
       search: () => undefined,
       onSelect: () => undefined,
       ...props,

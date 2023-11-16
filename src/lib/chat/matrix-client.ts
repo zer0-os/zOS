@@ -532,7 +532,7 @@ export class MatrixClient implements IChatClient {
     }
   };
 
-  public onSyncStateChange = (state: SyncState, _prevState: SyncState): void => {
+  private onSyncStateChange = (state: SyncState, _prevState: SyncState): void => {
     if (state === SyncState.Syncing) {
       this.isSyncing = true;
     } else if (state === SyncState.Stopped || state === SyncState.Error) {

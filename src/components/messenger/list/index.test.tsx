@@ -206,7 +206,7 @@ describe('messenger-list', () => {
     const wrapper = subject({
       createConversation,
       stage: Stage.CreateOneOnOne,
-      conversations: [{ id: 'convo-id', otherMembers: [{ userId: 'selected-user-id' }] }] as any,
+      conversations: [{ id: 'convo-id', isOneOnOne: true, otherMembers: [{ userId: 'selected-user-id' }] }] as any,
     });
 
     wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
@@ -218,7 +218,7 @@ describe('messenger-list', () => {
     const wrapper = subject({
       onConversationClick,
       stage: Stage.CreateOneOnOne,
-      conversations: [{ id: 'convo-id', otherMembers: [{ userId: 'selected-user-id' }] }] as any,
+      conversations: [{ id: 'convo-id', isOneOnOne: true, otherMembers: [{ userId: 'selected-user-id' }] }] as any,
     });
 
     wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
@@ -237,6 +237,7 @@ describe('messenger-list', () => {
             { userId: 'selected-user-id' },
             { userId: 'another-user-id' },
           ],
+          isOneOnOne: false,
         },
       ] as any,
     });

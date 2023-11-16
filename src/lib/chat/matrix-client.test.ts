@@ -22,6 +22,12 @@ jest.mock('../../store/messages/api', () => {
   return { uploadAttachment: (...args) => mockUploadAttachment(...args) };
 });
 
+global.Notification = {
+  permission: 'granted',
+  requestPermission: jest.fn().mockResolvedValue('granted'),
+  prototype: {},
+} as unknown as typeof Notification;
+
 const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',
@@ -64,6 +70,7 @@ const getSdkClient = (sdkClient = {}) => ({
   fetchRoomEvent: jest.fn(),
   paginateEventTimeline: () => true,
   isRoomEncrypted: () => true,
+  handleNotificationPermissions: jest.fn(),
   ...sdkClient,
 });
 

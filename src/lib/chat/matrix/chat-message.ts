@@ -80,3 +80,15 @@ export function mapEventToAdminMessage(matrixMessage) {
     admin: adminData,
   };
 }
+
+export function mapEventToBrowserNotificationMessage(matrixMessage) {
+  const { event } = matrixMessage;
+
+  return {
+    id: event.event_id,
+    createdAt: event.origin_server_ts,
+    sender: {
+      userId: event.senderId,
+    },
+  };
+}

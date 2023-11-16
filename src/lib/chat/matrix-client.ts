@@ -16,9 +16,11 @@ import {
   MatrixEvent,
   EventTimeline,
   NotificationCountType,
+  IRoomTimelineData,
+  SyncState,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message';
+import { mapEventToAdminMessage, mapMatrixMessage, mapEventToBrowserNotificationMessage } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -44,6 +46,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private isSyncing?: boolean;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -496,7 +499,22 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private initializeRoomEventHandlers(room: Room) {
+  private async processRoomTimelineEvent(
+    event: MatrixEvent,
+    room: Room | undefined,
+    toStartOfTimeline: boolean | undefined,
+    removed: boolean,
+    data: IRoomTimelineData
+  ) {
+    if (removed) return; // only notify for new events, not removed ones
+    if (!data.liveEvent || !!toStartOfTimeline) return; // only notify for new things, not old.
+    if (!this.isSyncing) return; // only notify if syncing is complete
+    if (event.getSender() === this.userId) return; // only notify for other users events
+
+    this.events.receiveLiveRoomEvent(room.roomId, mapEventToBrowserNotificationMessage(event) as any);
+  }
+
+  private async initializeRoomEventHandlers(room: Room) {
     if (this.unreadNotificationHandlers[room.roomId]) {
       return;
     }
@@ -504,11 +522,21 @@ export class MatrixClient implements IChatClient {
     this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
       this.handleUnreadNotifications(room.roomId, unreadNotification);
     room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
+
+    room.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
   }
 
   private handleUnreadNotifications = (roomId, unreadNotifications) => {
     if (unreadNotifications) {
       this.events.receiveUnreadCount(roomId, unreadNotifications?.total || 0);
+    }
+  };
+
+  public onSyncStateChange = (state: SyncState, _prevState: SyncState): void => {
+    if (state === SyncState.Syncing) {
+      this.isSyncing = true;
+    } else if (state === SyncState.Stopped || state === SyncState.Error) {
+      this.isSyncing = false;
     }
   };
 
@@ -549,6 +577,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
+    this.matrix.on(ClientEvent.Sync, this.onSyncStateChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -623,28 +652,12 @@ export class MatrixClient implements IChatClient {
   }
 
   private async handleNotificationPermissions() {
-    // Check if notification permissions are already granted
     if (Notification.permission === 'granted') {
-      // You have permission to show notifications.
-      // Continue with other initialization logic.
+      return;
     } else if (Notification.permission === 'denied') {
-      // The user has denied permission.
-      // You can inform the user to enable notifications in the browser settings.
-      // Optionally, you can handle this situation accordingly.
+      return;
     } else {
-      // Permission is not granted.
-      // You can request permission using Notification.requestPermission().
-      const permission = await Notification.requestPermission();
-
-      // Check the permission status after requesting it.
-      if (permission === 'granted') {
-        // Permission has been granted.
-        // Continue with other initialization logic.
-      } else {
-        // Permission was not granted.
-        // You can inform the user or adjust your application's behavior accordingly.
-        // Optionally, you can handle this situation accordingly.
-      }
+      await Notification.requestPermission();
     }
   }
 

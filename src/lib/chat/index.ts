@@ -23,6 +23,7 @@ export interface RealtimeChatEvents {
   onRoomAvatarChanged: (roomId: string, url: string) => void;
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
+  receiveLiveRoomEvent: (roomId: string, message: Message) => void;
 }
 
 export interface MatrixKeyBackupInfo {

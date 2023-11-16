@@ -1,16 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
-import {
-  EditMessageOptions,
-  Message,
-  SagaActionTypes,
-  schema,
-  removeAll,
-  denormalize,
-  MediaType,
-  MessageSendStatus,
-} from '.';
+import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
@@ -493,18 +484,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
         ];
       }
       currentMessages = newMessages;
-
-      const getLastNewMessage = newMessages[newMessages.length - 1];
-      const currentUser = yield select(currentUserSelector());
-      const chatClient = yield call(chat.get);
-      const presenceData = yield call([chatClient, chatClient.getUserPresence], currentUser.matrixId);
-      const { lastSeenAt } = presenceData;
-      const lastSeenAtDate = new Date(lastSeenAt);
-      const lastActiveTimestamp = lastSeenAtDate.getTime();
-
-      if (lastActiveTimestamp > getLastNewMessage.createdAt && !message.isOwner && channel.unreadCount > 0) {
-        yield call(sendBrowserNotification, channelId, message);
-      }
     }
 
     if (modified) {
@@ -591,11 +570,11 @@ export function isOwner(currentUser, entityUserId) {
   return currentUser.id === entityUserId;
 }
 
-export function* sendBrowserNotification(channelId, message: Message) {
+export function* sendBrowserNotification(roomId, message) {
   // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
-  const channel = yield select(rawChannelSelector(channelId));
+  const room = yield select(rawChannelSelector(roomId));
 
-  if (channel?.isChannel) return;
+  if (room?.isChannel) return;
 
   if (isOwner(yield select(currentUserSelector()), message.sender?.userId)) return;
 
@@ -614,4 +593,9 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
+  yield takeEveryFromBus(chatBus, ChatEvents.LiveTimelineEventReceived, receiveLiveTimelineEventAction);
+}
+
+function* receiveLiveTimelineEventAction({ payload }) {
+  yield sendBrowserNotification(payload.roomId, payload.message);
 }

@@ -8,11 +8,7 @@ import '../list/styles.scss';
 
 import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
-import { Channel } from '../../../store/channels';
-
 export interface Properties {
-  conversations?: Channel[];
-
   search: (query: string) => Promise<Item[]>;
   selectedOptions?: Option[];
   onSelect: (selected: Option) => void;

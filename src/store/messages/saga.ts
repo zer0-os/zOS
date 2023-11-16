@@ -474,7 +474,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
 
       let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
-
       if (!newMessages) {
         newMessages = [
           ...currentMessages,
@@ -483,7 +482,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
       currentMessages = newMessages;
     }
-
     if (modified) {
       yield put(receive({ id: channelId, messages: currentMessages }));
     }

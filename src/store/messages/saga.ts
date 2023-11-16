@@ -436,8 +436,6 @@ export function* receiveDelete(action) {
 
 let savedMessages = [];
 export function* receiveNewMessage(action) {
-  console.log('REAL TIME RECEIVE NEW MESSAGE');
-  console.log('ACTION', action);
   savedMessages.push(action.payload);
   if (savedMessages.length > 1) {
     // we already have a leading event that's awaiting the debounce delay

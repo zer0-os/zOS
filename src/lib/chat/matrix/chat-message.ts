@@ -25,6 +25,7 @@ async function parseMediaData(matrixMessage) {
   return {
     media,
     image: content?.msgtype === MsgType.Image ? media : undefined,
+    rootMessageId: media?.rootMessageId || '',
   };
 }
 

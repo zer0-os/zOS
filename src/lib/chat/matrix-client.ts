@@ -780,4 +780,28 @@ export class MatrixClient implements IChatClient {
   private getLatestEvent(room: Room, type: EventType) {
     return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
   }
+
+  /*
+   * DEBUGGING
+   */
+  async displayDeviceList(userIds: string[]) {
+    const devices = await this.matrix.getCrypto().getUserDeviceInfo(userIds);
+    console.log('devices: ', devices);
+  }
+
+  async displayRoomKeys(roomId: string) {
+    const roomKeys = await this.matrix.getCrypto().exportRoomKeys();
+    console.log('Room Id: ', roomId);
+    console.log(
+      'Room keys: ',
+      roomKeys.filter((k) => k.room_id === roomId)
+    );
+  }
+
+  async getDeviceInfo() {
+    return this.matrix.getDeviceId();
+  }
+  /*
+   * END DEBUGGING
+   */
 }

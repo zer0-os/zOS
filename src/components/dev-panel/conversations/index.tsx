@@ -31,7 +31,9 @@ export class Conversations extends React.PureComponent<Properties> {
         {this.props.conversations.map((conversation) => {
           return (
             <div {...cn('conversation')} key={conversation.id}>
-              <div>{this.name(conversation)}</div>
+              <div>
+                {this.name(conversation)}: {conversation.id}
+              </div>
               <select value={conversation.conversationStatus} onChange={(e) => this.statusChanged(e, conversation.id)}>
                 {this.statusOption(ConversationStatus.CREATED, 'Created')}
                 {this.statusOption(ConversationStatus.CREATING, 'Creating')}

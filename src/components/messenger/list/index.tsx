@@ -155,7 +155,16 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
+  isUserAlreadyInConversation = (userId: string) => {
+    return this.props.conversations.find((c) => c.otherMembers[0].userId === userId);
+  };
+
   createOneOnOneConversation = (id: string) => {
+    if (this.isUserAlreadyInConversation(id)) {
+      this.props.onConversationClick({ conversationId: this.isUserAlreadyInConversation(id).id });
+      return;
+    }
+
     this.props.createConversation({ userIds: [id] });
   };
 

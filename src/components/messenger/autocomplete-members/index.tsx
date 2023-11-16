@@ -9,7 +9,6 @@ import '../list/styles.scss';
 import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
 import { Channel } from '../../../store/channels';
-import { otherMembersToString } from '../../../platform-apps/channels/util';
 
 export interface Properties {
   conversations?: Channel[];
@@ -27,16 +26,6 @@ interface State {
 export class AutocompleteMembers extends React.Component<Properties, State> {
   state = { results: null, searchString: '' };
 
-  // filters the options to exclude any that are already in a "one2one" conversation
-  getNewOptions(options) {
-    const existingConversations = this.props.conversations || [];
-    const names = existingConversations
-      .filter((conversation) => conversation.otherMembers.length === 1)
-      .map((conversation) => otherMembersToString(conversation.otherMembers));
-
-    return options.filter((o) => !names.includes(o.label));
-  }
-
   searchChanged = async (searchString: string) => {
     this.setState({ searchString });
     if (!searchString) {
@@ -47,8 +36,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     const options = items.map(itemToOption);
     const selectedOptions = this.props.selectedOptions || [];
     const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
-    const newOptions = this.getNewOptions(filteredOptions);
-    this.setState({ results: newOptions });
+    this.setState({ results: filteredOptions });
   };
 
   itemSelected(event) {

@@ -225,6 +225,26 @@ describe('messenger-list', () => {
     expect(onConversationClick).toHaveBeenCalledWith({ conversationId: 'convo-id' });
   });
 
+  it('does not open the existing conversation if there is already a conversation with user BUT the conversation is a group (and not one2one)', async function () {
+    const onConversationClick = jest.fn();
+    const wrapper = subject({
+      onConversationClick,
+      stage: Stage.CreateOneOnOne,
+      conversations: [
+        {
+          id: 'convo-id',
+          otherMembers: [
+            { userId: 'selected-user-id' },
+            { userId: 'another-user-id' },
+          ],
+        },
+      ] as any,
+    });
+
+    wrapper.find(CreateConversationPanel).prop('onCreate')('selected-user-id');
+    expect(onConversationClick).not.toHaveBeenCalled();
+  });
+
   it('returns to conversation list if back button pressed', async function () {
     const back = jest.fn();
     const wrapper = subject({ stage: Stage.CreateOneOnOne, back });

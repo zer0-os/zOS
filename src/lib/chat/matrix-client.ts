@@ -20,7 +20,7 @@ import {
   SyncState,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapEventToAdminMessage, mapMatrixMessage, mapEventToBrowserNotificationMessage } from './matrix/chat-message';
+import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -501,7 +501,7 @@ export class MatrixClient implements IChatClient {
 
   private async processRoomTimelineEvent(
     event: MatrixEvent,
-    room: Room | undefined,
+    _room: Room | undefined,
     toStartOfTimeline: boolean | undefined,
     removed: boolean,
     data: IRoomTimelineData
@@ -511,7 +511,7 @@ export class MatrixClient implements IChatClient {
     if (!this.isSyncing) return; // only notify if syncing is complete
     if (event.getSender() === this.userId) return; // only notify for other users events
 
-    this.events.receiveLiveRoomEvent(room.roomId, mapEventToBrowserNotificationMessage(event) as any);
+    this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
   }
 
   private async initializeRoomEventHandlers(room: Room) {

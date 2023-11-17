@@ -18,7 +18,7 @@ export enum Events {
   RoomAvatarChanged = 'chat/roomAvatarChanged',
   OtherUserJoinedChannel = 'chat/channel/otherUserJoined',
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
-  LiveTimelineEventReceived = 'chat/message/liveTimelineEventReceived',
+  LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
 }
 
 let theBus;
@@ -57,8 +57,7 @@ export function createChatConnection(userId, chatAccessToken) {
       emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, user } });
     const onOtherUserLeftChannel = (channelId, user) =>
       emit({ type: Events.OtherUserLeftChannel, payload: { channelId, user } });
-    const receiveLiveRoomEvent = (roomId, message) =>
-      emit({ type: Events.LiveTimelineEventReceived, payload: { roomId, message } });
+    const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
 
     chatClient.initChat({
       reconnectStart,

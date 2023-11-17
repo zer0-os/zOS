@@ -566,11 +566,11 @@ export function isOwner(currentUser, entityUserId) {
   return currentUser.id === entityUserId;
 }
 
-export function* sendBrowserNotification(roomId, message) {
+export function* sendBrowserNotification(eventData) {
   // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
-  if (isOwner(yield select(currentUserSelector()), message.sender?.userId)) return;
+  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
-  yield call(sendBrowserMessage, mapMessage(message));
+  yield call(sendBrowserMessage, mapMessage(eventData));
 }
 
 export function* saga() {
@@ -585,9 +585,9 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
-  yield takeEveryFromBus(chatBus, ChatEvents.LiveTimelineEventReceived, receiveLiveTimelineEventAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.LiveRoomEventReceived, receiveLiveRoomEventAction);
 }
 
-function* receiveLiveTimelineEventAction({ payload }) {
-  yield sendBrowserNotification(payload.roomId, payload.message);
+function* receiveLiveRoomEventAction({ payload }) {
+  yield sendBrowserNotification(payload.eventData);
 }

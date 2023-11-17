@@ -81,8 +81,8 @@ export function mapEventToAdminMessage(matrixMessage) {
   };
 }
 
-export function mapEventToBrowserNotificationMessage(matrixMessage) {
-  const { event } = matrixMessage;
+export function mapToLiveRoomEvent(liveEvent) {
+  const { event } = liveEvent;
 
   return {
     id: event.event_id,

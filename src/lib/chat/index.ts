@@ -187,17 +187,30 @@ export class Chat {
   }
 
   async displayDeviceList(userIds: string[]) {
-    return (this.client as MatrixClient).displayDeviceList(userIds);
+    return this.matrix.displayDeviceList(userIds);
   }
 
   async displayRoomKeys(roomId: string) {
-    return (this.client as MatrixClient).displayRoomKeys(roomId);
+    return this.matrix.displayRoomKeys(roomId);
   }
 
   async getDeviceInfo() {
-    return (this.client as MatrixClient).getDeviceInfo();
+    return this.matrix.getDeviceInfo();
   }
 
+  async cancelAndResendKeyRequests() {
+    return this.matrix.cancelAndResendKeyRequests();
+  }
+
+  async discardOlmSession(roomId: string) {
+    return this.matrix.discardOlmSession(roomId);
+  }
+  async resetOlmSession(roomId: string) {
+    return this.matrix.resetOlmSession(roomId);
+  }
+  async shareHistoryKeys(roomId: string, userIds: string[]) {
+    return this.matrix.shareHistoryKeys(roomId, userIds);
+  }
   initChat(events: RealtimeChatEvents): void {
     this.client.init(events);
   }
@@ -208,6 +221,10 @@ export class Chat {
 
   disconnect(): void {
     this.client.disconnect();
+  }
+
+  get matrix() {
+    return this.client as MatrixClient;
   }
 }
 

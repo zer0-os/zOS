@@ -14,8 +14,12 @@ export interface Properties {
   roomId: string;
   otherMembers: User[];
 
-  onDeviceListRequested: () => void;
-  onRoomKeysRequested: () => void;
+  onDeviceList: () => void;
+  onRoomKeys: () => void;
+  onResendKeyRequests: () => void;
+  onDiscardOLM: () => void;
+  onRestartOLM: () => void;
+  onShareHistoryKeys: (userIds: string[]) => void;
 }
 
 interface State {}
@@ -32,12 +36,19 @@ export class Encryption extends React.PureComponent<Properties, State> {
         <Field label={'id: '} value={this.props.roomId} />
         <h3>Other Members</h3>
         {this.props.otherMembers.map((member) => (
-          <Field key={member.userId} label={member.firstName} value={member.matrixId} />
+          <React.Fragment key={member.userId}>
+            <Field label={member.firstName} value={member.matrixId} />
+            <Button onPress={() => this.props.onShareHistoryKeys([member.matrixId])}>Share History Keys</Button>
+          </React.Fragment>
         ))}
 
-        <h2>Print to Console</h2>
-        <Button onPress={this.props.onDeviceListRequested}>Device List</Button>
-        <Button onPress={this.props.onRoomKeysRequested}>Room Keys</Button>
+        <div {...cn('buttons')}>
+          <Button onPress={this.props.onDeviceList}>Device List</Button>
+          <Button onPress={this.props.onRoomKeys}>Room Keys</Button>
+          <Button onPress={this.props.onResendKeyRequests}>Cancel And Resend Key Requests</Button>
+          <Button onPress={this.props.onDiscardOLM}>Discard OLM Session</Button>
+          <Button onPress={this.props.onRestartOLM}>Restart OLM Session</Button>
+        </div>
       </div>
     );
   }

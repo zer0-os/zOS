@@ -801,6 +801,63 @@ export class MatrixClient implements IChatClient {
   async getDeviceInfo() {
     return this.matrix.getDeviceId();
   }
+
+  async shareHistoryKeys(roomId: string, userIds: string[]) {
+    // This resolves some instances where the other device is missing an old key from the room
+    console.log('sending shared history keys', roomId, userIds);
+    await this.matrix.sendSharedHistoryKeys(roomId, userIds);
+    console.log('done sending shared history keys');
+  }
+
+  async cancelAndResendKeyRequests() {
+    // It seems like this may already be happening automatically when we have
+    // problems decrypting messages.
+    console.log('cancelling and resending key requests');
+    await this.matrix.crypto?.cancelAndResendAllOutgoingKeyRequests();
+    console.log('done cancelling and resending key requests');
+  }
+
+  async discardOlmSession(roomId: string) {
+    // Throw away the olm session for the room...does this automatically
+    // regenerate or do we need the resetOlmSession call below?
+    console.log('discarding session', roomId);
+    await this.matrix.getCrypto().forceDiscardSession(roomId);
+    console.log('done discarding session', roomId);
+  }
+
+  async resetOlmSession(roomId: string) {
+    // RESET THE OLM SESSION
+    // Unsure which errors this might resolve. It seems like once you've missed
+    // something related to olm that you can't recover from it and this may only
+    // help with future messages.
+    console.log('resetting the olm session', roomId);
+    this.matrix.getCrypto().forceDiscardSession(roomId);
+    const room = this.matrix.getRoom(roomId);
+    const members = (await room?.getEncryptionTargetMembers()) || [];
+    if (members.length > 0) {
+      await this.matrix.crypto?.ensureOlmSessionsForUsers(
+        members.map((m) => m.userId),
+        true
+      );
+    }
+    console.log('done resetting the olm session', roomId);
+  }
+
+  async requestRoomKey(_roomId: string) {
+    // Not sure how to send this request. I think it might happen automatically
+    // when we find a specific message that we can't decrypt?
+    // await this.matrix.crypto?.requestRoomKey(
+    //   {
+    //     session_id: '???', // Are these supposed to be from the message we couldn't decrypt?
+    //     room_id: roomId,
+    //     sender_key: '???',
+    //     algorithm: 'm.megolm.v1.aes-sha2',
+    //   },
+    //   [{ deviceId: '???', userId: '???' }], // Are these supposed to be the requester or the requestee?
+    //   true
+    // );
+  }
+
   /*
    * END DEBUGGING
    */

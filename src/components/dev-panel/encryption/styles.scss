@@ -8,4 +8,11 @@
     text-overflow: ellipsis;
     cursor: pointer;
   }
+
+  &__buttons {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 }

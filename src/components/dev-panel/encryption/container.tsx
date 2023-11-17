@@ -2,7 +2,15 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 
 import { RootState } from '../../../store/reducer';
-import { debugDeviceList, debugRoomKeys, fetchDeviceInfo } from '../../../store/matrix';
+import {
+  debugDeviceList,
+  debugRoomKeys,
+  discardOlm,
+  fetchDeviceInfo,
+  resendKeyRequests,
+  restartOlm,
+  shareHistoryKeys,
+} from '../../../store/matrix';
 import { Encryption } from '.';
 import { Channel, denormalize as denormalizeChannel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
@@ -18,6 +26,10 @@ export interface Properties extends PublicProperties {
   fetchInfo: () => void;
   debugDeviceList: (userIds: string[]) => void;
   debugRoomKeys: (roomId: string) => void;
+  resendKeyRequests: () => void;
+  discardOlm: (roomId: string) => void;
+  restartOlm: (roomId: string) => void;
+  shareHistoryKeys: (roomId: string, userIds: string[]) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -46,6 +58,10 @@ export class Container extends React.Component<Properties> {
       debugDeviceList,
       debugRoomKeys,
       fetchInfo: fetchDeviceInfo,
+      resendKeyRequests,
+      discardOlm,
+      restartOlm,
+      shareHistoryKeys: (roomId, userIds) => shareHistoryKeys({ roomId, userIds }),
     };
   }
 
@@ -65,6 +81,24 @@ export class Container extends React.Component<Properties> {
     }
   };
 
+  discardOlm = () => {
+    if (this.props.room) {
+      this.props.discardOlm(this.props.room.id);
+    }
+  };
+
+  restartOlm = () => {
+    if (this.props.room) {
+      this.props.restartOlm(this.props.room.id);
+    }
+  };
+
+  shareHistoryKeys = (userIds: string[]) => {
+    if (this.props.room) {
+      this.props.shareHistoryKeys(this.props.room.id, userIds);
+    }
+  };
+
   render() {
     return (
       <Encryption
@@ -72,8 +106,12 @@ export class Container extends React.Component<Properties> {
         deviceId={this.props.deviceId}
         roomId={this.props.room?.id || ''}
         otherMembers={this.props.room?.otherMembers || []}
-        onDeviceListRequested={this.showDeviceList}
-        onRoomKeysRequested={this.showRoomKeys}
+        onDeviceList={this.showDeviceList}
+        onRoomKeys={this.showRoomKeys}
+        onResendKeyRequests={this.props.resendKeyRequests}
+        onDiscardOLM={this.discardOlm}
+        onRestartOLM={this.restartOlm}
+        onShareHistoryKeys={this.shareHistoryKeys}
       />
     );
   }

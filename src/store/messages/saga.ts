@@ -568,10 +568,6 @@ export function isOwner(currentUser, entityUserId) {
 
 export function* sendBrowserNotification(roomId, message) {
   // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
-  const room = yield select(rawChannelSelector(roomId));
-
-  if (room?.isChannel) return;
-
   if (isOwner(yield select(currentUserSelector()), message.sender?.userId)) return;
 
   yield call(sendBrowserMessage, mapMessage(message));

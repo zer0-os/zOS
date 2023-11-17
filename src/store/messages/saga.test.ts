@@ -96,40 +96,6 @@ describe('messages saga', () => {
       .run();
   });
 
-  it('does not send a browser notification for a channel', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    const message = {
-      id: 8667728016,
-      message: 'Hello',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 0,
-    };
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: true,
-          },
-        },
-      },
-    };
-
-    await expectSaga(sendBrowserNotification, channelId, message as any)
-      .provide([
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
-        ],
-      ])
-      .not.call(sendBrowserMessage, mapMessage(message as any))
-      .withState(initialState)
-      .run();
-  });
-
   it('edit message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'update message';

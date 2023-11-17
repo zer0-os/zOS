@@ -1,6 +1,14 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { SagaActionTypes, setBackup, setErrorMessage, setLoaded, setSuccessMessage, setTrustInfo } from '.';
+import {
+  SagaActionTypes,
+  setBackup,
+  setDeviceId,
+  setErrorMessage,
+  setLoaded,
+  setSuccessMessage,
+  setTrustInfo,
+} from '.';
 import { chat } from '../../lib/chat';
 
 export function* saga() {
@@ -9,6 +17,11 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
+
+  // For debugging
+  yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
+  yield takeLatest(SagaActionTypes.DebugRoomKeys, debugRoomKeys);
+  yield takeLatest(SagaActionTypes.FetchDeviceInfo, getDeviceInfo);
 }
 
 export function* getBackup() {
@@ -69,4 +82,21 @@ export function* clearBackupState() {
   yield put(setBackup(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+}
+
+export function* debugDeviceList(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.displayDeviceList], action.payload);
+}
+
+export function* debugRoomKeys(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.displayRoomKeys], action.payload);
+}
+
+export function* getDeviceInfo(action) {
+  const chatClient = yield call(chat.get);
+  const deviceId = yield call([chatClient, chatClient.getDeviceInfo], action.payload);
+
+  yield put(setDeviceId(deviceId));
 }

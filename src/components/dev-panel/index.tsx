@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import { Messages } from './messages';
 import { Conversations } from './conversations';
 import { Channel, ConversationStatus } from '../../store/channels';
+import { EncryptionContainer } from './encryption/container';
 
 const cn = bemClassName('dev-panel');
 
@@ -22,6 +23,7 @@ export interface Properties {
 enum Tab {
   CONVERSATIONS,
   MESSAGES,
+  ENCRYPTION,
 }
 
 interface State {
@@ -46,6 +48,7 @@ export class DevPanel extends React.PureComponent<Properties, State> {
 
   selectMessages = () => this.setState({ selectedTab: Tab.MESSAGES });
   selectConversations = () => this.setState({ selectedTab: Tab.CONVERSATIONS });
+  selectEncryption = () => this.setState({ selectedTab: Tab.ENCRYPTION });
 
   render() {
     return (
@@ -66,6 +69,9 @@ export class DevPanel extends React.PureComponent<Properties, State> {
               <li onClick={this.selectMessages} {...cn('tab', this.state.selectedTab === Tab.MESSAGES && 'active')}>
                 Messages
               </li>
+              <li onClick={this.selectEncryption} {...cn('tab', this.state.selectedTab === Tab.ENCRYPTION && 'active')}>
+                Encryption
+              </li>
             </ul>
             <div {...cn('content')}>
               {this.state.selectedTab === Tab.CONVERSATIONS && (
@@ -77,6 +83,7 @@ export class DevPanel extends React.PureComponent<Properties, State> {
               {this.state.selectedTab === Tab.MESSAGES && (
                 <Messages messages={this.props.messages} onMessageStatusChanged={this.props.onMessageStatusChanged} />
               )}
+              {this.state.selectedTab === Tab.ENCRYPTION && <EncryptionContainer />}
             </div>
           </div>
         </div>

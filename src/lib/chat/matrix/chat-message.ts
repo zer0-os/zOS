@@ -42,7 +42,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     updatedAt: updatedAt,
     sender: {
       userId: senderId,
-      firstName: senderData.displayName,
+      firstName: senderData?.displayName,
       lastName: '',
       profileImage: '',
       profileId: '',

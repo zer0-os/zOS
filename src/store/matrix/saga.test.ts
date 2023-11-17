@@ -33,13 +33,15 @@ describe(getBackup, () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix).toEqual({
-      backup: null,
-      isLoaded: true,
-      trustInfo: { usable: true, trustedLocally: true },
-      successMessage: '',
-      errorMessage: '',
-    });
+    expect(storeState.matrix).toEqual(
+      expect.objectContaining({
+        backup: null,
+        isLoaded: true,
+        trustInfo: { usable: true, trustedLocally: true },
+        successMessage: '',
+        errorMessage: '',
+      })
+    );
   });
 
   it('clears the backup if none found', async () => {
@@ -48,13 +50,15 @@ describe(getBackup, () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix).toEqual({
-      backup: null,
-      isLoaded: true,
-      trustInfo: null,
-      successMessage: '',
-      errorMessage: '',
-    });
+    expect(storeState.matrix).toEqual(
+      expect.objectContaining({
+        backup: null,
+        isLoaded: true,
+        trustInfo: null,
+        successMessage: '',
+        errorMessage: '',
+      })
+    );
   });
 
   it('clears the backup if backupInfo not found', async () => {
@@ -63,13 +67,15 @@ describe(getBackup, () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix).toEqual({
-      backup: null,
-      isLoaded: true,
-      trustInfo: null,
-      successMessage: '',
-      errorMessage: '',
-    });
+    expect(storeState.matrix).toEqual(
+      expect.objectContaining({
+        backup: null,
+        isLoaded: true,
+        trustInfo: null,
+        successMessage: '',
+        errorMessage: '',
+      })
+    );
   });
 });
 

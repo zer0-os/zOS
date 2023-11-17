@@ -186,6 +186,18 @@ export class Chat {
     return this.client.restoreSecureBackup(recoveryKey);
   }
 
+  async displayDeviceList(userIds: string[]) {
+    return (this.client as MatrixClient).displayDeviceList(userIds);
+  }
+
+  async displayRoomKeys(roomId: string) {
+    return (this.client as MatrixClient).displayRoomKeys(roomId);
+  }
+
+  async getDeviceInfo() {
+    return (this.client as MatrixClient).getDeviceInfo();
+  }
+
   initChat(events: RealtimeChatEvents): void {
     this.client.init(events);
   }

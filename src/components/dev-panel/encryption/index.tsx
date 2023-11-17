@@ -26,7 +26,6 @@ export class Encryption extends React.PureComponent<Properties, State> {
       <div {...cn()}>
         <h2>Me</h2>
         <Field label={'id'} value={this.props.userId} />
-        <br />
         <Field label={'device'} value={this.props.deviceId} />
 
         <h2>Room</h2>

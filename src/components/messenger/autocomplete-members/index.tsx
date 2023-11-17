@@ -8,7 +8,6 @@ import '../list/styles.scss';
 
 import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
-
 export interface Properties {
   search: (query: string) => Promise<Item[]>;
   selectedOptions?: Option[];

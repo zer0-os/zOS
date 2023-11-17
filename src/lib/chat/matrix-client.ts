@@ -532,14 +532,6 @@ export class MatrixClient implements IChatClient {
     }
   };
 
-  private onSyncStateChange = (state: SyncState, _prevState: SyncState): void => {
-    if (state === SyncState.Syncing) {
-      this.isSyncing = true;
-    } else if (state === SyncState.Stopped || state === SyncState.Error) {
-      this.isSyncing = false;
-    }
-  };
-
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {
       console.log('event: ', event);

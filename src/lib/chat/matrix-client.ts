@@ -676,12 +676,12 @@ export class MatrixClient implements IChatClient {
         switch (state) {
           case SyncState.Syncing:
           case SyncState.Catchup:
-            this.isSyncing = true;
+            this.updateSyncingStatus(true);
             break;
           case SyncState.Stopped:
           case SyncState.Error: // Error includes state - 'FAILED_SYNC_ERROR_THRESHOLD'
           case SyncState.Reconnecting:
-            this.isSyncing = false;
+            this.updateSyncingStatus(false);
             break;
           case SyncState.Prepared:
             resolve();
@@ -689,6 +689,10 @@ export class MatrixClient implements IChatClient {
         }
       });
     });
+  }
+
+  private updateSyncingStatus(isSyncing: boolean) {
+    this.isSyncing = isSyncing;
   }
 
   private async roomCreated(event) {

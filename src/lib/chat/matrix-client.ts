@@ -577,7 +577,6 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
-    this.matrix.on(ClientEvent.Sync, this.onSyncStateChange);
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -673,8 +672,21 @@ export class MatrixClient implements IChatClient {
 
   private async waitForSync() {
     await new Promise<void>((resolve) => {
-      this.matrix.on('sync' as any, (state, _prevState) => {
-        if (state === 'PREPARED') resolve();
+      this.matrix.on('sync' as any, (state: SyncState, _prevState: SyncState) => {
+        switch (state) {
+          case SyncState.Syncing:
+          case SyncState.Catchup:
+            this.isSyncing = true;
+            break;
+          case SyncState.Stopped:
+          case SyncState.Error: // Error includes state - 'FAILED_SYNC_ERROR_THRESHOLD'
+          case SyncState.Reconnecting:
+            this.isSyncing = false;
+            break;
+          case SyncState.Prepared:
+            resolve();
+            break;
+        }
       });
     });
   }

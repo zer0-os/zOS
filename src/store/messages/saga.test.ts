@@ -24,36 +24,20 @@ const chatClient = {
 
 describe('messages saga', () => {
   it('sends a browser notification for a conversation', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    const message = {
+    const eventData = {
       id: 8667728016,
-      message: 'Hello',
-      parentMessageText: null,
+      sender: { userId: 'sender-id' },
       createdAt: 1678861267433,
-      updatedAt: 0,
     };
 
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: false,
-          },
-        },
-      },
-    };
-
-    await expectSaga(sendBrowserNotification, channelId, message as any)
+    await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),
           undefined,
         ],
       ])
-      .call(sendBrowserMessage, mapMessage(message as any))
-      .withState(initialState)
+      .call(sendBrowserMessage, mapMessage(eventData as any))
       .run();
   });
 
@@ -61,37 +45,25 @@ describe('messages saga', () => {
     const user = {
       id: 'the-user-id',
     };
-    const channelId = '0x000000000000000000000000000000000000000A';
 
-    const message = {
+    const eventData = {
       id: 8667728016,
-      message: 'I should not receive this message, because I sent it',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 0,
       sender: { userId: user.id },
+      createdAt: 1678861267433,
     };
 
     const initialState = {
       authentication: { user: { data: user } },
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: false,
-          },
-        },
-      },
     };
 
-    await expectSaga(sendBrowserNotification, channelId, message as any)
+    await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),
           undefined,
         ],
       ])
-      .not.call(sendBrowserMessage, mapMessage(message as any))
+      .not.call(sendBrowserMessage, mapMessage(eventData as any))
       .withState(initialState)
       .run();
   });

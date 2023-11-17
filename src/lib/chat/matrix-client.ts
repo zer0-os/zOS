@@ -200,7 +200,11 @@ export class MatrixClient implements IChatClient {
   }
 
   private getNewContent(event): any {
-    return event.content[MatrixConstants.NEW_CONTENT];
+    const result = event.content[MatrixConstants.NEW_CONTENT];
+    if (!result) {
+      console.log('got an edit event that did not have new content', event);
+    }
+    return result;
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
@@ -225,11 +229,13 @@ export class MatrixClient implements IChatClient {
       const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
       if (messageIndex > -1) {
         const newContent = this.getNewContent(editEvent);
-        messages[messageIndex] = {
-          ...messages[messageIndex],
-          content: { ...messages[messageIndex].content, body: newContent.body },
-          updatedAt: editEvent.origin_server_ts,
-        };
+        if (newContent) {
+          messages[messageIndex] = {
+            ...messages[messageIndex],
+            content: { ...messages[messageIndex].content, body: newContent.body },
+            updatedAt: editEvent.origin_server_ts,
+          };
+        }
       }
     });
 

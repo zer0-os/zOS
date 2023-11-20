@@ -453,12 +453,12 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
     user = yield call(getUserByMatrixId, user.matrixId) || user;
   }
 
-  if (!channel?.otherMembers.includes(user.userId)) {
-    const otherMembers = [...channel.otherMembers, user];
+  if (!channel?.otherMembers?.includes(user.userId)) {
+    const otherMembers = [...(channel?.otherMembers || []), user];
     yield put(
       receiveChannel({
         id: channel.id,
-        isOneOnOne: channel.isChannel === true ? false : otherMembers.length === 1,
+        isOneOnOne: otherMembers.length === 1,
         otherMembers,
       })
     );

@@ -355,7 +355,8 @@ function* listenForUserLogout() {
   }
 }
 
-export function* currentUserAddedToChannel(_action) {
+export function* currentUserAddedToChannel(action) {
+  console.log('OR HERE', action);
   // For now, just force a fetch of conversations to refresh the list.
   yield fetchConversations();
 }
@@ -406,6 +407,7 @@ export function* saga() {
 }
 
 function* userJoinedChannelAction({ payload }) {
+  console.log('USER JOINED CHANNEL', payload);
   yield addChannel(payload.channel);
 }
 
@@ -418,6 +420,7 @@ function* roomAvatarChangedAction(action) {
 }
 
 function* otherUserJoinedChannelAction({ payload }) {
+  console.log('PAYLOAD', payload);
   yield otherUserJoinedChannel(payload.channelId, payload.user);
 }
 
@@ -444,21 +447,28 @@ export function* roomAvatarChanged(id: string, url: string) {
 }
 
 export function* otherUserJoinedChannel(roomId: string, user: User) {
+  console.log('USER', user);
+
   const channel = yield select(rawChannel, roomId);
+
+  console.log('CHANNEL', channel);
+
   if (!channel) {
     return;
   }
 
   if (user.userId === user.matrixId) {
     user = yield call(getUserByMatrixId, user.matrixId) || user;
+    console.log('UPDATED USER', user);
   }
 
-  if (!channel?.otherMembers.includes(user.userId)) {
-    const otherMembers = [...channel.otherMembers, user];
+  if (!channel?.otherMembers?.includes(user.userId)) {
+    const otherMembers = [...(channel?.otherMembers || []), user];
+    console.log('OTHER MEMBERS', otherMembers);
     yield put(
       receiveChannel({
         id: channel.id,
-        isOneOnOne: channel.isChannel === true ? false : otherMembers.length === 1,
+        isOneOnOne: channel?.isChannel === true ? false : otherMembers.length === 1,
         otherMembers,
       })
     );

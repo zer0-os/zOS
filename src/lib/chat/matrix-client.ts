@@ -627,8 +627,6 @@ export class MatrixClient implements IChatClient {
 
       await this.matrix.initCrypto();
 
-      await this.handleNotificationPermissions();
-
       // suppsedly the setter is deprecated, but the direct property set doesn't seem to work.
       // this is hopefully only a short-term setting anyway, so just leaving for now.
       // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
@@ -639,16 +637,6 @@ export class MatrixClient implements IChatClient {
       await this.waitForSync();
 
       return opts.userId;
-    }
-  }
-
-  private async handleNotificationPermissions() {
-    if (Notification.permission === 'granted') {
-      return;
-    } else if (Notification.permission === 'denied') {
-      return;
-    } else {
-      await Notification.requestPermission();
     }
   }
 

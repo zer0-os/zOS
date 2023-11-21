@@ -30,8 +30,6 @@ import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 
-const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
-
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
 export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
@@ -298,8 +296,6 @@ export function* fetchChannelsAndConversations() {
     }
 
     yield call(fetchConversations);
-
-    yield call(delay, FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
 
@@ -341,7 +337,8 @@ function* listenForUserLogin() {
     yield take(userChannel, Events.UserLogin);
     if (featureFlags.enableMatrix) {
       // Do not poll when in Matrix mode just fetch once
-      return yield call(fetchChannelsAndConversations);
+      yield call(fetchChannelsAndConversations);
+      continue;
     }
 
     yield startChannelsAndConversationsRefresh();

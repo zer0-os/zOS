@@ -77,8 +77,8 @@ export function createChatConnection(userId, chatAccessToken) {
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);
 
-    const unsubscribe = () => {
-      chatClient.disconnect();
+    const unsubscribe = async () => {
+      await chatClient.disconnect();
     };
     return unsubscribe;
   });

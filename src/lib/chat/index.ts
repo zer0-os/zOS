@@ -85,7 +85,7 @@ export interface IChatClient {
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null) {}
+  constructor(private client: IChatClient = null, private onDisconnect: () => void) {}
 
   supportsOptimisticCreateConversation = () => this.client.supportsOptimisticCreateConversation();
 
@@ -219,8 +219,9 @@ export class Chat {
     this.client.reconnect();
   }
 
-  disconnect(): void {
-    this.client.disconnect();
+  async disconnect(): Promise<void> {
+    await this.client.disconnect();
+    this.onDisconnect();
   }
 
   get matrix() {
@@ -242,7 +243,9 @@ let chatClient: Chat;
 export const chat = {
   get() {
     if (!chatClient) {
-      chatClient = new Chat(ClientFactory.get());
+      chatClient = new Chat(ClientFactory.get(), () => {
+        chatClient = null;
+      });
     }
 
     return chatClient;

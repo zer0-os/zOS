@@ -229,5 +229,23 @@ describe(receiveNewMessage, () => {
       expect(channel2.messages[1].id).toEqual('2-1');
       expect(channel2.messages[2].id).toEqual('2-2');
     });
+
+    it('only adds a new message to the list once if the same message is received multiple times in batch', async () => {
+      const channelId = 'channel-id';
+      const eventPayloads = [
+        { channelId, message: { id: 'new-message', message: 'a new message' } },
+        { channelId, message: { id: 'new-message', message: 'a new message' } },
+      ];
+
+      const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
+      const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
+
+      const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      const channel = denormalizeChannel(channelId, storeState);
+      expect(channel.messages.map((m) => m.id)).toEqual(['message-1', 'new-message']);
+    });
   });
 });

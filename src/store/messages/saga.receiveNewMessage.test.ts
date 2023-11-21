@@ -234,7 +234,7 @@ describe(receiveNewMessage, () => {
       const channelId = 'channel-id';
       const eventPayloads = [
         { channelId, message: { id: 'new-message', message: 'a new message' } },
-        { channelId, message: { id: 'new-message', message: 'a new message' } },
+        { channelId, message: { id: 'new-message', message: 'second event' } },
       ];
 
       const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
@@ -246,6 +246,8 @@ describe(receiveNewMessage, () => {
 
       const channel = denormalizeChannel(channelId, storeState);
       expect(channel.messages.map((m) => m.id)).toEqual(['message-1', 'new-message']);
+      // Should favor the second event as it's the most recent
+      expect(channel.messages[1].message).toEqual('second event');
     });
   });
 });

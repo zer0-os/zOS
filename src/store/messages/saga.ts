@@ -493,7 +493,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       currentMessages = newMessages;
     }
     if (modified) {
-      yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages) }));
+      yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
     }
     if (yield select(_isActive(channelId))) {
       const isChannel = yield select(_isChannel(channelId));

@@ -28,6 +28,7 @@ import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
+import { uniqNormalizedList } from '../utils';
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
@@ -482,8 +483,4 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
       otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
     })
   );
-}
-
-function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[]): any {
-  return uniqBy(objectsAndIds, (c) => c.id ?? c);
 }

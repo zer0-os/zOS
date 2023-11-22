@@ -52,7 +52,7 @@ const getSdkClient = (sdkClient = {}) => ({
   login: async () => ({}),
   initCrypto: async () => null,
   startClient: jest.fn(async () => undefined),
-  stopClient: jest.fn(),
+  logout: jest.fn(),
   removeAllListeners: jest.fn(),
   clearStores: jest.fn(),
   on: jest.fn((topic, callback) => {
@@ -116,7 +116,7 @@ describe('matrix client', () => {
 
       await client.disconnect();
 
-      expect(sdkClient.stopClient).toHaveBeenCalledOnce();
+      expect(sdkClient.logout).toHaveBeenCalledOnce();
       expect(sdkClient.removeAllListeners).toHaveBeenCalledOnce();
       expect(sdkClient.clearStores).toHaveBeenCalledOnce();
     });

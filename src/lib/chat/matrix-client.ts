@@ -67,10 +67,10 @@ export class MatrixClient implements IChatClient {
   }
 
   async disconnect() {
-    this.matrix.logout(true);
+    await this.matrix.logout(true);
     this.matrix.removeAllListeners();
     await this.matrix.clearStores();
-    this.matrix.store?.destroy();
+    await this.matrix.store?.destroy();
     this.sessionStorage.clear();
   }
 

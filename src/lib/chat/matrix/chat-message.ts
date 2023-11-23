@@ -103,6 +103,6 @@ function convertToNotifiableEventType(eventType) {
     case EventType.RoomMessage:
       return NotifiableEventType.RoomMessage;
     default:
-      return;
+      return '';
   }
 }

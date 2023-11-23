@@ -17,37 +17,19 @@ import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
 import { MessageSendStatus } from '.';
 import { chat } from '../../lib/chat';
+import { NotifiableEventType } from '../../lib/chat/matrix/types';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
 };
 
 describe('messages saga', () => {
-  it('sends a browser notification for a conversation when event type is room message', async () => {
+  it('sends a browser notification for a conversation when event type is notifiable', async () => {
     const eventData = {
       id: 8667728016,
       sender: { userId: 'sender-id' },
       createdAt: 1678861267433,
-      type: 'm.room.message',
-    };
-
-    await expectSaga(sendBrowserNotification, eventData as any)
-      .provide([
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
-        ],
-      ])
-      .call(sendBrowserMessage, mapMessage(eventData as any))
-      .run();
-  });
-
-  it('sends a browser notification for a conversation when event type is encrytped message', async () => {
-    const eventData = {
-      id: 8667728016,
-      sender: { userId: 'sender-id' },
-      createdAt: 1678861267433,
-      type: 'm.room.encrypted',
+      type: NotifiableEventType.RoomMessage,
     };
 
     await expectSaga(sendBrowserNotification, eventData as any)
@@ -66,7 +48,7 @@ describe('messages saga', () => {
       id: 8667728016,
       sender: { userId: 'sender-id' },
       createdAt: 1678861267433,
-      type: 'm.room.created',
+      type: '',
     };
 
     await expectSaga(sendBrowserNotification, eventData as any)

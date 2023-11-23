@@ -569,13 +569,13 @@ export function isOwner(currentUser, entityUserMatrixId) {
 }
 
 export function* sendBrowserNotification(eventData) {
-  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return; // only notify for other users events
-  if (!shouldNotifyForEventType(eventData.type)) return; // for now, only notify for message events
+  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
+  if (!shouldNotifyForMessageEvent(eventData.type)) return;
 
   yield call(sendBrowserMessage, mapMessage(eventData));
 }
 
-function shouldNotifyForEventType(eventType) {
+function shouldNotifyForMessageEvent(eventType) {
   return eventType === EventType.RoomMessageEncrypted || eventType === EventType.RoomMessage;
 }
 

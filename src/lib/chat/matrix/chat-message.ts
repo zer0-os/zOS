@@ -85,6 +85,7 @@ export function mapToLiveRoomEvent(liveEvent) {
   const { event } = liveEvent;
   return {
     id: event.event_id,
+    type: event.type,
     createdAt: event.origin_server_ts,
     sender: {
       userId: event.sender,

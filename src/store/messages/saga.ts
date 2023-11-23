@@ -19,6 +19,7 @@ import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
 import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
+import { EventType } from 'matrix-js-sdk';
 
 export interface Payload {
   channelId: string;
@@ -568,9 +569,14 @@ export function isOwner(currentUser, entityUserMatrixId) {
 
 export function* sendBrowserNotification(eventData) {
   // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
-  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
+  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return; // only notify for other users events
+  if (!shouldNotifyForEventType(eventData.type)) return; // for now, only notify for message events
 
   yield call(sendBrowserMessage, mapMessage(eventData));
+}
+
+function shouldNotifyForEventType(eventType) {
+  return eventType === EventType.RoomMessageEncrypted || eventType === EventType.RoomMessage;
 }
 
 export function* saga() {

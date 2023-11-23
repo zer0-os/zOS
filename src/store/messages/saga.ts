@@ -568,7 +568,6 @@ export function isOwner(currentUser, entityUserMatrixId) {
 }
 
 export function* sendBrowserNotification(eventData) {
-  // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return; // only notify for other users events
   if (!shouldNotifyForEventType(eventData.type)) return; // for now, only notify for message events
 

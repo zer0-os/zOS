@@ -23,11 +23,12 @@ const chatClient = {
 };
 
 describe('messages saga', () => {
-  it('sends a browser notification for a conversation', async () => {
+  it('sends a browser notification for a conversation when event type is room message', async () => {
     const eventData = {
       id: 8667728016,
       sender: { userId: 'sender-id' },
       createdAt: 1678861267433,
+      type: 'm.room.message',
     };
 
     await expectSaga(sendBrowserNotification, eventData as any)
@@ -38,6 +39,44 @@ describe('messages saga', () => {
         ],
       ])
       .call(sendBrowserMessage, mapMessage(eventData as any))
+      .run();
+  });
+
+  it('sends a browser notification for a conversation when event type is encrytped message', async () => {
+    const eventData = {
+      id: 8667728016,
+      sender: { userId: 'sender-id' },
+      createdAt: 1678861267433,
+      type: 'm.room.encrypted',
+    };
+
+    await expectSaga(sendBrowserNotification, eventData as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .call(sendBrowserMessage, mapMessage(eventData as any))
+      .run();
+  });
+
+  it('does not send a browser notification for a conversation when event type is not a message event', async () => {
+    const eventData = {
+      id: 8667728016,
+      sender: { userId: 'sender-id' },
+      createdAt: 1678861267433,
+      type: 'm.room.created',
+    };
+
+    await expectSaga(sendBrowserNotification, eventData as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .not.call(sendBrowserMessage, mapMessage(eventData as any))
       .run();
   });
 

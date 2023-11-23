@@ -1,6 +1,14 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { SagaActionTypes, setBackup, setErrorMessage, setLoaded, setSuccessMessage, setTrustInfo } from '.';
+import {
+  SagaActionTypes,
+  setBackup,
+  setDeviceId,
+  setErrorMessage,
+  setLoaded,
+  setSuccessMessage,
+  setTrustInfo,
+} from '.';
 import { chat } from '../../lib/chat';
 
 export function* saga() {
@@ -9,6 +17,15 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
+
+  // For debugging
+  yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
+  yield takeLatest(SagaActionTypes.DebugRoomKeys, debugRoomKeys);
+  yield takeLatest(SagaActionTypes.FetchDeviceInfo, getDeviceInfo);
+  yield takeLatest(SagaActionTypes.ResendKeyRequests, resendKeyRequests);
+  yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
+  yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
+  yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
 }
 
 export function* getBackup() {
@@ -69,4 +86,41 @@ export function* clearBackupState() {
   yield put(setBackup(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+}
+
+export function* debugDeviceList(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.displayDeviceList], action.payload);
+}
+
+export function* debugRoomKeys(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.displayRoomKeys], action.payload);
+}
+
+export function* getDeviceInfo() {
+  const chatClient = yield call(chat.get);
+  const deviceId = yield call([chatClient, chatClient.getDeviceInfo]);
+
+  yield put(setDeviceId(deviceId));
+}
+
+export function* resendKeyRequests() {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.cancelAndResendKeyRequests]);
+}
+
+export function* discardOlm(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.discardOlmSession], action.payload);
+}
+
+export function* restartOlm(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.resetOlmSession], action.payload);
+}
+
+export function* shareHistoryKeys(action) {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
 }

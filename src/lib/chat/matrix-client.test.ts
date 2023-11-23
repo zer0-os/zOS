@@ -52,7 +52,9 @@ const getSdkClient = (sdkClient = {}) => ({
   login: async () => ({}),
   initCrypto: async () => null,
   startClient: jest.fn(async () => undefined),
-  stopClient: jest.fn(),
+  logout: jest.fn(),
+  removeAllListeners: jest.fn(),
+  clearStores: jest.fn(),
   on: jest.fn((topic, callback) => {
     if (topic === 'sync') callback('PREPARED');
   }),
@@ -98,7 +100,7 @@ function resolveWith<T>(valueToResolve: T) {
 
 describe('matrix client', () => {
   describe('disconnect', () => {
-    it('stops client on disconnect', async () => {
+    it('stops client completely on disconnect', async () => {
       const sdkClient = getSdkClient();
       const createClient = jest.fn(() => sdkClient);
       const matrixSession = {
@@ -112,9 +114,11 @@ describe('matrix client', () => {
       // initializes underlying matrix client
       await client.connect(null, 'token');
 
-      client.disconnect();
+      await client.disconnect();
 
-      expect(sdkClient.stopClient).toHaveBeenCalledOnce();
+      expect(sdkClient.logout).toHaveBeenCalledOnce();
+      expect(sdkClient.removeAllListeners).toHaveBeenCalledOnce();
+      expect(sdkClient.clearStores).toHaveBeenCalledOnce();
     });
 
     it('clears session storage on disconnect', async () => {
@@ -135,7 +139,7 @@ describe('matrix client', () => {
 
       expect(clearSession).not.toHaveBeenCalled();
 
-      client.disconnect();
+      await client.disconnect();
 
       expect(clearSession).toHaveBeenCalledOnce();
     });

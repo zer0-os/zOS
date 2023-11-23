@@ -8,6 +8,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { setActiveChannelId, setactiveConversationId } from '../chat';
 import { chat } from '../../lib/chat';
+import { reset } from '../create-conversation/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -79,6 +80,7 @@ export function* openConversation(conversationId) {
     return;
   }
 
+  yield call(reset);
   yield put(setactiveConversationId(conversationId));
   yield spawn(markConversationAsRead, conversationId);
 }

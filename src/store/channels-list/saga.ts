@@ -28,8 +28,7 @@ import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
-
-const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
+import { uniqNormalizedList } from '../utils';
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
@@ -73,7 +72,7 @@ export function* mapCreatorIdToZeroUserId(channels) {
 
   for (const channel of channels) {
     for (const message of channel.messages) {
-      if (message.isAdmin) {
+      if (message.isAdmin && message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
         if (message.admin.creatorId === currentUser.matrixId) {
           message.admin.creatorId = currentUserId;
         } else {
@@ -297,8 +296,6 @@ export function* fetchChannelsAndConversations() {
     }
 
     yield call(fetchConversations);
-
-    yield call(delay, FETCH_CHAT_CHANNEL_INTERVAL);
   }
 }
 
@@ -340,7 +337,8 @@ function* listenForUserLogin() {
     yield take(userChannel, Events.UserLogin);
     if (featureFlags.enableMatrix) {
       // Do not poll when in Matrix mode just fetch once
-      return yield call(fetchChannelsAndConversations);
+      yield call(fetchChannelsAndConversations);
+      continue;
     }
 
     yield startChannelsAndConversationsRefresh();
@@ -453,12 +451,12 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
     user = yield call(getUserByMatrixId, user.matrixId) || user;
   }
 
-  if (!channel?.otherMembers.includes(user.userId)) {
-    const otherMembers = [...channel.otherMembers, user];
+  if (!channel?.otherMembers?.includes(user.userId)) {
+    const otherMembers = [...(channel?.otherMembers || []), user];
     yield put(
       receiveChannel({
         id: channel.id,
-        isOneOnOne: channel.isChannel === true ? false : otherMembers.length === 1,
+        isOneOnOne: otherMembers.length === 1,
         otherMembers,
       })
     );
@@ -482,8 +480,4 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
       otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
     })
   );
-}
-
-function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[]): any {
-  return uniqBy(objectsAndIds, (c) => c.id ?? c);
 }

@@ -1,5 +1,5 @@
 import moment from 'moment/moment';
-import { Message as MessageModel } from '../../store/messages';
+import { AdminMessageType, Message as MessageModel } from '../../store/messages';
 
 export function createMessageGroups(messages: MessageModel[]) {
   if (!messages.length) {
@@ -48,4 +48,28 @@ export function getMessageRenderProps(index: number, groupLength: number, isOneO
     showTimestamp: index === lastIndex,
     position,
   };
+}
+
+export function filterAdminMessages(messagesByDay) {
+  let hasJoinedZeroAdminMessage = false;
+
+  for (const day in messagesByDay) {
+    if (messagesByDay[day].some((message) => message.isAdmin && message.admin.type === AdminMessageType.JOINED_ZERO)) {
+      hasJoinedZeroAdminMessage = true;
+      break;
+    }
+  }
+
+  const filteredMessagesByDay = {};
+  Object.keys(messagesByDay).forEach((day) => {
+    filteredMessagesByDay[day] = messagesByDay[day].filter((message) => {
+      return !(
+        hasJoinedZeroAdminMessage &&
+        message.isAdmin &&
+        message.admin.type === AdminMessageType.CONVERSATION_STARTED
+      );
+    });
+  });
+
+  return filteredMessagesByDay;
 }

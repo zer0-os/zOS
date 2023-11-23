@@ -20,6 +20,7 @@ import { User } from '../channels';
 import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 import { EventType } from 'matrix-js-sdk';
+import { uniqNormalizedList } from '../utils';
 
 export interface Payload {
   channelId: string;
@@ -484,7 +485,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       currentMessages = newMessages;
     }
     if (modified) {
-      yield put(receive({ id: channelId, messages: currentMessages }));
+      yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
     }
     if (yield select(_isActive(channelId))) {
       const isChannel = yield select(_isChannel(channelId));

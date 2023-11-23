@@ -68,8 +68,11 @@ export class MatrixClient implements IChatClient {
     return this.userId;
   }
 
-  disconnect() {
-    this.matrix.stopClient();
+  async disconnect() {
+    await this.matrix.logout(true);
+    this.matrix.removeAllListeners();
+    await this.matrix.clearStores();
+    await this.matrix.store?.destroy();
     this.sessionStorage.clear();
   }
 
@@ -202,7 +205,11 @@ export class MatrixClient implements IChatClient {
   }
 
   private getNewContent(event): any {
-    return event.content[MatrixConstants.NEW_CONTENT];
+    const result = event.content[MatrixConstants.NEW_CONTENT];
+    if (!result) {
+      console.log('got an edit event that did not have new content', event);
+    }
+    return result;
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
@@ -213,7 +220,7 @@ export class MatrixClient implements IChatClient {
 
       if (event.type === EventType.RoomMessage) {
         return mapMatrixMessage(event, this.matrix);
-      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO) {
+      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO || event.type === EventType.RoomCreate) {
         return mapEventToAdminMessage(event);
       }
       return null;
@@ -227,11 +234,13 @@ export class MatrixClient implements IChatClient {
       const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
       if (messageIndex > -1) {
         const newContent = this.getNewContent(editEvent);
-        messages[messageIndex] = {
-          ...messages[messageIndex],
-          content: { ...messages[messageIndex].content, body: newContent.body },
-          updatedAt: editEvent.origin_server_ts,
-        };
+        if (newContent) {
+          messages[messageIndex] = {
+            ...messages[messageIndex],
+            content: { ...messages[messageIndex].content, body: newContent.body },
+            updatedAt: editEvent.origin_server_ts,
+          };
+        }
       }
     });
 
@@ -805,4 +814,85 @@ export class MatrixClient implements IChatClient {
   private getLatestEvent(room: Room, type: EventType) {
     return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
   }
+
+  /*
+   * DEBUGGING
+   */
+  async displayDeviceList(userIds: string[]) {
+    const devices = await this.matrix.getCrypto().getUserDeviceInfo(userIds);
+    console.log('devices: ', devices);
+  }
+
+  async displayRoomKeys(roomId: string) {
+    const roomKeys = await this.matrix.getCrypto().exportRoomKeys();
+    console.log('Room Id: ', roomId);
+    console.log(
+      'Room keys: ',
+      roomKeys.filter((k) => k.room_id === roomId)
+    );
+  }
+
+  async getDeviceInfo() {
+    return this.matrix.getDeviceId();
+  }
+
+  async shareHistoryKeys(roomId: string, userIds: string[]) {
+    // This resolves some instances where the other device is missing an old key from the room
+    console.log('sending shared history keys', roomId, userIds);
+    await this.matrix.sendSharedHistoryKeys(roomId, userIds);
+    console.log('done sending shared history keys');
+  }
+
+  async cancelAndResendKeyRequests() {
+    // It seems like this may already be happening automatically when we have
+    // problems decrypting messages.
+    console.log('cancelling and resending key requests');
+    await this.matrix.crypto?.cancelAndResendAllOutgoingKeyRequests();
+    console.log('done cancelling and resending key requests');
+  }
+
+  async discardOlmSession(roomId: string) {
+    // Throw away the olm session for the room...does this automatically
+    // regenerate or do we need the resetOlmSession call below?
+    console.log('discarding session', roomId);
+    await this.matrix.getCrypto().forceDiscardSession(roomId);
+    console.log('done discarding session', roomId);
+  }
+
+  async resetOlmSession(roomId: string) {
+    // RESET THE OLM SESSION
+    // Unsure which errors this might resolve. It seems like once you've missed
+    // something related to olm that you can't recover from it and this may only
+    // help with future messages.
+    console.log('resetting the olm session', roomId);
+    this.matrix.getCrypto().forceDiscardSession(roomId);
+    const room = this.matrix.getRoom(roomId);
+    const members = (await room?.getEncryptionTargetMembers()) || [];
+    if (members.length > 0) {
+      await this.matrix.crypto?.ensureOlmSessionsForUsers(
+        members.map((m) => m.userId),
+        true
+      );
+    }
+    console.log('done resetting the olm session', roomId);
+  }
+
+  async requestRoomKey(_roomId: string) {
+    // Not sure how to send this request. I think it might happen automatically
+    // when we find a specific message that we can't decrypt?
+    // await this.matrix.crypto?.requestRoomKey(
+    //   {
+    //     session_id: '???', // Are these supposed to be from the message we couldn't decrypt?
+    //     room_id: roomId,
+    //     sender_key: '???',
+    //     algorithm: 'm.megolm.v1.aes-sha2',
+    //   },
+    //   [{ deviceId: '???', userId: '???' }], // Are these supposed to be the requester or the requestee?
+    //   true
+    // );
+  }
+
+  /*
+   * END DEBUGGING
+   */
 }

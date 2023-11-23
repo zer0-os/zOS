@@ -7,6 +7,13 @@ export enum SagaActionTypes {
   SaveBackup = 'chat/save-backup',
   RestoreBackup = 'chat/restore-backup',
   ClearBackup = 'chat/clear-backup',
+  DebugDeviceList = 'chat/debug-device-list',
+  DebugRoomKeys = 'chat/debug-room-keys',
+  FetchDeviceInfo = 'chat/fetch-device-info',
+  ResendKeyRequests = 'chat/resend-key-requests',
+  DiscardOlm = 'chat/discard-olm',
+  RestartOlm = 'chat/restart-olm',
+  ShareHistoryKeys = 'chat/share-history-keys',
 }
 
 export type MatrixState = {
@@ -15,6 +22,7 @@ export type MatrixState = {
   backup: MatrixKeyBackupInfo | null;
   successMessage: string;
   errorMessage: string;
+  deviceId: string;
 };
 
 export const initialState: MatrixState = {
@@ -23,6 +31,7 @@ export const initialState: MatrixState = {
   backup: null,
   successMessage: '',
   errorMessage: '',
+  deviceId: '',
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -30,6 +39,13 @@ export const generateBackup = createAction(SagaActionTypes.GenerateBackup);
 export const saveBackup = createAction(SagaActionTypes.SaveBackup);
 export const restoreBackup = createAction<string>(SagaActionTypes.RestoreBackup);
 export const clearBackup = createAction(SagaActionTypes.ClearBackup);
+export const debugDeviceList = createAction<string[]>(SagaActionTypes.DebugDeviceList);
+export const debugRoomKeys = createAction<string>(SagaActionTypes.DebugRoomKeys);
+export const fetchDeviceInfo = createAction<string[]>(SagaActionTypes.FetchDeviceInfo);
+export const resendKeyRequests = createAction(SagaActionTypes.ResendKeyRequests);
+export const discardOlm = createAction<string>(SagaActionTypes.DiscardOlm);
+export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
+export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
 
 const slice = createSlice({
   name: 'matrix',
@@ -50,8 +66,11 @@ const slice = createSlice({
     setErrorMessage: (state, action: PayloadAction<MatrixState['errorMessage']>) => {
       state.errorMessage = action.payload;
     },
+    setDeviceId: (state, action: PayloadAction<MatrixState['deviceId']>) => {
+      state.deviceId = action.payload;
+    },
   },
 });
 
-export const { setLoaded, setBackup, setTrustInfo, setSuccessMessage, setErrorMessage } = slice.actions;
+export const { setLoaded, setBackup, setTrustInfo, setSuccessMessage, setErrorMessage, setDeviceId } = slice.actions;
 export const { reducer } = slice;

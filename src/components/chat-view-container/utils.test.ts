@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-import { Message as MessageModel } from '../../store/messages';
-import { createMessageGroups, getMessageRenderProps } from './utils';
+import { AdminMessageType, Message as MessageModel } from '../../store/messages';
+import { createMessageGroups, getMessageRenderProps, filterAdminMessages } from './utils';
 
 describe(createMessageGroups, () => {
   it('returns an empty group list when input is empty', () => {
@@ -180,10 +180,63 @@ describe(getMessageRenderProps, () => {
   }
 });
 
+describe(filterAdminMessages, () => {
+  it('does not filter out normal messages when no admin messages are present', () => {
+    const messagesByDay = {
+      '2023-01-01': [stubMessage(), stubMessage()],
+      '2023-01-02': [stubMessage()],
+    };
+
+    const filteredMessages = filterAdminMessages(messagesByDay);
+
+    expect(filteredMessages['2023-01-01']).toHaveLength(2);
+    expect(filteredMessages['2023-01-02']).toHaveLength(1);
+  });
+
+  it('does not filter out CONVERSATION_STARTED if no JOINED_ZERO message is present', () => {
+    const messagesByDay = {
+      '2023-01-01': [stubMessage({ isAdmin: true, admin: { type: AdminMessageType.CONVERSATION_STARTED } })],
+      '2023-01-02': [stubMessage()],
+    };
+
+    const filteredMessages = filterAdminMessages(messagesByDay);
+
+    expect(filteredMessages['2023-01-01']).toHaveLength(1);
+    expect(filteredMessages['2023-01-02']).toHaveLength(1);
+  });
+
+  it('retains JOINED_ZERO admin messages', () => {
+    const messagesByDay = {
+      '2023-01-01': [stubMessage({ isAdmin: true, admin: { type: AdminMessageType.JOINED_ZERO } })],
+      '2023-01-02': [stubMessage()],
+    };
+
+    const filteredMessages = filterAdminMessages(messagesByDay);
+
+    expect(filteredMessages['2023-01-01']).toHaveLength(1);
+    expect(filteredMessages['2023-01-02']).toHaveLength(1);
+  });
+
+  it('filters out CONVERSATION_STARTED if JOINED_ZERO is present', () => {
+    const messagesByDay = {
+      '2023-01-01': [stubMessage({ isAdmin: true, admin: { type: AdminMessageType.JOINED_ZERO } })],
+      '2023-01-02': [stubMessage({ isAdmin: true, admin: { type: AdminMessageType.CONVERSATION_STARTED } })],
+      '2023-01-03': [stubMessage()],
+    };
+
+    const filteredMessages = filterAdminMessages(messagesByDay);
+
+    expect(filteredMessages['2023-01-01']).toHaveLength(1);
+    expect(filteredMessages['2023-01-02']).toHaveLength(0);
+    expect(filteredMessages['2023-01-03']).toHaveLength(1);
+  });
+});
+
 function stubMessage(attrs: Partial<MessageModel> = {}) {
   return {
     id: 1,
     isAdmin: false,
+    admin: null,
     ...attrs,
   } as MessageModel;
 }

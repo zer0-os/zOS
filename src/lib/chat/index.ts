@@ -86,7 +86,7 @@ export interface IChatClient {
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null) {}
+  constructor(private client: IChatClient = null, private onDisconnect: () => void) {}
 
   supportsOptimisticCreateConversation = () => this.client.supportsOptimisticCreateConversation();
 
@@ -187,6 +187,31 @@ export class Chat {
     return this.client.restoreSecureBackup(recoveryKey);
   }
 
+  async displayDeviceList(userIds: string[]) {
+    return this.matrix.displayDeviceList(userIds);
+  }
+
+  async displayRoomKeys(roomId: string) {
+    return this.matrix.displayRoomKeys(roomId);
+  }
+
+  async getDeviceInfo() {
+    return this.matrix.getDeviceInfo();
+  }
+
+  async cancelAndResendKeyRequests() {
+    return this.matrix.cancelAndResendKeyRequests();
+  }
+
+  async discardOlmSession(roomId: string) {
+    return this.matrix.discardOlmSession(roomId);
+  }
+  async resetOlmSession(roomId: string) {
+    return this.matrix.resetOlmSession(roomId);
+  }
+  async shareHistoryKeys(roomId: string, userIds: string[]) {
+    return this.matrix.shareHistoryKeys(roomId, userIds);
+  }
   initChat(events: RealtimeChatEvents): void {
     this.client.init(events);
   }
@@ -195,8 +220,13 @@ export class Chat {
     this.client.reconnect();
   }
 
-  disconnect(): void {
-    this.client.disconnect();
+  async disconnect(): Promise<void> {
+    await this.client.disconnect();
+    this.onDisconnect();
+  }
+
+  get matrix() {
+    return this.client as MatrixClient;
   }
 }
 
@@ -214,7 +244,9 @@ let chatClient: Chat;
 export const chat = {
   get() {
     if (!chatClient) {
-      chatClient = new Chat(ClientFactory.get());
+      chatClient = new Chat(ClientFactory.get(), () => {
+        chatClient = null;
+      });
     }
 
     return chatClient;

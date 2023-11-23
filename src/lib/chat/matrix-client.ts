@@ -46,7 +46,6 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
-  private isSyncing?: boolean;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -508,7 +507,7 @@ export class MatrixClient implements IChatClient {
   ) {
     if (removed) return; // only notify for new events, not removed ones
     if (!data.liveEvent || !!toStartOfTimeline) return; // only notify for new things, not old.
-    if (!this.isSyncing) return; // only notify if syncing is complete
+    if (!this.isSyncing()) return; // only notify if syncing is complete
     if (event.getSender() === this.userId) return; // only notify for other users events
 
     this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
@@ -649,29 +648,20 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private async waitForSync() {
-    await new Promise<void>((resolve) => {
-      this.matrix.on('sync' as any, (state: SyncState, _prevState: SyncState) => {
-        switch (state) {
-          case SyncState.Syncing:
-          case SyncState.Catchup:
-            this.updateSyncingStatus(true);
-            break;
-          case SyncState.Stopped:
-          case SyncState.Error: // Error includes state - 'FAILED_SYNC_ERROR_THRESHOLD'
-          case SyncState.Reconnecting:
-            this.updateSyncingStatus(false);
-            break;
-          case SyncState.Prepared:
-            resolve();
-            break;
-        }
-      });
-    });
+  private getSyncStatus() {
+    return this.matrix.getSyncState();
   }
 
-  private updateSyncingStatus(isSyncing: boolean) {
-    this.isSyncing = isSyncing;
+  private isSyncing() {
+    return this.getSyncStatus() === SyncState.Syncing || this.getSyncStatus() === SyncState.Catchup;
+  }
+
+  private async waitForSync() {
+    await new Promise<void>((resolve) => {
+      this.matrix.on('sync' as any, (state, _prevState) => {
+        if (state === 'PREPARED') resolve();
+      });
+    });
   }
 
   private async roomCreated(event) {

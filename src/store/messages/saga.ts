@@ -560,10 +560,10 @@ export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
 }
 
-export function isOwner(currentUser, entityUserId) {
-  if (!currentUser || !entityUserId) return false;
+export function isOwner(currentUser, entityUserMatrixId) {
+  if (!currentUser || !entityUserMatrixId) return false;
 
-  return currentUser.id === entityUserId;
+  return currentUser.matrixId === entityUserMatrixId;
 }
 
 export function* sendBrowserNotification(eventData) {

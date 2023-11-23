@@ -508,7 +508,6 @@ export class MatrixClient implements IChatClient {
     if (removed) return; // only notify for new events, not removed ones
     if (!data.liveEvent || !!toStartOfTimeline) return; // only notify for new things, not old.
     if (!this.isSyncing()) return; // only notify if syncing is complete
-    if (event.getSender() === this.userId) return; // only notify for other users events
 
     this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
   }

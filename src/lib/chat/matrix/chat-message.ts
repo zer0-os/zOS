@@ -83,12 +83,11 @@ export function mapEventToAdminMessage(matrixMessage) {
 
 export function mapToLiveRoomEvent(liveEvent) {
   const { event } = liveEvent;
-
   return {
     id: event.event_id,
     createdAt: event.origin_server_ts,
     sender: {
-      userId: event.senderId,
+      userId: event.sender,
     },
   };
 }

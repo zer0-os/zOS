@@ -522,8 +522,6 @@ export class MatrixClient implements IChatClient {
     this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
       this.handleUnreadNotifications(room.roomId, unreadNotification);
     room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
-
-    room.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
   }
 
   private handleUnreadNotifications = (roomId, unreadNotifications) => {
@@ -569,6 +567,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
+    this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {

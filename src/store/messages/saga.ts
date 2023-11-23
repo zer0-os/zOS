@@ -19,8 +19,8 @@ import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
 import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
-import { EventType } from 'matrix-js-sdk';
 import { uniqNormalizedList } from '../utils';
+import { NotifiableEventType } from '../../lib/chat/matrix/types';
 
 export interface Payload {
   channelId: string;
@@ -570,13 +570,10 @@ export function isOwner(currentUser, entityUserMatrixId) {
 
 export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
-  if (!shouldNotifyForMessageEvent(eventData.type)) return;
 
-  yield call(sendBrowserMessage, mapMessage(eventData));
-}
-
-function shouldNotifyForMessageEvent(eventType) {
-  return eventType === EventType.RoomMessageEncrypted || eventType === EventType.RoomMessage;
+  if (eventData.type === NotifiableEventType.RoomMessage) {
+    yield call(sendBrowserMessage, mapMessage(eventData));
+  }
 }
 
 export function* saga() {

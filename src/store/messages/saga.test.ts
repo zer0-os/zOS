@@ -44,11 +44,12 @@ describe('messages saga', () => {
   it('does not send a browser notification when the user is the sender', async () => {
     const user = {
       id: 'the-user-id',
+      matrixId: 'the-user-matrix-id',
     };
 
     const eventData = {
       id: 8667728016,
-      sender: { userId: user.id },
+      sender: { userId: user.matrixId },
       createdAt: 1678861267433,
     };
 

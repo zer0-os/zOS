@@ -1,3 +1,9 @@
+import metamaskIcon from './assets/metamask.svg';
+import coinbaseIcon from './assets/coinbase-wallet.svg';
+import fortmaticIcon from './assets/fortmatic.svg';
+import portisIcon from './assets/portis.svg';
+import walletConnectIcon from './assets/wallet-connect.svg';
+
 export enum WalletType {
   Metamask = 'metamask',
   WalletConnect = 'wallet-connect',
@@ -16,35 +22,28 @@ const wallets: { [walletType: string]: Wallet } = {
   [WalletType.Metamask]: {
     type: WalletType.Metamask,
     name: 'Metamask',
-    imageSource: 'metamask.svg',
+    imageSource: metamaskIcon,
   },
   [WalletType.WalletConnect]: {
     type: WalletType.WalletConnect,
     name: 'Wallet Connect',
-    imageSource: 'walletconnect.svg',
+    imageSource: walletConnectIcon,
   },
   [WalletType.Coinbase]: {
     type: WalletType.Coinbase,
     name: 'Coinbase Wallet',
-    imageSource: 'coinbasewallet.svg',
+    imageSource: coinbaseIcon,
   },
   [WalletType.Fortmatic]: {
     type: WalletType.Fortmatic,
     name: 'Fortmatic',
-    imageSource: 'fortmatic.svg',
+    imageSource: fortmaticIcon,
   },
   [WalletType.Portis]: {
     type: WalletType.Portis,
     name: 'Portis',
-    imageSource: 'portis.svg',
+    imageSource: portisIcon,
   },
 };
-
-for (const wallet in wallets) {
-  wallets[wallet].imageSource = [
-    'https://res.cloudinary.com/fact0ry-dev/image/upload/v1637005920/zero-assets/wallet-providers',
-    wallets[wallet].imageSource,
-  ].join('/');
-}
 
 export { wallets };

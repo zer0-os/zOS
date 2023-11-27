@@ -63,12 +63,10 @@ export class Container extends React.Component<Properties> {
   }
 
   redirectOnInvalidRoute() {
-    console.log('HERE I THINK');
     const {
       location: { pathname, search },
     } = this.props;
 
-    console.log(/^\/$/.test(pathname));
     if (/^\/$/.test(pathname)) return false;
 
     this.props.history.replace({

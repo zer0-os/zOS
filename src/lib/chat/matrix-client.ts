@@ -26,7 +26,13 @@ import { ParentMessage, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType } from './matrix/types';
+import {
+  ConnectionStatus,
+  CustomEventType,
+  DecryptErrorConstants,
+  MatrixConstants,
+  MembershipStateType,
+} from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -235,7 +241,7 @@ export class MatrixClient implements IChatClient {
           messages[messageIndex] = {
             ...messages[messageIndex],
             content: { ...messages[messageIndex].content },
-            message: 'Message edit cannot be decrypted.',
+            message: DecryptErrorConstants.UndecryptableEdit,
             updatedAt: editEvent.origin_server_ts,
           };
         } else {
@@ -449,7 +455,7 @@ export class MatrixClient implements IChatClient {
 
     if (event.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
       if (originalMessage) {
-        originalMessage.message = 'Message edit cannot be decrypted.';
+        originalMessage.message = DecryptErrorConstants.UndecryptableEdit;
         originalMessage.updatedAt = event.origin_server_ts;
       }
     } else {

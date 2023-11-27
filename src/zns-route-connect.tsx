@@ -63,22 +63,24 @@ export class Container extends React.Component<Properties> {
   }
 
   redirectOnInvalidRoute() {
+    console.log('HERE I THINK');
     const {
       location: { pathname, search },
     } = this.props;
 
-    if (/^\/0\./.test(pathname)) return false;
+    console.log(/^\/$/.test(pathname));
+    if (/^\/$/.test(pathname)) return false;
 
     this.props.history.replace({
-      pathname: pathname.replace(/^\//, '/0.'),
+      pathname: '/',
       search: search || '',
     });
 
     return true;
   }
 
-  extractRouteFromProps(props: Properties = this.props) {
-    return props.match.params.znsRoute.replace(/^0\./, '');
+  extractRouteFromProps(_props: Properties = this.props) {
+    return '/';
   }
 
   extractAppFromProps(props: Properties = this.props) {

@@ -8,7 +8,6 @@ import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
-import { config } from './config';
 import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
@@ -31,12 +30,11 @@ showReleaseVersionInConsole();
 export const history = getHistory();
 
 const redirectToDefaults = ({ match: { params } }) => {
-  const route = params.znsRoute || `0.${config.defaultZnsRoute}`;
-  if (route === 'get-access') return <Redirect to={'/get-access'} />;
-  if (route === 'login') return <Redirect to={'/login'} />;
-  if (route === 'reset-password') return <ResetPassword />;
+  if (params.znsRoute === 'get-access') return <Redirect to={'/get-access'} />;
+  if (params.znsRoute === 'login') return <Redirect to={'/login'} />;
+  if (params.znsRoute === 'reset-password') return <Redirect to={'/reset-password'} />;
 
-  return <Redirect to={`/${route}/${config.defaultApp}`} />;
+  return <Redirect to={'/'} />;
 };
 
 ReactDOM.render(
@@ -50,8 +48,8 @@ ReactDOM.render(
                 <Route path='/get-access' exact component={Invite} />
                 <Route path='/login' exact component={LoginPage} />
                 <Route path='/reset-password' exact component={ResetPassword} />
-                <Route path='/:znsRoute?/' exact render={redirectToDefaults} />
-                <Route path='/:znsRoute/:app' component={ZnsRouteConnect} />
+                <Route path='/' exact component={ZnsRouteConnect} />
+                <Route render={redirectToDefaults} />
               </Web3Connect>
             </Web3ReactContextProvider>
           </Router>

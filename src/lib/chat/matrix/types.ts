@@ -22,5 +22,5 @@ export enum CustomEventType {
 }
 
 export enum DecryptErrorConstants {
-  UNDERCRYPTABLE_EDIT = 'Message edit cannot be decrypted.',
+  UNDECRYPTABLE_EDIT = 'Message edit cannot be decrypted.',
 }

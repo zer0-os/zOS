@@ -446,17 +446,11 @@ export class MatrixClient implements IChatClient {
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
-    if (event.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
-      if (originalMessage) {
-        originalMessage.message = 'Message edit cannot be decrypted.';
-        originalMessage.updatedAt = event.origin_server_ts;
-      }
-    } else {
-      const newContent = this.getNewContent(event);
-      if (originalMessage && newContent) {
-        originalMessage.message = newContent.body;
-        originalMessage.updatedAt = event.origin_server_ts;
-      }
+    const newContent = this.getNewContent(event);
+
+    if (originalMessage && newContent) {
+      originalMessage.message = newContent.body;
+      originalMessage.updatedAt = event.origin_server_ts;
     }
 
     this.events.onMessageUpdated(event.room_id, originalMessage as any);

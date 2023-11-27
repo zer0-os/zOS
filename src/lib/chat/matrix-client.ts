@@ -231,13 +231,22 @@ export class MatrixClient implements IChatClient {
       const relatedEventId = this.getRelatedEventId(editEvent);
       const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
       if (messageIndex > -1) {
-        const newContent = this.getNewContent(editEvent);
-        if (newContent) {
+        if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
           messages[messageIndex] = {
             ...messages[messageIndex],
-            content: { ...messages[messageIndex].content, body: newContent.body },
+            content: { ...messages[messageIndex].content },
+            message: 'Message edit cannot be decrypted.',
             updatedAt: editEvent.origin_server_ts,
           };
+        } else {
+          const newContent = this.getNewContent(editEvent);
+          if (newContent) {
+            messages[messageIndex] = {
+              ...messages[messageIndex],
+              content: { ...messages[messageIndex].content, body: newContent.body },
+              updatedAt: editEvent.origin_server_ts,
+            };
+          }
         }
       }
     });

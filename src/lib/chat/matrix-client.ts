@@ -241,7 +241,7 @@ export class MatrixClient implements IChatClient {
           messages[messageIndex] = {
             ...messages[messageIndex],
             content: { ...messages[messageIndex].content },
-            message: DecryptErrorConstants.UndecryptableEdit,
+            message: DecryptErrorConstants.UNDERCRYPTABLE_EDIT,
             updatedAt: editEvent.origin_server_ts,
           };
         } else {
@@ -455,7 +455,7 @@ export class MatrixClient implements IChatClient {
 
     if (event.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
       if (originalMessage) {
-        originalMessage.message = DecryptErrorConstants.UndecryptableEdit;
+        originalMessage.message = DecryptErrorConstants.UNDERCRYPTABLE_EDIT;
         originalMessage.updatedAt = event.origin_server_ts;
       }
     } else {

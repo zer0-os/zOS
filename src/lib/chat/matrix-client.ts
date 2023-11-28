@@ -22,7 +22,7 @@ import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message'
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage, User } from './types';
+import { ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
@@ -283,8 +283,8 @@ export class MatrixClient implements IChatClient {
       initial_state,
       power_level_content_override: {
         users: {
-          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: 0 }), {}),
-          [this.userId]: 100,
+          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: PowerLevels.Viewer }), {}),
+          [this.userId]: PowerLevels.Owner,
         },
       },
     };

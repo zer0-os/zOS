@@ -67,18 +67,18 @@ export class Container extends React.Component<Properties> {
       location: { pathname, search },
     } = this.props;
 
-    if (/^\/$/.test(pathname)) return false;
+    if (/^\/0\./.test(pathname)) return false;
 
     this.props.history.replace({
-      pathname: '/',
+      pathname: pathname.replace(/^\//, '/0.'),
       search: search || '',
     });
 
     return true;
   }
 
-  extractRouteFromProps(_props: Properties = this.props) {
-    return '/';
+  extractRouteFromProps(props: Properties = this.props) {
+    return props.match.params.znsRoute.replace(/^0\./, '');
   }
 
   extractAppFromProps(props: Properties = this.props) {

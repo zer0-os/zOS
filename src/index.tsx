@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { ZnsRouteConnect } from './zns-route-connect';
+import { MessengerMain } from './messenger-main';
 import { store, runSagas } from './store';
 import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
@@ -29,11 +29,7 @@ showReleaseVersionInConsole();
 
 export const history = getHistory();
 
-const redirectToDefaults = ({ match: { params } }) => {
-  if (params.znsRoute === 'get-access') return <Redirect to={'/get-access'} />;
-  if (params.znsRoute === 'login') return <Redirect to={'/login'} />;
-  if (params.znsRoute === 'reset-password') return <Redirect to={'/reset-password'} />;
-
+const redirectToDefaults = () => {
   return <Redirect to={'/'} />;
 };
 
@@ -48,7 +44,7 @@ ReactDOM.render(
                 <Route path='/get-access' exact component={Invite} />
                 <Route path='/login' exact component={LoginPage} />
                 <Route path='/reset-password' exact component={ResetPassword} />
-                <Route path='/' exact component={ZnsRouteConnect} />
+                <Route path='/' exact component={MessengerMain} />
                 <Route render={redirectToDefaults} />
               </Web3Connect>
             </Web3ReactContextProvider>

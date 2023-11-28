@@ -104,6 +104,31 @@ export class MatrixClient implements IChatClient {
     return [];
   }
 
+  // NOTE: This can be removed in the next release cycle,
+  // since it will fix the "already existing" conversations, and we create a new room with the
+  // appropriate power_levels
+  private async setPowerLevels(rooms: Room[]) {
+    for (const room of rooms) {
+      const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
+      if (!powerLevels || this.userId !== room.getCreator()) {
+        continue;
+      }
+
+      const powerLevelsByUser = powerLevels.getContent()?.users || {};
+      try {
+        for (const userId of Object.keys(powerLevelsByUser)) {
+          if (userId === this.userId) {
+            continue; // Don't change the creator's power level
+          } else if (powerLevelsByUser[userId] !== 0) {
+            await this.matrix.setPowerLevel(room.roomId, userId, 0);
+          }
+        }
+      } catch (error) {
+        // most likely permission denied (403), ignore for now
+      }
+    }
+  }
+
   async getConversations() {
     await this.waitForConnection();
     const rooms = await this.getRooms();
@@ -124,6 +149,7 @@ export class MatrixClient implements IChatClient {
     }
 
     const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+    await this.setPowerLevels(filteredRooms);
     return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
   }
 

@@ -17,7 +17,6 @@ import {
   EventTimeline,
   NotificationCountType,
   IRoomTimelineData,
-  SyncState,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
@@ -46,6 +45,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private initializationTimestamp: number;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -514,9 +514,9 @@ export class MatrixClient implements IChatClient {
     removed: boolean,
     data: IRoomTimelineData
   ) {
-    if (removed) return; // only notify for new events, not removed ones
-    if (!data.liveEvent || !!toStartOfTimeline) return; // only notify for new things, not old.
-    if (!this.isSyncing()) return; // only notify if syncing is complete
+    if (removed) return;
+    if (!data.liveEvent || !!toStartOfTimeline) return;
+    if (event.getTs() < this.initializationTimestamp) return;
 
     this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
   }
@@ -656,18 +656,13 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private getSyncStatus() {
-    return this.matrix.getSyncState();
-  }
-
-  private isSyncing() {
-    return this.getSyncStatus() === SyncState.Syncing || this.getSyncStatus() === SyncState.Catchup;
-  }
-
   private async waitForSync() {
     await new Promise<void>((resolve) => {
       this.matrix.on('sync' as any, (state, _prevState) => {
-        if (state === 'PREPARED') resolve();
+        if (state === 'PREPARED') {
+          this.initializationTimestamp = Date.now();
+          resolve();
+        }
       });
     });
   }

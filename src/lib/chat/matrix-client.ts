@@ -718,6 +718,7 @@ export class MatrixClient implements IChatClient {
       hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
+      admin: room.getCreator(),
     };
   };
 

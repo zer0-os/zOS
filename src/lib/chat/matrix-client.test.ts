@@ -26,6 +26,7 @@ const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',
   getMembers: () => [],
+  getCreator: () => '',
   getDMInviter: () => undefined,
   loadMembersIfNeeded: () => undefined,
   decryptAllEvents: () => undefined,
@@ -266,7 +267,10 @@ describe('matrix client', () => {
     };
 
     it('returns all rooms as conversations', async () => {
-      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
+      const rooms = [
+        stubRoom({ roomId: 'channel-id' }),
+        stubRoom({ roomId: 'dm-id', getCreator: () => 'creator-user-id' }),
+      ];
       const getRooms = jest.fn(() => rooms);
       const client = await subject({ getRooms });
 
@@ -275,6 +279,7 @@ describe('matrix client', () => {
       expect(conversations).toHaveLength(2);
       expect(conversations[0].id).toEqual('channel-id');
       expect(conversations[1].id).toEqual('dm-id');
+      expect(conversations[1].admin).toEqual('creator-user-id');
     });
 
     it('returns empty array if no direct rooms exist', async () => {

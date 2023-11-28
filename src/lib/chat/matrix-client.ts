@@ -281,6 +281,12 @@ export class MatrixClient implements IChatClient {
       invite: users.map((u) => u.matrixId),
       is_direct: true,
       initial_state,
+      power_level_content_override: {
+        users: {
+          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: 0 }), {}),
+          [this.userId]: 100,
+        },
+      },
     };
     if (name) {
       options.name = name;

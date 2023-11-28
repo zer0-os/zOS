@@ -29,7 +29,12 @@ showReleaseVersionInConsole();
 
 export const history = getHistory();
 
-const redirectToDefaults = () => {
+const redirectToDefaults = ({ match: { params } }) => {
+  const route = params.znsRoute;
+  if (route === 'get-access') return <Redirect to={'/get-access'} />;
+  if (route === 'login') return <Redirect to={'/login'} />;
+  if (route === 'reset-password') return <ResetPassword />;
+
   return <Redirect to={'/'} />;
 };
 
@@ -45,7 +50,7 @@ ReactDOM.render(
                 <Route path='/login' exact component={LoginPage} />
                 <Route path='/reset-password' exact component={ResetPassword} />
                 <Route path='/' exact component={MessengerMain} />
-                <Route render={redirectToDefaults} />
+                <Route path='/:znsRoute' render={redirectToDefaults} />
               </Web3Connect>
             </Web3ReactContextProvider>
           </Router>

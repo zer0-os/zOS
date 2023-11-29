@@ -25,12 +25,12 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { isLoaded, backup, trustInfo, successMessage, errorMessage } = state.matrix;
+    const { isLoaded, generatedRecoveryKey, trustInfo, successMessage, errorMessage } = state.matrix;
     return {
       isLoaded,
       backupExists: !!trustInfo,
       isBackupRecovered: trustInfo?.usable || trustInfo?.trustedLocally,
-      recoveryKey: backup?.recovery_key,
+      recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
     };

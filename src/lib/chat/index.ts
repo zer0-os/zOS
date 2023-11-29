@@ -180,7 +180,7 @@ export class Chat {
   }
 
   async saveSecureBackup(backup: MatrixKeyBackupInfo): Promise<void> {
-    this.client.saveSecureBackup(backup);
+    await this.client.saveSecureBackup(backup);
   }
 
   async restoreSecureBackup(recoveryKey: string): Promise<any> {

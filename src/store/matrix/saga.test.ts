@@ -35,7 +35,7 @@ describe(getBackup, () => {
 
     expect(storeState.matrix).toEqual(
       expect.objectContaining({
-        backup: null,
+        generatedRecoveryKey: null,
         isLoaded: true,
         trustInfo: { usable: true, trustedLocally: true },
         successMessage: '',
@@ -52,7 +52,7 @@ describe(getBackup, () => {
 
     expect(storeState.matrix).toEqual(
       expect.objectContaining({
-        backup: null,
+        generatedRecoveryKey: null,
         isLoaded: true,
         trustInfo: null,
         successMessage: '',
@@ -69,7 +69,7 @@ describe(getBackup, () => {
 
     expect(storeState.matrix).toEqual(
       expect.objectContaining({
-        backup: null,
+        generatedRecoveryKey: null,
         isLoaded: true,
         trustInfo: null,
         successMessage: '',
@@ -82,27 +82,27 @@ describe(getBackup, () => {
 describe(generateBackup, () => {
   it('generates a new backup', async () => {
     const { storeState } = await subject(generateBackup)
-      .provide([[call([chatClient, chatClient.generateSecureBackup]), { data: 'here' }]])
+      .provide([[call([chatClient, chatClient.generateSecureBackup]), 'new key']])
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix.backup).toEqual({ data: 'here' });
+    expect(storeState.matrix.generatedRecoveryKey).toEqual('new key');
   });
 });
 
 describe(saveBackup, () => {
   describe('success', () => {
     function successSubject() {
-      const initialState = { matrix: { backup: { generated: 'backup' } } };
+      const initialState = { matrix: { generatedRecoveryKey: 'the key' } };
 
       return subject(saveBackup)
-        .provide([[call([chatClient, chatClient.saveSecureBackup], { generated: 'backup' }), { version: 1 }]])
+        .provide([[call([chatClient, chatClient.saveSecureBackup], 'the key'), { version: 1 }]])
         .withReducer(rootReducer, initialState as any);
     }
     it('clears the generated backup', async () => {
       const { storeState } = await successSubject().run();
 
-      expect(storeState.matrix.backup).toEqual(null);
+      expect(storeState.matrix.generatedRecoveryKey).toEqual(null);
     });
 
     it('fetches the saved backup', async () => {
@@ -118,7 +118,7 @@ describe(saveBackup, () => {
 
   describe('failure', () => {
     it('sets a failure message', async () => {
-      const initialState = { matrix: { backup: {} } };
+      const initialState = { matrix: { generatedRecoveryKey: 'a key' } };
 
       const { storeState } = await subject(saveBackup)
         .provide([
@@ -181,7 +181,7 @@ describe(clearBackupState, () => {
     const initialState = {
       matrix: {
         isLoaded: true,
-        backup: { data: 'here' },
+        generatedRecoveryKey: 'a key',
         trustInfo: { trustData: 'here' },
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
@@ -192,7 +192,7 @@ describe(clearBackupState, () => {
       .run();
 
     expect(storeState.matrix).toEqual({
-      backup: null,
+      generatedRecoveryKey: null,
       isLoaded: false,
       trustInfo: null,
       successMessage: '',

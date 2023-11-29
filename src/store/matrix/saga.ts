@@ -2,7 +2,7 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import {
   SagaActionTypes,
-  setBackup,
+  setGeneratedRecoveryKey,
   setDeviceId,
   setErrorMessage,
   setLoaded,
@@ -47,18 +47,18 @@ export function* getBackup() {
 
 export function* generateBackup() {
   const chatClient = yield call(chat.get);
-  const newBackup = yield call([chatClient, chatClient.generateSecureBackup]);
-  yield put(setBackup(newBackup));
+  const key = yield call([chatClient, chatClient.generateSecureBackup]);
+  yield put(setGeneratedRecoveryKey(key));
 }
 
 export function* saveBackup() {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
-  const backup = yield select((state) => state.matrix.backup);
+  const key = yield select((state) => state.matrix.generatedRecoveryKey);
   const chatClient = yield call(chat.get);
   try {
-    yield call([chatClient, chatClient.saveSecureBackup], backup);
-    yield put(setBackup(null));
+    yield call([chatClient, chatClient.saveSecureBackup], key);
+    yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
     yield put(setSuccessMessage('Backup saved successfully'));
   } catch {
@@ -83,7 +83,7 @@ export function* restoreBackup(action) {
 export function* clearBackupState() {
   yield put(setLoaded(false));
   yield put(setTrustInfo(null));
-  yield put(setBackup(null));
+  yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
 }

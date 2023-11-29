@@ -6,6 +6,11 @@ import { Channel, User } from '../../../store/channels';
 import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 
+const featureFlags = { enableGroupManagementMenu: false };
+jest.mock('../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
@@ -190,6 +195,25 @@ describe('messenger-chat', () => {
 
       expect(headerAvatar.prop('style').backgroundImage).toEqual('url(avatar-url)');
       expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
+    });
+
+    it('header renders group management menu icon button', function () {
+      featureFlags.enableGroupManagementMenu = true;
+
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const groupManagementMenuContainer = wrapper.find('.direct-message-chat__group-management-menu-container');
+
+      expect(groupManagementMenuContainer.exists()).toBeTrue();
     });
   });
 

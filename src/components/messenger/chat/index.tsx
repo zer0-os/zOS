@@ -19,7 +19,7 @@ import { startAddGroupMember } from '../../../store/group-management';
 
 import './styles.scss';
 
-export interface PublicProperties {}
+export interface PublicProperties { }
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;

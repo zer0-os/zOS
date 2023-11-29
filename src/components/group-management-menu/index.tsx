@@ -12,7 +12,7 @@ export interface Properties {
   onStartAddMember: () => void;
 }
 
-interface State {}
+interface State { }
 
 export class GroupManagementMenu extends React.Component<Properties, State> {
   constructor(props) {
@@ -20,7 +20,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     this.state = {};
   }
 
-  handleOpenChange = () => {};
+  handleOpenChange = () => { };
 
   startAddMember = (_e) => {
     this.props.onStartAddMember();

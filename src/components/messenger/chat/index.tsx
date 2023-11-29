@@ -9,8 +9,6 @@ import { Channel, denormalize } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { GroupManagementMenu } from '../../group-management-menu';
-import { featureFlags } from '../../../lib/feature-flags';
 
 import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
@@ -180,11 +178,6 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-            {featureFlags.enableGroupManagementMenu && (
-              <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu />
-              </div>
-            )}
           </div>
 
           <ChatViewContainer

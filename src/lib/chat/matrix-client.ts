@@ -246,19 +246,20 @@ export class MatrixClient implements IChatClient {
     const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
 
     if (messageIndex > -1) {
-      const newContent = this.getNewContent(editEvent);
-
-      if (newContent) {
-        messages[messageIndex] = this.applyNewContentToMessage(
-          messages[messageIndex],
-          newContent,
-          editEvent.origin_server_ts
-        );
-      } else if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
+      if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
         messages[messageIndex] = this.applyBadEncryptionReplacementToMessage(
           messages[messageIndex],
           editEvent.origin_server_ts
         );
+      } else {
+        const newContent = this.getNewContent(editEvent);
+        if (newContent) {
+          messages[messageIndex] = this.applyNewContentToMessage(
+            messages[messageIndex],
+            newContent,
+            editEvent.origin_server_ts
+          );
+        }
       }
     }
   }

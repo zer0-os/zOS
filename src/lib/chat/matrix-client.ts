@@ -211,38 +211,58 @@ export class MatrixClient implements IChatClient {
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
-    const messagesPromises = events.map(async (event) => {
-      if (this.isDeleted(event) || this.isEditEvent(event)) {
-        return null;
-      }
-
-      if (event.type === EventType.RoomMessage) {
-        return mapMatrixMessage(event, this.matrix);
-      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO || event.type === EventType.RoomCreate) {
-        return mapEventToAdminMessage(event);
-      }
-      return null;
-    });
-
+    const messagesPromises = events.map(async (event) => this.convertEventToMessage(event));
     let messages = await Promise.all(messagesPromises);
     messages = messages.filter((message) => message !== null);
 
-    events.filter(this.isEditEvent).forEach((editEvent) => {
-      const relatedEventId = this.getRelatedEventId(editEvent);
-      const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
-      if (messageIndex > -1) {
-        const newContent = this.getNewContent(editEvent);
-        if (newContent) {
-          messages[messageIndex] = {
-            ...messages[messageIndex],
-            content: { ...messages[messageIndex].content, body: newContent.body },
-            updatedAt: editEvent.origin_server_ts,
-          };
-        }
-      }
-    });
-
+    this.applyEditEventsToMessages(events, messages);
     return messages;
+  }
+
+  private async convertEventToMessage(event): Promise<any> {
+    if (this.isDeleted(event) || this.isEditEvent(event)) {
+      return null;
+    }
+
+    switch (event.type) {
+      case EventType.RoomMessage:
+        return mapMatrixMessage(event, this.matrix);
+      case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
+      case EventType.RoomCreate:
+        return mapEventToAdminMessage(event);
+      default:
+        return null;
+    }
+  }
+
+  private applyEditEventsToMessages(events, messages): void {
+    events.filter(this.isEditEvent).forEach((editEvent) => {
+      this.updateMessageWithEdit(messages, editEvent);
+    });
+  }
+
+  private updateMessageWithEdit(messages, editEvent): void {
+    const relatedEventId = this.getRelatedEventId(editEvent);
+    const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
+
+    if (messageIndex > -1) {
+      const newContent = this.getNewContent(editEvent);
+      if (newContent) {
+        messages[messageIndex] = this.applyNewContentToMessage(
+          messages[messageIndex],
+          newContent,
+          editEvent.origin_server_ts
+        );
+      }
+    }
+  }
+
+  private applyNewContentToMessage(message, newContent, timestamp): any {
+    return {
+      ...message,
+      content: { ...message.content, body: newContent.body },
+      updatedAt: timestamp,
+    };
   }
 
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {

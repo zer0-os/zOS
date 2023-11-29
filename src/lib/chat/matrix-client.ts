@@ -118,8 +118,8 @@ export class MatrixClient implements IChatClient {
       for (const userId of Object.keys(powerLevelsByUser)) {
         // if the user is in the room and has a power level > 0,
         // AND the user is not the creator of the room, set their power level to 0
-        if (userId === this.userId && powerLevelsByUser[userId] !== 0) {
-          await this.matrix.setPowerLevel(room.roomId, userId, 0);
+        if (userId === this.userId && powerLevelsByUser[userId] !== PowerLevels.Viewer) {
+          await this.matrix.setPowerLevel(room.roomId, userId, PowerLevels.Viewer);
         }
       }
     }

@@ -188,15 +188,17 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-            {featureFlags.enableGroupManagementMenu && (
-              <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu
-                  isRoomAdmin={this.props.isCurrentUserRoomAdmin}
-                  onStartAddMember={this.props.startAddGroupMember}
-                />
-              </div>
-            )}
-          </div>
+            {
+              featureFlags.enableGroupManagementMenu && (
+                <div className='direct-message-chat__group-management-menu-container'>
+                  <GroupManagementMenu
+                    isRoomAdmin={this.props.isCurrentUserRoomAdmin}
+                    onStartAddMember={() => console.log('group management: starting add group member')}
+                  />
+                </div>
+              )
+            }
+          </div >
 
           <ChatViewContainer
             key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
@@ -205,8 +207,8 @@ export class Container extends React.Component<Properties, State> {
             isDirectMessage
             showSenderAvatar={!this.isOneOnOne()}
           />
-        </div>
-      </div>
+        </div >
+      </div >
     );
   }
 }

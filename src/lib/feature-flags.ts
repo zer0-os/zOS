@@ -73,14 +73,6 @@ export class FeatureFlags {
   set internalUsage(value: boolean) {
     this._setBoolean('internalUsage', value);
   }
-
-  get enableGroupManagementMenu() {
-    return this._getBoolean('enableGroupManagementMenu', false);
-  }
-
-  set enableGroupManagementMenu(value: boolean) {
-    this._setBoolean('enableGroupManagementMenu', value);
-  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -157,6 +157,10 @@ $recent-indicator-size: 8px;
     color: theme.$color-greyscale-11;
   }
 
+  &__group-management-menu-container {
+    display: flex;
+  }
+
   &--transition {
     transition: all animation.$animation-duration-half ease-out;
 

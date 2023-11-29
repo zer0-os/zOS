@@ -1,0 +1,17 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.group-management-menu {
+  width: 248px;
+  padding: 8px;
+
+  align-self: stretch;
+
+  .menu-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

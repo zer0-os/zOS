@@ -20,6 +20,7 @@ describe('messenger-chat', () => {
       isFullScreen: false,
       enterFullScreenMessenger: () => null,
       exitFullScreenMessenger: () => null,
+      isCurrentUserRoomAdmin: false,
       ...props,
     };
 

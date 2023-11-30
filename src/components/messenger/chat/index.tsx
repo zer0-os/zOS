@@ -18,8 +18,6 @@ import { currentUserSelector } from '../../../store/authentication/selectors';
 
 import './styles.scss';
 
-import './styles.scss';
-
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {

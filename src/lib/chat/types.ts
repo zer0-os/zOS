@@ -30,3 +30,9 @@ export interface User {
   userId: string;
   matrixId: string;
 }
+
+export enum PowerLevels {
+  Viewer = 0, // Default
+  Editor = 50, // "Moderator" or ~PL50
+  Owner = 100, // "Admin" or PL100
+}

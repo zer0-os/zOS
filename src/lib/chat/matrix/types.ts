@@ -24,3 +24,7 @@ export enum CustomEventType {
 export enum DecryptErrorConstants {
   UNDECRYPTABLE_EDIT = 'Message edit cannot be decrypted.',
 }
+
+export enum NotifiableEventType {
+  RoomMessage = 'RoomMessage',
+}

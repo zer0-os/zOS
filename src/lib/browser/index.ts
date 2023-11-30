@@ -11,7 +11,7 @@ export const send = (options: { body; heading; tag }) => {
   new Notification(heading, {
     tag: tag,
     body,
-    icon: getProvider().getSource({ src: 'v1681525214/zero-logo-round.png', local: false, options: {} }),
+    icon: getProvider().getSource({ src: '', local: false, options: {} }),
   });
 };
 

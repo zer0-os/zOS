@@ -49,14 +49,11 @@ describe('Group Management Saga', () => {
       });
 
       const {
-        storeState: { createConversation: state },
+        storeState: { groupManagement: state },
       } = await expectSaga(reset).withReducer(rootReducer, initialState).run();
 
       expect(state).toEqual({
         stage: Stage.None,
-        groupUsers: [],
-        startGroupChat: { isLoading: false },
-        groupDetails: { isCreating: false },
       });
     });
   });

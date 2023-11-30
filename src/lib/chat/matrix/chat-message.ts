@@ -1,5 +1,5 @@
-import { CustomEventType } from './types';
-import { MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { CustomEventType, NotifiableEventType } from './types';
+import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType } from '../../../store/messages';
 
@@ -80,4 +80,29 @@ export function mapEventToAdminMessage(matrixMessage) {
     },
     admin: adminData,
   };
+}
+
+export function mapToLiveRoomEvent(liveEvent) {
+  const { event } = liveEvent;
+
+  const eventType = convertToNotifiableEventType(event.type);
+
+  return {
+    id: event.event_id,
+    type: eventType,
+    createdAt: event.origin_server_ts,
+    sender: {
+      userId: event.sender,
+    },
+  };
+}
+
+function convertToNotifiableEventType(eventType) {
+  switch (eventType) {
+    case EventType.RoomMessageEncrypted:
+    case EventType.RoomMessage:
+      return NotifiableEventType.RoomMessage;
+    default:
+      return '';
+  }
 }

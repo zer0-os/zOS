@@ -30,6 +30,7 @@ export function* startAddGroupMember() {
     while (currentStage !== Stage.None) {
       const { back, cancel, handlerResult } = yield race({
         back: take(SagaActionTypes.Back),
+        cancel: take(SagaActionTypes.Cancel),
         handlerResult: call(STAGE_HANDLERS[currentStage]),
       });
 

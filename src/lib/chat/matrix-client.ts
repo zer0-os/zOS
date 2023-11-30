@@ -248,13 +248,20 @@ export class MatrixClient implements IChatClient {
     const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
 
     if (messageIndex > -1) {
-      const newContent = this.getNewContent(editEvent);
-      if (newContent) {
-        messages[messageIndex] = this.applyNewContentToMessage(
+      if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
+        messages[messageIndex] = this.applyBadEncryptionReplacementToMessage(
           messages[messageIndex],
-          newContent,
           editEvent.origin_server_ts
         );
+      } else {
+        const newContent = this.getNewContent(editEvent);
+        if (newContent) {
+          messages[messageIndex] = this.applyNewContentToMessage(
+            messages[messageIndex],
+            newContent,
+            editEvent.origin_server_ts
+          );
+        }
       }
     }
   }
@@ -263,6 +270,15 @@ export class MatrixClient implements IChatClient {
     return {
       ...message,
       content: { ...message.content, body: newContent.body },
+      updatedAt: timestamp,
+    };
+  }
+
+  private applyBadEncryptionReplacementToMessage(message, timestamp): any {
+    return {
+      ...message,
+      content: { ...message.content },
+      message: 'Message edit cannot be decrypted.',
       updatedAt: timestamp,
     };
   }

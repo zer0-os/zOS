@@ -81,6 +81,14 @@ export class FeatureFlags {
   set enableGroupManagementMenu(value: boolean) {
     this._setBoolean('enableGroupManagementMenu', value);
   }
+
+  get enableAddMemberToGroup() {
+    return this._getBoolean('enableAddMemberToGroup', false);
+  }
+
+  set enableAddMemberToGroup(value: boolean) {
+    this._setBoolean('enableAddMemberToGroup', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

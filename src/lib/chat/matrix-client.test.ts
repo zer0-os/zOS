@@ -26,6 +26,7 @@ const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',
   getMembers: () => [],
+  getCreator: () => '',
   getDMInviter: () => undefined,
   loadMembersIfNeeded: () => undefined,
   decryptAllEvents: () => undefined,
@@ -266,7 +267,10 @@ describe('matrix client', () => {
     };
 
     it('returns all rooms as conversations', async () => {
-      const rooms = [stubRoom({ roomId: 'channel-id' }), stubRoom({ roomId: 'dm-id' })];
+      const rooms = [
+        stubRoom({ roomId: 'channel-id' }),
+        stubRoom({ roomId: 'dm-id', getCreator: () => 'creator-user-id' }),
+      ];
       const getRooms = jest.fn(() => rooms);
       const client = await subject({ getRooms });
 
@@ -275,6 +279,7 @@ describe('matrix client', () => {
       expect(conversations).toHaveLength(2);
       expect(conversations[0].id).toEqual('channel-id');
       expect(conversations[1].id).toEqual('dm-id');
+      expect(conversations[1].admin).toEqual('creator-user-id');
     });
 
     it('returns empty array if no direct rooms exist', async () => {
@@ -288,7 +293,7 @@ describe('matrix client', () => {
   });
 
   describe('createConversation', () => {
-    const subject = async (stubs = {}) => {
+    const subject = async (stubs = {}, sessionStorage = {}) => {
       const allStubs = {
         createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
         getRoom: jest.fn().mockReturnValue(stubRoom({})),
@@ -298,7 +303,7 @@ describe('matrix client', () => {
         createClient: (_opts: any) => getSdkClient(allStubs),
       };
 
-      const client = new MatrixClient(allProps);
+      const client = new MatrixClient(allProps, { get: () => sessionStorage } as any);
       await client.connect(null, 'token');
       return client;
     };
@@ -344,6 +349,33 @@ describe('matrix client', () => {
           preset: Preset.TrustedPrivateChat,
           visibility: Visibility.Private,
           is_direct: true,
+        })
+      );
+    });
+
+    it('set the appropriate power_level_content_override for each user in group conversation', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom }, { userId: '@this.user' });
+
+      await client.createConversation(
+        [
+          { userId: 'id-1', matrixId: '@first.user' },
+          { userId: 'id-2', matrixId: '@second.user' },
+        ],
+        null,
+        null,
+        null
+      );
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          power_level_content_override: {
+            users: {
+              '@first.user': 0,
+              '@second.user': 0,
+              '@this.user': 100, // the user who created the room
+            },
+          },
         })
       );
     });

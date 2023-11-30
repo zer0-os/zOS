@@ -42,8 +42,8 @@ describe('page-load saga', () => {
       .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /login to /0.wilder.channels
-    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
+    // redirected from /login to /
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(loginStoreState.pageload.isComplete).toBe(true);
 
     // signup
@@ -53,8 +53,8 @@ describe('page-load saga', () => {
       .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /get-access to /0.wilder.channels
-    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
+    // redirected from /get-access to /
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(getAccessStoreState.pageload.isComplete).toBe(true);
   });
 
@@ -80,7 +80,7 @@ describe('page-load saga', () => {
       pageload: { isComplete: false },
     };
 
-    const history = new StubHistory('/0.wilder/channels');
+    const history = new StubHistory('/');
     const { storeState } = await expectSaga(saga)
       .provide(stubResponses(history, false))
       .withReducer(rootReducer, initialState as any)
@@ -96,7 +96,7 @@ describe('page-load saga', () => {
       pageload: { isComplete: false },
     };
 
-    const history = new StubHistory('/0.wilder/channels');
+    const history = new StubHistory('/');
     featureFlags.allowPublicZOS = true;
     const { storeState } = await expectSaga(saga)
       .provide(stubResponses(history, false))
@@ -117,8 +117,8 @@ describe('page-load saga', () => {
       .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /reset-password to /0.wilder.channels
-    expect(history.replace).toHaveBeenCalledWith({ pathname: '/0.wilder/channels' });
+    // redirected from /reset-password to /
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
   });
 

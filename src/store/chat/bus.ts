@@ -18,6 +18,7 @@ export enum Events {
   RoomAvatarChanged = 'chat/roomAvatarChanged',
   OtherUserJoinedChannel = 'chat/channel/otherUserJoined',
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
+  LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
 }
 
 let theBus;
@@ -56,6 +57,7 @@ export function createChatConnection(userId, chatAccessToken) {
       emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, user } });
     const onOtherUserLeftChannel = (channelId, user) =>
       emit({ type: Events.OtherUserLeftChannel, payload: { channelId, user } });
+    const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
 
     chatClient.initChat({
       reconnectStart,
@@ -73,6 +75,7 @@ export function createChatConnection(userId, chatAccessToken) {
       onRoomAvatarChanged,
       onOtherUserJoinedChannel,
       onOtherUserLeftChannel,
+      receiveLiveRoomEvent,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

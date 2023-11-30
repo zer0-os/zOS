@@ -16,13 +16,14 @@ import {
   MatrixEvent,
   EventTimeline,
   NotificationCountType,
+  IRoomTimelineData,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message';
+import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage, User } from './types';
+import { ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
@@ -44,6 +45,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private initializationTimestamp: number;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -317,6 +319,12 @@ export class MatrixClient implements IChatClient {
       invite: users.map((u) => u.matrixId),
       is_direct: true,
       initial_state,
+      power_level_content_override: {
+        users: {
+          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: PowerLevels.Viewer }), {}),
+          [this.userId]: PowerLevels.Owner,
+        },
+      },
     };
     if (name) {
       options.name = name;
@@ -541,7 +549,21 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private initializeRoomEventHandlers(room: Room) {
+  private async processRoomTimelineEvent(
+    event: MatrixEvent,
+    _room: Room | undefined,
+    toStartOfTimeline: boolean | undefined,
+    removed: boolean,
+    data: IRoomTimelineData
+  ) {
+    if (removed) return;
+    if (!data.liveEvent || !!toStartOfTimeline) return;
+    if (event.getTs() < this.initializationTimestamp) return;
+
+    this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
+  }
+
+  private async initializeRoomEventHandlers(room: Room) {
     if (this.unreadNotificationHandlers[room.roomId]) {
       return;
     }
@@ -594,6 +616,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
+    this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -678,7 +701,10 @@ export class MatrixClient implements IChatClient {
   private async waitForSync() {
     await new Promise<void>((resolve) => {
       this.matrix.on('sync' as any, (state, _prevState) => {
-        if (state === 'PREPARED') resolve();
+        if (state === 'PREPARED') {
+          this.initializationTimestamp = Date.now();
+          resolve();
+        }
       });
     });
   }
@@ -754,6 +780,7 @@ export class MatrixClient implements IChatClient {
       hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
+      admin: room.getCreator(),
     };
   };
 

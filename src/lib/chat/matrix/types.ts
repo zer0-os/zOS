@@ -20,3 +20,7 @@ export enum MatrixConstants {
 export enum CustomEventType {
   USER_JOINED_INVITER_ON_ZERO = 'user_joined_inviter_on_zero',
 }
+
+export enum NotifiableEventType {
+  RoomMessage = 'RoomMessage',
+}

@@ -14,6 +14,7 @@ import { featureFlags } from '../../../lib/feature-flags';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { IconButton } from '@zero-tech/zui/components';
+import { currentUserSelector } from '../../../store/authentication/selectors';
 
 import './styles.scss';
 
@@ -38,13 +39,13 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      authentication,
       chat: { activeConversationId },
       layout,
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
-    const isCurrentUserRoomAdmin = directMessage?.admin === authentication.user.data.matrixId;
+    const currentUser = currentUserSelector(state);
+    const isCurrentUserRoomAdmin = directMessage?.admin === currentUser.matrixId;
 
     return {
       activeConversationId,

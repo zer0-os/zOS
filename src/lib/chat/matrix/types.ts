@@ -21,6 +21,10 @@ export enum CustomEventType {
   USER_JOINED_INVITER_ON_ZERO = 'user_joined_inviter_on_zero',
 }
 
+export enum DecryptErrorConstants {
+  UNDECRYPTABLE_EDIT = 'Message edit cannot be decrypted.',
+}
+
 export enum NotifiableEventType {
   RoomMessage = 'RoomMessage',
 }

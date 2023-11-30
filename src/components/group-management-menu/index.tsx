@@ -1,11 +1,16 @@
 import * as React from 'react';
 
+import { featureFlags } from '../../lib/feature-flags';
+
 import { IconDotsHorizontal, IconPlus } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
-export interface Properties {}
+export interface Properties {
+  isRoomAdmin: boolean;
+  onStartAddMember: () => void;
+}
 
 interface State {}
 
@@ -17,6 +22,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
 
   handleOpenChange = () => {};
 
+  startAddMember = (_e) => {
+    this.props.onStartAddMember();
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -27,13 +36,16 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
 
   // Update menuItems to add new menu items
   get renderDropdownMenuItems() {
-    const menuItems = [
-      {
-        id: 'example_id',
-        label: this.renderMenuItem(<IconPlus />, 'Example Item'),
-        onSelect: () => {},
-      },
-    ];
+    const menuItems = [];
+
+    if (featureFlags.enableAddMemberToGroup && this.props.isRoomAdmin) {
+      menuItems.push({
+        id: 'add-member',
+        label: this.renderMenuItem(<IconPlus />, 'Add Member'),
+        onSelect: this.startAddMember,
+      });
+    }
+
     return menuItems;
   }
 

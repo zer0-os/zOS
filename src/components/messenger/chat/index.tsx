@@ -11,11 +11,11 @@ import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../group-management-menu';
 import { featureFlags } from '../../../lib/feature-flags';
-
-import './styles.scss';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { IconButton } from '@zero-tech/zui/components';
+
+import './styles.scss';
 
 export interface PublicProperties {}
 
@@ -26,6 +26,7 @@ export interface Properties extends PublicProperties {
   isFullScreen: boolean;
   enterFullScreenMessenger: () => void;
   exitFullScreenMessenger: () => void;
+  isCurrentUserRoomAdmin: boolean;
 }
 
 interface State {
@@ -37,16 +38,19 @@ export class Container extends React.Component<Properties, State> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
+      authentication,
       chat: { activeConversationId },
       layout,
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
+    const isCurrentUserRoomAdmin = directMessage?.admin === authentication.user.data.matrixId;
 
     return {
       activeConversationId,
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
+      isCurrentUserRoomAdmin,
     };
   }
 
@@ -182,7 +186,10 @@ export class Container extends React.Component<Properties, State> {
             </span>
             {featureFlags.enableGroupManagementMenu && (
               <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu />
+                <GroupManagementMenu
+                  isRoomAdmin={this.props.isCurrentUserRoomAdmin}
+                  onStartAddMember={() => console.log('group management: starting add group member')}
+                />
               </div>
             )}
           </div>

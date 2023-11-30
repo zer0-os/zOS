@@ -4,7 +4,6 @@ import { getHistory, getNavigator } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { initializePublicLayout } from '../layout/saga';
-import { config } from '../../config';
 
 const anonymousPaths = [
   '/get-access',
@@ -31,7 +30,7 @@ function handleAuthenticatedUser(history) {
   // we should redirect to index page in that case
   if (anonymousPaths.includes(history.location.pathname)) {
     history.replace({
-      pathname: `/0.${config.defaultZnsRoute}/${config.defaultApp}`,
+      pathname: '/',
     });
   }
 }

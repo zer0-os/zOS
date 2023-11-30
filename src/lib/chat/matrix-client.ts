@@ -16,9 +16,10 @@ import {
   MatrixEvent,
   EventTimeline,
   NotificationCountType,
+  IRoomTimelineData,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapEventToAdminMessage, mapMatrixMessage } from './matrix/chat-message';
+import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
 import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -26,7 +27,13 @@ import { ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
-import { ConnectionStatus, CustomEventType, MatrixConstants, MembershipStateType } from './matrix/types';
+import {
+  ConnectionStatus,
+  CustomEventType,
+  DecryptErrorConstants,
+  MatrixConstants,
+  MembershipStateType,
+} from './matrix/types';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
@@ -44,6 +51,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private initializationTimestamp: number;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -211,38 +219,74 @@ export class MatrixClient implements IChatClient {
   }
 
   private async processRawEventsToMessages(events): Promise<any[]> {
-    const messagesPromises = events.map(async (event) => {
-      if (this.isDeleted(event) || this.isEditEvent(event)) {
-        return null;
-      }
-
-      if (event.type === EventType.RoomMessage) {
-        return mapMatrixMessage(event, this.matrix);
-      } else if (event.type === CustomEventType.USER_JOINED_INVITER_ON_ZERO || event.type === EventType.RoomCreate) {
-        return mapEventToAdminMessage(event);
-      }
-      return null;
-    });
-
+    const messagesPromises = events.map(async (event) => this.convertEventToMessage(event));
     let messages = await Promise.all(messagesPromises);
     messages = messages.filter((message) => message !== null);
 
+    this.applyEditEventsToMessages(events, messages);
+    return messages;
+  }
+
+  private async convertEventToMessage(event): Promise<any> {
+    if (this.isDeleted(event) || this.isEditEvent(event)) {
+      return null;
+    }
+
+    switch (event.type) {
+      case EventType.RoomMessage:
+        return mapMatrixMessage(event, this.matrix);
+      case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
+      case EventType.RoomCreate:
+        return mapEventToAdminMessage(event);
+      default:
+        return null;
+    }
+  }
+
+  private applyEditEventsToMessages(events, messages): void {
     events.filter(this.isEditEvent).forEach((editEvent) => {
-      const relatedEventId = this.getRelatedEventId(editEvent);
-      const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
-      if (messageIndex > -1) {
+      this.updateMessageWithEdit(messages, editEvent);
+    });
+  }
+
+  private updateMessageWithEdit(messages, editEvent): void {
+    const relatedEventId = this.getRelatedEventId(editEvent);
+    const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
+
+    if (messageIndex > -1) {
+      if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
+        messages[messageIndex] = this.applyBadEncryptionReplacementToMessage(
+          messages[messageIndex],
+          editEvent.origin_server_ts
+        );
+      } else {
         const newContent = this.getNewContent(editEvent);
         if (newContent) {
-          messages[messageIndex] = {
-            ...messages[messageIndex],
-            content: { ...messages[messageIndex].content, body: newContent.body },
-            updatedAt: editEvent.origin_server_ts,
-          };
+          messages[messageIndex] = this.applyNewContentToMessage(
+            messages[messageIndex],
+            newContent,
+            editEvent.origin_server_ts
+          );
         }
       }
-    });
+    }
+  }
 
-    return messages;
+  private applyNewContentToMessage(message, newContent, timestamp): any {
+    return {
+      ...message,
+      content: { ...message.content, body: newContent.body },
+      updatedAt: timestamp,
+    };
+  }
+
+  private applyBadEncryptionReplacementToMessage(message, timestamp): any {
+    return {
+      ...message,
+      content: { ...message.content },
+      message: 'Message edit cannot be decrypted.',
+      updatedAt: timestamp,
+    };
   }
 
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
@@ -443,11 +487,18 @@ export class MatrixClient implements IChatClient {
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
-    const newContent = this.getNewContent(event);
 
-    if (originalMessage && newContent) {
-      originalMessage.message = newContent.body;
-      originalMessage.updatedAt = event.origin_server_ts;
+    if (event.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
+      if (originalMessage) {
+        originalMessage.message = DecryptErrorConstants.UNDECRYPTABLE_EDIT;
+        originalMessage.updatedAt = event.origin_server_ts;
+      }
+    } else {
+      const newContent = this.getNewContent(event);
+      if (originalMessage && newContent) {
+        originalMessage.message = newContent.body;
+        originalMessage.updatedAt = event.origin_server_ts;
+      }
     }
 
     this.events.onMessageUpdated(event.room_id, originalMessage as any);
@@ -511,7 +562,21 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private initializeRoomEventHandlers(room: Room) {
+  private async processRoomTimelineEvent(
+    event: MatrixEvent,
+    _room: Room | undefined,
+    toStartOfTimeline: boolean | undefined,
+    removed: boolean,
+    data: IRoomTimelineData
+  ) {
+    if (removed) return;
+    if (!data.liveEvent || !!toStartOfTimeline) return;
+    if (event.getTs() < this.initializationTimestamp) return;
+
+    this.events.receiveLiveRoomEvent(mapToLiveRoomEvent(event) as any);
+  }
+
+  private async initializeRoomEventHandlers(room: Room) {
     if (this.unreadNotificationHandlers[room.roomId]) {
       return;
     }
@@ -564,6 +629,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
+    this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
 
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
@@ -648,7 +714,10 @@ export class MatrixClient implements IChatClient {
   private async waitForSync() {
     await new Promise<void>((resolve) => {
       this.matrix.on('sync' as any, (state, _prevState) => {
-        if (state === 'PREPARED') resolve();
+        if (state === 'PREPARED') {
+          this.initializationTimestamp = Date.now();
+          resolve();
+        }
       });
     });
   }

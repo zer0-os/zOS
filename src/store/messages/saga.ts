@@ -1,16 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
-import {
-  EditMessageOptions,
-  Message,
-  SagaActionTypes,
-  schema,
-  removeAll,
-  denormalize,
-  MediaType,
-  MessageSendStatus,
-} from '.';
+import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
 import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
@@ -29,6 +20,7 @@ import { User } from '../channels';
 import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 import { uniqNormalizedList } from '../utils';
+import { NotifiableEventType } from '../../lib/chat/matrix/types';
 
 export interface Payload {
   channelId: string;
@@ -570,21 +562,18 @@ export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
 }
 
-export function isOwner(currentUser, entityUserId) {
-  if (!currentUser || !entityUserId) return false;
+export function isOwner(currentUser, entityUserMatrixId) {
+  if (!currentUser || !entityUserMatrixId) return false;
 
-  return currentUser.id === entityUserId;
+  return currentUser.matrixId === entityUserMatrixId;
 }
 
-export function* sendBrowserNotification(channelId, message: Message) {
-  // This is not well defined. We need to respect muted channels, ignore messages from the current user, etc.
-  const channel = yield select(rawChannelSelector(channelId));
+export function* sendBrowserNotification(eventData) {
+  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
-  if (channel?.isChannel) return;
-
-  if (isOwner(yield select(currentUserSelector()), message.sender?.userId)) return;
-
-  yield call(sendBrowserMessage, mapMessage(message));
+  if (eventData.type === NotifiableEventType.RoomMessage) {
+    yield call(sendBrowserMessage, mapMessage(eventData));
+  }
 }
 
 export function* saga() {
@@ -599,4 +588,9 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
+  yield takeEveryFromBus(chatBus, ChatEvents.LiveRoomEventReceived, receiveLiveRoomEventAction);
+}
+
+function* receiveLiveRoomEventAction({ payload }) {
+  yield sendBrowserNotification(payload.eventData);
 }

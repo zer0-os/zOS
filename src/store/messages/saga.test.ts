@@ -17,115 +17,75 @@ import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
 import { MessageSendStatus } from '.';
 import { chat } from '../../lib/chat';
+import { NotifiableEventType } from '../../lib/chat/matrix/types';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
 };
 
 describe('messages saga', () => {
-  it('sends a browser notification for a conversation', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    const message = {
+  it('sends a browser notification for a conversation when event type is notifiable', async () => {
+    const eventData = {
       id: 8667728016,
-      message: 'Hello',
-      parentMessageText: null,
+      sender: { userId: 'sender-id' },
       createdAt: 1678861267433,
-      updatedAt: 0,
+      type: NotifiableEventType.RoomMessage,
     };
 
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: false,
-          },
-        },
-      },
-    };
-
-    await expectSaga(sendBrowserNotification, channelId, message as any)
+    await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),
           undefined,
         ],
       ])
-      .call(sendBrowserMessage, mapMessage(message as any))
-      .withState(initialState)
+      .call(sendBrowserMessage, mapMessage(eventData as any))
+      .run();
+  });
+
+  it('does not send a browser notification for a conversation when event type is not a message event', async () => {
+    const eventData = {
+      id: 8667728016,
+      sender: { userId: 'sender-id' },
+      createdAt: 1678861267433,
+      type: '',
+    };
+
+    await expectSaga(sendBrowserNotification, eventData as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .not.call(sendBrowserMessage, mapMessage(eventData as any))
       .run();
   });
 
   it('does not send a browser notification when the user is the sender', async () => {
     const user = {
       id: 'the-user-id',
+      matrixId: 'the-user-matrix-id',
     };
-    const channelId = '0x000000000000000000000000000000000000000A';
 
-    const message = {
+    const eventData = {
       id: 8667728016,
-      message: 'I should not receive this message, because I sent it',
-      parentMessageText: null,
+      sender: { userId: user.matrixId },
       createdAt: 1678861267433,
-      updatedAt: 0,
-      sender: { userId: user.id },
     };
 
     const initialState = {
       authentication: { user: { data: user } },
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: false,
-          },
-        },
-      },
     };
 
-    await expectSaga(sendBrowserNotification, channelId, message as any)
+    await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
           matchers.call.fn(sendBrowserMessage),
           undefined,
         ],
       ])
-      .not.call(sendBrowserMessage, mapMessage(message as any))
-      .withState(initialState)
-      .run();
-  });
-
-  it('does not send a browser notification for a channel', async () => {
-    const channelId = '0x000000000000000000000000000000000000000A';
-
-    const message = {
-      id: 8667728016,
-      message: 'Hello',
-      parentMessageText: null,
-      createdAt: 1678861267433,
-      updatedAt: 0,
-    };
-
-    const initialState = {
-      normalized: {
-        channels: {
-          [channelId]: {
-            id: channelId,
-            isChannel: true,
-          },
-        },
-      },
-    };
-
-    await expectSaga(sendBrowserNotification, channelId, message as any)
-      .provide([
-        [
-          matchers.call.fn(sendBrowserMessage),
-          undefined,
-        ],
-      ])
-      .not.call(sendBrowserMessage, mapMessage(message as any))
+      .not.call(sendBrowserMessage, mapMessage(eventData as any))
       .withState(initialState)
       .run();
   });

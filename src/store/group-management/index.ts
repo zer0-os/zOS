@@ -22,7 +22,7 @@ export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.Leave
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const back = createAction(SagaActionTypes.Back);
 
-type GroupManagementState = {
+export type GroupManagementState = {
   stage: Stage;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
 };

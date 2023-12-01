@@ -13,6 +13,7 @@ import { reducer as chat } from './chat';
 import { reducer as notificationsList } from './notifications';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
+import { reducer as groupManagement } from './group-management';
 import { reducer as registration } from './registration';
 import { reducer as login } from './login';
 import { reducer as rewards } from './rewards';
@@ -36,6 +37,7 @@ export const rootReducer = combineReducers({
   notificationsList,
   createConversation,
   createInvitation,
+  groupManagement,
   registration,
   login,
   rewards,

@@ -13,6 +13,7 @@ import { saga as layout } from './layout/saga';
 import { saga as notificationsList } from './notifications/saga';
 import { saga as createConversation } from './create-conversation/saga';
 import { saga as createInvitation } from './create-invitation/saga';
+import { saga as groupManagement } from './group-management/saga';
 import { saga as registration } from './registration/saga';
 import { saga as login } from './login/saga';
 import { saga as rewards } from './rewards/saga';
@@ -40,6 +41,7 @@ export function* rootSaga() {
     notificationsList,
     createConversation,
     createInvitation,
+    groupManagement,
     registration,
     login,
     rewards,

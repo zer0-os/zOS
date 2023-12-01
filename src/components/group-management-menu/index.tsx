@@ -13,7 +13,7 @@ export interface Properties {
   onLeave: () => void;
 }
 
-interface State { }
+interface State {}
 
 export class GroupManagementMenu extends React.Component<Properties, State> {
   constructor(props) {
@@ -21,7 +21,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     this.state = {};
   }
 
-  handleOpenChange = () => { };
+  handleOpenChange = () => {};
 
   startAddMember = (_e) => {
     this.props.onStartAddMember();
@@ -53,7 +53,6 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         onSelect: this.startAddMember as any,
       });
     }
-
 
     return menuItems;
   }

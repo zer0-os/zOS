@@ -12,9 +12,9 @@ describe(GroupManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isRoomAdmin: false,
-      onStartAddMember: () => { },
+      onStartAddMember: () => {},
 
-      onLeave: () => { },
+      onLeave: () => {},
       ...props,
     };
 

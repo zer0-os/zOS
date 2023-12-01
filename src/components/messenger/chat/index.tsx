@@ -20,7 +20,7 @@ import { LeaveGroupDialogContainer } from '../../group-management/leave-group-di
 
 import './styles.scss';
 
-export interface PublicProperties { }
+export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;
@@ -216,18 +216,16 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-            {
-              featureFlags.enableGroupManagementMenu && (
-                <div className='direct-message-chat__group-management-menu-container'>
-                  <GroupManagementMenu
-                    isRoomAdmin={this.props.isCurrentUserRoomAdmin}
-                    onStartAddMember={() => console.log('group management: starting add group member')}
-                    onLeave={this.openLeaveGroupDialog}
-                  />
-                </div>
-              )
-            }
-          </div >
+            {featureFlags.enableGroupManagementMenu && (
+              <div className='direct-message-chat__group-management-menu-container'>
+                <GroupManagementMenu
+                  isRoomAdmin={this.props.isCurrentUserRoomAdmin}
+                  onStartAddMember={() => console.log('group management: starting add group member')}
+                  onLeave={this.openLeaveGroupDialog}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         <ChatViewContainer

@@ -533,6 +533,15 @@ export class MatrixClient implements IChatClient {
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
   }
 
+  async leaveRoom(roomId: string, userId: string): Promise<void> {
+    if (!roomId) {
+      return;
+    }
+
+    await this.matrix.leave(roomId);
+    this.events.onUserLeft(roomId, userId);
+  }
+
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);

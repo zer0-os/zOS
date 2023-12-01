@@ -38,6 +38,10 @@ export class SendbirdClient implements IChatClient {
     return null;
   }
 
+  async leaveRoom() {
+    return null;
+  }
+
   async generateSecureBackup() {
     return null;
   }

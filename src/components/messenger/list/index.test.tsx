@@ -10,12 +10,14 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
+import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
 import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { SettingsMenu } from '../../settings-menu';
+import { AddMembersPanel } from './add-members-panel';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -26,6 +28,8 @@ describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       stage: Stage.None,
+      groupManangemenetStage: GroupManagementStage.None,
+
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -57,6 +61,8 @@ describe('messenger-list', () => {
       rewardsTooltipClosed: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
+      backGroupManagement: () => null,
+
       ...props,
     };
 
@@ -317,6 +323,58 @@ describe('messenger-list', () => {
     expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
+  describe('group management', () => {
+    it('renders AddMembersPanel', function () {
+      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
+
+      expect(wrapper).not.toHaveElement(ConversationListPanel);
+      expect(wrapper).not.toHaveElement(CreateConversationPanel);
+      expect(wrapper).not.toHaveElement(StartGroupPanel);
+      expect(wrapper).not.toHaveElement(GroupDetailsPanel);
+      expect(wrapper).toHaveElement(AddMembersPanel);
+    });
+
+    it('does not render AddMembersPanel if group management stage is none', function () {
+      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
+
+      expect(wrapper).not.toHaveElement(AddMembersPanel);
+    });
+
+    it('moves back from AddMembersPanel', async function () {
+      const backGroupManagement = jest.fn();
+      const wrapper = subject({
+        stage: Stage.None,
+        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
+        backGroupManagement,
+      });
+
+      await wrapper.find(AddMembersPanel).simulate('back');
+
+      expect(backGroupManagement).toHaveBeenCalledOnce();
+    });
+
+    it('searches for citizens when adding new members', async function () {
+      when(mockSearchMyNetworksByName)
+        .calledWith('jac')
+        .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
+      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
+
+      const searchResults = await wrapper.find(AddMembersPanel).prop('searchUsers')('jac');
+
+      expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
+    });
+
+    it('sets AddMembersPanel to Submitting while data is loading', async function () {
+      const wrapper = subject({
+        stage: Stage.None,
+        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
+        isFetchingExistingConversations: true,
+      });
+
+      expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();
+    });
+  });
+
   describe('mapState', () => {
     const subject = (
       channels,
@@ -362,6 +420,7 @@ describe('messenger-list', () => {
           loading: false,
           ...rewardsState,
         },
+        groupManagement: {},
       } as RootState;
     };
 

@@ -36,21 +36,23 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
   }
 
   get renderDropdownMenuItems() {
-    const menuItems = [
-      {
-        id: 'leave_group',
-        label: this.renderMenuItem(<IconUserRight1 />, 'Leave Group'),
-        onSelect: () => {
-          this.props.onLeave();
-        },
-      },
-    ];
+    const menuItems = [];
 
     if (featureFlags.enableAddMemberToGroup && this.props.isRoomAdmin) {
       menuItems.push({
         id: 'add-member',
         label: this.renderMenuItem(<IconPlus />, 'Add Member'),
         onSelect: this.startAddMember as any,
+      });
+    }
+
+    if (!this.props.isRoomAdmin) {
+      menuItems.push({
+        id: 'leave_group',
+        label: this.renderMenuItem(<IconUserRight1 />, 'Leave Group'),
+        onSelect: () => {
+          this.props.onLeave();
+        },
       });
     }
 

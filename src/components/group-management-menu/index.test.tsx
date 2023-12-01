@@ -58,15 +58,23 @@ describe(GroupManagementMenu, () => {
     });
   });
 
-  it('publishes onLeave event when leave group is clicked', () => {
-    const onLeave = jest.fn();
-    const wrapper = subject({ onLeave });
+  describe('Leave Group', () => {
+    it('publishes onLeave event when leave group is clicked', () => {
+      const onLeave = jest.fn();
+      const wrapper = subject({ onLeave, isRoomAdmin: false });
 
-    const dropdownMenu = wrapper.find(DropdownMenu);
+      const dropdownMenu = wrapper.find(DropdownMenu);
 
-    const leaveGroupItem = dropdownMenu.prop('items').find((item) => item.id === 'leave_group');
-    leaveGroupItem.onSelect();
+      const leaveGroupItem = dropdownMenu.prop('items').find((item) => item.id === 'leave_group');
+      leaveGroupItem.onSelect();
 
-    expect(onLeave).toHaveBeenCalled();
+      expect(onLeave).toHaveBeenCalled();
+    });
+
+    it('does not render leave group menu item when isRoomAdmin is true', function () {
+      const wrapper = subject({ isRoomAdmin: true });
+      const dropdownMenu = wrapper.find(DropdownMenu);
+      expect(dropdownMenu.prop('items').some((item) => item.id === 'leave_group')).toBe(false);
+    });
   });
 });

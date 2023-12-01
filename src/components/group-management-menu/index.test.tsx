@@ -14,6 +14,7 @@ describe(GroupManagementMenu, () => {
       isRoomAdmin: false,
       onStartAddMember: () => { },
 
+      onLeave: () => { },
       ...props,
     };
 
@@ -55,5 +56,17 @@ describe(GroupManagementMenu, () => {
 
       expect(mockOnStartAddMember).toHaveBeenCalled();
     });
+  });
+
+  it('publishes onLeave event when leave group is clicked', () => {
+    const onLeave = jest.fn();
+    const wrapper = subject({ onLeave });
+
+    const dropdownMenu = wrapper.find(DropdownMenu);
+
+    const leaveGroupItem = dropdownMenu.prop('items').find((item) => item.id === 'leave_group');
+    leaveGroupItem.onSelect();
+
+    expect(onLeave).toHaveBeenCalled();
   });
 });

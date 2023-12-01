@@ -7,15 +7,10 @@ export enum SagaActionTypes {
   Cancel = 'group-management/cancel',
 }
 
-export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
-export const back = createAction(SagaActionTypes.Back);
-
 export enum Stage {
   None = 'none',
   StartAddMemberToRoom = 'start_add_member_to_room',
 }
-
-export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
 
 export enum LeaveGroupDialogStatus {
   OPEN,
@@ -23,7 +18,11 @@ export enum LeaveGroupDialogStatus {
   IN_PROGRESS,
 }
 
-export type GroupManagementState = {
+export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
+export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
+export const back = createAction(SagaActionTypes.Back);
+
+type GroupManagementState = {
   stage: Stage;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
 };

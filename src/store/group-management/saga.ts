@@ -1,7 +1,6 @@
-import { SagaActionTypes, Stage, setStage } from '.';
+import { SagaActionTypes, Stage, setStage, LeaveGroupDialogStatus, setLeaveGroupStatus } from './index';
 import { call, fork, put, race, take, delay, takeLeading, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
-import { LeaveGroupDialogStatus, SagaActionTypes, setLeaveGroupStatus } from '.';
 import { chat } from '../../lib/chat';
 import { currentUserSelector } from '../authentication/saga';
 

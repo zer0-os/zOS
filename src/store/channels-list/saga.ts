@@ -366,6 +366,22 @@ export function* userLeftChannel(channelId, userId) {
   }
 }
 
+// TODO: we can remove this function and simply use the "lastMessage.createdAt" property
+// look into https://github.com/zer0-os/zOS/pull/1063
+const conversationWithLatestMessage = (conversations) =>
+  conversations.reduce((latest, current) => {
+    if (current.messages && current.messages.length > 0) {
+      const latestMessage = current.messages.reduce((prevMsg, currentMsg) => {
+        return currentMsg.createdAt > prevMsg.createdAt ? currentMsg : prevMsg;
+      });
+      if (!latest || latestMessage.createdAt > latest.messages[0].createdAt) {
+        current.latestMessage = latestMessage;
+        return current;
+      }
+    }
+    return latest;
+  }, null);
+
 function* currentUserLeftChannel(channelId) {
   const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
   const newList = channelIdList.filter((id) => id !== channelId);
@@ -374,10 +390,9 @@ function* currentUserLeftChannel(channelId) {
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
     const conversations = yield select(denormalizeConversations);
-
     if (conversations.length > 0) {
-      const sorted = conversations.sort((a, b) => (b.lastMessage?.createdAt || 0) - (a.lastMessage?.createdAt || 0));
-      yield put(setactiveConversationId(sorted[0].id));
+      const latestConversation = conversationWithLatestMessage(conversations);
+      yield put(setactiveConversationId(latestConversation.id));
     } else {
       // Probably not possible but handled just in case
       yield put(setactiveConversationId(null));

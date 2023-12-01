@@ -1,3 +1,5 @@
+import { config } from '../../config';
+
 export enum WalletType {
   Metamask = 'metamask',
   WalletConnect = 'wallet-connect',
@@ -21,12 +23,12 @@ const wallets: { [walletType: string]: Wallet } = {
   [WalletType.WalletConnect]: {
     type: WalletType.WalletConnect,
     name: 'Wallet Connect',
-    imageSource: 'walletconnect.svg',
+    imageSource: 'wallet-connect.svg',
   },
   [WalletType.Coinbase]: {
     type: WalletType.Coinbase,
     name: 'Coinbase Wallet',
-    imageSource: 'coinbasewallet.svg',
+    imageSource: 'coinbase-wallet.svg',
   },
   [WalletType.Fortmatic]: {
     type: WalletType.Fortmatic,
@@ -42,7 +44,7 @@ const wallets: { [walletType: string]: Wallet } = {
 
 for (const wallet in wallets) {
   wallets[wallet].imageSource = [
-    'https://res.cloudinary.com/fact0ry-dev/image/upload/v1637005920/zero-assets/wallet-providers',
+    config.assetsPath,
     wallets[wallet].imageSource,
   ].join('/');
 }

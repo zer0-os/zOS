@@ -39,6 +39,7 @@ export function* getBackup() {
       setTrustInfo({
         usable: existingBackup.trustInfo.usable,
         trustedLocally: existingBackup.trustInfo.trusted_locally,
+        isLegacy: existingBackup.isLegacy,
       })
     );
   }

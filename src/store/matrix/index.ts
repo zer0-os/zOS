@@ -17,7 +17,7 @@ export enum SagaActionTypes {
 
 export type MatrixState = {
   isLoaded: boolean;
-  trustInfo: { trustedLocally: boolean; usable: boolean } | null;
+  trustInfo: { trustedLocally: boolean; usable: boolean; isLegacy: boolean } | null;
   generatedRecoveryKey: string | null;
   successMessage: string;
   errorMessage: string;

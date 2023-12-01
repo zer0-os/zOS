@@ -18,6 +18,7 @@ export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
   isBackupRecovered: boolean;
+  isLegacy: boolean;
   successMessage: string;
   errorMessage: string;
 
@@ -61,11 +62,13 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   }
 
   renderBackedUpMode() {
+    const { isLegacy } = this.props;
+    const button = isLegacy ? <Button onPress={() => this.props.onGenerate()}>Generate new backup</Button> : null;
     return (
       <div {...cn('backed-up')}>
         <p>This session is backing up your keys.</p>
         <p>This backup is trusted because it has been restored on this session.</p>
-        {this.renderButtons(<Button onPress={() => this.props.onGenerate()}>Generate new backup</Button>)}
+        {this.renderButtons(button)}
       </div>
     );
   }

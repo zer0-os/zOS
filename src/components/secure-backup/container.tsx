@@ -12,6 +12,7 @@ export interface Properties extends PublicProperties {
   isLoaded: boolean;
   backupExists: boolean;
   isBackupRecovered: boolean;
+  isLegacy: boolean;
   recoveryKey: string;
   successMessage: string;
   errorMessage: string;
@@ -30,6 +31,7 @@ export class Container extends React.Component<Properties> {
       isLoaded,
       backupExists: !!trustInfo,
       isBackupRecovered: trustInfo?.usable || trustInfo?.trustedLocally,
+      isLegacy: trustInfo?.isLegacy,
       recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
@@ -57,6 +59,7 @@ export class Container extends React.Component<Properties> {
       <SecureBackup
         backupExists={this.props.backupExists}
         isBackupRecovered={this.props.isBackupRecovered}
+        isLegacy={this.props.isLegacy}
         recoveryKey={this.props.recoveryKey}
         successMessage={this.props.successMessage}
         errorMessage={this.props.errorMessage}

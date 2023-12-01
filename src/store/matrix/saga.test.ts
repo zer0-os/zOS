@@ -27,7 +27,7 @@ describe(getBackup, () => {
       .provide([
         [
           call([chatClient, chatClient.getSecureBackup]),
-          { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true } },
+          { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
         ],
       ])
       .withReducer(rootReducer)
@@ -37,7 +37,7 @@ describe(getBackup, () => {
       expect.objectContaining({
         generatedRecoveryKey: null,
         isLoaded: true,
-        trustInfo: { usable: true, trustedLocally: true },
+        trustInfo: { usable: true, trustedLocally: true, isLegacy: true },
         successMessage: '',
         errorMessage: '',
       })

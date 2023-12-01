@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { SecureBackup, Properties } from '.';
-import { Alert, Input } from '@zero-tech/zui/components';
+import { Alert, Button, Input } from '@zero-tech/zui/components';
 import { bem } from '../../lib/bem';
 import { buttonLabelled } from '../../test/utils';
 
@@ -13,6 +13,7 @@ describe('SecureBackup', () => {
       recoveryKey: 'stub-key',
       backupExists: false,
       isBackupRecovered: false,
+      isLegacy: false,
       successMessage: '',
       errorMessage: '',
       onGenerate: () => null,
@@ -96,6 +97,20 @@ describe('SecureBackup', () => {
     const wrapper = subject({ onRestore, backupExists: true, isBackupRecovered: true, recoveryKey: '' });
 
     expect(wrapper).toHaveElement(c('backed-up'));
+    expect(wrapper).not.toHaveElement(Button);
+  });
+
+  it('renders button to generate a new backup if the current one is a legacy backup', function () {
+    const onRestore = jest.fn();
+    const wrapper = subject({
+      onRestore,
+      isLegacy: true,
+      backupExists: true,
+      isBackupRecovered: true,
+      recoveryKey: '',
+    });
+
+    expect(wrapper).toHaveElement(Button);
   });
 
   it('renders success message', function () {

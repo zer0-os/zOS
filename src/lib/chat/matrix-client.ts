@@ -137,7 +137,10 @@ export class MatrixClient implements IChatClient {
   }
 
   async getSecureBackup() {
-    return await this.matrix.checkKeyBackup();
+    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    const backupInfo = await this.matrix.checkKeyBackup();
+    (backupInfo as any).isLegacy = !crossSigning;
+    return backupInfo;
   }
 
   async generateSecureBackup() {

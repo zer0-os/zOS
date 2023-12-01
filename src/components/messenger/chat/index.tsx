@@ -226,17 +226,17 @@ export class Container extends React.Component<Properties, State> {
               </div>
             )}
           </div>
+
+          <ChatViewContainer
+            key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
+            channelId={this.props.activeConversationId}
+            className='direct-message-chat__channel'
+            isDirectMessage
+            showSenderAvatar={!this.isOneOnOne()}
+          />
+
+          {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
         </div>
-
-        <ChatViewContainer
-          key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
-          channelId={this.props.activeConversationId}
-          className='direct-message-chat__channel'
-          isDirectMessage
-          showSenderAvatar={!this.isOneOnOne()}
-        />
-
-        {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
       </div>
     );
   }

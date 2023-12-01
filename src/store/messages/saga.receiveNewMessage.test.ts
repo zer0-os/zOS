@@ -64,19 +64,22 @@ describe(receiveNewMessage, () => {
       .run();
   });
 
-  it('does nothing if we already have the messsage', async () => {
+  it('favors the new version if message already exists', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'message_0001' };
+    const message = { id: 'new-message', message: 'the new message' };
     const existingMessages = [
       { id: 'new-message', message: 'message_0001' },
       { id: 'other-message', message: 'message_0002' },
     ] as any;
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
-    await subject(receiveNewMessage, { payload: { channelId, message } })
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .withReducer(rootReducer, initialState.build())
-      .not.put.like({ action: { type: 'normalized/receive' } })
       .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages.map((m) => m.id)).toEqual(['other-message', 'new-message']);
+    expect(channel.messages[1].message).toEqual('the new message');
   });
 
   it('calls markAsReadAction when new message is received', async () => {

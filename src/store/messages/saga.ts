@@ -464,7 +464,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
     for (let message of byChannelId[channelId]) {
       yield call(mapReceivedMessage, message);
 
-      if (!channel || currentMessages.includes(message.id)) {
+      if (!channel) {
         continue;
       }
       modified = true;

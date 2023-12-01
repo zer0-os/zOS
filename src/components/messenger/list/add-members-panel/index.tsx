@@ -1,0 +1,117 @@
+import * as React from 'react';
+
+import { Button } from '@zero-tech/zui/components';
+
+import { Option } from '../../lib/types';
+
+import { AutocompleteMembers } from '../../autocomplete-members';
+import { PanelHeader } from '../panel-header';
+import { SelectedUserTag } from '../selected-user-tag';
+
+import { bemClassName } from '../../../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('add-members-panel');
+
+export interface Properties {
+  isSubmitting: boolean;
+
+  searchUsers: (input: string) => any;
+  onBack: () => void;
+  onSubmit: (options: Option[]) => void;
+}
+
+interface State {
+  selectedOptions: Option[];
+}
+
+export class AddMembersPanel extends React.Component<Properties, State> {
+  state = { selectedOptions: [] };
+
+  constructor(props) {
+    super(props);
+    this.state = { selectedOptions: [] };
+  }
+
+  submitSelectedOptions = () => {
+    this.props.onSubmit(this.state.selectedOptions);
+  };
+
+  selectOption = (selectedOption) => {
+    if (this.state.selectedOptions.find((o) => o.value === selectedOption.value)) {
+      return;
+    }
+
+    this.setState({
+      selectedOptions: [
+        ...this.state.selectedOptions,
+        selectedOption,
+      ],
+    });
+  };
+
+  unselectOption = (value: string) => {
+    this.setState({
+      selectedOptions: this.state.selectedOptions.filter((o) => o.value !== value),
+    });
+  };
+
+  get hasSelectedOptions() {
+    return this.state.selectedOptions.length > 0;
+  }
+
+  get memberCountSuffix() {
+    return this.state.selectedOptions.length >= 2 ? 's' : '';
+  }
+
+  renderSelectCount() {
+    return (
+      <div {...cn('selected-count')}>
+        <span {...cn('selected-number')}>{this.state.selectedOptions.length}</span> member
+        {this.memberCountSuffix} selected
+      </div>
+    );
+  }
+
+  renderSelectedUserTags() {
+    return (
+      <div>
+        {this.state.selectedOptions.map((option) => (
+          <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
+        ))}
+      </div>
+    );
+  }
+
+  renderSubmitButton() {
+    return (
+      <Button
+        {...cn('submit-button')}
+        onPress={this.submitSelectedOptions}
+        isDisabled={!this.hasSelectedOptions}
+        isLoading={this.props.isSubmitting}
+      >
+        {`Add Member${this.memberCountSuffix}`}
+      </Button>
+    );
+  }
+
+  render() {
+    return (
+      <>
+        <PanelHeader title={'Add Members'} onBack={this.props.onBack} />
+        <div {...cn('search')}>
+          <AutocompleteMembers
+            search={this.props.searchUsers}
+            onSelect={this.selectOption}
+            selectedOptions={this.state.selectedOptions}
+          >
+            {this.hasSelectedOptions && this.renderSelectCount()}
+            {this.renderSelectedUserTags()}
+          </AutocompleteMembers>
+        </div>
+        {this.renderSubmitButton()}
+      </>
+    );
+  }
+}

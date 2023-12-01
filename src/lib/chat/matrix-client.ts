@@ -169,6 +169,15 @@ export class MatrixClient implements IChatClient {
       throw new Error('Backup broken or not there');
     }
 
+    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    if (crossSigning) {
+      await this.restoreSecretStorageBackup(recoveryKey, backup);
+    } else {
+      await this.restoreLegacyBackup(recoveryKey, backup);
+    }
+  }
+
+  private async restoreSecretStorageBackup(recoveryKey: string, backup) {
     // Set this because bootstrapping the secret storage will call back
     // and require this value. Not ideal but given the callback nature of
     // setting up the secret storage, this suffices for now.
@@ -184,6 +193,10 @@ export class MatrixClient implements IChatClient {
     } finally {
       this.secretStorageKey = null;
     }
+  }
+
+  private async restoreLegacyBackup(recoveryKey: string, backup) {
+    await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
   }
 
   private async autoJoinRoom(roomId: string) {

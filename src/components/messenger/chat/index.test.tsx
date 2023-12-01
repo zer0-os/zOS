@@ -5,6 +5,7 @@ import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
 import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
+import { GroupManagementMenu } from '../../group-management-menu';
 
 const featureFlags = { enableGroupManagementMenu: false };
 jest.mock('../../../lib/feature-flags', () => ({
@@ -21,6 +22,7 @@ describe('messenger-chat', () => {
       enterFullScreenMessenger: () => null,
       exitFullScreenMessenger: () => null,
       isCurrentUserRoomAdmin: false,
+      startAddGroupMember: () => null,
       ...props,
     };
 
@@ -215,6 +217,15 @@ describe('messenger-chat', () => {
       const groupManagementMenuContainer = wrapper.find('.direct-message-chat__group-management-menu-container');
 
       expect(groupManagementMenuContainer.exists()).toBeTrue();
+    });
+
+    it('can start add group member group management saga', async function () {
+      const startAddGroupMember = jest.fn();
+      const wrapper = subject({ startAddGroupMember });
+
+      wrapper.find(GroupManagementMenu).prop('onStartAddMember')();
+
+      expect(startAddGroupMember).toHaveBeenCalledOnce();
     });
   });
 

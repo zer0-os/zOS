@@ -15,6 +15,7 @@ import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../stor
 import { isCustomIcon } from '../list/utils/utils';
 import { IconButton } from '@zero-tech/zui/components';
 import { currentUserSelector } from '../../../store/authentication/selectors';
+import { startAddGroupMember } from '../../../store/group-management';
 
 import './styles.scss';
 
@@ -28,6 +29,7 @@ export interface Properties extends PublicProperties {
   enterFullScreenMessenger: () => void;
   exitFullScreenMessenger: () => void;
   isCurrentUserRoomAdmin: boolean;
+  startAddGroupMember: () => void;
 }
 
 interface State {
@@ -60,6 +62,7 @@ export class Container extends React.Component<Properties, State> {
       setactiveConversationId,
       enterFullScreenMessenger,
       exitFullScreenMessenger,
+      startAddGroupMember,
     };
   }
 
@@ -189,7 +192,7 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__group-management-menu-container'>
                 <GroupManagementMenu
                   isRoomAdmin={this.props.isCurrentUserRoomAdmin}
-                  onStartAddMember={() => console.log('group management: starting add group member')}
+                  onStartAddMember={this.props.startAddGroupMember}
                 />
               </div>
             )}

@@ -1,8 +1,4 @@
-import metamaskIcon from './assets/metamask.svg';
-import coinbaseIcon from './assets/coinbase-wallet.svg';
-import fortmaticIcon from './assets/fortmatic.svg';
-import portisIcon from './assets/portis.svg';
-import walletConnectIcon from './assets/wallet-connect.svg';
+import { config } from '../../config';
 
 export enum WalletType {
   Metamask = 'metamask',
@@ -22,28 +18,35 @@ const wallets: { [walletType: string]: Wallet } = {
   [WalletType.Metamask]: {
     type: WalletType.Metamask,
     name: 'Metamask',
-    imageSource: metamaskIcon,
+    imageSource: 'metamask.svg',
   },
   [WalletType.WalletConnect]: {
     type: WalletType.WalletConnect,
     name: 'Wallet Connect',
-    imageSource: walletConnectIcon,
+    imageSource: 'wallet-connect.svg',
   },
   [WalletType.Coinbase]: {
     type: WalletType.Coinbase,
     name: 'Coinbase Wallet',
-    imageSource: coinbaseIcon,
+    imageSource: 'coinbase-wallet.svg',
   },
   [WalletType.Fortmatic]: {
     type: WalletType.Fortmatic,
     name: 'Fortmatic',
-    imageSource: fortmaticIcon,
+    imageSource: 'fortmatic.svg',
   },
   [WalletType.Portis]: {
     type: WalletType.Portis,
     name: 'Portis',
-    imageSource: portisIcon,
+    imageSource: 'portis.svg',
   },
 };
+
+for (const wallet in wallets) {
+  wallets[wallet].imageSource = [
+    config.assetsPath,
+    wallets[wallet].imageSource,
+  ].join('/');
+}
 
 export { wallets };

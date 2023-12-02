@@ -1,5 +1,5 @@
 import { SagaActionTypes, Stage, setStage, LeaveGroupDialogStatus, setLeaveGroupStatus } from './index';
-import { call, fork, put, race, take, delay, takeLeading, select } from 'redux-saga/effects';
+import { call, fork, put, race, take, delay, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { chat } from '../../lib/chat';
 import { currentUserSelector } from '../authentication/saga';
@@ -10,16 +10,18 @@ export function* reset() {
 
 export function* saga() {
   yield fork(authWatcher);
-  yield takeLeading(SagaActionTypes.LeaveGroup, leaveGroup);
 
   while (true) {
-    const { startEvent } = yield race({
+    const { startEvent, leaveGroupEvent } = yield race({
       startEvent: take(SagaActionTypes.StartAddMember),
+      leaveGroupEvent: take(SagaActionTypes.LeaveGroup),
     });
 
     if (startEvent) {
       console.log('Triggering Start Add Member Stage');
       yield call(startAddGroupMember);
+    } else if (leaveGroupEvent) {
+      yield call(leaveGroup, leaveGroupEvent);
     }
   }
 }

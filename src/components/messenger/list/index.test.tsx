@@ -29,7 +29,7 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       stage: Stage.None,
       groupManangemenetStage: GroupManagementStage.None,
-
+      roomMembers: [],
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -62,6 +62,7 @@ describe('messenger-list', () => {
       receiveSearchResults: () => null,
       logout: () => null,
       backGroupManagement: () => null,
+      membersSelectedGroupManagement: () => null,
 
       ...props,
     };
@@ -372,6 +373,26 @@ describe('messenger-list', () => {
       });
 
       expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();
+    });
+
+    it('triggers members addition to the room with selected members', async function () {
+      const membersSelectedGroupManagement = jest.fn();
+      const mockActiveConversationId = 'active-channel-id';
+
+      const wrapper = subject({
+        membersSelectedGroupManagement,
+        stage: Stage.None,
+        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
+        activeConversationId: 'active-channel-id',
+      });
+
+      await wrapper.find(AddMembersPanel).prop('onSubmit')([{ value: 'id-1' } as any]);
+      wrapper.setProps({ groupManangemenetStage: GroupManagementStage.None });
+
+      expect(membersSelectedGroupManagement).toHaveBeenCalledWith({
+        roomId: mockActiveConversationId,
+        users: [{ value: 'id-1' }],
+      });
     });
   });
 

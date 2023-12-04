@@ -1,23 +1,48 @@
 import { SagaActionTypes, Stage, setStage, setRoomMembers } from '.';
-import { call, fork, put, race, take } from 'redux-saga/effects';
+import { Chat, chat } from '../../lib/chat';
+import { call, fork, put, race, take, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
+import { denormalize as denormalizeUsers } from '../users';
 
 export function* reset() {
   yield put(setRoomMembers([]));
   yield put(setStage(Stage.None));
 }
 
+export function* roomMembersSelected(action) {
+  const { users: selectedMembers, roomId } = action.payload;
+
+  try {
+    if (!roomId || !selectedMembers) {
+      return;
+    }
+
+    const userIds = selectedMembers.map((user) => user.value);
+    const users = yield select((state) => denormalizeUsers(userIds, state));
+    console.log(users);
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
+    yield put(setRoomMembers(selectedMembers));
+
+    return Stage.None;
+  } catch (error) {}
+}
+
 export function* saga() {
   yield fork(authWatcher);
 
   while (true) {
-    const { startEvent } = yield race({
+    const { startEvent, membersSelectedEvent } = yield race({
       startEvent: take(SagaActionTypes.StartAddMember),
+      membersSelectedEvent: take(SagaActionTypes.MembersSelected),
     });
 
     if (startEvent) {
-      console.log('Triggering Start Add Member Stage');
       yield call(startAddGroupMember);
+    } else if (membersSelectedEvent) {
+      const nextStage = yield call(STAGE_HANDLERS[membersSelectedEvent.payload.stage], membersSelectedEvent);
+      yield put(setStage(nextStage));
     }
   }
 }
@@ -51,22 +76,16 @@ export function* startAddGroupMember() {
 }
 
 const STAGE_HANDLERS = {
-  [Stage.StartAddMemberToRoom]: handleStartAddMember,
+  [Stage.StartAddMemberToRoom]: handleStartAddMembersToRoom,
 };
 
 const PREVIOUS_STAGES = {
   [Stage.StartAddMemberToRoom]: Stage.None,
 };
 
-function* handleStartAddMember() {
-  const action = yield take([
-    SagaActionTypes.StartAddMember,
-  ]);
-  if (action.type === SagaActionTypes.StartAddMember) {
-    yield put(setRoomMembers([]));
-    return Stage.StartAddMemberToRoom;
-  }
-  return Stage.None;
+function* handleStartAddMembersToRoom() {
+  const action = yield take(SagaActionTypes.MembersSelected);
+  return yield call(roomMembersSelected, action);
 }
 
 function* authWatcher() {

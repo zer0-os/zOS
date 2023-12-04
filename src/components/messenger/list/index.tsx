@@ -34,11 +34,16 @@ import { RewardsContainer } from '../../rewards-container';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
 import { FeatureFlag } from '../../feature-flag';
-import { Stage as GroupManagementSagaStage, back as backGroupManagement } from '../../../store/group-management';
+import {
+  Stage as GroupManagementSagaStage,
+  back as backGroupManagement,
+  membersSelected as membersSelectedGroupManagement,
+  MembersSelectedPayload as MembersSelectedPayloadGroupManagement,
+} from '../../../store/group-management';
+import { AddMembersPanel } from './add-members-panel';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
-import { AddMembersPanel } from './add-members-panel';
 
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');
@@ -69,6 +74,7 @@ export interface Properties extends PublicProperties {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   groupManangemenetStage: GroupManagementSagaStage;
+  roomMembers: Option[];
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -83,6 +89,7 @@ export interface Properties extends PublicProperties {
   logout: () => void;
   receiveSearchResults: (data) => void;
   backGroupManagement: () => void;
+  membersSelectedGroupManagement: (payload: MembersSelectedPayloadGroupManagement) => void;
 }
 
 interface State {
@@ -126,6 +133,7 @@ export class Container extends React.Component<Properties, State> {
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
       groupManangemenetStage: groupManagement.stage,
+      roomMembers: groupManagement.roomMembers,
     };
   }
 
@@ -144,6 +152,7 @@ export class Container extends React.Component<Properties, State> {
       logout,
       receiveSearchResults,
       backGroupManagement,
+      membersSelectedGroupManagement,
     };
   }
 
@@ -177,6 +186,10 @@ export class Container extends React.Component<Properties, State> {
 
   groupMembersSelected = async (selectedOptions: Option[]) => {
     this.props.membersSelected({ users: selectedOptions });
+  };
+
+  groupManagementMembersSelected = async (selectedOptions: Option[]) => {
+    this.props.membersSelectedGroupManagement({ roomId: this.props.activeConversationId, users: selectedOptions });
   };
 
   createGroup = async (details) => {
@@ -276,7 +289,7 @@ export class Container extends React.Component<Properties, State> {
           <AddMembersPanel
             isSubmitting={this.props.isFetchingExistingConversations}
             onBack={this.props.backGroupManagement}
-            onSubmit={() => console.log('addMembersSelected: Submit Add New Group members')}
+            onSubmit={this.groupManagementMembersSelected}
             searchUsers={this.usersInMyNetworks}
           />
         )}

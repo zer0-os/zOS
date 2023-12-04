@@ -1,13 +1,20 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
+export interface MembersSelectedPayload {
+  roomId: string;
+  users: any[];
+}
+
 export enum SagaActionTypes {
   StartAddMember = 'group-management/start-add-member',
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
+  MembersSelected = 'group-management/members-selected',
 }
 
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const back = createAction(SagaActionTypes.Back);
+export const membersSelected = createAction<MembersSelectedPayload>(SagaActionTypes.MembersSelected);
 
 export enum Stage {
   None = 'none',

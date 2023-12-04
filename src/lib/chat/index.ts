@@ -204,7 +204,7 @@ export class Chat {
     return this.matrix.cancelAndResendKeyRequests();
   }
 
-  async addMembers(roomId: string, users: User[]): Promise<void> {
+  async addMembersToRoom(roomId: string, users: User[]): Promise<void> {
     return this.client.addMembersToRoom(roomId, users);
   }
 

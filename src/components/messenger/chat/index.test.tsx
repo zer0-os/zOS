@@ -5,6 +5,7 @@ import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
 import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
+import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 const featureFlags = { enableGroupManagementMenu: false };
 jest.mock('../../../lib/feature-flags', () => ({
@@ -200,6 +201,34 @@ describe('messenger-chat', () => {
       expect(headerAvatar.prop('style').backgroundImage).toEqual('url(avatar-url)');
       expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
     });
+
+    it('header renders group management menu icon button', function () {
+      featureFlags.enableGroupManagementMenu = true;
+
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const groupManagementMenuContainer = wrapper.find('.direct-message-chat__group-management-menu-container');
+
+      expect(groupManagementMenuContainer.exists()).toBeTrue();
+    });
+
+    it('can start add group member group management saga', async function () {
+      const startAddGroupMember = jest.fn();
+      const wrapper = subject({ startAddGroupMember });
+
+      wrapper.find(GroupManagementMenu).prop('onStartAddMember')();
+
+      expect(startAddGroupMember).toHaveBeenCalledOnce();
+    });
   });
 
   describe('one to many chat', function () {
@@ -287,25 +316,6 @@ describe('messenger-chat', () => {
 
       expect(headerAvatar.prop('style').backgroundImage).toEqual('url()');
       expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
-    });
-
-    it('header renders group management menu icon button', function () {
-      featureFlags.enableGroupManagementMenu = true;
-
-      const wrapper = subject({
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
-        } as Channel,
-      });
-
-      const groupManagementMenuContainer = wrapper.find('.direct-message-chat__group-management-menu-container');
-
-      expect(groupManagementMenuContainer.exists()).toBeTrue();
     });
 
     it('header renders avatar in case if custom icon is set', function () {

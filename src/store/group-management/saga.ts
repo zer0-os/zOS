@@ -1,8 +1,9 @@
-import { SagaActionTypes, Stage, setStage } from '.';
-import { call, fork, put, race, take, delay } from 'redux-saga/effects';
+import { SagaActionTypes, Stage, setStage, setRoomMembers } from '.';
+import { call, fork, put, race, take } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
 
 export function* reset() {
+  yield put(setRoomMembers([]));
   yield put(setStage(Stage.None));
 }
 
@@ -34,7 +35,7 @@ export function* startAddGroupMember() {
         handlerResult: call(STAGE_HANDLERS[currentStage]),
       });
 
-      let nextStage = handlerResult || PREVIOUS_STAGES[currentStage];
+      let nextStage = handlerResult;
       if (cancel) {
         nextStage = Stage.None;
       } else if (back) {
@@ -58,17 +59,14 @@ const PREVIOUS_STAGES = {
 };
 
 function* handleStartAddMember() {
-  console.log('Handle Start Add Member - Implementation Pending');
-
-  // Placeholder action
-  try {
-    yield delay(1000);
-  } catch (error) {
-    console.error('Error in handleStartAddMember:', error);
-  } finally {
-    console.log('Exiting handleStartAddMember - Placeholder action complete');
-    yield put(setStage(Stage.None));
+  const action = yield take([
+    SagaActionTypes.StartAddMember,
+  ]);
+  if (action.type === SagaActionTypes.StartAddMember) {
+    yield put(setRoomMembers([]));
+    return Stage.StartAddMemberToRoom;
   }
+  return Stage.None;
 }
 
 function* authWatcher() {

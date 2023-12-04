@@ -46,6 +46,7 @@ describe('Group Management Saga', () => {
     it('resets to default state', async () => {
       const initialState = defaultState({
         stage: Stage.None,
+        roomMembers: [],
       });
 
       const {
@@ -54,6 +55,7 @@ describe('Group Management Saga', () => {
 
       expect(state).toEqual({
         stage: Stage.None,
+        roomMembers: [],
       });
     });
   });
@@ -65,7 +67,7 @@ function defaultState(attrs = {}) {
     .withOtherState({
       groupManagement: {
         stage: Stage.None,
-
+        roomMembers: [],
         ...attrs,
       },
     })

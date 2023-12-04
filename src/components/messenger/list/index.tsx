@@ -40,12 +40,10 @@ import {
   addSelectedMembersToRoom,
   MembersSelectedPayload as MembersSelectedPayloadGroupManagement,
 } from '../../../store/group-management';
-import { AddMembersPanel } from './add-members-panel';
+import { GroupManagement } from './group-management';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
-import { GroupManagement } from './group-management';
-
 
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');

@@ -34,9 +34,11 @@ import { RewardsContainer } from '../../rewards-container';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
 import { FeatureFlag } from '../../feature-flag';
+import { Stage as GroupManagementSagaStage, back as backGroupManagement } from '../../../store/group-management';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
+import { AddMembersPanel } from './add-members-panel';
 
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');
@@ -66,6 +68,7 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
+  groupManangemenetStage: GroupManagementSagaStage;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -79,6 +82,7 @@ export interface Properties extends PublicProperties {
   rewardsTooltipClosed: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
+  backGroupManagement: () => void;
 }
 
 interface State {
@@ -94,6 +98,7 @@ export class Container extends React.Component<Properties, State> {
       chat: { activeConversationId },
       layout,
       rewards,
+      groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
 
@@ -120,6 +125,7 @@ export class Container extends React.Component<Properties, State> {
       isRewardsLoading: rewards.loading,
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
+      groupManangemenetStage: groupManagement.stage,
     };
   }
 
@@ -137,6 +143,7 @@ export class Container extends React.Component<Properties, State> {
       rewardsTooltipClosed,
       logout,
       receiveSearchResults,
+      backGroupManagement,
     };
   }
 
@@ -262,45 +269,75 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
+  renderGroupManagement() {
+    return (
+      <>
+        {this.props.groupManangemenetStage === GroupManagementSagaStage.StartAddMemberToRoom && (
+          <AddMembersPanel
+            isSubmitting={this.props.isFetchingExistingConversations}
+            onBack={this.props.backGroupManagement}
+            onSubmit={() => console.log('addMembersSelected: Submit Add New Group members')}
+            searchUsers={this.usersInMyNetworks}
+          />
+        )}
+      </>
+    );
+  }
+
+  renderCreateConversation() {
+    return (
+      <>
+        {this.props.stage === SagaStage.None && (
+          <ConversationListPanel
+            search={this.usersInMyNetworks}
+            conversations={this.props.conversations}
+            onCreateConversation={this.createOneOnOneConversation}
+            onConversationClick={this.props.onConversationClick}
+            startConversation={this.props.startCreateConversation}
+            myUserId={this.props.myUserId}
+            activeConversationId={this.props.activeConversationId}
+          />
+        )}
+        {this.props.stage === SagaStage.CreateOneOnOne && (
+          <CreateConversationPanel
+            onBack={this.props.back}
+            search={this.usersInMyNetworks}
+            onCreate={this.createOneOnOneConversation}
+            onStartGroupChat={this.props.startGroup}
+          />
+        )}
+        {this.props.stage === SagaStage.StartGroupChat && (
+          <StartGroupPanel
+            initialSelections={this.props.groupUsers}
+            isContinuing={this.props.isFetchingExistingConversations}
+            onBack={this.props.back}
+            onContinue={this.groupMembersSelected}
+            searchUsers={this.usersInMyNetworks}
+          />
+        )}
+        {this.props.stage === SagaStage.GroupDetails && (
+          <GroupDetailsPanel users={this.props.groupUsers} onCreate={this.createGroup} onBack={this.props.back} />
+        )}
+      </>
+    );
+  }
+
+  get isGroupManagementActive() {
+    return this.props.groupManangemenetStage !== GroupManagementSagaStage.None;
+  }
+
+  get renderPanel() {
+    return this.isGroupManagementActive ? this.renderGroupManagement() : this.renderCreateConversation();
+  }
+
   render() {
     return (
       <>
         {this.props.includeTitleBar && this.renderTitleBar()}
-
-        {this.props.stage === SagaStage.None && this.renderUserAccountContainer()}
+        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserAccountContainer()}
 
         <div {...cn('')}>
-          {this.props.stage === SagaStage.None && (
-            <ConversationListPanel
-              search={this.usersInMyNetworks}
-              conversations={this.props.conversations}
-              onCreateConversation={this.createOneOnOneConversation}
-              onConversationClick={this.props.onConversationClick}
-              startConversation={this.props.startCreateConversation}
-              myUserId={this.props.myUserId}
-              activeConversationId={this.props.activeConversationId}
-            />
-          )}
-          {this.props.stage === SagaStage.CreateOneOnOne && (
-            <CreateConversationPanel
-              onBack={this.props.back}
-              search={this.usersInMyNetworks}
-              onCreate={this.createOneOnOneConversation}
-              onStartGroupChat={this.props.startGroup}
-            />
-          )}
-          {this.props.stage === SagaStage.StartGroupChat && (
-            <StartGroupPanel
-              initialSelections={this.props.groupUsers}
-              isContinuing={this.props.isFetchingExistingConversations}
-              onBack={this.props.back}
-              onContinue={this.groupMembersSelected}
-              searchUsers={this.usersInMyNetworks}
-            />
-          )}
-          {this.props.stage === SagaStage.GroupDetails && (
-            <GroupDetailsPanel users={this.props.groupUsers} onCreate={this.createGroup} onBack={this.props.back} />
-          )}
+          {this.renderPanel}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.renderToastNotification()}
         </div>

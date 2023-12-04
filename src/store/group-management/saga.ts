@@ -32,15 +32,15 @@ export function* saga() {
   yield fork(authWatcher);
 
   while (true) {
-    const { startEvent, membersSelectedEvent } = yield race({
+    const { startEvent, addSelectedMembersEvent } = yield race({
       startEvent: take(SagaActionTypes.StartAddMember),
-      membersSelectedEvent: take(SagaActionTypes.MembersSelected),
+      addSelectedMembersEvent: take(SagaActionTypes.AddSelectedMembers),
     });
 
     if (startEvent) {
       yield call(startAddGroupMember);
-    } else if (membersSelectedEvent) {
-      const nextStage = yield call(STAGE_HANDLERS[membersSelectedEvent.payload.stage], membersSelectedEvent);
+    } else if (addSelectedMembersEvent) {
+      const nextStage = yield call(STAGE_HANDLERS[addSelectedMembersEvent.payload.stage], addSelectedMembersEvent);
       yield put(setStage(nextStage));
     }
   }
@@ -83,7 +83,7 @@ const PREVIOUS_STAGES = {
 };
 
 function* handleStartAddMembersToRoom() {
-  const action = yield take(SagaActionTypes.MembersSelected);
+  const action = yield take(SagaActionTypes.AddSelectedMembers);
   return yield call(roomMembersSelected, action);
 }
 

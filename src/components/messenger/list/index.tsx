@@ -37,7 +37,7 @@ import { FeatureFlag } from '../../feature-flag';
 import {
   Stage as GroupManagementSagaStage,
   back as backGroupManagement,
-  membersSelected as membersSelectedGroupManagement,
+  addSelectedMembersToRoom,
   MembersSelectedPayload as MembersSelectedPayloadGroupManagement,
 } from '../../../store/group-management';
 import { AddMembersPanel } from './add-members-panel';
@@ -89,7 +89,7 @@ export interface Properties extends PublicProperties {
   logout: () => void;
   receiveSearchResults: (data) => void;
   backGroupManagement: () => void;
-  membersSelectedGroupManagement: (payload: MembersSelectedPayloadGroupManagement) => void;
+  addSelectedMembersToRoom: (payload: MembersSelectedPayloadGroupManagement) => void;
 }
 
 interface State {
@@ -152,7 +152,7 @@ export class Container extends React.Component<Properties, State> {
       logout,
       receiveSearchResults,
       backGroupManagement,
-      membersSelectedGroupManagement,
+      addSelectedMembersToRoom,
     };
   }
 
@@ -188,8 +188,8 @@ export class Container extends React.Component<Properties, State> {
     this.props.membersSelected({ users: selectedOptions });
   };
 
-  groupManagementMembersSelected = async (selectedOptions: Option[]) => {
-    this.props.membersSelectedGroupManagement({ roomId: this.props.activeConversationId, users: selectedOptions });
+  onSubmitSelectedMembers = async (selectedOptions: Option[]) => {
+    this.props.addSelectedMembersToRoom({ roomId: this.props.activeConversationId, users: selectedOptions });
   };
 
   createGroup = async (details) => {
@@ -289,7 +289,7 @@ export class Container extends React.Component<Properties, State> {
           <AddMembersPanel
             isSubmitting={this.props.isFetchingExistingConversations}
             onBack={this.props.backGroupManagement}
-            onSubmit={this.groupManagementMembersSelected}
+            onSubmit={this.onSubmitSelectedMembers}
             searchUsers={this.usersInMyNetworks}
           />
         )}

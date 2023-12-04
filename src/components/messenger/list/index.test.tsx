@@ -62,7 +62,7 @@ describe('messenger-list', () => {
       receiveSearchResults: () => null,
       logout: () => null,
       backGroupManagement: () => null,
-      membersSelectedGroupManagement: () => null,
+      addSelectedMembersToRoom: () => null,
 
       ...props,
     };
@@ -376,11 +376,11 @@ describe('messenger-list', () => {
     });
 
     it('triggers members addition to the room with selected members', async function () {
-      const membersSelectedGroupManagement = jest.fn();
+      const addSelectedMembersToRoom = jest.fn();
       const mockActiveConversationId = 'active-channel-id';
 
       const wrapper = subject({
-        membersSelectedGroupManagement,
+        addSelectedMembersToRoom,
         stage: Stage.None,
         groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
         activeConversationId: 'active-channel-id',
@@ -389,7 +389,7 @@ describe('messenger-list', () => {
       await wrapper.find(AddMembersPanel).prop('onSubmit')([{ value: 'id-1' } as any]);
       wrapper.setProps({ groupManangemenetStage: GroupManagementStage.None });
 
-      expect(membersSelectedGroupManagement).toHaveBeenCalledWith({
+      expect(addSelectedMembersToRoom).toHaveBeenCalledWith({
         roomId: mockActiveConversationId,
         users: [{ value: 'id-1' }],
       });

@@ -9,12 +9,12 @@ export enum SagaActionTypes {
   StartAddMember = 'group-management/start-add-member',
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
-  MembersSelected = 'group-management/members-selected',
+  AddSelectedMembers = 'group-management/add-selected-members',
 }
 
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const back = createAction(SagaActionTypes.Back);
-export const membersSelected = createAction<MembersSelectedPayload>(SagaActionTypes.MembersSelected);
+export const addSelectedMembersToRoom = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
 
 export enum Stage {
   None = 'none',

@@ -74,7 +74,6 @@ export interface Properties extends PublicProperties {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   groupManangemenetStage: GroupManagementSagaStage;
-  roomMembers: Option[];
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -133,7 +132,6 @@ export class Container extends React.Component<Properties, State> {
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
       groupManangemenetStage: groupManagement.stage,
-      roomMembers: groupManagement.roomMembers,
     };
   }
 

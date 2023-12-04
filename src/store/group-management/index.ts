@@ -23,16 +23,10 @@ export enum Stage {
 
 type GroupManagementState = {
   stage: Stage;
-  roomMembers: {
-    value: string;
-    label: string;
-    image?: string;
-  }[];
 };
 
 const initialState: GroupManagementState = {
   stage: Stage.None,
-  roomMembers: [],
 };
 
 const slice = createSlice({
@@ -42,11 +36,8 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<Stage>) => {
       state.stage = action.payload;
     },
-    setRoomMembers: (state, action: PayloadAction<GroupManagementState['roomMembers']>) => {
-      state.roomMembers = action.payload;
-    },
   },
 });
 
-export const { setStage, setRoomMembers } = slice.actions;
+export const { setStage } = slice.actions;
 export const { reducer } = slice;

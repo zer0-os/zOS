@@ -1,11 +1,10 @@
-import { SagaActionTypes, Stage, setStage, setRoomMembers } from '.';
+import { SagaActionTypes, Stage, setStage } from '.';
 import { Chat, chat } from '../../lib/chat';
 import { call, fork, put, race, take, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
 
 export function* reset() {
-  yield put(setRoomMembers([]));
   yield put(setStage(Stage.None));
 }
 
@@ -22,7 +21,6 @@ export function* roomMembersSelected(action) {
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
-    yield put(setRoomMembers(selectedMembers));
 
     return Stage.None;
   } catch (error) {}

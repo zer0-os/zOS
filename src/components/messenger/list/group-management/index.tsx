@@ -1,20 +1,20 @@
 import * as React from 'react';
 
-import { Stage as GroupManagementSagaStage, back as backGroupManagement } from '../../../../store/group-management';
+import { Stage as GroupManagementSagaStage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 
 export interface Properties {
-  groupManangemenetStage: GroupManagementSagaStage;
+  groupManagementStage: GroupManagementSagaStage;
   isFetchingExistingConversations: boolean; // XXX: This is totally wrong
   backGroupManagement: () => void;
   usersInMyNetworks: (search: string) => Promise<any>;
 }
 
-export class GroupManagement extends React.Component<Properties> {
+export class GroupManagement extends React.PureComponent<Properties> {
   render() {
     return (
       <>
-        {this.props.groupManangemenetStage === GroupManagementSagaStage.StartAddMemberToRoom && (
+        {this.props.groupManagementStage === GroupManagementSagaStage.StartAddMemberToRoom && (
           <AddMembersPanel
             isSubmitting={this.props.isFetchingExistingConversations}
             onBack={this.props.backGroupManagement}

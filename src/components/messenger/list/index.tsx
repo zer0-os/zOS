@@ -272,7 +272,7 @@ export class Container extends React.Component<Properties, State> {
   renderGroupManagement() {
     return (
       <GroupManagement
-        groupManangemenetStage={this.props.groupManangemenetStage}
+        groupManagementStage={this.props.groupManangemenetStage}
         isFetchingExistingConversations={this.props.isFetchingExistingConversations}
         backGroupManagement={this.props.backGroupManagement}
         usersInMyNetworks={this.usersInMyNetworks}

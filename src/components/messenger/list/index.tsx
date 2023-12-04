@@ -288,6 +288,7 @@ export class Container extends React.Component<Properties, State> {
         groupManagementStage={this.props.groupManangemenetStage}
         isFetchingExistingConversations={this.props.isFetchingExistingConversations}
         backGroupManagement={this.props.backGroupManagement}
+        onSubmitSelectedMembers={this.onSubmitSelectedMembers}
         usersInMyNetworks={this.usersInMyNetworks}
       />
     );

@@ -11,6 +11,7 @@ describe('GroupManagement', () => {
       isFetchingExistingConversations: false,
       backGroupManagement: () => null,
       usersInMyNetworks: () => null,
+      onSubmitSelectedMembers: () => null,
       ...props,
     };
 
@@ -60,5 +61,26 @@ describe('GroupManagement', () => {
     });
 
     expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();
+  });
+
+  it('submits selected members for addition to the specified room', async function () {
+    const mockAddSelectedMembersToRoom = jest.fn();
+    const mockActiveConversationId = 'active-channel-id';
+
+    const onSubmitSelectedMembers = (selectedOptions) => {
+      mockAddSelectedMembersToRoom({ roomId: mockActiveConversationId, users: selectedOptions });
+    };
+
+    const wrapper = subject({
+      onSubmitSelectedMembers,
+      groupManagementStage: Stage.StartAddMemberToRoom,
+    });
+
+    await wrapper.find(AddMembersPanel).prop('onSubmit')([{ value: 'id-1', label: 'name-1' }]);
+
+    expect(mockAddSelectedMembersToRoom).toHaveBeenCalledWith({
+      roomId: mockActiveConversationId,
+      users: [{ value: 'id-1', label: 'name-1' }],
+    });
   });
 });

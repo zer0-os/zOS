@@ -6,7 +6,7 @@ import { Channel, User } from '../../../store/channels';
 import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { GroupManagementMenu } from '../../group-management-menu';
-
+import { LeaveGroupDialogStatus } from '../../../store/group-management';
 const featureFlags = { enableGroupManagementMenu: false };
 jest.mock('../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -16,6 +16,7 @@ describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       activeConversationId: '1',
+      leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       setactiveConversationId: jest.fn(),
       directMessage: { id: '1', otherMembers: [] } as any,
       isFullScreen: false,
@@ -23,6 +24,7 @@ describe('messenger-chat', () => {
       exitFullScreenMessenger: () => null,
       isCurrentUserRoomAdmin: false,
       startAddGroupMember: () => null,
+      setLeaveGroupStatus: () => null,
       ...props,
     };
 
@@ -336,6 +338,44 @@ describe('messenger-chat', () => {
       expect(headerAvatar.prop('style').backgroundImage).toEqual(
         'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)'
       );
+    });
+  });
+
+  describe('leave group dialog', () => {
+    it('renders leave group dialog when status is NOT closed', () => {
+      let wrapper = subject({
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
+      });
+
+      // Modal is the wrapper for the leave group dialog
+      expect(wrapper.find('Modal').exists()).toBeTrue();
+
+      wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.IN_PROGRESS });
+      expect(wrapper.find('Modal').exists()).toBeTrue();
+    });
+
+    it('does not render leave group dialog when LeaveGroupDialogStatus is closed', () => {
+      const wrapper = subject({
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
+      });
+
+      expect(wrapper.find('Modal').exists()).toBeFalse();
+    });
+
+    it('passes name and roomId to leave group dialog', () => {
+      const wrapper = subject({
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
+        directMessage: {
+          name: 'group-name',
+          id: '1',
+          otherMembers: [],
+        } as any,
+        activeConversationId: 'room-id',
+      });
+
+      const leaveGroupDialog = wrapper.find('Modal').prop('children');
+      expect(leaveGroupDialog['props'].roomId).toEqual('room-id');
+      expect(leaveGroupDialog['props'].groupName).toEqual('group-name');
     });
   });
 });

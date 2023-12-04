@@ -13,9 +13,10 @@ import { GroupManagementMenu } from '../../group-management-menu';
 import { featureFlags } from '../../../lib/feature-flags';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
-import { IconButton } from '@zero-tech/zui/components';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { startAddGroupMember } from '../../../store/group-management';
+import { startAddGroupMember, LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import { IconButton, Modal } from '@zero-tech/zui/components';
+import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
 import './styles.scss';
 
@@ -30,6 +31,8 @@ export interface Properties extends PublicProperties {
   exitFullScreenMessenger: () => void;
   isCurrentUserRoomAdmin: boolean;
   startAddGroupMember: () => void;
+  leaveGroupDialogStatus: LeaveGroupDialogStatus;
+  setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
 
 interface State {
@@ -43,6 +46,7 @@ export class Container extends React.Component<Properties, State> {
     const {
       chat: { activeConversationId },
       layout,
+      groupManagement,
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
@@ -54,6 +58,7 @@ export class Container extends React.Component<Properties, State> {
       directMessage,
       isFullScreen: layout.value?.isMessengerFullScreen,
       isCurrentUserRoomAdmin,
+      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
     };
   }
 
@@ -63,6 +68,7 @@ export class Container extends React.Component<Properties, State> {
       enterFullScreenMessenger,
       exitFullScreenMessenger,
       startAddGroupMember,
+      setLeaveGroupStatus,
     };
   }
 
@@ -148,6 +154,28 @@ export class Container extends React.Component<Properties, State> {
     return this.props.directMessage.otherMembers.some((m) => m.isOnline);
   }
 
+  get isLeaveGroupDialogOpen() {
+    return this.props.leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
+  }
+  openLeaveGroupDialog = () => {
+    this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.OPEN);
+  };
+  closeLeaveGroupDialog = () => {
+    this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
+  };
+
+  renderLeaveGroupDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.isLeaveGroupDialogOpen} onOpenChange={this.closeLeaveGroupDialog}>
+        <LeaveGroupDialogContainer
+          groupName={this.props.directMessage.name}
+          onClose={this.closeLeaveGroupDialog}
+          roomId={this.props.activeConversationId}
+        />
+      </Modal>
+    );
+  };
+
   render() {
     if (!this.props.activeConversationId || !this.props.directMessage) {
       return null;
@@ -193,6 +221,7 @@ export class Container extends React.Component<Properties, State> {
                 <GroupManagementMenu
                   isRoomAdmin={this.props.isCurrentUserRoomAdmin}
                   onStartAddMember={this.props.startAddGroupMember}
+                  onLeave={this.openLeaveGroupDialog}
                 />
               </div>
             )}
@@ -205,6 +234,8 @@ export class Container extends React.Component<Properties, State> {
             isDirectMessage
             showSenderAvatar={!this.isOneOnOne()}
           />
+
+          {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
         </div>
       </div>
     );

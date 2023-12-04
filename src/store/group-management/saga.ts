@@ -1,6 +1,8 @@
-import { SagaActionTypes, Stage, setStage } from '.';
-import { call, fork, put, race, take, delay } from 'redux-saga/effects';
+import { SagaActionTypes, Stage, setStage, LeaveGroupDialogStatus, setLeaveGroupStatus } from './index';
+import { call, fork, put, race, take, delay, select, takeLatest } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
+import { chat } from '../../lib/chat';
+import { currentUserSelector } from '../authentication/saga';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -8,6 +10,7 @@ export function* reset() {
 
 export function* saga() {
   yield fork(authWatcher);
+  yield takeLatest(SagaActionTypes.LeaveGroup, leaveGroup);
 
   while (true) {
     const { startEvent } = yield race({
@@ -76,5 +79,21 @@ function* authWatcher() {
   while (true) {
     yield take(channel, Events.UserLogout);
     yield put({ type: SagaActionTypes.Cancel });
+  }
+}
+
+export function* leaveGroup(action) {
+  try {
+    yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.IN_PROGRESS));
+
+    const currentUser = yield select(currentUserSelector());
+    const chatClient = yield call(chat.get);
+    yield call([chatClient, chatClient.leaveRoom], action.payload.roomId, currentUser.id);
+
+    return;
+  } catch (e) {
+    // probably handle this..?
+  } finally {
+    yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED));
   }
 }

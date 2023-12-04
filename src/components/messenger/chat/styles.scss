@@ -29,6 +29,7 @@ $recent-indicator-size: 8px;
     .channel-view__main {
       padding-right: 0;
     }
+
     &.channel-view {
       height: calc(100% - $title-bar-height - $header-height);
       display: flex;

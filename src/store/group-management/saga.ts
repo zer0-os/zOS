@@ -19,7 +19,6 @@ export function* roomMembersSelected(action) {
 
     const userIds = selectedMembers.map((user) => user.value);
     const users = yield select((state) => denormalizeUsers(userIds, state));
-    console.log(users);
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);

@@ -205,7 +205,7 @@ export class Chat {
   }
 
   async addMembersToRoom(roomId: string, users: User[]): Promise<void> {
-    return this.client.addMembersToRoom(roomId, users);
+    return this.matrix.addMembersToRoom(roomId, users);
   }
 
   async discardOlmSession(roomId: string) {

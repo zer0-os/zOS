@@ -372,14 +372,14 @@ export function* userLeftChannel(channelId, userId) {
 // look into https://github.com/zer0-os/zOS/pull/1063
 const conversationWithLatestMessage = (conversations) => {
   conversations = cloneDeep(conversations);
-
   for (const conversation of conversations) {
-    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    const sortedMessages =
+      (conversation.messages || [])?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
     conversation.lastMessage = sortedMessages[0];
   }
 
   const sortedConversations = conversations.sort((a, b) =>
-    compareDatesDesc(a.lastMessage.createdAt, b.lastMessage.createdAt)
+    compareDatesDesc(a.lastMessage?.createdAt, b.lastMessage?.createdAt)
   );
   return sortedConversations[0];
 };

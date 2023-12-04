@@ -5,7 +5,7 @@ import { AddMembersPanel } from '../add-members-panel';
 
 export interface Properties {
   groupManagementStage: GroupManagementSagaStage;
-  isFetchingExistingConversations: boolean; // XXX: This is totally wrong
+  isFetchingExistingConversations: boolean; // This is wrong as it's a flag related to creating conversations
   backGroupManagement: () => void;
   usersInMyNetworks: (search: string) => Promise<any>;
 }

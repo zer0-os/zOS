@@ -8,7 +8,7 @@ describe('GroupManagement', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       groupManagementStage: Stage.None,
-      isFetchingExistingConversations: false,
+      isAddingMembers: false,
       backGroupManagement: () => null,
       usersInMyNetworks: () => null,
       onSubmitSelectedMembers: () => null,
@@ -57,7 +57,7 @@ describe('GroupManagement', () => {
   it('sets AddMembersPanel to Submitting while data is loading', async function () {
     const wrapper = subject({
       groupManagementStage: Stage.StartAddMemberToRoom,
-      isFetchingExistingConversations: true,
+      isAddingMembers: true,
     });
 
     expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();

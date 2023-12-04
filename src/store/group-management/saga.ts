@@ -1,4 +1,4 @@
-import { SagaActionTypes, Stage, setStage } from '.';
+import { SagaActionTypes, Stage, setStage, setIsAddingMembers } from '.';
 import { Chat, chat } from '../../lib/chat';
 import { call, fork, put, race, take, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
@@ -6,6 +6,7 @@ import { denormalize as denormalizeUsers } from '../users';
 
 export function* reset() {
   yield put(setStage(Stage.None));
+  yield put(setIsAddingMembers(false));
 }
 
 export function* roomMembersSelected(action) {
@@ -16,14 +17,21 @@ export function* roomMembersSelected(action) {
       return;
     }
 
+    yield put(setIsAddingMembers(true));
+
     const userIds = selectedMembers.map((user) => user.value);
     const users = yield select((state) => denormalizeUsers(userIds, state));
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
 
+    yield put(setIsAddingMembers(false));
     return Stage.None;
-  } catch (error) {}
+  } catch (error) {
+    yield put(setIsAddingMembers(false));
+    // TODO: Handle error once we have a UI for it
+    console.log('Error in roomMembersSelected:', error);
+  }
 }
 
 export function* saga() {

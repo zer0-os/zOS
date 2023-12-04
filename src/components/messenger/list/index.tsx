@@ -74,6 +74,7 @@ export interface Properties extends PublicProperties {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   groupManangemenetStage: GroupManagementSagaStage;
+  isAddingMembers: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -132,6 +133,7 @@ export class Container extends React.Component<Properties, State> {
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
       groupManangemenetStage: groupManagement.stage,
+      isAddingMembers: groupManagement.isAddingMembers,
     };
   }
 
@@ -284,7 +286,7 @@ export class Container extends React.Component<Properties, State> {
     return (
       <GroupManagement
         groupManagementStage={this.props.groupManangemenetStage}
-        isFetchingExistingConversations={this.props.isFetchingExistingConversations}
+        isAddingMembers={this.props.isAddingMembers}
         backGroupManagement={this.props.backGroupManagement}
         onSubmitSelectedMembers={this.onSubmitSelectedMembers}
         usersInMyNetworks={this.usersInMyNetworks}

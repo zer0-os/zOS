@@ -23,10 +23,12 @@ export enum Stage {
 
 type GroupManagementState = {
   stage: Stage;
+  isAddingMembers: boolean;
 };
 
 const initialState: GroupManagementState = {
   stage: Stage.None,
+  isAddingMembers: false,
 };
 
 const slice = createSlice({
@@ -36,8 +38,11 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<Stage>) => {
       state.stage = action.payload;
     },
+    setIsAddingMembers: (state, action: PayloadAction<boolean>) => {
+      state.isAddingMembers = action.payload;
+    },
   },
 });
 
-export const { setStage } = slice.actions;
+export const { setStage, setIsAddingMembers } = slice.actions;
 export const { reducer } = slice;

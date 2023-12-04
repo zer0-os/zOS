@@ -6,7 +6,7 @@ import { Option } from '../../lib/types';
 
 export interface Properties {
   groupManagementStage: GroupManagementSagaStage;
-  isFetchingExistingConversations: boolean; // This is wrong as it's a flag related to creating conversations
+  isAddingMembers: boolean;
   backGroupManagement: () => void;
   usersInMyNetworks: (search: string) => Promise<any>;
   onSubmitSelectedMembers: (options: Option[]) => void;
@@ -18,7 +18,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
       <>
         {this.props.groupManagementStage === GroupManagementSagaStage.StartAddMemberToRoom && (
           <AddMembersPanel
-            isSubmitting={this.props.isFetchingExistingConversations}
+            isSubmitting={this.props.isAddingMembers}
             onBack={this.props.backGroupManagement}
             onSubmit={this.props.onSubmitSelectedMembers}
             searchUsers={this.props.usersInMyNetworks}

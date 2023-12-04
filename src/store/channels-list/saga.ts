@@ -29,6 +29,8 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
+import { compareDatesDesc } from '../../lib/date';
+import cloneDeep from 'lodash/cloneDeep';
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
@@ -368,19 +370,19 @@ export function* userLeftChannel(channelId, userId) {
 
 // TODO: we can remove this function and simply use the "lastMessage.createdAt" property
 // look into https://github.com/zer0-os/zOS/pull/1063
-const conversationWithLatestMessage = (conversations) =>
-  conversations.reduce((latest, current) => {
-    if (current.messages && current.messages.length > 0) {
-      const latestMessage = current.messages.reduce((prevMsg, currentMsg) => {
-        return currentMsg.createdAt > prevMsg.createdAt ? currentMsg : prevMsg;
-      });
-      if (!latest || latestMessage.createdAt > latest.messages[0].createdAt) {
-        current.latestMessage = latestMessage;
-        return current;
-      }
-    }
-    return latest;
-  }, null);
+const conversationWithLatestMessage = (conversations) => {
+  conversations = cloneDeep(conversations);
+
+  for (const conversation of conversations) {
+    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    conversation.lastMessage = sortedMessages[0];
+  }
+
+  const sortedConversations = conversations.sort((a, b) =>
+    compareDatesDesc(a.lastMessage.createdAt, b.lastMessage.createdAt)
+  );
+  return sortedConversations[0];
+};
 
 function* currentUserLeftChannel(channelId) {
   const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));

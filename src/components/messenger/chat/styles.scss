@@ -29,6 +29,7 @@ $recent-indicator-size: 8px;
     .channel-view__main {
       padding-right: 0;
     }
+
     &.channel-view {
       height: calc(100% - $title-bar-height - $header-height);
       display: flex;
@@ -155,6 +156,10 @@ $recent-indicator-size: 8px;
     font-size: 12px;
     line-height: 15px;
     color: theme.$color-greyscale-11;
+  }
+
+  &__group-management-menu-container {
+    display: flex;
   }
 
   &--transition {

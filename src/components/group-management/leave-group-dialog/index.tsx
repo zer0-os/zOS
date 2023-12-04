@@ -30,7 +30,8 @@ export class LeaveGroupDialog extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('body')}>
-          Are you sure you want to leave {this.props.name}? You will lose access to the conversation and its history.
+          Are you sure you want to leave {this.props.name || 'this group'}? You will lose access to the conversation and
+          its history.
         </div>
 
         <div {...cn('footer')}>

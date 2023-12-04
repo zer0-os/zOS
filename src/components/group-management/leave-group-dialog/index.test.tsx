@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { LeaveGroupDialog, Properties } from '.';
+import { buttonLabelled } from '../../../test/utils';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -23,6 +24,12 @@ describe('InviteDialog', () => {
     expect(wrapper.find('.leave-group-dialog__body').text()).toContain('zOS test group');
   });
 
+  it('renders different text if group name is not provided', function () {
+    const wrapper = subject({ name: '' });
+
+    expect(wrapper.find('.leave-group-dialog__body').text()).toContain('this group');
+  });
+
   it('publishes close event when modal is closed', function () {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });
@@ -36,8 +43,7 @@ describe('InviteDialog', () => {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });
 
-    wrapper.find('Button[variant="text"]').simulate('press');
-
+    buttonLabelled(wrapper, 'Cancel').simulate('press');
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -45,8 +51,7 @@ describe('InviteDialog', () => {
     const onLeave = jest.fn();
     const wrapper = subject({ onLeave });
 
-    wrapper.find('Button[variant="negative"]').simulate('press');
-
+    buttonLabelled(wrapper, 'Leave Group').simulate('press');
     expect(onLeave).toHaveBeenCalled();
   });
 });

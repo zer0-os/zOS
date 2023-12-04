@@ -49,6 +49,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     if (!this.props.isRoomAdmin) {
       menuItems.push({
         id: 'leave_group',
+        className: 'leave-group',
         label: this.renderMenuItem(<IconUserRight1 />, 'Leave Group'),
         onSelect: () => {
           this.props.onLeave();

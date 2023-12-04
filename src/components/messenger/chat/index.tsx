@@ -220,7 +220,7 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__group-management-menu-container'>
                 <GroupManagementMenu
                   isRoomAdmin={this.props.isCurrentUserRoomAdmin}
-                  onStartAddMember={() => console.log('group management: starting add group member')}
+                  onStartAddMember={this.props.startAddGroupMember}
                   onLeave={this.openLeaveGroupDialog}
                 />
               </div>

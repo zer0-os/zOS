@@ -38,16 +38,12 @@ export function* saga() {
   yield fork(authWatcher);
 
   while (true) {
-    const { startEvent, addSelectedMembersEvent } = yield race({
+    const { startEvent } = yield race({
       startEvent: take(SagaActionTypes.StartAddMember),
-      addSelectedMembersEvent: take(SagaActionTypes.AddSelectedMembers),
     });
 
     if (startEvent) {
       yield call(startAddGroupMember);
-    } else if (addSelectedMembersEvent) {
-      const nextStage = yield call(STAGE_HANDLERS[addSelectedMembersEvent.payload.stage], addSelectedMembersEvent);
-      yield put(setStage(nextStage));
     }
   }
 }

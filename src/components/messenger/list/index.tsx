@@ -38,7 +38,7 @@ import { Stage as GroupManagementSagaStage, back as backGroupManagement } from '
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
-import { AddMembersPanel } from './add-members-panel';
+import { GroupManagement } from './group-management';
 
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');
@@ -271,16 +271,12 @@ export class Container extends React.Component<Properties, State> {
 
   renderGroupManagement() {
     return (
-      <>
-        {this.props.groupManangemenetStage === GroupManagementSagaStage.StartAddMemberToRoom && (
-          <AddMembersPanel
-            isSubmitting={this.props.isFetchingExistingConversations}
-            onBack={this.props.backGroupManagement}
-            onSubmit={() => console.log('addMembersSelected: Submit Add New Group members')}
-            searchUsers={this.usersInMyNetworks}
-          />
-        )}
-      </>
+      <GroupManagement
+        groupManangemenetStage={this.props.groupManangemenetStage}
+        isFetchingExistingConversations={this.props.isFetchingExistingConversations}
+        backGroupManagement={this.props.backGroupManagement}
+        usersInMyNetworks={this.usersInMyNetworks}
+      />
     );
   }
 
@@ -326,7 +322,7 @@ export class Container extends React.Component<Properties, State> {
     return this.props.groupManangemenetStage !== GroupManagementSagaStage.None;
   }
 
-  get renderPanel() {
+  renderPanel() {
     return this.isGroupManagementActive ? this.renderGroupManagement() : this.renderCreateConversation();
   }
 
@@ -337,7 +333,7 @@ export class Container extends React.Component<Properties, State> {
         {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserAccountContainer()}
 
         <div {...cn('')}>
-          {this.renderPanel}
+          {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.renderToastNotification()}
         </div>

@@ -104,7 +104,7 @@ export class MatrixClient implements IChatClient {
     return [];
   }
 
-  // NOTE: This can be removed in the next release cycle,
+  // NOTE: This can be removed after a few releases,
   // since it will fix the "already existing" conversation groups,
   // and we create a new room with the appropriate power_levels now.
   private async setPowerLevels(rooms: Room[]) {
@@ -115,12 +115,10 @@ export class MatrixClient implements IChatClient {
       }
 
       const powerLevelsByUser = powerLevels.getContent()?.users || {};
-      for (const userId of Object.keys(powerLevelsByUser)) {
-        // if the user is in the room and has a power level > 0,
-        // AND the user is not the creator of the room, set their power level to 0
-        if (userId === this.userId && powerLevelsByUser[userId] !== PowerLevels.Viewer) {
-          await this.matrix.setPowerLevel(room.roomId, userId, PowerLevels.Viewer);
-        }
+      // if the user is in the room and has a power level > 0,
+      // AND the user is not the creator of the room, set their power level to 0
+      if (powerLevelsByUser[this.userId] && powerLevelsByUser[this.userId] !== PowerLevels.Viewer) {
+        await this.matrix.setPowerLevel(room.roomId, this.userId, PowerLevels.Viewer);
       }
     }
   }

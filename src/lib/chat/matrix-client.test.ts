@@ -67,6 +67,7 @@ const getSdkClient = (sdkClient = {}) => ({
   fetchRoomEvent: jest.fn(),
   paginateEventTimeline: () => true,
   isRoomEncrypted: () => true,
+  invite: jest.fn().mockResolvedValue({}),
   ...sdkClient,
 });
 
@@ -431,6 +432,27 @@ describe('matrix client', () => {
           ]),
         })
       );
+    });
+  });
+
+  describe('addMembersToRoom', () => {
+    it('successfully invites users to a room', async () => {
+      const invite = jest.fn().mockResolvedValue({});
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ invite })) });
+
+      await client.connect(null, 'token');
+
+      const roomId = 'room123';
+      const users = [
+        { matrixId: '@user1:server' },
+        { matrixId: '@user2:server' },
+      ];
+
+      await client.addMembersToRoom(roomId, users);
+
+      for (const user of users) {
+        expect(invite).toHaveBeenCalledWith(roomId, user.matrixId);
+      }
     });
   });
 

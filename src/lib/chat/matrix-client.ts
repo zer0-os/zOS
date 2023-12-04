@@ -466,7 +466,7 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  async addMembersToRoom(roomId: string, users): Promise<void> {
+  async addMembersToRoom(roomId, users): Promise<void> {
     await this.waitForConnection();
 
     for (const user of users) {

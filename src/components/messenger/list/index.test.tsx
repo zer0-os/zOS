@@ -17,7 +17,7 @@ import { RewardsState } from '../../../store/rewards';
 import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { SettingsMenu } from '../../settings-menu';
-import { AddMembersPanel } from './add-members-panel';
+import { GroupManagement } from './group-management';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -324,76 +324,16 @@ describe('messenger-list', () => {
     expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
-  describe('group management', () => {
-    it('renders AddMembersPanel', function () {
-      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
+  it('renders GroupManagement if group management stage is NOT none', function () {
+    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
 
-      expect(wrapper).not.toHaveElement(ConversationListPanel);
-      expect(wrapper).not.toHaveElement(CreateConversationPanel);
-      expect(wrapper).not.toHaveElement(StartGroupPanel);
-      expect(wrapper).not.toHaveElement(GroupDetailsPanel);
-      expect(wrapper).toHaveElement(AddMembersPanel);
-    });
+    expect(wrapper).toHaveElement(GroupManagement);
+  });
 
-    it('does not render AddMembersPanel if group management stage is none', function () {
-      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
+  it('does not render GroupManagement if group management stage is none', function () {
+    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
 
-      expect(wrapper).not.toHaveElement(AddMembersPanel);
-    });
-
-    it('moves back from AddMembersPanel', async function () {
-      const backGroupManagement = jest.fn();
-      const wrapper = subject({
-        stage: Stage.None,
-        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
-        backGroupManagement,
-      });
-
-      await wrapper.find(AddMembersPanel).simulate('back');
-
-      expect(backGroupManagement).toHaveBeenCalledOnce();
-    });
-
-    it('searches for citizens when adding new members', async function () {
-      when(mockSearchMyNetworksByName)
-        .calledWith('jac')
-        .mockResolvedValue([{ id: 'user-id', profileImage: 'image-url' }]);
-      const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
-
-      const searchResults = await wrapper.find(AddMembersPanel).prop('searchUsers')('jac');
-
-      expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
-    });
-
-    it('sets AddMembersPanel to Submitting while data is loading', async function () {
-      const wrapper = subject({
-        stage: Stage.None,
-        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
-        isFetchingExistingConversations: true,
-      });
-
-      expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();
-    });
-
-    it('triggers members addition to the room with selected members', async function () {
-      const addSelectedMembersToRoom = jest.fn();
-      const mockActiveConversationId = 'active-channel-id';
-
-      const wrapper = subject({
-        addSelectedMembersToRoom,
-        stage: Stage.None,
-        groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom,
-        activeConversationId: 'active-channel-id',
-      });
-
-      await wrapper.find(AddMembersPanel).prop('onSubmit')([{ value: 'id-1' } as any]);
-      wrapper.setProps({ groupManangemenetStage: GroupManagementStage.None });
-
-      expect(addSelectedMembersToRoom).toHaveBeenCalledWith({
-        roomId: mockActiveConversationId,
-        users: [{ value: 'id-1' }],
-      });
-    });
+    expect(wrapper).not.toHaveElement(GroupManagement);
   });
 
   describe('mapState', () => {

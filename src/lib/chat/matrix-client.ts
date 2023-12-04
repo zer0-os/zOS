@@ -52,6 +52,7 @@ export class MatrixClient implements IChatClient {
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
   private initializationTimestamp: number;
+  private secretStorageKey: string;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -112,6 +113,25 @@ export class MatrixClient implements IChatClient {
     return [];
   }
 
+  // NOTE: This can be removed after a few releases,
+  // since it will fix the "already existing" conversation groups,
+  // and we create a new room with the appropriate power_levels now.
+  private async setPowerLevels(rooms: Room[]) {
+    for (const room of rooms) {
+      const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
+      if (!powerLevels || this.userId === room.getCreator()) {
+        continue;
+      }
+
+      const powerLevelsByUser = powerLevels.getContent()?.users || {};
+      // if the user is in the room and has a power level > 0,
+      // AND the user is not the creator of the room, set their power level to 0
+      if (powerLevelsByUser[this.userId] && powerLevelsByUser[this.userId] !== PowerLevels.Viewer) {
+        await this.matrix.setPowerLevel(room.roomId, this.userId, PowerLevels.Viewer);
+      }
+    }
+  }
+
   async getConversations() {
     await this.waitForConnection();
     const rooms = await this.getRooms();
@@ -132,29 +152,37 @@ export class MatrixClient implements IChatClient {
     }
 
     const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+    await this.setPowerLevels(filteredRooms);
     return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
   }
 
   async getSecureBackup() {
-    return await this.matrix.checkKeyBackup();
+    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    const backupInfo = await this.matrix.checkKeyBackup();
+    (backupInfo as any).isLegacy = !crossSigning;
+    return backupInfo;
   }
 
   async generateSecureBackup() {
-    return await this.matrix.prepareKeyBackupVersion();
+    const recoveryKey = await this.matrix.getCrypto()!.createRecoveryKeyFromPassphrase();
+    return recoveryKey.encodedPrivateKey;
   }
 
-  async saveSecureBackup(backup) {
-    // Clone the backup object because the save mutates it.
-    const cleanBackup = {
-      algorithm: backup.algorithm,
-      auth_data: { ...backup.auth_data },
-      recovery_key: backup.recovery_key,
-    };
+  async saveSecureBackup(recoveryKey: string) {
+    await this.matrix.bootstrapCrossSigning({
+      authUploadDeviceSigningKeys: async (makeRequest) => {
+        await makeRequest({ identifier: { type: 'm.id.user', user: this.userId } });
+      },
+    });
 
+    // Set this because bootstrapping the secret storage will call back
+    // and require this value. Not ideal but given the callback nature of
+    // setting up the secret storage, this suffices for now.
+    this.secretStorageKey = recoveryKey;
     try {
-      await this.matrix.createKeyBackupVersion(cleanBackup);
-    } catch (e) {
-      throw new Error('Error creating key backup');
+      await this.matrix.getCrypto().bootstrapSecretStorage({ setupNewKeyBackup: true });
+    } finally {
+      this.secretStorageKey = null;
     }
   }
 
@@ -164,13 +192,34 @@ export class MatrixClient implements IChatClient {
       throw new Error('Backup broken or not there');
     }
 
-    try {
-      if (!backup.trustInfo.usable) {
-        await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
-      }
-    } catch (e) {
-      throw new Error('Error while restoring backup');
+    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    if (crossSigning) {
+      await this.restoreSecretStorageBackup(recoveryKey, backup);
+    } else {
+      await this.restoreLegacyBackup(recoveryKey, backup);
     }
+  }
+
+  private async restoreSecretStorageBackup(recoveryKey: string, backup) {
+    // Set this because bootstrapping the secret storage will call back
+    // and require this value. Not ideal but given the callback nature of
+    // setting up the secret storage, this suffices for now.
+    this.secretStorageKey = recoveryKey;
+    try {
+      // Since cross signing is already setup when we get here we don't have to provide signing keys
+      await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
+      await this.matrix.getCrypto().bootstrapSecretStorage({});
+      await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
+    } catch (e) {
+      console.log('error restoring backup', e);
+      throw new Error('Error while restoring backup');
+    } finally {
+      this.secretStorageKey = null;
+    }
+  }
+
+  private async restoreLegacyBackup(recoveryKey: string, backup) {
+    await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -689,6 +738,7 @@ export class MatrixClient implements IChatClient {
     if (!this.matrix) {
       const opts: any = {
         baseUrl: config.matrix.homeServerUrl,
+        cryptoCallbacks: { getSecretStorageKey: this.getSecretStorageKey },
         ...(await this.getCredentials(ssoToken)),
       };
 
@@ -873,6 +923,16 @@ export class MatrixClient implements IChatClient {
   private getLatestEvent(room: Room, type: EventType) {
     return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
   }
+
+  private getSecretStorageKey = async ({ keys: keyInfos }) => {
+    const keyInfoEntries = Object.entries(keyInfos);
+    if (keyInfoEntries.length > 1) {
+      throw new Error('Multiple storage key requests not implemented');
+    }
+    const [keyId] = keyInfoEntries[0];
+    const key = this.matrix.keyBackupKeyFromRecoveryKey(this.secretStorageKey);
+    return [keyId, key];
+  };
 
   /*
    * DEBUGGING

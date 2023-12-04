@@ -163,10 +163,12 @@ describe('matrix client', () => {
 
       await new Promise((resolve) => setImmediate(resolve));
 
-      expect(createClient).toHaveBeenCalledWith({
-        baseUrl: config.matrix.homeServerUrl,
-        ...matrixSession,
-      });
+      expect(createClient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseUrl: config.matrix.homeServerUrl,
+          ...matrixSession,
+        })
+      );
     });
 
     it('logs in and creates SDK client with new session if none exists', async () => {
@@ -190,10 +192,13 @@ describe('matrix client', () => {
 
       await resolve();
 
-      expect(createClient).toHaveBeenNthCalledWith(2, {
-        baseUrl: config.matrix.homeServerUrl,
-        ...matrixSession,
-      });
+      expect(createClient).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          baseUrl: config.matrix.homeServerUrl,
+          ...matrixSession,
+        })
+      );
     });
 
     it('saves session if none exists', async () => {

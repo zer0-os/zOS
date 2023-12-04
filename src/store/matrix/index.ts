@@ -1,5 +1,4 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MatrixKeyBackupInfo } from '../../lib/chat';
 
 export enum SagaActionTypes {
   GetBackup = 'chat/get-backup',
@@ -18,8 +17,8 @@ export enum SagaActionTypes {
 
 export type MatrixState = {
   isLoaded: boolean;
-  trustInfo: { trustedLocally: boolean; usable: boolean } | null;
-  backup: MatrixKeyBackupInfo | null;
+  trustInfo: { trustedLocally: boolean; usable: boolean; isLegacy: boolean } | null;
+  generatedRecoveryKey: string | null;
   successMessage: string;
   errorMessage: string;
   deviceId: string;
@@ -28,7 +27,7 @@ export type MatrixState = {
 export const initialState: MatrixState = {
   isLoaded: false,
   trustInfo: null,
-  backup: null,
+  generatedRecoveryKey: null,
   successMessage: '',
   errorMessage: '',
   deviceId: '',
@@ -54,8 +53,8 @@ const slice = createSlice({
     setLoaded: (state, action: PayloadAction<MatrixState['isLoaded']>) => {
       state.isLoaded = action.payload;
     },
-    setBackup: (state, action: PayloadAction<MatrixState['backup']>) => {
-      state.backup = action.payload;
+    setGeneratedRecoveryKey: (state, action: PayloadAction<MatrixState['generatedRecoveryKey']>) => {
+      state.generatedRecoveryKey = action.payload;
     },
     setTrustInfo: (state, action: PayloadAction<MatrixState['trustInfo']>) => {
       state.trustInfo = action.payload;
@@ -72,5 +71,6 @@ const slice = createSlice({
   },
 });
 
-export const { setLoaded, setBackup, setTrustInfo, setSuccessMessage, setErrorMessage, setDeviceId } = slice.actions;
+export const { setLoaded, setGeneratedRecoveryKey, setTrustInfo, setSuccessMessage, setErrorMessage, setDeviceId } =
+  slice.actions;
 export const { reducer } = slice;

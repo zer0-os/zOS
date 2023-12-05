@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
+import { EditConversationPanel } from '../edit-conversation-panel';
 
 export interface Properties {
   stage: Stage;
@@ -27,6 +28,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             searchUsers={this.props.searchUsers}
           />
         )}
+        {this.props.stage === Stage.EditConversation && <EditConversationPanel onBack={this.props.onBack} />}
       </>
     );
   }

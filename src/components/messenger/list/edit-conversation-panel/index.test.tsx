@@ -5,6 +5,7 @@ import { EditConversationPanel, Properties } from '.';
 describe(EditConversationPanel, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      onBack: () => null,
       ...props,
     };
 

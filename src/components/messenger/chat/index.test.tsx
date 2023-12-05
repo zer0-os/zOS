@@ -24,6 +24,7 @@ describe('messenger-chat', () => {
       exitFullScreenMessenger: () => null,
       isCurrentUserRoomAdmin: false,
       startAddGroupMember: () => null,
+      startEditConversation: () => null,
       setLeaveGroupStatus: () => null,
       ...props,
     };

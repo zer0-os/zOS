@@ -1,9 +1,16 @@
 import * as React from 'react';
+import { PanelHeader } from '../panel-header';
 
-export interface Properties {}
+export interface Properties {
+  onBack: () => void;
+}
 
 export class EditConversationPanel extends React.Component<Properties> {
   render() {
-    return <div>Edit Conversation</div>;
+    return (
+      <>
+        <PanelHeader title={'Edit Group'} onBack={this.props.onBack} />
+      </>
+    );
   }
 }

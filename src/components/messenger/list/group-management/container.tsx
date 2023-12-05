@@ -15,6 +15,7 @@ export interface Properties extends PublicProperties {
   stage: Stage;
   activeConversationId?: string;
   isAddingMembers: boolean;
+  addMemberError: string;
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -31,6 +32,7 @@ export class Container extends React.Component<Properties> {
       activeConversationId,
       stage: groupManagement.stage,
       isAddingMembers: groupManagement.isAddingMembers,
+      addMemberError: groupManagement.addMemberError,
     };
   }
 
@@ -53,6 +55,7 @@ export class Container extends React.Component<Properties> {
         searchUsers={this.props.searchUsers}
         onAddMembers={this.onAddMembers}
         isAddingMembers={this.props.isAddingMembers}
+        addMemberError={this.props.addMemberError}
       />
     );
   }

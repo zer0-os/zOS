@@ -6,6 +6,7 @@ import { currentUserSelector } from '../authentication/saga';
 import {
   SagaActionTypes,
   Stage,
+  setAddMemberError,
   setStage,
   setIsAddingMembers,
   LeaveGroupDialogStatus,
@@ -15,6 +16,7 @@ import {
 export function* reset() {
   yield put(setStage(Stage.None));
   yield put(setIsAddingMembers(false));
+  yield put(setAddMemberError(null));
 }
 
 export function* saga() {
@@ -106,7 +108,6 @@ export function* roomMembersSelected(action) {
     }
 
     yield put(setIsAddingMembers(true));
-
     const userIds = selectedMembers.map((user) => user.value);
     const users = yield select((state) => denormalizeUsers(userIds, state));
 
@@ -115,9 +116,9 @@ export function* roomMembersSelected(action) {
 
     yield put(setIsAddingMembers(false));
     return Stage.None;
-  } catch (error) {
+  } catch (error: any) {
     yield put(setIsAddingMembers(false));
-    // TODO: Handle error once we have a UI for it
-    console.log('Error in roomMembersSelected:', error);
+    yield put(setAddMemberError('Failed to add member, please try again...'));
+    return Stage.StartAddMemberToRoom;
   }
 }

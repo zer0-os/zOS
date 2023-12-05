@@ -32,12 +32,14 @@ export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActio
 export type GroupManagementState = {
   stage: Stage;
   isAddingMembers: boolean;
+  addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
 };
 
 const initialState: GroupManagementState = {
   stage: Stage.None,
   isAddingMembers: false,
+  addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
 };
 
@@ -48,8 +50,11 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<Stage>) => {
       state.stage = action.payload;
     },
-    setIsAddingMembers: (state, action: PayloadAction<boolean>) => {
+    setIsAddingMembers: (state, action: PayloadAction<GroupManagementState['isAddingMembers']>) => {
       state.isAddingMembers = action.payload;
+    },
+    setAddMemberError: (state, action: PayloadAction<GroupManagementState['addMemberError']>) => {
+      state.addMemberError = action.payload;
     },
     setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
       state.leaveGroupDialogStatus = action.payload;
@@ -57,5 +62,5 @@ const slice = createSlice({
   },
 });
 
-export const { setStage, setIsAddingMembers, setLeaveGroupStatus } = slice.actions;
+export const { setAddMemberError, setStage, setIsAddingMembers, setLeaveGroupStatus } = slice.actions;
 export const { reducer } = slice;

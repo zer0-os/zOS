@@ -9,6 +9,7 @@ describe(GroupManagement, () => {
     const allProps: Properties = {
       stage: Stage.None,
       isAddingMembers: false,
+      addMemberError: '',
 
       onBack: () => null,
       searchUsers: () => null,
@@ -77,5 +78,12 @@ describe(GroupManagement, () => {
       roomId: mockActiveConversationId,
       users: [{ value: 'id-1', label: 'name-1' }],
     });
+  });
+
+  it('passes addMemberError to AddMembersPanel', function () {
+    const error = 'Error adding member';
+    const wrapper = subject({ stage: Stage.StartAddMemberToRoom, addMemberError: error });
+
+    expect(wrapper.find(AddMembersPanel).prop('error')).toEqual(error);
   });
 });

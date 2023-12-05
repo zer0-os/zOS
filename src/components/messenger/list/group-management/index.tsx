@@ -6,6 +6,7 @@ import { Option } from '../../lib/types';
 
 export interface Properties {
   stage: Stage;
+  addMemberError: string;
   isAddingMembers: boolean;
 
   onBack: () => void;
@@ -19,6 +20,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
       <>
         {this.props.stage === Stage.StartAddMemberToRoom && (
           <AddMembersPanel
+            error={this.props.addMemberError}
             isSubmitting={this.props.isAddingMembers}
             onBack={this.props.onBack}
             onSubmit={this.props.onAddMembers}

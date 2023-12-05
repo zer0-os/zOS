@@ -102,12 +102,13 @@ export function* leaveGroup(action) {
 export function* roomMembersSelected(action) {
   const { users: selectedMembers, roomId } = action.payload;
 
+  yield put(setIsAddingMembers(true));
+
   try {
     if (!roomId || !selectedMembers) {
       return;
     }
 
-    yield put(setIsAddingMembers(true));
     const userIds = selectedMembers.map((user) => user.value);
     const users = yield select((state) => denormalizeUsers(userIds, state));
 

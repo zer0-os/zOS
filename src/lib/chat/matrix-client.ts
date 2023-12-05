@@ -113,6 +113,18 @@ export class MatrixClient implements IChatClient {
     return [];
   }
 
+  private getRoomAdmins(room: Room): string[] {
+    const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
+    if (!powerLevels) {
+      // possible if you've just _created_ the conversation, in which case we don't
+      // have the power levels events yet
+      return [room.getCreator()];
+    }
+    const powerLevelsByUser = powerLevels.getContent()?.users || {};
+    const admins = Object.keys(powerLevelsByUser).filter((userId) => powerLevelsByUser[userId] === PowerLevels.Owner);
+    return admins;
+  }
+
   // NOTE: This can be removed after a few releases,
   // since it will fix the "already existing" conversation groups,
   // and we create a new room with the appropriate power_levels now.
@@ -852,7 +864,7 @@ export class MatrixClient implements IChatClient {
       hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
-      admin: room.getCreator(),
+      admins: this.getRoomAdmins(room),
     };
   };
 

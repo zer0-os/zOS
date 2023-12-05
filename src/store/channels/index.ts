@@ -53,7 +53,7 @@ export interface Channel {
   hasLoadedMessages: boolean;
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
-  admin: string;
+  admins: string[];
 }
 
 export enum SagaActionTypes {

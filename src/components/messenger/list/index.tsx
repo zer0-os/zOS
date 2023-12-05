@@ -34,11 +34,11 @@ import { RewardsContainer } from '../../rewards-container';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
 import { FeatureFlag } from '../../feature-flag';
-import { Stage as GroupManagementSagaStage, back as backGroupManagement } from '../../../store/group-management';
+import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
+import { GroupManagementContainer } from './group-management/container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
-import { GroupManagement } from './group-management';
 
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');
@@ -82,7 +82,6 @@ export interface Properties extends PublicProperties {
   rewardsTooltipClosed: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
-  backGroupManagement: () => void;
 }
 
 interface State {
@@ -143,7 +142,6 @@ export class Container extends React.Component<Properties, State> {
       rewardsTooltipClosed,
       logout,
       receiveSearchResults,
-      backGroupManagement,
     };
   }
 
@@ -270,14 +268,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderGroupManagement() {
-    return (
-      <GroupManagement
-        groupManagementStage={this.props.groupManangemenetStage}
-        isFetchingExistingConversations={this.props.isFetchingExistingConversations}
-        backGroupManagement={this.props.backGroupManagement}
-        usersInMyNetworks={this.usersInMyNetworks}
-      />
-    );
+    return <GroupManagementContainer searchUsers={this.usersInMyNetworks} />;
   }
 
   renderCreateConversation() {

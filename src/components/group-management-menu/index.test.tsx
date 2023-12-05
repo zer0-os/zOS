@@ -17,10 +17,13 @@ describe(GroupManagementMenu, () => {
     return shallow(<GroupManagementMenu {...allProps} />);
   };
 
-  it('renders DropdownMenu component', function () {
-    const wrapper = subject();
+  it('does not render the menu if user cannot do anything', function () {
+    const wrapper = subject({
+      canAddMembers: false,
+      canLeaveRoom: false,
+    });
 
-    expect(wrapper).toHaveElement(DropdownMenu);
+    expect(wrapper).not.toHaveElement(DropdownMenu);
   });
 
   describe('Add Member', () => {

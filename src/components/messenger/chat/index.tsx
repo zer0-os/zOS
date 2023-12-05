@@ -14,7 +14,12 @@ import { featureFlags } from '../../../lib/feature-flags';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { startAddGroupMember, LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import {
+  startAddGroupMember,
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus,
+  startEditConversation,
+} from '../../../store/group-management';
 import { IconButton, Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
@@ -31,6 +36,7 @@ export interface Properties extends PublicProperties {
   exitFullScreenMessenger: () => void;
   isCurrentUserRoomAdmin: boolean;
   startAddGroupMember: () => void;
+  startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
@@ -68,6 +74,7 @@ export class Container extends React.Component<Properties, State> {
       enterFullScreenMessenger,
       exitFullScreenMessenger,
       startAddGroupMember,
+      startEditConversation,
       setLeaveGroupStatus,
     };
   }
@@ -226,7 +233,7 @@ export class Container extends React.Component<Properties, State> {
                     !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
                   }
                   canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin}
-                  onEdit={() => null}
+                  onEdit={this.props.startEditConversation}
                 />
               </div>
             )}

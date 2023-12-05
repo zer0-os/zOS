@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { GroupManagement, Properties } from '.';
 import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
+import { EditConversationPanel } from '../edit-conversation-panel';
 
 describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
@@ -19,6 +20,13 @@ describe(GroupManagement, () => {
 
     return shallow(<GroupManagement {...allProps} />);
   };
+
+  it('renders nothing if no management stage is active', function () {
+    let wrapper = subject({ stage: Stage.None });
+
+    expect(wrapper).not.toHaveElement(AddMembersPanel);
+    expect(wrapper).not.toHaveElement(EditConversationPanel);
+  });
 
   it('renders AddMembersPanel', function () {
     let wrapper = subject({ stage: Stage.StartAddMemberToRoom });
@@ -85,5 +93,11 @@ describe(GroupManagement, () => {
     const wrapper = subject({ stage: Stage.StartAddMemberToRoom, addMemberError: error });
 
     expect(wrapper.find(AddMembersPanel).prop('error')).toEqual(error);
+  });
+
+  it('renders the EditConversationPanel', async function () {
+    const wrapper = subject({ stage: Stage.EditConversation });
+
+    expect(wrapper).toHaveElement(EditConversationPanel);
   });
 });

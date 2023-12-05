@@ -424,7 +424,7 @@ describe('messenger-chat', () => {
   });
 
   describe('room management', () => {
-    it('allows editing if user is an admin', () => {
+    it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
       featureFlags.enableEditRoom = true;
       const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
@@ -433,7 +433,17 @@ describe('messenger-chat', () => {
 
     it('does NOT allow editing if user is NOT an admin', () => {
       featureFlags.enableEditRoom = true;
-      const wrapper = subject({ isCurrentUserRoomAdmin: false });
+      const wrapper = subject({
+        isCurrentUserRoomAdmin: false,
+        directMessage: stubConversation({ isOneOnOne: false }),
+      });
+
+      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+    });
+
+    it('does NOT allow editing if conversation is considered a 1 on 1', () => {
+      featureFlags.enableEditRoom = true;
+      const wrapper = subject({ isCurrentUserRoomAdmin: true, directMessage: stubConversation({ isOneOnOne: true }) });
 
       expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
     });
@@ -456,4 +466,12 @@ function stubUser(attrs: Partial<User> = {}): User {
 
 function icon(wrapper, icon) {
   return wrapper.find('IconButton').findWhere((n) => n.prop('Icon') === icon);
+}
+
+function stubConversation(props: Partial<Channel> = {}): Channel {
+  return {
+    id: 'channel-id',
+    otherMembers: [],
+    ...props,
+  } as Channel;
 }

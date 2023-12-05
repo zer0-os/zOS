@@ -232,7 +232,7 @@ export class Container extends React.Component<Properties, State> {
                   canLeaveRoom={
                     !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
                   }
-                  canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin}
+                  canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                   onEdit={this.props.startEditConversation}
                 />
               </div>

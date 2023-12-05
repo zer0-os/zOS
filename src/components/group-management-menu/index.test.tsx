@@ -11,6 +11,7 @@ describe(GroupManagementMenu, () => {
       canEdit: true,
       onStartAddMember: () => {},
       onLeave: () => {},
+      onEdit: () => {},
       ...props,
     };
 

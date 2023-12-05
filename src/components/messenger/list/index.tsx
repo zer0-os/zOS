@@ -267,14 +267,8 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  getActiveConversation() {
-    return this.props.conversations.find((c) => c.id === this.props.activeConversationId);
-  }
-
   renderGroupManagement() {
-    return (
-      <GroupManagementContainer searchUsers={this.usersInMyNetworks} conversation={this.getActiveConversation()} />
-    );
+    return <GroupManagementContainer searchUsers={this.usersInMyNetworks} />;
   }
 
   renderCreateConversation() {

@@ -32,5 +32,17 @@ describe(Container, () => {
         })
       );
     });
+
+    test('gets name', () => {
+      const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'id', name: 'name' });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ name: 'name' }));
+    });
+
+    test('gets conversationIcon', () => {
+      const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'id', icon: 'icon' });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ conversationIcon: 'icon' }));
+    });
   });
 });

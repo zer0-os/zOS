@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { PanelHeader } from '../panel-header';
-import { Channel } from '../../../../store/channels';
 import { bemClassName } from '../../../../lib/bem';
 import { Input, Button, Alert } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../../image-upload';
@@ -11,7 +10,8 @@ import { EditConversationErrors } from '../../../../store/group-management/types
 const cn = bemClassName('edit-conversation-panel');
 
 export interface Properties {
-  conversation: Channel;
+  name: string;
+  icon: string;
   errors: EditConversationErrors;
   onBack: () => void;
 }
@@ -23,7 +23,7 @@ interface State {
 
 export class EditConversationPanel extends React.Component<Properties, State> {
   state = {
-    name: this.props.conversation.name || '',
+    name: this.props.name || '',
     image: null,
   };
 
@@ -51,7 +51,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   };
 
   get isDisabled() {
-    return !!this.nameError || (this.state.name === this.props.conversation.name && this.state.image === null);
+    return !!this.nameError || (this.state.name === this.props.name && this.state.image === null);
   }
 
   get changesSaved() {
@@ -66,7 +66,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
             onChange={this.trackImage}
             icon={this.renderImageUploadIcon()}
             uploadText='Select or drag and drop'
-            imageSrc={this.props.conversation.icon} // to show the existing image
+            imageSrc={this.props.icon} // to show the existing image
             isError={Boolean(this.props.errors?.image)}
             errorMessage={this.props.errors?.image}
           />

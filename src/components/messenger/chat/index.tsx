@@ -219,7 +219,7 @@ export class Container extends React.Component<Properties, State> {
             {featureFlags.enableGroupManagementMenu && (
               <div className='direct-message-chat__group-management-menu-container'>
                 <GroupManagementMenu
-                  isRoomAdmin={this.props.isCurrentUserRoomAdmin}
+                  canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
                   onStartAddMember={this.props.startAddGroupMember}
                   onLeave={this.openLeaveGroupDialog}
                   canLeaveRoom={

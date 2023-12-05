@@ -1,14 +1,12 @@
 import * as React from 'react';
 
-import { featureFlags } from '../../lib/feature-flags';
-
 import { IconDotsHorizontal, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
 export interface Properties {
-  isRoomAdmin: boolean;
+  canAddMembers: boolean;
   canLeaveRoom: boolean;
   onStartAddMember: () => void;
   onLeave: () => void;
@@ -36,10 +34,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     );
   }
 
-  get renderDropdownMenuItems() {
+  get dropdownMenuItems() {
     const menuItems = [];
 
-    if (featureFlags.enableAddMemberToGroup && this.props.isRoomAdmin) {
+    if (this.props.canAddMembers) {
       menuItems.push({
         id: 'add-member',
         label: this.renderMenuItem(<IconPlus />, 'Add Member'),
@@ -65,7 +63,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     return (
       <DropdownMenu
         menuClassName={'group-management-menu'}
-        items={this.renderDropdownMenuItems}
+        items={this.dropdownMenuItems}
         side='bottom'
         alignMenu='end'
         onOpenChange={this.handleOpenChange}

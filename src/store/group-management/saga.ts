@@ -115,11 +115,11 @@ export function* roomMembersSelected(action) {
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
 
-    yield put(setIsAddingMembers(false));
     return Stage.None;
   } catch (error: any) {
-    yield put(setIsAddingMembers(false));
     yield put(setAddMemberError('Failed to add member, please try again...'));
     return Stage.StartAddMemberToRoom;
+  } finally {
+    yield put(setIsAddingMembers(false));
   }
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IconDotsHorizontal, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconEdit5, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -8,8 +8,10 @@ import './styles.scss';
 export interface Properties {
   canAddMembers: boolean;
   canLeaveRoom: boolean;
+  canEdit: boolean;
   onStartAddMember: () => void;
   onLeave: () => void;
+  onEdit: () => void;
 }
 
 interface State {}
@@ -53,6 +55,14 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         onSelect: () => {
           this.props.onLeave();
         },
+      });
+    }
+
+    if (this.props.canEdit) {
+      menuItems.push({
+        id: 'edit_group',
+        label: this.renderMenuItem(<IconEdit5 />, 'Edit'),
+        onSelect: this.props.onEdit,
       });
     }
 

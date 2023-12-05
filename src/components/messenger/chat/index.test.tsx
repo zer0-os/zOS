@@ -7,7 +7,7 @@ import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
-const featureFlags = { enableGroupManagementMenu: false };
+const featureFlags = { enableGroupManagementMenu: false, enableEditRoom: false };
 jest.mock('../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
@@ -419,6 +419,22 @@ describe('messenger-chat', () => {
       const leaveGroupDialog = wrapper.find('Modal').prop('children');
       expect(leaveGroupDialog['props'].roomId).toEqual('room-id');
       expect(leaveGroupDialog['props'].groupName).toEqual('group-name');
+    });
+  });
+
+  describe('room management', () => {
+    it('allows editing if user is an admin', () => {
+      featureFlags.enableEditRoom = true;
+      const wrapper = subject({ isCurrentUserRoomAdmin: true });
+
+      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
+    });
+
+    it('does NOT allow editing if user is NOT an admin', () => {
+      featureFlags.enableEditRoom = true;
+      const wrapper = subject({ isCurrentUserRoomAdmin: false });
+
+      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
     });
   });
 });

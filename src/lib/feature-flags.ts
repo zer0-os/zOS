@@ -89,6 +89,14 @@ export class FeatureFlags {
   set enableAddMemberToGroup(value: boolean) {
     this._setBoolean('enableAddMemberToGroup', value);
   }
+
+  get enableEditRoom() {
+    return this._getBoolean('enableEditRoom', false);
+  }
+
+  set enableEditRoom(value: boolean) {
+    this._setBoolean('enableEditRoom', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

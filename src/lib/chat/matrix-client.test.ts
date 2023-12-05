@@ -284,7 +284,7 @@ describe('matrix client', () => {
       expect(conversations).toHaveLength(2);
       expect(conversations[0].id).toEqual('channel-id');
       expect(conversations[1].id).toEqual('dm-id');
-      expect(conversations[1].admin).toEqual('creator-user-id');
+      expect(conversations[1].admins).toEqual(['creator-user-id']);
     });
 
     it('returns empty array if no direct rooms exist', async () => {

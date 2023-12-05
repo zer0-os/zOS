@@ -60,10 +60,14 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
   }
 
   render() {
+    const items = this.dropdownMenuItems;
+    if (items.length === 0) {
+      return null;
+    }
     return (
       <DropdownMenu
         menuClassName={'group-management-menu'}
-        items={this.dropdownMenuItems}
+        items={items}
         side='bottom'
         alignMenu='end'
         onOpenChange={this.handleOpenChange}

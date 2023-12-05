@@ -3,15 +3,10 @@ import { shallow } from 'enzyme';
 import { Properties, GroupManagementMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
-const featureFlags = { enableAddMemberToGroup: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe(GroupManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
-      isRoomAdmin: false,
+      canAddMembers: true,
       canLeaveRoom: true,
       onStartAddMember: () => {},
 
@@ -29,25 +24,14 @@ describe(GroupManagementMenu, () => {
   });
 
   describe('Add Member', () => {
-    it('does not render add member menu item when isRoomAdmin is false and enableAddMemberToGroup feature flag is true', function () {
-      featureFlags.enableAddMemberToGroup = true;
-
-      const wrapper = subject({ isRoomAdmin: false });
+    it('does not render add member menu item when canAddMembers is false', function () {
+      const wrapper = subject({ canAddMembers: false });
       expect(menuItem(wrapper, 'add-member')).toBeFalsy();
     });
 
-    it('renders add member menu item when isRoomAdmin is true and enableAddMemberToGroup feature flag is true', function () {
-      featureFlags.enableAddMemberToGroup = true;
-
-      const wrapper = subject({ isRoomAdmin: true });
-      expect(menuItem(wrapper, 'add-member')).toBeTruthy();
-    });
-
     it('calls onStartAddMember when the add member menu item is selected', function () {
-      featureFlags.enableAddMemberToGroup = true;
-
       const mockOnStartAddMember = jest.fn();
-      const wrapper = subject({ isRoomAdmin: true, onStartAddMember: mockOnStartAddMember });
+      const wrapper = subject({ canAddMembers: true, onStartAddMember: mockOnStartAddMember });
       selectItem(wrapper, 'add-member');
 
       expect(mockOnStartAddMember).toHaveBeenCalled();

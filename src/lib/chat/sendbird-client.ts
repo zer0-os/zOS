@@ -184,6 +184,10 @@ export class SendbirdClient implements IChatClient {
     return {};
   }
 
+  async addMembersToRoom(_roomId: string, _users: User[]): Promise<any> {
+    return {};
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,

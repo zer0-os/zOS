@@ -6,11 +6,13 @@ import { AddMembersPanel, Properties } from '.';
 import { SelectedUserTag } from '../selected-user-tag';
 import { AutocompleteMembers } from '../../autocomplete-members';
 import { Button } from '@zero-tech/zui/components';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
 
 describe(AddMembersPanel, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isSubmitting: false,
+      error: '',
       searchUsers: () => {},
       onBack: () => {},
       onSubmit: () => {},
@@ -113,6 +115,14 @@ describe(AddMembersPanel, () => {
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'id-1', label: 'User 1', image: 'url-1' });
 
     expect(wrapper.find(SelectedUserTag).map(userLabel)).toEqual(['User 1']);
+  });
+
+  it('displays error message when error prop is present', function () {
+    const error = 'Error adding member';
+    const wrapper = subject({ error });
+
+    expect(wrapper.find('.add-members-panel__error-message').text()).toEqual(error);
+    expect(wrapper.find(IconAlertCircle)).toHaveLength(1);
   });
 });
 

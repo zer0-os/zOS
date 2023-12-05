@@ -4,12 +4,16 @@ import { GroupManagement, Properties } from '.';
 import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 
-describe('GroupManagement', () => {
+describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       stage: Stage.None,
+      isAddingMembers: false,
+      addMemberError: '',
+
       onBack: () => null,
       searchUsers: () => null,
+      onAddMembers: () => null,
       ...props,
     };
 
@@ -44,5 +48,42 @@ describe('GroupManagement', () => {
     await wrapper.find(AddMembersPanel).prop('searchUsers')('jac');
 
     expect(searchUsers).toHaveBeenCalledWith('jac');
+  });
+
+  it('sets AddMembersPanel to Submitting while adding members', async function () {
+    const wrapper = subject({
+      stage: Stage.StartAddMemberToRoom,
+      isAddingMembers: true,
+    });
+
+    expect(wrapper.find(AddMembersPanel).prop('isSubmitting')).toBeTrue();
+  });
+
+  it('submits selected members for addition to the specified room', async function () {
+    const mockAddSelectedMembers = jest.fn();
+    const mockActiveConversationId = 'active-channel-id';
+
+    const onAddMembers = (selectedOptions) => {
+      mockAddSelectedMembers({ roomId: mockActiveConversationId, users: selectedOptions });
+    };
+
+    const wrapper = subject({
+      onAddMembers,
+      stage: Stage.StartAddMemberToRoom,
+    });
+
+    await wrapper.find(AddMembersPanel).prop('onSubmit')([{ value: 'id-1', label: 'name-1' }]);
+
+    expect(mockAddSelectedMembers).toHaveBeenCalledWith({
+      roomId: mockActiveConversationId,
+      users: [{ value: 'id-1', label: 'name-1' }],
+    });
+  });
+
+  it('passes addMemberError to AddMembersPanel', function () {
+    const error = 'Error adding member';
+    const wrapper = subject({ stage: Stage.StartAddMemberToRoom, addMemberError: error });
+
+    expect(wrapper.find(AddMembersPanel).prop('error')).toEqual(error);
   });
 });

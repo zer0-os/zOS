@@ -9,5 +9,17 @@ describe(Container, () => {
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ stage: Stage.StartAddMemberToRoom }));
     });
+
+    test('gets isAddingMembers', () => {
+      const state = new StoreBuilder().managingGroup({ isAddingMembers: true });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ isAddingMembers: true }));
+    });
+
+    test('gets addMemberError', () => {
+      const state = new StoreBuilder().managingGroup({ addMemberError: 'error' });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ addMemberError: 'error' }));
+    });
   });
 });

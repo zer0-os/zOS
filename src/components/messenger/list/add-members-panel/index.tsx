@@ -7,6 +7,7 @@ import { Option } from '../../lib/types';
 import { AutocompleteMembers } from '../../autocomplete-members';
 import { PanelHeader } from '../panel-header';
 import { SelectedUserTag } from '../selected-user-tag';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
@@ -15,6 +16,7 @@ const cn = bemClassName('add-members-panel');
 
 export interface Properties {
   isSubmitting: boolean;
+  error: string;
 
   searchUsers: (input: string) => any;
   onBack: () => void;
@@ -64,6 +66,10 @@ export class AddMembersPanel extends React.Component<Properties, State> {
     return this.state.selectedOptions.length >= 2 ? 's' : '';
   }
 
+  get hasError() {
+    return this.props.error;
+  }
+
   renderSelectCount() {
     return (
       <div {...cn('selected-count')}>
@@ -79,6 +85,15 @@ export class AddMembersPanel extends React.Component<Properties, State> {
         {this.state.selectedOptions.map((option) => (
           <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
         ))}
+      </div>
+    );
+  }
+
+  renderErrorMessage() {
+    return (
+      <div {...cn('error')}>
+        <IconAlertCircle size={16} isFilled />
+        <div {...cn('error-message')}>{this.props.error}</div>
       </div>
     );
   }
@@ -110,6 +125,7 @@ export class AddMembersPanel extends React.Component<Properties, State> {
             {this.renderSelectedUserTags()}
           </AutocompleteMembers>
         </div>
+        {this.hasError && this.renderErrorMessage()}
         {this.renderSubmitButton()}
       </>
     );

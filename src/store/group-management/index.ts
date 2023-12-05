@@ -1,10 +1,16 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
+export interface MembersSelectedPayload {
+  roomId: string;
+  users: any[];
+}
+
 export enum SagaActionTypes {
   StartAddMember = 'group-management/start-add-member',
   LeaveGroup = 'group-management/leave-group',
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
+  AddSelectedMembers = 'group-management/add-selected-members',
 }
 
 export enum Stage {
@@ -21,14 +27,19 @@ export enum LeaveGroupDialogStatus {
 export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const back = createAction(SagaActionTypes.Back);
+export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
 
 export type GroupManagementState = {
   stage: Stage;
+  isAddingMembers: boolean;
+  addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
 };
 
 const initialState: GroupManagementState = {
   stage: Stage.None,
+  isAddingMembers: false,
+  addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
 };
 
@@ -39,11 +50,17 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<Stage>) => {
       state.stage = action.payload;
     },
+    setIsAddingMembers: (state, action: PayloadAction<GroupManagementState['isAddingMembers']>) => {
+      state.isAddingMembers = action.payload;
+    },
+    setAddMemberError: (state, action: PayloadAction<GroupManagementState['addMemberError']>) => {
+      state.addMemberError = action.payload;
+    },
     setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
       state.leaveGroupDialogStatus = action.payload;
     },
   },
 });
 
-export const { setStage, setLeaveGroupStatus } = slice.actions;
+export const { setAddMemberError, setStage, setIsAddingMembers, setLeaveGroupStatus } = slice.actions;
 export const { reducer } = slice;

@@ -29,7 +29,6 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       stage: Stage.None,
       groupManangemenetStage: GroupManagementStage.None,
-
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,

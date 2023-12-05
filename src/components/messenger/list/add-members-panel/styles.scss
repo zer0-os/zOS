@@ -34,4 +34,22 @@ $side-padding: 16px;
   &__submit-button {
     margin: 12px $side-padding;
   }
+
+  &__error {
+    display: flex;
+    margin: 4px $side-padding;
+    padding: 4px 8px;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 8px;
+    background: theme.$color-failure-4;
+
+    color: theme.$color-error-transparency-11;
+  }
+
+  &__error-message {
+    font-size: 14px;
+    line-height: 20px;
+  }
 }

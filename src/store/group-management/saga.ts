@@ -1,11 +1,22 @@
-import { SagaActionTypes, Stage, setStage, LeaveGroupDialogStatus, setLeaveGroupStatus } from './index';
-import { call, fork, put, race, take, delay, select, takeLatest } from 'redux-saga/effects';
+import { call, fork, put, race, take, select, takeLatest } from 'redux-saga/effects';
+import { Chat, chat } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
-import { chat } from '../../lib/chat';
+import { denormalize as denormalizeUsers } from '../users';
 import { currentUserSelector } from '../authentication/saga';
+import {
+  SagaActionTypes,
+  Stage,
+  setAddMemberError,
+  setStage,
+  setIsAddingMembers,
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus,
+} from './index';
 
 export function* reset() {
   yield put(setStage(Stage.None));
+  yield put(setIsAddingMembers(false));
+  yield put(setAddMemberError(null));
 }
 
 export function* saga() {
@@ -18,7 +29,6 @@ export function* saga() {
     });
 
     if (startEvent) {
-      console.log('Triggering Start Add Member Stage');
       yield call(startAddGroupMember);
     }
   }
@@ -37,7 +47,7 @@ export function* startAddGroupMember() {
         handlerResult: call(STAGE_HANDLERS[currentStage]),
       });
 
-      let nextStage = handlerResult || PREVIOUS_STAGES[currentStage];
+      let nextStage = handlerResult;
       if (cancel) {
         nextStage = Stage.None;
       } else if (back) {
@@ -53,25 +63,16 @@ export function* startAddGroupMember() {
 }
 
 const STAGE_HANDLERS = {
-  [Stage.StartAddMemberToRoom]: handleStartAddMember,
+  [Stage.StartAddMemberToRoom]: handleStartAddMembersToRoom,
 };
 
 const PREVIOUS_STAGES = {
   [Stage.StartAddMemberToRoom]: Stage.None,
 };
 
-function* handleStartAddMember() {
-  console.log('Handle Start Add Member - Implementation Pending');
-
-  // Placeholder action
-  try {
-    yield delay(1000);
-  } catch (error) {
-    console.error('Error in handleStartAddMember:', error);
-  } finally {
-    console.log('Exiting handleStartAddMember - Placeholder action complete');
-    yield put(setStage(Stage.None));
-  }
+function* handleStartAddMembersToRoom() {
+  const action = yield take(SagaActionTypes.AddSelectedMembers);
+  return yield call(roomMembersSelected, action);
 }
 
 function* authWatcher() {
@@ -95,5 +96,29 @@ export function* leaveGroup(action) {
     // probably handle this..?
   } finally {
     yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED));
+  }
+}
+
+export function* roomMembersSelected(action) {
+  const { users: selectedMembers, roomId } = action.payload;
+
+  try {
+    if (!roomId || !selectedMembers) {
+      return;
+    }
+
+    yield put(setIsAddingMembers(true));
+    const userIds = selectedMembers.map((user) => user.value);
+    const users = yield select((state) => denormalizeUsers(userIds, state));
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
+
+    yield put(setIsAddingMembers(false));
+    return Stage.None;
+  } catch (error: any) {
+    yield put(setIsAddingMembers(false));
+    yield put(setAddMemberError('Failed to add member, please try again...'));
+    return Stage.StartAddMemberToRoom;
   }
 }

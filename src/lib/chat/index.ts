@@ -84,6 +84,7 @@ export interface IChatClient {
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
+  addMembersToRoom: (roomId: string, users: User[]) => Promise<void>;
 }
 
 export class Chat {
@@ -206,6 +207,10 @@ export class Chat {
 
   async cancelAndResendKeyRequests() {
     return this.matrix.cancelAndResendKeyRequests();
+  }
+
+  async addMembersToRoom(roomId: string, users: User[]): Promise<void> {
+    return this.matrix.addMembersToRoom(roomId, users);
   }
 
   async discardOlmSession(roomId: string) {

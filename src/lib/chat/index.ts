@@ -84,7 +84,6 @@ export interface IChatClient {
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
-  addMembersToRoom: (roomId: string, users: User[]) => Promise<void>;
 }
 
 export class Chat {

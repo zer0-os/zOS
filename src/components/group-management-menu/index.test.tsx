@@ -33,16 +33,14 @@ describe(GroupManagementMenu, () => {
       featureFlags.enableAddMemberToGroup = true;
 
       const wrapper = subject({ isRoomAdmin: false });
-      const dropdownMenu = wrapper.find(DropdownMenu);
-      expect(dropdownMenu.prop('items').some((item) => item.id === 'add-member')).toBe(false);
+      expect(menuItem(wrapper, 'add-member')).toBeFalsy();
     });
 
     it('renders add member menu item when isRoomAdmin is true and enableAddMemberToGroup feature flag is true', function () {
       featureFlags.enableAddMemberToGroup = true;
 
       const wrapper = subject({ isRoomAdmin: true });
-      const dropdownMenu = wrapper.find(DropdownMenu);
-      expect(dropdownMenu.prop('items').some((item) => item.id === 'add-member')).toBe(true);
+      expect(menuItem(wrapper, 'add-member')).toBeTruthy();
     });
 
     it('calls onStartAddMember when the add member menu item is selected', function () {
@@ -50,10 +48,7 @@ describe(GroupManagementMenu, () => {
 
       const mockOnStartAddMember = jest.fn();
       const wrapper = subject({ isRoomAdmin: true, onStartAddMember: mockOnStartAddMember });
-      const dropdownMenu = wrapper.find(DropdownMenu);
-      const addMemberMenuItem = dropdownMenu.prop('items').find((item) => item.id === 'add-member');
-
-      addMemberMenuItem.onSelect();
+      selectItem(wrapper, 'add-member');
 
       expect(mockOnStartAddMember).toHaveBeenCalled();
     });
@@ -64,18 +59,23 @@ describe(GroupManagementMenu, () => {
       const onLeave = jest.fn();
       const wrapper = subject({ onLeave, canLeaveRoom: true });
 
-      const dropdownMenu = wrapper.find(DropdownMenu);
-
-      const leaveGroupItem = dropdownMenu.prop('items').find((item) => item.id === 'leave_group');
-      leaveGroupItem.onSelect();
+      selectItem(wrapper, 'leave_group');
 
       expect(onLeave).toHaveBeenCalled();
     });
 
     it('does not render leave group menu item when canLeaveRoom is false', function () {
       const wrapper = subject({ canLeaveRoom: false });
-      const dropdownMenu = wrapper.find(DropdownMenu);
-      expect(dropdownMenu.prop('items').some((item) => item.id === 'leave_group')).toBe(false);
+      expect(menuItem(wrapper, 'leave_group')).toBeFalsy();
     });
   });
 });
+
+function selectItem(wrapper, id) {
+  menuItem(wrapper, id).onSelect();
+}
+
+function menuItem(menu, id) {
+  const dropdownMenu = menu.find(DropdownMenu);
+  return dropdownMenu.prop('items').find((i) => i.id === id);
+}

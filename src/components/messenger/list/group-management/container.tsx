@@ -13,7 +13,7 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   stage: Stage;
-  activeConversationId?: string;
+  activeConversationId: string;
   isAddingMembers: boolean;
   addMemberError: string;
 
@@ -44,7 +44,8 @@ export class Container extends React.Component<Properties> {
   }
 
   onAddMembers = async (selectedOptions: Option[]) => {
-    this.props.addSelectedMembers({ roomId: this.props.activeConversationId, users: selectedOptions });
+    const userIds = selectedOptions.map((option) => option.value);
+    this.props.addSelectedMembers({ roomId: this.props.activeConversationId, userIds });
   };
 
   render() {

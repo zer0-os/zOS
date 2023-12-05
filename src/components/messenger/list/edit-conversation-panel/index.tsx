@@ -59,44 +59,46 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   }
 
   renderEditImageAndIcon = () => {
-    <div {...cn('body')}>
-      <div {...cn('image-upload')}>
-        <ImageUpload
-          onChange={this.trackImage}
-          icon={this.renderImageUploadIcon()}
-          uploadText='Select or drag and drop'
-          imageSrc={this.props.conversation.icon} // to show the existing image
-          isError={Boolean(this.props.errors?.image)}
-          errorMessage={this.props.errors?.image}
+    return (
+      <div {...cn('body')}>
+        <div {...cn('image-upload')}>
+          <ImageUpload
+            onChange={this.trackImage}
+            icon={this.renderImageUploadIcon()}
+            uploadText='Select or drag and drop'
+            imageSrc={this.props.conversation.icon} // to show the existing image
+            isError={Boolean(this.props.errors?.image)}
+            errorMessage={this.props.errors?.image}
+          />
+        </div>
+
+        <Input
+          label='Display Name'
+          name='name'
+          value={this.state.name}
+          onChange={this.trackName}
+          error={!!this.nameError}
+          alert={this.nameError}
+          {...cn('body-input')}
         />
+
+        {this.generalError && (
+          <Alert {...cn('alert')} variant='error'>
+            {this.generalError}
+          </Alert>
+        )}
+        {this.changesSaved && (
+          <Alert {...cn('alert')} variant='success'>
+            {' '}
+            Changes saved{' '}
+          </Alert>
+        )}
+
+        <Button {...cn('zui-button-large')} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
+          Save
+        </Button>
       </div>
-
-      <Input
-        label='Display Name'
-        name='name'
-        value={this.state.name}
-        onChange={this.trackName}
-        error={!!this.nameError}
-        alert={this.nameError}
-        {...cn('body-input')}
-      />
-
-      {this.generalError && (
-        <Alert {...cn('alert')} variant='error'>
-          {this.generalError}
-        </Alert>
-      )}
-      {this.changesSaved && (
-        <Alert {...cn('alert')} variant='success'>
-          {' '}
-          Changes saved{' '}
-        </Alert>
-      )}
-
-      <Button {...cn('zui-button-large')} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
-        Save
-      </Button>
-    </div>;
+    );
   };
 
   render() {

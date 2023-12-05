@@ -6,7 +6,7 @@ import { Avatar } from '@zero-tech/zui/components';
 
 const c = bem('.citizen-list-item');
 
-describe('CitizenListItem', () => {
+describe(CitizenListItem, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       user: { userId: 'stub' } as any,

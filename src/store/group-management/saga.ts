@@ -91,6 +91,5 @@ export function* roomMembersSelected(action) {
     return Stage.StartAddMemberToRoom;
   } finally {
     yield put(setIsAddingMembers(false));
-
   }
 }

@@ -11,7 +11,8 @@ describe(GroupManagement, () => {
       stage: Stage.None,
       isAddingMembers: false,
       addMemberError: '',
-
+      conversation: {} as any,
+      errors: {},
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,

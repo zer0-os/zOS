@@ -4,11 +4,15 @@ import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 import { EditConversationPanel } from '../edit-conversation-panel';
+import { Channel } from '../../../../store/channels';
+import { GroupManagementErrors } from '../../../../store/group-management/types';
 
 export interface Properties {
   stage: Stage;
   addMemberError: string;
   isAddingMembers: boolean;
+  errors: GroupManagementErrors;
+  conversation: Channel;
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
@@ -21,14 +25,20 @@ export class GroupManagement extends React.PureComponent<Properties> {
       <>
         {this.props.stage === Stage.StartAddMemberToRoom && (
           <AddMembersPanel
-            error={this.props.addMemberError}
+            error={this.props.addMemberError} // TODO: use this.props.errors.addMemberError
             isSubmitting={this.props.isAddingMembers}
             onBack={this.props.onBack}
             onSubmit={this.props.onAddMembers}
             searchUsers={this.props.searchUsers}
           />
         )}
-        {this.props.stage === Stage.EditConversation && <EditConversationPanel onBack={this.props.onBack} />}
+        {this.props.stage === Stage.EditConversation && (
+          <EditConversationPanel
+            conversation={this.props.conversation}
+            errors={this.props.errors.editConversationErrors}
+            onBack={this.props.onBack}
+          />
+        )}
       </>
     );
   }

@@ -222,6 +222,9 @@ export class Container extends React.Component<Properties, State> {
                   isRoomAdmin={this.props.isCurrentUserRoomAdmin}
                   onStartAddMember={this.props.startAddGroupMember}
                   onLeave={this.openLeaveGroupDialog}
+                  canLeaveRoom={
+                    !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
+                  }
                 />
               </div>
             )}

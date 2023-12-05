@@ -864,7 +864,7 @@ export class MatrixClient implements IChatClient {
       hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
-      admins: this.getRoomAdmins(room),
+      adminMatrixIds: this.getRoomAdmins(room),
     };
   };
 

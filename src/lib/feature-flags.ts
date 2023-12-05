@@ -74,14 +74,6 @@ export class FeatureFlags {
     this._setBoolean('internalUsage', value);
   }
 
-  get enableGroupManagementMenu() {
-    return this._getBoolean('enableGroupManagementMenu', false);
-  }
-
-  set enableGroupManagementMenu(value: boolean) {
-    this._setBoolean('enableGroupManagementMenu', value);
-  }
-
   get enableAddMemberToGroup() {
     return this._getBoolean('enableAddMemberToGroup', false);
   }

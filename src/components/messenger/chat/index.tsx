@@ -14,7 +14,12 @@ import { featureFlags } from '../../../lib/feature-flags';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { startAddGroupMember, LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import {
+  startAddGroupMember,
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus,
+  startEditConversation,
+} from '../../../store/group-management';
 import { IconButton, Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
@@ -31,6 +36,7 @@ export interface Properties extends PublicProperties {
   exitFullScreenMessenger: () => void;
   isCurrentUserRoomAdmin: boolean;
   startAddGroupMember: () => void;
+  startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
@@ -68,6 +74,7 @@ export class Container extends React.Component<Properties, State> {
       enterFullScreenMessenger,
       exitFullScreenMessenger,
       startAddGroupMember,
+      startEditConversation,
       setLeaveGroupStatus,
     };
   }
@@ -216,20 +223,16 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-            {featureFlags.enableGroupManagementMenu && (
-              <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu
-                  canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
-                  onStartAddMember={this.props.startAddGroupMember}
-                  onLeave={this.openLeaveGroupDialog}
-                  canLeaveRoom={
-                    !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
-                  }
-                  canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin}
-                  onEdit={() => null}
-                />
-              </div>
-            )}
+            <div className='direct-message-chat__group-management-menu-container'>
+              <GroupManagementMenu
+                canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
+                onStartAddMember={this.props.startAddGroupMember}
+                onLeave={this.openLeaveGroupDialog}
+                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
+                canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                onEdit={this.props.startEditConversation}
+              />
+            </div>
           </div>
 
           <ChatViewContainer

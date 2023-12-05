@@ -7,15 +7,18 @@ export interface MembersSelectedPayload {
 
 export enum SagaActionTypes {
   StartAddMember = 'group-management/start-add-member',
+  StartEditConversation = 'group-management/start-edit-conversation',
   LeaveGroup = 'group-management/leave-group',
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
   AddSelectedMembers = 'group-management/add-selected-members',
+  RemoveMember = 'group-management/remove-member',
 }
 
 export enum Stage {
   None = 'none',
   StartAddMemberToRoom = 'start_add_member_to_room',
+  EditConversation = 'edit_conversation',
 }
 
 export enum LeaveGroupDialogStatus {
@@ -26,6 +29,7 @@ export enum LeaveGroupDialogStatus {
 
 export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
+export const startEditConversation = createAction(SagaActionTypes.StartEditConversation);
 export const back = createAction(SagaActionTypes.Back);
 export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
 

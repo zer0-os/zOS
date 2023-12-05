@@ -6,8 +6,11 @@ import { Option } from '../../lib/types';
 
 import { GroupManagement } from '.';
 import { RootState } from '../../../../store/reducer';
+import { Channel } from '../../../../store/channels';
+import { GroupManagementErrors } from '../../../../store/group-management/types';
 
 export interface PublicProperties {
+  conversation: Channel;
   searchUsers: (search: string) => Promise<any>;
 }
 
@@ -16,6 +19,7 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   isAddingMembers: boolean;
   addMemberError: string;
+  errors: GroupManagementErrors;
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -33,6 +37,7 @@ export class Container extends React.Component<Properties> {
       stage: groupManagement.stage,
       isAddingMembers: groupManagement.isAddingMembers,
       addMemberError: groupManagement.addMemberError,
+      errors: groupManagement.errors,
     };
   }
 
@@ -56,6 +61,8 @@ export class Container extends React.Component<Properties> {
         onAddMembers={this.onAddMembers}
         isAddingMembers={this.props.isAddingMembers}
         addMemberError={this.props.addMemberError}
+        conversation={this.props.conversation}
+        errors={this.props.errors}
       />
     );
   }

@@ -1,4 +1,5 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
+import { GroupManagementErrors } from './types';
 
 export interface MembersSelectedPayload {
   roomId: string;
@@ -38,6 +39,7 @@ export type GroupManagementState = {
   isAddingMembers: boolean;
   addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
+  errors: GroupManagementErrors;
 };
 
 const initialState: GroupManagementState = {
@@ -45,6 +47,7 @@ const initialState: GroupManagementState = {
   isAddingMembers: false,
   addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
+  errors: {},
 };
 
 const slice = createSlice({

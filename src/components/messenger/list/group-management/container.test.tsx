@@ -21,5 +21,16 @@ describe(Container, () => {
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ addMemberError: 'error' }));
     });
+
+    test('gets errors', () => {
+      const state = new StoreBuilder().managingGroup({
+        errors: { editConversationErrors: { image: 'image error', general: 'general error' } },
+      });
+      expect(Container.mapState(state.build())).toEqual(
+        expect.objectContaining({
+          errors: { editConversationErrors: { image: 'image error', general: 'general error' } },
+        })
+      );
+    });
   });
 });

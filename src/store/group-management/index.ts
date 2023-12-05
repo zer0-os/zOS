@@ -2,7 +2,7 @@ import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
 
 export interface MembersSelectedPayload {
   roomId: string;
-  users: any[];
+  userIds: string[];
 }
 
 export enum SagaActionTypes {

@@ -70,7 +70,7 @@ export function* leaveGroup(action) {
 }
 
 export function* roomMembersSelected(action) {
-  const { users: selectedMembers, roomId } = action.payload;
+  const { userIds: selectedMembers, roomId } = action.payload;
 
   try {
     if (!roomId || !selectedMembers) {
@@ -78,7 +78,7 @@ export function* roomMembersSelected(action) {
     }
 
     yield put(setIsAddingMembers(true));
-    const userIds = selectedMembers.map((user) => user.value);
+    const userIds = selectedMembers.map((userId) => userId);
     const users = yield select((state) => denormalizeUsers(userIds, state));
 
     const chatClient: Chat = yield call(chat.get);

@@ -72,7 +72,7 @@ describe(GroupManagement, () => {
     const mockActiveConversationId = 'active-channel-id';
 
     const onAddMembers = (selectedOptions) => {
-      mockAddSelectedMembers({ roomId: mockActiveConversationId, users: selectedOptions });
+      mockAddSelectedMembers({ roomId: mockActiveConversationId, userIds: selectedOptions });
     };
 
     const wrapper = subject({
@@ -84,7 +84,7 @@ describe(GroupManagement, () => {
 
     expect(mockAddSelectedMembers).toHaveBeenCalledWith({
       roomId: mockActiveConversationId,
-      users: [{ value: 'id-1', label: 'name-1' }],
+      userIds: [{ value: 'id-1', label: 'name-1' }],
     });
   });
 

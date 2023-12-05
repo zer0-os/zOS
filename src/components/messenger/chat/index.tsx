@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties, State> {
 
     const directMessage = denormalize(activeConversationId, state);
     const currentUser = currentUserSelector(state);
-    const isCurrentUserRoomAdmin = directMessage?.admin === currentUser.matrixId;
+    const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
 
     return {
       activeConversationId,

@@ -8,8 +8,8 @@ describe(GroupManagementMenu, () => {
     const allProps: Properties = {
       canAddMembers: true,
       canLeaveRoom: true,
+      canEdit: true,
       onStartAddMember: () => {},
-
       onLeave: () => {},
       ...props,
     };
@@ -21,6 +21,7 @@ describe(GroupManagementMenu, () => {
     const wrapper = subject({
       canAddMembers: false,
       canLeaveRoom: false,
+      canEdit: false,
     });
 
     expect(wrapper).not.toHaveElement(DropdownMenu);
@@ -54,6 +55,22 @@ describe(GroupManagementMenu, () => {
     it('does not render leave group menu item when canLeaveRoom is false', function () {
       const wrapper = subject({ canLeaveRoom: false });
       expect(menuItem(wrapper, 'leave_group')).toBeFalsy();
+    });
+  });
+
+  describe('Edit', () => {
+    it('publishes onEdit event when clicked', () => {
+      const onEdit = jest.fn();
+      const wrapper = subject({ onEdit, canEdit: true });
+
+      selectItem(wrapper, 'edit_group');
+
+      expect(onEdit).toHaveBeenCalled();
+    });
+
+    it('does not render item when canEditRoom is false', function () {
+      const wrapper = subject({ canEdit: false });
+      expect(menuItem(wrapper, 'edit_group')).toBeFalsy();
     });
   });
 });

@@ -225,6 +225,8 @@ export class Container extends React.Component<Properties, State> {
                   canLeaveRoom={
                     !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
                   }
+                  canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin}
+                  onEdit={() => null}
                 />
               </div>
             )}

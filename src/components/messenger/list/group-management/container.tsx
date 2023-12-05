@@ -45,7 +45,7 @@ export class Container extends React.Component<Properties> {
 
   onAddMembers = async (selectedOptions: Option[]) => {
     const userIds = selectedOptions.map((option) => option.value);
-    this.props.addSelectedMembers({ roomId: this.props.activeConversationId, userIds: userIds });
+    this.props.addSelectedMembers({ roomId: this.props.activeConversationId, userIds });
   };
 
   render() {

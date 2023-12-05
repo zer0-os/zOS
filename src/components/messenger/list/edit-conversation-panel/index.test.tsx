@@ -4,10 +4,14 @@ import { EditConversationPanel, Properties } from '.';
 import { ImageUpload } from '../../../image-upload';
 import { buttonLabelled } from '../../../../test/utils';
 import { Alert } from '@zero-tech/zui/components';
+import { CitizenListItem } from '../../../citizen-list-item';
+import { User } from '../../../../store/channels';
 
 describe(EditConversationPanel, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      currentUser: { userId: 'current-user' } as User,
+      otherMembers: [],
       onBack: () => null,
       errors: {},
       name: '',
@@ -63,6 +67,22 @@ describe(EditConversationPanel, () => {
       const wrapper = subject({ errors: { general: 'invalid' } });
 
       expect(wrapper.find(Alert).prop('children')).toEqual('invalid');
+    });
+  });
+
+  describe('Members', () => {
+    it('renders the members of the conversation', function () {
+      const wrapper = subject({
+        currentUser: { userId: 'Admin' } as any,
+        otherMembers: [{ userId: '1' }, { userId: '2' }, { userId: '3' }] as any,
+      });
+
+      expect(wrapper.find(CitizenListItem).map((c) => c.prop('user'))).toEqual([
+        { userId: 'Admin' },
+        { userId: '1' },
+        { userId: '2' },
+        { userId: '3' },
+      ]);
     });
   });
 });

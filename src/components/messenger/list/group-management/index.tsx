@@ -5,6 +5,7 @@ import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 import { EditConversationPanel } from '../edit-conversation-panel';
 import { GroupManagementErrors } from '../../../../store/group-management/types';
+import { User } from '../../../../store/channels';
 
 export interface Properties {
   stage: Stage;
@@ -13,6 +14,8 @@ export interface Properties {
   errors: GroupManagementErrors;
   name: string;
   icon: string;
+  currentUser: User;
+  otherMembers: User[];
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
@@ -34,10 +37,12 @@ export class GroupManagement extends React.PureComponent<Properties> {
         )}
         {this.props.stage === Stage.EditConversation && (
           <EditConversationPanel
-            errors={this.props.errors.editConversationErrors}
-            onBack={this.props.onBack}
             name={this.props.name}
             icon={this.props.icon}
+            currentUser={this.props.currentUser}
+            otherMembers={this.props.otherMembers}
+            errors={this.props.errors.editConversationErrors}
+            onBack={this.props.onBack}
           />
         )}
       </>

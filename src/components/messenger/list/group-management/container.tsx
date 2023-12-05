@@ -7,7 +7,8 @@ import { Option } from '../../lib/types';
 import { GroupManagement } from '.';
 import { RootState } from '../../../../store/reducer';
 import { GroupManagementErrors } from '../../../../store/group-management/types';
-import { denormalize as denormalizeChannel } from '../../../../store/channels';
+import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
 
 export interface PublicProperties {
   searchUsers: (search: string) => Promise<any>;
@@ -16,6 +17,8 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   stage: Stage;
   activeConversationId: string;
+  currentUser: User;
+  otherMembers: User[];
   isAddingMembers: boolean;
   addMemberError: string;
   errors: GroupManagementErrors;
@@ -34,6 +37,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const conversation = denormalizeChannel(activeConversationId, state);
+    const currentUser = currentUserSelector(state);
 
     return {
       activeConversationId,
@@ -43,6 +47,12 @@ export class Container extends React.Component<Properties> {
       errors: groupManagement.errors,
       name: conversation?.name || '',
       conversationIcon: conversation?.icon || '',
+      currentUser: {
+        firstName: currentUser?.profileSummary.firstName,
+        lastName: currentUser?.profileSummary.lastName,
+        profileImage: currentUser?.profileSummary.profileImage,
+      } as User,
+      otherMembers: conversation ? conversation.otherMembers : [],
     };
   }
 
@@ -61,6 +71,8 @@ export class Container extends React.Component<Properties> {
     return (
       <GroupManagement
         stage={this.props.stage}
+        currentUser={this.props.currentUser}
+        otherMembers={this.props.otherMembers}
         onBack={this.props.back}
         searchUsers={this.props.searchUsers}
         onAddMembers={this.onAddMembers}

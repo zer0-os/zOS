@@ -48,8 +48,7 @@ describe(GroupManagementMenu, () => {
 
       const mockOnStartAddMember = jest.fn();
       const wrapper = subject({ isRoomAdmin: true, onStartAddMember: mockOnStartAddMember });
-      const addMemberMenuItem = menuItem(wrapper, 'add-member');
-      addMemberMenuItem.onSelect();
+      selectItem(wrapper, 'add-member');
 
       expect(mockOnStartAddMember).toHaveBeenCalled();
     });
@@ -60,7 +59,7 @@ describe(GroupManagementMenu, () => {
       const onLeave = jest.fn();
       const wrapper = subject({ onLeave, canLeaveRoom: true });
 
-      menuItem(wrapper, 'leave_group').onSelect();
+      selectItem(wrapper, 'leave_group');
 
       expect(onLeave).toHaveBeenCalled();
     });
@@ -71,6 +70,10 @@ describe(GroupManagementMenu, () => {
     });
   });
 });
+
+function selectItem(wrapper, id) {
+  menuItem(wrapper, id).onSelect();
+}
 
 function menuItem(menu, id) {
   const dropdownMenu = menu.find(DropdownMenu);

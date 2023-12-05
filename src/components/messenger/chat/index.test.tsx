@@ -204,8 +204,6 @@ describe('messenger-chat', () => {
     });
 
     it('header renders group management menu icon button', function () {
-      featureFlags.enableGroupManagementMenu = true;
-
       const wrapper = subject({
         directMessage: {
           isOneOnOne: true,
@@ -223,8 +221,6 @@ describe('messenger-chat', () => {
     });
 
     it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
-      featureFlags.enableGroupManagementMenu = true;
-
       const wrapper = subject({
         isCurrentUserRoomAdmin: false,
         directMessage: {
@@ -243,8 +239,6 @@ describe('messenger-chat', () => {
     });
 
     it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
-      featureFlags.enableGroupManagementMenu = true;
-
       const wrapper = subject({
         isCurrentUserRoomAdmin: false,
         directMessage: {

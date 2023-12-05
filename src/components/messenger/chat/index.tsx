@@ -223,20 +223,16 @@ export class Container extends React.Component<Properties, State> {
               <div className='direct-message-chat__title'>{this.renderTitle()}</div>
               <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
             </span>
-            {featureFlags.enableGroupManagementMenu && (
-              <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu
-                  canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
-                  onStartAddMember={this.props.startAddGroupMember}
-                  onLeave={this.openLeaveGroupDialog}
-                  canLeaveRoom={
-                    !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
-                  }
-                  canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                  onEdit={this.props.startEditConversation}
-                />
-              </div>
-            )}
+            <div className='direct-message-chat__group-management-menu-container'>
+              <GroupManagementMenu
+                canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
+                onStartAddMember={this.props.startAddGroupMember}
+                onLeave={this.openLeaveGroupDialog}
+                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
+                canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                onEdit={this.props.startEditConversation}
+              />
+            </div>
           </div>
 
           <ChatViewContainer

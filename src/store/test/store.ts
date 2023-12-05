@@ -76,7 +76,7 @@ export class StoreBuilder {
     return this;
   }
 
-  managingGroup(data: RootState['groupManagement']) {
+  managingGroup(data: Partial<RootState['groupManagement']>) {
     this.groupManagement = data;
     return this;
   }

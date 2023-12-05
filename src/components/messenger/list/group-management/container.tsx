@@ -31,14 +31,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return (
-      <GroupManagement
-        groupManagementStage={this.props.stage}
-        backGroupManagement={this.props.back}
-        usersInMyNetworks={this.props.searchUsers}
-        isFetchingExistingConversations={false}
-      />
-    );
+    return <GroupManagement stage={this.props.stage} onBack={this.props.back} searchUsers={this.props.searchUsers} />;
   }
 }
 

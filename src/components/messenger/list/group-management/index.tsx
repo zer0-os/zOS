@@ -1,25 +1,24 @@
 import * as React from 'react';
 
-import { Stage as GroupManagementSagaStage } from '../../../../store/group-management';
+import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 
 export interface Properties {
-  groupManagementStage: GroupManagementSagaStage;
-  isFetchingExistingConversations: boolean; // This is wrong as it's a flag related to creating conversations
-  backGroupManagement: () => void;
-  usersInMyNetworks: (search: string) => Promise<any>;
+  stage: Stage;
+  onBack: () => void;
+  searchUsers: (search: string) => Promise<any>;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
   render() {
     return (
       <>
-        {this.props.groupManagementStage === GroupManagementSagaStage.StartAddMemberToRoom && (
+        {this.props.stage === Stage.StartAddMemberToRoom && (
           <AddMembersPanel
-            isSubmitting={this.props.isFetchingExistingConversations}
-            onBack={this.props.backGroupManagement}
+            isSubmitting={false}
+            onBack={this.props.onBack}
             onSubmit={() => console.log('addMembersSelected: Submit Add New Group members')}
-            searchUsers={this.props.usersInMyNetworks}
+            searchUsers={this.props.searchUsers}
           />
         )}
       </>

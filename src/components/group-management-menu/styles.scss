@@ -4,6 +4,10 @@
   width: 232px;
   padding: 8px;
 
+  .leave-group {
+    color: theme.$color-failure-11;
+  }
+
   .menu-item {
     display: flex;
     justify-content: flex-start;

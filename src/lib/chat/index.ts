@@ -70,6 +70,7 @@ export interface IChatClient {
   ) => Promise<Message>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
+  leaveRoom: (roomId: string, userId: string) => Promise<void>;
   editMessage(
     roomId: string,
     messageId: string,
@@ -113,6 +114,10 @@ export class Chat {
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
     return this.client.getMessagesByChannelId(channelId, lastCreatedAt);
+  }
+
+  async leaveRoom(roomId: string, userId: string) {
+    return this.client.leaveRoom(roomId, userId);
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {

@@ -17,7 +17,7 @@ import { RewardsState } from '../../../store/rewards';
 import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { SettingsMenu } from '../../settings-menu';
-import { GroupManagement } from './group-management';
+import { GroupManagementContainer } from './group-management/container';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -29,7 +29,6 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       stage: Stage.None,
       groupManangemenetStage: GroupManagementStage.None,
-      isAddingMembers: false,
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -61,8 +60,6 @@ describe('messenger-list', () => {
       rewardsTooltipClosed: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
-      backGroupManagement: () => null,
-      addSelectedMembersToRoom: () => null,
 
       ...props,
     };
@@ -327,13 +324,13 @@ describe('messenger-list', () => {
   it('renders GroupManagement if group management stage is NOT none', function () {
     const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
 
-    expect(wrapper).toHaveElement(GroupManagement);
+    expect(wrapper).toHaveElement(GroupManagementContainer);
   });
 
   it('does not render GroupManagement if group management stage is none', function () {
     const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
 
-    expect(wrapper).not.toHaveElement(GroupManagement);
+    expect(wrapper).not.toHaveElement(GroupManagementContainer);
   });
 
   describe('mapState', () => {

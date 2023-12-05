@@ -34,13 +34,8 @@ import { RewardsContainer } from '../../rewards-container';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
 import { FeatureFlag } from '../../feature-flag';
-import {
-  Stage as GroupManagementSagaStage,
-  back as backGroupManagement,
-  addSelectedMembersToRoom,
-  MembersSelectedPayload as MembersSelectedPayloadGroupManagement,
-} from '../../../store/group-management';
-import { GroupManagement } from './group-management';
+import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
+import { GroupManagementContainer } from './group-management/container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -74,7 +69,6 @@ export interface Properties extends PublicProperties {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   groupManangemenetStage: GroupManagementSagaStage;
-  isAddingMembers: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -88,8 +82,6 @@ export interface Properties extends PublicProperties {
   rewardsTooltipClosed: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
-  backGroupManagement: () => void;
-  addSelectedMembersToRoom: (payload: MembersSelectedPayloadGroupManagement) => void;
 }
 
 interface State {
@@ -133,7 +125,6 @@ export class Container extends React.Component<Properties, State> {
       showRewardsInTooltip: rewards.showRewardsInTooltip,
       showRewardsInPopup: rewards.showRewardsInPopup,
       groupManangemenetStage: groupManagement.stage,
-      isAddingMembers: groupManagement.isAddingMembers,
     };
   }
 
@@ -151,8 +142,6 @@ export class Container extends React.Component<Properties, State> {
       rewardsTooltipClosed,
       logout,
       receiveSearchResults,
-      backGroupManagement,
-      addSelectedMembersToRoom,
     };
   }
 
@@ -186,10 +175,6 @@ export class Container extends React.Component<Properties, State> {
 
   groupMembersSelected = async (selectedOptions: Option[]) => {
     this.props.membersSelected({ users: selectedOptions });
-  };
-
-  onSubmitSelectedMembers = async (selectedOptions: Option[]) => {
-    this.props.addSelectedMembersToRoom({ roomId: this.props.activeConversationId, users: selectedOptions });
   };
 
   createGroup = async (details) => {
@@ -283,15 +268,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderGroupManagement() {
-    return (
-      <GroupManagement
-        groupManagementStage={this.props.groupManangemenetStage}
-        isAddingMembers={this.props.isAddingMembers}
-        backGroupManagement={this.props.backGroupManagement}
-        onSubmitSelectedMembers={this.onSubmitSelectedMembers}
-        usersInMyNetworks={this.usersInMyNetworks}
-      />
-    );
+    return <GroupManagementContainer searchUsers={this.usersInMyNetworks} />;
   }
 
   renderCreateConversation() {

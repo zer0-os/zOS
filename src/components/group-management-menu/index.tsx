@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { featureFlags } from '../../lib/feature-flags';
 
-import { IconDotsHorizontal, IconPlus } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -10,6 +10,7 @@ import './styles.scss';
 export interface Properties {
   isRoomAdmin: boolean;
   onStartAddMember: () => void;
+  onLeave: () => void;
 }
 
 interface State {}
@@ -34,7 +35,6 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     );
   }
 
-  // Update menuItems to add new menu items
   get renderDropdownMenuItems() {
     const menuItems = [];
 
@@ -42,7 +42,18 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       menuItems.push({
         id: 'add-member',
         label: this.renderMenuItem(<IconPlus />, 'Add Member'),
-        onSelect: this.startAddMember,
+        onSelect: this.startAddMember as any,
+      });
+    }
+
+    if (!this.props.isRoomAdmin) {
+      menuItems.push({
+        id: 'leave_group',
+        className: 'leave-group',
+        label: this.renderMenuItem(<IconUserRight1 />, 'Leave Group'),
+        onSelect: () => {
+          this.props.onLeave();
+        },
       });
     }
 

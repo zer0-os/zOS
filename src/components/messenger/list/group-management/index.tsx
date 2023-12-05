@@ -1,27 +1,28 @@
 import * as React from 'react';
 
-import { Stage as GroupManagementSagaStage } from '../../../../store/group-management';
+import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 
 export interface Properties {
-  groupManagementStage: GroupManagementSagaStage;
+  stage: Stage;
   isAddingMembers: boolean;
-  backGroupManagement: () => void;
-  usersInMyNetworks: (search: string) => Promise<any>;
-  onSubmitSelectedMembers: (options: Option[]) => void;
+
+  onBack: () => void;
+  onAddMembers: (options: Option[]) => void;
+  searchUsers: (search: string) => Promise<any>;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
   render() {
     return (
       <>
-        {this.props.groupManagementStage === GroupManagementSagaStage.StartAddMemberToRoom && (
+        {this.props.stage === Stage.StartAddMemberToRoom && (
           <AddMembersPanel
             isSubmitting={this.props.isAddingMembers}
-            onBack={this.props.backGroupManagement}
-            onSubmit={this.props.onSubmitSelectedMembers}
-            searchUsers={this.props.usersInMyNetworks}
+            onBack={this.props.onBack}
+            onSubmit={this.props.onAddMembers}
+            searchUsers={this.props.searchUsers}
           />
         )}
       </>

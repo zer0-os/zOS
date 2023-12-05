@@ -303,9 +303,17 @@ describe('channels list saga', () => {
       const initialState = new StoreBuilder()
         .withCurrentUserId(userId)
         .withConversationList(
-          { id: 'conversation-1', lastMessage: { createdAt: 10000000 } as any },
+          {
+            id: 'conversation-1',
+            lastMessage: { createdAt: 10000000 } as any,
+            messages: [{ id: '1', createdAt: 10000000 }] as any,
+          },
           { id: channelId },
-          { id: 'conversation-2', lastMessage: { createdAt: 10000001 } as any }
+          {
+            id: 'conversation-2',
+            lastMessage: { createdAt: 10000001 } as any,
+            messages: [{ id: '2', createdAt: 10000001 }] as any,
+          }
         )
         .withActiveConversation({ id: channelId })
         .build();

@@ -7,28 +7,38 @@ export interface MembersSelectedPayload {
 
 export enum SagaActionTypes {
   StartAddMember = 'group-management/start-add-member',
+  LeaveGroup = 'group-management/leave-group',
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
   AddSelectedMembers = 'group-management/add-selected-members',
 }
-
-export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
-export const back = createAction(SagaActionTypes.Back);
-export const addSelectedMembersToRoom = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
 
 export enum Stage {
   None = 'none',
   StartAddMemberToRoom = 'start_add_member_to_room',
 }
 
-type GroupManagementState = {
+export enum LeaveGroupDialogStatus {
+  OPEN,
+  CLOSED,
+  IN_PROGRESS,
+}
+
+export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
+export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
+export const back = createAction(SagaActionTypes.Back);
+export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
+
+export type GroupManagementState = {
   stage: Stage;
   isAddingMembers: boolean;
+  leaveGroupDialogStatus: LeaveGroupDialogStatus;
 };
 
 const initialState: GroupManagementState = {
   stage: Stage.None,
   isAddingMembers: false,
+  leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
 };
 
 const slice = createSlice({
@@ -41,8 +51,11 @@ const slice = createSlice({
     setIsAddingMembers: (state, action: PayloadAction<boolean>) => {
       state.isAddingMembers = action.payload;
     },
+    setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
+      state.leaveGroupDialogStatus = action.payload;
+    },
   },
 });
 
-export const { setStage, setIsAddingMembers } = slice.actions;
+export const { setStage, setIsAddingMembers, setLeaveGroupStatus } = slice.actions;
 export const { reducer } = slice;

@@ -1,41 +1,25 @@
-import { SagaActionTypes, Stage, setStage, setIsAddingMembers } from '.';
+import { call, fork, put, race, take, select, takeLatest } from 'redux-saga/effects';
 import { Chat, chat } from '../../lib/chat';
-import { call, fork, put, race, take, select } from 'redux-saga/effects';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
+import { currentUserSelector } from '../authentication/saga';
+import {
+  SagaActionTypes,
+  Stage,
+  setStage,
+  setIsAddingMembers,
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus,
+} from './index';
 
 export function* reset() {
   yield put(setStage(Stage.None));
   yield put(setIsAddingMembers(false));
 }
 
-export function* roomMembersSelected(action) {
-  const { users: selectedMembers, roomId } = action.payload;
-
-  try {
-    if (!roomId || !selectedMembers) {
-      return;
-    }
-
-    yield put(setIsAddingMembers(true));
-
-    const userIds = selectedMembers.map((user) => user.value);
-    const users = yield select((state) => denormalizeUsers(userIds, state));
-
-    const chatClient: Chat = yield call(chat.get);
-    yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
-
-    yield put(setIsAddingMembers(false));
-    return Stage.None;
-  } catch (error) {
-    yield put(setIsAddingMembers(false));
-    // TODO: Handle error once we have a UI for it
-    console.log('Error in roomMembersSelected:', error);
-  }
-}
-
 export function* saga() {
   yield fork(authWatcher);
+  yield takeLatest(SagaActionTypes.LeaveGroup, leaveGroup);
 
   while (true) {
     const { startEvent } = yield race({
@@ -94,5 +78,46 @@ function* authWatcher() {
   while (true) {
     yield take(channel, Events.UserLogout);
     yield put({ type: SagaActionTypes.Cancel });
+  }
+}
+
+export function* leaveGroup(action) {
+  try {
+    yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.IN_PROGRESS));
+
+    const currentUser = yield select(currentUserSelector());
+    const chatClient = yield call(chat.get);
+    yield call([chatClient, chatClient.leaveRoom], action.payload.roomId, currentUser.id);
+
+    return;
+  } catch (e) {
+    // probably handle this..?
+  } finally {
+    yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED));
+  }
+}
+
+export function* roomMembersSelected(action) {
+  const { users: selectedMembers, roomId } = action.payload;
+
+  try {
+    if (!roomId || !selectedMembers) {
+      return;
+    }
+
+    yield put(setIsAddingMembers(true));
+
+    const userIds = selectedMembers.map((user) => user.value);
+    const users = yield select((state) => denormalizeUsers(userIds, state));
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
+
+    yield put(setIsAddingMembers(false));
+    return Stage.None;
+  } catch (error) {
+    yield put(setIsAddingMembers(false));
+    // TODO: Handle error once we have a UI for it
+    console.log('Error in roomMembersSelected:', error);
   }
 }

@@ -221,6 +221,49 @@ describe('messenger-chat', () => {
       expect(groupManagementMenuContainer.exists()).toBeTrue();
     });
 
+    it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
+      featureFlags.enableGroupManagementMenu = true;
+
+      const wrapper = subject({
+        isCurrentUserRoomAdmin: false,
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(false);
+    });
+
+    it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
+      featureFlags.enableGroupManagementMenu = true;
+
+      const wrapper = subject({
+        isCurrentUserRoomAdmin: false,
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+            stubUser({
+              profileImage: 'avatar-url',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(true);
+    });
+
     it('can start add group member group management saga', async function () {
       const startAddGroupMember = jest.fn();
       const wrapper = subject({ startAddGroupMember });

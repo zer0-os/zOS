@@ -12,6 +12,7 @@ describe(GroupManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isRoomAdmin: false,
+      canLeaveRoom: true,
       onStartAddMember: () => {},
 
       onLeave: () => {},
@@ -61,7 +62,7 @@ describe(GroupManagementMenu, () => {
   describe('Leave Group', () => {
     it('publishes onLeave event when leave group is clicked', () => {
       const onLeave = jest.fn();
-      const wrapper = subject({ onLeave, isRoomAdmin: false });
+      const wrapper = subject({ onLeave, canLeaveRoom: true });
 
       const dropdownMenu = wrapper.find(DropdownMenu);
 
@@ -71,8 +72,8 @@ describe(GroupManagementMenu, () => {
       expect(onLeave).toHaveBeenCalled();
     });
 
-    it('does not render leave group menu item when isRoomAdmin is true', function () {
-      const wrapper = subject({ isRoomAdmin: true });
+    it('does not render leave group menu item when canLeaveRoom is false', function () {
+      const wrapper = subject({ canLeaveRoom: false });
       const dropdownMenu = wrapper.find(DropdownMenu);
       expect(dropdownMenu.prop('items').some((item) => item.id === 'leave_group')).toBe(false);
     });

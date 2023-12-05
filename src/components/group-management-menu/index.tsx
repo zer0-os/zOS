@@ -9,6 +9,7 @@ import './styles.scss';
 
 export interface Properties {
   isRoomAdmin: boolean;
+  canLeaveRoom: boolean;
   onStartAddMember: () => void;
   onLeave: () => void;
 }
@@ -46,7 +47,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       });
     }
 
-    if (!this.props.isRoomAdmin) {
+    if (this.props.canLeaveRoom) {
       menuItems.push({
         id: 'leave_group',
         className: 'leave-group',

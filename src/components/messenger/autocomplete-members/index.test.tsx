@@ -63,30 +63,37 @@ describe('autocomplete-members', () => {
     expect(wrapper.find('.autocomplete-members__search-results').text()).not.toContain('Result 1');
   });
 
-  it('excludes the selected option from search results', async () => {
+  it('excludes the selected option from search results on subsequent searches', async () => {
     const search = jest.fn();
-    when(search).mockResolvedValue([
-      { name: 'Result 1', id: 'result-1' },
-      { name: 'Result 2', id: 'result-2' },
-    ]);
+    when(search)
+      .calledWith('name')
+      .mockResolvedValue([
+        { name: 'Result 1', id: 'result-1' },
+        { name: 'Result 2', id: 'result-2' },
+      ]);
 
     const onSelect = jest.fn();
     const wrapper = subject({ search, onSelect });
+
     await searchFor(wrapper, 'name');
 
-    // Simulate selecting an option
     wrapper
       .find('.autocomplete-members__search-results > div')
       .first()
-      .simulate('click', { currentTarget: { dataset: { id: 'result-1' } } });
+      .simulate('click', {
+        currentTarget: { dataset: { id: 'result-1' } },
+      });
 
-    // Ensure that the selected option is excluded from state.results
-    expect(wrapper.state('results')).toEqual([
-      { value: 'result-2', label: 'Result 2', image: undefined },
-    ]);
+    when(search)
+      .calledWith('name')
+      .mockResolvedValue([
+        { name: 'Result 2', id: 'result-2' },
+      ]);
 
-    // Ensure that the selected option is not displayed in the component
-    expect(wrapper.find('.autocomplete-members__search-results > div').text()).not.toContain('Result 1');
+    await searchFor(wrapper, 'name');
+
+    expect(wrapper.state('results')).toEqual([expect.objectContaining({ value: 'result-2' })]);
+    expect(wrapper.find('.autocomplete-members__search-results').text()).not.toContain('Result 1');
   });
 
   it('search with empty string clears results', async () => {
@@ -133,6 +140,46 @@ describe('autocomplete-members', () => {
       .simulate('keydown', { key: 'Enter', currentTarget: { dataset: { id: 'result-1' } } });
 
     expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
+  });
+
+  it('clears search input when a member is selected', async () => {
+    const search = jest.fn();
+    when(search).mockResolvedValue([
+      { name: 'Member 1', id: 'member-1' },
+      { name: 'Member 2', id: 'member-2' },
+    ]);
+
+    const wrapper = subject({ search, onSelect: jest.fn() });
+    await searchFor(wrapper, 'Member');
+
+    wrapper
+      .find('.autocomplete-members__search-results > div')
+      .first()
+      .simulate('click', {
+        currentTarget: { dataset: { id: 'member-1' } },
+      });
+
+    expect(wrapper.find('Input').prop('value')).toEqual('');
+  });
+
+  it('clears search results when a member is selected', async () => {
+    const search = jest.fn();
+    when(search).mockResolvedValue([
+      { name: 'Member 1', id: 'member-1' },
+      { name: 'Member 2', id: 'member-2' },
+    ]);
+
+    const wrapper = subject({ search, onSelect: jest.fn() });
+    await searchFor(wrapper, 'Member');
+
+    wrapper
+      .find('.autocomplete-members__search-results > div')
+      .first()
+      .simulate('click', {
+        currentTarget: { dataset: { id: 'member-1' } },
+      });
+
+    expect(wrapper.state('results')).toEqual(null);
   });
 });
 

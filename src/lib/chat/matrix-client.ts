@@ -562,6 +562,11 @@ export class MatrixClient implements IChatClient {
     this.events.onUserLeft(roomId, userId);
   }
 
+  async removeUser(roomId, user): Promise<void> {
+    await this.waitForConnection();
+    await this.matrix.kick(roomId, user.matrixId);
+  }
+
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);

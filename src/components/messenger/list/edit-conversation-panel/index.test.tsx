@@ -84,6 +84,19 @@ describe(EditConversationPanel, () => {
         { userId: '3' },
       ]);
     });
+
+    it('pubishes remove event', function () {
+      const onRemoveMember = jest.fn();
+      const wrapper = subject({
+        onRemoveMember,
+        otherMembers: [{ userId: 'user-1' }] as any,
+      });
+
+      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'user-1');
+      item.simulate('remove', 'user-1');
+
+      expect(onRemoveMember).toHaveBeenCalledWith('user-1');
+    });
   });
 });
 

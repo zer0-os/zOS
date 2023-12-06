@@ -33,6 +33,7 @@ export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const startEditConversation = createAction(SagaActionTypes.StartEditConversation);
 export const back = createAction(SagaActionTypes.Back);
 export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
+export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
 
 export type GroupManagementState = {
   stage: Stage;

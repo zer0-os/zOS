@@ -20,6 +20,7 @@ export interface Properties {
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
   searchUsers: (search: string) => Promise<any>;
+  onRemoveMember: (userId: string) => void;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
@@ -43,6 +44,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             otherMembers={this.props.otherMembers}
             errors={this.props.errors.editConversationErrors}
             onBack={this.props.onBack}
+            onRemoveMember={this.props.onRemoveMember}
           />
         )}
       </>

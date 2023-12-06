@@ -13,7 +13,7 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   stage: Stage;
-  activeConversationId?: string;
+  activeConversationId: string;
   isAddingMembers: boolean;
   addMemberError: string;
 

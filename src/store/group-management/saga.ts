@@ -72,22 +72,24 @@ export function* leaveGroup(action) {
 export function* roomMembersSelected(action) {
   const { users: selectedMembers, roomId } = action.payload;
 
-  try {
-    if (!roomId || !selectedMembers) {
-      return;
-    }
+  if (!roomId || !selectedMembers) {
+    return;
+  }
 
-    yield put(setIsAddingMembers(true));
+  yield put(setIsAddingMembers(true));
+
+  try {
     const userIds = selectedMembers.map((user) => user.value);
     const users = yield select((state) => denormalizeUsers(userIds, state));
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);
 
-    yield put(setIsAddingMembers(false));
-    yield call(reset);
+    return yield put(setStage(Stage.None));
   } catch (error: any) {
-    yield put(setIsAddingMembers(false));
     yield put(setAddMemberError('Failed to add member, please try again...'));
+    return yield put(setStage(Stage.StartAddMemberToRoom));
+  } finally {
+    yield put(setIsAddingMembers(false));
   }
 }

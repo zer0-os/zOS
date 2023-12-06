@@ -48,19 +48,22 @@ describe(EditConversationPanel, () => {
       expect(saveButton(wrapper).prop('isDisabled')).toEqual(false);
     });
 
-    it('renders name error when name is empty', () => {
+    it('does not render name error when name is empty', () => {
       const wrapper = subject({ name: '', icon: 'some-url' });
 
-      expect(wrapper.find('Input[name="name"]').prop('alert')).toEqual({
-        variant: 'error',
-        text: 'name cannot be empty',
-      });
+      expect(wrapper.find('Input[name="name"]').prop('alert')).toBe(undefined);
     });
 
     it('does not render name error when name is not empty', () => {
       const wrapper = subject({ name: 'John Doe' });
 
-      expect(wrapper.find('Input[name="name"]').prop('alert')).toBeNull();
+      expect(wrapper.find('Input[name="name"]').prop('alert')).toBe(undefined);
+    });
+
+    it('does not render image errror when image is empty', () => {
+      const wrapper = subject({ icon: '' });
+
+      expect(wrapper.find(ImageUpload).prop('isError')).toBe(false);
     });
 
     it('renders general errors', () => {

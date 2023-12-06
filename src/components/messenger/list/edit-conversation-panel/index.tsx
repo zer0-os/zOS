@@ -34,21 +34,6 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     image: null,
   };
 
-  get isValid() {
-    return this.state.name.trim().length > 0;
-  }
-
-  get nameError() {
-    if (!this.isValid) {
-      return { variant: 'error', text: 'name cannot be empty' } as any;
-    }
-    return null;
-  }
-
-  get generalError() {
-    return this.props.errors?.general;
-  }
-
   trackName = (value) => this.setState({ name: value });
   trackImage = (image) => this.setState({ image });
   renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled={true} />;
@@ -57,8 +42,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     // do edit here
   };
 
+  get generalError() {
+    return this.props.errors?.general;
+  }
+
   get isDisabled() {
-    return !!this.nameError || (this.state.name === this.props.name && this.state.image === null);
+    return this.state.name === this.props.name && this.state.image === null;
   }
 
   get changesSaved() {
@@ -84,8 +73,6 @@ export class EditConversationPanel extends React.Component<Properties, State> {
           name='name'
           value={this.state.name}
           onChange={this.trackName}
-          error={!!this.nameError}
-          alert={this.nameError}
           {...cn('body-input')}
         />
 

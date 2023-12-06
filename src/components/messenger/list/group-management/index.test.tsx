@@ -4,6 +4,7 @@ import { GroupManagement, Properties } from '.';
 import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { EditConversationPanel } from '../edit-conversation-panel';
+import { EditConversationState } from '../../../../store/group-management/types';
 
 describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
@@ -16,10 +17,12 @@ describe(GroupManagement, () => {
       name: '',
       icon: '',
       errors: {},
+      editConversationState: EditConversationState.NONE,
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
       onRemoveMember: () => null,
+      onEditConversation: () => null,
       ...props,
     };
 

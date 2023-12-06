@@ -19,5 +19,32 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
+    flex-grow: 1;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  &__remove {
+    visibility: hidden;
+  }
+
+  &:hover &__remove {
+    visibility: visible;
+  }
+
+  &__tag {
+    box-sizing: border-box;
+    height: 32px;
+    color: theme.$color-greyscale-11;
+    background-color: theme.$color-greyscale-3;
+    border: 1px solid theme.$color-greyscale-5;
+    border-radius: 8px;
+    padding: 0px 8px;
+
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 30px;
   }
 }

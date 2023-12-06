@@ -10,6 +10,7 @@ import { CitizenListItem } from '../../../citizen-list-item';
 
 import './styles.scss';
 import { EditConversationErrors } from '../../../../store/group-management/types';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 const cn = bemClassName('edit-conversation-panel');
 
 export interface Properties {
@@ -115,10 +116,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
           <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
         </div>
         <div {...cn('member-list')}>
-          <CitizenListItem user={this.props.currentUser}></CitizenListItem>
-          {otherMembers.map((u) => (
-            <CitizenListItem key={u.userId} user={u}></CitizenListItem>
-          ))}
+          <ScrollbarContainer>
+            <CitizenListItem user={this.props.currentUser} tag='admin'></CitizenListItem>
+            {otherMembers.map((u) => (
+              <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+            ))}
+          </ScrollbarContainer>
         </div>
       </div>
     );
@@ -126,13 +129,13 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   render() {
     return (
-      <>
+      <div {...cn()}>
         <PanelHeader title={'Edit Group'} onBack={this.props.onBack} />
         <div {...cn('body')}>
           {this.renderEditImageAndIcon()}
           {this.renderMembers()}
         </div>
-      </>
+      </div>
     );
   }
 }

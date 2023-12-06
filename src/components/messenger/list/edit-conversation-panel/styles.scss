@@ -1,6 +1,13 @@
 .edit-conversation-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
   &__body {
     margin: 0px 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   &__details {
@@ -32,6 +39,10 @@
 
   &__members {
     padding-top: 24px;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   &__member-header {
@@ -42,5 +53,8 @@
 
   &__member-list {
     padding-top: 8px;
+    flex-grow: 1;
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
   }
 }

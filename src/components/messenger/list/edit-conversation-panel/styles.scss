@@ -1,0 +1,29 @@
+.edit-conversation-panel {
+  &__body {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 16px;
+  }
+
+  &__image-upload {
+    margin: 8px 0px 24px 0px;
+    align-self: center;
+  }
+
+  &__body-input {
+    width: 240px;
+    gap: 4px;
+    line-height: 24px;
+  }
+
+  &__zui-button-large {
+    margin-top: 16px;
+    height: 40px;
+    width: 71px;
+    align-self: flex-end;
+  }
+
+  &__alert {
+    margin-top: 8px;
+  }
+}

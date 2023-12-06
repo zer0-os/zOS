@@ -7,12 +7,14 @@ import {
   addSelectedMembers,
   MembersSelectedPayload,
   removeMember,
+  editConversationNameAndIcon,
+  EditConversationPayload,
 } from '../../../../store/group-management';
 import { Option } from '../../lib/types';
 
 import { GroupManagement } from '.';
 import { RootState } from '../../../../store/reducer';
-import { GroupManagementErrors } from '../../../../store/group-management/types';
+import { GroupManagementErrors, EditConversationState } from '../../../../store/group-management/types';
 import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 
@@ -30,10 +32,12 @@ export interface Properties extends PublicProperties {
   errors: GroupManagementErrors;
   name: string;
   conversationIcon: string;
+  editConversationState: EditConversationState;
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
   removeMember: (params: { roomId: string; userId: string }) => void;
+  editConversationNameAndIcon: (payload: EditConversationPayload) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -60,6 +64,7 @@ export class Container extends React.Component<Properties> {
         profileImage: currentUser?.profileSummary.profileImage,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
+      editConversationState: groupManagement.editConversationState,
     };
   }
 
@@ -68,6 +73,7 @@ export class Container extends React.Component<Properties> {
       back,
       addSelectedMembers,
       removeMember,
+      editConversationNameAndIcon,
     };
   }
 
@@ -77,6 +83,10 @@ export class Container extends React.Component<Properties> {
 
   removeMember = (userId: string) => {
     this.props.removeMember({ roomId: this.props.activeConversationId, userId });
+  };
+
+  onEditConversation = async (name: string, image: File | null) => {
+    this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
   };
 
   render() {
@@ -94,6 +104,8 @@ export class Container extends React.Component<Properties> {
         name={this.props.name}
         icon={this.props.conversationIcon}
         onRemoveMember={this.removeMember}
+        onEditConversation={this.onEditConversation}
+        editConversationState={this.props.editConversationState}
       />
     );
   }

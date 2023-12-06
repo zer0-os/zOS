@@ -1,6 +1,7 @@
 import { Container } from './container';
 import { StoreBuilder } from '../../../../store/test/store';
 import { Stage } from '../../../../store/group-management';
+import { EditConversationState } from '../../../../store/group-management/types';
 
 describe(Container, () => {
   describe('mapState', () => {
@@ -43,6 +44,14 @@ describe(Container, () => {
       const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'id', icon: 'icon' });
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ conversationIcon: 'icon' }));
+    });
+
+    test('gets editConversationState', () => {
+      const state = new StoreBuilder().managingGroup({ editConversationState: EditConversationState.NONE });
+
+      expect(Container.mapState(state.build())).toEqual(
+        expect.objectContaining({ editConversationState: EditConversationState.NONE })
+      );
     });
   });
 });

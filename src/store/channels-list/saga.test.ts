@@ -273,9 +273,10 @@ describe('channels list saga', () => {
       const channelId = 'channel-id';
       const initialState = new StoreBuilder()
         .withCurrentUserId('current-user-id')
+        .withUsers({ userId: 'current-user-id', matrixId: 'matrix-id' })
         .withChannelList({ id: 'one-channel' }, { id: channelId }, { id: 'other-channel' });
 
-      const { storeState } = await expectSaga(userLeftChannel, channelId, 'current-user-id')
+      const { storeState } = await expectSaga(userLeftChannel, channelId, 'matrix-id')
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -286,9 +287,12 @@ describe('channels list saga', () => {
     it('does not remove channel if user is not the current user', async () => {
       const channelId = 'channel-id';
       const userId = 'current-user-id';
-      const initialState = new StoreBuilder().withCurrentUserId(userId).withChannelList({ id: channelId });
+      const initialState = new StoreBuilder()
+        .withCurrentUserId(userId)
+        .withUsers({ userId, matrixId: 'matrix-id' })
+        .withChannelList({ id: channelId });
 
-      const { storeState } = await expectSaga(userLeftChannel, channelId, 'other-user-id')
+      const { storeState } = await expectSaga(userLeftChannel, channelId, 'other-matrix-id')
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -302,6 +306,7 @@ describe('channels list saga', () => {
 
       const initialState = new StoreBuilder()
         .withCurrentUserId(userId)
+        .withUsers({ userId, matrixId: 'matrix-id' })
         .withConversationList(
           {
             id: 'conversation-1',
@@ -318,7 +323,7 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId })
         .build();
 
-      const { storeState } = await expectSaga(userLeftChannel, channelId, userId)
+      const { storeState } = await expectSaga(userLeftChannel, channelId, 'matrix-id')
         .withReducer(rootReducer, initialState)
         .run();
 

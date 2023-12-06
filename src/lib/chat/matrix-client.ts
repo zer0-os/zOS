@@ -848,6 +848,10 @@ export class MatrixClient implements IChatClient {
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
         }
+      } else {
+        if (event.getContent().membership === MembershipStateType.Leave) {
+          this.events.onUserLeft(event.getRoomId(), user.matrixId);
+        }
       }
     }
   };

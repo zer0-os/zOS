@@ -19,7 +19,7 @@ import { conversationsChannel } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
@@ -54,7 +54,7 @@ export function* mapToZeroUsers(channels: any[]) {
     zeroUsersMap[user.matrixId] = user;
   }
 
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
   if (currentUser && currentUser.matrixId) {
     zeroUsersMap[currentUser.matrixId] = currentUser;
   }
@@ -65,7 +65,7 @@ export function* mapToZeroUsers(channels: any[]) {
 }
 
 export function* mapCreatorIdToZeroUserId(channels) {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
   if (!currentUser || !currentUser.matrixId) {
     return;
   }
@@ -210,7 +210,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     groupChannelType: GroupChannelType.Private,
   };
 
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
   const id = uuidv4();
   const timestamp = Date.now();
   const adminMessage = {
@@ -360,10 +360,11 @@ export function* currentUserAddedToChannel(_action) {
   yield fetchConversations();
 }
 
-export function* userLeftChannel(channelId, userId) {
-  const currentUser = yield select(currentUserSelector());
+export function* userLeftChannel(channelId, matrixId) {
+  const currentUser = yield select(currentUserSelector);
+  const user = yield call(getUserByMatrixId, matrixId);
 
-  if (userId === currentUser.id) {
+  if (user?.userId === currentUser.id) {
     yield call(currentUserLeftChannel, channelId);
   }
 }

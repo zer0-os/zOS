@@ -10,6 +10,7 @@ const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
   user: User;
+  tag?: string;
 
   onRemove?: (userId: string) => void;
 }
@@ -42,9 +43,12 @@ export class CitizenListItem extends React.Component<Properties> {
           statusType={this.statusType}
         />
         <span {...cn('name')}>{this.displayName}</span>
-        <div {...cn('remove')}>
-          {this.props.onRemove && <IconButton Icon={IconXClose} onClick={this.publishRemove} />}
-        </div>
+        {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}
+        {this.props.onRemove && (
+          <div {...cn('remove')}>
+            <IconButton Icon={IconXClose} onClick={this.publishRemove} />
+          </div>
+        )}
       </div>
     );
   }

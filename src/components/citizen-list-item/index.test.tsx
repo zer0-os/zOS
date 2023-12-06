@@ -48,4 +48,16 @@ describe(CitizenListItem, () => {
 
     expect(wrapper).not.toHaveElement(IconButton);
   });
+
+  it('renders a tag if provided', function () {
+    const wrapper = subject({ tag: 'Admin' });
+
+    expect(wrapper.find(c('tag')).text()).toEqual('Admin');
+  });
+
+  it('does NOT render tag if NOT provided', function () {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement(c('tag'));
+  });
 });

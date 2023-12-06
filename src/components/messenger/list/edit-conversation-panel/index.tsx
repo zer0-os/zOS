@@ -121,7 +121,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser}></CitizenListItem>
+            <CitizenListItem user={this.props.currentUser} tag='admin'></CitizenListItem>
             {otherMembers.map((u) => (
               <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
             ))}

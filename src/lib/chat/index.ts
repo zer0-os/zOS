@@ -87,7 +87,7 @@ export interface IChatClient {
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null, private onDisconnect: () => void) {}
+  constructor(private client: IChatClient = null, private onDisconnect: () => void) { }
 
   supportsOptimisticCreateConversation = () => this.client.supportsOptimisticCreateConversation();
 
@@ -214,6 +214,10 @@ export class Chat {
 
   async removeUser(roomId: string, user: User): Promise<void> {
     return this.matrix.removeUser(roomId, user);
+  }
+
+  async editRoomNameAndIcon(roomId: string, name: string, icon: string): Promise<void> {
+    return this.matrix.editRoomNameAndIcon(roomId, name, icon);
   }
 
   async discardOlmSession(roomId: string) {

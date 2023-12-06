@@ -24,6 +24,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
   searchChanged = async (searchString: string) => {
     this.setState({ searchString });
+
     if (!searchString) {
       return this.setState({ results: null });
     }
@@ -35,18 +36,15 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     this.setState({ results: filteredOptions });
   };
 
-  itemSelected(event) {
+  itemSelected = (event) => {
     const clickedId = event.currentTarget.dataset.id;
     const selectedUser = this.state.results.find((r) => r.value === clickedId);
 
     if (selectedUser) {
       this.props.onSelect(selectedUser);
-      // exclude selected user from results
-      this.setState({
-        results: this.state.results.filter((r) => r.value !== clickedId),
-      });
+      this.setState({ results: null, searchString: '' });
     }
-  }
+  };
 
   itemClicked = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     this.itemSelected(event);

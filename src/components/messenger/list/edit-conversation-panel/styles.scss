@@ -1,8 +1,11 @@
 .edit-conversation-panel {
   &__body {
+    margin: 0px 16px;
+  }
+
+  &__details {
     display: flex;
     flex-direction: column;
-    margin: 0px 16px;
   }
 
   &__image-upload {
@@ -25,5 +28,19 @@
 
   &__alert {
     margin-top: 8px;
+  }
+
+  &__members {
+    padding-top: 24px;
+  }
+
+  &__member-header {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  &__member-list {
+    padding-top: 8px;
   }
 }

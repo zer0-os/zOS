@@ -9,6 +9,8 @@ describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       stage: Stage.None,
+      currentUser: {} as any,
+      otherMembers: [],
       isAddingMembers: false,
       addMemberError: '',
       name: '',

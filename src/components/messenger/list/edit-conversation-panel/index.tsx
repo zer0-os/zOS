@@ -1,9 +1,12 @@
 import * as React from 'react';
+
 import { PanelHeader } from '../panel-header';
 import { bemClassName } from '../../../../lib/bem';
 import { Input, Button, Alert } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../../image-upload';
 import { IconUpload2 } from '@zero-tech/zui/icons';
+import { User } from '../../../../store/channels';
+import { CitizenListItem } from '../../../citizen-list-item';
 
 import './styles.scss';
 import { EditConversationErrors } from '../../../../store/group-management/types';
@@ -12,7 +15,10 @@ const cn = bemClassName('edit-conversation-panel');
 export interface Properties {
   name: string;
   icon: string;
+  currentUser: User;
+  otherMembers: User[];
   errors: EditConversationErrors;
+
   onBack: () => void;
 }
 
@@ -60,7 +66,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   renderEditImageAndIcon = () => {
     return (
-      <div {...cn('body')}>
+      <div {...cn('details')}>
         <div {...cn('image-upload')}>
           <ImageUpload
             onChange={this.trackImage}
@@ -101,11 +107,31 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     );
   };
 
+  renderMembers = () => {
+    const { otherMembers } = this.props;
+    return (
+      <div {...cn('members')}>
+        <div {...cn('member-header')}>
+          <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
+        </div>
+        <div {...cn('member-list')}>
+          <CitizenListItem user={this.props.currentUser}></CitizenListItem>
+          {otherMembers.map((u) => (
+            <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   render() {
     return (
       <>
         <PanelHeader title={'Edit Group'} onBack={this.props.onBack} />
-        {this.renderEditImageAndIcon()}
+        <div {...cn('body')}>
+          {this.renderEditImageAndIcon()}
+          {this.renderMembers()}
+        </div>
       </>
     );
   }

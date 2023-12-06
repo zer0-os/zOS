@@ -16,6 +16,7 @@ describe(EditConversationPanel, () => {
       errors: {},
       name: '',
       icon: '',
+      onRemoveMember: () => null,
       ...props,
     };
 

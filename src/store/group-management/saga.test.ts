@@ -6,7 +6,6 @@ import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
 import { chat } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
-import { User } from '../channels';
 
 describe('Group Management Saga', () => {
   describe(roomMembersSelected, () => {

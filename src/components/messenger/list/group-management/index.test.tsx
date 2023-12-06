@@ -19,6 +19,7 @@ describe(GroupManagement, () => {
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
+      onRemoveMember: () => null,
       ...props,
     };
 

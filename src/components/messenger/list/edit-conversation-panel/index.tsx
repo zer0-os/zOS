@@ -21,6 +21,7 @@ export interface Properties {
   errors: EditConversationErrors;
 
   onBack: () => void;
+  onRemoveMember: (userId: string) => void;
 }
 
 interface State {
@@ -53,6 +54,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   get changesSaved() {
     return false;
   }
+
+  removeMember = (userId: string) => {
+    this.props.onRemoveMember(userId);
+  };
 
   renderEditImageAndIcon = () => {
     return (
@@ -106,7 +111,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
           <ScrollbarContainer>
             <CitizenListItem user={this.props.currentUser} tag='admin'></CitizenListItem>
             {otherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+              <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

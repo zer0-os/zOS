@@ -27,6 +27,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.StartAddMember, startAddGroupMember);
   yield takeLatest(SagaActionTypes.AddSelectedMembers, roomMembersSelected);
   yield takeLatest(SagaActionTypes.StartEditConversation, startEditConversation);
+  yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
 }
 
 export function* resetConversationManagement() {
@@ -92,4 +93,16 @@ export function* roomMembersSelected(action) {
   } finally {
     yield put(setIsAddingMembers(false));
   }
+}
+
+export function* removeMember(action) {
+  const { userId, roomId } = action.payload;
+  const chatClient: Chat = yield call(chat.get);
+  const user = yield select((state) => denormalizeUsers(userId, state));
+  if (!user) {
+    // Currently no error feedback provided to the user
+    return;
+  }
+
+  yield call([chatClient, chatClient.removeUser], roomId, user);
 }

@@ -562,6 +562,11 @@ export class MatrixClient implements IChatClient {
     this.events.onUserLeft(roomId, userId);
   }
 
+  async removeUser(roomId, user): Promise<void> {
+    await this.waitForConnection();
+    await this.matrix.kick(roomId, user.matrixId);
+  }
+
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
@@ -842,6 +847,10 @@ export class MatrixClient implements IChatClient {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
+        }
+      } else {
+        if (event.getContent().membership === MembershipStateType.Leave) {
+          this.events.onUserLeft(event.getRoomId(), user.matrixId);
         }
       }
     }

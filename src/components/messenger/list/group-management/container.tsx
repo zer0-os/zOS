@@ -1,7 +1,13 @@
 import React from 'react';
 import { connectContainer } from '../../../../store/redux-container';
 
-import { Stage, back, addSelectedMembers, MembersSelectedPayload } from '../../../../store/group-management';
+import {
+  Stage,
+  back,
+  addSelectedMembers,
+  MembersSelectedPayload,
+  removeMember,
+} from '../../../../store/group-management';
 import { Option } from '../../lib/types';
 
 import { GroupManagement } from '.';
@@ -27,6 +33,7 @@ export interface Properties extends PublicProperties {
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
+  removeMember: (params: { roomId: string; userId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -60,11 +67,16 @@ export class Container extends React.Component<Properties> {
     return {
       back,
       addSelectedMembers,
+      removeMember,
     };
   }
 
   onAddMembers = async (selectedOptions: Option[]) => {
     this.props.addSelectedMembers({ roomId: this.props.activeConversationId, users: selectedOptions });
+  };
+
+  removeMember = (userId: string) => {
+    this.props.removeMember({ roomId: this.props.activeConversationId, userId });
   };
 
   render() {
@@ -81,6 +93,7 @@ export class Container extends React.Component<Properties> {
         errors={this.props.errors}
         name={this.props.name}
         icon={this.props.conversationIcon}
+        onRemoveMember={this.removeMember}
       />
     );
   }

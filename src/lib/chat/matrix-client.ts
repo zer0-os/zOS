@@ -31,6 +31,7 @@ import {
   ConnectionStatus,
   CustomEventType,
   DecryptErrorConstants,
+  IN_ROOM_MEMBERSHIP_STATES,
   MatrixConstants,
   MembershipStateType,
 } from './matrix/types';
@@ -146,7 +147,7 @@ export class MatrixClient implements IChatClient {
 
   async getConversations() {
     await this.waitForConnection();
-    const rooms = await this.getRooms();
+    const rooms = await this.getRoomsUserIsIn();
 
     const failedToJoin = [];
     for (const room of rooms) {
@@ -593,7 +594,7 @@ export class MatrixClient implements IChatClient {
 
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
-    const rooms = await this.getRooms();
+    const rooms = await this.getRoomsUserIsIn();
     const matches = [];
     for (const room of rooms) {
       const roomMembers = room
@@ -932,9 +933,10 @@ export class MatrixClient implements IChatClient {
       .map((member) => member.userId);
   }
 
-  private async getRooms() {
+  private async getRoomsUserIsIn() {
     await this.waitForConnection();
-    return this.matrix.getRooms() || [];
+    const allUserRooms = this.matrix.getRooms() || [];
+    return allUserRooms.filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()));
   }
 
   private async uploadCoverImage(image) {

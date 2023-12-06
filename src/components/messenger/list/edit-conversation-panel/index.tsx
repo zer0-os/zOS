@@ -64,6 +64,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     return false;
   }
 
+  removeMember = (userId: string) => {
+    // do remove here
+  };
+
   renderEditImageAndIcon = () => {
     return (
       <div {...cn('details')}>
@@ -117,7 +121,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         <div {...cn('member-list')}>
           <CitizenListItem user={this.props.currentUser}></CitizenListItem>
           {otherMembers.map((u) => (
-            <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+            <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
           ))}
         </div>
       </div>

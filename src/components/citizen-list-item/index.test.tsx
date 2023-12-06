@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 
 import { CitizenListItem, Properties } from '.';
 import { bem } from '../../lib/bem';
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 
 const c = bem('.citizen-list-item');
 
@@ -32,5 +32,20 @@ describe(CitizenListItem, () => {
     const wrapper = subject({ user: { isOnline: false } as any });
 
     expect(wrapper.find(Avatar).prop('statusType')).toEqual('offline');
+  });
+
+  it('publishes remove event', function () {
+    const onRemove = jest.fn();
+    const wrapper = subject({ onRemove, user: { userId: 'user-id' } as any });
+
+    wrapper.find(IconButton).simulate('click');
+
+    expect(onRemove).toHaveBeenCalledWith('user-id');
+  });
+
+  it('does not render remove icon if no handler provided', function () {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement(IconButton);
   });
 });

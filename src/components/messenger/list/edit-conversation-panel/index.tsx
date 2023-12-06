@@ -66,7 +66,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   renderEditImageAndIcon = () => {
     return (
-      <div {...cn('body')}>
+      <div {...cn('details')}>
         <div {...cn('image-upload')}>
           <ImageUpload
             onChange={this.trackImage}
@@ -107,24 +107,30 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     );
   };
 
-  render() {
+  renderMembers = () => {
     const { otherMembers } = this.props;
+    return (
+      <div {...cn('members')}>
+        <div {...cn('member-header')}>
+          <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
+        </div>
+        <div {...cn('member-list')}>
+          <CitizenListItem user={this.props.currentUser}></CitizenListItem>
+          {otherMembers.map((u) => (
+            <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
+  render() {
     return (
       <>
         <PanelHeader title={'Edit Group'} onBack={this.props.onBack} />
-        {this.renderEditImageAndIcon()}
-
-        <div {...cn('content')}>
-          <div>
-            <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
-          </div>
-          <div>
-            <CitizenListItem user={this.props.currentUser}></CitizenListItem>
-            {otherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u}></CitizenListItem>
-            ))}
-          </div>
+        <div {...cn('body')}>
+          {this.renderEditImageAndIcon()}
+          {this.renderMembers()}
         </div>
       </>
     );

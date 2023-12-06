@@ -1,13 +1,21 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { removeMember, reset, roomMembersSelected } from './saga';
+import { removeMember, editConversationNameAndIcon, reset, roomMembersSelected } from './saga';
 import { StoreBuilder } from '../test/store';
-import { Stage, setIsAddingMembers, setAddMemberError } from '.';
+import { Stage, setIsAddingMembers, setAddMemberError, setEditConversationState, setEditConversationErrors } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
 import { chat } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
+import { EditConversationState } from './types';
+import { uploadImage } from '../registration/api';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('Group Management Saga', () => {
+  const chatClient = {
+    addMembersToRoom: jest.fn(),
+    editRoomNameAndIcon: jest.fn(),
+  };
+
   describe(roomMembersSelected, () => {
     const action = {
       payload: {
@@ -23,10 +31,6 @@ describe('Group Management Saga', () => {
       { matrixId: '@user1:server' },
       { matrixId: '@user2:server' },
     ];
-
-    const chatClient = {
-      addMembersToRoom: jest.fn(),
-    };
 
     it('successfully adds members to a room', async () => {
       await expectSaga(roomMembersSelected, action)
@@ -115,6 +119,8 @@ describe('Group Management Saga', () => {
         stage: Stage.None,
         isAddingMembers: false,
         addMemberError: null,
+        errors: { editConversationErrors: {} },
+        editConversationState: EditConversationState.NONE,
       });
     });
   });
@@ -134,6 +140,50 @@ describe('Group Management Saga', () => {
           fn: chatClient.removeUser,
           args: ['room-1', user],
         })
+    });
+  });
+
+  describe('editConversation name and icon', () => {
+    const roomId = 'roomId123';
+    const name = 'new-name';
+    const image = { some: 'new-file' };
+
+    it('edits the conversation name and icon', async () => {
+      await expectSaga(editConversationNameAndIcon, { payload: { roomId, name, image } })
+        .withReducer(rootReducer, defaultState({ stage: Stage.EditConversation }))
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.editRoomNameAndIcon), {}],
+          [matchers.call.fn(uploadImage), { url: 'image-url' }],
+        ])
+        .call(uploadImage, image)
+        .call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, 'image-url')
+        .put(setEditConversationState(EditConversationState.SUCCESS))
+        .run();
+    });
+
+    it('sets image error if image upload fails', async () => {
+      await expectSaga(editConversationNameAndIcon, { payload: { roomId, name, image } })
+        .withReducer(rootReducer, defaultState({ stage: Stage.EditConversation }))
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.editRoomNameAndIcon), {}],
+          [matchers.call.fn(uploadImage), throwError(new Error('Image upload failed'))],
+        ])
+        .put(setEditConversationErrors({ image: 'Failed to upload image, please try again...' }))
+        .run();
+    });
+
+    it('sets general error if API response is not successful', async () => {
+      await expectSaga(editConversationNameAndIcon, { payload: { roomId, name, image } })
+        .withReducer(rootReducer, defaultState({ stage: Stage.EditConversation }))
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.editRoomNameAndIcon), throwError(new Error('matrix API error'))],
+          [matchers.call.fn(uploadImage), { url: 'image-url' }],
+        ])
+        .put(setEditConversationErrors({ general: 'An unknown error has occurred' }))
+        .put(setEditConversationState(EditConversationState.LOADED))
         .run();
     });
   });
@@ -147,6 +197,8 @@ function defaultState(attrs = {}) {
         stage: Stage.None,
         isAddingMembers: false,
         addMemberError: null,
+        errors: {},
+        editConversationState: EditConversationState.NONE,
 
         ...attrs,
       },

@@ -1,9 +1,15 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
-import { GroupManagementErrors } from './types';
+import { EditConversationState, GroupManagementErrors } from './types';
 
 export interface MembersSelectedPayload {
   roomId: string;
   users: any[];
+}
+
+export interface EditConversationPayload {
+  name: string;
+  image: File | null;
+  roomId: string;
 }
 
 export enum SagaActionTypes {
@@ -14,6 +20,7 @@ export enum SagaActionTypes {
   Cancel = 'group-management/cancel',
   AddSelectedMembers = 'group-management/add-selected-members',
   RemoveMember = 'group-management/remove-member',
+  EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
 }
 
 export enum Stage {
@@ -34,6 +41,9 @@ export const startEditConversation = createAction(SagaActionTypes.StartEditConve
 export const back = createAction(SagaActionTypes.Back);
 export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
 export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
+export const editConversationNameAndIcon = createAction<EditConversationPayload>(
+  SagaActionTypes.EditConversationNameAndIcon
+);
 
 export type GroupManagementState = {
   stage: Stage;
@@ -41,6 +51,7 @@ export type GroupManagementState = {
   addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   errors: GroupManagementErrors;
+  editConversationState: EditConversationState;
 };
 
 const initialState: GroupManagementState = {
@@ -49,6 +60,7 @@ const initialState: GroupManagementState = {
   addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
   errors: {},
+  editConversationState: EditConversationState.NONE,
 };
 
 const slice = createSlice({
@@ -64,11 +76,30 @@ const slice = createSlice({
     setAddMemberError: (state, action: PayloadAction<GroupManagementState['addMemberError']>) => {
       state.addMemberError = action.payload;
     },
+    setEditConversationErrors: (
+      state,
+      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']>
+    ) => {
+      state.errors.editConversationErrors = {
+        ...state.errors.editConversationErrors,
+        ...action.payload,
+      };
+    },
     setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
       state.leaveGroupDialogStatus = action.payload;
+    },
+    setEditConversationState: (state, action: PayloadAction<GroupManagementState['editConversationState']>) => {
+      state.editConversationState = action.payload;
     },
   },
 });
 
-export const { setAddMemberError, setStage, setIsAddingMembers, setLeaveGroupStatus } = slice.actions;
+export const {
+  setAddMemberError,
+  setStage,
+  setIsAddingMembers,
+  setLeaveGroupStatus,
+  setEditConversationState,
+  setEditConversationErrors,
+} = slice.actions;
 export const { reducer } = slice;

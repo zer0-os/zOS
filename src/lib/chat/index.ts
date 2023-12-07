@@ -212,6 +212,10 @@ export class Chat {
     return this.matrix.addMembersToRoom(roomId, users);
   }
 
+  async removeUser(roomId: string, user: User): Promise<void> {
+    return this.matrix.removeUser(roomId, user);
+  }
+
   async discardOlmSession(roomId: string) {
     return this.matrix.discardOlmSession(roomId);
   }

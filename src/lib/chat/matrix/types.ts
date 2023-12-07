@@ -10,6 +10,11 @@ export enum MembershipStateType {
   Leave = 'leave',
 }
 
+export const IN_ROOM_MEMBERSHIP_STATES = [
+  MembershipStateType.Invite,
+  MembershipStateType.Join,
+] as string[];
+
 export enum MatrixConstants {
   RELATES_TO = 'm.relates_to',
   NEW_CONTENT = 'm.new_content',

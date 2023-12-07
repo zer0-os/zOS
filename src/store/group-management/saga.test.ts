@@ -1,5 +1,5 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { reset, roomMembersSelected } from './saga';
+import { removeMember, reset, roomMembersSelected } from './saga';
 import { StoreBuilder } from '../test/store';
 import { Stage, setIsAddingMembers, setAddMemberError } from '.';
 import { expectSaga } from '../../test/saga';
@@ -116,6 +116,25 @@ describe('Group Management Saga', () => {
         isAddingMembers: false,
         addMemberError: null,
       });
+    });
+  });
+
+  describe(removeMember, () => {
+    const chatClient = { removeUser: jest.fn() };
+
+    it('removes a member from a room', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      await expectSaga(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .provide([[matchers.call.fn(chat.get), chatClient]])
+        .withReducer(rootReducer, initialState.build())
+        // .call([chatClient, chatClient.removeUser], 'room-1', user)
+        .call.like({
+          context: chatClient,
+          fn: chatClient.removeUser,
+          args: ['room-1', user],
+        })
+        .run();
     });
   });
 });

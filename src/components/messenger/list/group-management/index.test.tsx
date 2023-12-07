@@ -9,12 +9,17 @@ describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       stage: Stage.None,
+      currentUser: {} as any,
+      otherMembers: [],
       isAddingMembers: false,
       addMemberError: '',
-
+      name: '',
+      icon: '',
+      errors: {},
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
+      onRemoveMember: () => null,
       ...props,
     };
 

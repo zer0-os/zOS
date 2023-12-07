@@ -21,5 +21,28 @@ describe(Container, () => {
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ addMemberError: 'error' }));
     });
+
+    test('gets errors', () => {
+      const state = new StoreBuilder().managingGroup({
+        errors: { editConversationErrors: { image: 'image error', general: 'general error' } },
+      });
+      expect(Container.mapState(state.build())).toEqual(
+        expect.objectContaining({
+          errors: { editConversationErrors: { image: 'image error', general: 'general error' } },
+        })
+      );
+    });
+
+    test('gets name', () => {
+      const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'id', name: 'name' });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ name: 'name' }));
+    });
+
+    test('gets conversationIcon', () => {
+      const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'id', icon: 'icon' });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ conversationIcon: 'icon' }));
+    });
   });
 });

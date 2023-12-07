@@ -296,9 +296,18 @@ export class MatrixClient implements IChatClient {
     switch (event.type) {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
+
       case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       case EventType.RoomCreate:
         return mapEventToAdminMessage(event);
+
+      case EventType.RoomMember:
+        if (event.content.membership === 'leave') {
+          return mapEventToAdminMessage(event);
+        } else {
+          return null;
+        }
+
       default:
         return null;
     }

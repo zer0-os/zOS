@@ -274,6 +274,35 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('You started the conversation');
     });
   });
+
+  describe(AdminMessageType.MEMBER_LEFT_CONVERSATION, () => {
+    it('returns default message if creator not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if current user was not the creator', () => {
+      const state = getState('current-user', { 'creator-id': { id: 'creator-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: 'creator-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney left the group');
+    });
+  });
 });
 
 describe(getMessagePreview, () => {

@@ -208,6 +208,8 @@ export function adminMessageText(message: Message, state: RootState) {
     return translateJoinedZero(message.admin, user, state) ?? text;
   } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
     return translateConversationStarted(message.admin, user, state) ?? text;
+  } else if (message.admin.type === AdminMessageType.MEMBER_LEFT_CONVERSATION) {
+    return translateMemberLeftGroup(message.admin, state) ?? text;
   }
 
   return text;
@@ -231,4 +233,9 @@ function translateConversationStarted(admin: { creatorId?: string }, currentUser
 
   const creator = denormalizeUser(admin.creatorId, state);
   return creator?.firstName ? `${creator.firstName} started the conversation` : null;
+}
+
+function translateMemberLeftGroup(admin: { creatorId?: string }, state: RootState) {
+  const creator = denormalizeUser(admin.creatorId, state);
+  return creator?.firstName ? `${creator.firstName} left the group` : null;
 }

@@ -74,7 +74,11 @@ export function* mapCreatorIdToZeroUserId(channels) {
 
   for (const channel of channels) {
     for (const message of channel.messages) {
-      if (message.isAdmin && message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
+      if (
+        message.isAdmin &&
+        (message.admin.type === AdminMessageType.CONVERSATION_STARTED ||
+          message.admin.type === AdminMessageType.MEMBER_LEFT_CONVERSATION)
+      ) {
         if (message.admin.creatorId === currentUser.matrixId) {
           message.admin.creatorId = currentUserId;
         } else {
@@ -139,6 +143,7 @@ export function* fetchConversations() {
     chatClient,
     chatClient.getConversations,
   ]);
+
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);
   yield call(mapCreatorIdToZeroUserId, conversations);

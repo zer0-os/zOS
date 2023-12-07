@@ -65,10 +65,22 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 export function mapEventToAdminMessage(matrixMessage) {
   const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
 
-  const adminData =
-    type === CustomEventType.USER_JOINED_INVITER_ON_ZERO
-      ? { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId }
-      : { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
+  let adminData;
+
+  switch (type) {
+    case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
+      adminData = { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
+      break;
+    case EventType.RoomMember:
+      adminData = { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
+      break;
+    case EventType.RoomCreate:
+      adminData = { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
+      break;
+    default:
+      adminData = {};
+      break;
+  }
 
   return {
     id: event_id,

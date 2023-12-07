@@ -21,6 +21,8 @@ import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
+import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
+import { receive as receiveUser } from '../users';
 
 export interface Payload {
   channelId: string;
@@ -88,6 +90,7 @@ const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* getZeroUsersMap() {
   const users = yield select((state) => state.normalized.users);
+
   const zeroUsersMap: { [matrixId: string]: User } = {};
   for (const user of Object.values(users)) {
     zeroUsersMap[(user as User).matrixId] = user as User;
@@ -109,6 +112,7 @@ export function* getZeroUsersMap() {
 
 function* mapMessagesAndPreview(messagesResponse, channelId) {
   yield call(mapMessageSenders, messagesResponse.messages, channelId);
+
   for (const message of messagesResponse.messages) {
     const preview = yield call(getPreview, message.message);
     if (preview) {
@@ -117,6 +121,37 @@ function* mapMessagesAndPreview(messagesResponse, channelId) {
   }
 
   return messagesResponse.messages;
+}
+
+function mapZeroUsers(zeroUsers) {
+  const zeroUsersMap = {};
+  for (const user of zeroUsers) {
+    zeroUsersMap[user.matrixId] = {
+      userId: user.id,
+      firstName: user.profileSummary?.firstName,
+      profileImage: user.profileSummary?.profileImage,
+      matrixId: user.matrixId,
+    };
+  }
+  return zeroUsersMap;
+}
+
+export function* fetchMissingUsersData(matrixIds, getZeroUsersMapFn?) {
+  let missingMatrixIds = matrixIds;
+
+  if (getZeroUsersMapFn) {
+    const zeroUsersMap = yield call(getZeroUsersMapFn);
+    missingMatrixIds = matrixIds.filter((id) => !zeroUsersMap[id]);
+  }
+
+  if (missingMatrixIds.length) {
+    const zeroUsers = yield call(getZEROUsersAPI, missingMatrixIds);
+    const mappedZeroUsers = mapZeroUsers(zeroUsers);
+
+    for (const user of Object.values(mappedZeroUsers)) {
+      yield put(receiveUser(user));
+    }
+  }
 }
 
 export function* fetch(action) {
@@ -139,6 +174,13 @@ export function* fetch(action) {
       yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
+
+    // Check for users not present in the local users map. This scenario can occur when a user,
+    // who has sent messages in the conversation, has since left the room and is therefore not in the current user list.
+    // In such cases, we fetch these missing users' profiles from the API to ensure we have complete user data for all messages.
+    // This is crucial for accurately displaying sender information in the UI.
+    const matrixIds = messagesResponse.messages.map((m) => m.sender?.userId).filter(Boolean);
+    yield call(fetchMissingUsersData, matrixIds);
 
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
     yield call(mapCreatorIdToZeroUserId, [messagesResponse]);

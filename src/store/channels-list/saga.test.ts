@@ -159,10 +159,17 @@ describe('channels list saga', () => {
 
     it('fetches direct messages', async () => {
       await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(fetchMissingUsersData), null],
+          [matchers.call.fn(updateMessageSenders), null],
+        ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
         .call(fetchMissingUsersData, matrixIds)
+        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .run();
     });
 

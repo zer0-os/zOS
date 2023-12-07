@@ -15,6 +15,13 @@ if (type === 'component') {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join('');
   params = { componentName: name };
+} else if (type === 'container') {
+  name = path
+    .basename(destinationPath)
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+  params = { componentName: name };
 } else if (type === 'saga') {
   name = path
     .basename(destinationPath)
@@ -26,7 +33,7 @@ if (type === 'component') {
     sagaNameLower: name.charAt(0).toLowerCase() + name.slice(1),
   };
 } else {
-  console.error(`Unknown type ${type}. Please specify "component" or "saga".`);
+  console.error(`Unknown type ${type}. Please specify "component", "container", or "saga".`);
   process.exit(1);
 }
 
@@ -41,28 +48,25 @@ const templateFiles = fs
     };
   });
 
-// Check if folder exists
-if (fs.existsSync(destinationPath)) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  rl.question(`The folder ${destinationPath} already exists. Do you want to overwrite it? (y/n): `, (answer) => {
-    rl.close();
-    if (answer === 'y') {
-      fs.rmSync(destinationPath, { recursive: true });
-      createComponent();
-    } else {
-      console.log('Aborting component creation.');
+const doTheWork = async function () {
+  if (fs.existsSync(destinationPath) && type !== 'container') {
+    const overwriteAccepted = await confirmFolderOverwrite();
+    if (!overwriteAccepted) {
+      return;
     }
-  });
-} else {
+  }
   createComponent();
-}
+};
+doTheWork();
+
+//
+// Helpers
+//
 
 function createComponent() {
-  // Create folder
-  fs.mkdirSync(destinationPath);
+  if (!fs.existsSync(destinationPath)) {
+    fs.mkdirSync(destinationPath);
+  }
 
   // Generate files from templates
   templateFiles.forEach((file) => {
@@ -74,4 +78,23 @@ function createComponent() {
   });
 
   console.log(`${type} ${name} created at ${destinationPath}.`);
+}
+
+async function confirmFolderOverwrite() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve, _reject) => {
+    rl.question(`The folder ${destinationPath} already exists. Do you want to overwrite it? (y/n): `, (answer) => {
+      rl.close();
+      if (answer === 'y' && type !== 'container') {
+        fs.rmSync(destinationPath, { recursive: true });
+        resolve(true);
+      } else {
+        console.log('Aborting component creation.');
+        resolve(false);
+      }
+    });
+  });
 }

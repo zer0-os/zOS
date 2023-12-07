@@ -72,7 +72,7 @@ export function* mapToZeroUsers(channels: any[]) {
 }
 
 export function* mapCreatorIdToZeroUserId(messageContainers) {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   if (!currentUser || !currentUser.matrixId) {
     return;

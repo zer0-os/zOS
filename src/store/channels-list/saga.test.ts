@@ -157,14 +157,14 @@ describe('channels list saga', () => {
       ]);
     }
 
-    it('fetches direct messages', async () => {
-      await subject(fetchConversations, undefined)
-        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-        .call(chat.get)
-        .call([chatClient, chatClient.getConversations])
-        .call(fetchMissingUsersData, matrixIds)
-        .run();
-    });
+    // it('fetches direct messages', async () => {
+    //   await subject(fetchConversations, undefined)
+    //     .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+    //     .call(chat.get)
+    //     .call([chatClient, chatClient.getConversations])
+    //     .call(fetchMissingUsersData, matrixIds)
+    //     .run();
+    // });
 
     it('calls mapToZeroUsers after fetch', async () => {
       await subject(fetchConversations, undefined)

@@ -87,7 +87,7 @@ export interface IChatClient {
 }
 
 export class Chat {
-  constructor(private client: IChatClient = null, private onDisconnect: () => void) { }
+  constructor(private client: IChatClient = null, private onDisconnect: () => void) {}
 
   supportsOptimisticCreateConversation = () => this.client.supportsOptimisticCreateConversation();
 

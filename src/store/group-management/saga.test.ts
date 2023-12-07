@@ -139,7 +139,7 @@ describe('Group Management Saga', () => {
           context: chatClient,
           fn: chatClient.removeUser,
           args: ['room-1', user],
-        })
+        });
     });
   });
 

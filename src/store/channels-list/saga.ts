@@ -22,7 +22,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
-import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
+import { fetchNewMessages, rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
@@ -502,4 +502,7 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
       otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
     })
   );
+
+  // Fetch latest message events to update channel with admin message when a user leaves.
+  yield call(fetchNewMessages, channel.id);
 }

@@ -354,7 +354,9 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
+
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
+    yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
 
     yield put(
       receive({

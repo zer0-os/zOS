@@ -28,6 +28,8 @@ import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapOtherMembers } from './utils';
+import { getUserByMatrixId } from '../users/saga';
+import { fetchNewMessages } from '../messages/saga';
 
 const featureFlags = { enableMatrix: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -440,6 +442,27 @@ describe('channels list saga', () => {
 
       const conversation = denormalizeChannel('conversation-id', storeState);
       expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-3']);
+    });
+
+    it('fetches new messages for the room when a user leaves', async () => {
+      const existingMembers = [
+        { userId: 'user-1', matrixId: 'user-1' },
+        { userId: 'user-2', matrixId: 'user-2' },
+        { userId: 'user-3', matrixId: 'user-3' },
+      ] as any;
+      const initialState = new StoreBuilder().withConversationList({
+        id: 'room-id',
+        otherMembers: existingMembers,
+      });
+
+      await expectSaga(otherUserLeftChannel, 'room-id', { userId: 'user-2', matrixId: 'user-2' })
+        .withReducer(rootReducer, initialState.build())
+        .provide([
+          [matchers.call.fn(getUserByMatrixId), existingMembers.find((u) => u.matrixId === 'user-2')],
+          [matchers.call.fn(fetchNewMessages), null],
+        ])
+        .call(fetchNewMessages, 'room-id') // Verify fetchNewMessages is called with the correct room/channel ID
+        .run();
     });
   });
 

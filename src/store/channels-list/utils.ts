@@ -67,3 +67,17 @@ export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: str
     }
   }
 };
+
+export function extractMatrixIdsFromConversations(conversations) {
+  const matrixIdsSet = new Set();
+  for (const conv of conversations) {
+    for (const msg of conv.messages) {
+      if (msg.isAdmin && msg.admin.creatorId) {
+        matrixIdsSet.add(msg.admin.creatorId);
+      } else if (msg.sender?.userId) {
+        matrixIdsSet.add(msg.sender.userId);
+      }
+    }
+  }
+  return Array.from(matrixIdsSet);
+}

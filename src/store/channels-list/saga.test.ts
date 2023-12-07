@@ -16,6 +16,8 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   updateUserPresence,
+  updateMessageSenders,
+  mapCreatorIdToZeroUserId,
 } from './saga';
 
 import { SagaActionTypes, setStatus } from '.';
@@ -27,9 +29,9 @@ import { ConversationStatus, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
-import { mapOtherMembers } from './utils';
+import { mapOtherMembers, extractMatrixIdsFromConversations } from './utils';
 import { getUserByMatrixId } from '../users/saga';
-import { fetchNewMessages } from '../messages/saga';
+import { fetchMissingUsersData, fetchNewMessages } from '../messages/saga';
 
 const featureFlags = { enableMatrix: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -50,6 +52,10 @@ const mockConversation = (id: string) => ({
   icon: 'conversation-icon',
   hasJoined: true,
   isChannel: false,
+  messages: [
+    { isAdmin: true, admin: { creatorId: 'admin-id-1' } },
+    { sender: { userId: 'user-id-1' } },
+  ],
 });
 
 const MOCK_CHANNELS = [mockChannel('0001'), mockChannel('0002'), mockChannel('0003')];
@@ -142,6 +148,8 @@ describe('channels list saga', () => {
   });
 
   describe(fetchConversations, () => {
+    const matrixIds = extractMatrixIdsFromConversations(MOCK_CONVERSATIONS);
+
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
         [matchers.call.fn(chat.get), chatClient],
@@ -154,14 +162,23 @@ describe('channels list saga', () => {
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
+        .call(fetchMissingUsersData, matrixIds)
         .run();
     });
 
     it('calls mapToZeroUsers after fetch', async () => {
       await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(fetchMissingUsersData), null],
+          [matchers.call.fn(updateMessageSenders), null],
+        ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
+        .call(fetchMissingUsersData, matrixIds)
+        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .call(mapToZeroUsers, MOCK_CONVERSATIONS)
         .run();
     });
@@ -171,8 +188,14 @@ describe('channels list saga', () => {
 
       await subject(fetchConversations, undefined)
         .provide([
-          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
+          [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(fetchMissingUsersData), null],
+          [matchers.call.fn(updateMessageSenders), null],
+          [matchers.call.fn(mapToZeroUsers), null],
+          [matchers.call.fn(updateUserPresence), null],
+          [matchers.call.fn(mapCreatorIdToZeroUserId), null],
+          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .put(conversationsChannelStub, { loaded: true })
@@ -182,7 +205,7 @@ describe('channels list saga', () => {
     it('retains conversations that are not CREATED', async () => {
       const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
       const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
-      const fetchedChannel = { id: 'conversation-id' };
+      const fetchedChannel = { id: 'conversation-id', messages: [] };
 
       const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
@@ -202,7 +225,7 @@ describe('channels list saga', () => {
     });
 
     it('removes channels that are duplicates of the newly fetched conversations', async () => {
-      const fetchedConversations = [{ id: 'previously-a-channel' }];
+      const fetchedConversations = [{ id: 'previously-a-channel', messages: [] }];
 
       const initialState = new StoreBuilder().withChannelList({ id: 'previously-a-channel' });
 
@@ -240,6 +263,7 @@ describe('channels list saga', () => {
         otherMembers: [],
         lastMessage: {},
         groupChannelType: '',
+        messages: [],
       };
 
       const conversation = {
@@ -254,6 +278,7 @@ describe('channels list saga', () => {
         otherMembers: [],
         lastMessage: {},
         groupChannelType: '',
+        messages: [],
       };
 
       const { storeState } = await subject(fetchChannelsAndConversations, {})
@@ -262,7 +287,12 @@ describe('channels list saga', () => {
           [matchers.call([chatClient, chatClient.getConversations]), [conversation]],
         ])
         .withReducer(rootReducer)
-        .withState({ zns: { value: { rootDomainId } } })
+        .withState({
+          zns: { value: { rootDomainId } },
+          normalized: {
+            users: {},
+          },
+        })
         .run();
 
       expect(denormalizeChannel(channel.id, storeState).name).toEqual('the channel');

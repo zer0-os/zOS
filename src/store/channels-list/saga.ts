@@ -12,6 +12,7 @@ import {
   filterChannelsList,
   mapOtherMembers as mapOtherMembersOfChannel,
   mapChannelMessages,
+  extractMatrixIdsFromConversations,
 } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
@@ -22,7 +23,13 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
-import { fetchNewMessages, rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
+import {
+  fetchMissingUsersData,
+  fetchNewMessages,
+  getZeroUsersMap,
+  rawMessagesSelector,
+  replaceOptimisticMessage,
+} from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
@@ -89,6 +96,17 @@ export function* mapCreatorIdToZeroUserId(messageContainers) {
   }
 }
 
+export function* updateMessageSenders(conversations) {
+  const zeroUsersMap = yield call(getZeroUsersMap);
+  conversations.forEach((conv) => {
+    conv.messages.forEach((msg) => {
+      if (msg.sender && zeroUsersMap[msg.sender.userId]) {
+        msg.sender = zeroUsersMap[msg.sender.userId];
+      }
+    });
+  });
+}
+
 export function* updateUserPresence(conversations) {
   if (!featureFlags.enableMatrix) {
     return;
@@ -144,6 +162,12 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
 
+  const matrixIds = extractMatrixIdsFromConversations(conversations);
+  if (matrixIds.length > 0) {
+    yield call(fetchMissingUsersData, matrixIds);
+  }
+
+  yield call(updateMessageSenders, conversations);
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);
   yield call(mapCreatorIdToZeroUserId, conversations);

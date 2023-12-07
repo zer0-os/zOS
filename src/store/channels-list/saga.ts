@@ -64,7 +64,7 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
-export function* mapCreatorIdToZeroUserId(channels) {
+export function* mapCreatorIdToZeroUserId(messageContainers) {
   const currentUser = yield select(currentUserSelector());
   if (!currentUser || !currentUser.matrixId) {
     return;
@@ -72,8 +72,8 @@ export function* mapCreatorIdToZeroUserId(channels) {
 
   const currentUserId = currentUser.id;
 
-  for (const channel of channels) {
-    for (const message of channel.messages) {
+  for (const container of messageContainers) {
+    for (const message of container.messages) {
       if (
         message.isAdmin &&
         (message.admin.type === AdminMessageType.CONVERSATION_STARTED ||

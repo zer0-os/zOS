@@ -159,6 +159,7 @@ describe('Group Management Saga', () => {
         .call(uploadImage, image)
         .call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, 'image-url')
         .put(setEditConversationState(EditConversationState.SUCCESS))
+        .put(setEditConversationErrors({}))
         .run();
     });
 

@@ -133,6 +133,7 @@ export function* editConversationNameAndIcon(action) {
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, imageUrl);
     yield put(setEditConversationState(EditConversationState.SUCCESS));
+    yield put(setEditConversationErrors({}));
   } catch (e) {
     yield put(setEditConversationErrors({ general: 'An unknown error has occurred' }));
     yield put(setEditConversationState(EditConversationState.LOADED));

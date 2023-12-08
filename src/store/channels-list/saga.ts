@@ -86,7 +86,8 @@ export function* mapCreatorIdToZeroUserId(messageContainers) {
         if (message.admin.creatorId === currentUser.matrixId) {
           message.admin.creatorId = currentUserId;
         } else {
-          message.admin.creatorId = message.sender.userId;
+          const user = yield call(getUserByMatrixId, message.admin.creatorId);
+          message.admin.creatorId = user.userId;
         }
       }
     }

@@ -56,6 +56,10 @@ export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string
 export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
   for (const channel of channels) {
     for (const message of channel.messages) {
+      if (message.isAdmin) {
+        continue;
+      }
+
       const zeroUser = zeroUsersMap[message.sender.userId];
       if (zeroUser && zeroUser?.profileSummary) {
         message.sender.userId = zeroUser.id;

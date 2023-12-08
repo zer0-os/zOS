@@ -61,7 +61,13 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     return this.props.state === EditConversationState.SUCCESS;
   }
 
-  removeMember = (userId: string) => {
+  get removeMember() {
+    if (this.props.otherMembers.length < 2) return null;
+
+    return this.publishRemove;
+  }
+
+  publishRemove = (userId: string) => {
     this.props.onRemoveMember(userId);
   };
 

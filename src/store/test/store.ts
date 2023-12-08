@@ -3,6 +3,7 @@ import { RootState } from '../reducer';
 import { Channel, User, normalize as normalizeChannel } from '../channels';
 import { normalize as normalizeUser } from '../users';
 import { User as AuthenticatedUser } from '../authentication/types';
+import { initialState as initialGroupManagementState } from '../group-management';
 
 const DEFAULT_USER_ATTRS = {
   id: 'default-stub-user-id',
@@ -23,7 +24,7 @@ export class StoreBuilder {
   activeConversation: Partial<Channel> = {};
   isFullScreenMessenger: boolean = true;
   currentUser: Partial<AuthenticatedUser> = { ...DEFAULT_USER_ATTRS };
-  groupManagement: Partial<RootState['groupManagement']> = {};
+  groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
 
   withActiveChannel(channel: Partial<Channel>) {

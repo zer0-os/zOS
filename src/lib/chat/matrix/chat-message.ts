@@ -65,33 +65,36 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 export function mapEventToAdminMessage(matrixMessage) {
   const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
 
-  let adminData;
-
-  switch (type) {
-    case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
-      adminData = { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
-      break;
-    case EventType.RoomMember:
-      adminData = { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
-      break;
-    case EventType.RoomCreate:
-      adminData = { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
-      break;
-    default:
-      adminData = {};
-      break;
-  }
+  const adminData = getAdminDataFromEventType(type, content, senderId);
 
   return {
     id: event_id,
     message: 'Conversation was started',
     createdAt: origin_server_ts,
     isAdmin: true,
-    sender: {
-      userId: senderId,
-    },
+    sender: { userId: senderId },
     admin: adminData,
   };
+}
+
+function getAdminDataFromEventType(type, content, senderId) {
+  switch (type) {
+    case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
+      return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
+    case EventType.RoomMember:
+      return getRoomMemberAdminData(content, senderId);
+    case EventType.RoomCreate:
+      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
+    default:
+      return {};
+  }
+}
+
+function getRoomMemberAdminData(content, senderId) {
+  if (content.membership === 'leave') {
+    return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
+  }
+  return {};
 }
 
 export function mapToLiveRoomEvent(liveEvent) {

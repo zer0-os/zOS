@@ -82,11 +82,7 @@ export function* mapCreatorIdToZeroUserId(messageContainers) {
 
   for (const container of messageContainers) {
     for (const message of container.messages) {
-      if (
-        message.isAdmin &&
-        (message.admin.type === AdminMessageType.CONVERSATION_STARTED ||
-          message.admin.type === AdminMessageType.MEMBER_LEFT_CONVERSATION)
-      ) {
+      if (message.isAdmin && message.admin.creatorId) {
         if (message.admin.creatorId === currentUser.matrixId) {
           message.admin.creatorId = currentUserId;
         } else {

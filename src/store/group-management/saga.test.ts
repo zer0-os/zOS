@@ -164,6 +164,22 @@ describe('Group Management Saga', () => {
       expect(storeState.groupManagement.removeMember.stage).toEqual(RemoveMemberDialogStage.CLOSED);
     });
 
+    it('sets error message when error occurs', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      const { storeState } = await subject(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .provide([
+          [
+            matchers.call.like({ context: chatClient, fn: chatClient.removeUser }),
+            throwError(new Error('Simulated: Failed to remove user')),
+          ],
+        ])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.groupManagement.removeMember.error).toEqual('Failed to remove member, please try again');
+    });
+
     it('keeps the dialog open when error occurs', async () => {
       const user = { userId: 'user-1', matrixId: 'matrix-1' };
       const initialState = new StoreBuilder().withUsers(user);

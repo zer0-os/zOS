@@ -17,6 +17,7 @@ import {
   setRemoveMember,
   RemoveMemberDialogStage,
   setRemoveMemberStage,
+  setRemoveMemberError,
 } from './index';
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
@@ -111,11 +112,15 @@ export function* roomMembersSelected(action) {
 
 export function* openRemoveMember(action) {
   const { userId, roomId } = action.payload;
-  yield put(setRemoveMember({ userId, roomId, stage: RemoveMemberDialogStage.OPEN }));
+  yield put(setRemoveMember({ userId, roomId, stage: RemoveMemberDialogStage.OPEN, error: '' }));
 }
 
 export function* cancelRemoveMember() {
-  yield put(setRemoveMember({ userId: '', roomId: '', stage: RemoveMemberDialogStage.CLOSED }));
+  return yield resetRemoveMember();
+}
+
+export function* resetRemoveMember() {
+  return yield put(setRemoveMember({ userId: '', roomId: '', stage: RemoveMemberDialogStage.CLOSED, error: '' }));
 }
 
 export function* removeMember(action) {
@@ -131,8 +136,9 @@ export function* removeMember(action) {
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.removeUser], roomId, user);
-    yield put(setRemoveMemberStage(RemoveMemberDialogStage.CLOSED));
+    yield resetRemoveMember();
   } catch (e) {
+    yield put(setRemoveMemberError('Failed to remove member, please try again'));
     yield put(setRemoveMemberStage(RemoveMemberDialogStage.OPEN));
   }
 }

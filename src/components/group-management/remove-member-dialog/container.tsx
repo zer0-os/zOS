@@ -16,6 +16,7 @@ export interface Properties extends PublicProperties {
   userName: string;
   roomName: string;
   stage: RemoveMemberDialogStage;
+  error: string;
 
   cancel: () => void;
   remove: (userId: string, roomId: string) => void;
@@ -33,6 +34,7 @@ export class Container extends React.Component<Properties> {
       userId: removeMember.userId,
       roomId: removeMember.roomId,
       stage: removeMember.stage,
+      error: removeMember.error,
       userName: displayName(user),
       roomName: channel?.name,
     };
@@ -59,6 +61,7 @@ export class Container extends React.Component<Properties> {
         userName={this.props.userName}
         roomName={this.props.roomName}
         inProgress={this.props.stage === RemoveMemberDialogStage.IN_PROGRESS}
+        error={this.props.error}
         onClose={this.props.cancel}
         onRemove={this.remove}
       />

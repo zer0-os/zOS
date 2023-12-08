@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ModalConfirmation } from '@zero-tech/zui/components';
+import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
@@ -12,6 +12,7 @@ export interface Properties {
   userName: string;
   roomName: string;
   inProgress: boolean;
+  error: string;
 
   onClose: () => void;
   onRemove: () => void;
@@ -46,7 +47,10 @@ export class RemoveMemberDialog extends React.Component<Properties> {
         onConfirm={this.props.onRemove}
         inProgress={this.props.inProgress}
       >
-        <div {...cn()}>{this.props.inProgress ? this.progressMessage : this.message}</div>
+        <div {...cn()}>
+          <div>{this.props.inProgress ? this.progressMessage : this.message}</div>
+          {this.props.error && <Alert variant='error'>{this.props.error}</Alert>}
+        </div>
       </ModalConfirmation>
     );
   }

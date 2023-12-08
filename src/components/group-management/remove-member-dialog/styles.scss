@@ -2,4 +2,8 @@
 
 .remove-member-dialog {
   width: 528px;
+
+  & > *:last-child {
+    margin-top: 24px;
+  }
 }

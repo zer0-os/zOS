@@ -29,5 +29,11 @@ describe(Container, () => {
         expect.objectContaining({ stage: RemoveMemberDialogStage.IN_PROGRESS })
       );
     });
+
+    test('gets the remove member error message', () => {
+      const state = new StoreBuilder().managingGroup({ removeMember: { error: 'an error' } as any });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ error: 'an error' }));
+    });
   });
 });

@@ -64,6 +64,7 @@ export type GroupManagementState = {
     userId: string;
     roomId: string;
     stage: RemoveMemberDialogStage;
+    error: string;
   };
   errors: GroupManagementErrors;
   editConversationState: EditConversationState;
@@ -80,6 +81,7 @@ export const initialState: GroupManagementState = {
     userId: '',
     roomId: '',
     stage: RemoveMemberDialogStage.CLOSED,
+    error: '',
   },
 };
 
@@ -120,6 +122,9 @@ const slice = createSlice({
     setRemoveMemberStage: (state, action: PayloadAction<GroupManagementState['removeMember']['stage']>) => {
       state.removeMember.stage = action.payload;
     },
+    setRemoveMemberError: (state, action: PayloadAction<GroupManagementState['removeMember']['error']>) => {
+      state.removeMember.error = action.payload;
+    },
   },
 });
 
@@ -133,5 +138,6 @@ export const {
   setEditConversationGeneralError,
   setRemoveMember,
   setRemoveMemberStage,
+  setRemoveMemberError,
 } = slice.actions;
 export const { reducer } = slice;

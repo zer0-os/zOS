@@ -4,8 +4,7 @@ import { shallow } from 'enzyme';
 
 import { RemoveMemberDialog, Properties } from '.';
 import { bem } from '../../../lib/bem';
-import { ModalConfirmation } from '@zero-tech/zui/components';
-import { IconLoading2 } from '@zero-tech/zui/icons';
+import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
 
 const c = bem('.remove-member-dialog');
 
@@ -79,5 +78,11 @@ describe(RemoveMemberDialog, () => {
     const wrapper = subject({ inProgress: true });
 
     expect(wrapper.find(ModalConfirmation).prop('inProgress')).toEqual(true);
+  });
+
+  it('renders the error message', () => {
+    const wrapper = subject({ error: 'this is an error' });
+
+    expect(wrapper.find(Alert).prop('children')).toEqual('this is an error');
   });
 });

@@ -6,6 +6,7 @@ import { Avatar, IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { IconXClose } from '@zero-tech/zui/icons';
+import { displayName } from '../../lib/user';
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
@@ -16,14 +17,6 @@ export interface Properties {
 }
 
 export class CitizenListItem extends React.Component<Properties> {
-  get displayName() {
-    if (!this.props.user.firstName && !this.props.user.lastName) {
-      return 'Unknown';
-    }
-
-    return `${this.props.user.firstName ?? ''} ${this.props.user.lastName ?? ''}`;
-  }
-
   get statusType() {
     return this.props.user.isOnline ? 'active' : 'offline';
   }
@@ -42,7 +35,7 @@ export class CitizenListItem extends React.Component<Properties> {
           tabIndex={-1}
           statusType={this.statusType}
         />
-        <span {...cn('name')}>{this.displayName}</span>
+        <span {...cn('name')}>{displayName(this.props.user)}</span>
         {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}
         {this.props.onRemove && (
           <div {...cn('remove')}>

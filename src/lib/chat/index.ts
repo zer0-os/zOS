@@ -249,11 +249,7 @@ export class Chat {
 
 const ClientFactory = {
   get() {
-    if (featureFlags.enableMatrix) {
-      return new MatrixClient();
-    }
-
-    return new SendbirdClient();
+    return new MatrixClient();
   },
 };
 

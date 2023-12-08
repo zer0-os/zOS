@@ -337,13 +337,7 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, Events.UserLogin);
-    if (featureFlags.enableMatrix) {
-      // Do not poll when in Matrix mode just fetch once
-      yield call(fetchChannelsAndConversations);
-      continue;
-    }
-
-    yield startChannelsAndConversationsRefresh();
+    yield call(fetchChannelsAndConversations);
   }
 }
 

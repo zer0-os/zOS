@@ -10,7 +10,6 @@ import { ChatViewContainer } from '../../chat-view-container/chat-view-container
 import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../group-management-menu';
-import { featureFlags } from '../../../lib/feature-flags';
 import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
@@ -225,11 +224,11 @@ export class Container extends React.Component<Properties, State> {
             </span>
             <div className='direct-message-chat__group-management-menu-container'>
               <GroupManagementMenu
-                canAddMembers={featureFlags.enableAddMemberToGroup && this.props.isCurrentUserRoomAdmin}
+                canAddMembers={this.props.isCurrentUserRoomAdmin}
                 onStartAddMember={this.props.startAddGroupMember}
                 onLeave={this.openLeaveGroupDialog}
                 canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
-                canEdit={featureFlags.enableEditRoom && this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                 onEdit={this.props.startEditConversation}
               />
             </div>

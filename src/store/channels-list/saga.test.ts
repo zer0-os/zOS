@@ -375,16 +375,19 @@ describe('channels list saga', () => {
   });
 
   describe(addChannel, () => {
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(mapToZeroUsers), null],
+        [matchers.call.fn(updateUserPresence), null],
+      ]);
+    }
+
     it('adds channel to list', async () => {
       const initialState = new StoreBuilder()
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await expectSaga(addChannel, { id: 'new-convo' })
-        .provide([
-          [matchers.call.fn(mapToZeroUsers), null],
-          [matchers.call.fn(updateUserPresence), null],
-        ])
+      const { storeState } = await subject(addChannel, { id: 'new-convo' })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -394,7 +397,7 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await expectSaga(addChannel, { id: 'existing-conversation-id' })
+      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id' })
         .withReducer(rootReducer, initialState.build())
         .run();
 

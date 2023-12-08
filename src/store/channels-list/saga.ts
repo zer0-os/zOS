@@ -38,10 +38,6 @@ export const rawConversationsList = () => (state) => filterChannelsList(state, C
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* mapToZeroUsers(channels: any[]) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   let allMatrixIds = [];
   for (const channel of channels) {
     const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
@@ -86,10 +82,6 @@ export function* mapCreatorIdToZeroUserId(channels) {
 }
 
 export function* updateUserPresence(conversations) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   const chatClient = yield call(chat.get);
   for (let conversation of conversations) {
     const { otherMembers } = conversation;

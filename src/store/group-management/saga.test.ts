@@ -1,7 +1,14 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { removeMember, editConversationNameAndIcon, reset, roomMembersSelected } from './saga';
 import { StoreBuilder } from '../test/store';
-import { Stage, setIsAddingMembers, setAddMemberError, setEditConversationState, setEditConversationErrors } from '.';
+import {
+  Stage,
+  setIsAddingMembers,
+  setAddMemberError,
+  setEditConversationState,
+  setEditConversationGeneralError,
+  setEditConversationImageError,
+} from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
 import { chat } from '../../lib/chat';
@@ -119,7 +126,7 @@ describe('Group Management Saga', () => {
         stage: Stage.None,
         isAddingMembers: false,
         addMemberError: null,
-        errors: { editConversationErrors: {} },
+        errors: { editConversationErrors: { image: '', general: '' } },
         editConversationState: EditConversationState.NONE,
       });
     });
@@ -159,7 +166,8 @@ describe('Group Management Saga', () => {
         .call(uploadImage, image)
         .call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, 'image-url')
         .put(setEditConversationState(EditConversationState.SUCCESS))
-        .put(setEditConversationErrors({}))
+        .put(setEditConversationImageError(''))
+        .put(setEditConversationGeneralError(''))
         .run();
     });
 
@@ -171,7 +179,7 @@ describe('Group Management Saga', () => {
           [matchers.call.fn(chatClient.editRoomNameAndIcon), {}],
           [matchers.call.fn(uploadImage), throwError(new Error('Image upload failed'))],
         ])
-        .put(setEditConversationErrors({ image: 'Failed to upload image, please try again...' }))
+        .put(setEditConversationImageError('Failed to upload image, please try again...'))
         .run();
     });
 
@@ -183,7 +191,7 @@ describe('Group Management Saga', () => {
           [matchers.call.fn(chatClient.editRoomNameAndIcon), throwError(new Error('matrix API error'))],
           [matchers.call.fn(uploadImage), { url: 'image-url' }],
         ])
-        .put(setEditConversationErrors({ general: 'An unknown error has occurred' }))
+        .put(setEditConversationGeneralError('An unknown error has occurred'))
         .put(setEditConversationState(EditConversationState.LOADED))
         .run();
     });
@@ -198,7 +206,7 @@ function defaultState(attrs = {}) {
         stage: Stage.None,
         isAddingMembers: false,
         addMemberError: null,
-        errors: {},
+        errors: { editConversationErrors: { image: '', general: '' } },
         editConversationState: EditConversationState.NONE,
 
         ...attrs,

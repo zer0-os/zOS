@@ -59,7 +59,7 @@ const initialState: GroupManagementState = {
   isAddingMembers: false,
   addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
-  errors: {},
+  errors: { editConversationErrors: { image: '', general: '' } },
   editConversationState: EditConversationState.NONE,
 };
 
@@ -76,14 +76,17 @@ const slice = createSlice({
     setAddMemberError: (state, action: PayloadAction<GroupManagementState['addMemberError']>) => {
       state.addMemberError = action.payload;
     },
-    setEditConversationErrors: (
+    setEditConversationImageError: (
       state,
-      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']>
+      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']['image']>
     ) => {
-      state.errors.editConversationErrors = {
-        ...state.errors.editConversationErrors,
-        ...action.payload,
-      };
+      state.errors.editConversationErrors.image = action.payload;
+    },
+    setEditConversationGeneralError: (
+      state,
+      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']['general']>
+    ) => {
+      state.errors.editConversationErrors.general = action.payload;
     },
     setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
       state.leaveGroupDialogStatus = action.payload;
@@ -100,6 +103,7 @@ export const {
   setIsAddingMembers,
   setLeaveGroupStatus,
   setEditConversationState,
-  setEditConversationErrors,
+  setEditConversationImageError,
+  setEditConversationGeneralError,
 } = slice.actions;
 export const { reducer } = slice;

@@ -12,7 +12,8 @@ import {
   LeaveGroupDialogStatus,
   setLeaveGroupStatus,
   setEditConversationState,
-  setEditConversationErrors,
+  setEditConversationGeneralError,
+  setEditConversationImageError,
 } from './index';
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
@@ -22,7 +23,8 @@ export function* reset() {
   yield put(setIsAddingMembers(false));
   yield put(setAddMemberError(null));
   yield put(setEditConversationState(EditConversationState.NONE));
-  yield put(setEditConversationErrors({}));
+  yield put(setEditConversationImageError(''));
+  yield put(setEditConversationGeneralError(''));
 }
 
 export function* saga() {
@@ -125,7 +127,7 @@ export function* editConversationNameAndIcon(action) {
         const uploadResult = yield call(uploadImage, image);
         imageUrl = uploadResult.url;
       } catch (error) {
-        yield put(setEditConversationErrors({ image: 'Failed to upload image, please try again...' }));
+        yield put(setEditConversationImageError('Failed to upload image, please try again...'));
         return;
       }
     }
@@ -133,9 +135,10 @@ export function* editConversationNameAndIcon(action) {
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, imageUrl);
     yield put(setEditConversationState(EditConversationState.SUCCESS));
-    yield put(setEditConversationErrors({}));
+    yield put(setEditConversationImageError(''));
+    yield put(setEditConversationGeneralError(''));
   } catch (e) {
-    yield put(setEditConversationErrors({ general: 'An unknown error has occurred' }));
+    yield put(setEditConversationGeneralError('An unknown error has occurred'));
     yield put(setEditConversationState(EditConversationState.LOADED));
   }
 

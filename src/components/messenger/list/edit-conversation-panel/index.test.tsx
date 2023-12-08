@@ -130,13 +130,23 @@ describe(EditConversationPanel, () => {
       const onRemoveMember = jest.fn();
       const wrapper = subject({
         onRemoveMember,
-        otherMembers: [{ userId: 'user-1' }] as any,
+        otherMembers: [{ userId: 'user-1' }, { userId: 'user-2' }] as any,
       });
 
       const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'user-1');
       item.simulate('remove', 'user-1');
 
       expect(onRemoveMember).toHaveBeenCalledWith('user-1');
+    });
+
+    it('does not allow remove if there are only 2 people in the room', function () {
+      const wrapper = subject({
+        otherMembers: [{ userId: 'user-1' }] as any,
+      });
+
+      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'user-1');
+
+      expect(item.prop('onRemove')).toBeFalsy();
     });
   });
 });

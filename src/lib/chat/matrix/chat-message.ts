@@ -1,4 +1,4 @@
-import { CustomEventType, NotifiableEventType } from './types';
+import { CustomEventType, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType } from '../../../store/messages';
@@ -91,12 +91,15 @@ function getAdminDataFromEventType(type, content, senderId) {
 }
 
 function getRoomMemberAdminData(content, senderId) {
-  if (content.membership === 'leave') {
-    return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
+  switch (content.membership) {
+    case MembershipStateType.Leave:
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
+    case MembershipStateType.Join:
+      return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, creatorId: senderId };
+    default:
+      return {};
   }
-  return {};
 }
-
 export function mapToLiveRoomEvent(liveEvent) {
   const { event } = liveEvent;
 

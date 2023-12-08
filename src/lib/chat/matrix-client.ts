@@ -293,7 +293,6 @@ export class MatrixClient implements IChatClient {
     if (this.isDeleted(event) || this.isEditEvent(event)) {
       return null;
     }
-
     switch (event.type) {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
@@ -303,11 +302,13 @@ export class MatrixClient implements IChatClient {
         return mapEventToAdminMessage(event);
 
       case EventType.RoomMember:
-        if (event.content.membership === 'leave') {
+        if (
+          event.content.membership === MembershipStateType.Leave ||
+          event.content.membership === MembershipStateType.Join
+        ) {
           return mapEventToAdminMessage(event);
-        } else {
-          return null;
         }
+        return null;
 
       default:
         return null;

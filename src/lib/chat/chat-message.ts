@@ -204,15 +204,19 @@ export function adminMessageText(message: Message, state: RootState) {
     return text;
   }
 
-  if (message.admin.type === AdminMessageType.JOINED_ZERO) {
-    return translateJoinedZero(message.admin, user, state) ?? text;
-  } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
-    return translateConversationStarted(message.admin, user, state) ?? text;
-  } else if (message.admin.type === AdminMessageType.MEMBER_LEFT_CONVERSATION) {
-    return translateMemberLeftGroup(message.admin, state) ?? text;
-  }
+  switch (message.admin.type) {
+    case AdminMessageType.JOINED_ZERO:
+      return translateJoinedZero(message.admin, user, state) ?? text;
+    case AdminMessageType.CONVERSATION_STARTED:
+      return translateConversationStarted(message.admin, user, state) ?? text;
+    case AdminMessageType.MEMBER_LEFT_CONVERSATION:
+      return translateMemberLeftGroup(message.admin, state) ?? text;
+    case AdminMessageType.MEMBER_ADDED_TO_CONVERSATION:
+      return translateMemberAddedToGroup(message.admin, state) ?? text;
 
-  return text;
+    default:
+      return text;
+  }
 }
 
 function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {
@@ -238,4 +242,9 @@ function translateConversationStarted(admin: { creatorId?: string }, currentUser
 function translateMemberLeftGroup(admin: { creatorId?: string }, state: RootState) {
   const creator = denormalizeUser(admin.creatorId, state);
   return creator?.firstName ? `${creator.firstName} left the group` : null;
+}
+
+function translateMemberAddedToGroup(admin: { creatorId?: string }, state: RootState) {
+  const creator = denormalizeUser(admin.creatorId, state);
+  return creator?.firstName ? `${creator.firstName} was added to the group` : null;
 }

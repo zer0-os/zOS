@@ -33,10 +33,6 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
 // takes in a list of messages, and maps the sender to a ZERO user for each message
 // this is used to display the sender's name and profile image
 export function* mapMessageSenders(messages, channelId) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   const zeroUsersMap = yield call(getZeroUsersMap);
 
   const matrixIds = [];
@@ -70,9 +66,6 @@ export function* mapMessageSenders(messages, channelId) {
 
 // maps a newly sent/received message sender + parentMessage to a ZERO user
 export function* mapReceivedMessage(message) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
   const matrixId = message.sender?.userId;
 
   const currentUser = yield select(currentUserSelector());

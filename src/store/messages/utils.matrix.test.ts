@@ -5,11 +5,6 @@ import { mapMessageSenders } from './utils.matrix';
 import { getZEROUsers } from '../channels-list/api';
 import { chat } from '../../lib/chat';
 
-const featureFlags = { enableMatrix: true };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 const chatClient = { getMessageByRoomId: () => {} };
 
 describe(mapMessageSenders, () => {

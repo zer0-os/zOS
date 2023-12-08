@@ -64,7 +64,7 @@ export function* syncMEOWPrice() {
 }
 
 export function* syncRewardsAndTokenPrice() {
-  if (!featureFlags.enableRewards || featureFlags.enableMatrix) {
+  if (!featureFlags.enableRewards) {
     return;
   }
 

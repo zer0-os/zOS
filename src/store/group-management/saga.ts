@@ -11,12 +11,20 @@ import {
   setIsAddingMembers,
   LeaveGroupDialogStatus,
   setLeaveGroupStatus,
+  setEditConversationState,
+  setEditConversationGeneralError,
+  setEditConversationImageError,
 } from './index';
+import { EditConversationState } from './types';
+import { uploadImage } from '../registration/api';
 
 export function* reset() {
   yield put(setStage(Stage.None));
   yield put(setIsAddingMembers(false));
   yield put(setAddMemberError(null));
+  yield put(setEditConversationState(EditConversationState.NONE));
+  yield put(setEditConversationImageError(''));
+  yield put(setEditConversationGeneralError(''));
 }
 
 export function* saga() {
@@ -26,6 +34,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Back, resetConversationManagement);
   yield takeLatest(SagaActionTypes.StartAddMember, startAddGroupMember);
   yield takeLatest(SagaActionTypes.AddSelectedMembers, roomMembersSelected);
+  yield takeLatest(SagaActionTypes.EditConversationNameAndIcon, editConversationNameAndIcon);
   yield takeLatest(SagaActionTypes.StartEditConversation, startEditConversation);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
 }
@@ -105,4 +114,33 @@ export function* removeMember(action) {
   }
 
   yield call([chatClient, chatClient.removeUser], roomId, user);
+}
+
+export function* editConversationNameAndIcon(action) {
+  const { roomId, name, image } = action.payload;
+
+  yield put(setEditConversationState(EditConversationState.INPROGRESS));
+  try {
+    let imageUrl = '';
+    if (image) {
+      try {
+        const uploadResult = yield call(uploadImage, image);
+        imageUrl = uploadResult.url;
+      } catch (error) {
+        yield put(setEditConversationImageError('Failed to upload image, please try again...'));
+        return;
+      }
+    }
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, imageUrl);
+    yield put(setEditConversationState(EditConversationState.SUCCESS));
+    yield put(setEditConversationImageError(''));
+    yield put(setEditConversationGeneralError(''));
+  } catch (e) {
+    yield put(setEditConversationGeneralError('An unknown error has occurred'));
+    yield put(setEditConversationState(EditConversationState.LOADED));
+  }
+
+  return;
 }

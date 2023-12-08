@@ -6,6 +6,7 @@ import { buttonLabelled } from '../../../../test/utils';
 import { Alert } from '@zero-tech/zui/components';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
+import { EditConversationState } from '../../../../store/group-management/types';
 
 describe(EditConversationPanel, () => {
   const subject = (props: Partial<Properties>) => {
@@ -13,6 +14,8 @@ describe(EditConversationPanel, () => {
       currentUser: { userId: 'current-user' } as User,
       otherMembers: [],
       onBack: () => null,
+      onEdit: () => null,
+      state: EditConversationState.NONE,
       errors: {},
       name: '',
       icon: '',
@@ -71,6 +74,40 @@ describe(EditConversationPanel, () => {
       const wrapper = subject({ errors: { general: 'invalid' } });
 
       expect(wrapper.find(Alert).prop('children')).toEqual('invalid');
+    });
+
+    it('disables Save Changes button when editProfileState is INPROGRESS', () => {
+      const wrapper = subject({ state: EditConversationState.INPROGRESS });
+
+      expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
+    });
+
+    it('calls onEdit with correct data when Save Changes button is clicked', () => {
+      const onEditMock = jest.fn();
+      const wrapper = subject({ onEdit: onEditMock });
+
+      const formData = {
+        name: 'Jane Smith',
+        image: 'new-image.jpg', // note: this is actually supposed to be a nodejs FILE object
+      };
+
+      wrapper.find('Input[name="name"]').simulate('change', formData.name);
+      wrapper.find(ImageUpload).simulate('change', formData.image);
+      saveButton(wrapper).simulate('press');
+
+      expect(onEditMock).toHaveBeenCalledWith(formData.name, formData.image);
+    });
+
+    it('renders changesSaved message when editProfileState is SUCCESS', () => {
+      const wrapper = subject({ state: EditConversationState.SUCCESS });
+
+      expect(wrapper.find(Alert).prop('children')).toEqual('Changes saved');
+    });
+
+    it('does not render changesSaved message when editProfileState is not SUCCESS', () => {
+      const wrapper = subject({ state: EditConversationState.NONE });
+
+      expect(wrapper.find(Alert).exists()).toBe(false);
     });
   });
 

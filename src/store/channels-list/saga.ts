@@ -23,7 +23,6 @@ import { currentUserSelector } from '../authentication/selectors';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
-import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
@@ -38,10 +37,6 @@ export const rawConversationsList = () => (state) => filterChannelsList(state, C
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* mapToZeroUsers(channels: any[]) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   let allMatrixIds = [];
   for (const channel of channels) {
     const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
@@ -86,10 +81,6 @@ export function* mapCreatorIdToZeroUserId(channels) {
 }
 
 export function* updateUserPresence(conversations) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   const chatClient = yield call(chat.get);
   for (let conversation of conversations) {
     const { otherMembers } = conversation;
@@ -337,13 +328,7 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, Events.UserLogin);
-    if (featureFlags.enableMatrix) {
-      // Do not poll when in Matrix mode just fetch once
-      yield call(fetchChannelsAndConversations);
-      continue;
-    }
-
-    yield startChannelsAndConversationsRefresh();
+    yield call(fetchChannelsAndConversations);
   }
 }
 

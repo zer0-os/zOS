@@ -9,15 +9,7 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
-import MessageAudioRecorder from '../message-audio-recorder';
-import { Giphy } from './giphy/giphy';
-import ImageCards from '../../platform-apps/channels/image-cards';
 import { IconSend3 } from '@zero-tech/zui/icons';
-
-const featureFlags = { enableMatrix: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -206,19 +198,6 @@ describe('MessageInput', () => {
     expect(wrapper.find(ReplyCard).prop('message')).toEqual('hello');
   });
 
-  it('renders MessageAudioRecorder', function () {
-    const wrapper = subject({});
-    const dropzone = wrapper.find(Dropzone).shallow();
-
-    expect(dropzone.find(MessageAudioRecorder).exists()).toBe(false);
-
-    wrapper.find('.message-input__icon--end-action').simulate('click');
-
-    dropzone.setProps({});
-
-    expect(dropzone.find(MessageAudioRecorder).exists()).toBe(true);
-  });
-
   it('call onRemoveReply', function () {
     const onRemoveReply = jest.fn();
     const messageId = 98988743;
@@ -294,44 +273,6 @@ describe('MessageInput', () => {
       wrapper.find('.message-input__icon--end-action').simulate('click');
 
       expect(onSubmit).toHaveBeenCalledWith('Message with 😄', [], []);
-    });
-  });
-
-  describe('Giphy', () => {
-    it('should render giphy component', function () {
-      const wrapper = subject({});
-      const dropzone = wrapper.find(Dropzone).shallow();
-
-      expect(dropzone.find(Giphy).exists()).toBe(false);
-
-      wrapper.find('.message-input__icon--giphy').simulate('click');
-
-      dropzone.setProps({});
-
-      expect(dropzone.find(Giphy).exists()).toBe(true);
-    });
-    it('should render giphy component and insert gif in media when giphy icon is clicked', function () {
-      const sampleGif = { id: '1', title: 'Hilarious gif', images: { preview_gif: { url: 'youfoundme.gif' } } };
-      const wrapper = subject({});
-      const dropzone = wrapper.find(Dropzone).shallow();
-
-      wrapper.find('.message-input__icon--giphy').simulate('click');
-
-      dropzone.setProps({});
-
-      dropzone.find(Giphy).simulate('clickGif', sampleGif);
-
-      dropzone.setProps({});
-
-      expect(dropzone.find(ImageCards).prop('images')[0]).toStrictEqual({
-        id: '1',
-        name: 'Hilarious gif',
-        url: 'youfoundme.gif',
-        mediaType: 'image',
-        giphy: sampleGif,
-      } as any);
-
-      expect(dropzone.find(Giphy).exists()).toBe(false);
     });
   });
 

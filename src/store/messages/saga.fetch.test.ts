@@ -1,17 +1,13 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetch } from './saga';
+import { fetch, mapMessagesAndPreview } from './saga';
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize } from '../channels';
 import { chat } from '../../lib/chat';
 import { StoreBuilder } from '../test/store';
 import { call } from 'redux-saga/effects';
 import { expectSaga } from '../../test/saga';
-
-const featureFlags = { enableMatrix: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
+import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 
 const chatClient = {
   getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),
@@ -39,7 +35,11 @@ describe(fetch, () => {
     };
 
     const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
-      .provide([[call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse]])
+      .provide([
+        [call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse],
+        [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
+        [matchers.call.fn(mapCreatorIdToZeroUserId), null],
+      ])
       .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
 

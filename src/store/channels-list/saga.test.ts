@@ -29,11 +29,6 @@ import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapOtherMembers } from './utils';
 
-const featureFlags = { enableMatrix: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
   name: `channel ${id}`,
@@ -65,6 +60,7 @@ describe('channels list saga', () => {
       return expectSaga(...args).provide([
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.getChannels), MOCK_CHANNELS],
+        [matchers.call.fn(mapToZeroUsers), null],
       ]);
     }
 
@@ -144,6 +140,8 @@ describe('channels list saga', () => {
       return expectSaga(...args).provide([
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+        [matchers.call.fn(mapToZeroUsers), null],
+        [matchers.call.fn(updateUserPresence), null],
       ]);
     }
 
@@ -220,6 +218,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(chatClient.getChannels), MOCK_CHANNELS],
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(delay), null],
+        [matchers.call.fn(mapToZeroUsers), null],
       ]);
     }
 
@@ -376,12 +375,19 @@ describe('channels list saga', () => {
   });
 
   describe(addChannel, () => {
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(mapToZeroUsers), null],
+        [matchers.call.fn(updateUserPresence), null],
+      ]);
+    }
+
     it('adds channel to list', async () => {
       const initialState = new StoreBuilder()
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await expectSaga(addChannel, { id: 'new-convo' })
+      const { storeState } = await subject(addChannel, { id: 'new-convo' })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -391,7 +397,7 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await expectSaga(addChannel, { id: 'existing-conversation-id' })
+      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id' })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -484,7 +490,6 @@ describe('channels list saga', () => {
     ] as any;
 
     it('calls getZEROUsers by merging all matrixIds', async () => {
-      featureFlags.enableMatrix = true;
       await expectSaga(mapToZeroUsers, channels)
         .withReducer(rootReducer)
         .call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3'])
@@ -492,8 +497,6 @@ describe('channels list saga', () => {
     });
 
     it('creates map for zero users after fetching from api', async () => {
-      featureFlags.enableMatrix = true;
-
       const expectedMap = {
         'matrix-id-1': {
           id: 'user-1',
@@ -520,7 +523,6 @@ describe('channels list saga', () => {
     });
 
     it('maps Other Members of channels to ZERO Users and save normalized state', async () => {
-      featureFlags.enableMatrix = true;
       const initialState = new StoreBuilder().withChannelList(channels[0], channels[1]);
 
       const { storeState } = await expectSaga(mapToZeroUsers, channels)
@@ -562,7 +564,6 @@ describe('channels list saga', () => {
     });
 
     it('maps channel message senders and saves normalized state', async () => {
-      featureFlags.enableMatrix = true;
       channels[0].messages = [
         { message: 'hi', sender: { userId: 'matrix-id-1', firstName: '' } },
         { message: 'hello', sender: { userId: 'matrix-id-2', firstName: '' } },
@@ -611,14 +612,7 @@ describe('channels list saga', () => {
     const mockOtherMembers = [{ matrixId: 'member_001' }, { matrixId: 'member_002' }, { matrixId: 'member_003' }];
     const mockConversations = [{ otherMembers: mockOtherMembers }];
 
-    it('exits early if feature flag is not enabled', async () => {
-      featureFlags.enableMatrix = false;
-      await subject(mockConversations).not.call(chat.get).run();
-    });
-
     it('fetches and updates user presence data', async () => {
-      featureFlags.enableMatrix = true;
-
       const mockPresenceData = {
         lastSeenAt: '2023-01-01T00:00:00.000Z',
         isOnline: true,
@@ -637,7 +631,6 @@ describe('channels list saga', () => {
     });
 
     it('does not fail if member does not have matrixId', async () => {
-      featureFlags.enableMatrix = true;
       const conversationsWithMissingMatrixId = [{ otherMembers: [{ matrixId: null }] }];
 
       await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();

@@ -19,6 +19,8 @@ export enum SagaActionTypes {
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
   AddSelectedMembers = 'group-management/add-selected-members',
+  OpenRemoveMember = 'group-management/open-remove-member',
+  CancelRemoveMember = 'group-management/cancel-remove-member',
   RemoveMember = 'group-management/remove-member',
   EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
 }
@@ -35,11 +37,19 @@ export enum LeaveGroupDialogStatus {
   IN_PROGRESS,
 }
 
+export enum RemoveMemberDialogStage {
+  OPEN,
+  CLOSED,
+  IN_PROGRESS,
+}
+
 export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
 export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const startEditConversation = createAction(SagaActionTypes.StartEditConversation);
 export const back = createAction(SagaActionTypes.Back);
 export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
+export const openRemoveMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.OpenRemoveMember);
+export const cancelRemoveMember = createAction(SagaActionTypes.CancelRemoveMember);
 export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
 export const editConversationNameAndIcon = createAction<EditConversationPayload>(
   SagaActionTypes.EditConversationNameAndIcon
@@ -50,17 +60,27 @@ export type GroupManagementState = {
   isAddingMembers: boolean;
   addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
+  removeMember: {
+    userId: string;
+    roomId: string;
+    stage: RemoveMemberDialogStage;
+  };
   errors: GroupManagementErrors;
   editConversationState: EditConversationState;
 };
 
-const initialState: GroupManagementState = {
+export const initialState: GroupManagementState = {
   stage: Stage.None,
   isAddingMembers: false,
   addMemberError: null,
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
   errors: { editConversationErrors: { image: '', general: '' } },
   editConversationState: EditConversationState.NONE,
+  removeMember: {
+    userId: '',
+    roomId: '',
+    stage: RemoveMemberDialogStage.CLOSED,
+  },
 };
 
 const slice = createSlice({
@@ -94,6 +114,12 @@ const slice = createSlice({
     setEditConversationState: (state, action: PayloadAction<GroupManagementState['editConversationState']>) => {
       state.editConversationState = action.payload;
     },
+    setRemoveMember: (state, action: PayloadAction<GroupManagementState['removeMember']>) => {
+      state.removeMember = action.payload;
+    },
+    setRemoveMemberStage: (state, action: PayloadAction<GroupManagementState['removeMember']['stage']>) => {
+      state.removeMember.stage = action.payload;
+    },
   },
 });
 
@@ -105,5 +131,7 @@ export const {
   setEditConversationState,
   setEditConversationImageError,
   setEditConversationGeneralError,
+  setRemoveMember,
+  setRemoveMemberStage,
 } = slice.actions;
 export const { reducer } = slice;

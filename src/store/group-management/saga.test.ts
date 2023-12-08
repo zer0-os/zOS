@@ -8,6 +8,7 @@ import {
   setEditConversationState,
   setEditConversationGeneralError,
   setEditConversationImageError,
+  RemoveMemberDialogStage,
 } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
@@ -134,19 +135,49 @@ describe('Group Management Saga', () => {
 
   describe(removeMember, () => {
     const chatClient = { removeUser: jest.fn() };
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(chat.get), chatClient],
+      ]);
+    }
 
     it('removes a member from a room', async () => {
       const user = { userId: 'user-1', matrixId: 'matrix-1' };
       const initialState = new StoreBuilder().withUsers(user);
-      await expectSaga(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
-        .provide([[matchers.call.fn(chat.get), chatClient]])
+      await subject(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
         .withReducer(rootReducer, initialState.build())
-        // .call([chatClient, chatClient.removeUser], 'room-1', user)
         .call.like({
           context: chatClient,
           fn: chatClient.removeUser,
           args: ['room-1', user],
-        });
+        })
+        .run();
+    });
+
+    it('closes the dialog when successful', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      const { storeState } = await subject(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.groupManagement.removeMember.stage).toEqual(RemoveMemberDialogStage.CLOSED);
+    });
+
+    it('keeps the dialog open when error occurs', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      const { storeState } = await subject(removeMember, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .provide([
+          [
+            matchers.call.like({ context: chatClient, fn: chatClient.removeUser }),
+            throwError(new Error('Simulated: Failed to remove user')),
+          ],
+        ])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.groupManagement.removeMember.stage).toEqual(RemoveMemberDialogStage.OPEN);
     });
   });
 

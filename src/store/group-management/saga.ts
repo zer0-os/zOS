@@ -1,4 +1,4 @@
-import { call, fork, put, take, select, takeLatest } from 'redux-saga/effects';
+import { call, fork, put, take, select, takeLatest, delay } from 'redux-saga/effects';
 import { Chat, chat } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
@@ -14,6 +14,9 @@ import {
   setEditConversationState,
   setEditConversationGeneralError,
   setEditConversationImageError,
+  setRemoveMember,
+  RemoveMemberDialogStage,
+  setRemoveMemberStage,
 } from './index';
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
@@ -36,6 +39,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.AddSelectedMembers, roomMembersSelected);
   yield takeLatest(SagaActionTypes.EditConversationNameAndIcon, editConversationNameAndIcon);
   yield takeLatest(SagaActionTypes.StartEditConversation, startEditConversation);
+  yield takeLatest(SagaActionTypes.OpenRemoveMember, openRemoveMember);
+  yield takeLatest(SagaActionTypes.CancelRemoveMember, cancelRemoveMember);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
 }
 
@@ -104,16 +109,32 @@ export function* roomMembersSelected(action) {
   }
 }
 
+export function* openRemoveMember(action) {
+  const { userId, roomId } = action.payload;
+  yield put(setRemoveMember({ userId, roomId, stage: RemoveMemberDialogStage.OPEN }));
+}
+
+export function* cancelRemoveMember() {
+  yield put(setRemoveMember({ userId: '', roomId: '', stage: RemoveMemberDialogStage.CLOSED }));
+}
+
 export function* removeMember(action) {
   const { userId, roomId } = action.payload;
-  const chatClient: Chat = yield call(chat.get);
-  const user = yield select((state) => denormalizeUsers(userId, state));
-  if (!user) {
-    // Currently no error feedback provided to the user
-    return;
-  }
 
-  yield call([chatClient, chatClient.removeUser], roomId, user);
+  yield put(setRemoveMemberStage(RemoveMemberDialogStage.IN_PROGRESS));
+
+  try {
+    const user = yield select((state) => denormalizeUsers(userId, state));
+    if (!user) {
+      return;
+    }
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.removeUser], roomId, user);
+    yield put(setRemoveMemberStage(RemoveMemberDialogStage.CLOSED));
+  } catch (e) {
+    yield put(setRemoveMemberStage(RemoveMemberDialogStage.OPEN));
+  }
 }
 
 export function* editConversationNameAndIcon(action) {

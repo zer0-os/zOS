@@ -1,5 +1,4 @@
 import { call, select } from 'redux-saga/effects';
-import { featureFlags } from '../../lib/feature-flags';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';

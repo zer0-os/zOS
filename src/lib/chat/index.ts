@@ -1,10 +1,8 @@
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
-import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
-import { featureFlags } from '../feature-flags';
 import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {

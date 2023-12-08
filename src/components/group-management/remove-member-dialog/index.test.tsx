@@ -14,6 +14,7 @@ describe(RemoveMemberDialog, () => {
       userName: 'StubUser',
       roomName: 'StubRoom',
       inProgress: false,
+      error: '',
       onClose: () => {},
       onRemove: () => {},
       ...props,

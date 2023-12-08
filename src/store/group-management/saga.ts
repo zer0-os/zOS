@@ -1,4 +1,4 @@
-import { call, fork, put, take, select, takeLatest, delay } from 'redux-saga/effects';
+import { call, fork, put, take, select, takeLatest } from 'redux-saga/effects';
 import { Chat, chat } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';

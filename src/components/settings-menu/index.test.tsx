@@ -5,11 +5,6 @@ import { DropdownMenu } from '@zero-tech/zui/components';
 import { EditProfileContainer } from '../edit-profile/container';
 import { SecureBackupContainer } from '../secure-backup/container';
 
-const featureFlags = { enableMatrix: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe('settings-menu', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -41,8 +36,6 @@ describe('settings-menu', () => {
   });
 
   it('opens secure backup dialog', function () {
-    featureFlags.enableMatrix = true;
-
     const wrapper = subject({});
     const dropdownMenu = wrapper.find(DropdownMenu);
     const menuItem = dropdownMenu.prop('items').find((item) => item.id === 'secure_backup');

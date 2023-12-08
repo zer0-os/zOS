@@ -114,14 +114,12 @@ export class SettingsMenu extends React.Component<Properties, State> {
       },
     ];
 
-    if (featureFlags.enableMatrix) {
-      options.push({
-        className: 'secure_backup',
-        id: 'secure_backup',
-        label: this.renderSettingsOption(<IconLock1 />, 'Secure Backup'),
-        onSelect: this.openBackupDialog,
-      });
-    }
+    options.push({
+      className: 'secure_backup',
+      id: 'secure_backup',
+      label: this.renderSettingsOption(<IconLock1 />, 'Secure Backup'),
+      onSelect: this.openBackupDialog,
+    });
 
     return [
       {

@@ -24,8 +24,6 @@ $recent-indicator-size: 8px;
   right: $width-sidekick + 25px;
 
   &__channel {
-    background-color: theme.$color-primary-1;
-
     .channel-view__main {
       padding-right: 0;
     }
@@ -46,12 +44,7 @@ $recent-indicator-size: 8px;
     width: $window-width;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
-    background-color: themeDeprecated.$background-color-primary;
     border-radius: $title-bar-border-radius;
-
-    &:hover {
-      background-color: themeDeprecated.$background-color-primary-hover;
-    }
 
     .message-block__left-column {
       width: auto;

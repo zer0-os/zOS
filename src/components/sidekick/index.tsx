@@ -2,7 +2,6 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import classNames from 'classnames';
 import { updateSidekick } from '../../store/layout';
 import { MessengerList } from '../messenger/list';
 
@@ -41,7 +40,7 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <IfAuthenticated showChildren>
-        <div className={classNames('sidekick', this.props.className, { 'sidekick--open': this.isOpen })}>
+        <div className='sidekick'>
           <div className='sidekick__tab-content'>
             <div className='sidekick__tab-content--messages'>
               <MessengerList onClose={this.props.closeConversations} />

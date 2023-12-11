@@ -290,7 +290,7 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('some message');
     });
 
-    it('translates message if current user was not the creator', () => {
+    it('translates message if creator is found', () => {
       const state = getState('current-user', { 'creator-id': { id: 'creator-id', firstName: 'Courtney' } });
       const message = {
         message: 'some message',

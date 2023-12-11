@@ -1,4 +1,4 @@
-import { CustomEventType, NotifiableEventType } from './types';
+import { CustomEventType, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType } from '../../../store/messages';
@@ -90,7 +90,7 @@ function getAdminDataFromEventType(type, content, userId) {
 }
 
 function getRoomMemberAdminData(content, userId) {
-  if (content.membership === 'leave') {
+  if (content.membership === MembershipStateType.Leave) {
     return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: userId };
   }
   return {};

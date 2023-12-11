@@ -303,7 +303,7 @@ export class MatrixClient implements IChatClient {
         return mapEventToAdminMessage(event);
 
       case EventType.RoomMember:
-        if (event.content.membership === 'leave') {
+        if (event.content.membership === MembershipStateType.Leave) {
           return mapEventToAdminMessage(event);
         } else {
           return null;

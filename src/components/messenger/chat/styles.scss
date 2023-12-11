@@ -34,7 +34,7 @@ $recent-indicator-size: 8px;
       flex-direction: column;
 
       &__fullscreen {
-        height: calc(100% - $header-height);
+        height: 100%;
       }
     }
   }
@@ -45,6 +45,7 @@ $recent-indicator-size: 8px;
     margin: 0px 10px;
     animation: slide-up animation.$animation-duration-half ease-out forwards;
     border-radius: $title-bar-border-radius;
+    position: relative;
 
     .message-block__left-column {
       width: auto;
@@ -67,13 +68,21 @@ $recent-indicator-size: 8px;
     color: theme.$color-primary-transparency-11;
   }
 
-  &__header {
+  &__header-position {
+    position: absolute;
+    width: 100%;
     padding: 16px;
+    box-sizing: border-box;
+    z-index: 1;
+  }
+
+  &__header {
     background-color: theme.$color-primary-1;
     height: $header-height - (16px * 2);
-    border-bottom: 1px solid theme.$color-greyscale-transparency-2;
     display: flex;
     gap: 8px;
+    border-radius: 16px;
+    padding: 16px;
 
     > div:last-child {
       flex-grow: 1;

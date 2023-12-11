@@ -204,33 +204,37 @@ export class Container extends React.Component<Properties, State> {
             </div>
           )}
 
-          <div className='direct-message-chat__header'>
-            <span>
-              <div
-                style={{
-                  backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
-                }}
-                className={classNames(
-                  'direct-message-chat__header-avatar',
-                  `direct-message-chat__header-avatar--${this.avatarStatus()}`
-                )}
-              >
-                {!this.isOneOnOne() && <IconUsers1 size={16} />}
+          <div className='direct-message-chat__header-position'>
+            <div className='direct-message-chat__header'>
+              <span>
+                <div
+                  style={{
+                    backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
+                  }}
+                  className={classNames(
+                    'direct-message-chat__header-avatar',
+                    `direct-message-chat__header-avatar--${this.avatarStatus()}`
+                  )}
+                >
+                  {!this.isOneOnOne() && <IconUsers1 size={16} />}
+                </div>
+              </span>
+              <span className='direct-message-chat__description'>
+                <div className='direct-message-chat__title'>{this.renderTitle()}</div>
+                <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
+              </span>
+              <div className='direct-message-chat__group-management-menu-container'>
+                <GroupManagementMenu
+                  canAddMembers={this.props.isCurrentUserRoomAdmin}
+                  onStartAddMember={this.props.startAddGroupMember}
+                  onLeave={this.openLeaveGroupDialog}
+                  canLeaveRoom={
+                    !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
+                  }
+                  canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                  onEdit={this.props.startEditConversation}
+                />
               </div>
-            </span>
-            <span className='direct-message-chat__description'>
-              <div className='direct-message-chat__title'>{this.renderTitle()}</div>
-              <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
-            </span>
-            <div className='direct-message-chat__group-management-menu-container'>
-              <GroupManagementMenu
-                canAddMembers={this.props.isCurrentUserRoomAdmin}
-                onStartAddMember={this.props.startAddGroupMember}
-                onLeave={this.openLeaveGroupDialog}
-                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
-                canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                onEdit={this.props.startEditConversation}
-              />
             </div>
           </div>
 

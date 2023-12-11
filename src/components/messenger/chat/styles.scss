@@ -71,7 +71,7 @@ $recent-indicator-size: 8px;
   &__header-position {
     position: absolute;
     width: 100%;
-    padding: 16px;
+    padding: 16px 16px 16px 0px;
     box-sizing: border-box;
     z-index: 1;
   }
@@ -83,6 +83,7 @@ $recent-indicator-size: 8px;
     gap: 8px;
     border-radius: 16px;
     padding: 16px;
+    border: 1px solid red;
 
     > div:last-child {
       flex-grow: 1;

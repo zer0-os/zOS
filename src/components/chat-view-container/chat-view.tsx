@@ -305,15 +305,17 @@ export class ChatView extends React.Component<Properties, State> {
           {isMemberOfChannel && (
             <>
               {this.props.conversationErrorMessage && <div {...cn('error')}>{this.props.conversationErrorMessage}</div>}
-              <MessageInput
-                onMessageInputRendered={this.props.onMessageInputRendered}
-                id={this.props.id}
-                onSubmit={this.handleSendMessage}
-                getUsersForMentions={this.searchMentionableUsers}
-                reply={this.props.reply}
-                onRemoveReply={this.props.onRemove}
-                sendDisabledMessage={this.props.sendDisabledMessage}
-              />
+              <div {...cn('message-input-container')}>
+                <MessageInput
+                  onMessageInputRendered={this.props.onMessageInputRendered}
+                  id={this.props.id}
+                  onSubmit={this.handleSendMessage}
+                  getUsersForMentions={this.searchMentionableUsers}
+                  reply={this.props.reply}
+                  onRemoveReply={this.props.onRemove}
+                  sendDisabledMessage={this.props.sendDisabledMessage}
+                />
+              </div>
             </>
           )}
           {!isMemberOfChannel && this.renderJoinButton()}

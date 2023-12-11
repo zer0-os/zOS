@@ -505,6 +505,9 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
       })
     );
   }
+
+  // Fetch latest message events to update channel with admin message when a user leaves.
+  yield call(fetchNewMessages, channel.id);
 }
 
 export function* otherUserLeftChannel(roomId: string, user: User) {

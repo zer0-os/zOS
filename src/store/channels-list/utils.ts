@@ -55,17 +55,13 @@ export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string
 
 export const mapMemberHistory = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
   for (const channel of channels) {
-    channel.memberHistory = channel.memberHistory.map((member) => {
+    for (const member of channel.memberHistory) {
       const zeroUser = zeroUsersMap[member.matrixId];
-      if (zeroUser && zeroUser.profileSummary) {
-        return {
-          matrixId: member.matrixId,
-          userId: zeroUser.id,
-          firstName: zeroUser.profileSummary.firstName,
-        };
+      if (zeroUser && zeroUser?.profileSummary) {
+        member.userId = zeroUser.id;
+        member.firstName = zeroUser.profileSummary.firstName;
       }
-      return member;
-    });
+    }
   }
 };
 

@@ -5,25 +5,31 @@
 
 .sidekick {
   position: relative;
-  background-color: theme.$background-color-tertiary-hover;
-  width: $width-sidekick;
+  width: $width-sidekick + 32px;
   height: 100%;
-  margin-right: -$width-sidekick;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
 
-  &--open {
-    margin-right: 0;
-  }
+  box-sizing: border-box;
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+
+  flex-shrink: 0;
+  padding: 16px;
 
   .scroll-container__gradient {
     background: linear-gradient(to bottom, transparent, theme.$background-color-tertiary-hover 100%);
   }
+
   .scroll-container__gradient-top {
     background: linear-gradient(to top, transparent, theme.$background-color-tertiary-hover 100%);
   }
 
   &__tab-content {
     width: inherit;
+    background-color: theme.$background-color-tertiary-hover;
+    border-radius: 16px;
+    overflow: hidden;
 
     &--messages {
       height: 100%;

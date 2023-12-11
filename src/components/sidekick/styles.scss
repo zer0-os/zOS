@@ -9,6 +9,8 @@
   height: 100%;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
 
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.492172) 22px, rgba(0, 0, 0, 0) 64px);
+
   box-sizing: border-box;
   position: relative;
   pointer-events: auto;

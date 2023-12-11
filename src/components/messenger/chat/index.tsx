@@ -204,6 +204,7 @@ export class Container extends React.Component<Properties, State> {
             </div>
           )}
 
+          <div className='direct-message-chat__header-gradient'></div>
           <div className='direct-message-chat__header-position'>
             <div className='direct-message-chat__header'>
               <span>

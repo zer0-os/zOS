@@ -12,6 +12,7 @@ import {
   filterChannelsList,
   mapOtherMembers as mapOtherMembersOfChannel,
   mapChannelMessages,
+  rawUserToDomainUser,
 } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
@@ -51,7 +52,7 @@ export function* mapToZeroUsers(channels: any[]) {
 
   const currentUser = yield select(currentUserSelector);
   if (currentUser && currentUser.matrixId) {
-    zeroUsersMap[currentUser.matrixId] = currentUser;
+    zeroUsersMap[currentUser.matrixId] = rawUserToDomainUser(currentUser);
   }
 
   yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);

@@ -473,19 +473,25 @@ describe('channels list saga', () => {
 
     const zeroUsers = [
       {
-        id: 'user-1',
+        userId: 'user-1',
         matrixId: 'matrix-id-1',
-        profileSummary: { id: 'profile-1', firstName: 'first-1', lastName: 'last-1' },
+        profileId: 'profile-1',
+        firstName: 'first-1',
+        lastName: 'last-1',
       },
       {
-        id: 'user-2',
+        userId: 'user-2',
         matrixId: 'matrix-id-2',
-        profileSummary: { id: 'profile-2', firstName: 'first-2', lastName: 'last-2' },
+        profileId: 'profile-2',
+        firstName: 'first-2',
+        lastName: 'last-2',
       },
       {
-        id: 'user-3',
+        userId: 'user-3',
         matrixId: 'matrix-id-3',
-        profileSummary: { id: 'profile-3', firstName: 'first-3', lastName: 'last-3' },
+        profileId: 'profile-3',
+        firstName: 'first-3',
+        lastName: 'last-3',
       },
     ] as any;
 
@@ -499,19 +505,25 @@ describe('channels list saga', () => {
     it('creates map for zero users after fetching from api', async () => {
       const expectedMap = {
         'matrix-id-1': {
-          id: 'user-1',
+          userId: 'user-1',
           matrixId: 'matrix-id-1',
-          profileSummary: { id: 'profile-1', firstName: 'first-1', lastName: 'last-1' },
+          profileId: 'profile-1',
+          firstName: 'first-1',
+          lastName: 'last-1',
         },
         'matrix-id-2': {
-          id: 'user-2',
+          userId: 'user-2',
           matrixId: 'matrix-id-2',
-          profileSummary: { id: 'profile-2', firstName: 'first-2', lastName: 'last-2' },
+          profileId: 'profile-2',
+          firstName: 'first-2',
+          lastName: 'last-2',
         },
         'matrix-id-3': {
-          id: 'user-3',
+          userId: 'user-3',
           matrixId: 'matrix-id-3',
-          profileSummary: { id: 'profile-3', firstName: 'first-3', lastName: 'last-3' },
+          profileId: 'profile-3',
+          firstName: 'first-3',
+          lastName: 'last-3',
         },
       };
 
@@ -598,6 +610,38 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         profileImage: undefined,
       });
+    });
+
+    it('maps current user as sender', async () => {
+      channels[0].messages = [{ message: 'hi', sender: { userId: 'matrix-id', firstName: '' } }];
+
+      const initialState = new StoreBuilder()
+        .withCurrentUser({
+          id: 'current-user',
+          matrixId: 'matrix-id',
+          profileId: 'profile-id',
+          profileSummary: {
+            firstName: 'Jack',
+            lastName: 'Black',
+            profileImage: '/cool-image.jpg',
+          } as any,
+        })
+        .withChannelList(channels[0]);
+
+      await expectSaga(mapToZeroUsers, channels)
+        .withReducer(rootReducer, initialState.build())
+        .provide([[matchers.call.fn(getZEROUsers), zeroUsers]])
+        .run();
+
+      expect(channels[0].messages[0].sender).toEqual(
+        expect.objectContaining({
+          userId: 'current-user',
+          profileId: 'profile-id',
+          firstName: 'Jack',
+          lastName: 'Black',
+          profileImage: '/cool-image.jpg',
+        })
+      );
     });
   });
 

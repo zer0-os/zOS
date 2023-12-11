@@ -11,8 +11,8 @@ import {
   toLocalChannel,
   filterChannelsList,
   mapOtherMembers as mapOtherMembersOfChannel,
+  mapMemberHistory as mapMemberHistoryOfChannel,
   mapChannelMessages,
-  extractMatrixIdsFromConversations,
 } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
@@ -23,12 +23,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
-import {
-  fetchMissingUsersData,
-  fetchNewMessages,
-  rawMessagesSelector,
-  replaceOptimisticMessage,
-} from '../messages/saga';
+import { fetchNewMessages, rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
@@ -50,15 +45,8 @@ export function* mapToZeroUsers(channels: any[]) {
 
   let allMatrixIds = [];
   for (const channel of channels) {
-    const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
-
-    // add matrix IDs from messages to ensure all users are included
-    channel.messages.forEach((message) => {
-      if (message.sender?.userId) {
-        matrixIds.push(message.sender.userId);
-      }
-    });
-
+    const combinedMembers = [...(channel.otherMembers || []), ...(channel.memberHistory || [])];
+    const matrixIds = combinedMembers.filter((u) => u).map((u) => u.matrixId);
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
@@ -74,6 +62,7 @@ export function* mapToZeroUsers(channels: any[]) {
   }
 
   yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);
+  yield call(mapMemberHistoryOfChannel, channels, zeroUsersMap);
   yield call(mapChannelMessages, channels, zeroUsersMap);
   return;
 }
@@ -155,11 +144,6 @@ export function* fetchConversations() {
     chatClient,
     chatClient.getConversations,
   ]);
-
-  const matrixIds = extractMatrixIdsFromConversations(conversations);
-  if (matrixIds.length > 0) {
-    yield call(fetchMissingUsersData, matrixIds);
-  }
 
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);

@@ -868,6 +868,12 @@ export class MatrixClient implements IChatClient {
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
+
+    const memberHistory = room
+      .getMembers()
+      .filter((member) => member.userId !== this.userId)
+      .map((member) => this.mapMemberForHistory(member.userId));
+
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
@@ -883,6 +889,7 @@ export class MatrixClient implements IChatClient {
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
       otherMembers: otherMembers,
+      memberHistory: memberHistory,
       lastMessage: null,
       messages,
       groupChannelType: GroupChannelType.Private,
@@ -894,6 +901,14 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: this.getRoomAdmins(room),
     };
   };
+
+  private mapMemberForHistory(matrixId: string) {
+    return {
+      userId: matrixId,
+      matrixId,
+      firstName: '',
+    };
+  }
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);

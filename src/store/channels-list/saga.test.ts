@@ -16,7 +16,6 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   updateUserPresence,
-  updateMessageSenders,
   mapCreatorIdToZeroUserId,
 } from './saga';
 
@@ -163,13 +162,11 @@ describe('channels list saga', () => {
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
         .call(fetchMissingUsersData, matrixIds)
-        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .run();
     });
 
@@ -179,13 +176,11 @@ describe('channels list saga', () => {
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
         .call(fetchMissingUsersData, matrixIds)
-        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .call(mapToZeroUsers, MOCK_CONVERSATIONS)
         .run();
     });
@@ -198,7 +193,6 @@ describe('channels list saga', () => {
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
           [matchers.call.fn(mapToZeroUsers), null],
           [matchers.call.fn(updateUserPresence), null],
           [matchers.call.fn(mapCreatorIdToZeroUserId), null],

@@ -26,7 +26,6 @@ import { AdminMessageType } from '../messages';
 import {
   fetchMissingUsersData,
   fetchNewMessages,
-  getZeroUsersMap,
   rawMessagesSelector,
   replaceOptimisticMessage,
 } from '../messages/saga';
@@ -52,6 +51,14 @@ export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
   for (const channel of channels) {
     const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
+
+    // add matrix IDs from messages to ensure all users are included
+    channel.messages.forEach((message) => {
+      if (message.sender?.userId) {
+        matrixIds.push(message.sender.userId);
+      }
+    });
+
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
@@ -92,17 +99,6 @@ export function* mapCreatorIdToZeroUserId(messageContainers) {
       }
     }
   }
-}
-
-export function* updateMessageSenders(conversations) {
-  const zeroUsersMap = yield call(getZeroUsersMap);
-  conversations.forEach((conv) => {
-    conv.messages.forEach((msg) => {
-      if (msg.sender && zeroUsersMap[msg.sender.userId]) {
-        msg.sender = zeroUsersMap[msg.sender.userId];
-      }
-    });
-  });
 }
 
 export function* updateUserPresence(conversations) {
@@ -165,7 +161,6 @@ export function* fetchConversations() {
     yield call(fetchMissingUsersData, matrixIds);
   }
 
-  yield call(updateMessageSenders, conversations);
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);
   yield call(mapCreatorIdToZeroUserId, conversations);

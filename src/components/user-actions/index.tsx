@@ -15,7 +15,6 @@ export interface Properties {
   isConversationListOpen: boolean;
   unreadConversationMessageCount: number;
   unreadNotificationCount: number;
-  updateConversationState: (isOpen: boolean) => void;
   onDisconnect: () => void;
 }
 
@@ -50,10 +49,6 @@ export class UserActions extends React.Component<Properties, State> {
     this.setState({ isNotificationPopupOpen: !this.state.isNotificationPopupOpen });
   };
 
-  toggleConversationListState = () => {
-    this.props.updateConversationState(!this.props.isConversationListOpen);
-  };
-
   handleClickOutsideNotificationPopup = () => {
     this.setState({ isNotificationPopupOpen: false });
   };
@@ -66,7 +61,7 @@ export class UserActions extends React.Component<Properties, State> {
     return (
       <>
         <div className='user-actions'>
-          <button className='user-actions__icon-button' onClick={this.toggleConversationListState}>
+          <button className='user-actions__icon-button'>
             <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
             {this.props.unreadConversationMessageCount > 0 && (
               <div className='user-actions__badge'>{this.unreadConversationCount}</div>

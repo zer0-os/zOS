@@ -1,12 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { when } from 'jest-when';
 
-import {
-  updateSidekick as updateSidekickSaga,
-  initializeUserLayout,
-  clearUserLayout,
-  enterFullScreenMessenger,
-} from './saga';
+import { initializeUserLayout, clearUserLayout, enterFullScreenMessenger } from './saga';
 
 import { reducer } from '.';
 import { setactiveConversationId } from '../chat';
@@ -25,17 +20,6 @@ describe('layout saga', () => {
     },
     chat: { activeConversationId: 'channel-id' },
   };
-
-  describe('updateSidekick', () => {
-    it('should store sidekick', async () => {
-      const { storeState } = await expectSaga(updateSidekickSaga, { payload: { isOpen: true } })
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeTrue();
-      expect(global.localStorage.setItem).toHaveBeenCalledWith(sidekickKey, true);
-    });
-  });
 
   describe('initializeUserLayout', () => {
     it('sets the sidekick to open when previous state was open', async () => {

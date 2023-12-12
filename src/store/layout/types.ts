@@ -8,7 +8,3 @@ export interface AppLayout {
 export interface LayoutState {
   value: AppLayout;
 }
-
-export interface UpdateSidekickPayload {
-  isOpen: boolean;
-}

@@ -17,7 +17,7 @@ import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
-import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
+import { mapMessageSenders } from './utils.matrix';
 import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
@@ -462,18 +462,13 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
     let currentMessages = channel?.messages || [];
     let modified = false;
     for (let message of byChannelId[channelId]) {
-      yield call(mapReceivedMessage, message);
+      const messageList = yield call(mapMessagesAndPreview, [message], channelId);
+      message = messageList[0];
 
       if (!channel) {
         continue;
       }
       modified = true;
-
-      const preview = yield call(getPreview, message.message);
-
-      if (preview) {
-        message = { ...message, preview };
-      }
 
       let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
       if (!newMessages) {
@@ -520,12 +515,10 @@ export function* replaceOptimisticMessage(currentMessages, message) {
 }
 
 export function* receiveUpdateMessage(action) {
-  let { message } = action.payload;
+  let { message, channelId } = action.payload;
 
-  const preview = yield call(getPreview, message.message);
-  message.preview = preview;
-
-  yield call(mapReceivedMessage, message);
+  const messageList = yield call(mapMessagesAndPreview, [message], channelId);
+  message = messageList[0];
 
   yield put(receiveMessage(message));
 }

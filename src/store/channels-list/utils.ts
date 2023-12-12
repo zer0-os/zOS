@@ -53,9 +53,25 @@ export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string
   }
 };
 
+export const mapMemberHistory = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
+  for (const channel of channels) {
+    for (const member of channel.memberHistory) {
+      const zeroUser = zeroUsersMap[member.matrixId];
+      if (zeroUser && zeroUser?.profileSummary) {
+        member.userId = zeroUser.id;
+        member.firstName = zeroUser.profileSummary.firstName;
+      }
+    }
+  }
+};
+
 export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
   for (const channel of channels) {
     for (const message of channel.messages) {
+      if (message.isAdmin) {
+        continue;
+      }
+
       const zeroUser = zeroUsersMap[message.sender.userId];
       if (zeroUser && zeroUser?.profileSummary) {
         message.sender.userId = zeroUser.id;
@@ -67,17 +83,3 @@ export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: str
     }
   }
 };
-
-export function extractMatrixIdsFromConversations(conversations) {
-  const matrixIdsSet = new Set();
-  for (const conv of conversations) {
-    for (const msg of conv.messages) {
-      if (msg.isAdmin && msg.admin.creatorId) {
-        matrixIdsSet.add(msg.admin.creatorId);
-      } else if (msg.sender?.userId) {
-        matrixIdsSet.add(msg.sender.userId);
-      }
-    }
-  }
-  return Array.from(matrixIdsSet);
-}

@@ -63,43 +63,43 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 }
 
 export function mapEventToAdminMessage(matrixMessage) {
-  const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender: userId, type, state_key: targetUserId } = matrixMessage;
 
-  const adminData = getAdminDataFromEventType(type, content, senderId);
+  const adminData = getAdminDataFromEventType(type, content, userId, targetUserId);
 
   return {
     id: event_id,
     message: 'Conversation was started',
     createdAt: origin_server_ts,
     isAdmin: true,
-    sender: { userId: senderId },
     admin: adminData,
   };
 }
 
-function getAdminDataFromEventType(type, content, senderId) {
+function getAdminDataFromEventType(type, content, userId, targetUserId) {
   switch (type) {
     case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
     case EventType.RoomMember:
-      return getRoomMemberAdminData(content, senderId);
+      return getRoomMemberAdminData(content, userId, targetUserId);
     case EventType.RoomCreate:
-      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
+      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: userId };
     default:
       return {};
   }
 }
 
-function getRoomMemberAdminData(content, senderId) {
+function getRoomMemberAdminData(content, userId, targetUserId) {
   switch (content.membership) {
     case MembershipStateType.Leave:
-      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: senderId };
-    case MembershipStateType.Join:
-      return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, creatorId: senderId };
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: userId };
+    case MembershipStateType.Invite:
+      return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, creatorId: targetUserId };
     default:
       return {};
   }
 }
+
 export function mapToLiveRoomEvent(liveEvent) {
   const { event } = liveEvent;
 

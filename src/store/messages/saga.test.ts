@@ -9,7 +9,6 @@ import {
   sendBrowserNotification,
   receiveUpdateMessage,
   replaceOptimisticMessage,
-  fetchMissingUsersData,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -19,8 +18,6 @@ import { StoreBuilder } from '../test/store';
 import { MessageSendStatus } from '.';
 import { chat } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
-import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { receive as receiveUser } from '../users';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
@@ -304,73 +301,5 @@ describe(replaceOptimisticMessage, () => {
       .run();
 
     expect(returnValue[0].preview).toEqual({ url: 'example.com/old-preview' });
-  });
-});
-
-describe(fetchMissingUsersData, () => {
-  const matrixIds = ['matrixId1', 'matrixId2', 'matrixId3'];
-
-  it('fetches missing user data when no users are in the map', async () => {
-    const zeroUsers = [
-      { matrixId: 'matrixId1', id: 'id1', profileSummary: { firstName: 'Alice', profileImage: 'image1' } },
-      { matrixId: 'matrixId2', id: 'id2', profileSummary: { firstName: 'Bob', profileImage: 'image2' } },
-    ];
-
-    await expectSaga(fetchMissingUsersData, matrixIds)
-      .provide([
-        [matchers.call.fn(getZEROUsersAPI), zeroUsers],
-      ])
-      .put(
-        receiveUser({
-          userId: 'id1',
-          firstName: 'Alice',
-          profileImage: 'image1',
-          matrixId: 'matrixId1',
-        })
-      )
-      .put(
-        receiveUser({
-          userId: 'id2',
-          firstName: 'Bob',
-          profileImage: 'image2',
-          matrixId: 'matrixId2',
-        })
-      )
-      .run();
-  });
-
-  it('does not fetch user data if all users are already in the map', async () => {
-    const matrixIds = ['matrixId1', 'matrixId2'];
-    const zeroUsersMap = {
-      matrixId1: { userId: 'id1', firstName: 'Alice', profileImage: 'image1', matrixId: 'matrixId1' },
-      matrixId2: { userId: 'id2', firstName: 'Bob', profileImage: 'image2', matrixId: 'matrixId2' },
-    };
-
-    const getZeroUsersMapFn = () => zeroUsersMap;
-
-    await expectSaga(fetchMissingUsersData, matrixIds, getZeroUsersMapFn).not.call.fn(getZEROUsersAPI).run();
-  });
-
-  it('fetches only missing user data when some users are already in the map', async () => {
-    const getZeroUsersMapFn = () => ({
-      matrixId1: { userId: 'id1', firstName: 'Alice', profileImage: 'image1', matrixId: 'matrixId1' },
-    });
-    const zeroUsers = [
-      { matrixId: 'matrixId2', id: 'id2', profileSummary: { firstName: 'Bob', profileImage: 'image2' } },
-    ];
-
-    await expectSaga(fetchMissingUsersData, matrixIds, getZeroUsersMapFn)
-      .provide([
-        [matchers.call.fn(getZEROUsersAPI), zeroUsers],
-      ])
-      .put(
-        receiveUser({
-          userId: 'id2',
-          firstName: 'Bob',
-          profileImage: 'image2',
-          matrixId: 'matrixId2',
-        })
-      )
-      .run();
   });
 });

@@ -16,7 +16,6 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   updateUserPresence,
-  updateMessageSenders,
   mapCreatorIdToZeroUserId,
 } from './saga';
 
@@ -29,9 +28,9 @@ import { ConversationStatus, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
-import { mapOtherMembers, extractMatrixIdsFromConversations } from './utils';
+import { mapOtherMembers } from './utils';
 import { getUserByMatrixId } from '../users/saga';
-import { fetchMissingUsersData, fetchNewMessages } from '../messages/saga';
+import { fetchNewMessages } from '../messages/saga';
 
 const featureFlags = { enableMatrix: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -148,8 +147,6 @@ describe('channels list saga', () => {
   });
 
   describe(fetchConversations, () => {
-    const matrixIds = extractMatrixIdsFromConversations(MOCK_CONVERSATIONS);
-
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
         [matchers.call.fn(chat.get), chatClient],
@@ -162,14 +159,10 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-          [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
-        .call(fetchMissingUsersData, matrixIds)
-        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .run();
     });
 
@@ -178,14 +171,10 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-          [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
-        .call(fetchMissingUsersData, matrixIds)
-        .call(updateMessageSenders, MOCK_CONVERSATIONS)
         .call(mapToZeroUsers, MOCK_CONVERSATIONS)
         .run();
     });
@@ -197,8 +186,6 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-          [matchers.call.fn(fetchMissingUsersData), null],
-          [matchers.call.fn(updateMessageSenders), null],
           [matchers.call.fn(mapToZeroUsers), null],
           [matchers.call.fn(updateUserPresence), null],
           [matchers.call.fn(mapCreatorIdToZeroUserId), null],
@@ -516,11 +503,18 @@ describe('channels list saga', () => {
           { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
           { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
         ],
+        memberHistory: [
+          { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
+          { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
+        ],
         messages: [],
       },
       {
         id: 'channel-2',
         otherMembers: [{ matrixId: 'matrix-id-3', userId: 'matrix-id-3' }],
+        memberHistory: [
+          { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
+        ],
         messages: [],
       },
     ] as any;

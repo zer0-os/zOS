@@ -162,15 +162,6 @@ $border-color-hover: theme-zui.$color-primary-7;
     }
   }
 
-  &__sidekick {
-    box-sizing: border-box;
-    position: relative;
-    pointer-events: auto;
-    width: $width-sidekick;
-
-    display: flex;
-  }
-
   &__view-mode-toggle {
     &:hover {
       background-color: theme.$background-color-app-panel-hover;
@@ -188,6 +179,7 @@ $border-color-hover: theme-zui.$color-primary-7;
   0% {
     right: 0;
   }
+
   100% {
     right: $width-sidekick;
   }
@@ -197,6 +189,7 @@ $border-color-hover: theme-zui.$color-primary-7;
   0% {
     right: $width-sidekick;
   }
+
   100% {
     right: 0;
   }

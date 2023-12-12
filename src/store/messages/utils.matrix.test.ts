@@ -4,6 +4,9 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { mapMessageSenders } from './utils.matrix';
 import { getZEROUsers } from '../channels-list/api';
 import { chat } from '../../lib/chat';
+import { StoreBuilder } from '../test/store';
+import { rootReducer } from '../reducer';
+import { call } from 'redux-saga/effects';
 
 const chatClient = { getMessageByRoomId: () => {} };
 
@@ -35,19 +38,39 @@ describe(mapMessageSenders, () => {
     ];
   });
 
-  it('calls getZEROUsersAPI with matrixIds if users are not present in local redux state', async () => {
-    const initialState = {
-      normalized: {
-        users: {
-          'user-1': users[0],
-        },
-      },
-    };
+  it('replaces local data with actual Zero user data', async () => {
+    const messages = [
+      { id: 1, message: 'message-1', sender: { userId: 'matrix-user-1', firstName: '' } },
+    ];
+    const initialState = new StoreBuilder().withUsers({ userId: 'user-id-1', firstName: 'my test name' });
 
     await expectSaga(mapMessageSenders, messages, 'channel-id')
-      .withState(initialState)
-      .call(getZEROUsers, ['matrix-user-2'])
+      .provide([
+        [
+          call(getZEROUsers, ['matrix-user-1']),
+          [
+            {
+              userId: 'zero-user-id',
+              matrixId: 'matrix-user-1',
+              firstName: 'First name',
+              lastName: 'Last name',
+              profileId: 'profile-id',
+              profileImage: 'image-url',
+            },
+          ],
+        ],
+      ])
+      .withReducer(rootReducer, initialState.build())
       .run();
+
+    expect(messages[0].sender).toEqual({
+      userId: 'zero-user-id',
+      matrixId: 'matrix-user-1',
+      firstName: 'First name',
+      lastName: 'Last name',
+      profileId: 'profile-id',
+      profileImage: 'image-url',
+    });
   });
 
   it('maps message senders to ZERO users if present in state', async () => {

@@ -2,8 +2,6 @@ import { call, select } from 'redux-saga/effects';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getLocalZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
-import { userByMatrixIdSelector } from '../users/selectors';
-import { currentUserSelector } from '../authentication/saga';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   const chatClient = yield call(chat.get);

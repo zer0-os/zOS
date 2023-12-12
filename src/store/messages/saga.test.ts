@@ -11,7 +11,7 @@ import {
   replaceOptimisticMessage,
 } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';

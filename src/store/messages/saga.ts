@@ -108,7 +108,7 @@ export function* getZeroUsersMap() {
   return zeroUsersMap;
 }
 
-function* mapMessagesAndPreview(messagesResponse, channelId) {
+export function* mapMessagesAndPreview(messagesResponse, channelId) {
   yield call(mapMessageSenders, messagesResponse.messages, channelId);
 
   for (const message of messagesResponse.messages) {

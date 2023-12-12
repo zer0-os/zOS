@@ -11,12 +11,24 @@ import {
   setIsAddingMembers,
   LeaveGroupDialogStatus,
   setLeaveGroupStatus,
+  setEditConversationState,
+  setEditConversationGeneralError,
+  setEditConversationImageError,
+  setRemoveMember,
+  RemoveMemberDialogStage,
+  setRemoveMemberStage,
+  setRemoveMemberError,
 } from './index';
+import { EditConversationState } from './types';
+import { uploadImage } from '../registration/api';
 
 export function* reset() {
   yield put(setStage(Stage.None));
   yield put(setIsAddingMembers(false));
   yield put(setAddMemberError(null));
+  yield put(setEditConversationState(EditConversationState.NONE));
+  yield put(setEditConversationImageError(''));
+  yield put(setEditConversationGeneralError(''));
 }
 
 export function* saga() {
@@ -26,7 +38,10 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Back, resetConversationManagement);
   yield takeLatest(SagaActionTypes.StartAddMember, startAddGroupMember);
   yield takeLatest(SagaActionTypes.AddSelectedMembers, roomMembersSelected);
+  yield takeLatest(SagaActionTypes.EditConversationNameAndIcon, editConversationNameAndIcon);
   yield takeLatest(SagaActionTypes.StartEditConversation, startEditConversation);
+  yield takeLatest(SagaActionTypes.OpenRemoveMember, openRemoveMember);
+  yield takeLatest(SagaActionTypes.CancelRemoveMember, cancelRemoveMember);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
 }
 
@@ -95,14 +110,64 @@ export function* roomMembersSelected(action) {
   }
 }
 
+export function* openRemoveMember(action) {
+  const { userId, roomId } = action.payload;
+  yield put(setRemoveMember({ userId, roomId, stage: RemoveMemberDialogStage.OPEN, error: '' }));
+}
+
+export function* cancelRemoveMember() {
+  return yield resetRemoveMember();
+}
+
+export function* resetRemoveMember() {
+  return yield put(setRemoveMember({ userId: '', roomId: '', stage: RemoveMemberDialogStage.CLOSED, error: '' }));
+}
+
 export function* removeMember(action) {
   const { userId, roomId } = action.payload;
-  const chatClient: Chat = yield call(chat.get);
-  const user = yield select((state) => denormalizeUsers(userId, state));
-  if (!user) {
-    // Currently no error feedback provided to the user
-    return;
+
+  yield put(setRemoveMemberStage(RemoveMemberDialogStage.IN_PROGRESS));
+
+  try {
+    const user = yield select((state) => denormalizeUsers(userId, state));
+    if (!user) {
+      return;
+    }
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.removeUser], roomId, user);
+    yield resetRemoveMember();
+  } catch (e) {
+    yield put(setRemoveMemberError('Failed to remove member, please try again'));
+    yield put(setRemoveMemberStage(RemoveMemberDialogStage.OPEN));
+  }
+}
+
+export function* editConversationNameAndIcon(action) {
+  const { roomId, name, image } = action.payload;
+
+  yield put(setEditConversationState(EditConversationState.INPROGRESS));
+  try {
+    let imageUrl = '';
+    if (image) {
+      try {
+        const uploadResult = yield call(uploadImage, image);
+        imageUrl = uploadResult.url;
+      } catch (error) {
+        yield put(setEditConversationImageError('Failed to upload image, please try again...'));
+        return;
+      }
+    }
+
+    const chatClient: Chat = yield call(chat.get);
+    yield call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, imageUrl);
+    yield put(setEditConversationState(EditConversationState.SUCCESS));
+    yield put(setEditConversationImageError(''));
+    yield put(setEditConversationGeneralError(''));
+  } catch (e) {
+    yield put(setEditConversationGeneralError('An unknown error has occurred'));
+    yield put(setEditConversationState(EditConversationState.LOADED));
   }
 
-  yield call([chatClient, chatClient.removeUser], roomId, user);
+  return;
 }

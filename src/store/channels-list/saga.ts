@@ -13,6 +13,7 @@ import {
   mapOtherMembers as mapOtherMembersOfChannel,
   mapMemberHistory as mapMemberHistoryOfChannel,
   mapChannelMessages,
+  rawUserToDomainUser,
 } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
@@ -39,10 +40,6 @@ export const rawConversationsList = () => (state) => filterChannelsList(state, C
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* mapToZeroUsers(channels: any[]) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   let allMatrixIds = [];
   for (const channel of channels) {
     const combinedMembers = [...(channel.otherMembers || []), ...(channel.memberHistory || [])];
@@ -58,7 +55,7 @@ export function* mapToZeroUsers(channels: any[]) {
 
   const currentUser = yield select(currentUserSelector);
   if (currentUser && currentUser.matrixId) {
-    zeroUsersMap[currentUser.matrixId] = currentUser;
+    zeroUsersMap[currentUser.matrixId] = rawUserToDomainUser(currentUser);
   }
 
   yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);
@@ -91,10 +88,6 @@ export function* mapCreatorIdToZeroUserId(messageContainers) {
 }
 
 export function* updateUserPresence(conversations) {
-  if (!featureFlags.enableMatrix) {
-    return;
-  }
-
   const chatClient = yield call(chat.get);
   for (let conversation of conversations) {
     const { otherMembers } = conversation;
@@ -343,13 +336,7 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, Events.UserLogin);
-    if (featureFlags.enableMatrix) {
-      // Do not poll when in Matrix mode just fetch once
-      yield call(fetchChannelsAndConversations);
-      continue;
-    }
-
-    yield startChannelsAndConversationsRefresh();
+    yield call(fetchChannelsAndConversations);
   }
 }
 

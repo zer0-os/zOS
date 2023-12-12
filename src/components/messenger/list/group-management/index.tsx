@@ -4,8 +4,8 @@ import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 import { EditConversationPanel } from '../edit-conversation-panel';
-import { GroupManagementErrors } from '../../../../store/group-management/types';
 import { User } from '../../../../store/channels';
+import { EditConversationState, GroupManagementErrors } from '../../../../store/group-management/types';
 
 export interface Properties {
   stage: Stage;
@@ -16,9 +16,11 @@ export interface Properties {
   icon: string;
   currentUser: User;
   otherMembers: User[];
+  editConversationState: EditConversationState;
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
+  onEditConversation: (name: string, image: File | null) => void;
   searchUsers: (search: string) => Promise<any>;
   onRemoveMember: (userId: string) => void;
 }
@@ -45,6 +47,8 @@ export class GroupManagement extends React.PureComponent<Properties> {
             errors={this.props.errors.editConversationErrors}
             onBack={this.props.onBack}
             onRemoveMember={this.props.onRemoveMember}
+            onEdit={this.props.onEditConversation}
+            state={this.props.editConversationState}
           />
         )}
       </>

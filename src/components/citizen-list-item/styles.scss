@@ -27,11 +27,11 @@
   }
 
   &__remove {
-    visibility: hidden;
+    display: none;
   }
 
   &:hover &__remove {
-    visibility: visible;
+    display: block;
   }
 
   &__tag {

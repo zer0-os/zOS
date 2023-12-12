@@ -25,7 +25,6 @@ import classNames from 'classnames';
 import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 import { bem, bemClassName } from '../../lib/bem';
-import { featureFlags } from '../../lib/feature-flags';
 
 const c = bem('message-input');
 const cn = bemClassName('message-input');
@@ -350,7 +349,8 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowGiphy() {
-    return !featureFlags.enableMatrix && !this.props.isEditing;
+    // Feature not implemented in Matrix yet
+    return false && !this.props.isEditing;
   }
 
   get allowFileAttachment() {
@@ -362,11 +362,8 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowVoiceMessage() {
-    return !featureFlags.enableMatrix && !this.hasInputValue;
-  }
-
-  get displaySendButton() {
-    return featureFlags.enableMatrix || this.hasInputValue;
+    // Feature not implemented in Matrix yet
+    return false && !this.hasInputValue;
   }
 
   get hasInputValue() {
@@ -500,16 +497,14 @@ export class MessageInput extends React.Component<Properties, State> {
             <div className='message-input__icon-outer'>
               <div className='message-input__icon-wrapper'>
                 <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
-                  {this.displaySendButton && (
-                    <IconButton
-                      className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                        'message-input__icon--highlighted': this.sendHighlighted(),
-                      })}
-                      onClick={this.onSend}
-                      Icon={IconSend3}
-                      size='small'
-                    />
-                  )}
+                  <IconButton
+                    className={classNames('message-input__icon', 'message-input__icon--end-action', {
+                      'message-input__icon--highlighted': this.sendHighlighted(),
+                    })}
+                    onClick={this.onSend}
+                    Icon={IconSend3}
+                    size='small'
+                  />
                   {this.allowVoiceMessage && (
                     <IconButton
                       className={classNames('message-input__icon', 'message-input__icon--end-action')}

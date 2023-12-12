@@ -1,8 +1,7 @@
 import { ChannelType } from './types';
-import { Channel, ConversationStatus } from './../channels/index';
+import { Channel, ConversationStatus, User } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
-import { User } from '../authentication/types';
 
 export function filterChannelsList(state, filter: ChannelType) {
   const channelIdList = getDeepProperty(state, 'channelsList.value', []);
@@ -41,14 +40,7 @@ export const toLocalChannel = (input): Partial<Channel> => {
 export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
   for (const channel of channels) {
     for (const member of channel.otherMembers) {
-      const zeroUser = zeroUsersMap[member.matrixId];
-      if (zeroUser && zeroUser?.profileSummary) {
-        member.userId = zeroUser.id;
-        member.profileId = zeroUser.profileSummary.id;
-        member.firstName = zeroUser.profileSummary.firstName;
-        member.lastName = zeroUser.profileSummary.lastName;
-        member.profileImage = zeroUser.profileSummary.profileImage;
-      }
+      replaceZOSUserFields(member, zeroUsersMap[member.matrixId]);
     }
   }
 };
@@ -80,6 +72,39 @@ export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: str
         message.sender.lastName = zeroUser.profileSummary.lastName;
         message.sender.profileImage = zeroUser.profileSummary.profileImage;
       }
+      replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
     }
   }
 };
+
+function replaceZOSUserFields(
+  member: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    profileImage: string;
+    profileId: string;
+  },
+  zeroUser: User
+) {
+  if (zeroUser) {
+    member.userId = zeroUser.userId;
+    member.profileId = zeroUser.profileId;
+    member.firstName = zeroUser.firstName;
+    member.lastName = zeroUser.lastName;
+    member.profileImage = zeroUser.profileImage;
+  }
+}
+
+export function rawUserToDomainUser(u): User {
+  return {
+    userId: u.id,
+    matrixId: u.matrixId,
+    profileId: u.profileId,
+    isOnline: false,
+    firstName: u.profileSummary?.firstName,
+    lastName: u.profileSummary?.lastName,
+    profileImage: u.profileSummary?.profileImage,
+    lastSeenAt: u.lastActiveAt,
+  };
+}

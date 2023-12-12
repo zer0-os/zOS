@@ -545,6 +545,15 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async editRoomNameAndIcon(roomId: string, name: string, iconUrl: string): Promise<void> {
+    await this.waitForConnection();
+
+    await this.matrix.setRoomName(roomId, name);
+    if (iconUrl) {
+      await this.matrix.sendStateEvent(roomId, EventType.RoomAvatar, { url: iconUrl });
+    }
+  }
+
   async markRoomAsRead(roomId: string): Promise<void> {
     const room = this.matrix.getRoom(roomId);
 

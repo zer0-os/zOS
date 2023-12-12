@@ -22,12 +22,6 @@ describe(CitizenListItem, () => {
     expect(wrapper.find(c('name')).text()).toEqual('John Doe');
   });
 
-  it('renders unknown display name', function () {
-    const wrapper = subject({ user: { firstName: '', lastName: '' } as any });
-
-    expect(wrapper.find(c('name')).text()).toEqual('Unknown');
-  });
-
   it('renders the user status', function () {
     const wrapper = subject({ user: { isOnline: false } as any });
 

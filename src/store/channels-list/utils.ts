@@ -49,9 +49,9 @@ export const mapMemberHistory = (channels: Channel[], zeroUsersMap: { [id: strin
   for (const channel of channels) {
     for (const member of channel.memberHistory) {
       const zeroUser = zeroUsersMap[member.matrixId];
-      if (zeroUser && zeroUser?.profileSummary) {
-        member.userId = zeroUser.id;
-        member.firstName = zeroUser.profileSummary.firstName;
+      if (zeroUser) {
+        member.userId = zeroUser.userId;
+        member.firstName = zeroUser.firstName;
       }
     }
   }
@@ -62,15 +62,6 @@ export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: str
     for (const message of channel.messages) {
       if (message.isAdmin) {
         continue;
-      }
-
-      const zeroUser = zeroUsersMap[message.sender.userId];
-      if (zeroUser && zeroUser?.profileSummary) {
-        message.sender.userId = zeroUser.id;
-        message.sender.profileId = zeroUser.profileSummary.id;
-        message.sender.firstName = zeroUser.profileSummary.firstName;
-        message.sender.lastName = zeroUser.profileSummary.lastName;
-        message.sender.profileImage = zeroUser.profileSummary.profileImage;
       }
       replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
     }

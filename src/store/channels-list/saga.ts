@@ -348,9 +348,8 @@ export function* currentUserAddedToChannel(_action) {
 
 export function* userLeftChannel(channelId, matrixId) {
   const currentUser = yield select(currentUserSelector);
-  const user = yield call(getUserByMatrixId, matrixId);
 
-  if (user?.userId === currentUser.id) {
+  if (matrixId === currentUser.matrixId) {
     yield call(currentUserLeftChannel, channelId);
   }
 }

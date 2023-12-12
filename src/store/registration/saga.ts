@@ -183,29 +183,18 @@ export function* updateProfile(action) {
 
       const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
 
-      if (inviterZeroUserData && inviterZeroUserData.length > 0) {
-        const user = {
-          userId: inviterZeroUserData[0].id,
-          firstName: inviterZeroUserData[0].profileSummary.firstName,
-          profileImage: inviterZeroUserData[0].profileSummary.profileImage,
-          matrixId: inviterZeroUserData[0].matrixId,
-        };
+      const inviter = inviterZeroUserData?.[0];
+      if (inviter) {
+        yield put(receiveUser(inviter));
 
-        yield put(receiveUser(user));
+        try {
+          const createdConversation = yield call(createConversation, [inviterUserId], '', null);
+          const createdConversationId = createdConversation.id;
+
+          const chatClient = yield call(chat.get);
+          yield call([chatClient, chatClient.userJoinedInviterOnZero], createdConversationId, inviter.id, userId);
+        } catch (error) {}
       }
-
-      try {
-        const createdConversation = yield call(createConversation, [inviterUserId], '', null);
-        const createdConversationId = createdConversation.id;
-
-        const chatClient = yield call(chat.get);
-        yield call(
-          [chatClient, chatClient.userJoinedInviterOnZero],
-          createdConversationId,
-          inviterZeroUserData[0].id,
-          userId
-        );
-      } catch (error) {}
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;

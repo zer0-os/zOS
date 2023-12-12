@@ -104,7 +104,7 @@ describe(createOptimisticConversation, () => {
       expect.objectContaining({
         id: newChannelId,
         name: 'New Conversation',
-        otherMembers: [{ userId: 'other-user-id' }],
+        otherMembers: [expect.objectContaining({ userId: 'other-user-id' })],
         conversationStatus: ConversationStatus.CREATING,
       })
     );

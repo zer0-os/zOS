@@ -178,7 +178,7 @@ describe('channels list saga', () => {
     it('retains conversations that are not CREATED', async () => {
       const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
       const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
-      const fetchedChannel = { id: 'conversation-id' };
+      const fetchedChannel = { id: 'conversation-id', messages: [] };
 
       const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
@@ -198,7 +198,7 @@ describe('channels list saga', () => {
     });
 
     it('removes channels that are duplicates of the newly fetched conversations', async () => {
-      const fetchedConversations = [{ id: 'previously-a-channel' }];
+      const fetchedConversations = [{ id: 'previously-a-channel', messages: [] }];
 
       const initialState = new StoreBuilder().withChannelList({ id: 'previously-a-channel' });
 
@@ -387,7 +387,7 @@ describe('channels list saga', () => {
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'new-convo' })
+      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -397,7 +397,7 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id' })
+      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id', messages: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 

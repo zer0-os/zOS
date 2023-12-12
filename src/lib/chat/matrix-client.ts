@@ -943,10 +943,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private getMemberHistoryFromRoom(room: Room): string[] {
-    return room
-      .getMembers()
-      .filter((member) => member.userId !== this.userId)
-      .map((member) => member.userId);
+    return room.getMembers().map((member) => member.userId);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

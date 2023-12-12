@@ -63,9 +63,9 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 }
 
 export function mapEventToAdminMessage(matrixMessage) {
-  const { event_id, content, origin_server_ts, sender: userId, type } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId } = matrixMessage;
 
-  const adminData = getAdminDataFromEventType(type, content, userId);
+  const adminData = getAdminDataFromEventType(type, content, sender, targetUserId);
 
   return {
     id: event_id,
@@ -76,24 +76,26 @@ export function mapEventToAdminMessage(matrixMessage) {
   };
 }
 
-function getAdminDataFromEventType(type, content, userId) {
+function getAdminDataFromEventType(type, content, sender, targetUserId) {
   switch (type) {
     case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
     case EventType.RoomMember:
-      return getRoomMemberAdminData(content, userId);
+      return getRoomMemberAdminData(content, targetUserId);
     case EventType.RoomCreate:
-      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: userId };
+      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: sender };
     default:
       return {};
   }
 }
 
-function getRoomMemberAdminData(content, userId) {
-  if (content.membership === MembershipStateType.Leave) {
-    return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: userId };
+function getRoomMemberAdminData(content, targetUserId) {
+  switch (content.membership) {
+    case MembershipStateType.Leave:
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: targetUserId };
+    default:
+      return {};
   }
-  return {};
 }
 
 export function mapToLiveRoomEvent(liveEvent) {

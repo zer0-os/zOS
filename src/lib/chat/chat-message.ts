@@ -204,15 +204,16 @@ export function adminMessageText(message: Message, state: RootState) {
     return text;
   }
 
-  if (message.admin.type === AdminMessageType.JOINED_ZERO) {
-    return translateJoinedZero(message.admin, user, state) ?? text;
-  } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
-    return translateConversationStarted(message.admin, user, state) ?? text;
-  } else if (message.admin.type === AdminMessageType.MEMBER_LEFT_CONVERSATION) {
-    return translateMemberLeftGroup(message.admin, state) ?? text;
+  switch (message.admin.type) {
+    case AdminMessageType.JOINED_ZERO:
+      return translateJoinedZero(message.admin, user, state) ?? text;
+    case AdminMessageType.CONVERSATION_STARTED:
+      return translateConversationStarted(message.admin, user, state) ?? text;
+    case AdminMessageType.MEMBER_LEFT_CONVERSATION:
+      return translateMemberLeftGroup(message.admin, state) ?? text;
+    default:
+      return text;
   }
-
-  return text;
 }
 
 function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {

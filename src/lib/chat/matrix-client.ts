@@ -86,28 +86,29 @@ export class MatrixClient implements IChatClient {
 
   reconnect: () => void;
 
-  async getUserPresence(userId: string) {
+  async getUserPresence(_userId: string) {
     await this.waitForConnection();
 
-    try {
-      const userPresenceData = await this.matrix.getPresence(userId);
+    return { lastSeenAt: null, isOnline: false };
+    // try {
+    //   const userPresenceData = await this.matrix.getPresence(userId);
 
-      if (!userPresenceData) {
-        return { lastSeenAt: null, isOnline: false };
-      }
+    //   if (!userPresenceData) {
+    //     return { lastSeenAt: null, isOnline: false };
+    //   }
 
-      const { presence, last_active_ago } = userPresenceData;
-      const isOnline = presence === 'online';
-      const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
+    //   const { presence, last_active_ago } = userPresenceData;
+    //   const isOnline = presence === 'online';
+    //   const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 
-      return { lastSeenAt, isOnline };
-    } catch (error: any) {
-      if (error.errcode !== 'M_FORBIDDEN') {
-        console.error(error);
-      }
+    //   return { lastSeenAt, isOnline };
+    // } catch (error: any) {
+    //   if (error.errcode !== 'M_FORBIDDEN') {
+    //     console.error(error);
+    //   }
 
-      return { lastSeenAt: null, isOnline: false };
-    }
+    //   return { lastSeenAt: null, isOnline: false };
+    // }
   }
 
   async getChannels(_id: string) {

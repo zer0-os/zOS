@@ -1,8 +1,6 @@
 import getDeepProperty from 'lodash.get';
-import { SIDEKICK_OPEN_STORAGE } from './constants';
 import { put, takeLatest, select, call } from 'redux-saga/effects';
 import { update, SagaActionTypes } from './';
-import { resolveFromLocalStorageAsBoolean } from '../../lib/storage';
 import { User } from '../authentication/types';
 import { openFirstConversation } from '../login/saga';
 import { checkNewRewardsLoaded } from '../rewards/saga';
@@ -19,13 +17,11 @@ function keyForUser(id: string, key: string) {
   return `${id}-${key}`;
 }
 
-export function* initializeUserLayout(user: { id: string; isAMemberOfWorlds: boolean }) {
-  const isSidekickOpen = resolveFromLocalStorageAsBoolean(keyForUser(user.id, SIDEKICK_OPEN_STORAGE), true);
+export function* initializeUserLayout(_user: { id: string; isAMemberOfWorlds: boolean }) {
   const isMessengerFullScreen = true; // The main app view of zOS is no longer used
 
   yield put(
     update({
-      isSidekickOpen,
       isMessengerFullScreen,
     })
   );
@@ -34,7 +30,6 @@ export function* initializeUserLayout(user: { id: string; isAMemberOfWorlds: boo
 export function* initializePublicLayout() {
   yield put(
     update({
-      isSidekickOpen: false,
       isMessengerFullScreen: true,
     })
   );
@@ -43,7 +38,6 @@ export function* initializePublicLayout() {
 export function* clearUserLayout() {
   yield put(
     update({
-      isSidekickOpen: false,
       isMessengerFullScreen: true,
     })
   );

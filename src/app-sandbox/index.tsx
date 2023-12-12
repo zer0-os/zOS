@@ -77,7 +77,7 @@ export class AppSandbox extends React.Component<Properties> {
   }
 
   render() {
-    const { hasContextPanel, isContextPanelOpen, isSidekickOpen, isMessengerFullScreen } = this.props.layout;
+    const { hasContextPanel, isContextPanelOpen, isMessengerFullScreen } = this.props.layout;
 
     if (isMessengerFullScreen) {
       return null;
@@ -85,7 +85,7 @@ export class AppSandbox extends React.Component<Properties> {
 
     const className = classNames('app-sandbox', {
       'context-panel-open': isContextPanelOpen,
-      'sidekick-panel-open': isSidekickOpen && this.props.authenticationContext.isAuthenticated,
+      'sidekick-panel-open': this.props.authenticationContext.isAuthenticated,
       'has-context-panel': hasContextPanel,
     });
 

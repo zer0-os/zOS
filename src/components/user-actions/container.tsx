@@ -11,7 +11,6 @@ interface PublicProperties {
   userAddress: string;
   userImageUrl?: string;
   userIsOnline: boolean;
-  isConversationListOpen: boolean;
   onDisconnect: () => void;
 }
 export interface Properties extends PublicProperties {
@@ -47,7 +46,6 @@ export class Container extends React.Component<Properties> {
           userAddress={this.props.userAddress}
           userImageUrl={this.props.userImageUrl}
           userIsOnline={this.props.userIsOnline}
-          isConversationListOpen={this.props.isConversationListOpen}
           unreadConversationMessageCount={this.props.unreadConversationMessageCount}
           unreadNotificationCount={this.props.unreadNotificationCount}
           onDisconnect={this.props.onDisconnect}

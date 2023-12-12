@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { when } from 'jest-when';
 
-import { initializeUserLayout, clearUserLayout, enterFullScreenMessenger } from './saga';
+import { initializeUserLayout, enterFullScreenMessenger } from './saga';
 
 import { reducer } from '.';
 import { setactiveConversationId } from '../chat';
@@ -9,7 +9,6 @@ import { StoreBuilder } from '../test/store';
 import { rootReducer } from '../reducer';
 
 describe('layout saga', () => {
-  const sidekickKey = 'user-id-isSidekickOpen';
   const state = {
     authentication: {
       user: {
@@ -22,46 +21,6 @@ describe('layout saga', () => {
   };
 
   describe('initializeUserLayout', () => {
-    it('sets the sidekick to open when previous state was open', async () => {
-      stubLocalStorageValue(sidekickKey, 'true');
-
-      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeTrue();
-    });
-
-    it('sets the sidekick to closed when previous state was closed', async () => {
-      stubLocalStorageValue(sidekickKey, 'false');
-
-      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeFalse();
-    });
-
-    it('sets the sidekick to open when previous state is unknown', async () => {
-      stubLocalStorageValue(sidekickKey, null);
-
-      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeTrue();
-    });
-
-    it('sets the sidekick to open when previous state is not valid', async () => {
-      stubLocalStorageValue(sidekickKey, 'garbage');
-
-      const { storeState } = await expectSaga(initializeUserLayout, user({ id: 'user-id' }))
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeTrue();
-    });
-
     describe('isMessengerFullScreen', () => {
       it('sets the messenger to full screen if user is not a member of worlds', async () => {
         stubLocalStorageValue('fullScreenMessenger', 'false');
@@ -82,16 +41,6 @@ describe('layout saga', () => {
 
         expect(storeState.layout.value.isMessengerFullScreen).toBeTrue();
       });
-    });
-  });
-
-  describe('clearUserLayout', () => {
-    it('sets sidekick to closed', async () => {
-      const { storeState } = await expectSaga(clearUserLayout)
-        .withReducer(reducer, state as any)
-        .run();
-
-      expect(storeState.value.isSidekickOpen).toBeFalse();
     });
   });
 });

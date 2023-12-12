@@ -15,7 +15,6 @@ jest.mock('./lib/feature-flags', () => ({
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
-      isSidekickOpen: false,
       hasContextPanel: false,
       isContextPanelOpen: false,
       isMessengerFullScreen: false,
@@ -144,7 +143,6 @@ describe(Main, () => {
           value: {
             isContextPanelOpen: true,
             hasContextPanel: true,
-            isSidekickopen: false,
             isMessengerFullScreen: true,
           },
         } as any,
@@ -152,7 +150,6 @@ describe(Main, () => {
 
       expect(state.isContextPanelOpen).toBeFalse();
       expect(state.hasContextPanel).toBeFalse();
-      expect(state.isSidekickOpen).toBeTrue();
     });
   });
 });

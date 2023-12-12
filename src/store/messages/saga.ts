@@ -87,7 +87,7 @@ const _isActive = (channelId) => (state) => {
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* getLocalZeroUsersMap() {
-  const users = yield select((state) => state.normalized.users);
+  const users = yield select((state) => state.normalized.users || {});
   const zeroUsersMap: { [matrixId: string]: User } = {};
   for (const user of Object.values(users)) {
     zeroUsersMap[(user as User).matrixId] = user as User;

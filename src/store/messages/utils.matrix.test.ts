@@ -101,7 +101,7 @@ describe(mapMessageSenders, () => {
     });
   });
 
-  it('sets the parentMessage to message if present in state', async () => {
+  it('sets the parentMessage to message if present in the message list', async () => {
     const initialState = {
       normalized: {
         users: {
@@ -119,7 +119,20 @@ describe(mapMessageSenders, () => {
     expect(messages[1].parentMessage).toEqual(messages[0]); // check if the parent message is assigned properly
   });
 
-  it('calls matrix API to fetch parent message if not present in state', async () => {
+  it('sets the parentMessage to message if not present in the message list but IS present in state', async () => {
+    const messages = [
+      { id: '1', parentMessageId: 'existing-message-1', message: 'message-1', sender: { userId: 'matrix-1' } } as any,
+    ];
+    const initialState = new StoreBuilder()
+      .withUsers({ userId: 'user-1', matrixId: 'matrix-1' })
+      .withConversationList({ id: '1', messages: [{ id: 'existing-message-1', message: 'the parent!' } as any] });
+
+    await expectSaga(mapMessageSenders, messages, 'channel-id').withState(initialState.build()).run();
+
+    expect(messages[0].parentMessageText).toEqual('the parent!');
+  });
+
+  it('calls matrix API to fetch parent message if not present in the message list OR state', async () => {
     const initialState = {
       normalized: {
         users: {

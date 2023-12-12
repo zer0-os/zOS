@@ -17,7 +17,12 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
     if (message.parentMessageId) {
       let parentMessage = messagesById[message.parentMessageId];
       if (!parentMessage) {
-        // if we don't have the parent message in our list, we need to fetch it
+        // Check the state for the message
+        parentMessage = yield select(messageSelector(message.parentMessageId));
+      }
+
+      if (!parentMessage) {
+        // if we don't have the parent message in our list or in state we need to fetch it
         // this can happen when a message is a reply to a message which is not in the current page/list
         parentMessage = yield call([chatClient, chatClient.getMessageByRoomId], channelId, message.parentMessageId);
         parentMessage.sender = zeroUsersMap[parentMessage.sender?.userId] || parentMessage.sender;

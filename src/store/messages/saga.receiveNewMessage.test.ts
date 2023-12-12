@@ -37,6 +37,21 @@ describe(receiveNewMessage, () => {
     expect(channel.messages[1].id).toEqual('new-message');
   });
 
+  it('maps the message users', async () => {
+    const channelId = 'channel-id';
+    const message = { id: 'message-id', message: 'test message', sender: { userId: 'matrix-id' } };
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: channelId })
+      .withUsers({ userId: 'user-1', matrixId: 'matrix-id', firstName: 'the real user' });
+
+    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const channel = denormalizeChannel(channelId, storeState);
+    expect(channel.messages[0].sender.firstName).toEqual('the real user');
+  });
+
   it('adds the link previews to the message', async () => {
     const channelId = 'channel-id';
     const message = { id: 'message-id', message: 'www.google.com' };

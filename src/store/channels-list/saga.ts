@@ -25,7 +25,6 @@ import { currentUserSelector } from '../authentication/selectors';
 import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
 import { AdminMessageType } from '../messages';
 import { fetchNewMessages, rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
-import { featureFlags } from '../../lib/feature-flags';
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';

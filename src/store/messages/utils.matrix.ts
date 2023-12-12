@@ -1,9 +1,10 @@
 import { call, select } from 'redux-saga/effects';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { getZeroUsersMap, messageSelector } from './saga';
+import { getLocalZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
 import { userByMatrixIdSelector } from '../users/selectors';
 import { currentUserSelector } from '../authentication/saga';
+import { replaceZOSUserFields } from '../channels-list/utils';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   const chatClient = yield call(chat.get);
@@ -32,35 +33,27 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
 // takes in a list of messages, and maps the sender to a ZERO user for each message
 // this is used to display the sender's name and profile image
 export function* mapMessageSenders(messages, channelId) {
-  const zeroUsersMap = yield call(getZeroUsersMap);
+  const localUsersMap = yield call(getLocalZeroUsersMap);
 
   const matrixIds = [];
   for (const m of messages) {
-    // it's possible that our "cache" doesn't have the sender because (s)he has left the room
+    // it's possible that our "cache" doesn't have the sender because they have left the room
     // in that case we need to record the Id, and fetch it's profile using the API
-    if (m.sender?.userId && !zeroUsersMap[m.sender.userId]) {
+    if (m.sender?.userId && !localUsersMap[m.sender.userId]) {
       matrixIds.push(m.sender.userId);
     }
   }
 
   if (matrixIds.length) {
     const zeroUsers = yield call(getZEROUsersAPI, matrixIds);
-    for (const user of zeroUsers) {
-      zeroUsersMap[user.matrixId] = {
-        userId: user.id,
-        profileId: user.profileSummary?.id,
-        firstName: user.profileSummary?.firstName,
-        lastName: user.profileSummary?.lastName,
-        profileImage: user.profileSummary?.profileImage,
-      };
-    }
+    zeroUsers.forEach((u) => (localUsersMap[u.matrixId] = u));
   }
 
   messages.forEach((message) => {
-    message.sender = zeroUsersMap[message.sender?.userId] || message.sender; // note: message.sender.userId is the matrixId
+    message.sender = localUsersMap[message.sender?.userId] || message.sender; // note: message.sender.userId is the matrixId
   });
 
-  yield call(mapParentForMessages, messages, channelId, zeroUsersMap);
+  yield call(mapParentForMessages, messages, channelId, localUsersMap);
 }
 
 // maps a newly sent/received message sender + parentMessage to a ZERO user

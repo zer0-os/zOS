@@ -2,8 +2,6 @@ import { call, select } from 'redux-saga/effects';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getLocalZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
-import { userByMatrixIdSelector } from '../users/selectors';
-import { currentUserSelector } from '../authentication/saga';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   const chatClient = yield call(chat.get);
@@ -17,7 +15,12 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
     if (message.parentMessageId) {
       let parentMessage = messagesById[message.parentMessageId];
       if (!parentMessage) {
-        // if we don't have the parent message in our list, we need to fetch it
+        // Check the state for the message
+        parentMessage = yield select(messageSelector(message.parentMessageId));
+      }
+
+      if (!parentMessage) {
+        // if we don't have the parent message in our list or in state we need to fetch it
         // this can happen when a message is a reply to a message which is not in the current page/list
         parentMessage = yield call([chatClient, chatClient.getMessageByRoomId], channelId, message.parentMessageId);
         parentMessage.sender = zeroUsersMap[parentMessage.sender?.userId] || parentMessage.sender;
@@ -53,29 +56,4 @@ export function* mapMessageSenders(messages, channelId) {
   });
 
   yield call(mapParentForMessages, messages, channelId, localUsersMap);
-}
-
-// maps a newly sent/received message sender + parentMessage to a ZERO user
-export function* mapReceivedMessage(message) {
-  const matrixId = message.sender?.userId;
-
-  const currentUser = yield select(currentUserSelector());
-  if (currentUser && matrixId === currentUser.matrixId) {
-    message.sender = {
-      userId: currentUser.id,
-      profileId: currentUser.profileSummary?.id,
-      firstName: currentUser.profileSummary?.firstName,
-      lastName: currentUser.profileSummary?.lastName,
-      profileImage: currentUser.profileSummary?.profileImage,
-    };
-  } else {
-    const user = yield select(userByMatrixIdSelector, matrixId);
-    message.sender = user || message.sender;
-  }
-
-  if (message.parentMessageId) {
-    const parentMessage = yield select(messageSelector(message.parentMessageId));
-    message.parentMessage = parentMessage || {};
-    message.parentMessageText = parentMessage?.message;
-  }
 }

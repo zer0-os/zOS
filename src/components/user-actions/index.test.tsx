@@ -88,24 +88,6 @@ describe('UserActions', () => {
     expect(notificationButton(wrapper).find('.user-actions__badge').text()).toEqual('9+');
   });
 
-  it('opens the conversation list', () => {
-    const updateConversationState = jest.fn();
-    const wrapper = subject({ updateConversationState, isConversationListOpen: false });
-
-    conversationButton(wrapper).simulate('click');
-
-    expect(updateConversationState).toBeCalledWith(true);
-  });
-
-  it('closes the conversation list', () => {
-    const updateConversationState = jest.fn();
-    const wrapper = subject({ updateConversationState, isConversationListOpen: true });
-
-    conversationButton(wrapper).simulate('click');
-
-    expect(updateConversationState).toBeCalledWith(false);
-  });
-
   it('renders conversation list closed', () => {
     const wrapper = subject({ isConversationListOpen: false });
 

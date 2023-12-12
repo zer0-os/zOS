@@ -10,7 +10,6 @@ import { isElectron } from '../../utils';
 import { Button as ConnectButton } from '../../components/authentication/button';
 import './styles.scss';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import { updateSidekick } from '../../store/layout';
 import { UserActionsContainer } from '../user-actions/container';
 
 import { WalletSelectModal } from '../wallet-select/modal';
@@ -63,7 +62,6 @@ export class Container extends React.Component<Properties> {
       logout,
       loginByWeb3,
       setWalletModalOpen,
-      updateConversationState: (isOpen: boolean) => updateSidekick({ isOpen }),
     };
   }
 
@@ -116,7 +114,6 @@ export class Container extends React.Component<Properties> {
             userAddress={this.props.currentAddress}
             userImageUrl={this.props.userImageUrl}
             userIsOnline={this.props.userIsOnline}
-            updateConversationState={this.props.updateConversationState}
             isConversationListOpen={this.props.isConversationListOpen}
             onDisconnect={this.handleDisconnect}
           />

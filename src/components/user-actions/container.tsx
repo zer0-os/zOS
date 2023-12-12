@@ -12,7 +12,6 @@ interface PublicProperties {
   userImageUrl?: string;
   userIsOnline: boolean;
   isConversationListOpen: boolean;
-  updateConversationState: (isOpen: boolean) => void;
   onDisconnect: () => void;
 }
 export interface Properties extends PublicProperties {
@@ -51,7 +50,6 @@ export class Container extends React.Component<Properties> {
           isConversationListOpen={this.props.isConversationListOpen}
           unreadConversationMessageCount={this.props.unreadConversationMessageCount}
           unreadNotificationCount={this.props.unreadNotificationCount}
-          updateConversationState={this.props.updateConversationState}
           onDisconnect={this.props.onDisconnect}
         />
       </>

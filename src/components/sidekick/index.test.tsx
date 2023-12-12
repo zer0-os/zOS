@@ -9,7 +9,6 @@ describe('Sidekick', () => {
     const allProps = {
       className: '',
       isOpen: false,
-      closeConversations: () => null,
       ...props,
     };
 
@@ -17,7 +16,7 @@ describe('Sidekick', () => {
   };
 
   it('renders sidekick state when closed', () => {
-    const wrapper = subject({ isOpen: false });
+    const wrapper = subject({});
 
     const sidekick = wrapper.find('.sidekick');
 
@@ -29,15 +28,5 @@ describe('Sidekick', () => {
 
     expect(wrapper.find(MessengerList).exists()).toBe(true);
     expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
-  });
-
-  it('closes conversations when list publishes close event', () => {
-    const closeConversations = jest.fn();
-
-    const wrapper = subject({ closeConversations });
-
-    wrapper.find(MessengerList).simulate('close');
-
-    expect(closeConversations).toHaveBeenCalledOnce();
   });
 });

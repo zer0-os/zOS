@@ -213,7 +213,6 @@ export function adminMessageText(message: Message, state: RootState) {
       return translateMemberLeftGroup(message.admin, state) ?? text;
     case AdminMessageType.MEMBER_ADDED_TO_CONVERSATION:
       return translateMemberAddedToGroup(message.admin, state) ?? text;
-
     default:
       return text;
   }

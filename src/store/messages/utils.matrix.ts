@@ -4,7 +4,6 @@ import { getLocalZeroUsersMap, messageSelector } from './saga';
 import { chat } from '../../lib/chat';
 import { userByMatrixIdSelector } from '../users/selectors';
 import { currentUserSelector } from '../authentication/saga';
-import { replaceZOSUserFields } from '../channels-list/utils';
 
 function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
   const chatClient = yield call(chat.get);

@@ -21,7 +21,7 @@ import {
 import { SagaActionTypes, setStatus } from '.';
 import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
-import { conversationsChannel } from './channels';
+import { ConversationEvents, getConversationsBus } from './channels';
 import { multicastChannel } from 'redux-saga';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
@@ -167,11 +167,11 @@ describe('channels list saga', () => {
 
       await subject(fetchConversations, undefined)
         .provide([
-          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
+          [matchers.call.fn(getConversationsBus), conversationsChannelStub],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-        .put(conversationsChannelStub, { loaded: true })
+        .put(conversationsChannelStub, { type: ConversationEvents.ConversationsLoaded })
         .run();
     });
 

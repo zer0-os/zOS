@@ -478,10 +478,13 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
     return;
   }
 
+  const updatedMembers = channel.otherMembers.filter((userId) => userId !== existingUser.userId);
+
   yield put(
     receiveChannel({
       id: channel.id,
-      otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
+      isOneOnOne: updatedMembers.length === 1,
+      otherMembers: updatedMembers,
     })
   );
 }

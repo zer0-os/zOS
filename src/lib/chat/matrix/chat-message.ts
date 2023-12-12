@@ -81,7 +81,7 @@ function getAdminDataFromEventType(type, content, userId, targetUserId) {
     case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
     case EventType.RoomMember:
-      return getRoomMemberAdminData(content, userId, targetUserId);
+      return getRoomMemberAdminData(content, targetUserId);
     case EventType.RoomCreate:
       return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: userId };
     default:
@@ -89,10 +89,10 @@ function getAdminDataFromEventType(type, content, userId, targetUserId) {
   }
 }
 
-function getRoomMemberAdminData(content, userId, targetUserId) {
+function getRoomMemberAdminData(content, targetUserId) {
   switch (content.membership) {
     case MembershipStateType.Leave:
-      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: userId };
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: targetUserId };
     case MembershipStateType.Invite:
       return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, creatorId: targetUserId };
     default:

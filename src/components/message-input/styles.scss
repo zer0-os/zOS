@@ -9,6 +9,7 @@
   from {
     background-color: rgba(0, 0, 0, 0);
   }
+
   to {
     background-color: #c9fd51;
   }
@@ -21,6 +22,7 @@
     animation: fade-background-in 200ms ease-in forwards;
     border-radius: 4px;
   }
+
   mark {
     padding: 3px;
     border-radius: 5px;
@@ -34,10 +36,8 @@
   justify-content: flex-end;
   align-items: flex-end;
   gap: 8px;
-  border-top: 1px solid theme.$color-greyscale-transparency-6;
 
   &--editing {
-    border-top: none;
     padding: 0;
     margin-right: none;
   }

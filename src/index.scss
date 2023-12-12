@@ -2,6 +2,7 @@
 @use 'modules/animation' as animation;
 @use 'shared-components/theme-engine/theme' as theme;
 @import './scrollbar';
+@import './functions';
 
 @import-normalize;
 
@@ -20,7 +21,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background: theme.$platform-background;
+  background-image: url(cloudAsset('messenger_background.png'));
+  background-size: cover;
+  background-repeat: no-repeat;
+
   transition: color animation.$animation-duration-double ease-out;
 
   --box-radius: 16px;

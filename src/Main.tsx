@@ -92,7 +92,7 @@ export class Container extends React.Component<Properties> {
 
         {this.props.context.isAuthenticated && (
           <>
-            <Sidekick className='main__sidekick' />
+            <Sidekick />
             <MessengerChat />
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />

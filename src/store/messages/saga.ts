@@ -107,16 +107,16 @@ export function* getLocalZeroUsersMap() {
   return zeroUsersMap;
 }
 
-export function* mapMessagesAndPreview(messagesResponse, channelId) {
-  yield call(mapMessageSenders, messagesResponse.messages, channelId);
-  for (const message of messagesResponse.messages) {
+export function* mapMessagesAndPreview(messages, channelId) {
+  yield call(mapMessageSenders, messages, channelId);
+  for (const message of messages) {
     const preview = yield call(getPreview, message.message);
     if (preview) {
       message.preview = preview;
     }
   }
 
-  return messagesResponse.messages;
+  return messages;
 }
 
 export function* fetch(action) {
@@ -140,7 +140,7 @@ export function* fetch(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
     yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
@@ -312,7 +312,7 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
 
     yield put(
       receive({

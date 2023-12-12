@@ -216,45 +216,6 @@ describe('messenger-chat', () => {
       expect(groupManagementMenuContainer.exists()).toBeTrue();
     });
 
-    it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
-        } as Channel,
-      });
-
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(false);
-    });
-
-    it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
-        } as Channel,
-      });
-
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(true);
-    });
-
     it('can start add group member group management saga', async function () {
       const startAddGroupMember = jest.fn();
       const wrapper = subject({ startAddGroupMember });
@@ -414,25 +375,82 @@ describe('messenger-chat', () => {
   });
 
   describe('room management', () => {
-    it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
-      const wrapper = subject({ isCurrentUserRoomAdmin: true });
+    describe('edit members', () => {
+      it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
+        const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
-    });
-
-    it('does NOT allow editing if user is NOT an admin', () => {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: stubConversation({ isOneOnOne: false }),
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
       });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      it('does NOT allow editing if user is NOT an admin', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: false,
+          directMessage: stubConversation({ isOneOnOne: false }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      });
+
+      it('does NOT allow editing if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      });
     });
 
-    it('does NOT allow editing if conversation is considered a 1 on 1', () => {
-      const wrapper = subject({ isCurrentUserRoomAdmin: true, directMessage: stubConversation({ isOneOnOne: true }) });
+    describe('add members', () => {
+      it('allows adding of members if user is an admin and conversation is not a 1 on 1', () => {
+        const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(true);
+      });
+
+      it('does NOT allow adding of members if user is NOT an admin', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: false,
+          directMessage: stubConversation({ isOneOnOne: false }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+      });
+
+      it('does NOT allow adding of members if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+      });
+    });
+
+    describe('leave', () => {
+      it('allows user to leave if user is not an admin and conversation is not a 1 on 1', () => {
+        const wrapper = subject({ isCurrentUserRoomAdmin: false });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canLeaveRoom')).toBe(true);
+      });
+
+      it('does NOT allow user to leave if user is an admin', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: false }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canLeaveRoom')).toBe(false);
+      });
+
+      it('does NOT allow user to leave if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: false,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canLeaveRoom')).toBe(false);
+      });
     });
   });
 });

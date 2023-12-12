@@ -12,7 +12,6 @@ export interface Properties {
   userAddress: string;
   userImageUrl?: string;
   userIsOnline: boolean;
-  isConversationListOpen: boolean;
   unreadConversationMessageCount: number;
   unreadNotificationCount: number;
   onDisconnect: () => void;
@@ -62,7 +61,7 @@ export class UserActions extends React.Component<Properties, State> {
       <>
         <div className='user-actions'>
           <button className='user-actions__icon-button'>
-            <IconMessageSquare2 isFilled={this.props.isConversationListOpen} />
+            <IconMessageSquare2 isFilled />
             {this.props.unreadConversationMessageCount > 0 && (
               <div className='user-actions__badge'>{this.unreadConversationCount}</div>
             )}

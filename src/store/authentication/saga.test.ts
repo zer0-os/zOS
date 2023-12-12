@@ -253,7 +253,7 @@ describe(getCurrentUserWithChatAccessToken, () => {
 describe('clearUserState', () => {
   it('resets layout', async () => {
     await expectSaga(clearUserState)
-      .put(update({ isSidekickOpen: false, isMessengerFullScreen: true }))
+      .put(update({ isMessengerFullScreen: true }))
       .put(receive([]))
       .withReducer(rootReducer)
       .run();

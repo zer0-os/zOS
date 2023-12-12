@@ -31,7 +31,6 @@ export interface Properties extends PublicProperties {
   userImageUrl: string;
   userIsOnline: boolean;
   updateConversationState: (isOpen: boolean) => void;
-  isConversationListOpen: boolean;
   isConnecting: boolean;
 }
 
@@ -41,7 +40,6 @@ export class Container extends React.Component<Properties> {
       web3: { status, value, isWalletModalOpen },
       authentication: { user },
       login,
-      layout,
     } = state;
 
     const userData = user?.data;
@@ -52,7 +50,6 @@ export class Container extends React.Component<Properties> {
       isWalletModalOpen,
       userImageUrl: userData?.profileSummary?.profileImage || '',
       userIsOnline: !!userData?.isOnline,
-      isConversationListOpen: !!layout?.value?.isSidekickOpen,
       isConnecting: login.loading,
     };
   }
@@ -114,7 +111,6 @@ export class Container extends React.Component<Properties> {
             userAddress={this.props.currentAddress}
             userImageUrl={this.props.userImageUrl}
             userIsOnline={this.props.userIsOnline}
-            isConversationListOpen={this.props.isConversationListOpen}
             onDisconnect={this.handleDisconnect}
           />
         </IfAuthenticated>

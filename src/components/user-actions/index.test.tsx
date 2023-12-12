@@ -14,7 +14,6 @@ describe('UserActions', () => {
       userAddress: '',
       userImageUrl: '',
       userIsOnline: false,
-      isConversationListOpen: false,
       unreadConversationMessageCount: 0,
       unreadNotificationCount: 0,
       updateConversationState: () => undefined,
@@ -86,18 +85,6 @@ describe('UserActions', () => {
     const wrapper = subject({ unreadNotificationCount: 10 });
 
     expect(notificationButton(wrapper).find('.user-actions__badge').text()).toEqual('9+');
-  });
-
-  it('renders conversation list closed', () => {
-    const wrapper = subject({ isConversationListOpen: false });
-
-    expect(wrapper.find('IconMessageSquare2').prop('isFilled')).toBeFalse();
-  });
-
-  it('renders conversation list open', () => {
-    const wrapper = subject({ isConversationListOpen: true });
-
-    expect(wrapper.find('IconMessageSquare2').prop('isFilled')).toBeTrue();
   });
 
   it('does not render the message count if it is zero', () => {

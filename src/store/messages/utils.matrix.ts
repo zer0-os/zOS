@@ -59,28 +59,3 @@ export function* mapMessageSenders(messages, channelId) {
 
   yield call(mapParentForMessages, messages, channelId, localUsersMap);
 }
-
-// maps a newly sent/received message sender + parentMessage to a ZERO user
-export function* mapReceivedMessage(message) {
-  const matrixId = message.sender?.userId;
-
-  const currentUser = yield select(currentUserSelector());
-  if (currentUser && matrixId === currentUser.matrixId) {
-    message.sender = {
-      userId: currentUser.id,
-      profileId: currentUser.profileSummary?.id,
-      firstName: currentUser.profileSummary?.firstName,
-      lastName: currentUser.profileSummary?.lastName,
-      profileImage: currentUser.profileSummary?.profileImage,
-    };
-  } else {
-    const user = yield select(userByMatrixIdSelector, matrixId);
-    message.sender = user || message.sender;
-  }
-
-  if (message.parentMessageId) {
-    const parentMessage = yield select(messageSelector(message.parentMessageId));
-    message.parentMessage = parentMessage || {};
-    message.parentMessageText = parentMessage?.message;
-  }
-}

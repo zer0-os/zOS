@@ -10,6 +10,8 @@ import {
 
 import { reducer } from '.';
 import { setactiveConversationId } from '../chat';
+import { StoreBuilder } from '../test/store';
+import { rootReducer } from '../reducer';
 
 describe('layout saga', () => {
   const sidekickKey = 'user-id-isSidekickOpen';
@@ -87,21 +89,14 @@ describe('layout saga', () => {
       });
 
       it('enters full screen messenger, and opens the first conversation if activeConversationId is null', async () => {
+        const initialState = new StoreBuilder().withConversationList({ id: 'first-channel-id' });
+
         const { storeState } = await expectSaga(enterFullScreenMessenger, {})
-          .withReducer(reducer, {
-            ...state,
-            channelsList: { value: ['first-channel-id'] } as any,
-            normalized: {
-              channels: {
-                'first-channel-id': { isChannel: false },
-              },
-            },
-            chat: { activeConversationId: null },
-          } as any)
+          .withReducer(rootReducer, initialState.build())
           .put(setactiveConversationId('first-channel-id'))
           .run();
 
-        expect(storeState.value.isMessengerFullScreen).toBeTrue();
+        expect(storeState.layout.value.isMessengerFullScreen).toBeTrue();
       });
     });
   });

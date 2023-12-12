@@ -17,8 +17,8 @@ import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
-import { rawConversationsList } from '../channels-list/saga';
 import { openConversation } from '../channels/saga';
+import { mostRecentConversation } from '../channels-list/selectors';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -154,9 +154,9 @@ function* listenForUserLogin() {
 }
 
 export function* openFirstConversation() {
-  const existingConversationsList = yield select(rawConversationsList());
-  if (existingConversationsList.length > 0) {
-    yield call(openConversation, existingConversationsList[0]);
+  const conversation = yield select(mostRecentConversation);
+  if (conversation) {
+    yield call(openConversation, conversation.id);
   }
 }
 

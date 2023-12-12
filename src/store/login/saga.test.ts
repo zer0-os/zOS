@@ -6,10 +6,11 @@ import { call } from 'redux-saga/effects';
 
 import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegistrationState } from '.';
 
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { setactiveConversationId } from '../chat';
 import { authenticateByEmail } from '../authentication/saga';
+import { StoreBuilder } from '../test/store';
 
 describe('emailLogin', () => {
   it('logs the user in', async () => {
@@ -136,17 +137,12 @@ describe('validateEmailLogin', () => {
   });
 });
 
-describe('openFirstConversation', () => {
+describe(openFirstConversation, () => {
   it('opens the first conversation', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: '1234' });
+
     await expectSaga(openFirstConversation)
-      .withReducer(rootReducer, {
-        channelsList: { value: ['1234'] } as any,
-        normalized: {
-          channels: {
-            '1234': { isChannel: false },
-          },
-        } as any,
-      } as RootState)
+      .withReducer(rootReducer, initialState.build())
       .put(setactiveConversationId('1234'))
       .run();
   });

@@ -15,6 +15,7 @@ export interface Properties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
+  userStatus: 'active' | 'offline';
 
   onLogout: () => void;
 }
@@ -157,6 +158,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
               size={'medium'}
               type={'circle'}
               imageURL={this.props.userAvatarUrl}
+              statusType={this.props.userStatus}
             />
           }
         />

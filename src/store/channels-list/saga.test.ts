@@ -6,7 +6,6 @@ import { chat } from '../../lib/chat';
 import {
   fetchConversations,
   fetchChannelsAndConversations,
-  delay,
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,

@@ -29,15 +29,14 @@ import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { receiveSearchResults } from '../../../store/users';
-import { SettingsMenu } from '../../settings-menu';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
+import { UserHeader } from './user-header';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 
 const cn = bemClassName('direct-message-members');
-const cnMessageList = bemClassName('messenger-list');
 
 export interface PublicProperties {}
 
@@ -171,10 +170,6 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isInviteDialogOpen: false });
   };
 
-  get userStatus(): 'active' | 'offline' {
-    return this.props.userIsOnline ? 'active' : 'offline';
-  }
-
   renderInviteDialog = (): JSX.Element => {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
@@ -199,20 +194,16 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
-  renderUserAccountContainer() {
+  renderUserHeader() {
     return (
-      <div {...cnMessageList('user-account-container')}>
-        {this.props.includeUserSettings && (
-          <SettingsMenu
-            onLogout={this.props.logout}
-            userName={this.props.userName}
-            userHandle={this.props.userHandle}
-            userAvatarUrl={this.props.userAvatarUrl}
-            userStatus={this.userStatus}
-          />
-        )}
-        <div {...cnMessageList('user-name')}>{this.props.userName}</div>
-      </div>
+      <UserHeader
+        userIsOnline={this.props.userIsOnline}
+        includeUserSettings={this.props.includeUserSettings}
+        onLogout={this.props.logout}
+        userName={this.props.userName}
+        userHandle={this.props.userHandle}
+        userAvatarUrl={this.props.userAvatarUrl}
+      />
     );
   }
 
@@ -269,7 +260,7 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserAccountContainer()}
+        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserHeader()}
 
         <div {...cn('')}>
           {this.renderPanel()}

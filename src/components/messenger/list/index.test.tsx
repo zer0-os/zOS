@@ -14,8 +14,8 @@ import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { SettingsMenu } from '../../settings-menu';
 import { GroupManagementContainer } from './group-management/container';
+import { UserHeader } from './user-header';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -73,34 +73,16 @@ describe('messenger-list', () => {
     expect(startCreateConversation).toHaveBeenCalledOnce();
   });
 
-  it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {
-    const wrapper = subject({ stage: Stage.None, includeUserSettings: true, isMessengerFullScreen: true });
+  it('renders user UserHeader when stage is equal to none', function () {
+    const wrapper = subject({ stage: Stage.None });
 
-    expect(wrapper).toHaveElement(SettingsMenu);
+    expect(wrapper).toHaveElement(UserHeader);
   });
 
-  it('does not render SettingsMenu when stage is equal to none and messenger is not fullscreen', function () {
-    const wrapper = subject({ stage: Stage.None, isMessengerFullScreen: false });
-
-    expect(wrapper).not.toHaveElement(SettingsMenu);
-  });
-
-  it('does not render SettingsMenu when stage is not equal to none', function () {
+  it('does not render UserHeader when stage is not equal to none', function () {
     const wrapper = subject({ stage: Stage.CreateOneOnOne });
 
-    expect(wrapper).not.toHaveElement(SettingsMenu);
-  });
-
-  it('renders users name when stage is equal to none', function () {
-    const wrapper = subject({ stage: Stage.None, userName: 'Joe Bloggs' });
-
-    expect(wrapper.find('.messenger-list__user-name').text()).toEqual('Joe Bloggs');
-  });
-
-  it('does not render users name when stage is not equal to none', function () {
-    const wrapper = subject({ stage: Stage.CreateOneOnOne, userName: 'Joe Bloggs' });
-
-    expect(wrapper).not.toHaveElement('.messenger-list__user-name');
+    expect(wrapper).not.toHaveElement(UserHeader);
   });
 
   it('renders CreateConversationPanel', function () {

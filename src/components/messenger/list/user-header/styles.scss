@@ -1,0 +1,18 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+
+.user-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  height: 32px;
+  gap: 8px;
+  background-color: theme.$color-primary-3;
+
+  &__user-name {
+    font-size: $font-size-small;
+    font-weight: 600;
+    line-height: 15px;
+    color: rgba(253, 253, 255, 0.93);
+  }
+}

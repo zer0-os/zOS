@@ -202,6 +202,7 @@ export class Container extends React.Component<Properties, State> {
         userHandle={this.props.userHandle}
         userAvatarUrl={this.props.userAvatarUrl}
         includeUserSettings={this.props.includeUserSettings}
+        startConversation={this.props.startCreateConversation}
         onLogout={this.props.logout}
       />
     );
@@ -220,7 +221,6 @@ export class Container extends React.Component<Properties, State> {
             conversations={this.props.conversations}
             onCreateConversation={this.createOneOnOneConversation}
             onConversationClick={this.props.onConversationClick}
-            startConversation={this.props.startCreateConversation}
             myUserId={this.props.myUserId}
             activeConversationId={this.props.activeConversationId}
           />

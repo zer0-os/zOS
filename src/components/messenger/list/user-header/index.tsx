@@ -1,9 +1,11 @@
 import * as React from 'react';
 
 import { SettingsMenu } from '../../../settings-menu';
+import { IconButton } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
+import { IconPlus } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('user-header');
 
@@ -15,6 +17,7 @@ export interface Properties {
 
   includeUserSettings?: boolean;
   onLogout?: () => void;
+  startConversation: () => void;
 }
 
 export class UserHeader extends React.Component<Properties> {
@@ -35,6 +38,8 @@ export class UserHeader extends React.Component<Properties> {
           />
         )}
         <div {...cn('user-name')}>{this.props.userName}</div>
+
+        <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={32} />
       </div>
     );
   }

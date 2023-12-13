@@ -68,7 +68,7 @@ describe('messenger-list', () => {
     const startCreateConversation = jest.fn();
     const wrapper = subject({ startCreateConversation });
 
-    wrapper.find(ConversationListPanel).prop('startConversation')();
+    wrapper.find(UserHeader).prop('startConversation')();
 
     expect(startCreateConversation).toHaveBeenCalledOnce();
   });

@@ -12,7 +12,6 @@ describe('ConversationListPanel', () => {
       activeConversationId: '',
       search: () => undefined,
       onConversationClick: () => null,
-      startConversation: () => null,
       onCreateConversation: () => null,
       ...props,
     };

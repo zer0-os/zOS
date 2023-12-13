@@ -10,6 +10,7 @@
   background-color: theme.$color-primary-3;
 
   &__user-name {
+    width: 100%;
     font-size: $font-size-small;
     font-weight: 600;
     line-height: 15px;

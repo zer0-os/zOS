@@ -25,7 +25,6 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   viewMode: ViewModes;
-  isFullScreen: boolean;
 }
 
 export class Container extends React.Component<Properties> {
@@ -35,12 +34,10 @@ export class Container extends React.Component<Properties> {
       theme: {
         value: { viewMode },
       },
-      layout,
     } = state;
 
     return {
       viewMode,
-      isFullScreen: layout.value?.isMessengerFullScreen,
       currentUserId: user?.id,
     };
   }
@@ -66,7 +63,6 @@ export class Container extends React.Component<Properties> {
         viewMode={this.props.viewMode}
         reply={this.props.reply}
         replyIsCurrentUser={replyIsCurrentUser}
-        isMessengerFullScreen={this.props.isFullScreen}
         isEditing={this.props.isEditing}
         sendDisabledMessage={this.props.sendDisabledMessage}
       />

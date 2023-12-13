@@ -12,7 +12,6 @@ export class StoreBuilder {
 
   activeChannel: Partial<Channel> = {};
   activeConversation: Partial<Channel> = {};
-  isFullScreenMessenger: boolean = true;
   currentUser: Partial<AuthenticatedUser> = stubAuthenticatedUser();
   groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
@@ -53,16 +52,6 @@ export class StoreBuilder {
     return this.withCurrentUser({ id });
   }
 
-  inFullScreenMessenger() {
-    this.isFullScreenMessenger = true;
-    return this;
-  }
-
-  inWindowedMode() {
-    this.isFullScreenMessenger = false;
-    return this;
-  }
-
   withOtherState(data: any) {
     this.otherState = data;
     return this;
@@ -101,9 +90,7 @@ export class StoreBuilder {
         activeConversationId: this.activeConversation.id || null,
       },
       layout: {
-        value: {
-          isMessengerFullScreen: this.isFullScreenMessenger,
-        },
+        value: {},
       },
       authentication: {
         user: { data: this.currentUser },

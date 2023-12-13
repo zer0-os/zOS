@@ -27,11 +27,9 @@ import {
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { receive } from '../channels-list';
-import { update } from '../layout';
 import { rootReducer } from '../reducer';
 import { clearNotifications } from '../notifications/saga';
 import { clearChannelsAndConversations } from '../channels-list/saga';
-import { clearUserLayout } from '../layout/saga';
 import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
@@ -252,11 +250,7 @@ describe(getCurrentUserWithChatAccessToken, () => {
 
 describe('clearUserState', () => {
   it('resets layout', async () => {
-    await expectSaga(clearUserState)
-      .put(update({ isMessengerFullScreen: true }))
-      .put(receive([]))
-      .withReducer(rootReducer)
-      .run();
+    await expectSaga(clearUserState).put(receive([])).withReducer(rootReducer).run();
   });
 
   it('verifies state reset calls', async () => {
@@ -265,7 +259,6 @@ describe('clearUserState', () => {
       .call(clearMessages)
       .call(clearUsers)
       .call(clearNotifications)
-      .call(clearUserLayout)
       .withReducer(rootReducer)
       .run();
   });

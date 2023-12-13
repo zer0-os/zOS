@@ -14,7 +14,6 @@ describe('Container', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isLoading: false,
-      isFullScreen: false,
       withTitleBar: true,
       meow: '',
       meowInUSD: 0,
@@ -49,22 +48,6 @@ describe('Container', () => {
         ...rewardState(),
       } as RootState;
     }
-
-    test('withTitleBar', async () => {
-      let state = Container.mapState({ ...baseState(), ...authState({ isAMemberOfWorlds: false }) } as RootState);
-      expect(state.withTitleBar).toEqual(false);
-
-      state = Container.mapState({ ...baseState(), ...authState({ isAMemberOfWorlds: true }) } as RootState);
-      expect(state.withTitleBar).toEqual(true);
-    });
-
-    test('isFullScreen', async () => {
-      let state = Container.mapState({ ...baseState(), ...layoutState({ isMessengerFullScreen: false }) } as RootState);
-      expect(state.isFullScreen).toEqual(false);
-
-      state = Container.mapState({ ...baseState(), ...layoutState({ isMessengerFullScreen: true }) } as RootState);
-      expect(state.isFullScreen).toEqual(true);
-    });
 
     test('meow', async () => {
       let state = Container.mapState({ ...baseState(), ...rewardState() } as RootState);

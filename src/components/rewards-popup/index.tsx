@@ -14,7 +14,6 @@ export interface Properties {
   usd: string;
   meow: string;
   isLoading: boolean;
-  isFullScreen: boolean;
   withTitleBar: boolean;
 
   onClose: () => void;
@@ -50,7 +49,7 @@ export class RewardsPopup extends React.Component<Properties, State> {
     return (
       <div
         className={classnames(c(''), {
-          [c('', 'full-screen')]: this.props.isFullScreen,
+          [c('', 'full-screen')]: true, // todo: merge styles
           [c('', 'with-title')]: this.props.withTitleBar,
         })}
       >

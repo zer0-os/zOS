@@ -1,4 +1,3 @@
-import getDeepProperty from 'lodash.get';
 import { call, put, race, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
@@ -163,11 +162,7 @@ export function* openFirstConversation() {
 export function* openFirstConversationAfterChannelsLoaded() {
   const channel = yield call(getConversationsBus);
   yield take(channel, ConversationEvents.ConversationsLoaded);
-
-  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
-  if (isMessengerFullScreen) {
-    yield call(openFirstConversation);
-  }
+  yield call(openFirstConversation);
 }
 
 function* listenForUserLogout() {

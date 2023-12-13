@@ -9,7 +9,6 @@ describe('rewards-container', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
-      isMessengerFullScreen: false,
       meowPreviousDay: '',
       isRewardsLoading: false,
       showRewardsInTooltip: false,

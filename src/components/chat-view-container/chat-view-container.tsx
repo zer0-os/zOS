@@ -34,7 +34,6 @@ export interface Properties extends PublicProperties {
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
   activeConversationId?: string;
-  isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
   };
@@ -58,14 +57,12 @@ export class Container extends React.Component<Properties, State> {
     const {
       authentication: { user },
       chat: { activeConversationId },
-      layout,
     } = state;
 
     return {
       channel,
       user,
       activeConversationId,
-      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
     };
   }
 
@@ -263,7 +260,6 @@ export class Container extends React.Component<Properties, State> {
           className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
-          isMessengerFullScreen={this.props.isMessengerFullScreen}
           messages={this.messages}
           messagesFetchStatus={this.channel.messagesFetchStatus}
           otherMembers={this.channel.otherMembers}

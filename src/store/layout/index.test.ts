@@ -5,7 +5,6 @@ describe('layout reducer', () => {
     value: {
       isContextPanelOpen: false,
       hasContextPanel: false,
-      isMessengerFullScreen: false,
     },
   };
 
@@ -14,7 +13,6 @@ describe('layout reducer', () => {
       value: {
         isContextPanelOpen: false,
         hasContextPanel: false,
-        isMessengerFullScreen: true,
       },
     });
   });

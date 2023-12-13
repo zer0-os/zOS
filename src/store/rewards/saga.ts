@@ -76,9 +76,8 @@ export function* checkNewRewardsLoaded() {
   const meowPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.meowPreviousDay'));
   const meowTotal = yield select((state) => getDeepProperty(state, 'rewards.meow'));
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
-  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
 
-  if (isMessengerFullScreen && !isFirstTimeLogin && meowPreviousDay !== '0') {
+  if (!isFirstTimeLogin && meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
     }

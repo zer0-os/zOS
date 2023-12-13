@@ -1,9 +1,7 @@
 import { call, put } from 'redux-saga/effects';
 import { setIsComplete, setShowAndroidDownload } from '.';
 import { getHistory, getNavigator } from '../../lib/browser';
-import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
-import { initializePublicLayout } from '../layout/saga';
 
 const anonymousPaths = [
   '/get-access',
@@ -35,13 +33,8 @@ function handleAuthenticatedUser(history) {
   }
 }
 
-function* handleUnauthenticatedUser(history) {
+function handleUnauthenticatedUser(history) {
   if (anonymousPaths.includes(history.location.pathname)) {
-    return;
-  }
-
-  if (featureFlags.allowPublicZOS) {
-    yield call(initializePublicLayout);
     return;
   }
 

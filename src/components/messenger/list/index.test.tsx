@@ -12,7 +12,6 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
-import { LayoutState } from '../../../store/layout/types';
 import { RewardsState } from '../../../store/rewards';
 import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
@@ -33,11 +32,6 @@ describe('messenger-list', () => {
       conversations: [],
       isFetchingExistingConversations: false,
       isFirstTimeLogin: false,
-      includeTitleBar: true,
-      allowClose: true,
-      allowExpand: true,
-      isMessengerFullScreen: false,
-      includeUserSettings: false,
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
@@ -53,7 +47,6 @@ describe('messenger-list', () => {
       membersSelected: () => null,
       startGroup: () => null,
       back: () => null,
-      enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
       rewardsTooltipClosed: () => null,
@@ -93,16 +86,10 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(RewardsContainer);
   });
 
-  it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {
-    const wrapper = subject({ stage: Stage.None, includeUserSettings: true, isMessengerFullScreen: true });
+  it('renders SettingsMenu when stage is equal to none', function () {
+    const wrapper = subject({ stage: Stage.None });
 
     expect(wrapper).toHaveElement(SettingsMenu);
-  });
-
-  it('does not render SettingsMenu when stage is equal to none and messenger is not fullscreen', function () {
-    const wrapper = subject({ stage: Stage.None, isMessengerFullScreen: false });
-
-    expect(wrapper).not.toHaveElement(SettingsMenu);
   });
 
   it('does not render SettingsMenu when stage is not equal to none', function () {
@@ -473,62 +460,6 @@ describe('messenger-list', () => {
       });
 
       expect(state.isFirstTimeLogin).toEqual(true);
-    });
-
-    test('includeTitleBar', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.includeTitleBar).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.includeTitleBar).toEqual(true);
-    });
-
-    test('allowClose', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.allowClose).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.allowClose).toEqual(true);
-    });
-
-    test('allowExpand', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.allowExpand).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.allowExpand).toEqual(true);
-    });
-
-    test('includeUserSettings', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.includeUserSettings).toEqual(true);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.includeUserSettings).toEqual(false);
     });
   });
 });

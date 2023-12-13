@@ -60,30 +60,9 @@ describe('channels list saga', () => {
   });
 
   describe('markChannelAsReadIfActive', () => {
-    it('marks all messages as read', async () => {
-      const channelId = '236844224_56299bcd523ac9084181f2422d0d0cfe9df72db4';
-      const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';
-
-      const state = new StoreBuilder()
-        .inWindowedMode()
-        .withCurrentUserId(userId)
-        .withActiveChannel({ id: channelId, unreadCount: 3 })
-        .build();
-
-      await expectSaga(markChannelAsRead, channelId)
-        .provide([
-          [matchers.call.fn(chat.get), mockChatClient],
-          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
-        ])
-        .withReducer(rootReducer, state)
-        .call(markAllMessagesAsRead, channelId, userId)
-        .run();
-    });
-
     it('does not mark all messages as read if messenger is fullscreen', async () => {
       const channelId = 'channel-id';
       const state = new StoreBuilder()
-        .inFullScreenMessenger()
         .withCurrentUserId(userId)
         .withActiveChannel({ id: channelId, unreadCount: 3 })
         .build();
@@ -101,7 +80,6 @@ describe('channels list saga', () => {
     it('does not mark all messages as read if unreadCount is 0', async () => {
       const channelId = 'channel-id';
       const state = new StoreBuilder()
-        .inWindowedMode()
         .withCurrentUserId(userId)
         .withActiveChannel({ id: channelId, unreadCount: 0 })
         .build();

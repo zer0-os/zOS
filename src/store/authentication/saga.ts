@@ -10,7 +10,6 @@ import {
 } from './api';
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
-import { clearUserLayout, initializePublicLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
@@ -105,9 +104,6 @@ export function* authenticateByEmail(email, password) {
 }
 
 export function* initializeUserState(user: User) {
-  // Note: This should probably all live in the appropriate areas and listen to the logout event
-  yield initializeUserLayout(user);
-
   yield put(
     fetchNotifications({
       userId: user.id,
@@ -122,7 +118,6 @@ export function* clearUserState() {
     call(clearMessages),
     call(clearUsers),
     call(clearNotifications),
-    call(clearUserLayout),
   ]);
 }
 
@@ -146,12 +141,8 @@ export function* publishUserLogout() {
   yield put(channel, { type: Events.UserLogout });
 }
 
-export function* redirectUnauthenticatedUser(isAccountChange: boolean) {
+export function redirectUnauthenticatedUser(isAccountChange: boolean) {
   const history = getHistory();
-
-  if (featureFlags.allowPublicZOS) {
-    yield initializePublicLayout();
-  }
 
   if (isAccountChange || featureFlags.allowPublicZOS) {
     history.replace({ pathname: '/' });

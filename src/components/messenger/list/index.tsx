@@ -25,7 +25,6 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
-import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
@@ -50,15 +49,10 @@ export interface Properties extends PublicProperties {
   conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
   isFirstTimeLogin: boolean;
-  includeTitleBar: boolean;
-  allowClose: boolean;
-  allowExpand: boolean;
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
   meowPreviousDay: string;
-  includeUserSettings: boolean;
-  isMessengerFullScreen: boolean;
   isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
   myUserId: string;
@@ -73,7 +67,6 @@ export interface Properties extends PublicProperties {
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
-  enterFullScreenMessenger: () => void;
   fetchRewards: (_obj: any) => void;
   rewardsPopupClosed: () => void;
   rewardsTooltipClosed: () => void;
@@ -92,7 +85,6 @@ export class Container extends React.Component<Properties, State> {
       registration,
       authentication: { user },
       chat: { activeConversationId },
-      layout,
       rewards,
       groupManagement,
     } = state;
@@ -108,11 +100,6 @@ export class Container extends React.Component<Properties, State> {
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
-      includeTitleBar: !layout?.value?.isMessengerFullScreen,
-      allowClose: !layout?.value?.isMessengerFullScreen,
-      allowExpand: !layout?.value?.isMessengerFullScreen,
-      includeUserSettings: layout?.value?.isMessengerFullScreen,
-      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -134,7 +121,6 @@ export class Container extends React.Component<Properties, State> {
       startGroup,
       membersSelected,
       fetchRewards,
-      enterFullScreenMessenger: () => enterFullScreenMessenger(),
       rewardsPopupClosed,
       rewardsTooltipClosed,
       logout,
@@ -217,23 +203,20 @@ export class Container extends React.Component<Properties, State> {
   renderUserAccountContainer() {
     return (
       <div {...cnMessageList('user-account-container')}>
-        {this.props.includeUserSettings && (
-          <div {...cnMessageList('settings-menu-container')}>
-            <SettingsMenu
-              onLogout={this.props.logout}
-              userName={this.props.userName}
-              userHandle={this.props.userHandle}
-              userAvatarUrl={this.props.userAvatarUrl}
-            />
-          </div>
-        )}
+        <div {...cnMessageList('settings-menu-container')}>
+          <SettingsMenu
+            onLogout={this.props.logout}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+          />
+        </div>
 
         <FeatureFlag featureFlag='enableRewards'>
-          <div {...cnMessageList('rewards-container', !this.props.includeUserSettings && 'center')}>
+          <div {...cnMessageList('rewards-container')}>
             <RewardsContainer
               meowPreviousDay={this.props.meowPreviousDay}
               isRewardsLoading={this.props.isRewardsLoading}
-              isMessengerFullScreen={this.props.isMessengerFullScreen}
               showRewardsInTooltip={this.props.showRewardsInTooltip}
               showRewardsInPopup={this.props.showRewardsInPopup}
               isFirstTimeLogin={this.props.isFirstTimeLogin}

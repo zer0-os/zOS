@@ -33,7 +33,6 @@ export interface Properties extends PublicPropertiesContainer {
   replyIsCurrentUser: boolean;
   sendDisabledMessage?: string;
   viewMode: ViewModes;
-  isMessengerFullScreen?: boolean;
   placeholder?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -431,11 +430,7 @@ export class MessageInput extends React.Component<Properties, State> {
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
 
-                      <div
-                        className={classNames('message-input__emoji-picker-container', {
-                          'message-input__emoji-picker-container--fullscreen': this.props.isMessengerFullScreen,
-                        })}
-                      >
+                      <div className={classNames('message-input__emoji-picker-container')}>
                         <EmojiPicker
                           textareaRef={this.textareaRef}
                           isOpen={this.state.isEmojisActive}
@@ -446,13 +441,7 @@ export class MessageInput extends React.Component<Properties, State> {
                           onSelect={this.onInsertEmoji}
                         />
                       </div>
-                      {this.state.isGiphyActive && (
-                        <Giphy
-                          onClickGif={this.onInsertGiphy}
-                          onClose={this.closeGiphy}
-                          isMessengerFullScreen={this.props.isMessengerFullScreen}
-                        />
-                      )}
+                      {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
                       {this.state.isMicActive && (
                         <div>
                           <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />

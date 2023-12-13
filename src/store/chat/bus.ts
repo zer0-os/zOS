@@ -1,6 +1,6 @@
 import { eventChannel, multicastChannel } from 'redux-saga';
 import { call } from 'redux-saga/effects';
-import { chat } from '../../lib/chat';
+import { Chat } from '../../lib/chat';
 
 export enum Events {
   MessageReceived = 'chat/message/received',
@@ -29,11 +29,23 @@ export function* getChatBus() {
   return theBus;
 }
 
-export function createChatConnection(userId, chatAccessToken) {
-  const chatClient = chat.get();
-
+export function createChatConnection(userId, chatAccessToken, chatClient: Chat) {
+  let setActivationResult = null;
   let connectionPromise;
-  const chatConnection = eventChannel((emit) => {
+  const chatConnection = eventChannel((rawEmit) => {
+    const activationPromise = new Promise((resolve) => {
+      setActivationResult = (result) => resolve(result);
+    });
+
+    const emit = async (event) => {
+      const activated = await activationPromise;
+      if (activated) {
+        // This may not be necessary as the eventChannel stops broadcasting
+        // when the it's closed so we could just do this willy nilly.
+        rawEmit(event);
+      }
+    };
+
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });
     const onMessageUpdated = (channelId, message) =>
@@ -81,10 +93,11 @@ export function createChatConnection(userId, chatAccessToken) {
     connectionPromise = chatClient.connect(userId, chatAccessToken);
 
     const unsubscribe = async () => {
+      setActivationResult(false);
       await chatClient.disconnect();
     };
     return unsubscribe;
   });
 
-  return { chatConnection, connectionPromise };
+  return { chatConnection, connectionPromise, activate: () => setActivationResult(true) };
 }

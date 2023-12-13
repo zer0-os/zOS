@@ -17,17 +17,6 @@ $side-padding: 16px;
 }
 
 .messenger-list {
-  &__header {
-    height: 32px;
-    background-color: theme.$color-primary-3;
-    border-radius: 8px 8px 0px 0px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 2px;
-    align-items: center;
-    padding-right: 13px;
-  }
-
   &__user-account-container {
     display: flex;
     align-items: center;

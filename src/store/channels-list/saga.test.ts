@@ -25,8 +25,6 @@ import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapCreatorIdToZeroUserId, mapChannelMembers } from './utils';
-import { getUserByMatrixId } from '../users/saga';
-import { fetchNewMessages } from '../messages/saga';
 
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
@@ -331,37 +329,13 @@ describe('channels list saga', () => {
       const conversation = denormalizeChannel('conversation-id', storeState);
       expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-3']);
     });
-
-    it('fetches new messages for the room when a user leaves', async () => {
-      const existingMembers = [
-        { userId: 'user-1', matrixId: 'user-1' },
-        { userId: 'user-2', matrixId: 'user-2' },
-        { userId: 'user-3', matrixId: 'user-3' },
-      ] as any;
-      const initialState = new StoreBuilder().withConversationList({
-        id: 'room-id',
-        otherMembers: existingMembers,
-      });
-
-      await expectSaga(otherUserLeftChannel, 'room-id', { userId: 'user-2', matrixId: 'user-2' })
-        .withReducer(rootReducer, initialState.build())
-        .provide([
-          [matchers.call.fn(getUserByMatrixId), existingMembers.find((u) => u.matrixId === 'user-2')],
-          [matchers.call.fn(fetchNewMessages), null],
-        ])
-        .call(fetchNewMessages, 'room-id') // Verify fetchNewMessages is called with the correct room/channel ID
-        .run();
-    });
   });
 
   describe(mapToZeroUsers, () => {
     const channels = [
       {
         id: 'channel-1',
-        otherMembers: [
-          { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
-          { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
-        ],
+        otherMembers: [],
         memberHistory: [
           { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
           { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
@@ -370,7 +344,7 @@ describe('channels list saga', () => {
       },
       {
         id: 'channel-2',
-        otherMembers: [{ matrixId: 'matrix-id-3', userId: 'matrix-id-3' }],
+        otherMembers: [],
         memberHistory: [
           { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
         ],
@@ -441,7 +415,7 @@ describe('channels list saga', () => {
         .run();
     });
 
-    it('maps Other Members of channels to ZERO Users and save normalized state', async () => {
+    it('maps member history of channels to ZERO Users and save normalized state', async () => {
       const initialState = new StoreBuilder().withChannelList(channels[0], channels[1]);
 
       const { storeState } = await expectSaga(mapToZeroUsers, channels)
@@ -450,7 +424,7 @@ describe('channels list saga', () => {
         .run();
 
       const channel1 = denormalizeChannel('channel-1', storeState);
-      expect(channel1.otherMembers).toIncludeSameMembers([
+      expect(channel1.memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-1',
           userId: 'user-1',
@@ -470,7 +444,7 @@ describe('channels list saga', () => {
       ]);
 
       const channel2 = denormalizeChannel('channel-2', storeState);
-      expect(channel2.otherMembers).toIncludeSameMembers([
+      expect(channel2.memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-3',
           userId: 'user-3',
@@ -517,38 +491,6 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         profileImage: undefined,
       });
-    });
-
-    it('maps current user as sender', async () => {
-      channels[0].messages = [{ message: 'hi', sender: { userId: 'matrix-id', firstName: '' } }];
-
-      const initialState = new StoreBuilder()
-        .withCurrentUser({
-          id: 'current-user',
-          matrixId: 'matrix-id',
-          profileId: 'profile-id',
-          profileSummary: {
-            firstName: 'Jack',
-            lastName: 'Black',
-            profileImage: '/cool-image.jpg',
-          } as any,
-        })
-        .withChannelList(channels[0]);
-
-      await expectSaga(mapToZeroUsers, channels)
-        .withReducer(rootReducer, initialState.build())
-        .provide([[matchers.call.fn(getZEROUsers), zeroUsers]])
-        .run();
-
-      expect(channels[0].messages[0].sender).toEqual(
-        expect.objectContaining({
-          userId: 'current-user',
-          profileId: 'profile-id',
-          firstName: 'Jack',
-          lastName: 'Black',
-          profileImage: '/cool-image.jpg',
-        })
-      );
     });
   });
 

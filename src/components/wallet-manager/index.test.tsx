@@ -58,7 +58,6 @@ describe('WalletManager', () => {
       currentAddress,
       userIsOnline: true,
       userImageUrl: 'image-url',
-      isConversationListOpen: true,
     });
     const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
 
@@ -67,7 +66,6 @@ describe('WalletManager', () => {
         userAddress: currentAddress,
         userImageUrl: 'image-url',
         userIsOnline: true,
-        isConversationListOpen: true,
       })
     );
   });
@@ -239,18 +237,6 @@ describe('WalletManager', () => {
       );
 
       expect(state.userIsOnline).toEqual(true);
-    });
-
-    test('isConversationListOpen', () => {
-      const state = subject(
-        getState({
-          layout: {
-            value: { isSidekickOpen: true },
-          },
-        })
-      );
-
-      expect(state.isConversationListOpen).toEqual(true);
     });
   });
 });

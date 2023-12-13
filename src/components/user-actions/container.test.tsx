@@ -12,7 +12,6 @@ describe('UserActionsContainer', () => {
       userAddress: '',
       userImageUrl: '',
       userIsOnline: false,
-      isConversationListOpen: false,
       unreadConversationMessageCount: 0,
       unreadNotificationCount: 0,
       updateConversationState: (_) => undefined,
@@ -28,7 +27,6 @@ describe('UserActionsContainer', () => {
       userAddress: 'the-address',
       userImageUrl: 'image-url',
       userIsOnline: true,
-      isConversationListOpen: true,
       unreadConversationMessageCount: 7,
       unreadNotificationCount: 11,
     });
@@ -38,7 +36,6 @@ describe('UserActionsContainer', () => {
         userAddress: 'the-address',
         userImageUrl: 'image-url',
         userIsOnline: true,
-        isConversationListOpen: true,
         unreadConversationMessageCount: 7,
         unreadNotificationCount: 11,
       })

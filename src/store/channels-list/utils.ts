@@ -53,7 +53,7 @@ export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: str
   }
 };
 
-function replaceZOSUserFields(
+export function replaceZOSUserFields(
   member: {
     userId: string;
     firstName: string;

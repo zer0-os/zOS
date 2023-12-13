@@ -11,7 +11,7 @@ import {
   replaceOptimisticMessage,
 } from './saga';
 
-import { RootState, rootReducer } from '../reducer';
+import { rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
@@ -192,15 +192,13 @@ describe(receiveUpdateMessage, () => {
       updatedAt: 1678861290000,
     };
 
-    const messages = { 8667728016: message };
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-1', messages: [message] as any });
 
     const { storeState } = await expectSaga(receiveUpdateMessage, {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
-      .provide([
-        ...successResponses(),
-      ])
-      .withReducer(rootReducer, { normalized: { messages } as any } as RootState)
+      .provide([...successResponses()])
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.normalized.messages).toEqual({ 8667728016: editedMessage });
@@ -208,21 +206,19 @@ describe(receiveUpdateMessage, () => {
 
   it('adds the preview if exists', async () => {
     const message = { id: 8667728016, message: 'original message' };
-    const messages = { 8667728016: message };
     const editedMessage = { id: 8667728016, message: 'edited message: www.example.com' };
     const preview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0', type: 'link' };
+
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-1', messages: [message] as any });
 
     const { storeState } = await expectSaga(receiveUpdateMessage, {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
       .provide([
-        [
-          call(getPreview, editedMessage.message),
-          preview,
-        ],
+        [call(getPreview, editedMessage.message), preview],
         ...successResponses(),
       ])
-      .withReducer(rootReducer, { normalized: { messages } as any } as RootState)
+      .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, preview });

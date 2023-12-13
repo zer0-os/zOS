@@ -16,7 +16,7 @@ import {
 } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
-import { conversationsChannel } from './channels';
+import { ConversationEvents, getConversationsBus } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
@@ -152,9 +152,8 @@ export function* fetchConversations() {
     ])
   );
 
-  // Publish a system message across the channel
-  const channel = yield call(conversationsChannel);
-  yield put(channel, { loaded: true });
+  const channel = yield call(getConversationsBus);
+  yield put(channel, { type: ConversationEvents.ConversationsLoaded });
 }
 
 export function userSelector(state, userIds) {
@@ -348,9 +347,8 @@ export function* currentUserAddedToChannel(_action) {
 
 export function* userLeftChannel(channelId, matrixId) {
   const currentUser = yield select(currentUserSelector);
-  const user = yield call(getUserByMatrixId, matrixId);
 
-  if (user?.userId === currentUser.id) {
+  if (matrixId === currentUser.matrixId) {
     yield call(currentUserLeftChannel, channelId);
   }
 }

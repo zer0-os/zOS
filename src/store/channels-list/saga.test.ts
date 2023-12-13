@@ -21,7 +21,7 @@ import {
 import { SagaActionTypes, setStatus } from '.';
 import { RootState, rootReducer } from '../reducer';
 import { AsyncListStatus } from '../normalized';
-import { conversationsChannel } from './channels';
+import { ConversationEvents, getConversationsBus } from './channels';
 import { multicastChannel } from 'redux-saga';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
@@ -167,18 +167,18 @@ describe('channels list saga', () => {
 
       await subject(fetchConversations, undefined)
         .provide([
-          [matchers.call.fn(conversationsChannel), conversationsChannelStub],
+          [matchers.call.fn(getConversationsBus), conversationsChannelStub],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
-        .put(conversationsChannelStub, { loaded: true })
+        .put(conversationsChannelStub, { type: ConversationEvents.ConversationsLoaded })
         .run();
     });
 
     it('retains conversations that are not CREATED', async () => {
       const optimisticChannel1 = { id: 'optimistic-id-1', conversationStatus: ConversationStatus.CREATING } as any;
       const optimisticChannel2 = { id: 'optimistic-id-2', conversationStatus: ConversationStatus.ERROR } as any;
-      const fetchedChannel = { id: 'conversation-id' };
+      const fetchedChannel = { id: 'conversation-id', messages: [] };
 
       const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
@@ -198,7 +198,7 @@ describe('channels list saga', () => {
     });
 
     it('removes channels that are duplicates of the newly fetched conversations', async () => {
-      const fetchedConversations = [{ id: 'previously-a-channel' }];
+      const fetchedConversations = [{ id: 'previously-a-channel', messages: [] }];
 
       const initialState = new StoreBuilder().withChannelList({ id: 'previously-a-channel' });
 
@@ -271,7 +271,7 @@ describe('channels list saga', () => {
     it('Channel is removed from list when the current user has left a channel', async () => {
       const channelId = 'channel-id';
       const initialState = new StoreBuilder()
-        .withCurrentUserId('current-user-id')
+        .withCurrentUser({ id: 'current-user-id', matrixId: 'matrix-id' })
         .withUsers({ userId: 'current-user-id', matrixId: 'matrix-id' })
         .withChannelList({ id: 'one-channel' }, { id: channelId }, { id: 'other-channel' });
 
@@ -304,7 +304,7 @@ describe('channels list saga', () => {
       const userId = 'user-id';
 
       const initialState = new StoreBuilder()
-        .withCurrentUserId(userId)
+        .withCurrentUser({ id: userId, matrixId: 'matrix-id' })
         .withUsers({ userId, matrixId: 'matrix-id' })
         .withConversationList(
           {
@@ -387,7 +387,7 @@ describe('channels list saga', () => {
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'new-convo' })
+      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -397,7 +397,7 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id' })
+      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id', messages: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 

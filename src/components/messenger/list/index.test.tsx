@@ -39,6 +39,7 @@ describe('messenger-list', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
+      userIsOnline: true,
       isInviteNotificationOpen: false,
       myUserId: '',
       onConversationClick: jest.fn(),

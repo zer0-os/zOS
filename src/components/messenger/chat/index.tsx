@@ -226,7 +226,7 @@ export class Container extends React.Component<Properties, State> {
               </span>
               <div className='direct-message-chat__group-management-menu-container'>
                 <GroupManagementMenu
-                  canAddMembers={this.props.isCurrentUserRoomAdmin}
+                  canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                   onStartAddMember={this.props.startAddGroupMember}
                   onLeave={this.openLeaveGroupDialog}
                   canLeaveRoom={
@@ -236,20 +236,6 @@ export class Container extends React.Component<Properties, State> {
                   onEdit={this.props.startEditConversation}
                 />
               </div>
-            </span>
-            <span className='direct-message-chat__description'>
-              <div className='direct-message-chat__title'>{this.renderTitle()}</div>
-              <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
-            </span>
-            <div className='direct-message-chat__group-management-menu-container'>
-              <GroupManagementMenu
-                canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                onStartAddMember={this.props.startAddGroupMember}
-                onLeave={this.openLeaveGroupDialog}
-                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
-                canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                onEdit={this.props.startEditConversation}
-              />
             </div>
           </div>
 

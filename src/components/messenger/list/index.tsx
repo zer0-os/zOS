@@ -196,15 +196,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <div {...cnMessageList('user-account-container')}>
         {this.props.includeUserSettings && (
-          <div {...cnMessageList('settings-menu-container')}>
-            <SettingsMenu
-              onLogout={this.props.logout}
-              userName={this.props.userName}
-              userHandle={this.props.userHandle}
-              userAvatarUrl={this.props.userAvatarUrl}
-            />
-          </div>
+          <SettingsMenu
+            onLogout={this.props.logout}
+            userName={this.props.userName}
+            userHandle={this.props.userHandle}
+            userAvatarUrl={this.props.userAvatarUrl}
+          />
         )}
+        <div {...cnMessageList('user-name')}>{this.props.userName}</div>
       </div>
     );
   }

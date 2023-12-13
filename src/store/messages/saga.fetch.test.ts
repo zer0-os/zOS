@@ -7,7 +7,7 @@ import { chat } from '../../lib/chat';
 import { StoreBuilder } from '../test/store';
 import { call } from 'redux-saga/effects';
 import { expectSaga } from '../../test/saga';
-import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
+import { mapCreatorIdToZeroUserId } from '../channels-list/utils';
 
 const chatClient = {
   getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),

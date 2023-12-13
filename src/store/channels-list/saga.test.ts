@@ -14,7 +14,6 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   updateUserPresence,
-  mapCreatorIdToZeroUserId,
 } from './saga';
 
 import { SagaActionTypes } from '.';
@@ -25,7 +24,7 @@ import { ConversationStatus, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
-import { mapOtherMembers } from './utils';
+import { mapCreatorIdToZeroUserId, mapChannelMembers } from './utils';
 import { getUserByMatrixId } from '../users/saga';
 import { fetchNewMessages } from '../messages/saga';
 
@@ -438,7 +437,7 @@ describe('channels list saga', () => {
       await expectSaga(mapToZeroUsers, channels)
         .withReducer(rootReducer)
         .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
-        .call(mapOtherMembers, channels, expectedMap)
+        .call(mapChannelMembers, channels, expectedMap)
         .run();
     });
 

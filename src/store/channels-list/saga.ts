@@ -7,13 +7,7 @@ import { SagaActionTypes, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
-import {
-  toLocalChannel,
-  filterChannelsList,
-  mapChannelMembers,
-  mapChannelMessages,
-  rawUserToDomainUser,
-} from './utils';
+import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';

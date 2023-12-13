@@ -198,11 +198,11 @@ export class Container extends React.Component<Properties, State> {
     return (
       <UserHeader
         userIsOnline={this.props.userIsOnline}
-        includeUserSettings={this.props.includeUserSettings}
-        onLogout={this.props.logout}
         userName={this.props.userName}
         userHandle={this.props.userHandle}
         userAvatarUrl={this.props.userAvatarUrl}
+        includeUserSettings={this.props.includeUserSettings}
+        onLogout={this.props.logout}
       />
     );
   }

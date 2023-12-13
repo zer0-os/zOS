@@ -56,4 +56,6 @@ export function* mapMessageSenders(messages, channelId) {
   });
 
   yield call(mapParentForMessages, messages, channelId, localUsersMap);
+
+  return localUsersMap;
 }

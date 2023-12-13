@@ -10,8 +10,7 @@ import { AsyncListStatus } from '../normalized';
 import {
   toLocalChannel,
   filterChannelsList,
-  mapOtherMembers as mapOtherMembersOfChannel,
-  mapMemberHistory as mapMemberHistoryOfChannel,
+  mapChannelMembers,
   mapChannelMessages,
   rawUserToDomainUser,
 } from './utils';
@@ -41,8 +40,7 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
   for (const channel of channels) {
-    const combinedMembers = [...(channel.otherMembers || []), ...(channel.memberHistory || [])];
-    const matrixIds = combinedMembers.filter((u) => u).map((u) => u.matrixId);
+    const matrixIds = channel.memberHistory.map((u) => u.matrixId);
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
@@ -52,38 +50,9 @@ export function* mapToZeroUsers(channels: any[]) {
     zeroUsersMap[user.matrixId] = user;
   }
 
-  const currentUser = yield select(currentUserSelector);
-  if (currentUser && currentUser.matrixId) {
-    zeroUsersMap[currentUser.matrixId] = rawUserToDomainUser(currentUser);
-  }
-
-  yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);
-  yield call(mapMemberHistoryOfChannel, channels, zeroUsersMap);
+  yield call(mapChannelMembers, channels, zeroUsersMap);
   yield call(mapChannelMessages, channels, zeroUsersMap);
   return;
-}
-
-export function* mapCreatorIdToZeroUserId(messageContainers) {
-  const currentUser = yield select(currentUserSelector);
-
-  if (!currentUser || !currentUser.matrixId) {
-    return;
-  }
-
-  const currentUserId = currentUser.id;
-
-  for (const container of messageContainers) {
-    for (const message of container.messages) {
-      if (message.isAdmin && message.admin.creatorId) {
-        if (message.admin.creatorId === currentUser.matrixId) {
-          message.admin.creatorId = currentUserId;
-        } else {
-          const user = yield call(getUserByMatrixId, message.admin.creatorId);
-          message.admin.creatorId = user.userId;
-        }
-      }
-    }
-  }
 }
 
 export function* updateUserPresence(conversations) {
@@ -118,7 +87,6 @@ export function* fetchConversations() {
 
   yield call(mapToZeroUsers, conversations);
   yield call(updateUserPresence, conversations);
-  yield call(mapCreatorIdToZeroUserId, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -415,7 +383,6 @@ export function* addChannel(channel) {
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
   yield call(updateUserPresence, [channel]);
-  yield call(mapCreatorIdToZeroUserId, [channel]);
 
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
 }
@@ -464,7 +431,7 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
   yield put(
     receiveChannel({
       id: channel.id,
-      otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
+      otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
     })
   );
 

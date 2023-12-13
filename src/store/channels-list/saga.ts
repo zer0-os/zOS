@@ -3,7 +3,7 @@ import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
+import { SagaActionTypes, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
@@ -105,29 +105,8 @@ export function* updateUserPresence(conversations) {
   }
 }
 
-export function* fetchChannels(action) {
-  yield put(setStatus(AsyncListStatus.Fetching));
-
-  const chatClient = yield call(chat.get);
-  const channelsList = yield call(
-    [
-      chatClient,
-      chatClient.getChannels,
-    ],
-    action.payload
-  );
-  yield call(mapToZeroUsers, channelsList);
-
-  const conversationsList = yield select(rawConversationsList());
-
-  yield put(
-    receive([
-      ...channelsList,
-      ...conversationsList,
-    ])
-  );
-
-  yield put(setStatus(AsyncListStatus.Idle));
+export function* fetchChannels(_action) {
+  // TODO: Remove this function completely. For now, empty it to find out if anything breaks.
 }
 
 export function* fetchConversations() {

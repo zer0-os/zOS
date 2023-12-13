@@ -4,7 +4,6 @@ describe('layout reducer', () => {
   const initialExistingState: LayoutState = {
     value: {
       isContextPanelOpen: false,
-      isSidekickOpen: false,
       hasContextPanel: false,
       isMessengerFullScreen: false,
     },
@@ -14,7 +13,6 @@ describe('layout reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       value: {
         isContextPanelOpen: false,
-        isSidekickOpen: false,
         hasContextPanel: false,
         isMessengerFullScreen: true,
       },
@@ -26,16 +24,6 @@ describe('layout reducer', () => {
 
     expect(actual.value).toMatchObject({
       isContextPanelOpen: true,
-      hasContextPanel: false,
-    });
-  });
-
-  it('should update isSidekickOpen', () => {
-    const actual = reducer(initialExistingState, update({ isSidekickOpen: false }));
-
-    expect(actual.value).toMatchObject({
-      isContextPanelOpen: false,
-      isSidekickOpen: false,
       hasContextPanel: false,
     });
   });

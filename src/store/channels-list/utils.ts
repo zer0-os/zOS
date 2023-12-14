@@ -2,6 +2,8 @@ import { ChannelType } from './types';
 import { Channel, ConversationStatus, User } from './../channels/index';
 import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
+import { select } from 'redux-saga/effects';
+import { currentUserSelector } from '../authentication/selectors';
 
 export function filterChannelsList(state, filter: ChannelType) {
   const channelIdList = getDeepProperty(state, 'channelsList.value', []);
@@ -37,21 +39,51 @@ export const toLocalChannel = (input): Partial<Channel> => {
   };
 };
 
-export const mapOtherMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
+export const mapChannelMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
   for (const channel of channels) {
     for (const member of channel.otherMembers) {
       replaceZOSUserFields(member, zeroUsersMap[member.matrixId]);
     }
-  }
-};
-
-export const mapChannelMessages = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
-  for (const channel of channels) {
-    for (const message of channel.messages) {
-      replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
+    for (const member of channel.memberHistory) {
+      replaceZOSUserFields(member as User, zeroUsersMap[member.matrixId]);
     }
   }
 };
+
+export function* mapChannelMessages(channels: Channel[], zeroUsersMap: { [id: string]: User }) {
+  for (const channel of channels) {
+    for (const message of channel.messages) {
+      if (message.isAdmin) {
+        continue;
+      }
+      replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
+    }
+  }
+  yield mapAdminUserIdToZeroUserId(channels, zeroUsersMap);
+}
+
+export function* mapAdminUserIdToZeroUserId(messageContainers, zeroUsersMap) {
+  const currentUser = yield select(currentUserSelector);
+
+  if (!currentUser || !currentUser.matrixId) {
+    return;
+  }
+
+  const currentUserId = currentUser.id;
+
+  for (const container of messageContainers) {
+    for (const message of container.messages) {
+      if (message.isAdmin && message.admin.userId) {
+        if (message.admin.userId === currentUser.matrixId) {
+          message.admin.userId = currentUserId;
+        } else {
+          const user = zeroUsersMap[message.admin.userId];
+          message.admin.userId = user?.userId || message.admin.userId;
+        }
+      }
+    }
+  }
+}
 
 export function replaceZOSUserFields(
   member: {

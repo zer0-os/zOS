@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../layout';
+@import '../../../glass';
 
 $side-padding: 16px;
 
@@ -13,6 +14,24 @@ $side-padding: 16px;
   user-select: none;
   /* Enable pointer events for click event */
   pointer-events: auto;
+}
+
+.messenger-list {
+  &__user-account-container {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    height: 32px;
+    gap: 8px;
+  }
+
+  &__user-name {
+    @include glass-text-primary-color;
+
+    font-size: $font-size-small;
+    font-weight: 600;
+    line-height: 15px;
+  }
 }
 
 .highlighted-text {

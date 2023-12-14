@@ -204,13 +204,16 @@ export function adminMessageText(message: Message, state: RootState) {
     return text;
   }
 
-  if (message.admin.type === AdminMessageType.JOINED_ZERO) {
-    return translateJoinedZero(message.admin, user, state) ?? text;
-  } else if (message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
-    return translateConversationStarted(message.admin, user, state) ?? text;
+  switch (message.admin.type) {
+    case AdminMessageType.JOINED_ZERO:
+      return translateJoinedZero(message.admin, user, state) ?? text;
+    case AdminMessageType.CONVERSATION_STARTED:
+      return translateConversationStarted(message.admin, user, state) ?? text;
+    case AdminMessageType.MEMBER_LEFT_CONVERSATION:
+      return translateMemberLeftGroup(message.admin, state) ?? text;
+    default:
+      return text;
   }
-
-  return text;
 }
 
 function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {
@@ -224,11 +227,16 @@ function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, 
   return invitee?.firstName ? `${invitee.firstName} joined you on Zero` : null;
 }
 
-function translateConversationStarted(admin: { creatorId?: string }, currentUser, state: RootState) {
-  if (admin.creatorId === currentUser.id) {
+function translateConversationStarted(admin: { userId?: string }, currentUser, state: RootState) {
+  if (admin.userId === currentUser.id) {
     return 'You started the conversation';
   }
 
-  const creator = denormalizeUser(admin.creatorId, state);
-  return creator?.firstName ? `${creator.firstName} started the conversation` : null;
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} started the conversation` : null;
+}
+
+function translateMemberLeftGroup(admin: { userId?: string }, state: RootState) {
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} left the group` : null;
 }

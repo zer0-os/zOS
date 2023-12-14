@@ -40,6 +40,7 @@ export interface Channel {
   name: string;
   messages: Message[];
   otherMembers: User[];
+  memberHistory: User[];
   hasMore: boolean;
   createdAt: number;
   lastMessage: Message;
@@ -73,6 +74,7 @@ const slice = createNormalizedSlice({
   schemaDefinition: {
     messages: [messageSchema],
     otherMembers: [userSchema],
+    memberHistory: [userSchema],
   },
 });
 

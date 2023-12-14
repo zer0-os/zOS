@@ -1,7 +1,7 @@
-import { CustomEventType, NotifiableEventType } from './types';
+import { CustomEventType, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
-import { AdminMessageType } from '../../../store/messages';
+import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
 
 async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
@@ -62,24 +62,51 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
   };
 }
 
-export function mapEventToAdminMessage(matrixMessage) {
-  const { event_id, content, origin_server_ts, sender: senderId, type } = matrixMessage;
+export function mapEventToAdminMessage(matrixMessage): Message {
+  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId } = matrixMessage;
 
-  const adminData =
-    type === CustomEventType.USER_JOINED_INVITER_ON_ZERO
-      ? { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId }
-      : { type: AdminMessageType.CONVERSATION_STARTED, creatorId: senderId };
+  const adminData = getAdminDataFromEventType(type, content, sender, targetUserId);
+
+  if (!adminData) {
+    return null;
+  }
 
   return {
     id: event_id,
     message: 'Conversation was started',
     createdAt: origin_server_ts,
     isAdmin: true,
-    sender: {
-      userId: senderId,
-    },
     admin: adminData,
+
+    updatedAt: 0,
+    sender: ADMIN_USER,
+    mentionedUsers: [],
+    hidePreview: false,
+    preview: null,
+    sendStatus: MessageSendStatus.SUCCESS,
   };
+}
+
+function getAdminDataFromEventType(type, content, sender, targetUserId) {
+  switch (type) {
+    case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
+      return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
+    case EventType.RoomMember:
+      return getRoomMemberAdminData(content, targetUserId);
+    case EventType.RoomCreate:
+      return { type: AdminMessageType.CONVERSATION_STARTED, userId: sender };
+    default:
+      return null;
+  }
+}
+
+function getRoomMemberAdminData(content, targetUserId) {
+  switch (content.membership) {
+    case MembershipStateType.Leave:
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: targetUserId };
+    default:
+      return null;
+  }
 }
 
 export function mapToLiveRoomEvent(liveEvent) {
@@ -106,3 +133,5 @@ function convertToNotifiableEventType(eventType) {
       return '';
   }
 }
+
+const ADMIN_USER = { userId: 'admin', firstName: '', lastName: '', profileImage: '', profileId: '' };

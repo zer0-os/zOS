@@ -234,13 +234,13 @@ describe(adminMessageText, () => {
   });
 
   describe(AdminMessageType.CONVERSATION_STARTED, () => {
-    it('returns default message if creator not found', () => {
+    it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
-          admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'unknown-user-id' },
+          admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'unknown-user-id' },
         } as Message,
         state
       );
@@ -248,12 +248,12 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('some message');
     });
 
-    it('translates message if current user was not the creator', () => {
-      const state = getState('current-user', { 'creator-id': { id: 'creator-id', firstName: 'Courtney' } });
+    it('translates message if current user id is not the admin user id', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
       const message = {
         message: 'some message',
         isAdmin: true,
-        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'creator-id' },
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'admin-user-id' },
       } as Message;
 
       const adminText = adminMessageText(message, state);
@@ -261,17 +261,46 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('Courtney started the conversation');
     });
 
-    it('translates message if current user was the creator', () => {
-      const state = getState('creator-id', { 'creator-id': { id: 'creator-id', firstName: 'Julie' } });
+    it('translates message if current user id is the admin user id', () => {
+      const state = getState('admin-user-id', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Julie' } });
       const message = {
         message: 'some message',
         isAdmin: true,
-        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'creator-id' },
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'admin-user-id' },
       } as Message;
 
       const adminText = adminMessageText(message, state);
 
       expect(adminText).toEqual('You started the conversation');
+    });
+  });
+
+  describe(AdminMessageType.MEMBER_LEFT_CONVERSATION, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: 'admin-user-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney left the group');
     });
   });
 });
@@ -306,7 +335,7 @@ describe(getMessagePreview, () => {
       {
         message: 'some message',
         isAdmin: true,
-        admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+        admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'current-user' },
       } as Message,
       state
     );

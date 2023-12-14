@@ -8,6 +8,7 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
+import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 
@@ -71,9 +72,15 @@ function* clearOnLogout() {
   yield put(setactiveConversationId(null));
 }
 
+function* addAdminUser() {
+  yield put(receive({ userId: 'admin', firstName: 'Admin', profileImage: null, matrixId: 'admin' }));
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
+  const authBus = yield call(getAuthChannel);
+  yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
+  yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);

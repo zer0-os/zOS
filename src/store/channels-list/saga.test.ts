@@ -25,7 +25,7 @@ import { ConversationStatus, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
-import { mapOtherMembers } from './utils';
+import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
@@ -41,6 +41,10 @@ const mockConversation = (id: string) => ({
   icon: 'conversation-icon',
   hasJoined: true,
   isChannel: false,
+  messages: [
+    { isAdmin: true, admin: { userId: 'admin-id-1' } },
+    { sender: { userId: 'user-id-1' } },
+  ],
 });
 
 const MOCK_CHANNELS = [mockChannel('0001'), mockChannel('0002'), mockChannel('0003')];
@@ -65,6 +69,10 @@ describe('channels list saga', () => {
 
     it('fetches direct messages', async () => {
       await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+        ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
@@ -73,6 +81,10 @@ describe('channels list saga', () => {
 
     it('calls mapToZeroUsers after fetch', async () => {
       await subject(fetchConversations, undefined)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+        ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
         .call([chatClient, chatClient.getConversations])
@@ -85,8 +97,12 @@ describe('channels list saga', () => {
 
       await subject(fetchConversations, undefined)
         .provide([
-          [matchers.call.fn(getConversationsBus), conversationsChannelStub],
+          [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(mapToZeroUsers), null],
+          [matchers.call.fn(updateUserPresence), null],
+          [matchers.call.fn(mapAdminUserIdToZeroUserId), null],
+          [matchers.call.fn(getConversationsBus), conversationsChannelStub],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .put(conversationsChannelStub, { type: ConversationEvents.ConversationsLoaded })
@@ -324,7 +340,8 @@ describe('channels list saga', () => {
     const channels = [
       {
         id: 'channel-1',
-        otherMembers: [
+        otherMembers: [],
+        memberHistory: [
           { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
           { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
         ],
@@ -332,7 +349,10 @@ describe('channels list saga', () => {
       },
       {
         id: 'channel-2',
-        otherMembers: [{ matrixId: 'matrix-id-3', userId: 'matrix-id-3' }],
+        otherMembers: [],
+        memberHistory: [
+          { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
+        ],
         messages: [],
       },
     ] as any;
@@ -396,11 +416,11 @@ describe('channels list saga', () => {
       await expectSaga(mapToZeroUsers, channels)
         .withReducer(rootReducer)
         .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
-        .call(mapOtherMembers, channels, expectedMap)
+        .call(mapChannelMembers, channels, expectedMap)
         .run();
     });
 
-    it('maps Other Members of channels to ZERO Users and save normalized state', async () => {
+    it('maps member history of channels to ZERO Users and save normalized state', async () => {
       const initialState = new StoreBuilder().withChannelList(channels[0], channels[1]);
 
       const { storeState } = await expectSaga(mapToZeroUsers, channels)
@@ -409,7 +429,7 @@ describe('channels list saga', () => {
         .run();
 
       const channel1 = denormalizeChannel('channel-1', storeState);
-      expect(channel1.otherMembers).toIncludeSameMembers([
+      expect(channel1.memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-1',
           userId: 'user-1',
@@ -429,7 +449,7 @@ describe('channels list saga', () => {
       ]);
 
       const channel2 = denormalizeChannel('channel-2', storeState);
-      expect(channel2.otherMembers).toIncludeSameMembers([
+      expect(channel2.memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-3',
           userId: 'user-3',
@@ -476,38 +496,6 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         profileImage: undefined,
       });
-    });
-
-    it('maps current user as sender', async () => {
-      channels[0].messages = [{ message: 'hi', sender: { userId: 'matrix-id', firstName: '' } }];
-
-      const initialState = new StoreBuilder()
-        .withCurrentUser({
-          id: 'current-user',
-          matrixId: 'matrix-id',
-          profileId: 'profile-id',
-          profileSummary: {
-            firstName: 'Jack',
-            lastName: 'Black',
-            profileImage: '/cool-image.jpg',
-          } as any,
-        })
-        .withChannelList(channels[0]);
-
-      await expectSaga(mapToZeroUsers, channels)
-        .withReducer(rootReducer, initialState.build())
-        .provide([[matchers.call.fn(getZEROUsers), zeroUsers]])
-        .run();
-
-      expect(channels[0].messages[0].sender).toEqual(
-        expect.objectContaining({
-          userId: 'current-user',
-          profileId: 'profile-id',
-          firstName: 'Jack',
-          lastName: 'Black',
-          profileImage: '/cool-image.jpg',
-        })
-      );
     });
   });
 

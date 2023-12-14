@@ -160,12 +160,12 @@ describe(createOptimisticConversation, () => {
     expect(conversation.messages[0]).toMatchObject({
       message: 'Conversation was started',
       isAdmin: true,
-      admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+      admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'current-user' },
     });
     expect(conversation.lastMessage).toMatchObject({
       message: 'Conversation was started',
       isAdmin: true,
-      admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: 'current-user' },
+      admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'current-user' },
     });
     expect(conversation.lastMessageAt).toEqual(conversation.messages[0].createdAt);
   });

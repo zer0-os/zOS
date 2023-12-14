@@ -8,13 +8,7 @@ import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
-import {
-  toLocalChannel,
-  filterChannelsList,
-  mapOtherMembers as mapOtherMembersOfChannel,
-  mapChannelMessages,
-  rawUserToDomainUser,
-} from './utils';
+import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
 import { setactiveConversationId } from '../chat';
 import { clearChannels } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
@@ -41,7 +35,7 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
   for (const channel of channels) {
-    const matrixIds = (channel.otherMembers || []).filter((u) => u).map((u) => u.matrixId);
+    const matrixIds = channel.memberHistory.map((u) => u.matrixId);
     allMatrixIds = union(allMatrixIds, matrixIds);
   }
 
@@ -51,35 +45,9 @@ export function* mapToZeroUsers(channels: any[]) {
     zeroUsersMap[user.matrixId] = user;
   }
 
-  const currentUser = yield select(currentUserSelector);
-  if (currentUser && currentUser.matrixId) {
-    zeroUsersMap[currentUser.matrixId] = rawUserToDomainUser(currentUser);
-  }
-
-  yield call(mapOtherMembersOfChannel, channels, zeroUsersMap);
+  yield call(mapChannelMembers, channels, zeroUsersMap);
   yield call(mapChannelMessages, channels, zeroUsersMap);
   return;
-}
-
-export function* mapCreatorIdToZeroUserId(channels) {
-  const currentUser = yield select(currentUserSelector);
-  if (!currentUser || !currentUser.matrixId) {
-    return;
-  }
-
-  const currentUserId = currentUser.id;
-
-  for (const channel of channels) {
-    for (const message of channel.messages) {
-      if (message.isAdmin && message.admin.type === AdminMessageType.CONVERSATION_STARTED) {
-        if (message.admin.creatorId === currentUser.matrixId) {
-          message.admin.creatorId = currentUserId;
-        } else {
-          message.admin.creatorId = message.sender.userId;
-        }
-      }
-    }
-  }
 }
 
 export function* updateUserPresence(users) {
@@ -109,8 +77,6 @@ export function* fetchConversations() {
 
   const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
   yield fork(updateUserPresence, otherMembersOfConversations);
-
-  yield call(mapCreatorIdToZeroUserId, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -187,7 +153,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     message: 'Conversation was started',
     createdAt: timestamp,
     isAdmin: true,
-    admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUser.id },
+    admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: currentUser.id },
   };
   const conversation = {
     ...defaultConversationProperties,
@@ -407,7 +373,6 @@ export function* addChannel(channel) {
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
   yield fork(updateUserPresence, channel.otherMembers);
-  yield call(mapCreatorIdToZeroUserId, [channel]);
 
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
 }
@@ -456,7 +421,7 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
   yield put(
     receiveChannel({
       id: channel.id,
-      otherMembers: channel.otherMembers.filter((userId) => userId !== existingUser.userId),
+      otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
     })
   );
 }

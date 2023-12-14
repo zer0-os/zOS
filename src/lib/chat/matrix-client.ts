@@ -297,9 +297,18 @@ export class MatrixClient implements IChatClient {
     switch (event.type) {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
+
       case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       case EventType.RoomCreate:
         return mapEventToAdminMessage(event);
+
+      case EventType.RoomMember:
+        if (event.content.membership === MembershipStateType.Leave) {
+          return mapEventToAdminMessage(event);
+        } else {
+          return null;
+        }
+
       default:
         return null;
     }
@@ -849,12 +858,16 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
-  private publishMembershipChange = (event: MatrixEvent) => {
+  private publishMembershipChange = async (event: MatrixEvent) => {
     if (event.getType() === EventType.RoomMember) {
       const user = this.mapUser(event.getStateKey());
       if (event.getStateKey() !== this.userId) {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
+          const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+          if (message) {
+            this.events.receiveNewMessage(event.getRoomId(), message);
+          }
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
         }
@@ -868,6 +881,7 @@ export class MatrixClient implements IChatClient {
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
+    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
@@ -883,6 +897,7 @@ export class MatrixClient implements IChatClient {
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
       otherMembers: otherMembers,
+      memberHistory: memberHistory,
       lastMessage: null,
       messages,
       groupChannelType: GroupChannelType.Private,
@@ -930,6 +945,10 @@ export class MatrixClient implements IChatClient {
       .getEvents()
       .map((event) => event.getEffectiveEvent());
     return await this.processRawEventsToMessages(events);
+  }
+
+  private getMemberHistoryFromRoom(room: Room): string[] {
+    return room.getMembers().map((member) => member.userId);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

@@ -503,6 +503,7 @@ export class MessageInput extends React.Component<Properties, State> {
                     Icon={IconSend3}
                     size='small'
                     isFilled={this.sendHighlighted()}
+                    label='send'
                   />
                   {this.allowVoiceMessage && (
                     <IconButton

@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { Channel } from '../../../../store/channels';
-import { IconPlus, IconUserPlus1 } from '@zero-tech/zui/icons';
+import { IconUserPlus1 } from '@zero-tech/zui/icons';
 import { ConversationItem } from '../conversation-item';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { Button, IconButton, Input, Modal } from '@zero-tech/zui/components';
+import { Button, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
@@ -23,7 +23,6 @@ export interface Properties {
   activeConversationId: string;
 
   search: (input: string) => any;
-  startConversation: () => void;
   onCreateConversation: (userId: string) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
 }
@@ -136,10 +135,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
               placeholder='Search'
               value={this.state.filter}
             />
-
-            <div>
-              <IconButton Icon={IconPlus} onClick={this.props.startConversation} size='small' />
-            </div>
           </div>
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>

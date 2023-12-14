@@ -1,4 +1,7 @@
-// "glass" style mixin
+@mixin glass-text-primary-color {
+  color: rgba(253, 253, 255, 0.93);
+}
+
 @mixin glass-outer {
   // border-width: 1px;
   // border-image-slice: 1;

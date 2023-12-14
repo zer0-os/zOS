@@ -18,9 +18,9 @@ import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
-import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
+import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 
 export interface Payload {
   channelId: string;
@@ -108,7 +108,8 @@ export function* getLocalZeroUsersMap() {
 }
 
 export function* mapMessagesAndPreview(messages, channelId) {
-  yield call(mapMessageSenders, messages, channelId);
+  const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
+  yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
   for (const message of messages) {
     const preview = yield call(getPreview, message.message);
     if (preview) {
@@ -141,7 +142,6 @@ export function* fetch(action) {
     }
 
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
-    yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property
@@ -459,16 +459,14 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
 
   for (const channelId of Object.keys(byChannelId)) {
     const channel = yield select(rawChannelSelector(channelId));
+    if (!channel) {
+      continue;
+    }
+
     let currentMessages = channel?.messages || [];
-    let modified = false;
     for (let message of byChannelId[channelId]) {
       const messageList = yield call(mapMessagesAndPreview, [message], channelId);
       message = messageList[0];
-
-      if (!channel) {
-        continue;
-      }
-      modified = true;
 
       let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
       if (!newMessages) {
@@ -479,9 +477,8 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
       currentMessages = newMessages;
     }
-    if (modified) {
-      yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
-    }
+
+    yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
     if (yield select(_isActive(channelId))) {
       const isChannel = yield select(_isChannel(channelId));
       const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;

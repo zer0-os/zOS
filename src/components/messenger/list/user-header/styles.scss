@@ -1,0 +1,20 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+@import '../../../../glass';
+
+.user-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  height: 32px;
+  gap: 8px;
+
+  &__user-name {
+    @include glass-text-primary-color;
+
+    width: 100%;
+    font-size: $font-size-small;
+    font-weight: 600;
+    line-height: 15px;
+  }
+}

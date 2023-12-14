@@ -1,5 +1,4 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../variables';
 @import '../../../layout';
 
 $side-padding: 16px;
@@ -14,57 +13,6 @@ $side-padding: 16px;
   user-select: none;
   /* Enable pointer events for click event */
   pointer-events: auto;
-}
-
-.messenger-list {
-  &__user-account-container {
-    display: flex;
-    align-items: center;
-  }
-
-  &__settings-menu-container {
-    display: flex;
-    padding-left: 16px;
-    width: 100%;
-    height: 64px;
-  }
-
-  &__rewards-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-right: 8px;
-    height: 64px;
-    background-color: theme.$color-primary-3;
-
-    &--center {
-      width: 100%;
-      padding-right: 0px;
-    }
-  }
-
-  &__icon-button {
-    border-radius: 50%;
-    padding: 2px;
-    line-height: 0px;
-    width: 24px;
-    height: 24px;
-
-    cursor: pointer;
-    background: none;
-    border: none;
-    display: inline-block;
-    margin: 0px;
-
-    &:hover {
-      color: theme.$color-error-transparency-11;
-      background-color: theme.$color-primary-5;
-    }
-
-    & > * {
-      margin: auto;
-    }
-  }
 }
 
 .highlighted-text {

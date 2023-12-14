@@ -504,6 +504,7 @@ export class MessageInput extends React.Component<Properties, State> {
                     onClick={this.onSend}
                     Icon={IconSend3}
                     size='small'
+                    isFilled
                   />
                   {this.allowVoiceMessage && (
                     <IconButton

@@ -2,9 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setStatus, receive, denormalizeConversations } from '.';
+import { fork, takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
+import { SagaActionTypes, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
+import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
 import {
@@ -81,48 +82,20 @@ export function* mapCreatorIdToZeroUserId(channels) {
   }
 }
 
-export function* updateUserPresence(conversations) {
+export function* updateUserPresence(users) {
   const chatClient = yield call(chat.get);
-  for (let conversation of conversations) {
-    const { otherMembers } = conversation;
-
-    for (let member of otherMembers) {
-      const matrixId = member?.matrixId;
-      if (!matrixId) continue;
-
-      const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
-      if (!presenceData) continue;
-
-      const { lastSeenAt, isOnline } = presenceData;
-      member.lastSeenAt = lastSeenAt;
-      member.isOnline = isOnline;
-    }
+  for (let user of users) {
+    const matrixId = user?.matrixId;
+    if (!matrixId) continue;
+    const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
+    if (!presenceData) continue;
+    const { lastSeenAt, isOnline } = presenceData;
+    yield put(receiveUser({ userId: user.userId, lastSeenAt, isOnline }));
   }
 }
 
-export function* fetchChannels(action) {
-  yield put(setStatus(AsyncListStatus.Fetching));
-
-  const chatClient = yield call(chat.get);
-  const channelsList = yield call(
-    [
-      chatClient,
-      chatClient.getChannels,
-    ],
-    action.payload
-  );
-  yield call(mapToZeroUsers, channelsList);
-
-  const conversationsList = yield select(rawConversationsList());
-
-  yield put(
-    receive([
-      ...channelsList,
-      ...conversationsList,
-    ])
-  );
-
-  yield put(setStatus(AsyncListStatus.Idle));
+export function* fetchChannels(_action) {
+  // TODO: Remove this function completely. For now, empty it to find out if anything breaks.
 }
 
 export function* fetchConversations() {
@@ -131,8 +104,12 @@ export function* fetchConversations() {
     chatClient,
     chatClient.getConversations,
   ]);
+
   yield call(mapToZeroUsers, conversations);
-  yield call(updateUserPresence, conversations);
+
+  const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
+  yield fork(updateUserPresence, otherMembersOfConversations);
+
   yield call(mapCreatorIdToZeroUserId, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -429,7 +406,7 @@ export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
-  yield call(updateUserPresence, [channel]);
+  yield fork(updateUserPresence, channel.otherMembers);
   yield call(mapCreatorIdToZeroUserId, [channel]);
 
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));

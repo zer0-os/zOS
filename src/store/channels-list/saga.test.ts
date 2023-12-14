@@ -2,12 +2,11 @@ import { testSaga } from 'redux-saga-test-plan';
 import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { chat } from '../../lib/chat';
+import { receive as receiveUser } from '../users';
 
 import {
-  fetchChannels,
   fetchConversations,
   fetchChannelsAndConversations,
-  delay,
   startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
@@ -18,9 +17,8 @@ import {
   updateUserPresence,
 } from './saga';
 
-import { SagaActionTypes, setStatus } from '.';
+import { SagaActionTypes } from '.';
 import { RootState, rootReducer } from '../reducer';
-import { AsyncListStatus } from '../normalized';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { multicastChannel } from 'redux-saga';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
@@ -55,86 +53,6 @@ const chatClient = {
 };
 
 describe('channels list saga', () => {
-  describe(fetchChannels, () => {
-    function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args).provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.getChannels), MOCK_CHANNELS],
-        [matchers.call.fn(mapToZeroUsers), null],
-      ]);
-    }
-
-    it('sets status to fetching', async () => {
-      await subject(fetchChannels, { payload: '0x000000000000000000000000000000000000000A' })
-        .put(setStatus(AsyncListStatus.Fetching))
-        .run();
-    });
-
-    it('fetches channels', async () => {
-      const id = '0x000000000000000000000000000000000000000A';
-
-      await subject(fetchChannels, { payload: id }).call(chat.get).call([chatClient, chatClient.getChannels], id).run();
-    });
-
-    it('calls mapToZeroUsers after fetch', async () => {
-      const id = '0x000000000000000000000000000000000000000A';
-
-      await subject(fetchChannels, { payload: id })
-        .call(chat.get)
-        .call([chatClient, chatClient.getChannels], id)
-        .call(mapToZeroUsers, MOCK_CHANNELS)
-        .run();
-    });
-
-    it('sets status to Idle', async () => {
-      const id = '0x000000000000000000000000000000000000000A';
-
-      const { storeState } = await subject(fetchChannels, { payload: id }).withReducer(rootReducer).run();
-
-      expect(storeState.channelsList.status).toBe(AsyncListStatus.Idle);
-    });
-
-    it('adds channel ids to channelsList state', async () => {
-      const id = '0x000000000000000000000000000000000000000A';
-      const ids = ['channel_0001', 'channel_0002', 'channel_0003'];
-
-      const { storeState } = await subject(fetchChannels, { payload: id }).withReducer(rootReducer).run();
-
-      expect(storeState.channelsList.value).toStrictEqual(ids);
-    });
-
-    it('adds channels to normalized state', async () => {
-      const id = 'channel-0099';
-      const name = 'the channel';
-      const icon = 'channel-icon';
-      const category = 'channel-category';
-      const unreadCount = 1;
-      const hasJoined = true;
-      const isChannel = true;
-
-      const { storeState } = await subject(fetchChannels, {
-        payload: '0x000000000000000000000000000000000000000A',
-      })
-        .provide([
-          [matchers.call.fn(chatClient.getChannels), [{ id, name, icon, category, unreadCount, hasJoined, isChannel }]],
-        ])
-        .withReducer(rootReducer)
-        .run();
-
-      expect(storeState.normalized.channels[id]).toEqual(
-        expect.objectContaining({
-          id,
-          name,
-          icon,
-          category,
-          unreadCount,
-          hasJoined,
-          isChannel,
-        })
-      );
-    });
-  });
-
   describe(fetchConversations, () => {
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
@@ -208,62 +126,6 @@ describe('channels list saga', () => {
         .run();
 
       expect(storeState.channelsList.value).toIncludeSameMembers(['previously-a-channel']);
-    });
-  });
-
-  describe(fetchChannelsAndConversations, () => {
-    function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args).provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.getChannels), MOCK_CHANNELS],
-        [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
-        [matchers.call.fn(delay), null],
-        [matchers.call.fn(mapToZeroUsers), null],
-      ]);
-    }
-
-    it('verify fetchChannelsAndConversations', async () => {
-      const rootDomainId = '12345';
-
-      const channel = {
-        id: 'channel-id-1',
-        name: 'the channel',
-        icon: 'channel-icon',
-        category: 'channel-category',
-        unreadCount: 1,
-        hasJoined: true,
-        isChannel: true,
-        createdAt: 7000,
-        otherMembers: [],
-        lastMessage: {},
-        groupChannelType: '',
-      };
-
-      const conversation = {
-        id: 'conversation-id-1',
-        name: 'the conversation',
-        icon: 'conversation-icon',
-        category: null,
-        unreadCount: 2,
-        hasJoined: true,
-        isChannel: false,
-        createdAt: 5000,
-        otherMembers: [],
-        lastMessage: {},
-        groupChannelType: '',
-      };
-
-      const { storeState } = await subject(fetchChannelsAndConversations, {})
-        .provide([
-          [matchers.call([chatClient, chatClient.getChannels], rootDomainId), [channel]],
-          [matchers.call([chatClient, chatClient.getConversations]), [conversation]],
-        ])
-        .withReducer(rootReducer)
-        .withState({ zns: { value: { rootDomainId } } })
-        .run();
-
-      expect(denormalizeChannel(channel.id, storeState).name).toEqual('the channel');
-      expect(denormalizeChannel(conversation.id, storeState).name).toEqual('the conversation');
     });
   });
 
@@ -387,7 +249,7 @@ describe('channels list saga', () => {
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [] })
+      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [], otherMembers: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -397,7 +259,11 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id', messages: [] })
+      const { storeState } = await subject(addChannel, {
+        id: 'existing-conversation-id',
+        messages: [],
+        otherMembers: [],
+      })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -646,15 +512,14 @@ describe('channels list saga', () => {
   });
 
   describe(updateUserPresence, () => {
-    function subject(conversations, provide = []) {
-      return expectSaga(updateUserPresence, conversations).provide([
+    function subject(users, provide = []) {
+      return expectSaga(updateUserPresence, users).provide([
         [matchers.call.fn(chat.get), chatClient],
         ...provide,
       ]);
     }
 
     const mockOtherMembers = [{ matrixId: 'member_001' }, { matrixId: 'member_002' }, { matrixId: 'member_003' }];
-    const mockConversations = [{ otherMembers: mockOtherMembers }];
 
     it('fetches and updates user presence data', async () => {
       const mockPresenceData = {
@@ -662,7 +527,7 @@ describe('channels list saga', () => {
         isOnline: true,
       };
 
-      await subject(mockConversations, [
+      await subject(mockOtherMembers, [
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_001'), mockPresenceData],
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_002'), mockPresenceData],
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_003'), mockPresenceData],
@@ -680,62 +545,62 @@ describe('channels list saga', () => {
       await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();
     });
 
-    it('should set lastSeenAt, and isOnline to true if user is online', () => {
-      const mockConversations = [
+    it('dispatches receiveUser action with correct data when user is online', () => {
+      const mockUsers = [
         {
-          id: 'conversation_0001',
-          otherMembers: [
-            {
-              userId: 'user_1',
-              matrixId: 'matrix_1',
-              lastSeenAt: '',
-              isOnline: false,
-            },
-          ],
+          userId: 'user_1',
+          matrixId: 'matrix_1',
+          lastSeenAt: '',
+          isOnline: false,
         },
       ];
 
       const mockPresenceData1 = { lastSeenAt: '2023-10-17T10:00:00.000Z', isOnline: true };
 
-      testSaga(updateUserPresence, mockConversations)
+      testSaga(updateUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)
         .call([chatClient, chatClient.getUserPresence], 'matrix_1')
         .next(mockPresenceData1)
+        .put(
+          receiveUser({
+            userId: mockUsers[0].userId,
+            lastSeenAt: mockPresenceData1.lastSeenAt,
+            isOnline: mockPresenceData1.isOnline,
+          })
+        )
+        .next()
         .isDone();
-
-      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
-      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
     });
 
-    it('should set lastSeenAt to null and isOnline to false if user is offline', () => {
-      const mockConversations = [
+    it('dispatches receiveUser action with lastSeenAt null and isOnline false when user is offline', () => {
+      const mockUsers = [
         {
-          id: 'conversation_0001',
-          otherMembers: [
-            {
-              userId: 'user_1',
-              matrixId: 'matrix_1',
-              lastSeenAt: '',
-              isOnline: false,
-            },
-          ],
+          userId: 'user_1',
+          matrixId: 'matrix_1',
+          lastSeenAt: '',
+          isOnline: false,
         },
       ];
 
       const mockPresenceData1 = { lastSeenAt: null, isOnline: false };
 
-      testSaga(updateUserPresence, mockConversations)
+      testSaga(updateUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)
         .call([chatClient, chatClient.getUserPresence], 'matrix_1')
         .next(mockPresenceData1)
+        .put(
+          receiveUser({
+            userId: mockUsers[0].userId,
+            lastSeenAt: mockPresenceData1.lastSeenAt,
+            isOnline: mockPresenceData1.isOnline,
+          })
+        )
+        .next()
         .isDone();
-
-      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
-      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
     });
   });
 });

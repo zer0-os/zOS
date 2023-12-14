@@ -52,8 +52,9 @@ export function* mapToZeroUsers(channels: any[]) {
 
 export function* fetchUserPresence(users) {
   const chatClient = yield call(chat.get);
-  for (let user of users) {
-    const matrixId = user?.matrixId;
+  const uniqueUsers = uniqBy(users, (u) => u.matrixId);
+  for (let user of uniqueUsers) {
+    const matrixId = user.matrixId;
     if (!matrixId) continue;
     const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
     if (!presenceData) continue;

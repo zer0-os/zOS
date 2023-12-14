@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
+import { fork, takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
@@ -104,10 +104,12 @@ export function* fetchConversations() {
     chatClient,
     chatClient.getConversations,
   ]);
-  const otherMembersOfConversations = conversations.map((c) => c.otherMembers);
 
   yield call(mapToZeroUsers, conversations);
-  yield call(updateUserPresence, otherMembersOfConversations);
+
+  const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
+  yield fork(updateUserPresence, otherMembersOfConversations);
+
   yield call(mapCreatorIdToZeroUserId, conversations);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -404,7 +406,7 @@ export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
-  yield call(updateUserPresence, [channel.otherMembers]);
+  yield fork(updateUserPresence, channel.otherMembers);
   yield call(mapCreatorIdToZeroUserId, [channel]);
 
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));

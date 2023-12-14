@@ -249,7 +249,7 @@ describe('channels list saga', () => {
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [] })
+      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [], otherMembers: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -259,7 +259,11 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id', messages: [] })
+      const { storeState } = await subject(addChannel, {
+        id: 'existing-conversation-id',
+        messages: [],
+        otherMembers: [],
+      })
         .withReducer(rootReducer, initialState.build())
         .run();
 

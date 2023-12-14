@@ -211,6 +211,8 @@ export function adminMessageText(message: Message, state: RootState) {
       return translateConversationStarted(message.admin, user, state) ?? text;
     case AdminMessageType.MEMBER_LEFT_CONVERSATION:
       return translateMemberLeftGroup(message.admin, state) ?? text;
+    case AdminMessageType.MEMBER_ADDED_TO_CONVERSATION:
+      return translateMemberAddedToGroup(message.admin, state) ?? text;
     default:
       return text;
   }
@@ -239,4 +241,9 @@ function translateConversationStarted(admin: { userId?: string }, currentUser, s
 function translateMemberLeftGroup(admin: { userId?: string }, state: RootState) {
   const user = denormalizeUser(admin.userId, state);
   return user?.firstName ? `${user.firstName} left the group` : null;
+}
+
+function translateMemberAddedToGroup(admin: { userId?: string }, state: RootState) {
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} was added to the group` : null;
 }

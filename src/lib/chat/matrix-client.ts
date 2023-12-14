@@ -293,7 +293,6 @@ export class MatrixClient implements IChatClient {
     if (this.isDeleted(event) || this.isEditEvent(event)) {
       return null;
     }
-
     switch (event.type) {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
@@ -303,12 +302,13 @@ export class MatrixClient implements IChatClient {
         return mapEventToAdminMessage(event);
 
       case EventType.RoomMember:
-        if (event.content.membership === MembershipStateType.Leave) {
+        if (
+          event.content.membership === MembershipStateType.Leave ||
+          event.content.membership === MembershipStateType.Invite
+        ) {
           return mapEventToAdminMessage(event);
-        } else {
-          return null;
         }
-
+        return null;
       default:
         return null;
     }
@@ -864,10 +864,6 @@ export class MatrixClient implements IChatClient {
       if (event.getStateKey() !== this.userId) {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
-          const message = await mapEventToAdminMessage(event.getEffectiveEvent());
-          if (message) {
-            this.events.receiveNewMessage(event.getRoomId(), message);
-          }
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
         }
@@ -875,6 +871,11 @@ export class MatrixClient implements IChatClient {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onUserLeft(event.getRoomId(), user.matrixId);
         }
+      }
+
+      const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+      if (message) {
+        this.events.receiveNewMessage(event.getRoomId(), message);
       }
     }
   };

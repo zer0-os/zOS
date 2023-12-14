@@ -303,6 +303,35 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('Courtney left the group');
     });
   });
+
+  describe(AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: 'admin-user-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney was added to the group');
+    });
+  });
 });
 
 describe(getMessagePreview, () => {

@@ -104,6 +104,8 @@ function getRoomMemberAdminData(content, targetUserId) {
   switch (content.membership) {
     case MembershipStateType.Leave:
       return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: targetUserId };
+    case MembershipStateType.Invite:
+      return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: targetUserId };
     default:
       return null;
   }

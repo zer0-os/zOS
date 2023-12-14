@@ -28,11 +28,8 @@ import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-me
 import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { fetch as fetchRewards, rewardsPopupClosed, rewardsTooltipClosed } from '../../../store/rewards';
-import { RewardsContainer } from '../../rewards-container';
 import { receiveSearchResults } from '../../../store/users';
 import { SettingsMenu } from '../../settings-menu';
-import { FeatureFlag } from '../../feature-flag';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
 
@@ -56,15 +53,11 @@ export interface Properties extends PublicProperties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
-  meowPreviousDay: string;
   includeUserSettings: boolean;
   isMessengerFullScreen: boolean;
-  isRewardsLoading: boolean;
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
-  showRewardsInTooltip: boolean;
-  showRewardsInPopup: boolean;
   groupManangemenetStage: GroupManagementSagaStage;
 
   startCreateConversation: () => void;
@@ -74,9 +67,6 @@ export interface Properties extends PublicProperties {
   createConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
   enterFullScreenMessenger: () => void;
-  fetchRewards: (_obj: any) => void;
-  rewardsPopupClosed: () => void;
-  rewardsTooltipClosed: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
 }
@@ -93,7 +83,6 @@ export class Container extends React.Component<Properties, State> {
       authentication: { user },
       chat: { activeConversationId },
       layout,
-      rewards,
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -117,10 +106,6 @@ export class Container extends React.Component<Properties, State> {
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       myUserId: user?.data?.id,
-      meowPreviousDay: rewards.meowPreviousDay,
-      isRewardsLoading: rewards.loading,
-      showRewardsInTooltip: rewards.showRewardsInTooltip,
-      showRewardsInPopup: rewards.showRewardsInPopup,
       groupManangemenetStage: groupManagement.stage,
     };
   }
@@ -133,10 +118,7 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
-      fetchRewards,
       enterFullScreenMessenger: () => enterFullScreenMessenger(),
-      rewardsPopupClosed,
-      rewardsTooltipClosed,
       logout,
       receiveSearchResults,
     };
@@ -145,10 +127,6 @@ export class Container extends React.Component<Properties, State> {
   state = {
     isInviteDialogOpen: false,
   };
-
-  componentDidMount(): void {
-    this.props.fetchRewards({});
-  }
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
@@ -227,22 +205,6 @@ export class Container extends React.Component<Properties, State> {
             />
           </div>
         )}
-
-        <FeatureFlag featureFlag='enableRewards'>
-          <div {...cnMessageList('rewards-container', !this.props.includeUserSettings && 'center')}>
-            <RewardsContainer
-              meowPreviousDay={this.props.meowPreviousDay}
-              isRewardsLoading={this.props.isRewardsLoading}
-              isMessengerFullScreen={this.props.isMessengerFullScreen}
-              showRewardsInTooltip={this.props.showRewardsInTooltip}
-              showRewardsInPopup={this.props.showRewardsInPopup}
-              isFirstTimeLogin={this.props.isFirstTimeLogin}
-              onRewardsPopupClose={this.props.rewardsPopupClosed}
-              onRewardsTooltipClose={this.props.rewardsTooltipClosed}
-              hasLoadedConversation={this.props?.conversations[0]?.hasLoadedMessages}
-            />
-          </div>
-        </FeatureFlag>
       </div>
     );
   }

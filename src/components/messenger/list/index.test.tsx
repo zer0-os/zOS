@@ -13,8 +13,6 @@ import { Stage } from '../../../store/create-conversation';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
 import { LayoutState } from '../../../store/layout/types';
-import { RewardsState } from '../../../store/rewards';
-import { RewardsContainer } from '../../rewards-container';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { SettingsMenu } from '../../settings-menu';
 import { GroupManagementContainer } from './group-management/container';
@@ -41,12 +39,8 @@ describe('messenger-list', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      meowPreviousDay: '',
-      isRewardsLoading: false,
       isInviteNotificationOpen: false,
       myUserId: '',
-      showRewardsInTooltip: false,
-      showRewardsInPopup: false,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       startCreateConversation: () => null,
@@ -54,9 +48,6 @@ describe('messenger-list', () => {
       startGroup: () => null,
       back: () => null,
       enterFullScreenMessenger: () => null,
-      fetchRewards: () => null,
-      rewardsPopupClosed: () => null,
-      rewardsTooltipClosed: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
 
@@ -79,18 +70,6 @@ describe('messenger-list', () => {
     wrapper.find(ConversationListPanel).prop('startConversation')();
 
     expect(startCreateConversation).toHaveBeenCalledOnce();
-  });
-
-  it('renders RewardsContainer when stage is equal to none', function () {
-    const wrapper = subject({ stage: Stage.None });
-
-    expect(wrapper).toHaveElement(RewardsContainer);
-  });
-
-  it('does not render RewardsContainer when stage is not equal to none', function () {
-    const wrapper = subject({ stage: Stage.CreateOneOnOne });
-
-    expect(wrapper).not.toHaveElement(RewardsContainer);
   });
 
   it('renders SettingsMenu when stage is equal to none and messenger is fullscreen', function () {
@@ -294,18 +273,16 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '' },
-      rewardsState = {}
+      chat = { activeConversationId: '' }
     ) => {
-      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat, rewardsState));
+      return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
 
     const getState = (
       channels,
       createConversationState = {},
       users = [{ userId: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '' },
-      rewardsState: Partial<RewardsState> = {}
+      chat = { activeConversationId: '' }
     ) => {
       const channelData = normalize(channels);
       const userData = normalizeUsers(users);
@@ -330,10 +307,6 @@ describe('messenger-list', () => {
           ...createConversationState,
         },
         registration: {},
-        rewards: {
-          loading: false,
-          ...rewardsState,
-        },
         groupManagement: {},
       } as RootState;
     };
@@ -430,12 +403,6 @@ describe('messenger-list', () => {
       ]);
 
       expect(state.conversations.map((c) => c.previewDisplayDate)).toEqual([previewDisplayDate(date)]);
-    });
-
-    test('isLoading', () => {
-      const state = subject([], {}, undefined, undefined, { loading: true });
-
-      expect(state.isRewardsLoading).toEqual(true);
     });
 
     test('activeConversationId', () => {

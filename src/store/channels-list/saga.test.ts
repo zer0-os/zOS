@@ -68,7 +68,7 @@ describe('channels list saga', () => {
     }
 
     it('fetches direct messages', async () => {
-      await subject(fetchConversations, undefined)
+      await subject(fetchConversations)
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
@@ -80,7 +80,7 @@ describe('channels list saga', () => {
     });
 
     it('calls mapToZeroUsers after fetch', async () => {
-      await subject(fetchConversations, undefined)
+      await subject(fetchConversations)
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
@@ -95,12 +95,12 @@ describe('channels list saga', () => {
     it('announces conversations loaded', async () => {
       const conversationsChannelStub = multicastChannel();
 
-      await subject(fetchConversations, undefined)
+      await subject(fetchConversations)
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(mapToZeroUsers), null],
-          [matchers.call.fn(updateUserPresence), null],
+          [matchers.call.fn(fetchUserPresence), null],
           [matchers.call.fn(mapAdminUserIdToZeroUserId), null],
           [matchers.call.fn(getConversationsBus), conversationsChannelStub],
         ])
@@ -116,7 +116,7 @@ describe('channels list saga', () => {
 
       const initialState = new StoreBuilder().withConversationList(optimisticChannel1, optimisticChannel2).build();
 
-      const { storeState } = await subject(fetchConversations, undefined)
+      const { storeState } = await subject(fetchConversations)
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call([chatClient, chatClient.getConversations]), [fetchedChannel]],
@@ -136,7 +136,7 @@ describe('channels list saga', () => {
 
       const initialState = new StoreBuilder().withChannelList({ id: 'previously-a-channel' });
 
-      const { storeState } = await subject(fetchConversations, undefined)
+      const { storeState } = await subject(fetchConversations)
         .provide([[matchers.call([chatClient, chatClient.getConversations]), fetchedConversations]])
         .withReducer(rootReducer, initialState.build())
         .run();

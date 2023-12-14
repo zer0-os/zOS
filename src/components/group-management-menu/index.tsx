@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { IconDotsHorizontal, IconEdit5, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
-import { DropdownMenu } from '@zero-tech/zui/components';
+import { DropdownMenu, IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
@@ -81,7 +81,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         side='bottom'
         alignMenu='end'
         onOpenChange={this.handleOpenChange}
-        trigger={<IconDotsHorizontal size={24} isFilled />}
+        trigger={<IconButton Icon={IconDotsHorizontal} size={32} isFilled onClick={() => {}} />}
       />
     );
   }

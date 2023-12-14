@@ -170,6 +170,10 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isInviteDialogOpen: false });
   };
 
+  get userStatus(): 'active' | 'offline' {
+    return this.props.userIsOnline ? 'active' : 'offline';
+  }
+
   renderInviteDialog = (): JSX.Element => {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>

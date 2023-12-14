@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { SettingsMenu } from '../../../settings-menu';
 import { IconButton } from '@zero-tech/zui/components';
-
-import { bemClassName } from '../../../../lib/bem';
-import './styles.scss';
 import { IconPlus } from '@zero-tech/zui/icons';
+import { bemClassName } from '../../../../lib/bem';
+
+import './styles.scss';
 
 const cn = bemClassName('user-header');
 
@@ -14,8 +14,8 @@ export interface Properties {
   userHandle: string;
   userAvatarUrl: string;
   userIsOnline: boolean;
-
   includeUserSettings?: boolean;
+  
   onLogout?: () => void;
   startConversation: () => void;
 }

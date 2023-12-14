@@ -86,29 +86,28 @@ export class MatrixClient implements IChatClient {
 
   reconnect: () => void;
 
-  async getUserPresence(_userId: string) {
+  async getUserPresence(userId: string) {
     await this.waitForConnection();
 
-    return { lastSeenAt: null, isOnline: false };
-    // try {
-    //   const userPresenceData = await this.matrix.getPresence(userId);
+    try {
+      const userPresenceData = await this.matrix.getPresence(userId);
 
-    //   if (!userPresenceData) {
-    //     return { lastSeenAt: null, isOnline: false };
-    //   }
+      if (!userPresenceData) {
+        return { lastSeenAt: null, isOnline: false };
+      }
 
-    //   const { presence, last_active_ago } = userPresenceData;
-    //   const isOnline = presence === 'online';
-    //   const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
+      const { presence, last_active_ago } = userPresenceData;
+      const isOnline = presence === 'online';
+      const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
 
-    //   return { lastSeenAt, isOnline };
-    // } catch (error: any) {
-    //   if (error.errcode !== 'M_FORBIDDEN') {
-    //     console.error(error);
-    //   }
+      return { lastSeenAt, isOnline };
+    } catch (error: any) {
+      if (error.errcode !== 'M_FORBIDDEN') {
+        console.error(error);
+      }
 
-    //   return { lastSeenAt: null, isOnline: false };
-    // }
+      return { lastSeenAt: null, isOnline: false };
+    }
   }
 
   async getChannels(_id: string) {
@@ -294,13 +293,22 @@ export class MatrixClient implements IChatClient {
     if (this.isDeleted(event) || this.isEditEvent(event)) {
       return null;
     }
-
     switch (event.type) {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
+
       case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       case EventType.RoomCreate:
         return mapEventToAdminMessage(event);
+
+      case EventType.RoomMember:
+        if (
+          event.content.membership === MembershipStateType.Leave ||
+          event.content.membership === MembershipStateType.Invite
+        ) {
+          return mapEventToAdminMessage(event);
+        }
+        return null;
       default:
         return null;
     }
@@ -850,7 +858,7 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
-  private publishMembershipChange = (event: MatrixEvent) => {
+  private publishMembershipChange = async (event: MatrixEvent) => {
     if (event.getType() === EventType.RoomMember) {
       const user = this.mapUser(event.getStateKey());
       if (event.getStateKey() !== this.userId) {
@@ -864,11 +872,17 @@ export class MatrixClient implements IChatClient {
           this.events.onUserLeft(event.getRoomId(), user.matrixId);
         }
       }
+
+      const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+      if (message) {
+        this.events.receiveNewMessage(event.getRoomId(), message);
+      }
     }
   };
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
+    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
@@ -884,6 +898,7 @@ export class MatrixClient implements IChatClient {
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,
       otherMembers: otherMembers,
+      memberHistory: memberHistory,
       lastMessage: null,
       messages,
       groupChannelType: GroupChannelType.Private,
@@ -931,6 +946,10 @@ export class MatrixClient implements IChatClient {
       .getEvents()
       .map((event) => event.getEffectiveEvent());
     return await this.processRawEventsToMessages(events);
+  }
+
+  private getMemberHistoryFromRoom(room: Room): string[] {
+    return room.getMembers().map((member) => member.userId);
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {

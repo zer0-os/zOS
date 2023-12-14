@@ -20,7 +20,7 @@ import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
-import { mapCreatorIdToZeroUserId } from '../channels-list/utils';
+import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 
 export interface Payload {
   channelId: string;
@@ -109,7 +109,7 @@ export function* getLocalZeroUsersMap() {
 
 export function* mapMessagesAndPreview(messages, channelId) {
   const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
-  yield call(mapCreatorIdToZeroUserId, [{ messages }], zeroUsersMap);
+  yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
   for (const message of messages) {
     const preview = yield call(getPreview, message.message);
     if (preview) {

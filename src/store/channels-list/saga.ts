@@ -157,7 +157,7 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     message: 'Conversation was started',
     createdAt: timestamp,
     isAdmin: true,
-    admin: { type: AdminMessageType.CONVERSATION_STARTED, creatorId: currentUser.id },
+    admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: currentUser.id },
   };
   const conversation = {
     ...defaultConversationProperties,

@@ -94,7 +94,7 @@ function getAdminDataFromEventType(type, content, sender, targetUserId) {
     case EventType.RoomMember:
       return getRoomMemberAdminData(content, targetUserId);
     case EventType.RoomCreate:
-      return { type: AdminMessageType.CONVERSATION_STARTED, creatorId: sender };
+      return { type: AdminMessageType.CONVERSATION_STARTED, userId: sender };
     default:
       return null;
   }
@@ -103,7 +103,7 @@ function getAdminDataFromEventType(type, content, sender, targetUserId) {
 function getRoomMemberAdminData(content, targetUserId) {
   switch (content.membership) {
     case MembershipStateType.Leave:
-      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, creatorId: targetUserId };
+      return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: targetUserId };
     default:
       return null;
   }

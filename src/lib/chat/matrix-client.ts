@@ -881,7 +881,7 @@ export class MatrixClient implements IChatClient {
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
-    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapMemberForHistory(userId));
+    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
@@ -909,14 +909,6 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: this.getRoomAdmins(room),
     };
   };
-
-  private mapMemberForHistory(matrixId: string): Partial<UserModel> {
-    return {
-      userId: matrixId,
-      matrixId,
-      firstName: '',
-    };
-  }
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);

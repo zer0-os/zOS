@@ -24,7 +24,7 @@ import { ConversationStatus, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
-import { mapCreatorIdToZeroUserId, mapChannelMembers } from './utils';
+import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
@@ -41,7 +41,7 @@ const mockConversation = (id: string) => ({
   hasJoined: true,
   isChannel: false,
   messages: [
-    { isAdmin: true, admin: { creatorId: 'admin-id-1' } },
+    { isAdmin: true, admin: { userId: 'admin-id-1' } },
     { sender: { userId: 'user-id-1' } },
   ],
 });
@@ -100,7 +100,7 @@ describe('channels list saga', () => {
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(mapToZeroUsers), null],
           [matchers.call.fn(updateUserPresence), null],
-          [matchers.call.fn(mapCreatorIdToZeroUserId), null],
+          [matchers.call.fn(mapAdminUserIdToZeroUserId), null],
           [matchers.call.fn(getConversationsBus), conversationsChannelStub],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)

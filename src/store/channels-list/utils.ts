@@ -59,10 +59,10 @@ export function* mapChannelMessages(channels: Channel[], zeroUsersMap: { [id: st
       replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
     }
   }
-  yield mapCreatorIdToZeroUserId(channels, zeroUsersMap);
+  yield mapAdminUserIdToZeroUserId(channels, zeroUsersMap);
 }
 
-export function* mapCreatorIdToZeroUserId(messageContainers, zeroUsersMap) {
+export function* mapAdminUserIdToZeroUserId(messageContainers, zeroUsersMap) {
   const currentUser = yield select(currentUserSelector);
 
   if (!currentUser || !currentUser.matrixId) {
@@ -73,12 +73,12 @@ export function* mapCreatorIdToZeroUserId(messageContainers, zeroUsersMap) {
 
   for (const container of messageContainers) {
     for (const message of container.messages) {
-      if (message.isAdmin && message.admin.creatorId) {
-        if (message.admin.creatorId === currentUser.matrixId) {
-          message.admin.creatorId = currentUserId;
+      if (message.isAdmin && message.admin.userId) {
+        if (message.admin.userId === currentUser.matrixId) {
+          message.admin.userId = currentUserId;
         } else {
-          const user = zeroUsersMap[message.admin.creatorId];
-          message.admin.creatorId = user?.userId || message.admin.creatorId;
+          const user = zeroUsersMap[message.admin.userId];
+          message.admin.userId = user?.userId || message.admin.userId;
         }
       }
     }

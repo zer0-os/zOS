@@ -40,7 +40,7 @@ export interface Channel {
   name: string;
   messages: Message[];
   otherMembers: User[];
-  memberHistory: Partial<User>[];
+  memberHistory: User[];
   hasMore: boolean;
   createdAt: number;
   lastMessage: Message;

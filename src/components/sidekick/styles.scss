@@ -2,14 +2,13 @@
 @use '../../modules/animation' as animation;
 
 @import '../../layout';
+@import '../../glass';
 
 .sidekick {
   position: relative;
   width: $width-sidekick + 32px;
   height: 100%;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
-
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.492172) 22px, rgba(0, 0, 0, 0) 64px);
 
   box-sizing: border-box;
   position: relative;
@@ -27,11 +26,23 @@
     background: linear-gradient(to top, transparent, theme.$background-color-tertiary-hover 100%);
   }
 
+  &__tab-content-outer {
+    box-sizing: border-box;
+    display: flex;
+    flex-shrink: 0;
+    pointer-events: auto;
+    width: $width-sidekick;
+    border-radius: 16px;
+
+    @include glass-outer;
+  }
+
   &__tab-content {
     width: inherit;
-    background-color: theme.$background-color-tertiary-hover;
     border-radius: 16px;
     overflow: hidden;
+
+    @include glass-inner;
 
     &--messages {
       height: 100%;

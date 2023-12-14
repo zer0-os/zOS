@@ -27,7 +27,11 @@ $side-padding: 16px;
   }
 
   &__user-name {
-    @include glass-text-primary;
+    @include glass-text-primary-color;
+
+    font-size: $font-size-small;
+    font-weight: 600;
+    line-height: 15px;
   }
 }
 

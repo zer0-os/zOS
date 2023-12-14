@@ -1,6 +1,3 @@
-@mixin glass-text-primary {
+@mixin glass-text-primary-color {
   color: rgba(253, 253, 255, 0.93);
-  font-size: $font-size-small;
-  font-weight: 600;
-  line-height: 15px;
 }

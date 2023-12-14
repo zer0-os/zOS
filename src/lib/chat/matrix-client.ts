@@ -309,7 +309,6 @@ export class MatrixClient implements IChatClient {
           return mapEventToAdminMessage(event);
         }
         return null;
-
       default:
         return null;
     }
@@ -865,6 +864,10 @@ export class MatrixClient implements IChatClient {
       if (event.getStateKey() !== this.userId) {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
+          const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+          if (message) {
+            this.events.receiveNewMessage(event.getRoomId(), message);
+          }
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
         }

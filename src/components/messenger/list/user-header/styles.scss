@@ -12,6 +12,7 @@
   &__user-name {
     @include glass-text-primary-color;
 
+    width: 100%;
     font-size: $font-size-small;
     font-weight: 600;
     line-height: 15px;

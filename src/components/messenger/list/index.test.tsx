@@ -53,7 +53,6 @@ describe('messenger-list', () => {
       membersSelected: () => null,
       startGroup: () => null,
       back: () => null,
-      onClose: () => null,
       enterFullScreenMessenger: () => null,
       fetchRewards: () => null,
       rewardsPopupClosed: () => null,
@@ -71,16 +70,6 @@ describe('messenger-list', () => {
     const wrapper = subject({});
 
     expect(wrapper.find('.direct-message-members').exists()).toBe(true);
-  });
-
-  it('publishes close event when titlebar X clicked', function () {
-    const onClose = jest.fn();
-
-    const wrapper = subject({ onClose });
-
-    wrapper.find('.messenger-list__header button').at(1).simulate('click');
-
-    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('starts create conversation saga', async function () {
@@ -286,39 +275,6 @@ describe('messenger-list', () => {
     const wrapper = subject({ stage: Stage.StartGroupChat, groupUsers: [{ value: 'user-id' } as any] });
 
     expect(wrapper.find(StartGroupPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
-  });
-
-  it('renders the title bar based on property', function () {
-    const wrapper = subject({ includeTitleBar: true });
-    expect(wrapper).toHaveElement('.messenger-list__header');
-
-    wrapper.setProps({ includeTitleBar: false });
-    expect(wrapper).not.toHaveElement('.messenger-list__header');
-  });
-
-  it('renders the close icon as necessary', function () {
-    const wrapper = subject({ allowClose: true });
-    expect(wrapper).toHaveElement('IconXClose');
-
-    wrapper.setProps({ allowClose: false });
-    expect(wrapper).not.toHaveElement('IconXClose');
-  });
-
-  it('renders the expand icon as necessary', function () {
-    const wrapper = subject({ allowExpand: true });
-    expect(wrapper).toHaveElement('IconExpand1');
-
-    wrapper.setProps({ allowExpand: false });
-    expect(wrapper).not.toHaveElement('IconExpand1');
-  });
-
-  it('opens full screen mode', function () {
-    const enterFullScreenMessenger = jest.fn();
-    const wrapper = subject({ enterFullScreenMessenger, allowExpand: true });
-
-    wrapper.find('.messenger-list__icon-button').at(0).simulate('click');
-
-    expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
   it('renders GroupManagement if group management stage is NOT none', function () {

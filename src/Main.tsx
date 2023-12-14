@@ -19,7 +19,6 @@ import { featureFlags } from './lib/feature-flags';
 export interface Properties {
   hasContextPanel: boolean;
   isContextPanelOpen: boolean;
-  isSidekickOpen: boolean;
   isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
@@ -34,7 +33,6 @@ export class Container extends React.Component<Properties> {
       return {
         hasContextPanel: false,
         isContextPanelOpen: false,
-        isSidekickOpen: true,
         isMessengerFullScreen: true,
       };
     }
@@ -42,7 +40,6 @@ export class Container extends React.Component<Properties> {
     return {
       hasContextPanel: layout.hasContextPanel,
       isContextPanelOpen: layout.isContextPanelOpen,
-      isSidekickOpen: layout.isSidekickOpen,
       isMessengerFullScreen: false,
     };
   }
@@ -54,7 +51,7 @@ export class Container extends React.Component<Properties> {
   render() {
     const mainClassName = classNames('main', {
       'context-panel-open': this.props.isContextPanelOpen,
-      'sidekick-panel-open': this.props.isSidekickOpen && this.props.context.isAuthenticated,
+      'sidekick-panel-open': this.props.context.isAuthenticated,
       'has-context-panel': this.props.hasContextPanel,
       'messenger-full-screen': this.props.isMessengerFullScreen,
     });
@@ -92,7 +89,7 @@ export class Container extends React.Component<Properties> {
 
         {this.props.context.isAuthenticated && (
           <>
-            <Sidekick className='main__sidekick' />
+            <Sidekick />
             <MessengerChat />
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />

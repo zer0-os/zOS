@@ -1,10 +1,8 @@
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
-import { SendbirdClient } from './sendbird-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
-import { featureFlags } from '../feature-flags';
 import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {
@@ -216,6 +214,10 @@ export class Chat {
     return this.matrix.removeUser(roomId, user);
   }
 
+  async editRoomNameAndIcon(roomId: string, name: string, icon: string): Promise<void> {
+    return this.matrix.editRoomNameAndIcon(roomId, name, icon);
+  }
+
   async discardOlmSession(roomId: string) {
     return this.matrix.discardOlmSession(roomId);
   }
@@ -245,11 +247,7 @@ export class Chat {
 
 const ClientFactory = {
   get() {
-    if (featureFlags.enableMatrix) {
-      return new MatrixClient();
-    }
-
-    return new SendbirdClient();
+    return new MatrixClient();
   },
 };
 

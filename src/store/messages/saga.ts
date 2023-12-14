@@ -17,10 +17,10 @@ import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
 import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
-import { mapMessageSenders, mapReceivedMessage } from './utils.matrix';
-import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
+import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
+import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 
 export interface Payload {
   channelId: string;
@@ -86,9 +86,8 @@ const _isActive = (channelId) => (state) => {
 
 const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
-export function* getZeroUsersMap() {
-  const users = yield select((state) => state.normalized.users);
-
+export function* getLocalZeroUsersMap() {
+  const users = yield select((state) => state.normalized.users || {});
   const zeroUsersMap: { [matrixId: string]: User } = {};
   for (const user of Object.values(users)) {
     zeroUsersMap[(user as User).matrixId] = user as User;
@@ -108,17 +107,17 @@ export function* getZeroUsersMap() {
   return zeroUsersMap;
 }
 
-function* mapMessagesAndPreview(messagesResponse, channelId) {
-  yield call(mapMessageSenders, messagesResponse.messages, channelId);
-
-  for (const message of messagesResponse.messages) {
+export function* mapMessagesAndPreview(messages, channelId) {
+  const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
+  yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
+  for (const message of messages) {
     const preview = yield call(getPreview, message.message);
     if (preview) {
       message.preview = preview;
     }
   }
 
-  return messagesResponse.messages;
+  return messages;
 }
 
 export function* fetch(action) {
@@ -142,8 +141,7 @@ export function* fetch(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
-    yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
     const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property
@@ -314,9 +312,7 @@ export function* fetchNewMessages(channelId: string) {
       ],
       channelId
     );
-
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse, channelId);
-    yield call(mapCreatorIdToZeroUserId, [messagesResponse]);
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
 
     yield put(
       receive({
@@ -463,21 +459,14 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
 
   for (const channelId of Object.keys(byChannelId)) {
     const channel = yield select(rawChannelSelector(channelId));
+    if (!channel) {
+      continue;
+    }
+
     let currentMessages = channel?.messages || [];
-    let modified = false;
     for (let message of byChannelId[channelId]) {
-      yield call(mapReceivedMessage, message);
-
-      if (!channel) {
-        continue;
-      }
-      modified = true;
-
-      const preview = yield call(getPreview, message.message);
-
-      if (preview) {
-        message = { ...message, preview };
-      }
+      const messageList = yield call(mapMessagesAndPreview, [message], channelId);
+      message = messageList[0];
 
       let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
       if (!newMessages) {
@@ -488,9 +477,8 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       }
       currentMessages = newMessages;
     }
-    if (modified) {
-      yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
-    }
+
+    yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
     if (yield select(_isActive(channelId))) {
       const isChannel = yield select(_isChannel(channelId));
       const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
@@ -524,12 +512,10 @@ export function* replaceOptimisticMessage(currentMessages, message) {
 }
 
 export function* receiveUpdateMessage(action) {
-  let { message } = action.payload;
+  let { message, channelId } = action.payload;
 
-  const preview = yield call(getPreview, message.message);
-  message.preview = preview;
-
-  yield call(mapReceivedMessage, message);
+  const messageList = yield call(mapMessagesAndPreview, [message], channelId);
+  message = messageList[0];
 
   yield put(receiveMessage(message));
 }

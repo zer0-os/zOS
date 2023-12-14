@@ -75,7 +75,7 @@ export interface Message {
     type: AdminMessageType;
     inviterId?: string;
     inviteeId?: string;
-    creatorId?: string;
+    userId?: string;
   };
   optimisticId?: string;
   rootMessageId?: string;

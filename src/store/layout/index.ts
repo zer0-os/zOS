@@ -1,19 +1,16 @@
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
-import type { AppLayout, LayoutState, UpdateSidekickPayload } from './types';
+import type { AppLayout, LayoutState } from './types';
 
 export enum SagaActionTypes {
-  updateSidekick = 'layout/saga/updateSidekick',
   enterFullScreenMessenger = 'layout/saga/enterFullScreenMessenger',
 }
 
-export const updateSidekick = createAction<UpdateSidekickPayload>(SagaActionTypes.updateSidekick);
-export const enterFullScreenMessenger = createAction<UpdateSidekickPayload>(SagaActionTypes.enterFullScreenMessenger);
+export const enterFullScreenMessenger = createAction<{ isOpen: boolean }>(SagaActionTypes.enterFullScreenMessenger);
 
 const initialState: LayoutState = {
   value: {
     isContextPanelOpen: false,
     hasContextPanel: false,
-    isSidekickOpen: false,
     isMessengerFullScreen: true,
   },
 };
@@ -39,4 +36,4 @@ const slice = createSlice({
 
 export const { update, exitFullScreenMessenger } = slice.actions;
 export const { reducer } = slice;
-export { AppLayout, LayoutState, UpdateSidekickPayload };
+export { AppLayout, LayoutState };

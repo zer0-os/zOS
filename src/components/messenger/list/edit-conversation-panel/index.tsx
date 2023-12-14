@@ -9,8 +9,8 @@ import { User } from '../../../../store/channels';
 import { CitizenListItem } from '../../../citizen-list-item';
 
 import './styles.scss';
-import { EditConversationErrors } from '../../../../store/group-management/types';
 import { ScrollbarContainer } from '../../../scrollbar-container';
+import { EditConversationErrors, EditConversationState } from '../../../../store/group-management/types';
 const cn = bemClassName('edit-conversation-panel');
 
 export interface Properties {
@@ -19,9 +19,11 @@ export interface Properties {
   currentUser: User;
   otherMembers: User[];
   errors: EditConversationErrors;
+  state: EditConversationState;
 
   onBack: () => void;
   onRemoveMember: (userId: string) => void;
+  onEdit: (name: string, image: File | null) => void;
 }
 
 interface State {
@@ -40,7 +42,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled={true} />;
 
   handleEdit = () => {
-    // do edit here
+    this.props.onEdit(this.state.name, this.state.image);
   };
 
   get generalError() {
@@ -48,14 +50,24 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   }
 
   get isDisabled() {
-    return this.state.name === this.props.name && this.state.image === null;
+    return this.isLoading || (this.state.name === this.props.name && this.state.image === null);
+  }
+
+  get isLoading() {
+    return this.props.state === EditConversationState.INPROGRESS;
   }
 
   get changesSaved() {
-    return false;
+    return this.props.state === EditConversationState.SUCCESS;
   }
 
-  removeMember = (userId: string) => {
+  get removeMember() {
+    if (this.props.otherMembers.length < 2) return null;
+
+    return this.publishRemove;
+  }
+
+  publishRemove = (userId: string) => {
     this.props.onRemoveMember(userId);
   };
 
@@ -88,12 +100,17 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         )}
         {this.changesSaved && (
           <Alert {...cn('alert')} variant='success'>
-            {' '}
-            Changes saved{' '}
+            Changes saved
           </Alert>
         )}
 
-        <Button {...cn('zui-button-large')} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
+        <Button
+          {...cn('zui-button-large')}
+          isSubmit
+          isLoading={this.isLoading}
+          isDisabled={this.isDisabled}
+          onPress={this.handleEdit}
+        >
           Save
         </Button>
       </div>

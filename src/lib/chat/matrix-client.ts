@@ -546,6 +546,15 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async editRoomNameAndIcon(roomId: string, name: string, iconUrl: string): Promise<void> {
+    await this.waitForConnection();
+
+    await this.matrix.setRoomName(roomId, name);
+    if (iconUrl) {
+      await this.matrix.sendStateEvent(roomId, EventType.RoomAvatar, { url: iconUrl });
+    }
+  }
+
   async markRoomAsRead(roomId: string): Promise<void> {
     const room = this.matrix.getRoom(roomId);
 
@@ -850,14 +859,22 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
-  private publishMembershipChange = (event: MatrixEvent) => {
+  private publishMembershipChange = async (event: MatrixEvent) => {
     if (event.getType() === EventType.RoomMember) {
       const user = this.mapUser(event.getStateKey());
       if (event.getStateKey() !== this.userId) {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onOtherUserLeftChannel(event.getRoomId(), user);
+          const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+          if (message) {
+            this.events.receiveNewMessage(event.getRoomId(), message);
+          }
         } else {
           this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
+          const message = await mapEventToAdminMessage(event.getEffectiveEvent());
+          if (message) {
+            this.events.receiveNewMessage(event.getRoomId(), message);
+          }
         }
       } else {
         if (event.getContent().membership === MembershipStateType.Leave) {
@@ -869,7 +886,7 @@ export class MatrixClient implements IChatClient {
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
-    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapMemberForHistory(userId));
+    const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
@@ -897,14 +914,6 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: this.getRoomAdmins(room),
     };
   };
-
-  private mapMemberForHistory(matrixId: string): Partial<UserModel> {
-    return {
-      userId: matrixId,
-      matrixId,
-      firstName: '',
-    };
-  }
 
   private mapUser(matrixId: string): UserModel {
     const user = this.matrix.getUser(matrixId);

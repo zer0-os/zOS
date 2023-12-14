@@ -3,16 +3,7 @@ import { RootState } from '../reducer';
 import { Channel, User, normalize as normalizeChannel } from '../channels';
 import { normalize as normalizeUser } from '../users';
 import { User as AuthenticatedUser } from '../authentication/types';
-
-const DEFAULT_USER_ATTRS = {
-  id: 'default-stub-user-id',
-  profileId: 'default-stub-profile-id',
-  profileSummary: {
-    firstName: 'DefaultStubFirstName',
-    lastName: 'DefaultStubLastName',
-    profileImage: '/default-stub-image.jpg',
-  } as any,
-};
+import { initialState as initialGroupManagementState } from '../group-management';
 
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
@@ -22,8 +13,8 @@ export class StoreBuilder {
   activeChannel: Partial<Channel> = {};
   activeConversation: Partial<Channel> = {};
   isFullScreenMessenger: boolean = true;
-  currentUser: Partial<AuthenticatedUser> = { ...DEFAULT_USER_ATTRS };
-  groupManagement: Partial<RootState['groupManagement']> = {};
+  currentUser: Partial<AuthenticatedUser> = stubAuthenticatedUser();
+  groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
 
   withActiveChannel(channel: Partial<Channel>) {
@@ -47,12 +38,13 @@ export class StoreBuilder {
   }
 
   withUsers(...args: Partial<User>[]) {
-    this.users.push(...args);
+    const fullUsers = args.map(stubUser);
+    this.users.push(...fullUsers);
     return this;
   }
 
   withCurrentUser(user: Partial<AuthenticatedUser>) {
-    this.currentUser = { ...DEFAULT_USER_ATTRS, ...user };
+    this.currentUser = stubAuthenticatedUser(user);
     this.users.push({ userId: user.id });
     return this;
   }
@@ -120,4 +112,33 @@ export class StoreBuilder {
       ...this.otherState,
     } as RootState;
   }
+}
+
+let stubCount = 0;
+function stubAuthenticatedUser(attrs: Partial<AuthenticatedUser> = {}): Partial<AuthenticatedUser> {
+  stubCount++;
+  return {
+    id: `default-stub-user-id-${stubCount}`,
+    matrixId: `default-stub-matrix-id-${stubCount}`,
+    profileId: `default-stub-profile-id-${stubCount}`,
+    profileSummary: {
+      firstName: 'DefaultStubFirstName',
+      lastName: 'DefaultStubLastName',
+      profileImage: '/default-stub-image.jpg',
+    } as any,
+    ...attrs,
+  };
+}
+
+function stubUser(attrs: Partial<User> = {}): Partial<User> {
+  stubCount++;
+  return {
+    userId: `default-stub-user-id-${stubCount}`,
+    matrixId: `default-stub-matrix-id-${stubCount}`,
+    profileId: `default-stub-profile-id-${stubCount}`,
+    firstName: 'DefaultStubFirstName',
+    lastName: 'DefaultStubLastName',
+    profileImage: '/default-stub-image.jpg',
+    ...attrs,
+  };
 }

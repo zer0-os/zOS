@@ -17,7 +17,6 @@ import {
 } from '../../../store/create-conversation';
 import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
-import { IconExpand1, IconXClose } from '@zero-tech/zui/icons';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
@@ -43,9 +42,7 @@ import './styles.scss';
 const cn = bemClassName('direct-message-members');
 const cnMessageList = bemClassName('messenger-list');
 
-export interface PublicProperties {
-  onClose: () => void;
-}
+export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   stage: SagaStage;
@@ -217,23 +214,6 @@ export class Container extends React.Component<Properties, State> {
     );
   };
 
-  renderTitleBar() {
-    return (
-      <div {...cnMessageList('header')}>
-        {this.props.allowExpand && (
-          <button {...cnMessageList('icon-button')} onClick={this.props.enterFullScreenMessenger}>
-            <IconExpand1 label='Expand Messenger' size={12} isFilled={false} />
-          </button>
-        )}
-        {this.props.allowClose && (
-          <button {...cnMessageList('icon-button')} onClick={this.props.onClose}>
-            <IconXClose label='Close Messenger' size={12} isFilled={false} />
-          </button>
-        )}
-      </div>
-    );
-  }
-
   renderUserAccountContainer() {
     return (
       <div {...cnMessageList('user-account-container')}>
@@ -320,7 +300,6 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        {this.props.includeTitleBar && this.renderTitleBar()}
         {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserAccountContainer()}
 
         <div {...cn('')}>

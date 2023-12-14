@@ -7,10 +7,6 @@ import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
-const featureFlags = { enableGroupManagementMenu: false, enableEditRoom: false };
-jest.mock('../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
 
 describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
@@ -418,28 +414,56 @@ describe('messenger-chat', () => {
   });
 
   describe('room management', () => {
-    it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
-      featureFlags.enableEditRoom = true;
-      const wrapper = subject({ isCurrentUserRoomAdmin: true });
+    describe('edit members', () => {
+      it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
+        const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
-    });
-
-    it('does NOT allow editing if user is NOT an admin', () => {
-      featureFlags.enableEditRoom = true;
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: stubConversation({ isOneOnOne: false }),
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
       });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      it('does NOT allow editing if user is NOT an admin', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: false,
+          directMessage: stubConversation({ isOneOnOne: false }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      });
+
+      it('does NOT allow editing if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+      });
     });
 
-    it('does NOT allow editing if conversation is considered a 1 on 1', () => {
-      featureFlags.enableEditRoom = true;
-      const wrapper = subject({ isCurrentUserRoomAdmin: true, directMessage: stubConversation({ isOneOnOne: true }) });
+    describe('add members', () => {
+      it('allows adding of members if user is an admin and conversation is not a 1 on 1', () => {
+        const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-      expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(true);
+      });
+
+      it('does NOT allow adding of members if user is NOT an admin', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: false,
+          directMessage: stubConversation({ isOneOnOne: false }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+      });
+
+      it('does NOT allow adding of members if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+      });
     });
   });
 });

@@ -6,15 +6,18 @@ import {
   back,
   addSelectedMembers,
   MembersSelectedPayload,
-  removeMember,
+  editConversationNameAndIcon,
+  EditConversationPayload,
+  openRemoveMember,
 } from '../../../../store/group-management';
 import { Option } from '../../lib/types';
 
 import { GroupManagement } from '.';
 import { RootState } from '../../../../store/reducer';
-import { GroupManagementErrors } from '../../../../store/group-management/types';
+import { GroupManagementErrors, EditConversationState } from '../../../../store/group-management/types';
 import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { RemoveMemberDialogContainer } from '../../../group-management/remove-member-dialog/container';
 
 export interface PublicProperties {
   searchUsers: (search: string) => Promise<any>;
@@ -30,10 +33,12 @@ export interface Properties extends PublicProperties {
   errors: GroupManagementErrors;
   name: string;
   conversationIcon: string;
+  editConversationState: EditConversationState;
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
-  removeMember: (params: { roomId: string; userId: string }) => void;
+  editConversationNameAndIcon: (payload: EditConversationPayload) => void;
+  openRemoveMember: (params: { roomId: string; userId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -60,6 +65,7 @@ export class Container extends React.Component<Properties> {
         profileImage: currentUser?.profileSummary.profileImage,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
+      editConversationState: groupManagement.editConversationState,
     };
   }
 
@@ -67,7 +73,8 @@ export class Container extends React.Component<Properties> {
     return {
       back,
       addSelectedMembers,
-      removeMember,
+      editConversationNameAndIcon,
+      openRemoveMember,
     };
   }
 
@@ -75,26 +82,35 @@ export class Container extends React.Component<Properties> {
     this.props.addSelectedMembers({ roomId: this.props.activeConversationId, users: selectedOptions });
   };
 
-  removeMember = (userId: string) => {
-    this.props.removeMember({ roomId: this.props.activeConversationId, userId });
+  openRemoveMember = (userId: string) => {
+    this.props.openRemoveMember({ roomId: this.props.activeConversationId, userId });
+  };
+
+  onEditConversation = async (name: string, image: File | null) => {
+    this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
   };
 
   render() {
     return (
-      <GroupManagement
-        stage={this.props.stage}
-        currentUser={this.props.currentUser}
-        otherMembers={this.props.otherMembers}
-        onBack={this.props.back}
-        searchUsers={this.props.searchUsers}
-        onAddMembers={this.onAddMembers}
-        isAddingMembers={this.props.isAddingMembers}
-        addMemberError={this.props.addMemberError}
-        errors={this.props.errors}
-        name={this.props.name}
-        icon={this.props.conversationIcon}
-        onRemoveMember={this.removeMember}
-      />
+      <>
+        <GroupManagement
+          stage={this.props.stage}
+          currentUser={this.props.currentUser}
+          otherMembers={this.props.otherMembers}
+          onBack={this.props.back}
+          searchUsers={this.props.searchUsers}
+          onAddMembers={this.onAddMembers}
+          isAddingMembers={this.props.isAddingMembers}
+          addMemberError={this.props.addMemberError}
+          errors={this.props.errors}
+          name={this.props.name}
+          icon={this.props.conversationIcon}
+          onEditConversation={this.onEditConversation}
+          editConversationState={this.props.editConversationState}
+          onRemoveMember={this.openRemoveMember}
+        />
+        <RemoveMemberDialogContainer />
+      </>
     );
   }
 }

@@ -11,6 +11,7 @@ describe('settings-menu', () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
+      userStatus: 'active',
       onLogout: () => {},
 
       ...props,

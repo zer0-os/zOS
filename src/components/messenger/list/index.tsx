@@ -53,6 +53,7 @@ export interface Properties extends PublicProperties {
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
+  userIsOnline: boolean;
   includeUserSettings: boolean;
   isMessengerFullScreen: boolean;
   isInviteNotificationOpen: boolean;
@@ -105,6 +106,7 @@ export class Container extends React.Component<Properties, State> {
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
+      userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
     };
@@ -164,9 +166,14 @@ export class Container extends React.Component<Properties, State> {
   openInviteDialog = () => {
     this.setState({ isInviteDialogOpen: true });
   };
+
   closeInviteDialog = () => {
     this.setState({ isInviteDialogOpen: false });
   };
+
+  get userStatus(): 'active' | 'offline' {
+    return this.props.userIsOnline ? 'active' : 'offline';
+  }
 
   renderInviteDialog = (): JSX.Element => {
     return (
@@ -201,6 +208,7 @@ export class Container extends React.Component<Properties, State> {
             userName={this.props.userName}
             userHandle={this.props.userHandle}
             userAvatarUrl={this.props.userAvatarUrl}
+            userStatus={this.userStatus}
           />
         )}
         <div {...cnMessageList('user-name')}>{this.props.userName}</div>

@@ -25,3 +25,9 @@
     61px 75px 27px 0px rgba(0, 0, 0, 0.01);
   backdrop-filter: blur(32px);
 }
+
+// "flat" style mixin
+@mixin flat-thick {
+  background: var(--d-glass-materials-flat-thick, rgba(10, 10, 10, 0.75));
+  backdrop-filter: blur(64px);
+}

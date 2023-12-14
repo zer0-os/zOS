@@ -1,6 +1,17 @@
 // "glass" style mixin
 @mixin glass-outer {
-  border: 1px solid rgba(255, 255, 255, 0.25); // stroke should be applied to the outer div
+  // border-width: 1px;
+  // border-image-slice: 1;
+  // border-style: solid;
+  // border-radius: 16px;
+
+  // border-image-source: linear-gradient(
+  //   153.33deg,
+  //   rgba(255, 255, 255, 0.25) 0%,
+  //   rgba(255, 255, 255, 0) 24.43%,
+  //   rgba(255, 255, 255, 0.01) 79.12%,
+  //   rgba(255, 255, 255, 0.05) 100%
+  // );
 }
 
 @mixin glass-inner {

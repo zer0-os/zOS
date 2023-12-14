@@ -2,6 +2,7 @@ import { testSaga } from 'redux-saga-test-plan';
 import { call, race, take } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { chat } from '../../lib/chat';
+import { receive as receiveUser } from '../users';
 
 import {
   fetchConversations,
@@ -264,7 +265,7 @@ describe('channels list saga', () => {
         .withConversationList({ id: 'conversation-id' })
         .withChannelList({ id: 'channel-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [] })
+      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [], otherMembers: [] })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -274,7 +275,11 @@ describe('channels list saga', () => {
     it('does not duplicate the conversation', async () => {
       const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
 
-      const { storeState } = await subject(addChannel, { id: 'existing-conversation-id', messages: [] })
+      const { storeState } = await subject(addChannel, {
+        id: 'existing-conversation-id',
+        messages: [],
+        otherMembers: [],
+      })
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -495,15 +500,14 @@ describe('channels list saga', () => {
   });
 
   describe(updateUserPresence, () => {
-    function subject(conversations, provide = []) {
-      return expectSaga(updateUserPresence, conversations).provide([
+    function subject(users, provide = []) {
+      return expectSaga(updateUserPresence, users).provide([
         [matchers.call.fn(chat.get), chatClient],
         ...provide,
       ]);
     }
 
     const mockOtherMembers = [{ matrixId: 'member_001' }, { matrixId: 'member_002' }, { matrixId: 'member_003' }];
-    const mockConversations = [{ otherMembers: mockOtherMembers }];
 
     it('fetches and updates user presence data', async () => {
       const mockPresenceData = {
@@ -511,7 +515,7 @@ describe('channels list saga', () => {
         isOnline: true,
       };
 
-      await subject(mockConversations, [
+      await subject(mockOtherMembers, [
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_001'), mockPresenceData],
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_002'), mockPresenceData],
         [matchers.call([chatClient, chatClient.getUserPresence], 'member_003'), mockPresenceData],
@@ -529,62 +533,62 @@ describe('channels list saga', () => {
       await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();
     });
 
-    it('should set lastSeenAt, and isOnline to true if user is online', () => {
-      const mockConversations = [
+    it('dispatches receiveUser action with correct data when user is online', () => {
+      const mockUsers = [
         {
-          id: 'conversation_0001',
-          otherMembers: [
-            {
-              userId: 'user_1',
-              matrixId: 'matrix_1',
-              lastSeenAt: '',
-              isOnline: false,
-            },
-          ],
+          userId: 'user_1',
+          matrixId: 'matrix_1',
+          lastSeenAt: '',
+          isOnline: false,
         },
       ];
 
       const mockPresenceData1 = { lastSeenAt: '2023-10-17T10:00:00.000Z', isOnline: true };
 
-      testSaga(updateUserPresence, mockConversations)
+      testSaga(updateUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)
         .call([chatClient, chatClient.getUserPresence], 'matrix_1')
         .next(mockPresenceData1)
+        .put(
+          receiveUser({
+            userId: mockUsers[0].userId,
+            lastSeenAt: mockPresenceData1.lastSeenAt,
+            isOnline: mockPresenceData1.isOnline,
+          })
+        )
+        .next()
         .isDone();
-
-      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
-      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
     });
 
-    it('should set lastSeenAt to null and isOnline to false if user is offline', () => {
-      const mockConversations = [
+    it('dispatches receiveUser action with lastSeenAt null and isOnline false when user is offline', () => {
+      const mockUsers = [
         {
-          id: 'conversation_0001',
-          otherMembers: [
-            {
-              userId: 'user_1',
-              matrixId: 'matrix_1',
-              lastSeenAt: '',
-              isOnline: false,
-            },
-          ],
+          userId: 'user_1',
+          matrixId: 'matrix_1',
+          lastSeenAt: '',
+          isOnline: false,
         },
       ];
 
       const mockPresenceData1 = { lastSeenAt: null, isOnline: false };
 
-      testSaga(updateUserPresence, mockConversations)
+      testSaga(updateUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)
         .call([chatClient, chatClient.getUserPresence], 'matrix_1')
         .next(mockPresenceData1)
+        .put(
+          receiveUser({
+            userId: mockUsers[0].userId,
+            lastSeenAt: mockPresenceData1.lastSeenAt,
+            isOnline: mockPresenceData1.isOnline,
+          })
+        )
+        .next()
         .isDone();
-
-      expect(mockConversations[0].otherMembers[0].lastSeenAt).toBe(mockPresenceData1.lastSeenAt);
-      expect(mockConversations[0].otherMembers[0].isOnline).toBe(mockPresenceData1.isOnline);
     });
   });
 });

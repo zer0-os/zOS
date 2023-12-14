@@ -498,13 +498,11 @@ export class MessageInput extends React.Component<Properties, State> {
               <div className='message-input__icon-wrapper'>
                 <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
                   <IconButton
-                    className={classNames('message-input__icon', 'message-input__icon--end-action', {
-                      'message-input__icon--highlighted': this.sendHighlighted(),
-                    })}
+                    className={classNames('message-input__icon', 'message-input__icon--end-action')}
                     onClick={this.onSend}
                     Icon={IconSend3}
                     size='small'
-                    isFilled
+                    isFilled={this.sendHighlighted()}
                   />
                   {this.allowVoiceMessage && (
                     <IconButton

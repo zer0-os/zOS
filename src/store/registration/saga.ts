@@ -174,27 +174,7 @@ export function* updateProfile(action) {
       yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
 
-      const inviterMatrixId = response.response.inviter.matrixId;
-      const inviterUserId = response.response.inviter.id;
-
-      if (!inviterUserId || !inviterMatrixId) {
-        return false;
-      }
-
-      const inviterZeroUserData = yield call(getZEROUsersAPI, [inviterMatrixId]);
-
-      const inviter = inviterZeroUserData?.[0];
-      if (inviter) {
-        yield put(receiveUser(inviter));
-
-        try {
-          const createdConversation = yield call(createConversation, [inviterUserId], '', null);
-          const createdConversationId = createdConversation.id;
-
-          const chatClient = yield call(chat.get);
-          yield call([chatClient, chatClient.userJoinedInviterOnZero], createdConversationId, inviter.id, userId);
-        } catch (error) {}
-      }
+      yield call(createWelcomeConversation, userId, response.response.inviter);
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;
@@ -275,4 +255,22 @@ export function* openInviteToastWhenRewardsPopupClosed() {
   yield take(RewardsSagaActionTypes.RewardsPopupClosed);
   yield delay(10000);
   yield put(setInviteToastOpen(true));
+}
+
+export function* createWelcomeConversation(userId: string, inviter: { id: string; matrixId: string }) {
+  if (!inviter?.id || !inviter?.matrixId) {
+    return;
+  }
+
+  try {
+    const inviterZeroUserData = yield call(getZEROUsersAPI, [inviter.matrixId]);
+    const inviterUser = inviterZeroUserData?.[0];
+    yield put(receiveUser(inviterUser));
+
+    const createdConversation = yield call(createConversation, [inviterUser.userId], '', null);
+    const createdConversationId = createdConversation.id;
+
+    const chatClient = yield call(chat.get);
+    yield call([chatClient, chatClient.userJoinedInviterOnZero], createdConversationId, inviterUser.userId, userId);
+  } catch (error) {}
 }

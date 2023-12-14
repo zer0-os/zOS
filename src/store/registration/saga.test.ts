@@ -1,4 +1,4 @@
-import { expectSaga } from 'redux-saga-test-plan';
+import { expectSaga } from '../../test/saga';
 import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
@@ -6,6 +6,7 @@ import {
   authorizeAndCreateWeb3Account,
   clearRegistrationStateOnLogout,
   createAccount,
+  createWelcomeConversation,
   openInviteToastWhenRewardsPopupClosed,
   updateProfile,
   validateAccountInfo,
@@ -37,6 +38,9 @@ import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
+import { denormalize as denormalizeUser } from '../users';
+import { StoreBuilder } from '../test/store';
+import { chat } from '../../lib/chat';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -300,17 +304,7 @@ describe('updateProfile', () => {
           call(completeUserLogin),
           null,
         ],
-        [
-          call(getZEROUsersAPI, ['inviter-matrix-id']),
-          [
-            {
-              id: 'user-id',
-              profileSummary: { firstName: 'Inviter' },
-              profileImage: 'inviter-image-url',
-              matrixId: 'inviter-matrix-id',
-            },
-          ],
-        ],
+        [matchers.call.fn(createWelcomeConversation), null],
         [
           call(createConversation, ['inviter-id'], '', null),
           null,
@@ -362,17 +356,7 @@ describe('updateProfile', () => {
           call(createConversation, ['inviter-id'], '', null),
           null,
         ],
-        [
-          call(getZEROUsersAPI, ['inviter-matrix-id']),
-          [
-            {
-              id: 'user-id',
-              profileSummary: { firstName: 'Inviter' },
-              profileImage: 'inviter-image-url',
-              matrixId: 'inviter-matrix-id',
-            },
-          ],
-        ],
+        [matchers.call.fn(createWelcomeConversation), null],
         [
           spawn(clearRegistrationStateOnLogout),
           null,
@@ -569,6 +553,43 @@ describe('authorizeAndCreateWeb3Account', () => {
     expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
     expect(registration.userId).toEqual('123');
     expect(returnValue).toEqual(true);
+  });
+});
+
+describe(createWelcomeConversation, () => {
+  const chatClient = { userJoinedInviterOnZero: jest.fn() };
+
+  function subject(...args: Parameters<typeof expectSaga>) {
+    return expectSaga(...args).provide([
+      [matchers.call.fn(getZEROUsersAPI), [{ userId: 'stub-id' }]],
+      [matchers.call.fn(createConversation), { id: 'conversation-id' }],
+      [matchers.call.fn(chat.get), chatClient],
+    ]);
+  }
+  it('creates the welcome conversation between the inviter and new user', async () => {
+    const initialState = new StoreBuilder();
+
+    await subject(createWelcomeConversation, 'new-user-id', { id: 'inviter-id', matrixId: 'inviter-matrix-id' })
+      .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
+      .withReducer(rootReducer, initialState.build())
+      .call(createConversation, ['inviter-id'], '', null)
+      .call([chatClient, chatClient.userJoinedInviterOnZero], 'conversation-id', 'inviter-id', 'new-user-id')
+      .run();
+  });
+
+  it('stores the inviter in state', async () => {
+    const initialState = new StoreBuilder();
+
+    const { storeState } = await subject(createWelcomeConversation, 'new-user-id', {
+      id: 'inviter-id',
+      matrixId: 'inviter-matrix-id',
+    })
+      .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const savedUser = denormalizeUser('inviter-id', storeState);
+    expect(savedUser).toEqual(expect.objectContaining({ userId: 'inviter-id', firstName: 'The inviter' }));
   });
 });
 

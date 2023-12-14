@@ -1,6 +1,7 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../variables';
 @import '../../../layout';
+@import '../../../glass';
 
 $side-padding: 16px;
 
@@ -23,14 +24,14 @@ $side-padding: 16px;
     padding: 16px;
     height: 32px;
     gap: 8px;
-    background-color: theme.$color-primary-3;
   }
 
   &__user-name {
+    @include glass-text-primary-color;
+
     font-size: $font-size-small;
     font-weight: 600;
     line-height: 15px;
-    color: rgba(253, 253, 255, 0.93);
   }
 }
 

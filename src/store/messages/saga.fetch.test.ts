@@ -7,7 +7,6 @@ import { chat } from '../../lib/chat';
 import { StoreBuilder } from '../test/store';
 import { call } from 'redux-saga/effects';
 import { expectSaga } from '../../test/saga';
-import { mapCreatorIdToZeroUserId } from '../channels-list/saga';
 
 const chatClient = {
   getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),
@@ -38,7 +37,6 @@ describe(fetch, () => {
       .provide([
         [call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse],
         [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
-        [matchers.call.fn(mapCreatorIdToZeroUserId), null],
       ])
       .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();

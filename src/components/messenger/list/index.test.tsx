@@ -90,6 +90,18 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(SettingsMenu);
   });
 
+  it('renders users name when stage is equal to none', function () {
+    const wrapper = subject({ stage: Stage.None, userName: 'Joe Bloggs' });
+
+    expect(wrapper.find('.messenger-list__user-name').text()).toEqual('Joe Bloggs');
+  });
+
+  it('does not render users name when stage is not equal to none', function () {
+    const wrapper = subject({ stage: Stage.CreateOneOnOne, userName: 'Joe Bloggs' });
+
+    expect(wrapper).not.toHaveElement('.messenger-list__user-name');
+  });
+
   it('renders CreateConversationPanel', function () {
     const wrapper = subject({ stage: Stage.CreateOneOnOne });
 

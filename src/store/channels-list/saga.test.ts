@@ -63,7 +63,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
-        [matchers.call.fn(fetchUserPresence), null],
+        [matchers.fork.fn(fetchUserPresence), null],
       ]);
     }
 

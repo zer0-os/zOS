@@ -14,7 +14,7 @@ import {
   otherUserJoinedChannel,
   otherUserLeftChannel,
   mapToZeroUsers,
-  updateUserPresence,
+  fetchUserPresence,
 } from './saga';
 
 import { SagaActionTypes } from '.';
@@ -63,7 +63,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
-        [matchers.call.fn(updateUserPresence), null],
+        [matchers.call.fn(fetchUserPresence), null],
       ]);
     }
 
@@ -256,7 +256,7 @@ describe('channels list saga', () => {
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
         [matchers.call.fn(mapToZeroUsers), null],
-        [matchers.call.fn(updateUserPresence), null],
+        [matchers.call.fn(fetchUserPresence), null],
       ]);
     }
 
@@ -499,9 +499,9 @@ describe('channels list saga', () => {
     });
   });
 
-  describe(updateUserPresence, () => {
+  describe(fetchUserPresence, () => {
     function subject(users, provide = []) {
-      return expectSaga(updateUserPresence, users).provide([
+      return expectSaga(fetchUserPresence, users).provide([
         [matchers.call.fn(chat.get), chatClient],
         ...provide,
       ]);
@@ -545,7 +545,7 @@ describe('channels list saga', () => {
 
       const mockPresenceData1 = { lastSeenAt: '2023-10-17T10:00:00.000Z', isOnline: true };
 
-      testSaga(updateUserPresence, mockUsers)
+      testSaga(fetchUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)
@@ -574,7 +574,7 @@ describe('channels list saga', () => {
 
       const mockPresenceData1 = { lastSeenAt: null, isOnline: false };
 
-      testSaga(updateUserPresence, mockUsers)
+      testSaga(fetchUserPresence, mockUsers)
         .next()
         .call(chat.get)
         .next(chatClient)

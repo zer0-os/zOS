@@ -50,7 +50,7 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
-export function* updateUserPresence(users) {
+export function* fetchUserPresence(users) {
   const chatClient = yield call(chat.get);
   for (let user of users) {
     const matrixId = user?.matrixId;
@@ -76,7 +76,7 @@ export function* fetchConversations() {
   yield call(mapToZeroUsers, conversations);
 
   const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
-  yield fork(updateUserPresence, otherMembersOfConversations);
+  yield fork(fetchUserPresence, otherMembersOfConversations);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList
@@ -372,7 +372,7 @@ export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList());
   const channelsList = yield select(rawChannelsList());
   yield call(mapToZeroUsers, [channel]);
-  yield fork(updateUserPresence, channel.otherMembers);
+  yield fork(fetchUserPresence, channel.otherMembers);
 
   yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
 }

@@ -1,3 +1,40 @@
 @mixin glass-text-primary-color {
   color: rgba(253, 253, 255, 0.93);
 }
+
+@mixin glass-outer {
+  // border-width: 1px;
+  // border-image-slice: 1;
+  // border-style: solid;
+  // border-radius: 16px;
+
+  // border-image-source: linear-gradient(
+  //   153.33deg,
+  //   rgba(255, 255, 255, 0.25) 0%,
+  //   rgba(255, 255, 255, 0) 24.43%,
+  //   rgba(255, 255, 255, 0.01) 79.12%,
+  //   rgba(255, 255, 255, 0.05) 100%
+  // );
+}
+
+@mixin glass-inner {
+  background: radial-gradient(273.54% 141.42% at 0% 0%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(10, 10, 10, 0.75);
+  box-shadow: 2px 3px 9px 0px rgba(0, 0, 0, 0.31), 10px 12px 16px 0px rgba(0, 0, 0, 0.27),
+    22px 27px 21px 0px rgba(0, 0, 0, 0.16), 39px 48px 25px 0px rgba(0, 0, 0, 0.05),
+    61px 75px 27px 0px rgba(0, 0, 0, 0.01);
+  backdrop-filter: blur(32px);
+}
+
+// "flat" style mixin
+@mixin flat-thick {
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(64px);
+}
+
+@mixin text-input {
+  background: var(--D-Glass-Ui-State-Active, rgba(163, 162, 163, 0.1));
+
+  /* D/Glass/Inset/Shadows */
+  box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
+}

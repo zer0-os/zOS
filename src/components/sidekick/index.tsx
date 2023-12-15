@@ -24,9 +24,11 @@ export class Container extends React.Component<Properties> {
     return (
       <IfAuthenticated showChildren>
         <div className='sidekick'>
-          <div className='sidekick__tab-content'>
-            <div className='sidekick__tab-content--messages'>
-              <MessengerList />
+          <div className='sidekick__tab-content-outer'>
+            <div className='sidekick__tab-content'>
+              <div className='sidekick__tab-content--messages'>
+                <MessengerList />
+              </div>
             </div>
           </div>
         </div>

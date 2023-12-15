@@ -4,6 +4,7 @@
 @import '../../../variables';
 @import '../../../layout';
 @import '../../../animation';
+@import '../../../glass';
 
 $title-bar-height: 32px;
 $header-height: 66px;
@@ -85,12 +86,13 @@ $recent-indicator-size: 8px;
   }
 
   &__header {
-    background-color: theme.$color-primary-1;
     height: $header-height - (16px * 2);
     display: flex;
     gap: 8px;
     border-radius: 16px;
     padding: 16px;
+
+    @include flat-thick;
 
     > div:last-child {
       flex-grow: 1;

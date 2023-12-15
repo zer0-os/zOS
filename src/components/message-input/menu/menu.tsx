@@ -1,7 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { bytesToMB, dropzoneToMedia, Media } from '../utils';
-import { IconPaperclip } from '@zero-tech/zui/icons';
+import { IconPlus } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import { IconButton, ToastNotification } from '@zero-tech/zui/components';
@@ -65,7 +65,7 @@ export default class Menu extends React.Component<Properties, State> {
             <div className='image-send'>
               <div {...getRootProps({ className: 'image-send__dropzone' })}>
                 <input {...getInputProps()} />
-                <IconButton onClick={open} Icon={IconPaperclip} size='small' />
+                <IconButton onClick={open} Icon={IconPlus} size='small' />
               </div>
             </div>
           )}

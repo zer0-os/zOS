@@ -39,7 +39,7 @@ export async function uploadImage(file: File): Promise<FileResult> {
   return { url };
 }
 
-export async function getZEROUsers(matrixIds: string[]): Promise<User> {
+export async function getZEROUsers(matrixIds: string[]): Promise<[User]> {
   return await get('/matrix/users/zero', { matrixIds })
     .catch((_error) => null)
     .then((response) => {

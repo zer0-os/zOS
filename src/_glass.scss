@@ -1,5 +1,21 @@
+// D/Glass/Text/Primary
 @mixin glass-text-primary-color {
   color: rgba(253, 253, 255, 0.93);
+}
+
+// D/Glass/Text/Secondary
+@mixin glass-text-secondary-color {
+  color: rgba(247, 245, 255, 0.62);
+}
+
+// D/Glass/Text/Tertiary
+@mixin glass-text-tertiary-color {
+  color: rgba(238, 236, 255, 0.42);
+}
+
+// D/Glass/Ui State/Hover
+@mixin glass-state-hover-color {
+  background-color: rgba(253, 252, 253, 0.05);
 }
 
 @mixin glass-outer {

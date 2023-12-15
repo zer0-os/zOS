@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../variables';
+@import '../../../../glass';
 
 .conversation-item {
   display: flex;
@@ -11,15 +12,10 @@
   margin-bottom: 8px;
   padding: 0 8px;
 
-  font-size: $font-size-small;
-  line-height: 17px;
-
-  color: theme.$color-greyscale-12;
-
   &:hover,
   &:focus,
   &[is-active='true'] {
-    background-color: theme.$color-primary-3;
+    @include glass-state-hover-color;
     border-radius: 8px;
     outline: none;
   }
@@ -38,32 +34,36 @@
     display: flex;
     align-items: baseline;
     width: 100%;
-    margin-bottom: 7px;
+    margin-bottom: 4.5px;
     overflow: hidden;
   }
 
   &__name {
+    @include glass-text-primary-color;
+
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     flex-grow: 1;
     font-size: $font-size-medium;
+    line-height: 20px;
 
     &[is-unread='true'] {
-      font-weight: 700;
+      font-weight: 600;
     }
   }
 
   &__timestamp {
-    color: theme.$color-greyscale-11;
+    @include glass-text-tertiary-color;
     font-weight: 400;
     font-size: 10px;
-    line-height: 12px;
+    line-height: 15px;
     white-space: nowrap;
   }
 
   &__message {
-    color: theme.$color-greyscale-11;
+    @include glass-text-secondary-color;
+
     font-weight: 400;
     font-size: $font-size-small;
     line-height: 15px;
@@ -73,12 +73,12 @@
     padding-right: 1px;
 
     &[is-unread='true'] {
-      font-weight: 700;
-      color: theme.$color-greyscale-12;
+      font-weight: 600;
+      @include glass-text-primary-color;
 
       div {
-        font-weight: 700;
-        color: theme.$color-greyscale-12;
+        font-weight: 600;
+        @include glass-text-primary-color;
       }
     }
 

@@ -240,6 +240,7 @@ $scrollbar-width: 5px;
 .messages__container {
   animation: fadein 200ms ease-out forwards;
   padding-right: 16px;
+  padding-top: 100px;
 
   .message__header {
     display: flex;

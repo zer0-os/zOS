@@ -15,7 +15,6 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat } from '../../lib/chat';
-import { activeChannelIdSelector } from '../chat/selectors';
 import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
@@ -83,8 +82,6 @@ export const _isChannel = (channelId) => (state) =>
 const _isActive = (channelId) => (state) => {
   return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;
 };
-
-const FETCH_CHAT_CHANNEL_INTERVAL = 60000;
 
 export function* getLocalZeroUsersMap() {
   const users = yield select((state) => state.normalized.users || {});
@@ -300,33 +297,6 @@ export function* messageSendFailed(optimisticId) {
   );
 }
 
-export function* fetchNewMessages(channelId: string) {
-  yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
-
-  try {
-    const chatClient = yield call(chat.get);
-    const messagesResponse = yield call(
-      [
-        chatClient,
-        chatClient.getMessagesByChannelId,
-      ],
-      channelId
-    );
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
-
-    yield put(
-      receive({
-        id: channelId,
-        messages: messagesResponse.messages,
-        hasMore: messagesResponse.hasMore,
-        messagesFetchStatus: MessagesFetchState.SUCCESS,
-      })
-    );
-  } catch (e) {
-    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
-  }
-}
-
 export function* deleteMessage(action) {
   const { channelId, messageId } = action.payload;
 
@@ -535,19 +505,6 @@ function getFirstUrl(message: string) {
   return link[0].href;
 }
 
-function* pollForPublicChannelMessages() {
-  while (true) {
-    const currentUser = yield select(currentUserSelector());
-    const isPublicZOS = !currentUser?.id;
-    const activeChannelId = yield select(activeChannelIdSelector);
-
-    if (isPublicZOS && activeChannelId) {
-      yield call(fetchNewMessages, activeChannelId);
-    }
-    yield delay(FETCH_CHAT_CHANNEL_INTERVAL);
-  }
-}
-
 export function* clearMessages() {
   yield put(removeAll({ schema: schema.key }));
 }
@@ -571,8 +528,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-
-  yield spawn(pollForPublicChannelMessages);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);

@@ -31,3 +31,10 @@
   background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(64px);
 }
+
+@mixin text-input {
+  background: var(--D-Glass-Ui-State-Active, rgba(163, 162, 163, 0.1));
+
+  /* D/Glass/Inset/Shadows */
+  box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
+}

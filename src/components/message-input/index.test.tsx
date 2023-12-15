@@ -124,7 +124,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ sendDisabledMessage: '' });
     setInput(wrapper, 'Hello');
 
-    expect(wrapper).toHaveElement('.message-input__icon--highlighted');
+    expect(wrapper.find('IconButton[label="send"]').prop('isFilled')).toBe(true);
   });
 
   it('send icon is not highlighted if there is no input', () => {

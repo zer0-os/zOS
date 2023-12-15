@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../animation';
+@import '../../glass';
 
 // Note: there are some classes in various other places (src/platform-apps/channels/styles.scss)
 
@@ -17,11 +18,14 @@
   &__message-input-container {
     margin-bottom: 16px;
     margin-right: 16px;
-    margin-top: 16px;
     border-radius: 16px;
     overflow: hidden;
     flex-shrink: 0;
-    background-color: theme.$color-primary-1;
+
+    @include flat-thick;
+
+    // todo: remove this after extracting out the message input from chat-view
+    backdrop-filter: none;
   }
 
   &__group-message {

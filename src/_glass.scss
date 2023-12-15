@@ -75,3 +75,25 @@
   /* D/Glass/Inset/Shadows */
   box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
 }
+
+// D/Glass/Materials/Raised
+@mixin glass-materials-raised {
+  background: linear-gradient(
+    153.33deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0) 24.43%,
+    rgba(255, 255, 255, 0.01) 79.12%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
+}
+
+// L/Glass/Separator/Primary
+@mixin glass-separator-primary {
+  background: rgba(13, 2, 24, 0.09);
+}
+
+// D/Glass/Ui/Shadow Low
+@mixin glass-shadow-low {
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25), 1px 1px 1px 0px rgba(0, 0, 0, 0.21),
+    2px 2px 2px 0px rgba(0, 0, 0, 0.13), 4px 4px 2px 0px rgba(0, 0, 0, 0.04), 6px 6px 2px 0px rgba(0, 0, 0, 0);
+}

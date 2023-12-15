@@ -5,18 +5,10 @@
 @import 'variables';
 @import 'layout';
 
-$world-padding: 12px;
 $platform-padding: 8px;
 
 $border-color: theme-zui.$color-primary-4;
 $border-color-hover: theme-zui.$color-primary-7;
-
-@mixin menu-small {
-  box-sizing: border-box;
-  padding: $world-padding;
-  width: $width-world-navigation;
-  border-right: 1px solid $border-color;
-}
 
 .main {
   @include root-layout-vars;
@@ -34,68 +26,6 @@ $border-color-hover: theme-zui.$color-primary-7;
 
   &.messenger-full-screen {
     justify-content: start;
-  }
-
-  &__navigation {
-    box-sizing: border-box;
-    display: flex;
-    pointer-events: auto;
-    position: relative;
-    background-color: theme-zui.$color-primary-2;
-  }
-
-  &__navigation-world {
-    @include distribute-evenly();
-    @include menu-small();
-  }
-
-  &__navigation-platform {
-    @include distribute-evenly();
-    @include layout-transition(width);
-
-    box-sizing: border-box;
-    width: $width-platform-navigation;
-    border-right: 1px solid $border-color;
-    padding: $platform-padding;
-
-    @include for-left-collapse() {
-      @include menu-small();
-      padding: $world-padding 8px;
-    }
-  }
-
-  &__network {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
-
-    padding-top: calc(12px - $platform-padding);
-    padding-left: calc(16px - $platform-padding);
-
-    @include for-left-collapse() {
-      padding: 0;
-    }
-
-    > span {
-      font-size: 14px;
-      font-weight: bold;
-      color: theme-zui.$color-primary-12;
-
-      @include for-left-collapse() {
-        display: none;
-      }
-    }
-
-    > &__logo {
-      height: 40px;
-      width: 40px;
-
-      object-fit: contain;
-      border-radius: 100%;
-    }
   }
 
   &.has-context-panel.context-panel-open &__header {

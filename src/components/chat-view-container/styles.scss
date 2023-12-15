@@ -23,6 +23,9 @@
     flex-shrink: 0;
 
     @include flat-thick;
+
+    // todo: remove this after extracting out the message input from chat-view
+    backdrop-filter: none;
   }
 
   &__group-message {

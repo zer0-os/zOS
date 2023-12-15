@@ -20,7 +20,7 @@ $side-padding: 16px;
     display: flex;
     gap: 24px;
     flex-direction: column;
-    padding: $side-padding 0;
+    padding: 24px 0 16px;
 
     animation: conversation-slide-in 600ms ease-in forwards;
 

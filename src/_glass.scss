@@ -28,6 +28,6 @@
 
 // "flat" style mixin
 @mixin flat-thick {
-  background: var(--d-glass-materials-flat-thick, rgba(10, 10, 10, 0.75));
+  background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(64px);
 }

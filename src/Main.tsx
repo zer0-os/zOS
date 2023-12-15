@@ -3,8 +3,6 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
-import { AppMenuContainer } from './components/app-menu/container';
-import { Logo } from './components/logo';
 
 import './main.scss';
 import classNames from 'classnames';
@@ -56,22 +54,6 @@ export class Container extends React.Component<Properties> {
 
     return (
       <div className={mainClassName}>
-        <div className='main__navigation'>
-          {!this.props.isMessengerFullScreen && (
-            <div className='main__navigation-platform'>
-              <div>
-                <div className='main__network'>
-                  <Logo className={'main__network__logo'} />
-                  <span>Wilder World</span>
-                </div>
-              </div>
-              <div className='main__app-menu-container'>
-                <AppMenuContainer />
-              </div>
-              <div></div>
-            </div>
-          )}
-        </div>
         {!this.props.isMessengerFullScreen && (
           <div className='main__header'>
             <div className='main__wallet-manager-wrapper'>

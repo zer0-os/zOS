@@ -20,12 +20,4 @@ const apps: { [apps: string]: PlatformApp } = {
   },
 };
 
-const allApps = () => {
-  const activeApps = [
-    apps[Apps.Channels],
-  ];
-
-  return activeApps;
-};
-
-export { apps, allApps };
+export { apps };

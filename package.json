@@ -28,7 +28,7 @@
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "0.18.9",
     "@zer0-os/zos-zns": "2.3.3",
-    "@zero-tech/zui": "^0.28.0",
+    "@zero-tech/zui": "^0.30.0",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

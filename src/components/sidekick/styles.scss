@@ -32,15 +32,12 @@
     flex-shrink: 0;
     pointer-events: auto;
     width: $width-sidekick;
-    border-radius: 16px;
 
     @include glass-outer;
   }
 
   &__tab-content {
     width: inherit;
-    border-radius: 16px;
-    overflow: hidden;
 
     @include glass-inner;
 

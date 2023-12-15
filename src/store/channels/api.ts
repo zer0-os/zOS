@@ -5,9 +5,3 @@ export async function joinChannel(channelId: string): Promise<number> {
 
   return response.status;
 }
-
-export type MentionableUser = {
-  id: string;
-  name: string;
-  profileImage: string;
-};

@@ -116,6 +116,7 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
             alert={this.passwordAlert}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
+            size='large'
           />
           <PasswordInput
             {...cn('input')}
@@ -126,6 +127,7 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
             onChange={this.trackConfirmPassword}
             error={this.confirmPasswordAlert?.variant === 'error' || false}
             alert={this.confirmPasswordAlert}
+            size='large'
           />
         </div>
         {this.generalError && (

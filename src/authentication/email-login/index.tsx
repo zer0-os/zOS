@@ -78,6 +78,7 @@ export class EmailLogin extends React.Component<Properties, State> {
               onChange={this.trackPassword}
               error={!!this.passwordError}
               alert={this.passwordError}
+              size='large'
             />
           </div>
           {this.generalError && (

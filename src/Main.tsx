@@ -3,7 +3,6 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
-import { AddressBarContainer } from './components/address-bar/container';
 import { AppMenuContainer } from './components/app-menu/container';
 import { Logo } from './components/logo';
 
@@ -14,7 +13,6 @@ import { withContext as withAuthenticationContext } from './components/authentic
 import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
-import { featureFlags } from './lib/feature-flags';
 
 export interface Properties {
   hasContextPanel: boolean;
@@ -76,11 +74,6 @@ export class Container extends React.Component<Properties> {
         </div>
         {!this.props.isMessengerFullScreen && (
           <div className='main__header'>
-            {!featureFlags.enableMatrix && (
-              <div className='main__address-bar-wrapper'>
-                <AddressBarContainer className='main__address-bar' />
-              </div>
-            )}
             <div className='main__wallet-manager-wrapper'>
               <WalletManager className='main__wallet-manager' />
             </div>

@@ -4,13 +4,7 @@ import { shallow } from 'enzyme';
 import { Container as Main, Properties } from './Main';
 import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
-import { AddressBarContainer } from './components/address-bar/container';
 import { MessengerChat } from './components/messenger/chat';
-
-const featureFlags = { enableMatrix: false };
-jest.mock('./lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
 
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -37,12 +31,6 @@ describe(Main, () => {
     const wrapper = subject();
 
     expect(wrapper).toHaveElement(ThemeEngine);
-  });
-
-  it('renders address bar container', () => {
-    const wrapper = subject();
-
-    expect(wrapper).toHaveElement(AddressBarContainer);
   });
 
   it('does not set layout classes when values are false', () => {

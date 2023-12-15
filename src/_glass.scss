@@ -28,9 +28,11 @@
   backdrop-filter: blur(32px);
 
   &:before {
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: 16px;
+    pointer-events: none;
 
     //
     // Unfortunately, we can't have a gradient border with rounded corners.

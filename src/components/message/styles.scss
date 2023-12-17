@@ -33,7 +33,7 @@
     }
 
     .message__block {
-      @include flat-thick;
+      @include flat-thin;
       border-radius: var(--border-owner-radius); // set in message__message-row
 
       &--edit {
@@ -54,7 +54,7 @@
     z-index: 1;
 
     border-radius: var(--border-radius); // set in message__message-row
-    @include flat-thin;
+    @include flat-thick;
 
     &--edit {
       width: 100%;
@@ -63,15 +63,16 @@
 
   &__block-body {
     font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: theme.$color-greyscale-12;
+    font-size: 16px;
+    line-height: 23px;
     display: flex;
     flex-direction: column;
     gap: 4px;
 
-    margin: 8px 0 0px 0;
-    padding: 0px 8px 8px 8px;
+    margin: 16px 0px 0px 0px;
+    padding: 0px 16px 16px 16px;
+
+    @include glass-text-primary-color;
 
     white-space: pre-wrap;
     word-break: break-word;
@@ -127,6 +128,7 @@
 
   &__time {
     display: flex;
+    @include glass-text-secondary-color;
   }
 
   &__failure-message {
@@ -169,12 +171,12 @@
 
   &__author-name {
     display: flex;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 12px;
     line-height: 15px;
-    color: theme.$color-greyscale-12;
     margin: 0 0 8px 0;
-    padding: 8px 8px 0px 8px;
+    padding: 8px 16px 0px 16px;
+    @include glass-text-primary-color;
   }
 
   &.messages__message--last-in-group {

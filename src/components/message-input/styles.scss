@@ -103,10 +103,11 @@
     width: 100%;
     border-radius: 8px;
 
-    @include text-input;
+    @include text-input-default;
 
     &:focus-within {
       border-color: theme.$color-primary-7;
+      @include text-input-focus;
     }
   }
 

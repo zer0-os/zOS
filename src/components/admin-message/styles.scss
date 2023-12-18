@@ -1,10 +1,11 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
 
 .admin-message {
   margin: 8px 16px;
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
-  color: theme.$color-greyscale-transparency-11;
   text-align: center;
+  @include glass-text-primary-color;
 }

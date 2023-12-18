@@ -2,6 +2,7 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @use '../../shared-components/theme-engine/theme' as themeDeprecated;
 @import '../../animation';
+@import '../../glass';
 
 @mixin actionable-color(
   $inactive-color: themeDeprecated.$actionable-inactive-color,
@@ -252,9 +253,9 @@ $scrollbar-width: 5px;
     line-height: 15px;
 
     &-date {
-      color: theme.$color-greyscale-transparency-11;
       width: 100%;
       text-align: center;
+      @include glass-text-primary-color;
     }
   }
 

@@ -4,21 +4,23 @@
 
 @import '../../variables';
 @import '../../animation';
+@import '../../glass';
 
 .reply-card {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background-color: theme.$color-greyscale-transparency-2;
-  color: theme.$color-greyscale-11;
+  gap: 16px;
+  padding: 8px 8px 8px 16px;
   border-radius: 4px;
 
   font-weight: 400;
   font-size: 12px;
   font-style: normal;
   line-height: 15px;
+
+  @include glass-text-secondary-color;
+  @include glass-state-active-stroke;
 
   &__content {
     flex-grow: 1;
@@ -27,8 +29,6 @@
   }
 
   &__header {
-    color: theme.$color-greyscale-12;
-    font-weight: 700;
     margin-bottom: 4px;
   }
 }

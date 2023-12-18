@@ -1,11 +1,10 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../glass';
 
 .parent-message {
   display: flex;
   align-items: center;
-  padding: 8px;
-  background-color: theme.$color-greyscale-transparency-2;
-  color: theme.$color-greyscale-11;
+  padding: 8px 8px 8px 16px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 
@@ -14,16 +13,17 @@
   font-style: normal;
   line-height: 15px;
 
+  @include glass-text-secondary-color;
+  @include glass-state-active-stroke;
+
   &__content {
-    padding-left: 8px;
+    padding-left: 16px;
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
   }
 
   &__header {
-    color: theme.$color-greyscale-12;
-    font-weight: 700;
     margin-bottom: 4px;
   }
 }

@@ -39,11 +39,13 @@
     // Our solution is to use a div with a full background and then mask out the inside
     // of it so that you only see approximately 1 px of it
     //
-    background-image: linear-gradient(153.33deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        rgba(255, 255, 255, 0) 24.43%,
-        rgba(255, 255, 255, 0.01) 79.12%,
-        rgba(255, 255, 255, 0.05) 100%);
+    background-image: linear-gradient(
+      153.33deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0) 24.43%,
+      rgba(255, 255, 255, 0.01) 79.12%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
     mask: linear-gradient(black, black) center / 100% 100% no-repeat exclude,
       radial-gradient(circle 16px at 17px 17px, black 99%, transparent),
       radial-gradient(circle 16px at 17px calc(100% - 17px), black 99%, transparent),
@@ -72,22 +74,25 @@
   backdrop-filter: blur(64px);
 }
 
-@mixin text-input-default {
+@mixin glass-input-inset-default {
   background: rgba(167, 163, 163, 0.05);
   box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
 }
 
-@mixin text-input-focus {
+@mixin glass-input-inset-active {
   background: rgba(163, 162, 163, 0.1);
+  box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
 }
 
 // D/Glass/Materials/Raised
 @mixin glass-materials-raised {
-  background: linear-gradient(153.33deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0) 24.43%,
-      rgba(255, 255, 255, 0.01) 79.12%,
-      rgba(255, 255, 255, 0.75) 100%);
+  background: linear-gradient(
+    153.33deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0) 24.43%,
+    rgba(255, 255, 255, 0.01) 79.12%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
 }
 
 // L/Glass/Separator/Primary

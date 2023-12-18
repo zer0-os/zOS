@@ -13,9 +13,19 @@
   color: rgba(238, 236, 255, 0.42);
 }
 
+// D/Glass/Ui State/Default
+@mixin glass-state-default-color {
+  background-color: rgba(167, 163, 163, 0.05);
+}
+
 // D/Glass/Ui State/Hover
 @mixin glass-state-hover-color {
   background-color: rgba(253, 252, 253, 0.05);
+}
+
+// D/Glows/Highlight/Small (4px)
+@mixin glass-glow-highlight-small {
+  text-shadow: 0px 0px 4px rgba(1, 250, 195, 0.75);
 }
 
 @mixin glass-outer {
@@ -85,14 +95,15 @@
 }
 
 // D/Glass/Materials/Raised
-@mixin glass-materials-raised {
+@mixin glass-materials-raised($startColor: rgba(167, 163, 163, 0.05), $endColor: rgba(167, 163, 163, 0.05)) {
   background: linear-gradient(
-    153.33deg,
-    rgba(255, 255, 255, 0.55) 0%,
-    rgba(255, 255, 255, 0) 24.43%,
-    rgba(255, 255, 255, 0.01) 79.12%,
-    rgba(255, 255, 255, 0.75) 100%
-  );
+      153.33deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0) 24.43%,
+      rgba(255, 255, 255, 0.01) 79.12%,
+      rgba(255, 255, 255, 0.05) 100%
+    ),
+    linear-gradient(0deg, $startColor, $endColor);
 }
 
 // L/Glass/Separator/Primary

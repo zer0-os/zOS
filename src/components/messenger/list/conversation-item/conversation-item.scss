@@ -95,13 +95,16 @@
   }
 
   &__unread-count {
+    @include glass-state-default-color;
+    @include glass-glow-highlight-small;
+    @include glass-materials-raised();
+
     display: flex;
     justify-content: center;
     align-items: center;
     flex-grow: 0;
     flex-shrink: 0;
-    background-color: theme.$color-primary-8;
-    color: theme.$color-primary-transparency-12;
+    color: theme.$color-secondary-transparency-11;
     border-radius: 50%;
     width: 16px;
     height: 16px;
@@ -110,6 +113,7 @@
     font-weight: 700;
     line-height: 11px;
     margin-left: 3px;
+    letter-spacing: 0.32px;
   }
 
   &__content {
@@ -141,7 +145,14 @@
       border-radius: inherit;
       z-index: -1;
 
-      @include glass-materials-raised;
+      // custom raised background for group icon
+      background: linear-gradient(
+        153.33deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0) 24.43%,
+        rgba(255, 255, 255, 0.01) 79.12%,
+        rgba(255, 255, 255, 0.75) 100%
+      );
     }
 
     & > * {

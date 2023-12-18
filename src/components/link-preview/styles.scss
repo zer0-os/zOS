@@ -2,6 +2,7 @@
 
 @import '../../variables';
 @import '../../animation';
+@import '../../glass';
 
 $link-preview-min-height: 250px;
 $weight-bold: 900;
@@ -9,11 +10,13 @@ $weight-bold: 900;
 .link-preview {
   display: flex;
   gap: 8px;
+  margin: 8px 8px 0px 8px;
   padding: 8px;
   align-items: center;
-
-  background-color: theme.$color-greyscale-transparency-2;
+  border-radius: 4px;
   cursor: pointer;
+
+  @include glass-state-hover-color;
 
   &__default-image {
     position: absolute;
@@ -51,7 +54,7 @@ $weight-bold: 900;
 
   &__title {
     color: theme.$color-greyscale-12;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     text-overflow: ellipsis;

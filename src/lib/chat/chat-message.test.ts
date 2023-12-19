@@ -132,7 +132,7 @@ describe(adminMessageText, () => {
 
       const adminText = adminMessageText(message, state);
 
-      expect(adminText).toEqual('Courtney left the group');
+      expect(adminText).toEqual('Courtney left the conversation');
     });
   });
 

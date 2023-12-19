@@ -1,9 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .settings-menu {
-  width: 256px;
-  padding: 8px;
-
   > *:first-child {
     &:hover {
       background: none;

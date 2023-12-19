@@ -34,7 +34,7 @@ export class MessageMenu extends React.Component<Properties, State> {
   renderMenuOption(icon, label) {
     return (
       <div className={'option'}>
-        {label} {icon}
+        {icon} {label}
       </div>
     );
   }
@@ -51,21 +51,21 @@ export class MessageMenu extends React.Component<Properties, State> {
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'edit',
-        label: this.renderMenuOption(<IconEdit5 />, 'Edit'),
+        label: this.renderMenuOption(<IconEdit5 size={20} />, 'Edit'),
         onSelect: this.onEdit,
       });
     }
     if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'reply',
-        label: this.renderMenuOption(<IconFlipBackward />, 'Reply'),
+        label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),
         onSelect: this.onReply,
       });
     }
     if (this.props.onDelete && this.props.canDelete) {
       menuItems.push({
         id: 'delete',
-        label: this.renderMenuOption(<IconTrash4 />, 'Delete'),
+        label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
         onSelect: this.toggleDeleteDialog,
       });
     }

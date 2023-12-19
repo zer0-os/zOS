@@ -1,9 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .settings-menu {
-  width: 256px;
-  padding: 8px;
-
   > *:first-child {
     &:hover {
       background: none;
@@ -50,8 +47,8 @@
   }
 
   .zui-dropdown-item.divider {
-    border-bottom: 1px solid theme.$color-primary-5;
-    margin: 8px 0px;
+    border-bottom: 1px solid rgba(163, 162, 163, 0.1);
+    margin: 0;
     padding: 0;
   }
 

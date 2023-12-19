@@ -127,10 +127,16 @@ export class SettingsMenu extends React.Component<Properties, State> {
         label: this.renderSettingsHeader(),
         onSelect: () => {},
       },
+      {
+        className: 'divider',
+        id: 'header-divider',
+        label: <div />,
+        onSelect: () => {},
+      },
       ...options,
       {
         className: 'divider',
-        id: 'divider',
+        id: 'footer-divider',
         label: <div />,
         onSelect: () => {},
       },
@@ -161,6 +167,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
               statusType={this.props.userStatus}
             />
           }
+          itemSize='spacious'
         />
         {this.renderEditProfileDialog()}
         {this.renderBackupDialog()}

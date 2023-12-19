@@ -104,10 +104,10 @@ function translateConversationStarted(admin: { userId?: string }, currentUser, s
 
 function translateMemberLeftGroup(admin: { userId?: string }, state: RootState) {
   const user = denormalizeUser(admin.userId, state);
-  return user?.firstName ? `${user.firstName} left the group` : null;
+  return user?.firstName ? `${user.firstName} left the conversation` : null;
 }
 
 function translateMemberAddedToGroup(admin: { userId?: string }, state: RootState) {
   const user = denormalizeUser(admin.userId, state);
-  return user?.firstName ? `${user.firstName} was added to the group` : null;
+  return user?.firstName ? `${user.firstName} was added to the conversation` : null;
 }

@@ -161,7 +161,7 @@ describe(adminMessageText, () => {
 
       const adminText = adminMessageText(message, state);
 
-      expect(adminText).toEqual('Courtney was added to the group');
+      expect(adminText).toEqual('Courtney was added to the conversation');
     });
   });
 });

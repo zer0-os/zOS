@@ -42,7 +42,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     if (this.props.canAddMembers) {
       menuItems.push({
         id: 'add-member',
-        label: this.renderMenuItem(<IconPlus />, 'Add Member'),
+        label: this.renderMenuItem(<IconPlus size={20} />, 'Add Member'),
         onSelect: this.startAddMember as any,
       });
     }
@@ -51,7 +51,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       menuItems.push({
         id: 'leave_group',
         className: 'leave-group',
-        label: this.renderMenuItem(<IconUserRight1 />, 'Leave Group'),
+        label: this.renderMenuItem(<IconUserRight1 size={20} />, 'Leave Group'),
         onSelect: () => {
           this.props.onLeave();
         },
@@ -61,7 +61,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     if (this.props.canEdit) {
       menuItems.push({
         id: 'edit_group',
-        label: this.renderMenuItem(<IconEdit5 />, 'Edit'),
+        label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
         onSelect: this.props.onEdit,
       });
     }

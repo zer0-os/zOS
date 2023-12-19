@@ -66,6 +66,7 @@ export class ConversationItem extends React.Component<Properties> {
           imageURL={this.props.conversation.otherMembers[0].profileImage}
           statusType={this.conversationStatus}
           tabIndex={-1}
+          isRaised
         />
       );
     } else if (isCustomIcon(this.props.conversation.icon)) {
@@ -76,6 +77,7 @@ export class ConversationItem extends React.Component<Properties> {
           imageURL={this.props.conversation.icon}
           statusType={this.conversationStatus}
           tabIndex={-1}
+          isRaised
         />
       );
     } else if (!this.props.conversation.isOneOnOne) {
@@ -87,7 +89,7 @@ export class ConversationItem extends React.Component<Properties> {
       );
     }
 
-    return <Avatar size={'regular'} type={'circle'} statusType={this.conversationStatus} tabIndex={-1} />;
+    return <Avatar size={'regular'} type={'circle'} statusType={this.conversationStatus} tabIndex={-1} isRaised />;
   }
 
   render() {

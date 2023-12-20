@@ -137,7 +137,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   isUserAlreadyInConversation = (userId: string) => {
-    return this.props.conversations.filter((c) => c.isOneOnOne).find((c) => c.otherMembers[0].userId === userId);
+    return this.props.conversations.filter((c) => c.isOneOnOne).find((c) => c.otherMembers[0]?.userId === userId);
   };
 
   createOneOnOneConversation = (id: string) => {

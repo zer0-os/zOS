@@ -76,10 +76,6 @@ $scrollbar-width: 5px;
   }
 }
 
-.channel-view__inverted-scroll {
-  flex-grow: 99;
-}
-
 .channel {
   &-list {
     width: 100%;
@@ -235,66 +231,5 @@ $scrollbar-width: 5px;
         height: 20px;
       }
     }
-  }
-}
-
-.messages__container {
-  animation: fadein 200ms ease-out forwards;
-  padding-right: 16px;
-  padding-top: 100px;
-
-  .message__header {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin: 8px 16px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
-
-    &-date {
-      width: 100%;
-      text-align: center;
-      @include glass-text-primary-color;
-    }
-  }
-
-  .messages__message-row {
-    display: flex;
-    margin: 4px 16px;
-
-    &--owner {
-      justify-content: flex-end;
-    }
-  }
-}
-
-@keyframes fade-background-in {
-  from {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  to {
-    background-color: themeDeprecated.$accent-color;
-  }
-}
-
-.messages__container .messages__message-row:hover {
-  .message__menu {
-    transform: translateX(0);
-    transition: transform 0.1s ease-in-out, opacity 0s ease-in-out;
-    opacity: 1;
-  }
-}
-
-// Message sizing
-.direct-message-chat--full-screen {
-  .messages__message {
-    box-sizing: border-box;
-    max-width: 100%;
-  }
-
-  .messages__message {
-    max-width: 560px;
   }
 }

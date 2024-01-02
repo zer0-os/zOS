@@ -1,7 +1,6 @@
 import React from 'react';
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
-import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
 
 import './main.scss';
@@ -54,14 +53,6 @@ export class Container extends React.Component<Properties> {
 
     return (
       <div className={mainClassName}>
-        {!this.props.isMessengerFullScreen && (
-          <div className='main__header'>
-            <div className='main__wallet-manager-wrapper'>
-              <WalletManager className='main__wallet-manager' />
-            </div>
-          </div>
-        )}
-
         {this.props.context.isAuthenticated && (
           <>
             <Sidekick />

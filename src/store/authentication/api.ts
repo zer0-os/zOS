@@ -36,18 +36,6 @@ export async function clearSession(): Promise<AuthorizationResponse> {
   return response.body;
 }
 
-export async function createAndAuthorize(
-  nonce: string,
-  user: object,
-  inviteCode: string
-): Promise<AuthorizationResponse> {
-  return await post('/accounts/createAndAuthorize').set('Authorization', `Nonce ${nonce}`).send({ user, inviteCode });
-}
-
-export async function updateImageProfile(profileId: string, profileImage: File): Promise<AuthorizationResponse> {
-  return await post(`/upload/avatar?profileId=${profileId}`).attach('file', profileImage);
-}
-
 export async function getSSOToken(): Promise<{ token: string }> {
   const { body } = await get('/accounts/ssoToken');
 

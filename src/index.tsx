@@ -11,8 +11,6 @@ import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-rea
 import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
-import { AppSandboxContainer } from './app-sandbox/container';
-
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';

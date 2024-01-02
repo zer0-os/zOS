@@ -4,13 +4,12 @@ import { denormalize as denormalizeUser } from '../../store/users';
 import { currentUserSelector } from '../../store/authentication/saga';
 import moment from 'moment';
 
-export function previewDisplayDate(timestamp: number) {
+export function previewDisplayDate(timestamp: number, currentDate = moment()) {
   if (!timestamp) {
     return '';
   }
 
   const messageDate = moment(timestamp);
-  const currentDate = moment();
 
   if (messageDate.isSame(currentDate, 'day')) {
     return messageDate.format('h:mm A');

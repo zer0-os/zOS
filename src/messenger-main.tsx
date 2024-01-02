@@ -4,7 +4,6 @@ import { connectContainer } from './store/redux-container';
 
 import { Main } from './Main';
 import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
-import { Create as CreateAccount } from './components/account/create';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 
 export interface Properties {
@@ -32,7 +31,6 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <>
-        <CreateAccount />
         <AuthenticationContextProvider value={this.authenticationContext}>
           <ZUIProvider>
             <Main />

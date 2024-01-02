@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container } from './messenger-main';
-import { Create as CreateAccount } from './components/account/create';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { Main } from './Main';
@@ -12,11 +11,6 @@ describe('MessengerMain', () => {
   const subject = (isAuthenticated = mockIsAuthenticated) => {
     return shallow(<Container isAuthenticated={isAuthenticated} />);
   };
-
-  it('renders the CreateAccount component', () => {
-    const wrapper = subject();
-    expect(wrapper.find(CreateAccount)).toHaveLength(1);
-  });
 
   it('contains AuthenticationContextProvider with the correct context', () => {
     const wrapper = subject();

@@ -61,22 +61,6 @@ ReactDOM.render(
   document.getElementById('platform')
 );
 
-// The reason for the separate react app is to keep the sandbox isolated from the main app.
-// Everything contained within this render tree should be limited to what is necessary to
-// load and render the child apps. Anything exposed in this tree should also be done in
-// such a way that it won't interfere with the loaded app. (eg. pass the store directly
-// to components rather than using a provider.)
-ReactDOM.render(
-  <ErrorBoundary boundary={'apps'}>
-    <Router history={history}>
-      <Route path='/:znsRoute/:app'>
-        <AppSandboxContainer store={store} />
-      </Route>
-    </Router>
-  </ErrorBoundary>,
-  document.getElementById('app-sandbox')
-);
-
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

@@ -11,8 +11,6 @@ import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-rea
 import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
-import { AppSandboxContainer } from './app-sandbox/container';
-
 import '../node_modules/@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
@@ -59,22 +57,6 @@ ReactDOM.render(
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('platform')
-);
-
-// The reason for the separate react app is to keep the sandbox isolated from the main app.
-// Everything contained within this render tree should be limited to what is necessary to
-// load and render the child apps. Anything exposed in this tree should also be done in
-// such a way that it won't interfere with the loaded app. (eg. pass the store directly
-// to components rather than using a provider.)
-ReactDOM.render(
-  <ErrorBoundary boundary={'apps'}>
-    <Router history={history}>
-      <Route path='/:znsRoute/:app'>
-        <AppSandboxContainer store={store} />
-      </Route>
-    </Router>
-  </ErrorBoundary>,
-  document.getElementById('app-sandbox')
 );
 
 // If you want your app to work offline and load faster, you can change

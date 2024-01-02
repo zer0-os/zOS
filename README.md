@@ -46,9 +46,4 @@ A high level overview of the Component, Connected Component, Redux Saga, Normali
 
 #### Matrix
 
-To enable Matrix for chat instead of Sendbird, all you need to do is provide values for two ENV vars: `REACT_APP_MATRIX_USER_ID`, `REACT_APP_MATRIX_ACCESS_TOKEN`
-Currently this is what allows you to connect as a user. To create a user, you'll need to use an external app. For local development, it is easiest to run our matrix server locally, and use the instance of Element provided in that repo: [https://github.com/zer0-os/zOS-chat-server](https://github.com/zer0-os/zOS-chat-server).
-Once you've got the server and client running, you can retrieve your user id from the menu in the upper left corner menu of Element. To get your access token, from the same menu go to All Settings -> Help & About -> Advanced (Expand the Access Token drawer).
-Add those two ENV vars, restart zOS, and you should be connected to your local Matrix server.
-
-For testing at this point, you can use the local Element instance to provide any functionality that we haven't yet enabled in zOS. Ideally, we will maintain full interoperability between clients, unless we intentionally decide to deviate.
+For local development you can test against the development home server or run our matrix server locally: [https://github.com/zer0-os/zOS-chat-server](https://github.com/zer0-os/zOS-chat-server). If you want to run against your local home server set the env var and restart zOS: `REACT_APP_MATRIX_HOME_SERVER_URL=http://localhost:8008`

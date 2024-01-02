@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Container as Main, Properties } from './Main';
-import { WalletManager } from './components/wallet-manager';
 import { ThemeEngine } from './components/theme-engine';
 import { MessengerChat } from './components/messenger/chat';
 
@@ -20,12 +19,6 @@ describe(Main, () => {
 
     return shallow(<Main {...allProps} />);
   };
-
-  it('renders wallet manager container', () => {
-    const wrapper = subject();
-
-    expect(wrapper).toHaveElement(WalletManager);
-  });
 
   it('renders theme engine', () => {
     const wrapper = subject();

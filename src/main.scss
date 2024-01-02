@@ -40,26 +40,6 @@ $border-color-hover: theme-zui.$color-primary-7;
     right: $width-sidekick;
   }
 
-  &__header {
-    position: absolute;
-    top: $platform-padding;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 16px;
-    padding: 0 16px;
-
-    @include layout-transition(left);
-    @include layout-sidekick-transition(right);
-
-    left: $width-navigation;
-    right: 0;
-
-    @include for-left-collapse() {
-      left: $width-collapsed-navigation;
-    }
-  }
-
   &__address-bar-wrapper {
     height: 48px;
     display: flex;
@@ -70,26 +50,6 @@ $border-color-hover: theme-zui.$color-primary-7;
   &__address-bar {
     pointer-events: auto;
     width: 100%;
-  }
-
-  &__wallet-manager-wrapper {
-    height: 48px;
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  &__wallet-manager {
-    padding: 3px; // Align top with inner address bar border
-    pointer-events: auto;
-
-    .eth-address {
-      flex: 0 0 auto;
-      display: flex;
-      min-height: 32px;
-      align-items: center;
-    }
   }
 
   &__view-mode-toggle {

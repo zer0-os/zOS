@@ -22,9 +22,6 @@ export const config = {
     environment: process.env.NODE_ENV,
     release: process.env.REACT_APP_VERSION,
   },
-  inviteCode: {
-    dejaVu: process.env.REACT_APP_INVITE_CODE_DEJAVU,
-  },
   giphySdkKey: process.env.REACT_APP_GIPHY_SDK_KEY,
   pusher: {
     key: process.env.REACT_APP_PUSHER_KEY,

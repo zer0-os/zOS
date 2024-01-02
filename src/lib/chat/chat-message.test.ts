@@ -246,9 +246,10 @@ describe(previewDisplayDate, () => {
   });
 
   it('displays the three-letter month abbreviation and day of the month for messages sent in the same calendar year prior to the last 7 days', () => {
-    const withinCalendarYear = moment().subtract(10, 'days');
+    const currentDate = moment('2024-01-20');
+    const withinCalendarYear = moment(currentDate).subtract(10, 'days');
 
-    expect(previewDisplayDate(withinCalendarYear.valueOf())).toEqual(withinCalendarYear.format('MMM D'));
+    expect(previewDisplayDate(withinCalendarYear.valueOf(), currentDate)).toEqual(withinCalendarYear.format('MMM D'));
   });
 
   it('displays the three-letter month abbreviation, day of the month, and the year for messages sent before the current calendar year', () => {

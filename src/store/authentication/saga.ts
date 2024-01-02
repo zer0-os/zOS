@@ -23,10 +23,6 @@ import { getHistory } from '../../lib/browser';
 import { featureFlags } from '../../lib/feature-flags';
 import { completePendingUserProfile } from '../registration/saga';
 
-export interface Payload {
-  signedWeb3Token: string;
-}
-
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
@@ -128,7 +124,6 @@ export function* clearUserState() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.Logout, logout);
-  yield takeLatest(SagaActionTypes.FetchCurrentUserWithChatAccessToken, getCurrentUserWithChatAccessToken);
 }
 
 export function* logout() {

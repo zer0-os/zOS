@@ -204,3 +204,15 @@ $recent-indicator-size: 8px;
     bottom: calc($title-bar-height + $header-height - $window-height);
   }
 }
+
+// Message sizing
+.direct-message-chat--full-screen {
+  .messages__message {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .messages__message {
+    max-width: 560px;
+  }
+}

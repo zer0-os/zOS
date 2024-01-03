@@ -1,19 +1,7 @@
-import { all, takeLatest, take, put, call, select, fork, spawn, race } from 'redux-saga/effects';
-import { eventChannel } from 'redux-saga';
+import { all, takeLatest, put, call } from 'redux-saga/effects';
 import { AsyncListStatus } from '../normalized';
-import {
-  SagaActionTypes,
-  receive,
-  setStatus,
-  removeAll,
-  relevantNotificationTypes,
-  schema,
-  rawNotificationsList,
-  relevantNotificationEvents,
-} from '.';
-import { fetchNotification, fetchNotifications } from './api';
-import PusherClient from '../../lib/pusher';
-import { getAuthChannel } from '../authentication/channels';
+import { SagaActionTypes, receive, setStatus, removeAll, relevantNotificationTypes, schema } from '.';
+import { fetchNotifications } from './api';
 
 export interface Payload {
   userId: string;
@@ -31,64 +19,6 @@ export function* fetch(action) {
   yield put(setStatus(AsyncListStatus.Idle));
 }
 
-export function createEventChannel(userId, pusherClient = new PusherClient()) {
-  return eventChannel((emit) => {
-    const events = relevantNotificationEvents.map((event) => {
-      return {
-        key: event,
-        callback: (notification) => {
-          emit({ ...notification, isUnread: true });
-        },
-      };
-    });
-
-    pusherClient.init(userId, events);
-
-    const unsubscribe = () => {
-      pusherClient.disconnect();
-    };
-
-    return unsubscribe;
-  });
-}
-
-export function* watchForChannelEvent(userId) {
-  const notificationChannel = yield call(createEventChannel, userId);
-
-  while (true) {
-    const { abort, notification } = yield race({
-      abort: take(SagaActionTypes.CancelEventWatch),
-      notification: take(notificationChannel),
-    });
-
-    if (abort) {
-      notificationChannel.close();
-      return false;
-    }
-
-    if (relevantNotificationTypes.includes(notification.notificationType)) {
-      yield call(loadNotification, notification);
-    }
-  }
-}
-
-export function* loadNotification(notification) {
-  const enhancedNotification = yield call(fetchNotification, notification.id);
-
-  yield call(addNotification, enhancedNotification);
-}
-
-export function* addNotification(notification) {
-  const existingNotifications = yield select(rawNotificationsList);
-
-  yield put(
-    receive([
-      notification,
-      ...existingNotifications,
-    ])
-  );
-}
-
 export function* clearNotifications() {
   yield all([
     put(removeAll({ schema: schema.key })),
@@ -96,21 +26,6 @@ export function* clearNotifications() {
   ]);
 }
 
-export function* authWatcher() {
-  const channel = yield call(getAuthChannel);
-
-  while (true) {
-    const { userId = undefined } = yield take(channel, '*');
-
-    if (userId) {
-      yield spawn(watchForChannelEvent, userId);
-    } else {
-      yield put({ type: SagaActionTypes.CancelEventWatch });
-    }
-  }
-}
-
 export function* saga() {
-  yield fork(authWatcher);
   yield takeLatest(SagaActionTypes.Fetch, fetch);
 }

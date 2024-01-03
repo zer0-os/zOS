@@ -1,24 +1,13 @@
-import { race, take } from 'redux-saga/effects';
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { AsyncListStatus } from '../normalized';
 import { rootReducer } from '../reducer';
 
-import {
-  addNotification,
-  authWatcher,
-  clearNotifications,
-  createEventChannel,
-  fetch,
-  loadNotification,
-  watchForChannelEvent,
-} from './saga';
-import { setStatus, relevantNotificationTypes, SagaActionTypes, relevantNotificationEvents } from '.';
-import { fetchNotification, fetchNotifications } from './api';
+import { clearNotifications, fetch } from './saga';
+import { setStatus, relevantNotificationTypes } from '.';
+import { fetchNotifications } from './api';
 import { sample } from 'lodash';
-import { getAuthChannel } from '../authentication/channels';
-import { multicastChannel } from 'redux-saga';
 
 describe('notifications list saga', () => {
   const notificationFetchResponse = [
@@ -129,153 +118,5 @@ describe('notifications list saga', () => {
     });
 
     expect(notificationsListResult).toEqual({ value: [] });
-  });
-
-  it('watchForChannelEvent', () => {
-    const userId = 'user-id';
-
-    const notification = { id: 'notification-id', notificationType: sample(relevantNotificationTypes) };
-
-    const notificationChannel = {
-      take: jest.fn(),
-      close: jest.fn(),
-    };
-
-    testSaga(watchForChannelEvent, userId)
-      .next()
-      .call(createEventChannel, userId)
-      .next(notificationChannel)
-
-      .next({ abort: undefined, notification })
-      .call(loadNotification, notification)
-      .next()
-      .inspect((raceValue) => {
-        expect(raceValue).toStrictEqual(
-          race({
-            abort: take(SagaActionTypes.CancelEventWatch),
-            notification: take(notificationChannel),
-          })
-        );
-      })
-
-      .next({ abort: true, notification: undefined })
-      .inspect((returnValue) => {
-        expect(notificationChannel.close).toBeCalled();
-        expect(returnValue).toBeFalse();
-      })
-
-      .next()
-      .isDone();
-  });
-
-  it('addNotification', async () => {
-    const notification = { id: 'id-added', name: 'this one should be added to the top of the list' };
-
-    const notificationsList = { value: ['id-old'] };
-    const notifications = { 'id-old': { id: 'id-old', name: 'this one already existed' } };
-
-    const {
-      storeState: {
-        normalized: { notifications: storeNotifications },
-        notificationsList: storeNotificationsList,
-      },
-    } = await expectSaga(addNotification, notification)
-      .withReducer(rootReducer)
-      .withState({
-        notificationsList,
-        normalized: { notifications },
-      })
-      .run();
-
-    expect(storeNotificationsList.value).toEqual([
-      notification.id,
-      ...notificationsList.value,
-    ]);
-    expect(storeNotifications).toStrictEqual({ ...{ [notification.id]: notification }, ...notifications });
-  });
-
-  it('processNotification', async () => {
-    const notification = {
-      id: 'notification-id',
-      name: 'pusher notifications purposely restrict fields like profileSummary',
-    };
-
-    const enhancedNotification = { ...notification, originUser: { id: 'user-id', profileSummary: {} } };
-
-    const {
-      storeState: {
-        normalized: { notifications: storeNotifications },
-      },
-    } = await expectSaga(loadNotification, notification)
-      .provide([
-        [
-          matchers.call.fn(fetchNotification),
-          enhancedNotification,
-        ],
-      ])
-      .call(fetchNotification, notification.id)
-      .call(addNotification, enhancedNotification)
-      .withReducer(rootReducer)
-      .run();
-
-    expect(storeNotifications[enhancedNotification.id]).toStrictEqual(enhancedNotification);
-  });
-
-  it('authWatcher', async () => {
-    const channel = multicastChannel();
-    const userId = 'user-id';
-
-    testSaga(authWatcher)
-      .next()
-      .call(getAuthChannel)
-
-      .next(channel)
-      .inspect((action) => {
-        const { payload } = action as any;
-
-        expect(payload.channel).toEqual(channel);
-        expect(payload.pattern).toEqual('*');
-      })
-
-      .next({ userId })
-      .spawn(watchForChannelEvent, userId)
-
-      .next(channel)
-      .inspect((action) => {
-        const { payload } = action as any;
-
-        expect(payload.channel).toEqual(channel);
-        expect(payload.pattern).toEqual('*');
-      })
-
-      .next({ userId: undefined })
-      .put({ type: SagaActionTypes.CancelEventWatch });
-  });
-
-  describe('createEventChannel', () => {
-    const userId = 'user-id';
-
-    const pusherClient = {
-      init: jest.fn(),
-      disconnect: jest.fn(),
-    } as any;
-
-    it('disconnect', () => {
-      const channel = createEventChannel(userId, pusherClient);
-
-      channel.close();
-
-      expect(pusherClient.disconnect).toBeCalled();
-    });
-
-    it('initializes', () => {
-      createEventChannel(userId, pusherClient);
-
-      const eventsExpectation = relevantNotificationEvents.map((event) => {
-        return { key: event, callback: expect.anything() };
-      });
-
-      expect(pusherClient.init).toBeCalledWith(userId, eventsExpectation);
-    });
   });
 });

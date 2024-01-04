@@ -1,4 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../variables';
+@import '../../glass';
 
 @keyframes fadeIn {
   0% {
@@ -10,157 +12,59 @@
 }
 
 .invite-dialog {
-  width: 548px;
+  display: flex;
+  padding-bottom: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  align-self: stretch;
+  position: relative;
 
-  &__title-bar {
-    display: flex;
-    height: 53px;
-    border-bottom: 1px solid theme.$color-primary-4;
-    margin-left: 10px;
-
-    color: theme.$color-greyscale-12;
-
-    > *:first-child {
-      flex-grow: 1;
-    }
-
-    > *:last-child {
-      flex-grow: 0;
-    }
-  }
-
-  &__title {
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 29px;
-    margin: 0px;
-  }
+  width: 256px;
 
   &__close {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    z-index: 2;
+
     &:focus-visible {
       outline: none;
     }
   }
 
   &__image {
-    width: 100%;
-    height: 312px;
+    width: 248px;
+    height: 188px;
   }
 
   &__heading {
-    font-style: normal;
-    font-weight: 700;
+    @include glass-text-primary-color;
+
+    text-align: center;
+    font-weight: 600;
     font-size: 24px;
     line-height: 29px;
-
-    color: theme.$color-greyscale-12;
-  }
-
-  &__byline {
-    margin-top: 12px;
-    margin-bottom: 16px;
-    color: theme.$color-greyscale-11;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-  }
-
-  &__code-block {
-    border: 1px solid theme.$color-greyscale-6;
-    background: theme.$color-greyscale-2;
-    border-radius: 8px;
-
-    color: theme.$color-greyscale-11;
-    font-weight: 400;
-    font-size: 16px;
-
-    display: flex;
-
-    textarea {
-      background: none;
-      color: inherit;
-      font-size: inherit;
-      resize: none;
-      border-radius: inherit;
-      outline: none;
-      border: none;
-      animation: fadeIn 0.2s ease-in;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      height: 100px;
-    }
-
-    & > *:first-child {
-      flex-grow: 1;
-      padding: 9px;
-    }
-
-    & > *:last-child {
-      flex-grow: 0;
-      cursor: pointer;
-    }
-  }
-
-  &__inline-button--right {
-    padding: 8px;
-    margin: 0px;
-    border-width: 0px;
-    border-left: 1px solid theme.$color-secondary-6;
-    border-radius: 8px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-    background-color: theme.$color-secondary-1;
-    color: theme.$color-secondary-11;
-    width: 70px;
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 17px;
-
-    &:hover {
-      background-color: theme.$color-secondary-4;
-    }
-
-    &:active {
-      background-color: theme.$color-secondary-5;
-      box-shadow: 0px 0px 16px rgba(1, 250, 195, 0.75);
-    }
-
-    &:focus-visible {
-      outline: none;
-    }
-
-    &:disabled {
-      background-color: transparent;
-      cursor: not-allowed;
-      color: theme.$color-greyscale-11;
-      border-color: theme.$color-greyscale-6;
-
-      &:active {
-        box-shadow: none;
-      }
-    }
+    width: 171px;
   }
 
   &__remaining-invite-container {
+    @include glass-text-secondary-color;
+
     display: flex;
-    flex-direction: row;
-    padding: 12px;
-    gap: 10px;
+    justify-content: center;
     align-items: center;
+    font-size: $font-size-medium;
+    line-height: 17px;
+    gap: 4px;
+    height: 20px;
 
-    background: theme.$color-primary-3;
-    border-radius: 8px;
     margin-top: 16px;
-  }
-
-  &__remaining-invite {
     animation: fadeIn 0.2s ease-in;
   }
 
-  &__invite-left {
-    color: theme.$color-success-11;
+  &__remaining-invite {
+    font-weight: 600;
+    line-height: 20px;
   }
 }

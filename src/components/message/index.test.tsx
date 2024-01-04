@@ -240,7 +240,7 @@ describe('message', () => {
 
     wrapper.find(MessageMenu).simulate('reply');
 
-    expect(onReply).toHaveBeenCalledWith(replyMessage);
+    expect(onReply).toHaveBeenCalledWith({ reply: replyMessage });
   });
 
   it('should not renders edited indicator', () => {

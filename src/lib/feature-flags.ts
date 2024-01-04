@@ -66,6 +66,14 @@ export class FeatureFlags {
     this._setBoolean('enableMatrix', value);
   }
 
+  get allowEmailLogin() {
+    return this._getBoolean('allowEmailLogin', true);
+  }
+
+  set allowEmailLogin(value: boolean) {
+    this._setBoolean('allowEmailLogin', value);
+  }
+
   get internalUsage() {
     return this._getBoolean('internalUsage', false);
   }

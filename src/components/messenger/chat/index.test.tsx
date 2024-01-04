@@ -6,6 +6,17 @@ import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
+import { MessageInput } from '../../message-input/container';
+import { Media } from '../../message-input/utils';
+
+const mockSearchMentionableUsersForChannel = jest.fn();
+jest.mock('../../../platform-apps/channels/util/api', () => {
+  return {
+    searchMentionableUsersForChannel: (...args) => {
+      mockSearchMentionableUsersForChannel(...args);
+    },
+  };
+});
 
 describe('messenger-chat', () => {
   const subject = (props: Partial<Properties>) => {
@@ -13,6 +24,8 @@ describe('messenger-chat', () => {
       activeConversationId: '1',
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       directMessage: { id: '1', otherMembers: [] } as any,
+      sendMessage: () => null,
+      onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,
       startAddGroupMember: () => null,
       startEditConversation: () => null,
@@ -433,6 +446,69 @@ describe('messenger-chat', () => {
 
         expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
       });
+    });
+  });
+
+  describe('message input', () => {
+    it('renders message input', () => {
+      const wrapper = subject({});
+
+      expect(wrapper.find(MessageInput).exists()).toBe(true);
+    });
+
+    it('passes sendMessage prop to message input', () => {
+      const sendMessage = jest.fn();
+      const message = 'test message';
+      const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
+      const channelId = 'the-channel-id';
+
+      const wrapper = subject({ sendMessage, activeConversationId: channelId });
+
+      wrapper.find(MessageInput).prop('onSubmit')(message, mentionedUserIds, []);
+
+      expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, message, mentionedUserIds }));
+    });
+
+    it('calls sendMessage with reply', () => {
+      const sendMessage = jest.fn();
+      const message = 'test message';
+      const channelId = 'the-channel-id';
+      const reply = { id: 1, message: 'reply message' };
+
+      const wrapper = subject({
+        sendMessage,
+        activeConversationId: channelId,
+        directMessage: { reply, otherMembers: [] } as any,
+      });
+
+      wrapper.find(MessageInput).prop('onSubmit')(message, [], []);
+
+      expect(sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channelId, message, mentionedUserIds: [], parentMessage: reply })
+      );
+    });
+
+    it('calls sendMessage with File', () => {
+      const sendMessage = jest.fn();
+      const message = 'test message';
+      const channelId = 'the-channel-id';
+
+      const wrapper = subject({ sendMessage, activeConversationId: channelId });
+
+      wrapper.find(MessageInput).prop('onSubmit')(message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
+
+      expect(sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channelId, files: [{ id: 'file-id', name: 'file-name' }] })
+      );
+    });
+
+    it('searches for user mentions', async () => {
+      const wrapper = subject({ activeConversationId: '5', directMessage: { otherMembers: [] } as any });
+      const input = wrapper.find(MessageInput);
+
+      await input.prop('getUsersForMentions')('bob');
+
+      expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', []);
     });
   });
 });

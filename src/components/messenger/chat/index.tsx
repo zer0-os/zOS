@@ -4,13 +4,15 @@ import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
-import { Channel, denormalize } from '../../../store/channels';
+import { Channel, denormalize, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../group-management-menu';
 import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
+import { send as sendMessage } from '../../../store/messages';
+import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
 import {
   startAddGroupMember,
   LeaveGroupDialogStatus,
@@ -21,6 +23,9 @@ import { Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
 import './styles.scss';
+import { MessageInput } from '../../message-input/container';
+import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
+import { Media } from '../../message-input/utils';
 
 export interface PublicProperties {}
 
@@ -32,6 +37,8 @@ export interface Properties extends PublicProperties {
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
+  sendMessage: (payload: PayloadSendMessage) => void;
+  onRemoveReply: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -58,6 +65,8 @@ export class Container extends React.Component<Properties> {
       startAddGroupMember,
       startEditConversation,
       setLeaveGroupStatus,
+      onRemoveReply,
+      sendMessage,
     };
   }
 
@@ -148,6 +157,36 @@ export class Container extends React.Component<Properties> {
     );
   };
 
+  isNotEmpty = (message: string): boolean => {
+    return !!message && message.trim() !== '';
+  };
+
+  searchMentionableUsers = async (search: string) => {
+    return await searchMentionableUsersForChannel(
+      this.props.activeConversationId,
+      search,
+      this.props.directMessage.otherMembers
+    );
+  };
+
+  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
+    const { activeConversationId } = this.props;
+
+    let payloadSendMessage = {
+      channelId: activeConversationId,
+      message,
+      mentionedUserIds,
+      parentMessage: this.props.directMessage.reply,
+      files: media,
+    };
+
+    this.props.sendMessage(payloadSendMessage);
+
+    if (this.isNotEmpty(message)) {
+      this.props.onRemoveReply();
+    }
+  };
+
   render() {
     if (!this.props.activeConversationId || !this.props.directMessage) {
       return null;
@@ -198,6 +237,16 @@ export class Container extends React.Component<Properties> {
             isDirectMessage
             showSenderAvatar={!this.isOneOnOne()}
           />
+
+          <div className='direct-message-chat__footer'>
+            <MessageInput
+              id={this.props.activeConversationId}
+              onSubmit={this.handleSendMessage}
+              getUsersForMentions={this.searchMentionableUsers}
+              reply={this.props.directMessage.reply}
+              onRemoveReply={this.props.onRemoveReply}
+            />
+          </div>
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
         </div>

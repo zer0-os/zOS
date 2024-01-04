@@ -252,11 +252,6 @@ export class MessageInput extends React.Component<Properties, State> {
     return mentions;
   }
 
-  removeReply = (): void => {
-    this.props.onRemoveReply();
-    this.props.onMessageInputRendered(this.textareaRef);
-  };
-
   mediaSelected = (newMedia: Media[]): void => {
     this.setState({
       media: [
@@ -382,7 +377,7 @@ export class MessageInput extends React.Component<Properties, State> {
               senderIsCurrentUser={this.props.replyIsCurrentUser}
               senderFirstName={reply?.sender?.firstName}
               senderLastName={reply?.sender?.lastName}
-              onRemove={this.removeReply}
+              onRemove={this.props.onRemoveReply}
             />
           )}
         </div>

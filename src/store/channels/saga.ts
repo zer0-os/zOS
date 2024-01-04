@@ -1,14 +1,12 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, receive, schema, removeAll } from '.';
-import { SagaActionTypes as CreateConversationSagaActionTypes } from '../create-conversation';
 import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { setActiveChannelId, setactiveConversationId } from '../chat';
 import { chat } from '../../lib/chat';
-import { reset } from '../create-conversation/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -80,9 +78,6 @@ export function* openConversation(conversationId) {
     return;
   }
 
-  yield call(reset);
-  // cancel start of create conversation flow if it's in progress (resolves the race condition)
-  yield put({ type: CreateConversationSagaActionTypes.Cancel });
   yield put(setactiveConversationId(conversationId));
   yield spawn(markConversationAsRead, conversationId);
 }

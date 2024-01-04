@@ -10,3 +10,12 @@
     gap: 8px;
   }
 }
+
+.group-management-trigger {
+  padding: 4px;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: theme.$color-greyscale-transparency-3;
+  }
+}

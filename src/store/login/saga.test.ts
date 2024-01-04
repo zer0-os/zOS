@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { emailLogin, openFirstConversation, validateEmailLogin } from './saga';
+import { emailLogin, validateEmailLogin } from './saga';
 
 import { call } from 'redux-saga/effects';
 
@@ -8,9 +8,7 @@ import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegist
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { setactiveConversationId } from '../chat';
 import { authenticateByEmail } from '../authentication/saga';
-import { StoreBuilder } from '../test/store';
 
 describe('emailLogin', () => {
   it('logs the user in', async () => {
@@ -134,17 +132,6 @@ describe('validateEmailLogin', () => {
     const errors = validateEmailLogin({ email, password });
 
     expect(errors).toEqual([EmailLoginErrors.PASSWORD_REQUIRED]);
-  });
-});
-
-describe(openFirstConversation, () => {
-  it('opens the first conversation', async () => {
-    const initialState = new StoreBuilder().withConversationList({ id: '1234' });
-
-    await expectSaga(openFirstConversation)
-      .withReducer(rootReducer, initialState.build())
-      .put(setactiveConversationId('1234'))
-      .run();
   });
 });
 

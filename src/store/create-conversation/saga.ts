@@ -1,7 +1,6 @@
 import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
-import { setactiveConversationId } from '../chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
 import { Chat, chat } from '../../lib/chat';
@@ -44,7 +43,7 @@ export function* performGroupMembersSelected(userSelections: { value: string; la
   } else {
     const selectedConversation = existingConversations[0];
     yield call(channelsReceived, { payload: { channels: [selectedConversation] } });
-    yield put(setactiveConversationId(selectedConversation.id));
+    yield call(openConversation, selectedConversation.id);
     return Stage.None;
   }
 }

@@ -15,10 +15,10 @@ import {
   MessagesFetchState,
   denormalize as denormalizeChannel,
 } from '../channels';
-import { setactiveConversationId } from '../chat';
 import { StoreBuilder } from '../test/store';
 import { AdminMessageType } from '../messages';
 import { chat } from '../../lib/chat';
+import { openConversation } from '../channels/saga';
 
 describe(createConversation, () => {
   it('creates the conversation - full success flow', async () => {
@@ -42,7 +42,7 @@ describe(createConversation, () => {
       .next(true)
       .call(createOptimisticConversation, otherUserIds, name, image)
       .next(stubOptimisticConversation)
-      .put(setactiveConversationId(stubOptimisticConversation.id))
+      .call(openConversation, stubOptimisticConversation.id)
       .next()
       .select(userSelector, otherUserIds)
       .next([{ userId: 'user-1' }])

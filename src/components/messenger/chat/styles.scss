@@ -57,18 +57,6 @@ $recent-indicator-size: 8px;
     }
   }
 
-  &__title-bar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 12px;
-    gap: 10px;
-    background-color: $title-bar-background-color;
-    height: $title-bar-height;
-    border-radius: $title-bar-border-radius;
-    color: theme.$color-primary-transparency-11;
-  }
-
   &__header-gradient {
     position: absolute;
     width: 100%;
@@ -138,11 +126,6 @@ $recent-indicator-size: 8px;
     }
   }
 
-  &--minimized .direct-message-chat__header {
-    border: solid theme.$color-primary-4;
-    border-width: 0px 1px;
-  }
-
   &__description {
     overflow: hidden;
   }
@@ -174,14 +157,6 @@ $recent-indicator-size: 8px;
     display: flex;
   }
 
-  &--transition {
-    transition: all animation.$animation-duration-half ease-out;
-
-    .direct-message-chat__content {
-      transition: all animation.$animation-duration-half ease-out;
-    }
-  }
-
   &--full-screen {
     position: unset;
     flex-grow: 1;
@@ -192,16 +167,6 @@ $recent-indicator-size: 8px;
       width: unset;
       margin: 0;
     }
-  }
-
-  &.direct-message-chat--no-title {
-    .channel-view {
-      height: calc(100% - $header-height);
-    }
-  }
-
-  &--minimized {
-    bottom: calc($title-bar-height + $header-height - $window-height);
   }
 }
 

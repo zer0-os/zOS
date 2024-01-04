@@ -1,12 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { when } from 'jest-when';
 
-import { initializeUserLayout, enterFullScreenMessenger } from './saga';
+import { initializeUserLayout } from './saga';
 
 import { reducer } from '.';
-import { setactiveConversationId } from '../chat';
-import { StoreBuilder } from '../test/store';
-import { rootReducer } from '../reducer';
 
 describe('layout saga', () => {
   const state = {
@@ -29,17 +26,6 @@ describe('layout saga', () => {
           .run();
 
         expect(storeState.value.isMessengerFullScreen).toBeTrue();
-      });
-
-      it('enters full screen messenger, and opens the first conversation if activeConversationId is null', async () => {
-        const initialState = new StoreBuilder().withConversationList({ id: 'first-channel-id' });
-
-        const { storeState } = await expectSaga(enterFullScreenMessenger, {})
-          .withReducer(rootReducer, initialState.build())
-          .put(setactiveConversationId('first-channel-id'))
-          .run();
-
-        expect(storeState.layout.value.isMessengerFullScreen).toBeTrue();
       });
     });
   });

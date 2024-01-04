@@ -1,9 +1,7 @@
 import getDeepProperty from 'lodash.get';
-import { put, takeLatest, select, call } from 'redux-saga/effects';
-import { update, SagaActionTypes } from './';
+import { put } from 'redux-saga/effects';
+import { update } from './';
 import { User } from '../authentication/types';
-import { openFirstConversation } from '../login/saga';
-import { checkNewRewardsLoaded } from '../rewards/saga';
 
 export const getKeyWithUserId = (key: string) => (state) => {
   const user: User = getDeepProperty(state, 'authentication.user.data', null);
@@ -43,18 +41,4 @@ export function* clearUserLayout() {
   );
 }
 
-export function* enterFullScreenMessenger(_action) {
-  yield put(update({ isMessengerFullScreen: true }));
-
-  yield call(checkNewRewardsLoaded);
-
-  // open the first conversation when entering full screen
-  const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId'));
-  if (!activeConversationId) {
-    yield call(openFirstConversation);
-  }
-}
-
-export function* saga() {
-  yield takeLatest(SagaActionTypes.enterFullScreenMessenger, enterFullScreenMessenger);
-}
+export function* saga() {}

@@ -1,11 +1,5 @@
-import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { AppLayout, LayoutState } from './types';
-
-export enum SagaActionTypes {
-  enterFullScreenMessenger = 'layout/saga/enterFullScreenMessenger',
-}
-
-export const enterFullScreenMessenger = createAction<{ isOpen: boolean }>(SagaActionTypes.enterFullScreenMessenger);
 
 const initialState: LayoutState = {
   value: {
@@ -25,15 +19,9 @@ const slice = createSlice({
         ...action.payload,
       };
     },
-    exitFullScreenMessenger: (state, _action: PayloadAction) => {
-      state.value = {
-        ...state.value,
-        isMessengerFullScreen: false,
-      };
-    },
   },
 });
 
-export const { update, exitFullScreenMessenger } = slice.actions;
+export const { update } = slice.actions;
 export const { reducer } = slice;
 export { AppLayout, LayoutState };

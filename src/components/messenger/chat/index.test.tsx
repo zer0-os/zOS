@@ -1,5 +1,4 @@
 import React from 'react';
-import { IconXClose, IconMinus, IconExpand1 } from '@zero-tech/zui/icons';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
@@ -13,11 +12,7 @@ describe('messenger-chat', () => {
     const allProps: Properties = {
       activeConversationId: '1',
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
-      setactiveConversationId: jest.fn(),
       directMessage: { id: '1', otherMembers: [] } as any,
-      isFullScreen: false,
-      enterFullScreenMessenger: () => null,
-      exitFullScreenMessenger: () => null,
       isCurrentUserRoomAdmin: false,
       startAddGroupMember: () => null,
       startEditConversation: () => null,
@@ -45,32 +40,6 @@ describe('messenger-chat', () => {
 
     expect(wrapper.find(ChatViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
     expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
-  });
-
-  it('minimizes chat', function () {
-    const wrapper = subject({});
-
-    icon(wrapper, IconMinus).simulate('click');
-
-    expect(getDirectMessageChat(wrapper).hasClass('direct-message-chat--minimized')).toBe(true);
-  });
-
-  it('closes chat', function () {
-    const setActiveDirectMessageId = jest.fn();
-    const wrapper = subject({ setactiveConversationId: setActiveDirectMessageId });
-
-    icon(wrapper, IconXClose).simulate('click');
-
-    expect(setActiveDirectMessageId).toHaveBeenCalledWith('');
-  });
-
-  it('publishes full screen event', function () {
-    const enterFullScreenMessenger = jest.fn();
-    const wrapper = subject({ enterFullScreenMessenger });
-
-    icon(wrapper, IconExpand1).simulate('click');
-
-    expect(enterFullScreenMessenger).toHaveBeenCalledOnce();
   });
 
   describe('title', () => {
@@ -480,10 +449,6 @@ function stubUser(attrs: Partial<User> = {}): User {
     lastSeenAt: 'last-seen',
     ...attrs,
   };
-}
-
-function icon(wrapper, icon) {
-  return wrapper.find('IconButton').findWhere((n) => n.prop('Icon') === icon);
 }
 
 function stubConversation(props: Partial<Channel> = {}): Channel {

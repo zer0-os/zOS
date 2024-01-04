@@ -49,8 +49,17 @@ export class Container extends React.Component<Properties> {
     return {};
   }
 
+  onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
+    const activeConversationId = this.props.id;
+    if (textareaRef && textareaRef.current) {
+      if ((activeConversationId && activeConversationId === textareaRef.current.id) || !activeConversationId) {
+        textareaRef.current.focus();
+      }
+    }
+  };
+
   render() {
-    const { reply, currentUserId } = this.props;
+    const { currentUserId, reply } = this.props;
     const replyIsCurrentUser = currentUserId && reply?.sender && currentUserId === reply.sender.userId;
 
     return (
@@ -61,7 +70,7 @@ export class Container extends React.Component<Properties> {
         onSubmit={this.props.onSubmit}
         getUsersForMentions={this.props.getUsersForMentions}
         renderAfterInput={this.props.renderAfterInput}
-        onMessageInputRendered={this.props.onMessageInputRendered}
+        onMessageInputRendered={this.onMessageInputRendered}
         onRemoveReply={this.props.onRemoveReply}
         viewMode={this.props.viewMode}
         reply={this.props.reply}

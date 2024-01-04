@@ -82,11 +82,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         alignMenu='end'
         onOpenChange={this.handleOpenChange}
         className={'group-management-trigger'}
-        trigger={
-          <div>
-            <IconDotsHorizontal size={24} isFilled />
-          </div>
-        }
+        trigger={<IconDotsHorizontal size={24} isFilled />}
       />
     );
   }

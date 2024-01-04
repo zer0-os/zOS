@@ -3,25 +3,13 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
-import {
-  fetch as fetchMessages,
-  send as sendMessage,
-  deleteMessage,
-  editMessage,
-  Message,
-  EditMessageOptions,
-} from '../../store/messages';
-import { Channel, ConversationStatus, denormalize, joinChannel } from '../../store/channels';
+import { fetch as fetchMessages, deleteMessage, editMessage, Message, EditMessageOptions } from '../../store/messages';
+import { Channel, ConversationStatus, denormalize, joinChannel, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
-import {
-  EditPayload,
-  Payload as PayloadFetchMessages,
-  SendPayload as PayloadSendMessage,
-} from '../../store/messages/saga';
+import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { withContext as withAuthenticationContext } from '../authentication/context';
-import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
 
@@ -29,10 +17,11 @@ export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
-  sendMessage: (payload: PayloadSendMessage) => void;
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
+  onReply: ({ reply }: { reply: ParentMessage }) => void;
+
   activeConversationId?: string;
   isMessengerFullScreen: boolean;
   context: {
@@ -46,11 +35,8 @@ interface PublicProperties {
   isDirectMessage?: boolean;
   showSenderAvatar?: boolean;
 }
-export interface State {
-  reply: null | ParentMessage;
-}
 
-export class Container extends React.Component<Properties, State> {
+export class Container extends React.Component<Properties> {
   private textareaRef: RefObject<HTMLTextAreaElement>;
 
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
@@ -72,14 +58,12 @@ export class Container extends React.Component<Properties, State> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
-      sendMessage,
       deleteMessage,
       joinChannel,
       editMessage,
+      onReply,
     };
   }
-
-  state = { reply: null };
 
   componentDidMount() {
     const { channelId } = this.props;
@@ -89,7 +73,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId, channel } = this.props;
+    const { channelId } = this.props;
 
     if (channelId && channelId !== prevProps.channelId) {
       this.props.fetchMessages({ channelId });
@@ -98,11 +82,6 @@ export class Container extends React.Component<Properties, State> {
 
     if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
       this.props.fetchMessages({ channelId });
-    }
-
-    if (this.textareaRef && channel && Boolean(channel.messages)) {
-      this.onMessageInputRendered(this.textareaRef);
-      this.textareaRef = null;
     }
   }
 
@@ -124,39 +103,6 @@ export class Container extends React.Component<Properties, State> {
 
       this.props.fetchMessages({ channelId, referenceTimestamp });
     }
-  };
-
-  isNotEmpty = (message: string): boolean => {
-    return !!message && message.trim() !== '';
-  };
-
-  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
-    const { channelId } = this.props;
-    if (!channelId) {
-      return;
-    }
-
-    let payloadSendMessage = {
-      channelId,
-      message,
-      mentionedUserIds,
-      parentMessage: this.state.reply,
-      files: media,
-    };
-
-    this.props.sendMessage(payloadSendMessage);
-
-    if (this.isNotEmpty(message)) {
-      this.removeReply();
-    }
-  };
-
-  onReply = (reply: ParentMessage) => {
-    this.setState({ reply });
-  };
-
-  removeReply = (): void => {
-    this.setState({ reply: null });
   };
 
   handleDeleteMessage = (messageId: number): void => {
@@ -182,18 +128,6 @@ export class Container extends React.Component<Properties, State> {
     const { channelId } = this.props;
     if (channelId) {
       this.props.joinChannel({ channelId });
-    }
-  };
-
-  onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
-    if (textareaRef && textareaRef.current) {
-      if (!this.textareaRef) this.textareaRef = textareaRef;
-      if (
-        (this.props.activeConversationId && this.props.activeConversationId === textareaRef.current.id) ||
-        !this.props.activeConversationId
-      ) {
-        textareaRef.current.focus();
-      }
     }
   };
 
@@ -273,17 +207,12 @@ export class Container extends React.Component<Properties, State> {
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}
           editMessage={this.handleEditMessage}
-          sendMessage={this.handleSendMessage}
           joinChannel={this.handleJoinChannel}
           hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
-          onMessageInputRendered={this.onMessageInputRendered}
           isDirectMessage={this.props.isDirectMessage}
           showSenderAvatar={this.props.showSenderAvatar}
           isOneOnOne={this.isOneOnOne}
-          reply={this.state.reply}
-          onReply={this.onReply}
-          onRemove={this.removeReply}
-          sendDisabledMessage={this.sendDisabledMessage}
+          onReply={this.props.onReply}
           conversationErrorMessage={this.conversationErrorMessage}
         />
       </>

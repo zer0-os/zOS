@@ -48,7 +48,6 @@ describe('messenger-list', () => {
       membersSelected: () => null,
       startGroup: () => null,
       back: () => null,
-      enterFullScreenMessenger: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
 

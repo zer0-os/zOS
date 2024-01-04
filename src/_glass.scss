@@ -95,7 +95,7 @@
 }
 
 // D/Glass/Materials/Raised
-@mixin glass-materials-raised($startColor: rgba(167, 163, 163, 0.05), $endColor: rgba(167, 163, 163, 0.05)) {
+@mixin glass-materials-raised {
   background: linear-gradient(
       153.33deg,
       rgba(255, 255, 255, 0.25) 0%,
@@ -103,7 +103,7 @@
       rgba(255, 255, 255, 0.01) 79.12%,
       rgba(255, 255, 255, 0.05) 100%
     ),
-    linear-gradient(0deg, $startColor, $endColor);
+    linear-gradient(0deg, rgba(167, 163, 163, 0.05), rgba(167, 163, 163, 0.05));
 }
 
 // L/Glass/Separator/Primary

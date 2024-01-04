@@ -3,10 +3,7 @@ import * as React from 'react';
 import { IconDotsHorizontal, IconEdit5, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
-import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-
-const cn = bemClassName('group-management-menu');
 
 export interface Properties {
   canAddMembers: boolean;
@@ -33,7 +30,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
 
   renderMenuItem(icon, label) {
     return (
-      <div {...cn('menu-item')}>
+      <div className={'menu-item'}>
         {icon} {label}
       </div>
     );
@@ -84,8 +81,9 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         side='bottom'
         alignMenu='end'
         onOpenChange={this.handleOpenChange}
+        className={'group-management-trigger'}
         trigger={
-          <div {...cn('trigger')}>
+          <div>
             <IconDotsHorizontal size={24} isFilled />
           </div>
         }

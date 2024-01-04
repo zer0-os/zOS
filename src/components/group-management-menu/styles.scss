@@ -5,17 +5,17 @@
     color: theme.$color-failure-11;
   }
 
-  &__menu-item {
+  .menu-item {
     display: flex;
     gap: 8px;
   }
+}
 
-  &__trigger {
-    padding: 4px;
-    border-radius: 50%;
+.group-management-trigger {
+  padding: 4px;
+  border-radius: 50%;
 
-    &:hover {
-      background-color: theme.$color-greyscale-transparency-3;
-    }
+  &:hover {
+    background-color: theme.$color-greyscale-transparency-3;
   }
 }

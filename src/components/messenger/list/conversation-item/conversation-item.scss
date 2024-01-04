@@ -97,7 +97,7 @@
   &__unread-count {
     @include glass-state-default-color;
     @include glass-glow-highlight-small;
-    @include glass-materials-raised();
+    @include glass-materials-raised;
 
     display: flex;
     justify-content: center;

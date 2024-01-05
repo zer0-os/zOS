@@ -62,20 +62,6 @@
 
 $scrollbar-width: 5px;
 
-.channel-app > .channel-view {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-
-  .message-input {
-    margin-right: calc(var(--layout-app-content-right-padding) + $scrollbar-width);
-
-    &--editing {
-      margin-right: 0;
-    }
-  }
-}
-
 .channel {
   &-list {
     width: 100%;

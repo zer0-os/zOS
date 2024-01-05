@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { InviteDialog } from '.';
 import { connectContainer } from '../../store/redux-container';
-import { fetchInvite } from '../../store/create-invitation';
+import { clearInvite, fetchInvite } from '../../store/create-invitation';
 import { config } from '../../config';
 
 export interface PublicProperties {
@@ -18,6 +18,7 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
 
   fetchInvite: () => void;
+  clearInvite: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -35,11 +36,15 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { fetchInvite };
+    return { fetchInvite, clearInvite };
   }
 
   componentDidMount() {
     this.props.fetchInvite();
+  }
+
+  componentWillUnmount() {
+    this.props.clearInvite();
   }
 
   render() {

@@ -5,7 +5,6 @@ import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { setActiveChannelId } from '../chat';
 import { chat } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -65,15 +64,6 @@ export function* markConversationAsRead(conversationId) {
   if (conversationInfo?.unreadCount > 0) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }
-}
-
-export function* openChannel(channelId) {
-  if (!channelId) {
-    return;
-  }
-
-  yield put(setActiveChannelId(channelId));
-  yield spawn(markChannelAsRead, channelId);
 }
 
 export function* openFirstConversation() {
@@ -146,7 +136,6 @@ export function* clearChannels() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
-  yield takeLatest(SagaActionTypes.OpenChannel, ({ payload }: any) => openChannel(payload.channelId));
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);

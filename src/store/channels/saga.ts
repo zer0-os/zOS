@@ -9,6 +9,7 @@ import { setActiveChannelId } from '../chat';
 import { chat } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
+import { ParentMessage } from '../../lib/chat/types';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -42,7 +43,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
         unreadCount: 0,
       })
     );
-  } catch (error) {}
+  } catch (error) { }
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)
@@ -110,6 +111,34 @@ export function* unreadCountUpdated(action) {
   );
 }
 
+export function* onReply(reply: ParentMessage) {
+  const activeConversationId = yield select((state) => state.chat.activeConversationId);
+  if (!activeConversationId) {
+    return;
+  }
+
+  yield put(
+    receive({
+      id: activeConversationId,
+      reply,
+    })
+  );
+}
+
+export function* onRemoveReply() {
+  const activeConversationId = yield select((state) => state.chat.activeConversationId);
+  if (!activeConversationId) {
+    return;
+  }
+
+  yield put(
+    receive({
+      id: activeConversationId,
+      reply: null,
+    })
+  );
+}
+
 export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
 }
@@ -118,6 +147,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
   yield takeLatest(SagaActionTypes.OpenChannel, ({ payload }: any) => openChannel(payload.channelId));
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
+  yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
+  yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

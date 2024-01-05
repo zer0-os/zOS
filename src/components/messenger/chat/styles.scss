@@ -27,16 +27,13 @@ $recent-indicator-size: 8px;
   &__channel {
     .channel-view__main {
       padding-right: 0;
+      margin-bottom: 96px;
     }
 
     &.channel-view {
-      height: calc(100% - $title-bar-height - $header-height);
+      height: 100%;
       display: flex;
       flex-direction: column;
-
-      &__fullscreen {
-        height: 100%;
-      }
     }
   }
 
@@ -82,7 +79,7 @@ $recent-indicator-size: 8px;
 
     @include flat-thick;
 
-    > div:last-child {
+    >div:last-child {
       flex-grow: 1;
       display: flex;
       justify-content: flex-end;
@@ -117,13 +114,42 @@ $recent-indicator-size: 8px;
         background-color: theme.$color-greyscale-9;
       }
 
-      & > * {
+      &>* {
         position: absolute;
         top: calc(50% - 8px);
         line-height: 0px;
         left: calc(50% - 8px);
       }
     }
+  }
+
+  &__footer-position {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    padding: 0px 16px 16px 16px;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+
+  // message-input
+  &__footer {
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    @include flat-thick;
+
+    backdrop-filter: blur(32px);
+  }
+
+  &__footer-gradient {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 64px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0px, rgba(0, 0, 0, 0.492172) 22px, rgba(0, 0, 0, 0) 64px);
+    z-index: 2;
   }
 
   &__description {

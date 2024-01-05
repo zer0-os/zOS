@@ -14,15 +14,6 @@ import { User } from '../../store/authentication/types';
 import moment from 'moment';
 import { MessagesFetchState } from '../../store/channels';
 
-const mockSearchMentionableUsersForChannel = jest.fn();
-jest.mock('../../platform-apps/channels/util/api', () => {
-  return {
-    searchMentionableUsersForChannel: (...args) => {
-      mockSearchMentionableUsersForChannel(...args);
-    },
-  };
-});
-
 describe('ChatView', () => {
   const MESSAGES_TEST = [
     { id: 1111, message: 'what', sender: { userId: '1' }, createdAt: 1658776625730 },
@@ -40,7 +31,6 @@ describe('ChatView', () => {
       user: null,
       joinChannel: () => null,
       onFetchMore: () => null,
-      sendMessage: () => null,
       deleteMessage: () => null,
       editMessage: () => null,
       onRemove: () => null,
@@ -136,30 +126,6 @@ describe('ChatView', () => {
 
     expect(wrapper.find(InvertedScroll).exists()).toBe(true);
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
-  });
-
-  it('scrollToBottom is called when a message is sent', async function () {
-    const sendMessageMock = jest.fn().mockResolvedValue({});
-    const wrapper: any = subject({ sendMessage: sendMessageMock });
-
-    wrapper.instance().scrollContainerRef = {
-      current: {
-        scrollToBottom: jest.fn(),
-      },
-    } as any;
-
-    await wrapper.instance().handleSendMessage('Hello', [], []);
-
-    const scrollContainerRef = wrapper.instance().scrollContainerRef;
-    expect(scrollContainerRef.current.scrollToBottom).toHaveBeenCalled();
-  });
-
-  it('render MessageInput', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true });
-
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ showChildren: true });
-
-    expect(ifAuthenticated.find(MessageInput).exists()).toBe(true);
   });
 
   it('should not render MessageInput if user not a member', () => {
@@ -335,15 +301,6 @@ describe('ChatView', () => {
     const wrapper = subject({ messages: [], isDirectMessage: true });
 
     expect(wrapper.find('.channel-view__name').exists()).toBeFalsy();
-  });
-
-  it('searches for user mentions', async () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, id: '5' });
-    const input = wrapper.find(IfAuthenticated).find(MessageInput);
-
-    await input.prop('getUsersForMentions')('bob');
-
-    expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', []);
   });
 
   describe('formatDayHeader', () => {

@@ -4,6 +4,7 @@ import { Message, schema as messageSchema } from '../messages';
 import { schema as userSchema } from '../users';
 import { createAction } from '@reduxjs/toolkit';
 import { Payload, UnreadCountUpdatedPayload } from './types';
+import { ParentMessage } from '../../lib/chat/types';
 
 export interface User {
   userId: string;
@@ -55,6 +56,7 @@ export interface Channel {
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
   adminMatrixIds: string[];
+  reply?: ParentMessage;
 }
 
 export enum SagaActionTypes {
@@ -62,12 +64,16 @@ export enum SagaActionTypes {
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
   OpenChannel = 'channels/saga/openChannel',
   OpenConversation = 'channels/saga/openConversation',
+  OnReply = 'channels/saga/onReply',
+  OnRemoveReply = 'channels/saga/onRemoveReply',
 }
 
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
 const openChannel = createAction<Payload>(SagaActionTypes.OpenChannel);
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
+const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
+const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -80,4 +86,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { joinChannel, unreadCountUpdated, removeAll, openChannel, openConversation };
+export { joinChannel, unreadCountUpdated, removeAll, openChannel, openConversation, onReply, onRemoveReply };

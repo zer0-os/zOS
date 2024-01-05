@@ -32,7 +32,7 @@ interface Properties extends MessageModel {
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
-  onReply: (reply: ParentMessageType) => void;
+  onReply: ({ reply }: { reply: ParentMessageType }) => void;
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
@@ -191,7 +191,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   onReply = (): void => {
-    this.props.onReply({
+    const reply = {
       messageId: this.props.messageId,
       userId: this.props.sender.userId,
       message: this.props.message,
@@ -202,7 +202,9 @@ export class Message extends React.Component<Properties, State> {
       admin: this.props.admin,
       optimisticId: this.props.optimisticId,
       rootMessageId: this.props.rootMessageId,
-    });
+    };
+
+    this.props.onReply({ reply });
   };
 
   editActions = (value: string, mentionedUserIds: string[]) => {

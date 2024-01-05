@@ -5,7 +5,6 @@ import { shallow } from 'enzyme';
 import { Container } from './chat-view-container';
 import { ChatView } from './chat-view';
 import { Message } from '../../store/messages';
-import { Media } from '../message-input/utils';
 import { ConversationStatus } from '../../store/channels';
 
 describe('ChannelViewContainer', () => {
@@ -185,55 +184,6 @@ describe('ChannelViewContainer', () => {
     });
   });
 
-  it('should not send message if there is no channel id', () => {
-    const sendMessage = jest.fn();
-    const message = 'test message';
-
-    const wrapper = subject({ sendMessage, channel: {} });
-
-    wrapper.find(ChatView).first().prop('sendMessage')(message, [], []);
-
-    expect(sendMessage).not.toHaveBeenCalled();
-  });
-
-  it('calls sendMessage when chat view publishes message', () => {
-    const sendMessage = jest.fn();
-    const message = 'test message';
-    const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
-    const channelId = 'the-channel-id';
-
-    const wrapper = subject({ sendMessage, channelId, channel: {} });
-
-    wrapper.find(ChatView).first().prop('sendMessage')(message, mentionedUserIds, []);
-
-    expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, message, mentionedUserIds }));
-  });
-
-  it('calls sendMessage with parent message a reply is included', () => {
-    const sendMessage = jest.fn();
-    const channelId = 'the-channel-id';
-
-    const wrapper = subject({ sendMessage, channelId, channel: {} });
-
-    wrapper.find(ChatView).simulate('reply', { id: 'parent' });
-    wrapper.find(ChatView).first().prop('sendMessage')('message', [], []);
-
-    expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, parentMessage: { id: 'parent' } }));
-  });
-
-  it('calls sendMessage with files', () => {
-    const sendMessage = jest.fn();
-    const channelId = 'the-channel-id';
-
-    const wrapper = subject({ sendMessage, channelId, channel: {} });
-
-    wrapper.find(ChatView).first().prop('sendMessage')('', [], [{ id: 'file-id', name: 'file-name' } as Media]);
-
-    expect(sendMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ channelId, files: [{ id: 'file-id', name: 'file-name' }] })
-    );
-  });
-
   it('should call joinChannel when join button is clicked', () => {
     const joinChannel = jest.fn();
 
@@ -301,91 +251,6 @@ describe('ChannelViewContainer', () => {
       filter: {
         lastCreatedAt: 1658776625730,
       },
-    });
-  });
-
-  it('should call focus on message input render', () => {
-    const textareaRef = {
-      current: {
-        focus: jest.fn(),
-      },
-    };
-
-    const wrapper = subject();
-
-    (wrapper.instance() as any).onMessageInputRendered(textareaRef);
-
-    expect(textareaRef.current.focus).toHaveBeenCalled();
-  });
-
-  it('should not call focus on message input render if activeConversationId not equal the id of textareaRef', () => {
-    const activeConversationId = '1';
-    const textareaRef = {
-      current: {
-        focus: jest.fn(),
-        id: '3',
-      },
-    };
-
-    const wrapper = subject({ activeConversationId });
-
-    (wrapper.instance() as any).onMessageInputRendered(textareaRef);
-
-    expect(textareaRef.current.focus).not.toHaveBeenCalled();
-  });
-
-  it('should call focus on message input render if activeConversationId equal the id of textareaRef', () => {
-    const activeConversationId = '1';
-    const textareaRef = {
-      current: {
-        focus: jest.fn(),
-        id: activeConversationId,
-      },
-    };
-
-    const wrapper = subject({ activeConversationId });
-
-    (wrapper.instance() as any).onMessageInputRendered(textareaRef);
-
-    expect(textareaRef.current.focus).toHaveBeenCalled();
-  });
-
-  describe('sendDisabledMessage', () => {
-    it('is empty if the channel is created', () => {
-      const wrapper = subject({ channel: { conversationStatus: ConversationStatus.CREATED } });
-
-      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual('');
-    });
-
-    it('includes user name if one on one', () => {
-      const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
-      const wrapper = subject({
-        channel: { isOneOnOne: true, otherMembers, conversationStatus: ConversationStatus.CREATING },
-      });
-
-      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
-        "We're connecting you with Jack Black. Try again in a few seconds."
-      );
-    });
-
-    it('includes conversation name if exists', () => {
-      const wrapper = subject({ channel: { name: 'NamedGroup', conversationStatus: ConversationStatus.CREATING } });
-
-      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
-        "We're connecting you with NamedGroup. Try again in a few seconds."
-      );
-    });
-
-    it('references group if more than one member', () => {
-      const otherMembers = [
-        { userId: '1' },
-        { userId: '2' },
-      ];
-      const wrapper = subject({ channel: { otherMembers, conversationStatus: ConversationStatus.CREATING } });
-
-      expect(wrapper.find('ChatView').prop('sendDisabledMessage')).toEqual(
-        "We're connecting you with the group. Try again in a few seconds."
-      );
     });
   });
 

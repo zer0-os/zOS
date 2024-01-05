@@ -9,7 +9,15 @@
   width: $width-sidekick + 32px;
   height: 100%;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.492172) 22px, rgba(0, 0, 0, 0) 64px);
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.492172) 22px,
+    rgba(0, 0, 0, 0) 64px,
+
+    rgba(0, 0, 0, 0) calc(100% - 64px),
+    rgba(0, 0, 0, 0.492172) calc(100% - 22px),
+    rgba(0, 0, 0, 0.75) 100%
+  );
 
   box-sizing: border-box;
   position: relative;

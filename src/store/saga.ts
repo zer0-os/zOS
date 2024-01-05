@@ -2,7 +2,6 @@ import { all, call, spawn } from 'redux-saga/effects';
 
 import { saga as web3 } from './web3/saga';
 import { saga as zns } from './zns/saga';
-import { saga as apps } from './apps/saga';
 import { saga as channelsList } from './channels-list/saga';
 import { saga as messages } from './messages/saga';
 import { saga as channels } from './channels/saga';
@@ -29,7 +28,6 @@ export function* rootSaga() {
     pageLoad,
     web3,
     zns,
-    apps,
     channelsList,
     channels,
     messages,

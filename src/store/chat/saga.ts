@@ -11,6 +11,7 @@ import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
+import { getHistory } from '../../lib/browser';
 
 function* listenForReconnectStart(_action) {
   yield put(setReconnecting(true));
@@ -76,8 +77,10 @@ function* addAdminUser() {
   yield put(receive({ userId: 'admin', firstName: 'Admin', profileImage: null, matrixId: 'admin' }));
 }
 
+// The selected conversation is managed via the URL
 export function* setActiveConversation(id: string) {
-  yield put(setActiveConversationId(id));
+  const history = yield call(getHistory);
+  history.push({ pathname: `/conversation/${id}` });
 }
 
 export function* saga() {

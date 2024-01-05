@@ -31,6 +31,12 @@ export class Container extends React.Component<Properties> {
     this.props.setActiveConversationId(this.conversationId);
   }
 
+  componentDidUpdate(prevProps: Properties): void {
+    if (this.idChanged(prevProps)) {
+      this.props.setActiveConversationId(this.conversationId);
+    }
+  }
+
   get authenticationContext() {
     const { isAuthenticated } = this.props;
     return {
@@ -39,7 +45,15 @@ export class Container extends React.Component<Properties> {
   }
 
   get conversationId() {
-    return this.props.match?.params?.conversationId || '';
+    return this.idFrom(this.props);
+  }
+
+  idChanged(prevProps: Properties) {
+    return this.idFrom(prevProps) !== this.conversationId;
+  }
+
+  idFrom(props: Properties) {
+    return props.match?.params?.conversationId || '';
   }
 
   render() {

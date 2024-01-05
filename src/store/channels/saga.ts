@@ -80,6 +80,7 @@ export function* openFirstConversation() {
   if (conversation) {
     yield call(openConversation, conversation.id);
   } else {
+    // Not sure this is the right choice. Maybe there's a redirectToRoot at some point.
     yield call(setActiveConversation, '');
   }
 }

@@ -1,7 +1,7 @@
 import { put, select, call, take, takeEvery, spawn, race } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveChannelId, setReconnecting, setactiveConversationId } from '.';
+import { setActiveChannelId, setReconnecting, setActiveConversationId } from '.';
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -69,7 +69,7 @@ function* activateWhenConversationsLoaded(activate) {
 
 function* clearOnLogout() {
   yield put(setActiveChannelId(null));
-  yield put(setactiveConversationId(null));
+  yield put(setActiveConversationId(null));
 }
 
 function* addAdminUser() {
@@ -77,7 +77,7 @@ function* addAdminUser() {
 }
 
 export function* setActiveConversation(id: string) {
-  yield put(setactiveConversationId(id));
+  yield put(setActiveConversationId(id));
 }
 
 export function* saga() {

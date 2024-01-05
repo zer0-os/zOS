@@ -6,6 +6,7 @@ export enum SagaActionTypes {
 }
 
 export const fetchInvite = createAction(SagaActionTypes.GetCode);
+export const clearInvite = createAction(SagaActionTypes.Cancel);
 
 export type CreateInvitationState = {
   code: string;

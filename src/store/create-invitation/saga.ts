@@ -35,7 +35,12 @@ function* clearOnLogout() {
   yield put(reset());
 }
 
+export function* clearInvite() {
+  yield put(reset());
+}
+
 export function* saga() {
   yield takeLeading(SagaActionTypes.GetCode, fetchInvite);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
+  yield takeLeading(SagaActionTypes.Cancel, clearInvite);
 }

@@ -27,7 +27,7 @@ import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
 
-export interface PublicProperties { }
+export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;

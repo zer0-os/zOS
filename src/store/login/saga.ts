@@ -1,4 +1,3 @@
-import getDeepProperty from 'lodash.get';
 import { call, put, race, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {

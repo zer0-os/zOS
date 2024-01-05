@@ -18,6 +18,7 @@ import { Events as AuthEvents, getAuthChannel } from '../authentication/channels
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { openFirstConversation } from '../channels/saga';
+import { activeConversationIdSelector } from '../chat/selectors';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -155,9 +156,8 @@ function* listenForUserLogin() {
 export function* openFirstConversationAfterChannelsLoaded() {
   const channel = yield call(getConversationsBus);
   yield take(channel, ConversationEvents.ConversationsLoaded);
-
-  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
-  if (isMessengerFullScreen) {
+  const activeConversationId = yield select(activeConversationIdSelector);
+  if (!activeConversationId) {
     yield call(openFirstConversation);
   }
 }

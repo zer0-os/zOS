@@ -6,6 +6,8 @@ import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
 import { Chat, chat } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
+import { denormalizeConversations } from '../channels-list';
+import { openConversation } from '../channels/saga';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -123,7 +125,17 @@ function* handleOneOnOne() {
     yield put(setGroupUsers([]));
     return Stage.StartGroupChat;
   }
-  yield call(createConversation, action);
+
+  const { userIds } = action.payload;
+  const convos = yield select(denormalizeConversations);
+  const existingOneOnOne = convos.filter((c) => c.isOneOnOne).find((c) => c.otherMembers[0]?.userId === userIds[0]);
+
+  if (existingOneOnOne) {
+    yield call(openConversation, existingOneOnOne.id);
+  } else {
+    yield call(createConversation, action);
+  }
+
   return Stage.None;
 }
 

@@ -25,7 +25,6 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
-import { enterFullScreenMessenger } from '../../../store/layout';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { receiveSearchResults } from '../../../store/users';
@@ -66,7 +65,6 @@ export interface Properties extends PublicProperties {
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
-  enterFullScreenMessenger: () => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
 }
@@ -119,7 +117,6 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
-      enterFullScreenMessenger: () => enterFullScreenMessenger(),
       logout,
       receiveSearchResults,
     };
@@ -136,16 +133,7 @@ export class Container extends React.Component<Properties, State> {
     return users.map((user) => ({ ...user, image: user.profileImage }));
   };
 
-  isUserAlreadyInConversation = (userId: string) => {
-    return this.props.conversations.filter((c) => c.isOneOnOne).find((c) => c.otherMembers[0]?.userId === userId);
-  };
-
   createOneOnOneConversation = (id: string) => {
-    if (this.isUserAlreadyInConversation(id)) {
-      this.props.onConversationClick({ conversationId: this.isUserAlreadyInConversation(id).id });
-      return;
-    }
-
     this.props.createConversation({ userIds: [id] });
   };
 

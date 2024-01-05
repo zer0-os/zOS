@@ -1,7 +1,6 @@
 import React from 'react';
-import { IconExpand1, IconMinus, IconUsers1, IconXClose } from '@zero-tech/zui/icons';
+import { IconUsers1 } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
-import { setactiveConversationId } from '../../../store/chat';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import Tooltip from '../../tooltip';
@@ -10,7 +9,6 @@ import { ChatViewContainer } from '../../chat-view-container/chat-view-container
 import { getProvider } from '../../../lib/cloudinary/provider';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../group-management-menu';
-import { enterFullScreenMessenger, exitFullScreenMessenger } from '../../../store/layout';
 import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import {
@@ -19,7 +17,7 @@ import {
   setLeaveGroupStatus,
   startEditConversation,
 } from '../../../store/group-management';
-import { IconButton, Modal } from '@zero-tech/zui/components';
+import { Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
 import './styles.scss';
@@ -28,11 +26,7 @@ export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;
-  setactiveConversationId: (activeDirectMessageId: string) => void;
   directMessage: Channel;
-  isFullScreen: boolean;
-  enterFullScreenMessenger: () => void;
-  exitFullScreenMessenger: () => void;
   isCurrentUserRoomAdmin: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
@@ -40,17 +34,10 @@ export interface Properties extends PublicProperties {
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
 
-interface State {
-  isMinimized: boolean;
-}
-
-export class Container extends React.Component<Properties, State> {
-  state = { isMinimized: false };
-
+export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId },
-      layout,
       groupManagement,
     } = state;
 
@@ -61,7 +48,6 @@ export class Container extends React.Component<Properties, State> {
     return {
       activeConversationId,
       directMessage,
-      isFullScreen: layout.value?.isMessengerFullScreen,
       isCurrentUserRoomAdmin,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
     };
@@ -69,31 +55,11 @@ export class Container extends React.Component<Properties, State> {
 
   static mapActions(): Partial<Properties> {
     return {
-      setactiveConversationId,
-      enterFullScreenMessenger,
-      exitFullScreenMessenger,
       startAddGroupMember,
       startEditConversation,
       setLeaveGroupStatus,
     };
   }
-
-  handleClose = (): void => {
-    this.props.setactiveConversationId('');
-  };
-
-  componentDidUpdate(prevProps: Properties): void {
-    if (prevProps.activeConversationId !== this.props.activeConversationId) {
-      this.setState({ isMinimized: false });
-    }
-  }
-
-  handleMinimizeClick = (): void => {
-    this.setState((state) => ({ isMinimized: !state.isMinimized }));
-  };
-
-  handleMaximize = (): void => this.props.enterFullScreenMessenger();
-  handleDockRight = (): void => this.props.exitFullScreenMessenger();
 
   renderTitle() {
     const { directMessage } = this.props;
@@ -188,22 +154,8 @@ export class Container extends React.Component<Properties, State> {
     }
 
     return (
-      <div
-        className={classNames('direct-message-chat', {
-          'direct-message-chat--transition': this.props.isFullScreen !== null || this.state.isMinimized,
-          'direct-message-chat--full-screen': this.props.isFullScreen,
-          'direct-message-chat--minimized': this.state.isMinimized,
-        })}
-      >
+      <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
         <div className='direct-message-chat__content'>
-          {!this.props.isFullScreen && (
-            <div className='direct-message-chat__title-bar'>
-              <IconButton onClick={this.handleMaximize} Icon={IconExpand1} size='x-small' />
-              <IconButton onClick={this.handleMinimizeClick} Icon={IconMinus} size='x-small' />
-              <IconButton onClick={this.handleClose} Icon={IconXClose} size='x-small' />
-            </div>
-          )}
-
           <div className='direct-message-chat__header-gradient'></div>
           <div className='direct-message-chat__header-position'>
             <div className='direct-message-chat__header'>

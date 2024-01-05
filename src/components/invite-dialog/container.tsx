@@ -24,7 +24,7 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const { createInvitation } = state;
-    console.log('CREATE INVITATION', createInvitation);
+
     return {
       inviteCode: createInvitation.code,
       inviteUrl: createInvitation.url,

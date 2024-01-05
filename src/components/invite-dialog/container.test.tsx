@@ -16,6 +16,7 @@ describe('Container', () => {
       maxUses: 0,
       isLoading: false,
       fetchInvite: () => null,
+      clearInvite: () => null,
       ...props,
     };
 
@@ -27,6 +28,15 @@ describe('Container', () => {
     subject({ fetchInvite });
 
     expect(fetchInvite).toHaveBeenCalledOnce();
+  });
+
+  it('clears the invite code when unmounted', function () {
+    const clearInvite = jest.fn();
+    const wrapper = subject({ clearInvite });
+
+    wrapper.unmount();
+
+    expect(clearInvite).toHaveBeenCalled();
   });
 
   describe('mapState', () => {

@@ -9,7 +9,13 @@ describe('MessengerMain', () => {
   const mockIsAuthenticated = true;
 
   const subject = (isAuthenticated = mockIsAuthenticated) => {
-    return shallow(<Container isAuthenticated={isAuthenticated} />);
+    return shallow(
+      <Container
+        isAuthenticated={isAuthenticated}
+        match={{ params: { conversationId: '' } }}
+        setActiveConversationId={() => null}
+      />
+    );
   };
 
   it('contains AuthenticationContextProvider with the correct context', () => {

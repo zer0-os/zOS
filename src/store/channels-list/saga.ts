@@ -218,7 +218,6 @@ export function* clearChannelsAndConversations() {
   ]);
 }
 
-// XXX: What is the AsyncListStatus thing???
 export function* fetchChannelsAndConversations() {
   if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
     yield call(fetchConversations);

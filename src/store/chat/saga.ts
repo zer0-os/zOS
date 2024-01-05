@@ -76,8 +76,13 @@ function* addAdminUser() {
   yield put(receive({ userId: 'admin', firstName: 'Admin', profileImage: null, matrixId: 'admin' }));
 }
 
+export function* setActiveConversation(id: string) {
+  yield put(setactiveConversationId(id));
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
+
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);

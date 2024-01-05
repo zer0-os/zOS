@@ -5,9 +5,10 @@ import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { setActiveChannelId, setactiveConversationId } from '../chat';
+import { setActiveChannelId } from '../chat';
 import { chat } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
+import { setActiveConversation } from '../chat/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -79,7 +80,7 @@ export function* openFirstConversation() {
   if (conversation) {
     yield call(openConversation, conversation.id);
   } else {
-    yield put(setactiveConversationId(''));
+    yield call(setActiveConversation, '');
   }
 }
 
@@ -88,7 +89,7 @@ export function* openConversation(conversationId) {
     return;
   }
 
-  yield put(setactiveConversationId(conversationId));
+  yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
 }
 

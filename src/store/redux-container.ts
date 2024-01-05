@@ -36,5 +36,5 @@ export function connectContainer<TPublicProps>(
     return dispatchActions;
   }
 
-  return connect(mapStateToProps, mapDispatchToProps)(containerComponent);
+  return connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(containerComponent);
 }

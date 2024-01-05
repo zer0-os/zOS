@@ -128,24 +128,6 @@ describe('ChatView', () => {
     expect(wrapper.find(InvertedScroll).hasClass('channel-view__inverted-scroll')).toBe(true);
   });
 
-  /*
-  it('scrollToBottom is called when a message is sent', async function () {
-    const sendMessageMock = jest.fn().mockResolvedValue({});
-    const wrapper: any = subject({ sendMessage: sendMessageMock });
-
-    wrapper.instance().scrollContainerRef = {
-      current: {
-        scrollToBottom: jest.fn(),
-      },
-    } as any;
-
-    await wrapper.instance().handleSendMessage('Hello', [], []);
-
-    const scrollContainerRef = wrapper.instance().scrollContainerRef;
-    expect(scrollContainerRef.current.scrollToBottom).toHaveBeenCalled();
-  });
-  */
-
   it('should not render MessageInput if user not a member', () => {
     const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User });
 

@@ -7,6 +7,7 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import { setActiveChannelId, setactiveConversationId } from '../chat';
 import { chat } from '../../lib/chat';
+import { mostRecentConversation } from '../channels-list/selectors';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -71,6 +72,15 @@ export function* openChannel(channelId) {
 
   yield put(setActiveChannelId(channelId));
   yield spawn(markChannelAsRead, channelId);
+}
+
+export function* openFirstConversation() {
+  const conversation = yield select(mostRecentConversation);
+  if (conversation) {
+    yield call(openConversation, conversation.id);
+  } else {
+    yield put(setactiveConversationId(''));
+  }
 }
 
 export function* openConversation(conversationId) {

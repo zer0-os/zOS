@@ -9,8 +9,7 @@ import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
-import { setactiveConversationId } from '../chat';
-import { clearChannels } from '../channels/saga';
+import { clearChannels, openConversation, openFirstConversation } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -24,8 +23,6 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
-import { compareDatesDesc } from '../../lib/date';
-import cloneDeep from 'lodash/cloneDeep';
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
@@ -110,7 +107,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
   let optimisticConversation = { id: '', optimisticId: '' };
   if (yield call(chatClient.supportsOptimisticCreateConversation)) {
     optimisticConversation = yield call(createOptimisticConversation, userIds, name, image);
-    yield put(setactiveConversationId(optimisticConversation.id));
+    yield call(openConversation, optimisticConversation.id);
   }
 
   try {
@@ -215,7 +212,7 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     ])
   );
 
-  yield put(setactiveConversationId(conversation.id));
+  yield call(openConversation, conversation.id);
 }
 
 export function* clearChannelsAndConversations() {
@@ -297,22 +294,6 @@ export function* userLeftChannel(channelId, matrixId) {
   }
 }
 
-// TODO: we can remove this function and simply use the "lastMessage.createdAt" property
-// look into https://github.com/zer0-os/zOS/pull/1063
-const conversationWithLatestMessage = (conversations) => {
-  conversations = cloneDeep(conversations);
-  for (const conversation of conversations) {
-    const sortedMessages =
-      (conversation.messages || [])?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
-    conversation.lastMessage = sortedMessages[0];
-  }
-
-  const sortedConversations = conversations.sort((a, b) =>
-    compareDatesDesc(a.lastMessage?.createdAt, b.lastMessage?.createdAt)
-  );
-  return sortedConversations[0];
-};
-
 function* currentUserLeftChannel(channelId) {
   const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
   const newList = channelIdList.filter((id) => id !== channelId);
@@ -320,14 +301,7 @@ function* currentUserLeftChannel(channelId) {
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
-    const conversations = yield select(denormalizeConversations);
-    if (conversations.length > 0) {
-      const latestConversation = conversationWithLatestMessage(conversations);
-      yield put(setactiveConversationId(latestConversation.id));
-    } else {
-      // Probably not possible but handled just in case
-      yield put(setactiveConversationId(null));
-    }
+    yield call(openFirstConversation);
   }
 }
 

@@ -1,4 +1,5 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
   createConversation,
@@ -172,12 +173,16 @@ describe(createOptimisticConversation, () => {
 });
 
 describe(receiveCreatedConversation, () => {
+  function subject(...args: Parameters<typeof expectSaga>) {
+    return expectSaga(...args).provide([[matchers.call.fn(openConversation), null]]);
+  }
+
   it('replaces the optimistic conversation', async () => {
     const optimistic = { id: 'optimistic-id', optimisticId: 'optimistic-id' };
 
     const initialState = new StoreBuilder().withConversationList(optimistic).build();
 
-    const { storeState } = await expectSaga(receiveCreatedConversation, { id: 'new-convo', messages: [{}] }, optimistic)
+    const { storeState } = await subject(receiveCreatedConversation, { id: 'new-convo', messages: [{}] }, optimistic)
       .withReducer(rootReducer, initialState)
       .run();
 
@@ -185,7 +190,7 @@ describe(receiveCreatedConversation, () => {
   });
 
   it('sets hasLoadedMessages to true and fetch status to success', async () => {
-    const { storeState } = await expectSaga(
+    const { storeState } = await subject(
       receiveCreatedConversation,
       { id: 'new-convo', messages: [{}] },
       { id: '', optimisticId: '' }
@@ -199,13 +204,10 @@ describe(receiveCreatedConversation, () => {
   });
 
   it('sets the active conversation', async () => {
-    const {
-      storeState: { chat },
-    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id', messages: [{}] })
+    await subject(receiveCreatedConversation, { id: 'existing-id', messages: [{}] })
       .withReducer(rootReducer)
+      .call(openConversation, 'existing-id')
       .run();
-
-    expect(chat.activeConversationId).toStrictEqual('existing-id');
   });
 
   it('sets the active conversation if the conversation already exists', async () => {
@@ -214,13 +216,13 @@ describe(receiveCreatedConversation, () => {
     const initialState = new StoreBuilder().withConversationList(conversation).build();
 
     const {
-      storeState: { channelsList, chat },
-    } = await expectSaga(receiveCreatedConversation, { id: 'existing-id' })
+      storeState: { channelsList },
+    } = await subject(receiveCreatedConversation, { id: 'existing-id' })
       .withReducer(rootReducer, initialState)
+      .call(openConversation, 'existing-id')
       .run();
 
     expect(channelsList.value).toStrictEqual(['existing-id']);
-    expect(chat.activeConversationId).toStrictEqual('existing-id');
   });
 
   it('replaces the optimistic admin message', async () => {
@@ -235,7 +237,7 @@ describe(receiveCreatedConversation, () => {
 
     const initialState = new StoreBuilder().withConversationList(optimisticConvo);
 
-    const { storeState } = await expectSaga(
+    const { storeState } = await subject(
       receiveCreatedConversation,
       { id: 'new-convo', messages: [createdMessage] },
       optimisticConvo

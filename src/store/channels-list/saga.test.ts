@@ -26,6 +26,7 @@ import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
+import { openFirstConversation } from '../channels/saga';
 
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
@@ -200,11 +201,11 @@ describe('channels list saga', () => {
         .withActiveConversation({ id: channelId })
         .build();
 
-      const { storeState } = await expectSaga(userLeftChannel, channelId, 'matrix-id')
+      await expectSaga(userLeftChannel, channelId, 'matrix-id')
+        .provide([[matchers.call.fn(openFirstConversation), null]])
         .withReducer(rootReducer, initialState)
+        .call(openFirstConversation)
         .run();
-
-      expect(storeState.chat.activeConversationId).toEqual('conversation-2');
     });
   });
 

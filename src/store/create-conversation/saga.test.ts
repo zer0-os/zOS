@@ -15,6 +15,7 @@ import { channelsReceived, createConversation as performCreateConversation } fro
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
+import { openConversation } from '../channels/saga';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -87,6 +88,7 @@ describe('create conversation saga', () => {
           [matchers.call.fn(channelsReceived), null],
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.fetchConversationsWithUsers), []],
+          [matchers.call.fn(openConversation), null],
         ])
         .withReducer(rootReducer, defaultState());
     }
@@ -114,11 +116,10 @@ describe('create conversation saga', () => {
     });
 
     it('opens the existing conversation', async () => {
-      const { storeState } = await subject(performGroupMembersSelected, [])
+      await subject(performGroupMembersSelected, [])
         .provide([[matchers.call.fn(chatClient.fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
+        .call(openConversation, 'convo-1')
         .run();
-
-      expect(storeState.chat.activeConversationId).toBe('convo-1');
     });
 
     it('returns to initial state when existing conversation selected', async () => {

@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { InviteDialog, Properties } from '.';
+import { Button } from '@zero-tech/zui/components';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -20,65 +21,39 @@ describe('InviteDialog', () => {
     return shallow(<InviteDialog {...allProps} />);
   };
 
-  it('renders the code', function () {
-    const wrapper = subject({ inviteCode: '23817' });
+  it('renders the code remaining number of invites', function () {
+    const wrapper = subject({ inviteCode: '23817', maxUses: 5, invitesUsed: 3 });
 
-    expect(wrapper.find('textarea').prop('value')).toContain('23817');
+    expect(wrapper.find('.invite-dialog__remaining-invite').text()).toEqual('2');
   });
 
   it('copies the invitation to the clipboard', function () {
     const clipboard = { write: jest.fn() };
     const wrapper = subject({ clipboard, inviteCode: '23817' });
 
-    wrapper.find('.invite-dialog__inline-button').simulate('click');
+    wrapper.find(Button).simulate('press');
 
-    expect(wrapper.find('.invite-dialog__inline-button').prop('disabled')).toBeFalse();
+    expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
     expect(clipboard.write).toHaveBeenCalledWith(expect.stringContaining('23817'));
   });
 
-  it('sets button text to copied for a few seconds after copying the text', async function () {
+  it('sets copy text to copied for a few seconds after copying the text', async function () {
     const clipboard = { write: jest.fn().mockResolvedValue(null) };
     jest.useFakeTimers();
     const wrapper = subject({ clipboard });
 
-    wrapper.find('.invite-dialog__inline-button').simulate('click');
+    wrapper.find(Button).simulate('press');
     await new Promise(setImmediate);
 
-    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('COPIED');
+    expect(wrapper.state('copyText')).toEqual('Copied');
     jest.runAllTimers();
-    expect(wrapper.find('.invite-dialog__inline-button').text()).toEqual('COPY');
-  });
-
-  it('does not render the text content if no invite code', function () {
-    const wrapper = subject({ inviteCode: '' });
-
-    expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
-  });
-
-  it('does not render the text content if isLoading is true ', function () {
-    const wrapper = subject({ inviteCode: '12345', isLoading: true });
-
-    expect(wrapper.find('.invite-dialog__code-block').text()).not.toContain('Here is an invite');
+    expect(wrapper.state('copyText')).toEqual('Copy Invite Code');
   });
 
   it('disables copy button if code does not exist', function () {
     const wrapper = subject({ inviteCode: '' });
 
-    expect(wrapper.find('.invite-dialog__inline-button').prop('disabled')).toBeTrue();
-  });
-
-  describe('invite text', () => {
-    it('renders the invite code in a textarea', function () {
-      const wrapper = subject({ inviteCode: '23817' });
-
-      expect(wrapper.find('textarea').prop('value')).toContain('23817');
-    });
-
-    it('should not be editable', function () {
-      const wrapper = subject({ inviteCode: '23817' });
-
-      expect(wrapper.find('textarea').prop('readOnly')).toBeTrue();
-    });
+    expect(wrapper.find(Button).prop('isDisabled')).toBeTrue();
   });
 
   it('publishes close event.', function () {
@@ -88,15 +63,5 @@ describe('InviteDialog', () => {
     wrapper.find('IconButton').simulate('click');
 
     expect(onClose).toHaveBeenCalled();
-  });
-
-  it('displays text in green if invites remaining', function () {
-    // 2 invites left
-    let wrapper = subject({ inviteCode: '123456', invitesUsed: 3, maxUses: 5 });
-    expect(wrapper.find('.invite-dialog__invite-left').exists()).toBeTrue();
-
-    // no invite left
-    wrapper = subject({ inviteCode: '123456', invitesUsed: 5, maxUses: 5 });
-    expect(wrapper.find('.invite-dialog__invite-left').exists()).toBeFalse();
   });
 });

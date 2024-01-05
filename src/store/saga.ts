@@ -8,7 +8,6 @@ import { saga as authentication } from './authentication/saga';
 import { saga as chat } from './chat/saga';
 import { saga as theme } from './theme/saga';
 import { saga as layout } from './layout/saga';
-import { saga as notificationsList } from './notifications/saga';
 import { saga as createConversation } from './create-conversation/saga';
 import { saga as createInvitation } from './create-invitation/saga';
 import { saga as registration } from './registration/saga';
@@ -33,7 +32,6 @@ export function* rootSaga() {
     chat,
     theme,
     layout,
-    notificationsList,
     createConversation,
     createInvitation,
     registration,

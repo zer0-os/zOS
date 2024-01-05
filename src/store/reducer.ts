@@ -8,7 +8,6 @@ import { reducer as theme } from './theme';
 import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
 import { reducer as chat } from './chat';
-import { reducer as notificationsList } from './notifications';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
@@ -29,7 +28,6 @@ export const rootReducer = combineReducers({
   normalized,
   authentication,
   chat,
-  notificationsList,
   createConversation,
   createInvitation,
   registration,

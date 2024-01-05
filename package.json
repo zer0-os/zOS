@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@ethersproject/bytes": "^5.4.0",
     "@giphy/js-fetch-api": "^4.7.1",
     "@giphy/react-components": "^6.5.2",
     "@reduxjs/toolkit": "^1.7.1",
@@ -40,8 +41,8 @@
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
-    "matrix-js-sdk": "^29.1.0",
     "matrix-encrypt-attachment": "^1.0.3",
+    "matrix-js-sdk": "^29.1.0",
     "millify": "^6.1.0",
     "moment": "^2.29.4",
     "normalizr": "^3.6.2",

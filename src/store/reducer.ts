@@ -4,7 +4,6 @@ import { reducer as pageload } from './page-load';
 import { reducer as layout } from './layout';
 import { reducer as channelsList } from './channels-list';
 import { reducer as web3 } from './web3';
-import { reducer as zns } from './zns';
 import { reducer as theme } from './theme';
 import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
@@ -26,7 +25,6 @@ export const rootReducer = combineReducers({
   layout,
   channelsList,
   web3,
-  zns,
   theme,
   normalized,
   authentication,

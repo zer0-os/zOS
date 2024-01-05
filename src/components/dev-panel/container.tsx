@@ -38,7 +38,7 @@ export class Container extends React.Component<Properties, State> {
 
     let messages = [];
     if (activeConversationId) {
-      const channel = denormalizeChannel(activeConversationId, state) || null;
+      const channel = denormalizeChannel(activeConversationId, state) || {};
       messages = channel.messages || [];
     }
 

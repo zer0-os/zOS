@@ -42,7 +42,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
         unreadCount: 0,
       })
     );
-  } catch (error) { }
+  } catch (error) {}
 }
 
 // mark all messages as read in current active channel (only if you're not in full screen mode)

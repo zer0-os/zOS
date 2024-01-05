@@ -4,12 +4,10 @@ import { createNormalizedListSlice } from '../normalized';
 import { schema } from '../channels';
 
 export enum SagaActionTypes {
-  FetchChannels = 'channelsList/saga/fetchChannels',
   StartChannelsAndConversationsAutoRefresh = 'channelsList/saga/startChannelsAndConversationsAutoRefresh',
   StopChannelsAndConversationsAutoRefresh = 'channelsList/saga/stopChannelsAndConversationsAutoRefresh',
 }
 
-const fetchChannels = createAction<string>(SagaActionTypes.FetchChannels);
 const startChannelsAndConversationsAutoRefresh = createAction(SagaActionTypes.StartChannelsAndConversationsAutoRefresh);
 
 const slice = createNormalizedListSlice({
@@ -19,16 +17,8 @@ const slice = createNormalizedListSlice({
 
 export const { receiveNormalized, setStatus, receive } = slice.actions;
 export const { reducer, normalize, denormalize } = slice;
-export { fetchChannels, startChannelsAndConversationsAutoRefresh };
-
-export function denormalizeChannels(state) {
-  return denormalizeChannelsAndConversations(state).filter((c) => c.isChannel);
-}
+export { startChannelsAndConversationsAutoRefresh };
 
 export function denormalizeConversations(state) {
-  return denormalizeChannelsAndConversations(state).filter((c) => !c.isChannel);
-}
-
-export function denormalizeChannelsAndConversations(state) {
-  return denormalize(state.channelsList.value, state);
+  return denormalize(state.channelsList.value, state).filter((c) => !c.isChannel);
 }

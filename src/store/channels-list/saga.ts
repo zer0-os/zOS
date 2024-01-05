@@ -60,10 +60,6 @@ export function* fetchUserPresence(users) {
   }
 }
 
-export function* fetchChannels(_action) {
-  // TODO: Remove this function completely. For now, empty it to find out if anything breaks.
-}
-
 export function* fetchConversations() {
   const chatClient = yield call(chat.get);
   const conversations = yield call([
@@ -222,13 +218,9 @@ export function* clearChannelsAndConversations() {
   ]);
 }
 
+// XXX: What is the AsyncListStatus thing???
 export function* fetchChannelsAndConversations() {
   if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
-    const domainId = yield select((state) => getDeepProperty(state, 'zns.value.rootDomainId'));
-    if (domainId) {
-      yield call(fetchChannels, { payload: domainId });
-    }
-
     yield call(fetchConversations);
   }
 }
@@ -308,7 +300,6 @@ function* currentUserLeftChannel(channelId) {
 export function* saga() {
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
-  yield takeLatest(SagaActionTypes.FetchChannels, fetchChannels);
   yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
 
   const chatBus = yield call(getChatBus);

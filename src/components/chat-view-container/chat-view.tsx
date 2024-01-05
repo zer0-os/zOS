@@ -1,4 +1,4 @@
-import React, { Fragment, RefObject } from 'react';
+import React, { Fragment } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -7,11 +7,9 @@ import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
-import { MessageInput } from '../message-input/container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ConnectButton } from '../authentication/button';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
-import { Media } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
@@ -42,7 +40,6 @@ export interface Properties {
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
   hasJoined: boolean;
-  sendMessage: (message: string, mentionedUserIds: string[], media: Media[]) => void;
   deleteMessage: (messageId: number) => void;
   editMessage: (
     messageId: number,
@@ -50,17 +47,13 @@ export interface Properties {
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
   ) => void;
-  onRemove?: () => void;
-  onReply: (reply: ParentMessage) => void;
+  onReply: ({ reply }: { reply: ParentMessage }) => void;
   joinChannel: () => void;
   className?: string;
-  reply?: null | ParentMessage;
-  onMessageInputRendered: (ref: RefObject<HTMLTextAreaElement>) => void;
   isDirectMessage: boolean;
   showSenderAvatar?: boolean;
   isMessengerFullScreen: boolean;
   isOneOnOne: boolean;
-  sendDisabledMessage: string;
   conversationErrorMessage: string;
 }
 
@@ -83,11 +76,6 @@ export class ChatView extends React.Component<Properties, State> {
     if (this.scrollContainerRef.current) {
       this.scrollContainerRef.current.scrollToBottom();
     }
-  };
-
-  handleSendMessage = (message: string, mentionedUserIds: string[], media: Media[]) => {
-    this.scrollToBottom();
-    this.props.sendMessage(message, mentionedUserIds, media);
   };
 
   getMessagesByDay() {
@@ -301,21 +289,11 @@ export class ChatView extends React.Component<Properties, State> {
           </div>
         )}
 
+        {/* i think we can remove the entire code below */}
         <IfAuthenticated showChildren>
           {isMemberOfChannel && (
             <>
               {this.props.conversationErrorMessage && <div {...cn('error')}>{this.props.conversationErrorMessage}</div>}
-              <div {...cn('message-input-container')}>
-                <MessageInput
-                  onMessageInputRendered={this.props.onMessageInputRendered}
-                  id={this.props.id}
-                  onSubmit={this.handleSendMessage}
-                  getUsersForMentions={this.searchMentionableUsers}
-                  reply={this.props.reply}
-                  onRemoveReply={this.props.onRemove}
-                  sendDisabledMessage={this.props.sendDisabledMessage}
-                />
-              </div>
             </>
           )}
           {!isMemberOfChannel && this.renderJoinButton()}

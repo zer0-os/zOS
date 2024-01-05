@@ -27,7 +27,7 @@ import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
 
-export interface PublicProperties {}
+export interface PublicProperties { }
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;
@@ -42,6 +42,13 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
+  chatViewContainerRef = null;
+
+  constructor(props: Properties) {
+    super(props);
+    this.chatViewContainerRef = React.createRef();
+  }
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId },
@@ -185,6 +192,10 @@ export class Container extends React.Component<Properties> {
     if (this.isNotEmpty(message)) {
       this.props.onRemoveReply();
     }
+
+    if (this.chatViewContainerRef?.current) {
+      this.chatViewContainerRef.current.scrollToBottom();
+    }
   };
 
   render() {
@@ -236,17 +247,21 @@ export class Container extends React.Component<Properties> {
             className='direct-message-chat__channel'
             isDirectMessage
             showSenderAvatar={!this.isOneOnOne()}
+            ref={this.chatViewContainerRef}
           />
 
-          <div className='direct-message-chat__footer'>
-            <MessageInput
-              id={this.props.activeConversationId}
-              onSubmit={this.handleSendMessage}
-              getUsersForMentions={this.searchMentionableUsers}
-              reply={this.props.directMessage.reply}
-              onRemoveReply={this.props.onRemoveReply}
-            />
+          <div className='direct-message-chat__footer-position'>
+            <div className='direct-message-chat__footer'>
+              <MessageInput
+                id={this.props.activeConversationId}
+                onSubmit={this.handleSendMessage}
+                getUsersForMentions={this.searchMentionableUsers}
+                reply={this.props.directMessage.reply}
+                onRemoveReply={this.props.onRemoveReply}
+              />
+            </div>
           </div>
+          <div className='direct-message-chat__footer-gradient'></div>
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
         </div>

@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
@@ -9,7 +9,6 @@ import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import { Payload as PayloadJoinChannel } from '../../store/channels/types';
-import { withContext as withAuthenticationContext } from '../authentication/context';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
 
@@ -34,10 +33,16 @@ interface PublicProperties {
   className?: string;
   isDirectMessage?: boolean;
   showSenderAvatar?: boolean;
+  ref?: any;
 }
 
 export class Container extends React.Component<Properties> {
-  private textareaRef: RefObject<HTMLTextAreaElement>;
+  chatViewRef: React.RefObject<any>;
+
+  constructor(props) {
+    super(props);
+    this.chatViewRef = React.createRef();
+  }
 
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
     const channel = denormalize(props.channelId, state) || null;
@@ -84,6 +89,12 @@ export class Container extends React.Component<Properties> {
       this.props.fetchMessages({ channelId });
     }
   }
+
+  scrollToBottom = (): void => {
+    if (this.chatViewRef?.current) {
+      this.chatViewRef.current.scrollToBottom();
+    }
+  };
 
   getOldestTimestamp(messages: Message[] = []): number {
     return messages.reduce((previousTimestamp, message: any) => {
@@ -214,12 +225,11 @@ export class Container extends React.Component<Properties> {
           isOneOnOne={this.isOneOnOne}
           onReply={this.props.onReply}
           conversationErrorMessage={this.conversationErrorMessage}
+          ref={this.chatViewRef}
         />
       </>
     );
   }
 }
 
-export const ChatViewContainer = withAuthenticationContext<PublicProperties>(
-  connectContainer<PublicProperties>(Container)
-);
+export const ChatViewContainer = connectContainer<PublicProperties>(Container);

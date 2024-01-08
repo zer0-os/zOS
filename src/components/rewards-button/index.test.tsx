@@ -7,7 +7,6 @@ describe('rewards-button', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isFirstTimeLogin: false,
-      isMessengerFullScreen: false,
       meowPreviousDay: '',
       isRewardsLoading: false,
       showRewardsInTooltip: false,
@@ -45,23 +44,11 @@ describe('rewards-button', () => {
     expect(tooltipPopup.prop('open')).toBe(false);
   });
 
-  it('does not render rewards tooltip popup if not in full screen', function () {
-    const wrapper = subject({
-      meowPreviousDay: '9000000000000000000',
-      isRewardsLoading: false,
-      showRewardsInTooltip: true,
-      isMessengerFullScreen: false,
-    });
-    const tooltipPopup = wrapper.find(TooltipPopup);
-    expect(tooltipPopup.prop('open')).toBe(false);
-  });
-
   it('rewards tooltip popup is rendered upon load', function () {
     const wrapper = subject({
       meowPreviousDay: '9000000000000000000',
       isRewardsLoading: false,
       showRewardsInTooltip: true,
-      isMessengerFullScreen: true,
     });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toBe(true);
@@ -74,7 +61,6 @@ describe('rewards-button', () => {
       meowPreviousDay: '1000000000000000000',
       isRewardsLoading: false,
       showRewardsInTooltip: true,
-      isMessengerFullScreen: true,
       closeRewardsTooltip,
     });
     expect(wrapper.find(TooltipPopup).prop('open')).toBe(true);
@@ -86,7 +72,6 @@ describe('rewards-button', () => {
   it('displays rewards icon status when conditions are met', function () {
     const wrapper = subject({
       showRewardsInPopup: true,
-      isMessengerFullScreen: true,
       isRewardsPopupOpen: false,
     });
 
@@ -96,7 +81,6 @@ describe('rewards-button', () => {
   it('does not display rewards icon status when rewards popup is open', function () {
     const wrapper = subject({
       showRewardsInPopup: true,
-      isMessengerFullScreen: true,
       isRewardsPopupOpen: true,
     });
 
@@ -106,17 +90,6 @@ describe('rewards-button', () => {
   it('does not display rewards icon status when showRewardsInPopup is false', function () {
     const wrapper = subject({
       showRewardsInPopup: false,
-      isMessengerFullScreen: true,
-      isRewardsPopupOpen: false,
-    });
-
-    expect(wrapper.find('.rewards-button-container__rewards-icon__status')).toHaveLength(0);
-  });
-
-  it('does not display rewards icon status when messenger is not in full screen', function () {
-    const wrapper = subject({
-      showRewardsInPopup: true,
-      isMessengerFullScreen: false,
       isRewardsPopupOpen: false,
     });
 

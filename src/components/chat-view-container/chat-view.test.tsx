@@ -37,7 +37,6 @@ describe('ChatView', () => {
       onReply: () => null,
       onMessageInputRendered: () => null,
       isDirectMessage: true,
-      isMessengerFullScreen: false,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
       otherMembers: [],

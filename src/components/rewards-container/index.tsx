@@ -6,7 +6,6 @@ import { RewardsPopupContainer } from '../rewards-popup/container';
 
 export interface Properties {
   isFirstTimeLogin: boolean;
-  isMessengerFullScreen: boolean;
   hasLoadedConversation: boolean;
 
   meowPreviousDay: string;
@@ -59,7 +58,6 @@ export class RewardsContainer extends React.Component<Properties, State> {
           isRewardsLoading={this.props.isRewardsLoading}
           isFirstTimeLogin={this.props.isFirstTimeLogin}
           isRewardsPopupOpen={this.state.isRewardsPopupOpen}
-          isMessengerFullScreen={this.props.isMessengerFullScreen}
           showRewardsInTooltip={this.props.showRewardsInTooltip}
           showRewardsInPopup={this.props.showRewardsInPopup}
           hasLoadedConversation={this.props.hasLoadedConversation}

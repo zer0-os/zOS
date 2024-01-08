@@ -8,7 +8,6 @@ describe('RewardsPopup', () => {
       usd: '1',
       meow: '1',
       isLoading: false,
-      isFullScreen: false,
       withTitleBar: true,
       onClose: () => null,
       openRewardsFAQModal: () => null,

@@ -12,8 +12,6 @@ import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 
 export interface Properties {
-  hasContextPanel: boolean;
-  isContextPanelOpen: boolean;
   isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
@@ -26,15 +24,11 @@ export class Container extends React.Component<Properties> {
 
     if (layout.isMessengerFullScreen) {
       return {
-        hasContextPanel: false,
-        isContextPanelOpen: false,
         isMessengerFullScreen: true,
       };
     }
 
     return {
-      hasContextPanel: layout.hasContextPanel,
-      isContextPanelOpen: layout.isContextPanelOpen,
       isMessengerFullScreen: false,
     };
   }
@@ -45,9 +39,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     const mainClassName = classNames('main', {
-      'context-panel-open': this.props.isContextPanelOpen,
       'sidekick-panel-open': this.props.context.isAuthenticated,
-      'has-context-panel': this.props.hasContextPanel,
       'messenger-full-screen': this.props.isMessengerFullScreen,
     });
 

@@ -14,7 +14,6 @@ describe('Container', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isLoading: false,
-      isFullScreen: false,
       withTitleBar: true,
       meow: '',
       meowInUSD: 0,

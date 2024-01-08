@@ -75,7 +75,6 @@ export class Container extends React.Component<Properties, State> {
       registration,
       authentication: { user },
       chat: { activeConversationId },
-      layout,
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
-import { Channel } from '../../../store/channels';
+import { Channel, openFirstConversationInList } from '../../../store/channels';
 import { openConversation } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
@@ -27,6 +27,7 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
+import { ErrorDialogContainer } from '../../error-dialog/container';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
@@ -58,6 +59,7 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
+  isMemberOfActiveConversation: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -67,6 +69,7 @@ export interface Properties extends PublicProperties {
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
+  openFirstConversationInList: () => void;
 }
 
 interface State {
@@ -86,6 +89,7 @@ export class Container extends React.Component<Properties, State> {
     const hasWallet = user?.data?.wallets?.length > 0;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
+    const isMemberOfActiveConversation = conversations.some((c) => c.id === activeConversationId);
 
     return {
       conversations,
@@ -106,6 +110,7 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
+      isMemberOfActiveConversation,
     };
   }
 
@@ -119,6 +124,7 @@ export class Container extends React.Component<Properties, State> {
       membersSelected,
       logout,
       receiveSearchResults,
+      openFirstConversationInList,
     };
   }
 
@@ -158,6 +164,10 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isInviteDialogOpen: false });
   };
 
+  closeErrorDialog = () => {
+    this.props.openFirstConversationInList();
+  };
+
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
   }
@@ -166,6 +176,17 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
+
+  renderErrorDialog = (): JSX.Element => {
+    return (
+      <Modal
+        open={this.props.conversations.length && !this.props.isMemberOfActiveConversation}
+        onOpenChange={this.closeErrorDialog}
+      >
+        <ErrorDialogContainer onClose={this.closeErrorDialog} />
       </Modal>
     );
   };
@@ -257,6 +278,7 @@ export class Container extends React.Component<Properties, State> {
         <div {...cn('')}>
           {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
+          {this.renderErrorDialog()}
           {this.renderToastNotification()}
         </div>
       </>

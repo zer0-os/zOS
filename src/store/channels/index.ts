@@ -65,6 +65,7 @@ export enum SagaActionTypes {
   OpenConversation = 'channels/saga/openConversation',
   OnReply = 'channels/saga/onReply',
   OnRemoveReply = 'channels/saga/onRemoveReply',
+  OpenFirstConversationInList = 'channels/saga/openFirstConversationInList',
 }
 
 const joinChannel = createAction<Payload>(SagaActionTypes.JoinChannel);
@@ -72,6 +73,7 @@ const openConversation = createAction<{ conversationId: string }>(SagaActionType
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
 const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
+const openFirstConversationInList = createAction(SagaActionTypes.OpenFirstConversationInList);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -84,4 +86,12 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { joinChannel, unreadCountUpdated, removeAll, openConversation, onReply, onRemoveReply };
+export {
+  joinChannel,
+  unreadCountUpdated,
+  removeAll,
+  openConversation,
+  onReply,
+  onRemoveReply,
+  openFirstConversationInList,
+};

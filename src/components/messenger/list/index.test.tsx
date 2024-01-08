@@ -16,6 +16,7 @@ import { LayoutState } from '../../../store/layout/types';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
+import { ErrorDialogContainer } from '../../error-dialog/container';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -27,6 +28,7 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       stage: Stage.None,
       groupManangemenetStage: GroupManagementStage.None,
+      isMemberOfActiveConversation: true,
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -50,6 +52,7 @@ describe('messenger-list', () => {
       back: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
+      openFirstConversationInList: () => null,
 
       ...props,
     };
@@ -215,6 +218,15 @@ describe('messenger-list', () => {
     const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
 
     expect(wrapper).not.toHaveElement(GroupManagementContainer);
+  });
+
+  it('renders Error Dialog Container if user is not a member of the active conversation', function () {
+    const wrapper = subject({
+      isMemberOfActiveConversation: false,
+      conversations: [],
+    });
+
+    expect(wrapper).toHaveElement(ErrorDialogContainer);
   });
 
   describe('mapState', () => {

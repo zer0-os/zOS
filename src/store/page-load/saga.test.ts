@@ -4,7 +4,6 @@ import { getHistory, getNavigator } from '../../lib/browser';
 import { rootReducer } from '../reducer';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { call } from 'redux-saga/effects';
-import { initializePublicLayout } from '../layout/saga';
 import { stubResponse } from '../../test/saga';
 
 jest.mock('../../config', () => ({
@@ -12,11 +11,6 @@ jest.mock('../../config', () => ({
     defaultZnsRoute: 'wilder',
     defaultApp: 'channels',
   },
-}));
-
-const featureFlags = { allowPublicZOS: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
 }));
 
 class StubHistory {
@@ -84,28 +78,10 @@ describe('page-load saga', () => {
     const { storeState } = await expectSaga(saga)
       .provide(stubResponses(history, false))
       .withReducer(rootReducer, initialState as any)
-      .not.call(initializePublicLayout)
       .run();
 
     expect(storeState.pageload.isComplete).toBe(true);
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/login' });
-  });
-
-  it('initializes public layout if user is not present but feature flag is enabled', async () => {
-    const initialState = {
-      pageload: { isComplete: false },
-    };
-
-    const history = new StubHistory('/');
-    featureFlags.allowPublicZOS = true;
-    const { storeState } = await expectSaga(saga)
-      .provide(stubResponses(history, false))
-      .withReducer(rootReducer, initialState as any)
-      .call(initializePublicLayout)
-      .run();
-
-    expect(storeState.pageload.isComplete).toBe(true);
-    expect(history.replace).not.toHaveBeenCalledWith({ pathname: '/login' });
   });
 
   it('redirects authenticated user from /reset-password to main page', async () => {

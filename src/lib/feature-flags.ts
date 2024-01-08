@@ -26,14 +26,6 @@ export class FeatureFlags {
     this._setBoolean('channelsApp', value);
   }
 
-  get allowPublicZOS() {
-    return this._getBoolean('allowPublicZOS');
-  }
-
-  set allowPublicZOS(value: boolean) {
-    this._setBoolean('allowPublicZOS', value);
-  }
-
   get enableDevPanel() {
     return this._getBoolean('enableDevPanel');
   }

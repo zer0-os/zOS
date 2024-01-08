@@ -28,6 +28,8 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
       case LoginStage.Done:
+        // This case may not be needed any more now that the sagas are redirecting
+        // on login
         return <Redirect to='/' />;
       default:
         return <EmailLoginContainer />;

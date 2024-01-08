@@ -1,10 +1,10 @@
-import { expectSaga } from 'redux-saga-test-plan';
 import { saga } from './saga';
 import { getHistory, getNavigator } from '../../lib/browser';
 import { rootReducer } from '../reducer';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
 import { call } from 'redux-saga/effects';
-import { stubResponse } from '../../test/saga';
+
+import { expectSaga } from '../../test/saga';
 
 jest.mock('../../config', () => ({
   config: {
@@ -26,57 +26,61 @@ class StubHistory {
 }
 
 describe('page-load saga', () => {
-  it('redirects to main page if user is present tries to access login/signup page', async () => {
+  let history: StubHistory;
+
+  function subject(...args: Parameters<typeof expectSaga>) {
+    return expectSaga(...args).provide([
+      [call(getHistory), history],
+      [call(getCurrentUserWithChatAccessToken), true],
+      [call(getNavigator), stubNavigator()],
+    ]);
+  }
+
+  it('redirects to main page if user is present and tries to access login page', async () => {
     const initialState = { pageload: { isComplete: false } };
 
-    // login
-    let history = new StubHistory('/login');
-    const { storeState: loginStoreState } = await expectSaga(saga)
+    history = new StubHistory('/login');
+    const { storeState: loginStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /login to /
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(loginStoreState.pageload.isComplete).toBe(true);
+  });
 
-    // signup
+  it('redirects to main page if user is present and tries to access signup page', async () => {
+    const initialState = { pageload: { isComplete: false } };
+
     history = new StubHistory('/get-access');
-    const { storeState: getAccessStoreState } = await expectSaga(saga)
+    const { storeState: getAccessStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /get-access to /
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(getAccessStoreState.pageload.isComplete).toBe(true);
   });
 
   it('sets isComplete to true, if user is not present & stays on login page', async () => {
-    const initialState = {
-      pageload: { isComplete: false },
-    };
+    const initialState = { pageload: { isComplete: false } };
 
     let history = new StubHistory('/login');
     const {
       storeState: { pageload },
-    } = await expectSaga(saga)
+    } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide(stubResponses(history, false))
+      .provide([[call(getCurrentUserWithChatAccessToken), false]])
       .run();
 
     expect(pageload.isComplete).toBe(true);
     expect(history.replace).not.toHaveBeenCalled();
   });
 
-  it('redirects to login page if user is not present and feature flag is not enabled', async () => {
-    const initialState = {
-      pageload: { isComplete: false },
-    };
+  it('redirects to login page if user is not present', async () => {
+    const initialState = { pageload: { isComplete: false } };
 
-    const history = new StubHistory('/');
-    const { storeState } = await expectSaga(saga)
-      .provide(stubResponses(history, false))
+    history = new StubHistory('/');
+    const { storeState } = await subject(saga)
+      .provide([[call(getCurrentUserWithChatAccessToken), false]])
       .withReducer(rootReducer, initialState as any)
       .run();
 
@@ -87,13 +91,11 @@ describe('page-load saga', () => {
   it('redirects authenticated user from /reset-password to main page', async () => {
     const initialState = { pageload: { isComplete: false } };
 
-    let history = new StubHistory('/reset-password');
-    const { storeState: resetPasswordStoreState } = await expectSaga(saga)
+    history = new StubHistory('/reset-password');
+    const { storeState: resetPasswordStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide(stubResponses(history, true))
       .run();
 
-    // redirected from /reset-password to /
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/' });
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
   });
@@ -101,10 +103,10 @@ describe('page-load saga', () => {
   it('allows unauthenticated user to stay on /reset-password page', async () => {
     const initialState = { pageload: { isComplete: false } };
 
-    let history = new StubHistory('/reset-password');
-    const { storeState: resetPasswordStoreState } = await expectSaga(saga)
+    history = new StubHistory('/reset-password');
+    const { storeState: resetPasswordStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide(stubResponses(history, false))
+      .provide([[call(getCurrentUserWithChatAccessToken), false]])
       .run();
 
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
@@ -112,63 +114,43 @@ describe('page-load saga', () => {
   });
 
   describe('showAndroidDownload', () => {
-    async function expectPageLoad(path: string, userAgent: string) {
+    function subject(path: string, userAgent: string) {
       const initialState = { pageload: { showAndroidDownload: false } };
-
-      return await expectSaga(saga)
+      return expectSaga(saga)
         .provide([
-          stubResponse(call(getNavigator), stubNavigator(userAgent)),
-          ...stubResponses(new StubHistory(path), false),
+          [call(getHistory), new StubHistory(path)],
+          [call(getCurrentUserWithChatAccessToken), false],
+          [call(getNavigator), stubNavigator(userAgent)],
         ])
-        .withReducer(rootReducer, initialState as any)
-        .run();
+        .withReducer(rootReducer, initialState as any);
     }
 
     it('is false if not on a configured page', async () => {
-      const { storeState } = await expectPageLoad('/', 'Android');
+      const { storeState } = await subject('/', 'Android').run();
 
       expect(storeState.pageload.showAndroidDownload).toBe(false);
     });
 
     it('is false if not an android user agent', async () => {
-      const { storeState } = await expectPageLoad('/login', 'Chrome');
+      const { storeState } = await subject('/login', 'Chrome').run();
 
       expect(storeState.pageload.showAndroidDownload).toBe(false);
     });
 
     it('is true if the user agent matches and is login page', async () => {
-      const { storeState } = await expectPageLoad('/login', 'Android');
+      const { storeState } = await subject('/login', 'Android').run();
 
       expect(storeState.pageload.showAndroidDownload).toBe(true);
     });
 
     it('is true if the user agent matches and is get-access page', async () => {
-      const { storeState } = await expectPageLoad('/get-access', 'Android');
+      const { storeState } = await subject('/get-access', 'Android').run();
 
       expect(storeState.pageload.showAndroidDownload).toBe(true);
     });
   });
 });
 
-const stubResponses = (history, success, navigator = stubNavigator()) => {
-  return [
-    [
-      call(getHistory),
-      history,
-    ],
-    [
-      call(getCurrentUserWithChatAccessToken),
-      success,
-    ],
-    [
-      call(getNavigator),
-      navigator,
-    ],
-  ] as any;
-};
-
 function stubNavigator(userAgent: string = 'chrome') {
-  return {
-    userAgent,
-  };
+  return { userAgent };
 }

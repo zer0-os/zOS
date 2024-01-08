@@ -1,8 +1,8 @@
-import { saga } from './saga';
+import { redirectOnUserLogin, redirectToEntryPath, saga } from './saga';
 import { getHistory, getNavigator } from '../../lib/browser';
 import { rootReducer } from '../reducer';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
-import { call } from 'redux-saga/effects';
+import { call, spawn } from 'redux-saga/effects';
 
 import { expectSaga } from '../../test/saga';
 
@@ -33,6 +33,7 @@ describe('page-load saga', () => {
       [call(getHistory), history],
       [call(getCurrentUserWithChatAccessToken), true],
       [call(getNavigator), stubNavigator()],
+      [spawn(redirectOnUserLogin), null],
     ]);
   }
 
@@ -88,6 +89,16 @@ describe('page-load saga', () => {
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/login' });
   });
 
+  it('saves the entry path when redirecting to the login page', async () => {
+    history = new StubHistory('/some/path');
+    const { storeState } = await subject(saga)
+      .provide([[call(getCurrentUserWithChatAccessToken), false]])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.pageload.entryPath).toEqual('/some/path');
+  });
+
   it('redirects authenticated user from /reset-password to main page', async () => {
     const initialState = { pageload: { isComplete: false } };
 
@@ -121,6 +132,7 @@ describe('page-load saga', () => {
           [call(getHistory), new StubHistory(path)],
           [call(getCurrentUserWithChatAccessToken), false],
           [call(getNavigator), stubNavigator(userAgent)],
+          [spawn(redirectOnUserLogin), null],
         ])
         .withReducer(rootReducer, initialState as any);
     }
@@ -148,6 +160,32 @@ describe('page-load saga', () => {
 
       expect(storeState.pageload.showAndroidDownload).toBe(true);
     });
+  });
+});
+
+describe(redirectToEntryPath, () => {
+  it('redirects to the saved entry path', async () => {
+    const initialState = { pageload: { entryPath: '/saved/path' } };
+    const history = new StubHistory('/login');
+
+    await expectSaga(redirectToEntryPath)
+      .provide([[call(getHistory), history]])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/saved/path' });
+  });
+
+  it('resets the entry path state', async () => {
+    const initialState = { pageload: { entryPath: '/saved/path' } };
+    const history = new StubHistory('/login');
+
+    const { storeState } = await expectSaga(redirectToEntryPath)
+      .provide([[call(getHistory), history]])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(storeState.pageload.entryPath).toEqual('');
   });
 });
 

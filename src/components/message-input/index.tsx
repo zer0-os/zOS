@@ -33,7 +33,6 @@ export interface Properties extends PublicPropertiesContainer {
   replyIsCurrentUser: boolean;
   sendDisabledMessage?: string;
   viewMode: ViewModes;
-  isMessengerFullScreen?: boolean;
   placeholder?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -427,9 +426,10 @@ export class MessageInput extends React.Component<Properties, State> {
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
 
                       <div
-                        className={classNames('message-input__emoji-picker-container', {
-                          'message-input__emoji-picker-container--fullscreen': this.props.isMessengerFullScreen,
-                        })}
+                        className={classNames(
+                          'message-input__emoji-picker-container',
+                          'message-input__emoji-picker-container--fullscreen'
+                        )}
                       >
                         <EmojiPicker
                           textareaRef={this.textareaRef}
@@ -442,11 +442,7 @@ export class MessageInput extends React.Component<Properties, State> {
                         />
                       </div>
                       {this.state.isGiphyActive && (
-                        <Giphy
-                          onClickGif={this.onInsertGiphy}
-                          onClose={this.closeGiphy}
-                          isMessengerFullScreen={this.props.isMessengerFullScreen}
-                        />
+                        <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} isMessengerFullScreen={true} />
                       )}
                       {this.state.isMicActive && (
                         <div>

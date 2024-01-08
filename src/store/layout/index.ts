@@ -3,8 +3,6 @@ import type { AppLayout, LayoutState } from './types';
 
 const initialState: LayoutState = {
   value: {
-    isContextPanelOpen: false,
-    hasContextPanel: false,
     isMessengerFullScreen: true,
   },
 };

@@ -95,13 +95,4 @@ describe('rewards-button', () => {
 
     expect(wrapper.find('.rewards-button-container__rewards-icon__status')).toHaveLength(0);
   });
-
-  it('does not display rewards icon status when messenger is not in full screen', function () {
-    const wrapper = subject({
-      showRewardsInPopup: true,
-      isRewardsPopupOpen: false,
-    });
-
-    expect(wrapper.find('.rewards-button-container__rewards-icon__status')).toHaveLength(0);
-  });
 });

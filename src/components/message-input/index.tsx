@@ -441,9 +441,7 @@ export class MessageInput extends React.Component<Properties, State> {
                           onSelect={this.onInsertEmoji}
                         />
                       </div>
-                      {this.state.isGiphyActive && (
-                        <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} isMessengerFullScreen={true} />
-                      )}
+                      {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
                       {this.state.isMicActive && (
                         <div>
                           <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />

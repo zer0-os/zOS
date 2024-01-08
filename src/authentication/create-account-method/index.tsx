@@ -32,7 +32,7 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
     <div {...cn('', isConnecting && isWalletAccountCreationStage && 'is-connecting')}>
       <h3 {...cn('heading')}>Create Account</h3>
 
-      <FeatureFlag featureFlag='allowEmailLogin'>
+      <FeatureFlag featureFlag='allowEmailRegistration'>
         {!isConnectingWithWallet && (
           <ToggleGroup
             {...cn('toggle-group')}

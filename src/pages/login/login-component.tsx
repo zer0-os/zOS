@@ -90,9 +90,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
-              <FeatureFlag featureFlag={'allowEmailLogin'}>
-                {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
-              </FeatureFlag>
+              {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
               <div {...cn('login-option')}>{this.renderLoginOption()}</div>
             </div>
             {this.renderFooter(stage)}

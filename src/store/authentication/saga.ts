@@ -10,7 +10,7 @@ import {
 } from './api';
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
-import { clearUserLayout, initializePublicLayout, initializeUserLayout } from '../layout/saga';
+import { clearUserLayout, initializeUserLayout } from '../layout/saga';
 import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearNotifications } from '../notifications/saga';
@@ -20,7 +20,6 @@ import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
-import { featureFlags } from '../../lib/feature-flags';
 import { completePendingUserProfile } from '../registration/saga';
 
 export const currentUserSelector = () => (state) => {
@@ -144,14 +143,10 @@ export function* publishUserLogout() {
 export function* redirectUnauthenticatedUser(isAccountChange: boolean) {
   const history = getHistory();
 
-  if (featureFlags.allowPublicZOS) {
-    yield initializePublicLayout();
-  }
-
-  if (isAccountChange || featureFlags.allowPublicZOS) {
+  if (isAccountChange) {
     history.replace({ pathname: '/' });
     return;
   }
 
-  history.replace({ pathname: '/login' });
+  yield history.replace({ pathname: '/login' });
 }

@@ -52,7 +52,6 @@ export interface Properties {
   className?: string;
   isDirectMessage: boolean;
   showSenderAvatar?: boolean;
-  isMessengerFullScreen: boolean;
   isOneOnOne: boolean;
   conversationErrorMessage: string;
 }
@@ -232,11 +231,7 @@ export class ChatView extends React.Component<Properties, State> {
     const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
-      <div
-        className={classNames('channel-view', this.props.className, {
-          'channel-view__fullscreen': this.props.isMessengerFullScreen,
-        })}
-      >
+      <div className={classNames('channel-view', this.props.className)}>
         {isLightboxOpen && (
           <Lightbox
             // since we are displaying images from a local blob url (instead of a cloudinary url),

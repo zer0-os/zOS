@@ -27,10 +27,9 @@
   }
 
   &__heading-container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
     width: 100%;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(163, 162, 163, 0.1);
   }
 
   &__header {
@@ -50,11 +49,5 @@
     justify-content: space-between;
 
     width: 100%;
-  }
-
-  &__divider {
-    border-bottom: 1px solid rgba(163, 162, 163, 0.1);
-    margin: 0;
-    padding: 0;
   }
 }

@@ -26,14 +26,6 @@ export class FeatureFlags {
     this._setBoolean('channelsApp', value);
   }
 
-  get allowPublicZOS() {
-    return this._getBoolean('allowPublicZOS');
-  }
-
-  set allowPublicZOS(value: boolean) {
-    this._setBoolean('allowPublicZOS', value);
-  }
-
   get enableDevPanel() {
     return this._getBoolean('enableDevPanel');
   }
@@ -66,12 +58,12 @@ export class FeatureFlags {
     this._setBoolean('enableMatrix', value);
   }
 
-  get allowEmailLogin() {
-    return this._getBoolean('allowEmailLogin', true);
+  get allowEmailRegistration() {
+    return this._getBoolean('allowEmailRegistration', false);
   }
 
-  set allowEmailLogin(value: boolean) {
-    this._setBoolean('allowEmailLogin', value);
+  set allowEmailRegistration(value: boolean) {
+    this._setBoolean('allowEmailRegistration', value);
   }
 
   get internalUsage() {

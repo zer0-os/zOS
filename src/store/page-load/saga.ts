@@ -1,9 +1,8 @@
-import { call, put } from 'redux-saga/effects';
-import { setIsComplete, setShowAndroidDownload } from '.';
+import { call, put, select, spawn, take } from 'redux-saga/effects';
+import { setEntryPath, setIsComplete, setShowAndroidDownload } from '.';
 import { getHistory, getNavigator } from '../../lib/browser';
-import { featureFlags } from '../../lib/feature-flags';
 import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
-import { initializePublicLayout } from '../layout/saga';
+import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 
 const anonymousPaths = [
   '/get-access',
@@ -40,12 +39,9 @@ function* handleUnauthenticatedUser(history) {
     return;
   }
 
-  if (featureFlags.allowPublicZOS) {
-    yield call(initializePublicLayout);
-    return;
-  }
-
-  history.replace({ pathname: '/login' });
+  yield put(setEntryPath(history.location.pathname));
+  yield spawn(redirectOnUserLogin);
+  yield history.replace({ pathname: '/login' });
 }
 
 const MOBILE_APP_DOWNLOAD_PATHS = [
@@ -61,4 +57,17 @@ function* setMobileAppDownloadVisibility(history) {
       yield put(setShowAndroidDownload(isMobileAppDownloadPath));
     }
   }
+}
+
+export function* redirectOnUserLogin() {
+  const channel = yield call(getAuthChannel);
+  yield take(channel, AuthEvents.UserLogin);
+  yield redirectToEntryPath();
+}
+
+export function* redirectToEntryPath() {
+  const entryPath = yield select((state) => state.pageload.entryPath);
+  const history = yield call(getHistory);
+  history.replace({ pathname: entryPath });
+  yield put(setEntryPath(''));
 }

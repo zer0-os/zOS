@@ -28,14 +28,6 @@ $border-color-hover: theme-zui.$color-primary-7;
     justify-content: start;
   }
 
-  &.has-context-panel.context-panel-open &__header {
-    left: calc($width-navigation + $width-application-navigation);
-
-    @include for-left-collapse() {
-      left: calc($width-collapsed-navigation + $width-application-navigation);
-    }
-  }
-
   &.sidekick-panel-open &__header {
     right: $width-sidekick;
   }

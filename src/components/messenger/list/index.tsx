@@ -46,15 +46,10 @@ export interface Properties extends PublicProperties {
   conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
   isFirstTimeLogin: boolean;
-  includeTitleBar: boolean;
-  allowClose: boolean;
-  allowExpand: boolean;
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
   userIsOnline: boolean;
-  includeUserSettings: boolean;
-  isMessengerFullScreen: boolean;
   isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
@@ -83,7 +78,6 @@ export class Container extends React.Component<Properties, State> {
       registration,
       authentication: { user },
       chat: { activeConversationId },
-      layout,
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -99,11 +93,6 @@ export class Container extends React.Component<Properties, State> {
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
-      includeTitleBar: !layout?.value?.isMessengerFullScreen,
-      allowClose: !layout?.value?.isMessengerFullScreen,
-      allowExpand: !layout?.value?.isMessengerFullScreen,
-      includeUserSettings: layout?.value?.isMessengerFullScreen,
-      isMessengerFullScreen: layout?.value?.isMessengerFullScreen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -214,7 +203,7 @@ export class Container extends React.Component<Properties, State> {
         userName={this.props.userName}
         userHandle={this.props.userHandle}
         userAvatarUrl={this.props.userAvatarUrl}
-        includeUserSettings={this.props.includeUserSettings}
+        includeUserSettings={true}
         startConversation={this.props.startCreateConversation}
         onLogout={this.props.logout}
       />

@@ -25,14 +25,6 @@ export function* initializeUserLayout(_user: { id: string; isAMemberOfWorlds: bo
   );
 }
 
-export function* initializePublicLayout() {
-  yield put(
-    update({
-      isMessengerFullScreen: true,
-    })
-  );
-}
-
 export function* clearUserLayout() {
   yield put(
     update({

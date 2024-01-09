@@ -15,7 +15,6 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isLoading: boolean;
-  isFullScreen: boolean;
   withTitleBar: boolean;
   meow: string;
   meowInUSD: number;
@@ -27,13 +26,11 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
     const {
       authentication: { user },
-      layout,
       rewards,
     } = state;
 
     return {
       withTitleBar: !!user?.data?.isAMemberOfWorlds,
-      isFullScreen: layout.value.isMessengerFullScreen,
       meow: rewards.meow,
       meowInUSD: rewards.meowInUSD,
     };
@@ -62,7 +59,6 @@ export class Container extends React.Component<Properties> {
             onClose={this.props.onClose}
             openRewardsFAQModal={this.props.openRewardsFAQModal}
             isLoading={this.props.isLoading}
-            isFullScreen={this.props.isFullScreen}
             withTitleBar={this.props.withTitleBar}
           />,
           document.body

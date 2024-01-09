@@ -8,8 +8,6 @@ import { MessengerChat } from './components/messenger/chat';
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
-      hasContextPanel: false,
-      isContextPanelOpen: false,
       isMessengerFullScreen: false,
       context: {
         isAuthenticated: false,
@@ -28,28 +26,12 @@ describe(Main, () => {
 
   it('does not set layout classes when values are false', () => {
     const wrapper = subject({
-      hasContextPanel: false,
-      isContextPanelOpen: false,
       isMessengerFullScreen: false,
     });
 
     const main = wrapper.find('.main');
 
-    expect(main.hasClass('has-context-panel')).toBe(false);
-    expect(main.hasClass('context-panel-open')).toBe(false);
     expect(main.hasClass('messenger-full-screen')).toBe(false);
-  });
-
-  it('adds class when hasContextPanel is true', () => {
-    const wrapper = subject({ hasContextPanel: true });
-
-    expect(wrapper.find('.main').hasClass('has-context-panel')).toBe(true);
-  });
-
-  it('adds class when isContextPanelOpen is true', () => {
-    const wrapper = subject({ isContextPanelOpen: true });
-
-    expect(wrapper.find('.main').hasClass('context-panel-open')).toBe(true);
   });
 
   it('adds class when isMessengerFullScreen is true', () => {
@@ -81,32 +63,10 @@ describe(Main, () => {
       Main.mapState({
         layout: {
           value: {
-            isContextPanelOpen: false,
-            hasContextPanel: false,
             ...(state?.layout?.value || {}),
           },
         },
       } as any);
-
-    test('hasContextPanel', () => {
-      const state = subject({
-        layout: {
-          value: { hasContextPanel: true },
-        } as any,
-      });
-
-      expect(state.hasContextPanel).toBeTrue();
-    });
-
-    test('isContextPanelOpen', () => {
-      const state = subject({
-        layout: {
-          value: { isContextPanelOpen: true },
-        } as any,
-      });
-
-      expect(state.isContextPanelOpen).toBeTrue();
-    });
 
     test('isMessengerFullScreen', () => {
       const state = subject({
@@ -116,21 +76,6 @@ describe(Main, () => {
       });
 
       expect(state.isMessengerFullScreen).toBeTrue();
-    });
-
-    test('other layout state when messenger is fullscreen', () => {
-      const state = subject({
-        layout: {
-          value: {
-            isContextPanelOpen: true,
-            hasContextPanel: true,
-            isMessengerFullScreen: true,
-          },
-        } as any,
-      });
-
-      expect(state.isContextPanelOpen).toBeFalse();
-      expect(state.hasContextPanel).toBeFalse();
     });
   });
 });

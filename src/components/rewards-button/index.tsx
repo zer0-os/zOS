@@ -16,7 +16,6 @@ const c = bem('rewards-button-container');
 export interface Properties {
   isRewardsPopupOpen: boolean;
   isFirstTimeLogin: boolean;
-  isMessengerFullScreen: boolean;
   hasLoadedConversation: boolean;
 
   meowPreviousDay: string;
@@ -32,7 +31,7 @@ export class RewardsButton extends React.Component<Properties> {
   render() {
     return (
       <TooltipPopup
-        open={!this.props.isRewardsLoading && this.props.showRewardsInTooltip && this.props.isMessengerFullScreen}
+        open={!this.props.isRewardsLoading && this.props.showRewardsInTooltip}
         align='center'
         side='right'
         content={`You’ve earned ${formatWeiAmount(this.props.meowPreviousDay)} MEOW today`}
@@ -54,7 +53,7 @@ export class RewardsButton extends React.Component<Properties> {
               })}
             >
               <IconCurrencyDollar size={16} />
-              {!this.props.isRewardsPopupOpen && this.props.showRewardsInPopup && this.props.isMessengerFullScreen && (
+              {!this.props.isRewardsPopupOpen && this.props.showRewardsInPopup && (
                 <Status type='idle' className={c('rewards-icon__status')} />
               )}
             </div>

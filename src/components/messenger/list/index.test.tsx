@@ -12,7 +12,6 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
-import { LayoutState } from '../../../store/layout/types';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
@@ -33,11 +32,6 @@ describe('messenger-list', () => {
       conversations: [],
       isFetchingExistingConversations: false,
       isFirstTimeLogin: false,
-      includeTitleBar: true,
-      allowClose: true,
-      allowExpand: true,
-      isMessengerFullScreen: false,
-      includeUserSettings: false,
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
@@ -401,62 +395,6 @@ describe('messenger-list', () => {
       });
 
       expect(state.isFirstTimeLogin).toEqual(true);
-    });
-
-    test('includeTitleBar', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.includeTitleBar).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.includeTitleBar).toEqual(true);
-    });
-
-    test('allowClose', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.allowClose).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.allowClose).toEqual(true);
-    });
-
-    test('allowExpand', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.allowExpand).toEqual(false);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.allowExpand).toEqual(true);
-    });
-
-    test('includeUserSettings', async () => {
-      let state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: true } } as LayoutState,
-      });
-      expect(state.includeUserSettings).toEqual(true);
-
-      state = DirectMessageChat.mapState({
-        ...getState([]),
-        layout: { value: { isMessengerFullScreen: false } } as LayoutState,
-      });
-      expect(state.includeUserSettings).toEqual(false);
     });
   });
 });

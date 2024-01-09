@@ -21,7 +21,6 @@ export class ErrorDialog extends React.Component<Properties> {
 
         <div {...cn('heading-container')}>
           <div {...cn('header')}>Access Denied</div>
-          <div {...cn('divider')} />
         </div>
         <div {...cn('body')}>You are not a member of this conversation.</div>
         <div {...cn('footer')}>

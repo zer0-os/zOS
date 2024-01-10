@@ -216,7 +216,7 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '', isErrorDialogOpen: false }
+      chat = { activeConversationId: '' }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
@@ -349,7 +349,7 @@ describe('messenger-list', () => {
     });
 
     test('activeConversationId', () => {
-      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id', isErrorDialogOpen: false });
+      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id' });
 
       expect(state.activeConversationId).toEqual('active-channel-id');
     });

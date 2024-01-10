@@ -30,6 +30,13 @@ describe(ViewGroupInformationPanel, () => {
     expect(panelHeader.prop('onBack')).toEqual(onBackMock);
   });
 
+  it('renders group name when name prop is provided', () => {
+    const groupName = 'test-group-name';
+    const wrapper = subject({ name: groupName });
+    const image = wrapper.find('.view-group-information-panel__group-name');
+    expect(image.text()).toEqual(groupName);
+  });
+
   it('renders custom group icon when icon prop is provided', () => {
     const iconUrl = 'test-icon-url';
     const wrapper = subject({ icon: iconUrl });

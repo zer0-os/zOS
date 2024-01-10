@@ -37,7 +37,7 @@
     color: theme.$color-secondary-11;
   }
 
-  &__title {
+  &__group-name {
     text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -47,11 +47,11 @@
     font-weight: 600;
     font-size: 18px;
     line-height: 21px;
+
+    padding-bottom: 24px;
   }
 
   &__members {
-    padding-top: 24px;
-
     display: flex;
     flex-direction: column;
     flex-grow: 1;

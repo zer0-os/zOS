@@ -36,7 +36,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
           )}
         </div>
 
-        <div {...cn('title')}>{this.props.name}</div>
+        {this.props.name && <div {...cn('group-name')}>{this.props.name}</div>}
       </div>
     );
   };

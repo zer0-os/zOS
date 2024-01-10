@@ -32,18 +32,6 @@ $border-color-hover: theme-zui.$color-primary-7;
     right: $width-sidekick;
   }
 
-  &__address-bar-wrapper {
-    height: 48px;
-    display: flex;
-    justify-content: center;
-    flex: 1 0;
-  }
-
-  &__address-bar {
-    pointer-events: auto;
-    width: 100%;
-  }
-
   &__view-mode-toggle {
     &:hover {
       background-color: theme.$background-color-app-panel-hover;

@@ -11,7 +11,6 @@ describe('MessengerMain', () => {
       isAuthenticated: false,
       match: { params: { conversationId: '' } },
       setActiveConversationId: () => null,
-      validateActiveConversation: () => null,
       ...props,
     };
 
@@ -51,17 +50,6 @@ describe('MessengerMain', () => {
 
     wrapper.setProps({ match: { params: { conversationId: '456' } } });
     expect(setActiveConversationId).toHaveBeenCalledWith('456');
-  });
-
-  it('calls validate active conversation when the route changes', () => {
-    const validateActiveConversation = jest.fn();
-    const wrapper = subject({
-      validateActiveConversation,
-      match: { params: { conversationId: '123' } },
-    });
-
-    wrapper.setProps({ match: { params: { conversationId: '456' } } });
-    expect(validateActiveConversation).toHaveBeenCalled();
   });
 
   it('does not update the conversation id when the route does not change', () => {

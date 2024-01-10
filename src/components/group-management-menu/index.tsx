@@ -1,7 +1,9 @@
 import * as React from 'react';
 
-import { IconDotsHorizontal, IconEdit5, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconEdit5, IconInfoCircle, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
+
+import { featureFlags } from '../../lib/feature-flags';
 
 import './styles.scss';
 
@@ -12,6 +14,7 @@ export interface Properties {
   onStartAddMember: () => void;
   onLeave: () => void;
   onEdit: () => void;
+  onViewGroupInformation: () => void;
 }
 
 interface State {}
@@ -55,6 +58,14 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         onSelect: () => {
           this.props.onLeave();
         },
+      });
+    }
+
+    if (featureFlags.enableGroupInformation) {
+      menuItems.push({
+        id: 'group_information',
+        label: this.renderMenuItem(<IconInfoCircle size={20} />, 'Group Info'),
+        onSelect: this.props.onViewGroupInformation,
       });
     }
 

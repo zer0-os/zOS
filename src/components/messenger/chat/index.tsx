@@ -236,6 +236,7 @@ export class Container extends React.Component<Properties> {
                   }
                   canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                   onEdit={this.props.startEditConversation}
+                  onViewGroupInformation={() => console.log('View group information selected')}
                 />
               </div>
             </div>

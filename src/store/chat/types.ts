@@ -6,4 +6,5 @@ export interface ChatState {
   };
   activeConversationId: string;
   activeChannelId: string;
+  isErrorDialogOpen: boolean;
 }

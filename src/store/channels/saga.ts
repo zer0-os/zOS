@@ -139,7 +139,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
-  yield takeLatest(SagaActionTypes.OpenFirstConversationInList, openFirstConversation);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
-import { Channel, openFirstConversationInList } from '../../../store/channels';
+import { Channel } from '../../../store/channels';
 import { openConversation } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
@@ -17,6 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
+import { closeErrorDialog } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
@@ -27,7 +28,7 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { ErrorDialogContainer } from '../../error-dialog/container';
+import { ErrorDialog } from '../../error-dialog';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
@@ -54,7 +55,7 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
-  isMemberOfActiveConversation: boolean;
+  isErrorDialogOpen: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -64,7 +65,7 @@ export interface Properties extends PublicProperties {
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
-  openFirstConversationInList: () => void;
+  closeErrorDialog: () => void;
 }
 
 interface State {
@@ -77,13 +78,12 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId },
+      chat: { activeConversationId, isErrorDialogOpen },
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
-    const isMemberOfActiveConversation = conversations.some((c) => c.id === activeConversationId);
 
     return {
       conversations,
@@ -99,7 +99,7 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
-      isMemberOfActiveConversation,
+      isErrorDialogOpen,
     };
   }
 
@@ -113,7 +113,7 @@ export class Container extends React.Component<Properties, State> {
       membersSelected,
       logout,
       receiveSearchResults,
-      openFirstConversationInList,
+      closeErrorDialog,
     };
   }
 
@@ -154,7 +154,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   closeErrorDialog = () => {
-    this.props.openFirstConversationInList();
+    this.props.closeErrorDialog();
   };
 
   get userStatus(): 'active' | 'offline' {
@@ -171,11 +171,8 @@ export class Container extends React.Component<Properties, State> {
 
   renderErrorDialog = (): JSX.Element => {
     return (
-      <Modal
-        open={this.props.conversations.length && !this.props.isMemberOfActiveConversation}
-        onOpenChange={this.closeErrorDialog}
-      >
-        <ErrorDialogContainer onClose={this.closeErrorDialog} />
+      <Modal open={this.props.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
+        <ErrorDialog onClose={this.closeErrorDialog} />
       </Modal>
     );
   };

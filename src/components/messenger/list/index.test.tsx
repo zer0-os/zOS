@@ -15,7 +15,7 @@ import { RegistrationState } from '../../../store/registration';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
-import { ErrorDialogContainer } from '../../error-dialog/container';
+import { ErrorDialog } from '../../error-dialog';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -27,7 +27,6 @@ describe('messenger-list', () => {
     const allProps: Properties = {
       stage: Stage.None,
       groupManangemenetStage: GroupManagementStage.None,
-      isMemberOfActiveConversation: true,
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -38,15 +37,16 @@ describe('messenger-list', () => {
       userIsOnline: true,
       isInviteNotificationOpen: false,
       myUserId: '',
+      isErrorDialogOpen: false,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
+      closeErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,
       startGroup: () => null,
       back: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
-      openFirstConversationInList: () => null,
 
       ...props,
     };
@@ -216,11 +216,22 @@ describe('messenger-list', () => {
 
   it('renders Error Dialog Container if user is not a member of the active conversation', function () {
     const wrapper = subject({
-      isMemberOfActiveConversation: false,
-      conversations: [],
+      isErrorDialogOpen: true,
     });
 
-    expect(wrapper).toHaveElement(ErrorDialogContainer);
+    expect(wrapper).toHaveElement(ErrorDialog);
+  });
+
+  it('calls closeErrorDialog when error dialog is closed', function () {
+    const mockCloseErrorDialog = jest.fn();
+    const wrapper = subject({
+      isErrorDialogOpen: true,
+      closeErrorDialog: mockCloseErrorDialog,
+    });
+
+    wrapper.find(ErrorDialog).prop('onClose')();
+
+    expect(mockCloseErrorDialog).toHaveBeenCalledOnce();
   });
 
   describe('mapState', () => {
@@ -228,7 +239,7 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '' }
+      chat = { activeConversationId: '', isErrorDialogOpen: false }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
@@ -361,9 +372,15 @@ describe('messenger-list', () => {
     });
 
     test('activeConversationId', () => {
-      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id' });
+      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id', isErrorDialogOpen: false });
 
       expect(state.activeConversationId).toEqual('active-channel-id');
+    });
+
+    test('isErrorDialogOpen', () => {
+      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id', isErrorDialogOpen: true });
+
+      expect(state.isErrorDialogOpen).toEqual(true);
     });
 
     test('stage', () => {

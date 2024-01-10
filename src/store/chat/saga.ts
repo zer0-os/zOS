@@ -1,7 +1,7 @@
-import { put, select, call, take, takeEvery, spawn, race } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setReconnecting, setActiveConversationId } from '.';
+import { setReconnecting, setActiveConversationId, setIsErrorDialogOpen, SagaActionTypes } from '.';
 import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
 import { Events, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -12,6 +12,9 @@ import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
+import { activeConversationIdSelector } from './selectors';
+import { openFirstConversation } from '../channels/saga';
+import { rawConversationsList } from '../channels-list/saga';
 
 function* listenForReconnectStart(_action) {
   yield put(setReconnecting(true));
@@ -82,6 +85,25 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
+export function* performValidateActiveConversation() {
+  yield put(setIsErrorDialogOpen(false));
+
+  const conversationList = yield select(rawConversationsList());
+  const activeConversationId = yield select(activeConversationIdSelector);
+  const isMemberOfActiveConversation = conversationList.some((c) => c === activeConversationId);
+  if (!activeConversationId) {
+    return;
+  }
+
+  if (activeConversationId && !isMemberOfActiveConversation) {
+    yield put(setIsErrorDialogOpen(true));
+  }
+}
+
+export function* closeErrorDialog() {
+  yield call(openFirstConversation);
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
 
@@ -92,4 +114,7 @@ export function* saga() {
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
   yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
+
+  yield takeLatest(SagaActionTypes.CloseErrorDialog, closeErrorDialog);
+  yield takeLatest(SagaActionTypes.ValidateActiveConversation, performValidateActiveConversation);
 }

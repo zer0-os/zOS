@@ -8,7 +8,6 @@ import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
 import { IfAuthenticated } from '../authentication/if-authenticated';
-import { Button as ConnectButton } from '../authentication/button';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
@@ -292,9 +291,6 @@ export class ChatView extends React.Component<Properties, State> {
             </>
           )}
           {!isMemberOfChannel && this.renderJoinButton()}
-        </IfAuthenticated>
-        <IfAuthenticated hideChildren>
-          <ConnectButton className='authentication__connect-wrapper--with-space' />
         </IfAuthenticated>
       </div>
     );

@@ -53,7 +53,7 @@ describe('MessengerMain', () => {
     expect(setActiveConversationId).toHaveBeenCalledWith('456');
   });
 
-  it('checks conversation access when the route changes', () => {
+  it('calls validate active conversation when the route changes', () => {
     const validateActiveConversation = jest.fn();
     const wrapper = subject({
       validateActiveConversation,

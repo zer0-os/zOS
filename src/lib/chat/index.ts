@@ -263,3 +263,7 @@ export const chat = {
     return chatClient;
   },
 };
+
+export async function fetchConversationsWithUsers(users: User[]) {
+  return chat.get().fetchConversationsWithUsers(users);
+}

@@ -17,6 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
+import { closeErrorDialog } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
@@ -27,6 +28,7 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
+import { ErrorDialog } from '../../error-dialog';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
@@ -53,6 +55,7 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
+  isErrorDialogOpen: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -62,6 +65,7 @@ export interface Properties extends PublicProperties {
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
+  closeErrorDialog: () => void;
 }
 
 interface State {
@@ -74,7 +78,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId },
+      chat: { activeConversationId, isErrorDialogOpen },
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -95,6 +99,7 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
+      isErrorDialogOpen,
     };
   }
 
@@ -108,6 +113,7 @@ export class Container extends React.Component<Properties, State> {
       membersSelected,
       logout,
       receiveSearchResults,
+      closeErrorDialog,
     };
   }
 
@@ -147,6 +153,10 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isInviteDialogOpen: false });
   };
 
+  closeErrorDialog = () => {
+    this.props.closeErrorDialog();
+  };
+
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
   }
@@ -155,6 +165,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
+
+  renderErrorDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.props.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
+        <ErrorDialog onClose={this.closeErrorDialog} />
       </Modal>
     );
   };
@@ -246,6 +264,7 @@ export class Container extends React.Component<Properties, State> {
         <div {...cn('')}>
           {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
+          {this.renderErrorDialog()}
           {this.renderToastNotification()}
         </div>
       </>

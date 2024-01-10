@@ -23,7 +23,6 @@ describe('ChannelViewContainer', () => {
       uploadFileMessage: () => undefined,
       deleteMessage: () => undefined,
       editMessage: () => undefined,
-      setActiveChannelId: () => undefined,
       context: {
         isAuthenticated: false,
       },

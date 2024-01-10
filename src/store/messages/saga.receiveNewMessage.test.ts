@@ -8,7 +8,7 @@ import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
 import { expectSaga, stubResponse } from '../../test/saga';
-import { markChannelAsRead, markConversationAsRead } from '../channels/saga';
+import { markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
 
 describe(receiveNewMessage, () => {
@@ -95,39 +95,6 @@ describe(receiveNewMessage, () => {
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages.map((m) => m.id)).toEqual(['other-message', 'new-message']);
     expect(channel.messages[1].message).toEqual('the new message');
-  });
-
-  it('calls markAsReadAction when new message is received', async () => {
-    const message = { id: 'message-id', message: '' };
-
-    const channelState = new StoreBuilder()
-      .withChannelList({ id: 'channel-id' })
-      .withActiveChannel({ id: 'channel-id' });
-
-    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .withReducer(rootReducer, channelState.build())
-      .spawn(markChannelAsRead, 'channel-id')
-      .run();
-
-    const conversationState = new StoreBuilder()
-      .withConversationList({ id: 'channel-id' })
-      .withActiveConversation({ id: 'channel-id' });
-
-    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .withReducer(rootReducer, conversationState.build())
-      .spawn(markConversationAsRead, 'channel-id')
-      .run();
-  });
-
-  it('does not call markChannelAsRead when new message is received but channel is NOT active', async () => {
-    const message = { id: 'message-id', message: '' };
-
-    const channelState = new StoreBuilder().withChannelList({ id: 'channel-id' });
-
-    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .withReducer(rootReducer, channelState.build())
-      .not.call(markChannelAsRead, 'channel-id')
-      .run();
   });
 
   it('does not call markConversationAsRead when new message is received but conversation is NOT active', async () => {

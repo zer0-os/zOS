@@ -57,14 +57,12 @@ describe(ViewGroupInformationPanel, () => {
   it('renders member header with correct count', () => {
     const otherMembers = [{ userId: '1' }, { userId: '2' }] as User[];
     const wrapper = subject({ otherMembers });
-    const memberHeader = wrapper.find('.view-group-information-panel__member-header');
-    expect(memberHeader.text()).toEqual(`${otherMembers.length + 1} members`);
+    expect(wrapper.find(c('member-header'))).toHaveText(`${otherMembers.length + 1} members`);
   });
 
   it('renders singular member when only one member is present', () => {
     const wrapper = subject({ otherMembers: [] });
-    const memberHeader = wrapper.find('.view-group-information-panel__member-header');
-    expect(memberHeader.text()).toEqual('1 member');
+    expect(wrapper.find(c('member-header'))).toHaveText('1 member');
   });
 
   it('renders the members of the conversation', function () {

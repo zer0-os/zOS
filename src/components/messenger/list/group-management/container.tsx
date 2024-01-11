@@ -95,10 +95,6 @@ export class Container extends React.Component<Properties> {
     this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
   };
 
-  isUserAdmin = (userMatrixId: string, adminMatrixIds: string) => {
-    return adminMatrixIds.includes(userMatrixId);
-  };
-
   render() {
     return (
       <>

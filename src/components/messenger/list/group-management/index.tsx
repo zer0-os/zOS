@@ -18,6 +18,7 @@ export interface Properties {
   currentUser: User;
   otherMembers: User[];
   editConversationState: EditConversationState;
+  conversationAdminIds: string[];
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
@@ -58,6 +59,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             icon={this.props.icon}
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
+            conversationAdminIds={this.props.conversationAdminIds}
             onBack={this.props.onBack}
           />
         )}

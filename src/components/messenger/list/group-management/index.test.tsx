@@ -19,6 +19,7 @@ describe(GroupManagement, () => {
       icon: '',
       errors: {},
       editConversationState: EditConversationState.NONE,
+      conversationAdminIds: [],
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,

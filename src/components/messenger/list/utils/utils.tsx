@@ -20,8 +20,8 @@ export function isCustomIcon(url?: string) {
   return !url.startsWith('https://static.sendbird.com/sample');
 }
 
-export function isUserAdmin(user: Partial<User>, adminIds: string[]) {
-  return adminIds.includes(user.matrixId!);
+export function isUserAdmin(user: User, adminIds: string[]) {
+  return adminIds.includes(user.matrixId);
 }
 
 export function sortMembers(members: User[], adminIds?: string[], currentUserId?: string) {
@@ -42,6 +42,6 @@ export function sortMembers(members: User[], adminIds?: string[], currentUserId?
     if (!a.isOnline && b.isOnline) return 1;
 
     // Finally sort alphabetically by firstName
-    return a.firstName!.localeCompare(b.firstName!);
+    return a.firstName!.localeCompare(b.firstName);
   });
 }

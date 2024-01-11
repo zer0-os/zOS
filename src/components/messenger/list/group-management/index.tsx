@@ -19,6 +19,7 @@ export interface Properties {
   otherMembers: User[];
   editConversationState: EditConversationState;
   isCurrentUserRoomAdmin: boolean;
+  conversationAdminIds: string[];
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
@@ -62,6 +63,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             otherMembers={this.props.otherMembers}
             isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
             onEdit={this.props.startEditConversation}
+            conversationAdminIds={this.props.conversationAdminIds}
             onBack={this.props.onBack}
           />
         )}

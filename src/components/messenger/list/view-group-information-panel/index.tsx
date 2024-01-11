@@ -19,12 +19,21 @@ export interface Properties {
   currentUser: User;
   otherMembers: User[];
   isCurrentUserRoomAdmin: boolean;
+  conversationAdminIds: string[];
 
   onEdit: () => void;
   onBack: () => void;
 }
 
 export class ViewGroupInformationPanel extends React.Component<Properties> {
+  isUserAdmin(user: User) {
+    return this.props.conversationAdminIds.includes(user.matrixId);
+  }
+
+  getTagForUser(user: User) {
+    return this.isUserAdmin(user) ? 'Admin' : null;
+  }
+
   renderImage = () => {
     return (
       <div {...cn('details')}>
@@ -58,9 +67,12 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser} tag='admin'></CitizenListItem>
+            <CitizenListItem
+              user={this.props.currentUser}
+              tag={this.getTagForUser(this.props.currentUser)}
+            ></CitizenListItem>
             {otherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u}></CitizenListItem>
+              <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

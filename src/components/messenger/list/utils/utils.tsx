@@ -24,7 +24,7 @@ export function isUserAdmin(user: Partial<User>, adminIds: string[]) {
   return adminIds.includes(user.matrixId!);
 }
 
-export function sortMembers(members: Partial<User>[], adminIds?: string[], currentUserId?: string) {
+export function sortMembers(members: User[], adminIds?: string[], currentUserId?: string) {
   return members.sort((a, b) => {
     const aIsAdmin = adminIds ? isUserAdmin(a, adminIds) : false;
     const bIsAdmin = adminIds ? isUserAdmin(b, adminIds) : false;

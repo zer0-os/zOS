@@ -6,6 +6,9 @@ import { User } from '../../../../store/channels';
 import { PanelHeader } from '../panel-header';
 
 import { IconUsers1 } from '@zero-tech/zui/icons';
+import { bem } from '../../../../lib/bem';
+
+const c = bem('.view-group-information-panel');
 
 describe(ViewGroupInformationPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -32,10 +35,9 @@ describe(ViewGroupInformationPanel, () => {
   });
 
   it('renders group name when name prop is provided', () => {
-    const groupName = 'test-group-name';
-    const wrapper = subject({ name: groupName });
-    const image = wrapper.find('.view-group-information-panel__group-name');
-    expect(image.text()).toEqual(groupName);
+    const wrapper = subject({ name: 'test-group-name' });
+    const name = wrapper.find(c('group-name'));
+    expect(name.text()).toEqual('test-group-name');
   });
 
   it('renders custom group icon when icon prop is provided', () => {

@@ -3,6 +3,11 @@ import { shallow } from 'enzyme';
 import { Properties, GroupManagementMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
+const featureFlags = { enableGroupInformation: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe(GroupManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -12,6 +17,7 @@ describe(GroupManagementMenu, () => {
       onStartAddMember: () => {},
       onLeave: () => {},
       onEdit: () => {},
+      onViewGroupInformation: () => {},
       ...props,
     };
 
@@ -72,6 +78,18 @@ describe(GroupManagementMenu, () => {
     it('does not render item when canEditRoom is false', function () {
       const wrapper = subject({ canEdit: false });
       expect(menuItem(wrapper, 'edit_group')).toBeFalsy();
+    });
+  });
+
+  describe('Group Info', () => {
+    it('calls onViewGroupInformation when the group info menu item is selected', () => {
+      featureFlags.enableGroupInformation = true;
+      const onViewGroupInformation = jest.fn();
+      const wrapper = subject({ onViewGroupInformation });
+
+      selectItem(wrapper, 'group_information');
+
+      expect(onViewGroupInformation).toHaveBeenCalled();
     });
   });
 });

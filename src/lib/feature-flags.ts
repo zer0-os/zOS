@@ -81,6 +81,14 @@ export class FeatureFlags {
   set internalUsage(value: boolean) {
     this._setBoolean('internalUsage', value);
   }
+
+  get enableGroupInformation() {
+    return this._getBoolean('enableGroupInformation', false);
+  }
+
+  set enableGroupInformation(value: boolean) {
+    this._setBoolean('enableGroupInformation', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

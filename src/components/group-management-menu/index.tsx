@@ -51,17 +51,6 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       });
     }
 
-    if (this.props.canLeaveRoom) {
-      menuItems.push({
-        id: 'leave_group',
-        className: 'leave-group',
-        label: this.renderMenuItem(<IconUserRight1 size={20} />, 'Leave Group'),
-        onSelect: () => {
-          this.props.onLeave();
-        },
-      });
-    }
-
     if (featureFlags.enableGroupInformation && this.props.canViewGroupInformation) {
       menuItems.push({
         id: 'group_information',
@@ -75,6 +64,17 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         id: 'edit_group',
         label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
         onSelect: this.props.onEdit,
+      });
+    }
+
+    if (this.props.canLeaveRoom) {
+      menuItems.push({
+        id: 'leave_group',
+        className: 'leave-group',
+        label: this.renderMenuItem(<IconUserRight1 size={20} />, 'Leave Group'),
+        onSelect: () => {
+          this.props.onLeave();
+        },
       });
     }
 

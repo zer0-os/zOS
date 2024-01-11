@@ -3,18 +3,18 @@ import { User } from '../../../../store/channels';
 
 describe('sortMembers', () => {
   it('sorts members correctly with current user first, admins next, then online status and alphabetically', () => {
-    const members: Partial<User>[] = [
+    const members = [
       { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam', isOnline: false },
       { userId: 'currentUser', matrixId: 'matrix-id-current', firstName: 'Zara', isOnline: true },
       { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie', isOnline: true },
       { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Brenda', isOnline: true },
-    ];
+    ] as any;
     const adminIds = ['matrix-id-2', 'matrix-id-3'];
     const currentUserId = 'currentUser';
 
     const sortedMembers = sortMembers(members, adminIds, currentUserId);
 
-    const expectedOrder: Partial<User>[] = [
+    const expectedOrder = [
       { userId: 'currentUser', matrixId: 'matrix-id-current', firstName: 'Zara', isOnline: true },
       { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Brenda', isOnline: true },
       { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie', isOnline: true },

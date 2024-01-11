@@ -5,5 +5,4 @@ export interface ChatState {
     isLoading: boolean;
   };
   activeConversationId: string;
-  activeChannelId: string;
 }

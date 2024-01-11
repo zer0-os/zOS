@@ -45,18 +45,6 @@ export function* markAllMessagesAsRead(channelId, userId) {
   } catch (error) {}
 }
 
-// mark all messages as read in current active channel (only if you're not in full screen mode)
-export function* markChannelAsRead(channelId) {
-  const currentUser = yield select(currentUserSelector());
-  const isMessengerFullScreen = yield select((state) => state.layout.value.isMessengerFullScreen);
-  const channelInfo = yield select(rawChannelSelector(channelId));
-
-  // just ensure first that you're not in full screen mode before marking all messages as read in a "channel"
-  if (!isMessengerFullScreen && channelInfo?.unreadCount > 0) {
-    yield call(markAllMessagesAsRead, channelId, currentUser.id);
-  }
-}
-
 // mark all messages in read in current active conversation
 export function* markConversationAsRead(conversationId) {
   const currentUser = yield select(currentUserSelector());

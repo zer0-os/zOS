@@ -82,7 +82,7 @@ describe(GroupManagementMenu, () => {
     });
   });
 
-  describe('Group Info', () => {
+  describe('View Group Information', () => {
     it('calls onViewGroupInformation when the group info menu item is selected', () => {
       featureFlags.enableGroupInformation = true;
       const onViewGroupInformation = jest.fn();

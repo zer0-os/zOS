@@ -3,8 +3,6 @@ import * as React from 'react';
 import { IconDotsHorizontal, IconEdit5, IconInfoCircle, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
-import { featureFlags } from '../../lib/feature-flags';
-
 import './styles.scss';
 
 export interface Properties {
@@ -62,7 +60,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       });
     }
 
-    if (featureFlags.enableGroupInformation && this.props.canViewGroupInformation) {
+    if (this.props.canViewGroupInformation) {
       menuItems.push({
         id: 'group_information',
         label: this.renderMenuItem(<IconInfoCircle size={20} />, 'Group Info'),

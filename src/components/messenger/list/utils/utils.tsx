@@ -1,4 +1,5 @@
 import { monthsSince, fromNow } from '../../../../lib/date';
+import { User } from '../../../../store/channels';
 
 export function lastSeenText(user): string {
   if (user.isOnline) {
@@ -17,4 +18,20 @@ export function isCustomIcon(url?: string) {
 
   // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
   return !url.startsWith('https://static.sendbird.com/sample');
+}
+
+export function isUserAdmin(user: User, adminIds: string[]) {
+  return adminIds.includes(user.matrixId);
+}
+
+export function sortMembers(members: User[], adminIds?: string[]) {
+  return members.sort((a, b) => {
+    const aIsAdmin = adminIds ? isUserAdmin(a, adminIds) : false;
+    const bIsAdmin = adminIds ? isUserAdmin(b, adminIds) : false;
+
+    if (aIsAdmin && !bIsAdmin) return -1;
+    if (!aIsAdmin && bIsAdmin) return 1;
+
+    return a.firstName.localeCompare(b.firstName);
+  });
 }

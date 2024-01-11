@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Image } from '@zero-tech/zui/components';
+import { Button, Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
 import { PanelHeader } from '../panel-header';
@@ -18,7 +18,9 @@ export interface Properties {
   icon: string;
   currentUser: User;
   otherMembers: User[];
+  isCurrentUserRoomAdmin: boolean;
 
+  onEdit?: () => void;
   onBack: () => void;
 }
 
@@ -37,6 +39,12 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         </div>
 
         {this.props.name && <div {...cn('group-name')}>{this.props.name}</div>}
+
+        {this.props.isCurrentUserRoomAdmin && (
+          <Button {...cn('edit-group-button')} onPress={this.props.onEdit} variant='text'>
+            Edit
+          </Button>
+        )}
       </div>
     );
   };

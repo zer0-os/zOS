@@ -30,6 +30,7 @@ describe('messenger-chat', () => {
       startAddGroupMember: () => null,
       startEditConversation: () => null,
       setLeaveGroupStatus: () => null,
+      viewGroupInformation: () => null,
       ...props,
     };
 
@@ -445,6 +446,23 @@ describe('messenger-chat', () => {
         });
 
         expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+      });
+    });
+
+    describe('view group information', () => {
+      it('allows viewing of group information if conversation is not a 1 on 1', () => {
+        const wrapper = subject({ directMessage: stubConversation({ isOneOnOne: false }) });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canViewGroupInformation')).toBe(true);
+      });
+
+      it('does NOT allow viewing of group information if conversation is considered a 1 on 1', () => {
+        const wrapper = subject({
+          isCurrentUserRoomAdmin: true,
+          directMessage: stubConversation({ isOneOnOne: true }),
+        });
+
+        expect(wrapper.find(GroupManagementMenu).prop('canViewGroupInformation')).toBe(false);
       });
     });
   });

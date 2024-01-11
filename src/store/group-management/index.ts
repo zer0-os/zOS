@@ -23,12 +23,14 @@ export enum SagaActionTypes {
   CancelRemoveMember = 'group-management/cancel-remove-member',
   RemoveMember = 'group-management/remove-member',
   EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
+  OpenViewGroupInformation = 'group-management/open-view-group-information',
 }
 
 export enum Stage {
   None = 'none',
   StartAddMemberToRoom = 'start_add_member_to_room',
   EditConversation = 'edit_conversation',
+  ViewGroupInformation = 'view_group_information',
 }
 
 export enum LeaveGroupDialogStatus {
@@ -51,6 +53,7 @@ export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActio
 export const openRemoveMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.OpenRemoveMember);
 export const cancelRemoveMember = createAction(SagaActionTypes.CancelRemoveMember);
 export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
+export const viewGroupInformation = createAction(SagaActionTypes.OpenViewGroupInformation);
 export const editConversationNameAndIcon = createAction<EditConversationPayload>(
   SagaActionTypes.EditConversationNameAndIcon
 );

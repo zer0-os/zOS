@@ -14,6 +14,7 @@ describe(GroupManagementMenu, () => {
       canAddMembers: true,
       canLeaveRoom: true,
       canEdit: true,
+      canViewGroupInformation: true,
       onStartAddMember: () => {},
       onLeave: () => {},
       onEdit: () => {},
@@ -81,7 +82,7 @@ describe(GroupManagementMenu, () => {
     });
   });
 
-  describe('Group Info', () => {
+  describe('View Group Information', () => {
     it('calls onViewGroupInformation when the group info menu item is selected', () => {
       featureFlags.enableGroupInformation = true;
       const onViewGroupInformation = jest.fn();
@@ -90,6 +91,11 @@ describe(GroupManagementMenu, () => {
       selectItem(wrapper, 'group_information');
 
       expect(onViewGroupInformation).toHaveBeenCalled();
+    });
+
+    it('does not render item when canViewGroupInformation is false', function () {
+      const wrapper = subject({ canViewGroupInformation: false });
+      expect(menuItem(wrapper, 'group_information')).toBeFalsy();
     });
   });
 });

@@ -10,17 +10,11 @@ export class StoreBuilder {
   conversationList: Partial<Channel>[] = [];
   users: Partial<{ userId: string }>[] = [];
 
-  activeChannel: Partial<Channel> = {};
   activeConversation: Partial<Channel> = {};
   isFullScreenMessenger: boolean = true;
   currentUser: Partial<AuthenticatedUser> = stubAuthenticatedUser();
   groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
-
-  withActiveChannel(channel: Partial<Channel>) {
-    this.activeChannel = channel;
-    return this;
-  }
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
@@ -76,7 +70,6 @@ export class StoreBuilder {
   build() {
     const { result: channelsList, entities: channelEntitities } = normalizeChannel(
       [
-        this.activeChannel,
         this.activeConversation,
         ...this.channelList,
         ...this.conversationList,
@@ -97,7 +90,6 @@ export class StoreBuilder {
         },
       } as any,
       chat: {
-        activeChannelId: this.activeChannel.id || null,
         activeConversationId: this.activeConversation.id || null,
       },
       layout: {

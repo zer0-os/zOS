@@ -8,7 +8,6 @@ const initialState: ChatState = {
   },
   isReconnecting: false,
   activeConversationId: null,
-  activeChannelId: null,
 };
 
 const slice = createSlice({

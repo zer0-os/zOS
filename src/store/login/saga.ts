@@ -12,7 +12,6 @@ import {
 } from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
-import { setWalletModalOpen } from '../web3';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
@@ -81,8 +80,6 @@ export function* web3Login(action) {
     } else {
       yield put(setStage(LoginStage.Done));
     }
-    // Note: only impacts public zOS. Keeping the two flows together for now while things are refactored.
-    yield put(setWalletModalOpen(false));
   } finally {
     yield put(setLoading(false));
   }

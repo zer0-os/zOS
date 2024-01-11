@@ -135,7 +135,6 @@ $recent-indicator-size: 8px;
   // message-input
   &__footer {
     border-radius: 16px;
-    overflow: hidden;
     flex-shrink: 0;
 
     @include flat-thick;

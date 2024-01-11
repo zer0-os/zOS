@@ -100,6 +100,10 @@ function resolveWith<T>(valueToResolve: T) {
   return { resolve: theResolve, mock: () => promise };
 }
 
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: { verboseLogging: false },
+}));
+
 describe('matrix client', () => {
   describe('disconnect', () => {
     it('stops client completely on disconnect', async () => {

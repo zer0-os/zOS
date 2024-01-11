@@ -4,7 +4,7 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, receive } from '../channels';
-import { markChannelAsRead, markConversationAsRead, rawChannelSelector } from '../channels/saga';
+import { markConversationAsRead, rawChannelSelector } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { getLinkPreviews } from './api';
@@ -76,11 +76,8 @@ export const messageSelector = (messageId) => (state) => {
   return getDeepProperty(state, `normalized.messages[${messageId}]`, null);
 };
 
-export const _isChannel = (channelId) => (state) =>
-  getDeepProperty(state, `normalized.channels['${channelId}'].isChannel`, null);
-
-const _isActive = (channelId) => (state) => {
-  return channelId === state.chat.activeChannelId || channelId === state.chat.activeConversationId;
+const _isActive = (roomId) => (state) => {
+  return roomId === state.chat.activeConversationId;
 };
 
 export function* getLocalZeroUsersMap() {
@@ -450,9 +447,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
 
     yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
     if (yield select(_isActive(channelId))) {
-      const isChannel = yield select(_isChannel(channelId));
-      const markAllAsReadAction = isChannel ? markChannelAsRead : markConversationAsRead;
-      yield spawn(markAllAsReadAction, channelId);
+      yield spawn(markConversationAsRead, channelId);
     }
   }
 

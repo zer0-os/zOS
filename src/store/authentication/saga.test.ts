@@ -29,7 +29,6 @@ import { setChatAccessToken } from '../chat';
 import { receive } from '../channels-list';
 import { update } from '../layout';
 import { rootReducer } from '../reducer';
-import { clearNotifications } from '../notifications/saga';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUserLayout } from '../layout/saga';
 import { clearMessages } from '../messages/saga';
@@ -264,7 +263,6 @@ describe('clearUserState', () => {
       .call(clearChannelsAndConversations)
       .call(clearMessages)
       .call(clearUsers)
-      .call(clearNotifications)
       .call(clearUserLayout)
       .withReducer(rootReducer)
       .run();

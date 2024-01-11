@@ -4,6 +4,7 @@ import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 import { EditConversationPanel } from '../edit-conversation-panel';
+import { ViewGroupInformationPanel } from '../view-group-information-panel';
 import { User } from '../../../../store/channels';
 import { EditConversationState, GroupManagementErrors } from '../../../../store/group-management/types';
 
@@ -49,6 +50,15 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onRemoveMember={this.props.onRemoveMember}
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
+          />
+        )}
+        {this.props.stage === Stage.ViewGroupInformation && (
+          <ViewGroupInformationPanel
+            name={this.props.name}
+            icon={this.props.icon}
+            currentUser={this.props.currentUser}
+            otherMembers={this.props.otherMembers}
+            onBack={this.props.onBack}
           />
         )}
       </>

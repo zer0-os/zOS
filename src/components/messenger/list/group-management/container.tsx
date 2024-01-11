@@ -63,6 +63,7 @@ export class Container extends React.Component<Properties> {
         firstName: currentUser?.profileSummary.firstName,
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
+        isOnline: currentUser?.isOnline,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,

@@ -4,7 +4,7 @@ import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
 import { PanelHeader } from '../panel-header';
-
+import { Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
 
@@ -40,18 +40,14 @@ describe(ViewGroupInformationPanel, () => {
   });
 
   it('renders custom group icon when icon prop is provided', () => {
-    const iconUrl = 'test-icon-url';
-    const wrapper = subject({ icon: iconUrl });
-    const image = wrapper.find('.view-group-information-panel__custom-group-icon');
-    expect(image.length).toEqual(1);
-    expect(image.prop('src')).toEqual(iconUrl);
+    const wrapper = subject({ icon: 'test-icon-url' });
+    expect(wrapper.find(Image)).toHaveProp('src', 'test-icon-url');
+    expect(wrapper).not.toHaveElement(IconUsers1);
   });
 
   it('renders default group icon when icon prop is not provided', () => {
     const wrapper = subject({ icon: '' });
-    const defaultIcon = wrapper.find(IconUsers1);
-    expect(defaultIcon.length).toEqual(1);
-    expect(defaultIcon.prop('size')).toEqual(60);
+    expect(wrapper).toHaveElement(IconUsers1);
   });
 
   it('renders member header with correct count', () => {

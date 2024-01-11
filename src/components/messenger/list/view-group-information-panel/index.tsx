@@ -20,7 +20,7 @@ export interface Properties {
   otherMembers: User[];
   isCurrentUserRoomAdmin: boolean;
 
-  onEdit?: () => void;
+  onEdit: () => void;
   onBack: () => void;
 }
 

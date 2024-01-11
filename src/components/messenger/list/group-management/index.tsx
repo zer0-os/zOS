@@ -25,6 +25,7 @@ export interface Properties {
   onEditConversation: (name: string, image: File | null) => void;
   searchUsers: (search: string) => Promise<any>;
   onRemoveMember: (userId: string) => void;
+  startEditConversation: () => void;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
@@ -60,6 +61,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
             isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
+            onEdit={this.props.startEditConversation}
             onBack={this.props.onBack}
           />
         )}

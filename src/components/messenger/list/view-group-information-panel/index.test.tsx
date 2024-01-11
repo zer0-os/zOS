@@ -36,8 +36,7 @@ describe(ViewGroupInformationPanel, () => {
 
   it('renders group name when name prop is provided', () => {
     const wrapper = subject({ name: 'test-group-name' });
-    const name = wrapper.find(c('group-name'));
-    expect(name.text()).toEqual('test-group-name');
+    expect(wrapper.find(c('group-name'))).toHaveText('test-group-name');
   });
 
   it('renders custom group icon when icon prop is provided', () => {

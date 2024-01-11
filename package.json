@@ -107,6 +107,8 @@
     "electronmon": "^2.0.2",
     "enzyme": "^3.11.0",
     "husky": "^8.0.1",
+    "jest-environment-enzyme": "^7.1.2",
+    "jest-enzyme": "^7.1.2",
     "jest-extended": "^1.2.0",
     "jest-when": "^3.5.2",
     "mustache": "^4.2.0",

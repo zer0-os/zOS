@@ -11,6 +11,7 @@ export interface Properties {
   canAddMembers: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
+  canViewGroupInformation: boolean;
   onStartAddMember: () => void;
   onLeave: () => void;
   onEdit: () => void;
@@ -61,7 +62,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       });
     }
 
-    if (featureFlags.enableGroupInformation) {
+    if (featureFlags.enableGroupInformation && this.props.canViewGroupInformation) {
       menuItems.push({
         id: 'group_information',
         label: this.renderMenuItem(<IconInfoCircle size={20} />, 'Group Info'),

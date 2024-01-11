@@ -4,11 +4,14 @@ import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
 import { PanelHeader } from '../panel-header';
-
+import { Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
+import { bem } from '../../../../lib/bem';
+
+const c = bem('.view-group-information-panel');
 
 describe(ViewGroupInformationPanel, () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       name: '',
       icon: '',
@@ -22,47 +25,40 @@ describe(ViewGroupInformationPanel, () => {
     return shallow(<ViewGroupInformationPanel {...allProps} />);
   };
 
-  it('renders PanelHeader with correct title and back function', () => {
-    const onBackMock = jest.fn();
-    const wrapper = subject({ onBack: onBackMock });
-    const panelHeader = wrapper.find(PanelHeader);
-    expect(panelHeader.prop('title')).toEqual('Group Info');
-    expect(panelHeader.prop('onBack')).toEqual(onBackMock);
+  it('publishes onBack event', () => {
+    const onBack = jest.fn();
+    const wrapper = subject({ onBack });
+
+    wrapper.find(PanelHeader).simulate('back');
+
+    expect(onBack).toHaveBeenCalled();
   });
 
   it('renders group name when name prop is provided', () => {
-    const groupName = 'test-group-name';
-    const wrapper = subject({ name: groupName });
-    const image = wrapper.find('.view-group-information-panel__group-name');
-    expect(image.text()).toEqual(groupName);
+    const wrapper = subject({ name: 'test-group-name' });
+    expect(wrapper.find(c('group-name'))).toHaveText('test-group-name');
   });
 
   it('renders custom group icon when icon prop is provided', () => {
-    const iconUrl = 'test-icon-url';
-    const wrapper = subject({ icon: iconUrl });
-    const image = wrapper.find('.view-group-information-panel__custom-group-icon');
-    expect(image.length).toEqual(1);
-    expect(image.prop('src')).toEqual(iconUrl);
+    const wrapper = subject({ icon: 'test-icon-url' });
+    expect(wrapper.find(Image)).toHaveProp('src', 'test-icon-url');
+    expect(wrapper).not.toHaveElement(IconUsers1);
   });
 
   it('renders default group icon when icon prop is not provided', () => {
     const wrapper = subject({ icon: '' });
-    const defaultIcon = wrapper.find(IconUsers1);
-    expect(defaultIcon.length).toEqual(1);
-    expect(defaultIcon.prop('size')).toEqual(60);
+    expect(wrapper).toHaveElement(IconUsers1);
   });
 
   it('renders member header with correct count', () => {
     const otherMembers = [{ userId: '1' }, { userId: '2' }] as User[];
     const wrapper = subject({ otherMembers });
-    const memberHeader = wrapper.find('.view-group-information-panel__member-header');
-    expect(memberHeader.text()).toEqual(`${otherMembers.length + 1} members`);
+    expect(wrapper.find(c('member-header'))).toHaveText(`${otherMembers.length + 1} members`);
   });
 
   it('renders singular member when only one member is present', () => {
     const wrapper = subject({ otherMembers: [] });
-    const memberHeader = wrapper.find('.view-group-information-panel__member-header');
-    expect(memberHeader.text()).toEqual('1 member');
+    expect(wrapper.find(c('member-header'))).toHaveText('1 member');
   });
 
   it('renders the members of the conversation', function () {

@@ -34,6 +34,7 @@ export interface Properties extends PublicProperties {
   name: string;
   conversationIcon: string;
   editConversationState: EditConversationState;
+  conversationAdminIds: string[];
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -50,6 +51,7 @@ export class Container extends React.Component<Properties> {
 
     const conversation = denormalizeChannel(activeConversationId, state);
     const currentUser = currentUserSelector(state);
+    const conversationAdminIds = conversation?.adminMatrixIds;
 
     return {
       activeConversationId,
@@ -63,10 +65,12 @@ export class Container extends React.Component<Properties> {
         firstName: currentUser?.profileSummary.firstName,
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
+        matrixId: currentUser?.matrixId,
         isOnline: currentUser?.isOnline,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
+      conversationAdminIds,
     };
   }
 
@@ -91,6 +95,10 @@ export class Container extends React.Component<Properties> {
     this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
   };
 
+  isUserAdmin = (userMatrixId: string, adminMatrixIds: string) => {
+    return adminMatrixIds.includes(userMatrixId);
+  };
+
   render() {
     return (
       <>
@@ -109,6 +117,7 @@ export class Container extends React.Component<Properties> {
           onEditConversation={this.onEditConversation}
           editConversationState={this.props.editConversationState}
           onRemoveMember={this.openRemoveMember}
+          conversationAdminIds={this.props.conversationAdminIds}
         />
         <RemoveMemberDialogContainer />
       </>

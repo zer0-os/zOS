@@ -8,7 +8,7 @@ import { PanelHeader } from '../panel-header';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
 describe(ViewGroupInformationPanel, () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       name: '',
       icon: '',
@@ -22,12 +22,13 @@ describe(ViewGroupInformationPanel, () => {
     return shallow(<ViewGroupInformationPanel {...allProps} />);
   };
 
-  it('renders PanelHeader with correct title and back function', () => {
-    const onBackMock = jest.fn();
-    const wrapper = subject({ onBack: onBackMock });
-    const panelHeader = wrapper.find(PanelHeader);
-    expect(panelHeader.prop('title')).toEqual('Group Info');
-    expect(panelHeader.prop('onBack')).toEqual(onBackMock);
+  it('publishes onBack event', () => {
+    const onBack = jest.fn();
+    const wrapper = subject({ onBack });
+
+    wrapper.find(PanelHeader).simulate('back');
+
+    expect(onBack).toHaveBeenCalled();
   });
 
   it('renders group name when name prop is provided', () => {

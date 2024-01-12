@@ -20,11 +20,13 @@ describe(GroupManagement, () => {
       errors: {},
       editConversationState: EditConversationState.NONE,
       conversationAdminIds: [],
+      isCurrentUserRoomAdmin: false,
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
       onRemoveMember: () => null,
       onEditConversation: () => null,
+      startEditConversation: () => null,
       ...props,
     };
 

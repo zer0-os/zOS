@@ -9,6 +9,7 @@ import {
   editConversationNameAndIcon,
   EditConversationPayload,
   openRemoveMember,
+  startEditConversation,
 } from '../../../../store/group-management';
 import { Option } from '../../lib/types';
 
@@ -34,12 +35,14 @@ export interface Properties extends PublicProperties {
   name: string;
   conversationIcon: string;
   editConversationState: EditConversationState;
+  isCurrentUserRoomAdmin: boolean;
   conversationAdminIds: string[];
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
   editConversationNameAndIcon: (payload: EditConversationPayload) => void;
   openRemoveMember: (params: { roomId: string; userId: string }) => void;
+  startEditConversation: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -51,6 +54,7 @@ export class Container extends React.Component<Properties> {
 
     const conversation = denormalizeChannel(activeConversationId, state);
     const currentUser = currentUserSelector(state);
+    const isCurrentUserRoomAdmin = conversation?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
     const conversationAdminIds = conversation?.adminMatrixIds;
 
     return {
@@ -70,6 +74,7 @@ export class Container extends React.Component<Properties> {
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
+      isCurrentUserRoomAdmin,
       conversationAdminIds,
     };
   }
@@ -80,6 +85,7 @@ export class Container extends React.Component<Properties> {
       addSelectedMembers,
       editConversationNameAndIcon,
       openRemoveMember,
+      startEditConversation,
     };
   }
 
@@ -113,6 +119,8 @@ export class Container extends React.Component<Properties> {
           onEditConversation={this.onEditConversation}
           editConversationState={this.props.editConversationState}
           onRemoveMember={this.openRemoveMember}
+          isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
+          startEditConversation={this.props.startEditConversation}
           conversationAdminIds={this.props.conversationAdminIds}
         />
         <RemoveMemberDialogContainer />

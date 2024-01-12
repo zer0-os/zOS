@@ -4,7 +4,7 @@ import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
 import { PanelHeader } from '../panel-header';
-import { Image } from '@zero-tech/zui/components';
+import { Button, Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
 
@@ -18,7 +18,9 @@ describe(ViewGroupInformationPanel, () => {
       currentUser: { userId: 'current-user' } as User,
       otherMembers: [],
       conversationAdminIds: [],
+      isCurrentUserRoomAdmin: false,
 
+      onEdit: () => null,
       onBack: () => null,
       ...props,
     };
@@ -35,6 +37,15 @@ describe(ViewGroupInformationPanel, () => {
     expect(onBack).toHaveBeenCalled();
   });
 
+  it('publishes onEdit event', () => {
+    const onEdit = jest.fn();
+    const wrapper = subject({ onEdit, isCurrentUserRoomAdmin: true });
+
+    wrapper.find(Button).simulate('press');
+
+    expect(onEdit).toHaveBeenCalled();
+  });
+
   it('renders group name when name prop is provided', () => {
     const wrapper = subject({ name: 'test-group-name' });
     expect(wrapper.find(c('group-name'))).toHaveText('test-group-name');
@@ -49,6 +60,11 @@ describe(ViewGroupInformationPanel, () => {
   it('renders default group icon when icon prop is not provided', () => {
     const wrapper = subject({ icon: '' });
     expect(wrapper).toHaveElement(IconUsers1);
+  });
+
+  it('renders edit button when current user is admin', () => {
+    const wrapper = subject({ isCurrentUserRoomAdmin: true });
+    expect(wrapper).toHaveElement(Button);
   });
 
   it('renders member header with correct count', () => {

@@ -51,6 +51,11 @@
     padding-bottom: 24px;
   }
 
+  &__edit-group-button {
+    width: fit-content;
+    align-self: center;
+  }
+
   &__members {
     display: flex;
     flex-direction: column;

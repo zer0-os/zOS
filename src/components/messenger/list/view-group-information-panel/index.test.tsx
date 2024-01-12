@@ -3,8 +3,7 @@ import { shallow } from 'enzyme';
 import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
-import { PanelHeader } from '../panel-header';
-import { Button, Image } from '@zero-tech/zui/components';
+import { Button, IconButton, Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
 
@@ -32,7 +31,7 @@ describe(ViewGroupInformationPanel, () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 
-    wrapper.find(PanelHeader).simulate('back');
+    wrapper.find(IconButton).simulate('click');
 
     expect(onBack).toHaveBeenCalled();
   });

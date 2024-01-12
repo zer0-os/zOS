@@ -62,8 +62,8 @@ describe(ViewGroupInformationPanel, () => {
       onLeave,
       isCurrentUserRoomAdmin: false,
       otherMembers: [
-        { userId: 'otherUser1', matrixId: 'matrix-id-1' },
-        { userId: 'otherUser2', matrixId: 'matrix-id-2' },
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
       ] as User[],
     });
 
@@ -97,8 +97,8 @@ describe(ViewGroupInformationPanel, () => {
     const wrapper = subject({
       isCurrentUserRoomAdmin: false,
       otherMembers: [
-        { userId: 'otherUser1', matrixId: 'matrix-id-1' },
-        { userId: 'otherUser2', matrixId: 'matrix-id-2' },
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
       ] as User[],
     });
     expect(wrapper).toHaveElement(c('leave-group-button'));

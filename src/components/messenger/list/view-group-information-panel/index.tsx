@@ -8,6 +8,7 @@ import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { LeaveGroupDialogStatus } from '../../../../store/group-management';
+import { isUserAdmin, sortMembers } from '../utils/utils';
 
 import './styles.scss';
 
@@ -28,12 +29,8 @@ export interface Properties {
 }
 
 export class ViewGroupInformationPanel extends React.Component<Properties> {
-  isUserAdmin(user: User) {
-    return this.props.conversationAdminIds.includes(user.matrixId);
-  }
-
   getTagForUser(user: User) {
-    return this.isUserAdmin(user) ? 'Admin' : null;
+    return isUserAdmin(user, this.props.conversationAdminIds) ? 'Admin' : null;
   }
 
   navigateBack = () => {
@@ -77,7 +74,9 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   };
 
   renderMembers = () => {
-    const { otherMembers } = this.props;
+    const { otherMembers, conversationAdminIds } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
+
     return (
       <div {...cn('members')}>
         <div {...cn('member-header')}>
@@ -95,7 +94,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
               user={this.props.currentUser}
               tag={this.getTagForUser(this.props.currentUser)}
             ></CitizenListItem>
-            {otherMembers.map((u) => (
+            {sortedOtherMembers.map((u) => (
               <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>
             ))}
           </ScrollbarContainer>

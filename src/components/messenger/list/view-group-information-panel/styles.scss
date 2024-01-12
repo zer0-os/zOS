@@ -76,6 +76,11 @@
     align-self: center;
   }
 
+  &__edit-group-button {
+    width: fit-content;
+    align-self: center;
+  }
+
   &__members {
     display: flex;
     flex-direction: column;

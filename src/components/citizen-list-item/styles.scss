@@ -12,7 +12,7 @@
   border-radius: 8px;
 
   &:hover {
-    background-color: theme.$color-primary-3;
+    @include glass-state-hover-color;
   }
 
   &__name {

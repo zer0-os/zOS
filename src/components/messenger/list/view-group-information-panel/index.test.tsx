@@ -67,7 +67,10 @@ describe(ViewGroupInformationPanel, () => {
   });
 
   it('renders member header with correct count', () => {
-    const otherMembers = [{ userId: '1' }, { userId: '2' }] as User[];
+    const otherMembers = [
+      { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+      { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+    ] as User[];
     const wrapper = subject({ otherMembers });
     expect(wrapper.find(c('member-header'))).toHaveText(`${otherMembers.length + 1} members`);
   });
@@ -79,15 +82,17 @@ describe(ViewGroupInformationPanel, () => {
 
   it('renders the members of the conversation', function () {
     const wrapper = subject({
-      currentUser: { userId: 'Admin' } as any,
-      otherMembers: [{ userId: '1' }, { userId: '2' }, { userId: '3' }] as any,
+      currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+      otherMembers: [
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+      ] as User[],
     });
 
     expect(wrapper.find(CitizenListItem).map((c) => c.prop('user'))).toEqual([
-      { userId: 'Admin' },
-      { userId: '1' },
-      { userId: '2' },
-      { userId: '3' },
+      { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' },
+      { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+      { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
     ]);
   });
 

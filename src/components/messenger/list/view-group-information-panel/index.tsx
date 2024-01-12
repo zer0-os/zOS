@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import { Button, Image } from '@zero-tech/zui/components';
-import { IconUsers1 } from '@zero-tech/zui/icons';
+import { Button, IconButton, Image } from '@zero-tech/zui/components';
+import { IconArrowNarrowLeft, IconUsers1 } from '@zero-tech/zui/icons';
 
-import { PanelHeader } from '../panel-header';
 import { User } from '../../../../store/channels';
 import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
@@ -34,18 +33,22 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     return this.isUserAdmin(user) ? 'Admin' : null;
   }
 
+  navigateBack = () => {
+    this.props.onBack();
+  };
+
   editGroup = () => {
     this.props.onEdit();
   };
 
-  renderImage = () => {
+  renderDetails = () => {
     return (
       <div {...cn('details')}>
-        <div {...cn('image')}>
+        <div {...cn('group-icon-conatiner')}>
           {this.props.icon ? (
-            <Image {...cn('custom-group-icon')} src={this.props.icon} alt='Custom Group Icon' />
+            <Image {...cn('group-icon')} src={this.props.icon} alt='Custom Group Icon' />
           ) : (
-            <div {...cn('default-group-icon')}>
+            <div {...cn('group-icon')}>
               <IconUsers1 size={60} />
             </div>
           )}
@@ -84,12 +87,29 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     );
   };
 
+  renderBanner = () => {
+    return (
+      <div {...cn('banner-container')}>
+        <div {...cn('banner')} />
+      </div>
+    );
+  };
+
+  renderBackIcon = () => {
+    return (
+      <div {...cn('back-icon-container')}>
+        <IconButton {...cn('back-icon')} size={32} onClick={this.navigateBack} Icon={IconArrowNarrowLeft} isFilled />
+      </div>
+    );
+  };
+
   render() {
     return (
       <div {...cn()}>
-        <PanelHeader title={'Group Info'} onBack={this.props.onBack} />
+        {this.renderBanner()}
+        {this.renderBackIcon()}
         <div {...cn('body')}>
-          {this.renderImage()}
+          {this.renderDetails()}
           {this.renderMembers()}
         </div>
       </div>

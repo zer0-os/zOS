@@ -6,8 +6,6 @@ import { ParentMessage, User } from './types';
 import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {
-  reconnectStart: () => void;
-  reconnectStop: () => void;
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (roomId: string, messageId: string) => void;
   onMessageUpdated: (channelId: string, message: Message) => void;

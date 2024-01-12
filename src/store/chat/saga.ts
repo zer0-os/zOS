@@ -1,9 +1,8 @@
 import { put, select, call, take, takeEvery, spawn, race } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setReconnecting, setActiveConversationId } from '.';
-import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
-import { Events, createChatConnection, getChatBus } from './bus';
+import { setActiveConversationId } from '.';
+import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -12,17 +11,6 @@ import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-
-function* listenForReconnectStart(_action) {
-  yield put(setReconnecting(true));
-}
-
-function* listenForReconnectStop(_action) {
-  yield put(setReconnecting(false));
-  // after reconnecting fetch (latest) channels and conversations *immediately*.
-  // (instead of waiting for the "regular refresh interval to kick in")
-  yield put(startChannelsAndConversationsAutoRefresh());
-}
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -88,8 +76,4 @@ export function* saga() {
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
-
-  const chatBus = yield call(getChatBus);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
 }

@@ -6,7 +6,6 @@ const initialState: ChatState = {
     isLoading: false,
     value: null,
   },
-  isReconnecting: false,
   activeConversationId: null,
 };
 
@@ -14,9 +13,6 @@ const slice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    setReconnecting: (state, action: PayloadAction<ChatState['isReconnecting']>) => {
-      state.isReconnecting = action.payload;
-    },
     setChatAccessToken: (state, action: PayloadAction<ChatState['chatAccessToken']>) => {
       state.chatAccessToken = action.payload;
     },
@@ -26,5 +22,5 @@ const slice = createSlice({
   },
 });
 
-export const { setChatAccessToken, setReconnecting, setActiveConversationId } = slice.actions;
+export const { setChatAccessToken, setActiveConversationId } = slice.actions;
 export const { reducer } = slice;

@@ -21,10 +21,13 @@
     width: 32px;
     cursor: pointer;
     border-radius: 50%;
-    background-color: theme.$color-greyscale-4;
+    // TODO: uncomment when we have banner image path
+    // background-color: theme.$color-greyscale-4;
 
     &:hover {
-      background-color: theme.$color-greyscale-7;
+      // TODO: uncomment and replace when we have banner image path
+      // background-color: theme.$color-greyscale-7;
+      background-color: theme.$color-greyscale-transparency-3;
     }
   }
 
@@ -114,8 +117,9 @@
     flex-direction: column;
     align-items: flex-start;
     flex-shrink: 0;
-    // replace with cloudinary path
-    // background: url('./assets/banner.png'), lightgray 50% / cover no-repeat;
     border-radius: 16px 16px 0px 0px;
+
+    // TODO: replace with cloudinary path
+    // background: url('./assets/banner.png'), lightgray 50% / cover no-repeat;
   }
 }

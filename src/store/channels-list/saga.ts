@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { fork, takeLatest, put, call, take, race, all, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, receive, denormalizeConversations } from '.';
+import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
+import { receive, denormalizeConversations } from '.';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
@@ -224,17 +224,6 @@ export function* fetchChannelsAndConversations() {
   }
 }
 
-export function* startChannelsAndConversationsRefresh() {
-  while (true) {
-    const { abort, _success } = yield race({
-      abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
-      success: call(fetchChannelsAndConversations),
-    });
-
-    if (abort) return false;
-  }
-}
-
 export function* channelsReceived(action) {
   const { channels } = action.payload;
 
@@ -264,14 +253,6 @@ function* listenForUserLogin() {
   }
 }
 
-function* listenForUserLogout() {
-  const userChannel = yield call(getAuthChannel);
-  while (true) {
-    yield take(userChannel, Events.UserLogout);
-    yield put({ type: SagaActionTypes.StopChannelsAndConversationsAutoRefresh });
-  }
-}
-
 export function* currentUserAddedToChannel(_action) {
   // For now, just force a fetch of conversations to refresh the list.
   yield fetchConversations();
@@ -298,8 +279,6 @@ function* currentUserLeftChannel(channelId) {
 
 export function* saga() {
   yield spawn(listenForUserLogin);
-  yield spawn(listenForUserLogout);
-  yield takeLatest(SagaActionTypes.StartChannelsAndConversationsAutoRefresh, startChannelsAndConversationsRefresh);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);

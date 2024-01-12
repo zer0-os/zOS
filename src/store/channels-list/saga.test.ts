@@ -209,27 +209,6 @@ describe('channels list saga', () => {
     });
   });
 
-  it('verify startChannelsAndConversationsRefresh', () => {
-    testSaga(startChannelsAndConversationsRefresh)
-      .next({ abort: undefined, success: true })
-      .inspect((raceValue) => {
-        expect(raceValue).toStrictEqual(
-          race({
-            abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
-            success: call(fetchChannelsAndConversations),
-          })
-        );
-      })
-
-      .next({ abort: true, success: undefined })
-      .inspect((returnValue) => {
-        expect(returnValue).toBeFalse();
-      })
-
-      .next()
-      .isDone();
-  });
-
   it('removes the channels list and channels', async () => {
     const channelsList = { value: ['id-one'] };
     const channels = { 'id-one': { id: 'id-one', name: 'this should be removed' } };

@@ -34,6 +34,10 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     return this.isUserAdmin(user) ? 'Admin' : null;
   }
 
+  navigateToEditPanel = () => {
+    this.props.onEdit();
+  };
+
   renderImage = () => {
     return (
       <div {...cn('details')}>
@@ -50,7 +54,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         {this.props.name && <div {...cn('group-name')}>{this.props.name}</div>}
 
         {this.props.isCurrentUserRoomAdmin && (
-          <Button {...cn('edit-group-button')} onPress={this.props.onEdit} variant='text'>
+          <Button {...cn('edit-group-button')} onPress={this.navigateToEditPanel} variant='text'>
             Edit
           </Button>
         )}

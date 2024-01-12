@@ -78,6 +78,13 @@
     align-self: center;
   }
 
+  &__leave-group-button {
+    display: flex;
+    width: fit-content;
+    align-self: center;
+    padding: 0 8px;
+  }
+
   &__members {
     display: flex;
     flex-direction: column;

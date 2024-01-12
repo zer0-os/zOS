@@ -11,6 +11,8 @@ import {
   openRemoveMember,
   startEditConversation,
   startAddGroupMember,
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus,
 } from '../../../../store/group-management';
 import { Option } from '../../lib/types';
 
@@ -45,6 +47,7 @@ export interface Properties extends PublicProperties {
   openRemoveMember: (params: { roomId: string; userId: string }) => void;
   startEditConversation: () => void;
   startAddGroupMember: () => void;
+  setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -89,6 +92,7 @@ export class Container extends React.Component<Properties> {
       openRemoveMember,
       startEditConversation,
       startAddGroupMember,
+      setLeaveGroupStatus,
     };
   }
 
@@ -126,6 +130,7 @@ export class Container extends React.Component<Properties> {
           startEditConversation={this.props.startEditConversation}
           conversationAdminIds={this.props.conversationAdminIds}
           startAddGroupMember={this.props.startAddGroupMember}
+          setLeaveGroupStatus={this.props.setLeaveGroupStatus}
         />
         <RemoveMemberDialogContainer />
       </>

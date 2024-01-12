@@ -20,6 +20,7 @@ describe(ViewGroupInformationPanel, () => {
       isCurrentUserRoomAdmin: false,
 
       onAdd: () => null,
+      onLeave: () => null,
       onEdit: () => null,
       onBack: () => null,
       ...props,
@@ -55,6 +56,22 @@ describe(ViewGroupInformationPanel, () => {
     expect(onAdd).toHaveBeenCalled();
   });
 
+  it('publishes onLeave event', () => {
+    const onLeave = jest.fn();
+    const wrapper = subject({
+      onLeave,
+      isCurrentUserRoomAdmin: false,
+      otherMembers: [
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+      ] as User[],
+    });
+
+    wrapper.find(c('leave-group-button')).simulate('press');
+
+    expect(onLeave).toHaveBeenCalled();
+  });
+
   it('renders group name when name prop is provided', () => {
     const wrapper = subject({ name: 'test-group-name' });
     expect(wrapper.find(c('group-name'))).toHaveText('test-group-name');
@@ -74,6 +91,17 @@ describe(ViewGroupInformationPanel, () => {
   it('renders edit button when current user is admin', () => {
     const wrapper = subject({ isCurrentUserRoomAdmin: true });
     expect(wrapper).toHaveElement(Button);
+  });
+
+  it('renders leave group button when current user is not admin and more than 1 other member', () => {
+    const wrapper = subject({
+      isCurrentUserRoomAdmin: false,
+      otherMembers: [
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+      ] as User[],
+    });
+    expect(wrapper).toHaveElement(c('leave-group-button'));
   });
 
   it('renders add icon button when current user is admin', () => {

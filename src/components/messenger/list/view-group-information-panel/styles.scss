@@ -24,6 +24,10 @@
   //   }
   // }
 
+  &__add-icon {
+    margin-right: 8px;
+  }
+
   &__body {
     margin: 0px 16px;
     flex-grow: 1;
@@ -81,6 +85,12 @@
   }
 
   &__member-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__member-total {
     @include glass-text-secondary-color;
 
     font-weight: 600;

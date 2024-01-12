@@ -27,6 +27,7 @@ describe(GroupManagement, () => {
       onRemoveMember: () => null,
       onEditConversation: () => null,
       startEditConversation: () => null,
+      startAddGroupMember: () => null,
       ...props,
     };
 

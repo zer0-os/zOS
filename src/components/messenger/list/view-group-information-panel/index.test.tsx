@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
-import { Button, IconButton, Image } from '@zero-tech/zui/components';
+import { Button, Image } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
 
@@ -19,6 +19,7 @@ describe(ViewGroupInformationPanel, () => {
       conversationAdminIds: [],
       isCurrentUserRoomAdmin: false,
 
+      onAdd: () => null,
       onEdit: () => null,
       onBack: () => null,
       ...props,
@@ -31,7 +32,7 @@ describe(ViewGroupInformationPanel, () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 
-    wrapper.find(IconButton).simulate('click');
+    wrapper.find(c('back-icon')).simulate('click');
 
     expect(onBack).toHaveBeenCalled();
   });
@@ -43,6 +44,15 @@ describe(ViewGroupInformationPanel, () => {
     wrapper.find(Button).simulate('press');
 
     expect(onEdit).toHaveBeenCalled();
+  });
+
+  it('publishes onAdd event', () => {
+    const onAdd = jest.fn();
+    const wrapper = subject({ onAdd, isCurrentUserRoomAdmin: true });
+
+    wrapper.find(c('add-icon')).simulate('click');
+
+    expect(onAdd).toHaveBeenCalled();
   });
 
   it('renders group name when name prop is provided', () => {
@@ -64,6 +74,11 @@ describe(ViewGroupInformationPanel, () => {
   it('renders edit button when current user is admin', () => {
     const wrapper = subject({ isCurrentUserRoomAdmin: true });
     expect(wrapper).toHaveElement(Button);
+  });
+
+  it('renders add icon button when current user is admin', () => {
+    const wrapper = subject({ isCurrentUserRoomAdmin: true });
+    expect(wrapper).toHaveElement(c('add-icon'));
   });
 
   it('renders member header with correct count', () => {

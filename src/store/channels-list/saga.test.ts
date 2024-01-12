@@ -1,13 +1,11 @@
 import { testSaga } from 'redux-saga-test-plan';
-import { call, race, take } from 'redux-saga/effects';
+import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 import {
   fetchConversations,
-  fetchChannelsAndConversations,
-  startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
   addChannel,
@@ -17,7 +15,6 @@ import {
   fetchUserPresence,
 } from './saga';
 
-import { SagaActionTypes } from '.';
 import { RootState, rootReducer } from '../reducer';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { multicastChannel } from 'redux-saga';

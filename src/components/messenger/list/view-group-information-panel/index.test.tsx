@@ -58,7 +58,14 @@ describe(ViewGroupInformationPanel, () => {
 
   it('publishes onLeave event', () => {
     const onLeave = jest.fn();
-    const wrapper = subject({ onLeave, isCurrentUserRoomAdmin: false });
+    const wrapper = subject({
+      onLeave,
+      isCurrentUserRoomAdmin: false,
+      otherMembers: [
+        { userId: 'otherUser1', matrixId: 'matrix-id-1' },
+        { userId: 'otherUser2', matrixId: 'matrix-id-2' },
+      ] as User[],
+    });
 
     wrapper.find(c('leave-group-button')).simulate('press');
 
@@ -86,8 +93,14 @@ describe(ViewGroupInformationPanel, () => {
     expect(wrapper).toHaveElement(Button);
   });
 
-  it('renders leave group button when current user is not admin', () => {
-    const wrapper = subject({ isCurrentUserRoomAdmin: false });
+  it('renders leave group button when current user is not admin and more than 1 other member', () => {
+    const wrapper = subject({
+      isCurrentUserRoomAdmin: false,
+      otherMembers: [
+        { userId: 'otherUser1', matrixId: 'matrix-id-1' },
+        { userId: 'otherUser2', matrixId: 'matrix-id-2' },
+      ] as User[],
+    });
     expect(wrapper).toHaveElement(c('leave-group-button'));
   });
 

@@ -134,6 +134,9 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   };
 
   render() {
+    const { isCurrentUserRoomAdmin, otherMembers } = this.props;
+    const showLeaveGroupButton = !isCurrentUserRoomAdmin && otherMembers.length > 1;
+
     return (
       <div {...cn()}>
         {this.renderBanner()}
@@ -141,7 +144,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         <div {...cn('body')}>
           {this.renderDetails()}
           {this.renderMembers()}
-          {!this.props.isCurrentUserRoomAdmin && this.renderLeaveGroupButton()}
+          {showLeaveGroupButton && this.renderLeaveGroupButton()}
         </div>
       </div>
     );

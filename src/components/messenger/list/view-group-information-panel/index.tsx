@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Button, IconButton, Image } from '@zero-tech/zui/components';
-import { IconArrowNarrowLeft, IconUsers1 } from '@zero-tech/zui/icons';
+import { IconArrowNarrowLeft, IconPlus, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { User } from '../../../../store/channels';
 import { bemClassName } from '../../../../lib/bem';
@@ -20,6 +20,7 @@ export interface Properties {
   isCurrentUserRoomAdmin: boolean;
   conversationAdminIds: string[];
 
+  onAdd: () => void;
   onEdit: () => void;
   onBack: () => void;
 }
@@ -39,6 +40,10 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
 
   editGroup = () => {
     this.props.onEdit();
+  };
+
+  addMember = () => {
+    this.props.onAdd();
   };
 
   renderDetails = () => {
@@ -70,8 +75,14 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     return (
       <div {...cn('members')}>
         <div {...cn('member-header')}>
-          <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
+          <div {...cn('member-total')}>
+            <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
+          </div>
+          {this.props.isCurrentUserRoomAdmin && (
+            <IconButton {...cn('add-icon')} Icon={IconPlus} onClick={this.addMember} size={32} />
+          )}
         </div>
+
         <div {...cn('member-list')}>
           <ScrollbarContainer>
             <CitizenListItem

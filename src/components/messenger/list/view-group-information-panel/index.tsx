@@ -98,7 +98,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   renderBackIcon = () => {
     return (
       <div {...cn('back-icon-container')}>
-        <IconButton {...cn('back-icon')} size={32} onClick={this.navigateBack} Icon={IconArrowNarrowLeft} isFilled />
+        <IconButton {...cn('back-icon')} Icon={IconArrowNarrowLeft} onClick={this.navigateBack} isFilled size={32} />
       </div>
     );
   };

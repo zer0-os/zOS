@@ -16,20 +16,15 @@
     z-index: 1;
   }
 
-  &__back-icon {
-    height: 32px;
-    width: 32px;
-    cursor: pointer;
-    border-radius: 50%;
-    // TODO: uncomment when we have banner image path
-    // background-color: theme.$color-greyscale-4;
+  //   TODO: uncomment when we have banner image path
 
-    &:hover {
-      // TODO: uncomment and replace when we have banner image path
-      // background-color: theme.$color-greyscale-7;
-      background-color: theme.$color-greyscale-transparency-3;
-    }
-  }
+  // &__back-icon {
+  //   background-color: theme.$color-greyscale-4;
+
+  //   &:hover {
+  //   background-color: theme.$color-greyscale-7;
+  //   }
+  // }
 
   &__body {
     margin: 0px 16px;

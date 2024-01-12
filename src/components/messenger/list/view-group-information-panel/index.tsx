@@ -1,12 +1,13 @@
 import * as React from 'react';
 
 import { Button, IconButton, Image } from '@zero-tech/zui/components';
-import { IconArrowNarrowLeft, IconPlus, IconUsers1 } from '@zero-tech/zui/icons';
+import { IconArrowNarrowLeft, IconPlus, IconUserRight1, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { User } from '../../../../store/channels';
 import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
+import { LeaveGroupDialogStatus } from '../../../../store/group-management';
 
 import './styles.scss';
 
@@ -21,6 +22,7 @@ export interface Properties {
   conversationAdminIds: string[];
 
   onAdd: () => void;
+  onLeave: (status: LeaveGroupDialogStatus) => void;
   onEdit: () => void;
   onBack: () => void;
 }
@@ -44,6 +46,10 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
 
   addMember = () => {
     this.props.onAdd();
+  };
+
+  openLeaveGroup = () => {
+    this.props.onLeave(LeaveGroupDialogStatus.OPEN);
   };
 
   renderDetails = () => {
@@ -114,6 +120,19 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     );
   };
 
+  renderLeaveGroupButton = () => {
+    return (
+      <Button
+        {...cn('leave-group-button')}
+        variant={'text'}
+        onPress={this.openLeaveGroup}
+        startEnhancer={<IconUserRight1 />}
+      >
+        Leave Group
+      </Button>
+    );
+  };
+
   render() {
     return (
       <div {...cn()}>
@@ -122,6 +141,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         <div {...cn('body')}>
           {this.renderDetails()}
           {this.renderMembers()}
+          {!this.props.isCurrentUserRoomAdmin && this.renderLeaveGroupButton()}
         </div>
       </div>
     );

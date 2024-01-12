@@ -35,7 +35,6 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 24px;
   }
 
   &__details {
@@ -43,6 +42,7 @@
     flex-direction: column;
     gap: 16px;
     z-index: 1;
+    margin-bottom: 24px;
   }
 
   &__group-icon-conatiner {
@@ -78,6 +78,13 @@
   &__edit-group-button {
     width: fit-content;
     align-self: center;
+  }
+
+  &__leave-group-button {
+    display: flex;
+    width: fit-content;
+    align-self: center;
+    padding: 0 8px;
   }
 
   &__members {

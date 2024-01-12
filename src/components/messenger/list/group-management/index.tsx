@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Stage } from '../../../../store/group-management';
+import { LeaveGroupDialogStatus, Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { Option } from '../../lib/types';
 import { EditConversationPanel } from '../edit-conversation-panel';
@@ -28,6 +28,7 @@ export interface Properties {
   onRemoveMember: (userId: string) => void;
   startEditConversation: () => void;
   startAddGroupMember: () => void;
+  setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
@@ -65,6 +66,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
             conversationAdminIds={this.props.conversationAdminIds}
             onAdd={this.props.startAddGroupMember}
+            onLeave={this.props.setLeaveGroupStatus}
             onEdit={this.props.startEditConversation}
             onBack={this.props.onBack}
           />

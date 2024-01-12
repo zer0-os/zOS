@@ -30,6 +30,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     this.props.onStartAddMember();
   };
 
+  editGroup = () => {
+    this.props.onEdit();
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -61,7 +65,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       menuItems.push({
         id: 'edit_group',
         label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
-        onSelect: this.props.onEdit,
+        onSelect: this.editGroup,
       });
     }
 

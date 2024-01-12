@@ -63,7 +63,6 @@ export class GroupManagement extends React.PureComponent<Properties> {
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
             isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
-            onEdit={this.props.startEditConversation}
             conversationAdminIds={this.props.conversationAdminIds}
             onAdd={this.props.startAddGroupMember}
             onEdit={this.props.startEditConversation}

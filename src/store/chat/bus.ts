@@ -7,8 +7,6 @@ export enum Events {
   MessageUpdated = 'chat/message/updated',
   MessageDeleted = 'chat/message/deleted',
   UnreadCountChanged = 'chat/message/unreadCountChanged',
-  ReconnectStart = 'chat/reconnectStart',
-  ReconnectStop = 'chat/reconnectStop',
   InvalidToken = 'chat/invalidToken',
   ChannelInvitationReceived = 'chat/channel/invitationReceived',
   UserLeftChannel = 'chat/channel/userLeft',
@@ -54,8 +52,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       emit({ type: Events.MessageDeleted, payload: { channelId, messageId } });
     const receiveUnreadCount = (channelId, unreadCount) =>
       emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
-    const reconnectStart = () => emit({ type: Events.ReconnectStart, payload: {} });
-    const reconnectStop = () => emit({ type: Events.ReconnectStop, payload: {} });
     const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
     const onUserReceivedInvitation = (channelId) =>
       emit({ type: Events.ChannelInvitationReceived, payload: { channelId } });
@@ -72,8 +68,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
 
     chatClient.initChat({
-      reconnectStart,
-      reconnectStop,
       receiveNewMessage,
       onMessageUpdated,
       receiveDeleteMessage,

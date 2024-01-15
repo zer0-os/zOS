@@ -3,7 +3,7 @@ import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, set
 import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
-import { Chat, chat } from '../../lib/chat';
+import { fetchConversationsWithUsers } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
 import { denormalizeConversations } from '../channels-list';
 import { openConversation } from '../channels/saga';
@@ -34,8 +34,7 @@ export function* performGroupMembersSelected(userSelections: { value: string; la
   ];
   const users = yield select((state) => denormalizeUsers(userIds, state));
 
-  const chatClient: Chat = yield call(chat.get);
-  const existingConversations = yield call([chatClient, chatClient.fetchConversationsWithUsers], users);
+  const existingConversations = yield call(fetchConversationsWithUsers, users);
 
   if (existingConversations.length === 0) {
     yield put(setGroupUsers(userSelections));

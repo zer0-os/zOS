@@ -43,6 +43,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenRemoveMember, openRemoveMember);
   yield takeLatest(SagaActionTypes.CancelRemoveMember, cancelRemoveMember);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
+  yield takeLatest(SagaActionTypes.OpenViewGroupInformation, openViewGroupInformation);
 }
 
 export function* resetConversationManagement() {
@@ -170,4 +171,8 @@ export function* editConversationNameAndIcon(action) {
   }
 
   return;
+}
+
+export function* openViewGroupInformation() {
+  yield put(setStage(Stage.ViewGroupInformation));
 }

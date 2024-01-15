@@ -29,10 +29,6 @@ jobs:
     environment: development
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
-      REACT_APP_ROOT_DOMAIN_ID: ${{secrets.ROOT_DOMAIN_ID}}
-      REACT_APP_DEFAULT_ZNS_DOMAIN: ${{secrets.DEFAULT_ZNS_DOMAIN}}
-      REACT_APP_DEFAULT_APP: ${{secrets.DEFAULT_APP}}
-      REACT_APP_IPFS_BASE_URL: ${{secrets.IPFS_BASE_URL}}
       REACT_APP_FORTMATIC_API_KEY: ${{secrets.FORTMATIC_API_KEY}}
       REACT_APP_PORTIS_DAPP_ID: ${{secrets.PORTIS_DAPP_ID}}
       REACT_APP_INFURA_ID: ${{secrets.INFURA_ID}}

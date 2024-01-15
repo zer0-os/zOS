@@ -16,17 +16,6 @@ import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList } from '../channels-list/saga';
 
-function* listenForReconnectStart(_action) {
-  yield put(setReconnecting(true));
-}
-
-function* listenForReconnectStop(_action) {
-  yield put(setReconnecting(false));
-  // after reconnecting fetch (latest) channels and conversations *immediately*.
-  // (instead of waiting for the "regular refresh interval to kick in")
-  yield put(startChannelsAndConversationsAutoRefresh());
-}
-
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
   const id = yield connectionPromise;

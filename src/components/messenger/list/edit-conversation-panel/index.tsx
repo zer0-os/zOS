@@ -7,10 +7,12 @@ import { ImageUpload } from '../../../image-upload';
 import { IconUpload2 } from '@zero-tech/zui/icons';
 import { User } from '../../../../store/channels';
 import { CitizenListItem } from '../../../citizen-list-item';
-
-import './styles.scss';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { EditConversationErrors, EditConversationState } from '../../../../store/group-management/types';
+import { sortMembers } from '../utils/utils';
+
+import './styles.scss';
+
 const cn = bemClassName('edit-conversation-panel');
 
 export interface Properties {
@@ -119,6 +121,8 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   renderMembers = () => {
     const { otherMembers } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers);
+
     return (
       <div {...cn('members')}>
         <div {...cn('member-header')}>
@@ -126,8 +130,8 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser} tag='admin'></CitizenListItem>
-            {otherMembers.map((u) => (
+            <CitizenListItem user={this.props.currentUser} tag='Admin'></CitizenListItem>
+            {sortedOtherMembers.map((u) => (
               <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
             ))}
           </ScrollbarContainer>

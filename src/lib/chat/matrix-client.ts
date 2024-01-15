@@ -40,6 +40,8 @@ import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
 import { encryptFile } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
+import { featureFlags } from '../feature-flags';
+import { logger } from 'matrix-js-sdk/lib/logger';
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -60,6 +62,7 @@ export class MatrixClient implements IChatClient {
   }
 
   init(events: RealtimeChatEvents) {
+    logger.setLevel(featureFlags.verboseLogging ? logger.levels.DEBUG : logger.levels.WARN, false);
     this.events = events;
   }
 
@@ -696,9 +699,9 @@ export class MatrixClient implements IChatClient {
 
   private async initializeEventHandlers() {
     this.matrix.on('event' as any, async ({ event }) => {
-      console.log('event: ', event);
+      this.debug('event: ', event);
       if (event.type === EventType.RoomEncryption) {
-        console.log('encryped message: ', event);
+        this.debug('encryped message: ', event);
       }
       if (event.type === EventType.RoomCreate) {
         await this.roomCreated(event);
@@ -751,8 +754,14 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  private debug(...args) {
+    if (featureFlags.verboseLogging) {
+      console.log(...args);
+    }
+  }
+
   private debugEvent(name) {
-    return (data) => console.log('Received Event', name, data);
+    return (data) => this.debug('Received Event', name, data);
   }
 
   private async getCredentials(accessToken: string) {

@@ -29,7 +29,7 @@ export class CitizenListItem extends React.Component<Properties> {
     return (
       <div {...cn()}>
         <Avatar
-          size={'medium'}
+          size={'small'}
           type={'circle'}
           imageURL={this.props.user.profileImage}
           tabIndex={-1}

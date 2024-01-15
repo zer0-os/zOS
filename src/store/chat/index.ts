@@ -6,39 +6,32 @@ const initialState: ChatState = {
     isLoading: false,
     value: null,
   },
-  isReconnecting: false,
   activeConversationId: null,
-  activeChannelId: null,
-  isErrorDialogOpen: false,
+  isConversationErrorDialogOpen: false,
 };
 
 export enum SagaActionTypes {
-  CloseErrorDialog = 'chat/saga/closeErrorDialog',
-  ValidateActiveConversation = 'chat/saga/validateActiveConversation',
+  CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
 }
 
-const closeErrorDialog = createAction(SagaActionTypes.CloseErrorDialog);
-const validateActiveConversation = createAction(SagaActionTypes.ValidateActiveConversation);
+const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
 
 const slice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    setReconnecting: (state, action: PayloadAction<ChatState['isReconnecting']>) => {
-      state.isReconnecting = action.payload;
-    },
     setChatAccessToken: (state, action: PayloadAction<ChatState['chatAccessToken']>) => {
       state.chatAccessToken = action.payload;
     },
     setActiveConversationId: (state, action: PayloadAction<ChatState['activeConversationId']>) => {
       state.activeConversationId = action.payload;
     },
-    setIsErrorDialogOpen: (state, action: PayloadAction<ChatState['isErrorDialogOpen']>) => {
-      state.isErrorDialogOpen = action.payload;
+    setIsConversationErrorDialogOpen: (state, action: PayloadAction<ChatState['isConversationErrorDialogOpen']>) => {
+      state.isConversationErrorDialogOpen = action.payload;
     },
   },
 });
 
-export const { setChatAccessToken, setReconnecting, setActiveConversationId, setIsErrorDialogOpen } = slice.actions;
+export const { setChatAccessToken, setActiveConversationId, setIsConversationErrorDialogOpen } = slice.actions;
 export const { reducer } = slice;
-export { closeErrorDialog, validateActiveConversation };
+export { closeConversationErrorDialog };

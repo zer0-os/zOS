@@ -1,9 +1,8 @@
-import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest, all } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setReconnecting, setActiveConversationId, setIsErrorDialogOpen, SagaActionTypes } from '.';
-import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
-import { Events, createChatConnection, getChatBus } from './bus';
+import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
+import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -15,17 +14,6 @@ import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList } from '../channels-list/saga';
-
-function* listenForReconnectStart(_action) {
-  yield put(setReconnecting(true));
-}
-
-function* listenForReconnectStop(_action) {
-  yield put(setReconnecting(false));
-  // after reconnecting fetch (latest) channels and conversations *immediately*.
-  // (instead of waiting for the "regular refresh interval to kick in")
-  yield put(startChannelsAndConversationsAutoRefresh());
-}
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -85,36 +73,45 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
-export function* performValidateActiveConversation() {
-  yield put(setIsErrorDialogOpen(false));
+function* validateActiveConversation() {
+  const [conversationList, activeConversationId] = yield all([
+    select(rawConversationsList()),
+    select(activeConversationIdSelector),
+  ]);
 
-  const conversationList = yield select(rawConversationsList());
-  const activeConversationId = yield select(activeConversationIdSelector);
-  const isMemberOfActiveConversation = conversationList.some((c) => c === activeConversationId);
-  if (!activeConversationId) {
+  if (!activeConversationId || conversationList.length === 0) {
     return;
   }
 
-  if (activeConversationId && !isMemberOfActiveConversation) {
-    yield put(setIsErrorDialogOpen(true));
+  const isMemberOfActiveConversation = conversationList.includes(activeConversationId);
+  yield put(setIsConversationErrorDialogOpen(!isMemberOfActiveConversation));
+}
+
+function* watchForConversationChange() {
+  while (true) {
+    const { conversationsLoaded, activeIdChanged } = yield race({
+      conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
+      activeIdChanged: take(setActiveConversationId.type),
+    });
+
+    if (conversationsLoaded || activeIdChanged) {
+      yield call(validateActiveConversation);
+    }
   }
 }
 
 export function* closeErrorDialog() {
+  yield put(setIsConversationErrorDialogOpen(false));
   yield call(openFirstConversation);
 }
 
 export function* saga() {
   yield spawn(connectOnLogin);
+  yield spawn(watchForConversationChange);
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
 
-  const chatBus = yield call(getChatBus);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
-
-  yield takeLatest(SagaActionTypes.CloseErrorDialog, closeErrorDialog);
-  yield takeLatest(SagaActionTypes.ValidateActiveConversation, performValidateActiveConversation);
+  yield takeLatest(SagaActionTypes.CloseConversationErrorDialog, closeErrorDialog);
 }

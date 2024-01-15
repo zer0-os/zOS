@@ -6,13 +6,6 @@ import { call, spawn } from 'redux-saga/effects';
 
 import { expectSaga } from '../../test/saga';
 
-jest.mock('../../config', () => ({
-  config: {
-    defaultZnsRoute: 'wilder',
-    defaultApp: 'channels',
-  },
-}));
-
 class StubHistory {
   pathname: string;
   location: object;

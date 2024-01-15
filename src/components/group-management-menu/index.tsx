@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IconDotsHorizontal, IconEdit5, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconEdit5, IconInfoCircle, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -9,9 +9,11 @@ export interface Properties {
   canAddMembers: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
+  canViewGroupInformation: boolean;
   onStartAddMember: () => void;
   onLeave: () => void;
   onEdit: () => void;
+  onViewGroupInformation: () => void;
 }
 
 interface State {}
@@ -26,6 +28,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
 
   startAddMember = (_e) => {
     this.props.onStartAddMember();
+  };
+
+  editGroup = () => {
+    this.props.onEdit();
   };
 
   renderMenuItem(icon, label) {
@@ -47,6 +53,22 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       });
     }
 
+    if (this.props.canViewGroupInformation) {
+      menuItems.push({
+        id: 'group_information',
+        label: this.renderMenuItem(<IconInfoCircle size={20} />, 'Group Info'),
+        onSelect: this.props.onViewGroupInformation,
+      });
+    }
+
+    if (this.props.canEdit) {
+      menuItems.push({
+        id: 'edit_group',
+        label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
+        onSelect: this.editGroup,
+      });
+    }
+
     if (this.props.canLeaveRoom) {
       menuItems.push({
         id: 'leave_group',
@@ -55,14 +77,6 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         onSelect: () => {
           this.props.onLeave();
         },
-      });
-    }
-
-    if (this.props.canEdit) {
-      menuItems.push({
-        id: 'edit_group',
-        label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
-        onSelect: this.props.onEdit,
       });
     }
 

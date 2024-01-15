@@ -66,6 +66,14 @@ export class FeatureFlags {
     this._setBoolean('allowEmailRegistration', value);
   }
 
+  get verboseLogging() {
+    return this._getBoolean('verboseLogging', true);
+  }
+
+  set verboseLogging(value: boolean) {
+    this._setBoolean('verboseLogging', value);
+  }
+
   get internalUsage() {
     return this._getBoolean('internalUsage', false);
   }

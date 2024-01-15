@@ -18,6 +18,7 @@ import {
   LeaveGroupDialogStatus,
   setLeaveGroupStatus,
   startEditConversation,
+  viewGroupInformation,
 } from '../../../store/group-management';
 import { Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
@@ -39,6 +40,7 @@ export interface Properties extends PublicProperties {
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   sendMessage: (payload: PayloadSendMessage) => void;
   onRemoveReply: () => void;
+  viewGroupInformation: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -74,6 +76,7 @@ export class Container extends React.Component<Properties> {
       setLeaveGroupStatus,
       onRemoveReply,
       sendMessage,
+      viewGroupInformation,
     };
   }
 
@@ -150,6 +153,10 @@ export class Container extends React.Component<Properties> {
   };
   closeLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
+  };
+
+  onViewGroupInformation = () => {
+    this.props.viewGroupInformation();
   };
 
   renderLeaveGroupDialog = (): JSX.Element => {
@@ -236,6 +243,8 @@ export class Container extends React.Component<Properties> {
                   }
                   canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                   onEdit={this.props.startEditConversation}
+                  onViewGroupInformation={this.onViewGroupInformation}
+                  canViewGroupInformation={!this.isOneOnOne()}
                 />
               </div>
             </div>

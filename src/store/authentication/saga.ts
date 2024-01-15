@@ -11,9 +11,7 @@ import {
 import { setChatAccessToken } from '../chat';
 import { User } from './types';
 import { clearUserLayout, initializeUserLayout } from '../layout/saga';
-import { fetch as fetchNotifications } from '../notifications';
 import { clearChannelsAndConversations } from '../channels-list/saga';
-import { clearNotifications } from '../notifications/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
 import { updateConnector } from '../web3/saga';
@@ -102,12 +100,6 @@ export function* authenticateByEmail(email, password) {
 export function* initializeUserState(user: User) {
   // Note: This should probably all live in the appropriate areas and listen to the logout event
   yield initializeUserLayout(user);
-
-  yield put(
-    fetchNotifications({
-      userId: user.id,
-    })
-  );
 }
 
 export function* clearUserState() {
@@ -116,7 +108,6 @@ export function* clearUserState() {
     call(clearChannelsAndConversations),
     call(clearMessages),
     call(clearUsers),
-    call(clearNotifications),
     call(clearUserLayout),
   ]);
 }

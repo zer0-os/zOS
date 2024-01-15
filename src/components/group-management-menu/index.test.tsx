@@ -9,9 +9,11 @@ describe(GroupManagementMenu, () => {
       canAddMembers: true,
       canLeaveRoom: true,
       canEdit: true,
+      canViewGroupInformation: true,
       onStartAddMember: () => {},
       onLeave: () => {},
       onEdit: () => {},
+      onViewGroupInformation: () => {},
       ...props,
     };
 
@@ -23,6 +25,7 @@ describe(GroupManagementMenu, () => {
       canAddMembers: false,
       canLeaveRoom: false,
       canEdit: false,
+      canViewGroupInformation: false,
     });
 
     expect(wrapper).not.toHaveElement(DropdownMenu);
@@ -72,6 +75,22 @@ describe(GroupManagementMenu, () => {
     it('does not render item when canEditRoom is false', function () {
       const wrapper = subject({ canEdit: false });
       expect(menuItem(wrapper, 'edit_group')).toBeFalsy();
+    });
+  });
+
+  describe('View Group Information', () => {
+    it('calls onViewGroupInformation when the group info menu item is selected', () => {
+      const onViewGroupInformation = jest.fn();
+      const wrapper = subject({ onViewGroupInformation });
+
+      selectItem(wrapper, 'group_information');
+
+      expect(onViewGroupInformation).toHaveBeenCalled();
+    });
+
+    it('does not render item when canViewGroupInformation is false', function () {
+      const wrapper = subject({ canViewGroupInformation: false });
+      expect(menuItem(wrapper, 'group_information')).toBeFalsy();
     });
   });
 });

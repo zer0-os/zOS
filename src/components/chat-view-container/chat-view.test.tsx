@@ -7,7 +7,6 @@ import { MediaType, Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../message-input/container';
-import { Button as ConnectButton } from '../authentication/button';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
 import { User } from '../../store/authentication/types';
@@ -154,14 +153,6 @@ describe('ChatView', () => {
     wrapper.find('.channel-view__join-wrapper').simulate('click');
 
     expect(joinChannel).toHaveBeenCalled();
-  });
-
-  it('render ConnectButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST });
-
-    const ifAuthenticated = wrapper.find(IfAuthenticated).find({ hideChildren: true });
-
-    expect(ifAuthenticated.find(ConnectButton).exists()).toBe(true);
   });
 
   it('render Waypoint in case we have messages', () => {

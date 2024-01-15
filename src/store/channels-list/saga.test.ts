@@ -1,13 +1,11 @@
 import { testSaga } from 'redux-saga-test-plan';
-import { call, race, take } from 'redux-saga/effects';
+import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 import {
   fetchConversations,
-  fetchChannelsAndConversations,
-  startChannelsAndConversationsRefresh,
   clearChannelsAndConversations,
   userLeftChannel,
   addChannel,
@@ -17,7 +15,6 @@ import {
   fetchUserPresence,
 } from './saga';
 
-import { SagaActionTypes } from '.';
 import { RootState, rootReducer } from '../reducer';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { multicastChannel } from 'redux-saga';
@@ -207,27 +204,6 @@ describe('channels list saga', () => {
         .call(openFirstConversation)
         .run();
     });
-  });
-
-  it('verify startChannelsAndConversationsRefresh', () => {
-    testSaga(startChannelsAndConversationsRefresh)
-      .next({ abort: undefined, success: true })
-      .inspect((raceValue) => {
-        expect(raceValue).toStrictEqual(
-          race({
-            abort: take(SagaActionTypes.StopChannelsAndConversationsAutoRefresh),
-            success: call(fetchChannelsAndConversations),
-          })
-        );
-      })
-
-      .next({ abort: true, success: undefined })
-      .inspect((returnValue) => {
-        expect(returnValue).toBeFalse();
-      })
-
-      .next()
-      .isDone();
   });
 
   it('removes the channels list and channels', async () => {

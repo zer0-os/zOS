@@ -1,0 +1,135 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+@import '../../../../glass';
+
+.view-group-information-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__back-icon-container {
+    display: flex;
+    padding: 16px 0 0 16px;
+    z-index: 1;
+  }
+
+  //   TODO: uncomment when we have banner image path
+
+  // &__back-icon {
+  //   background-color: theme.$color-greyscale-4;
+
+  //   &:hover {
+  //   background-color: theme.$color-greyscale-7;
+  //   }
+  // }
+
+  &__add-icon {
+    margin-right: 8px;
+  }
+
+  &__body {
+    margin: 0px 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 1;
+  }
+
+  &__group-icon-conatiner {
+    align-self: center;
+  }
+
+  &__group-icon {
+    @include flat-thick;
+
+    width: 120px;
+    height: 120px;
+    border-radius: 9999px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: theme.$color-secondary-11;
+  }
+
+  &__group-name {
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    color: theme.$color-greyscale-12;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 21px;
+  }
+
+  &__edit-group-button {
+    width: fit-content;
+    align-self: center;
+  }
+
+  &__leave-group-button {
+    display: flex;
+    width: fit-content;
+    align-self: center;
+    padding: 0 8px;
+  }
+
+  &__members {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  &__member-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__member-total {
+    @include glass-text-secondary-color;
+
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  &__member-list {
+    padding-top: 8px;
+    flex-grow: 1;
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
+  }
+
+  &__banner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 16px 16px 0 0;
+  }
+
+  &__banner {
+    display: flex;
+    height: 136px;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-shrink: 0;
+    border-radius: 16px 16px 0px 0px;
+
+    // TODO: replace with cloudinary path
+    // background: url('./assets/banner.png'), lightgray 50% / cover no-repeat;
+  }
+}

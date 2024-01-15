@@ -114,15 +114,17 @@ describe(EditConversationPanel, () => {
   describe('Members', () => {
     it('renders the members of the conversation', function () {
       const wrapper = subject({
-        currentUser: { userId: 'Admin' } as any,
-        otherMembers: [{ userId: '1' }, { userId: '2' }, { userId: '3' }] as any,
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+          { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+        ] as User[],
       });
 
       expect(wrapper.find(CitizenListItem).map((c) => c.prop('user'))).toEqual([
-        { userId: 'Admin' },
-        { userId: '1' },
-        { userId: '2' },
-        { userId: '3' },
+        { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' },
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
       ]);
     });
 
@@ -130,21 +132,26 @@ describe(EditConversationPanel, () => {
       const onRemoveMember = jest.fn();
       const wrapper = subject({
         onRemoveMember,
-        otherMembers: [{ userId: 'user-1' }, { userId: 'user-2' }] as any,
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+          { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+        ] as User[],
       });
 
-      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'user-1');
-      item.simulate('remove', 'user-1');
+      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'otherMember1');
+      item.simulate('remove', 'otherMember1');
 
-      expect(onRemoveMember).toHaveBeenCalledWith('user-1');
+      expect(onRemoveMember).toHaveBeenCalledWith('otherMember1');
     });
 
     it('does not allow remove if there are only 2 people in the room', function () {
       const wrapper = subject({
-        otherMembers: [{ userId: 'user-1' }] as any,
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        ] as User[],
       });
 
-      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'user-1');
+      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'otherMember1');
 
       expect(item.prop('onRemove')).toBeFalsy();
     });

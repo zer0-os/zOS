@@ -5,6 +5,7 @@ import { Stage } from '../../../../store/group-management';
 import { AddMembersPanel } from '../add-members-panel';
 import { EditConversationPanel } from '../edit-conversation-panel';
 import { EditConversationState } from '../../../../store/group-management/types';
+import { ViewGroupInformationPanel } from '../view-group-information-panel';
 
 describe(GroupManagement, () => {
   const subject = (props: Partial<Properties>) => {
@@ -18,11 +19,17 @@ describe(GroupManagement, () => {
       icon: '',
       errors: {},
       editConversationState: EditConversationState.NONE,
+      conversationAdminIds: [],
+      isCurrentUserRoomAdmin: false,
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
       onRemoveMember: () => null,
       onEditConversation: () => null,
+      startEditConversation: () => null,
+      startAddGroupMember: () => null,
+      setLeaveGroupStatus: () => null,
+
       ...props,
     };
 
@@ -107,5 +114,11 @@ describe(GroupManagement, () => {
     const wrapper = subject({ stage: Stage.EditConversation });
 
     expect(wrapper).toHaveElement(EditConversationPanel);
+  });
+
+  it('renders the ViewGroupInformationPanel', async function () {
+    const wrapper = subject({ stage: Stage.ViewGroupInformation });
+
+    expect(wrapper).toHaveElement(ViewGroupInformationPanel);
   });
 });

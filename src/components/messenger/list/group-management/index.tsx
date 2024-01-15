@@ -50,6 +50,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             icon={this.props.icon}
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
+            conversationAdminIds={this.props.conversationAdminIds}
             errors={this.props.errors.editConversationErrors}
             onBack={this.props.onBack}
             onRemoveMember={this.props.onRemoveMember}

@@ -17,7 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
-import { closeErrorDialog } from '../../../store/chat';
+import { closeConversationErrorDialog } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
@@ -55,7 +55,7 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
-  isErrorDialogOpen: boolean;
+  isConversationErrorDialogOpen: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -65,7 +65,7 @@ export interface Properties extends PublicProperties {
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
-  closeErrorDialog: () => void;
+  closeConversationErrorDialog: () => void;
 }
 
 interface State {
@@ -78,7 +78,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId, isErrorDialogOpen },
+      chat: { activeConversationId, isConversationErrorDialogOpen },
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -99,7 +99,7 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
-      isErrorDialogOpen,
+      isConversationErrorDialogOpen,
     };
   }
 
@@ -113,7 +113,7 @@ export class Container extends React.Component<Properties, State> {
       membersSelected,
       logout,
       receiveSearchResults,
-      closeErrorDialog,
+      closeConversationErrorDialog,
     };
   }
 
@@ -154,11 +154,15 @@ export class Container extends React.Component<Properties, State> {
   };
 
   closeErrorDialog = () => {
-    this.props.closeErrorDialog();
+    this.props.closeConversationErrorDialog();
   };
 
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
+  }
+
+  get isErrorDialogOpen(): boolean {
+    return this.props.isConversationErrorDialogOpen;
   }
 
   renderInviteDialog = (): JSX.Element => {
@@ -171,7 +175,7 @@ export class Container extends React.Component<Properties, State> {
 
   renderErrorDialog = (): JSX.Element => {
     return (
-      <Modal open={this.props.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
+      <Modal open={this.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
         <ErrorDialog onClose={this.closeErrorDialog} />
       </Modal>
     );

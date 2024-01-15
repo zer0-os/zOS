@@ -37,10 +37,10 @@ describe('messenger-list', () => {
       userIsOnline: true,
       isInviteNotificationOpen: false,
       myUserId: '',
-      isErrorDialogOpen: false,
+      isConversationErrorDialogOpen: false,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
-      closeErrorDialog: () => null,
+      closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,
       startGroup: () => null,
@@ -214,24 +214,24 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(GroupManagementContainer);
   });
 
-  it('renders Error Dialog Container if user is not a member of the active conversation', function () {
+  it('renders Error Dialog Container if isConversationErrorDialogOpen is true', function () {
     const wrapper = subject({
-      isErrorDialogOpen: true,
+      isConversationErrorDialogOpen: true,
     });
 
     expect(wrapper).toHaveElement(ErrorDialog);
   });
 
-  it('calls closeErrorDialog when error dialog is closed', function () {
-    const mockCloseErrorDialog = jest.fn();
+  it('calls closeConversationErrorDialog when error dialog is closed', function () {
+    const closeConversationErrorDialog = jest.fn();
     const wrapper = subject({
-      isErrorDialogOpen: true,
-      closeErrorDialog: mockCloseErrorDialog,
+      isConversationErrorDialogOpen: true,
+      closeConversationErrorDialog,
     });
 
     wrapper.find(ErrorDialog).prop('onClose')();
 
-    expect(mockCloseErrorDialog).toHaveBeenCalledOnce();
+    expect(closeConversationErrorDialog).toHaveBeenCalledOnce();
   });
 
   describe('mapState', () => {
@@ -239,7 +239,7 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '', isErrorDialogOpen: false }
+      chat = { activeConversationId: '', isConversationErrorDialogOpen: false }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
@@ -372,15 +372,21 @@ describe('messenger-list', () => {
     });
 
     test('activeConversationId', () => {
-      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id', isErrorDialogOpen: false });
+      const state = subject([], {}, undefined, {
+        activeConversationId: 'active-channel-id',
+        isConversationErrorDialogOpen: false,
+      });
 
       expect(state.activeConversationId).toEqual('active-channel-id');
     });
 
-    test('isErrorDialogOpen', () => {
-      const state = subject([], {}, undefined, { activeConversationId: 'active-channel-id', isErrorDialogOpen: true });
+    test('isConversationErrorDialogOpen', () => {
+      const state = subject([], {}, undefined, {
+        activeConversationId: 'active-channel-id',
+        isConversationErrorDialogOpen: true,
+      });
 
-      expect(state.isErrorDialogOpen).toEqual(true);
+      expect(state.isConversationErrorDialogOpen).toEqual(true);
     });
 
     test('stage', () => {

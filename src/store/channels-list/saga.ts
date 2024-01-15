@@ -23,7 +23,6 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
-import { performValidateActiveConversation } from '../chat/saga';
 
 const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
@@ -92,9 +91,6 @@ export function* fetchConversations() {
 
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
-
-  // Validate the active conversation after conversations are loaded
-  yield call(performValidateActiveConversation);
 }
 
 export function userSelector(state, userIds) {
@@ -229,6 +225,7 @@ export function* fetchChannelsAndConversations() {
 }
 
 export function* channelsReceived(action) {
+  console.log('WOWOWSA');
   const { channels } = action.payload;
 
   const newChannels = channels.map(toLocalChannel);

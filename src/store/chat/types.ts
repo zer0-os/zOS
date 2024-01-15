@@ -4,5 +4,5 @@ export interface ChatState {
     isLoading: boolean;
   };
   activeConversationId: string;
-  isErrorDialogOpen: boolean;
+  isConversationErrorDialogOpen: boolean;
 }

@@ -19,7 +19,9 @@ export interface Properties {
   icon: string;
   currentUser: User;
   otherMembers: User[];
-  isCurrentUserRoomAdmin: boolean;
+  canAddMembers: boolean;
+  canEditGroup: boolean;
+  canLeaveGroup: boolean;
   conversationAdminIds: string[];
 
   onAdd: () => void;
@@ -64,7 +66,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
 
         {this.props.name && <div {...cn('group-name')}>{this.props.name}</div>}
 
-        {this.props.isCurrentUserRoomAdmin && (
+        {this.props.canEditGroup && (
           <Button {...cn('edit-group-button')} onPress={this.editGroup} variant='text'>
             Edit
           </Button>
@@ -83,7 +85,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
           <div {...cn('member-total')}>
             <span>{otherMembers.length + 1}</span> member{otherMembers.length + 1 === 1 ? '' : 's'}
           </div>
-          {this.props.isCurrentUserRoomAdmin && (
+          {this.props.canAddMembers && (
             <IconButton {...cn('add-icon')} Icon={IconPlus} onClick={this.addMember} size={32} />
           )}
         </div>
@@ -133,8 +135,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   };
 
   render() {
-    const { isCurrentUserRoomAdmin, otherMembers } = this.props;
-    const showLeaveGroupButton = !isCurrentUserRoomAdmin && otherMembers.length > 1;
+    const { canLeaveGroup } = this.props;
 
     return (
       <div {...cn()}>
@@ -143,7 +144,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         <div {...cn('body')}>
           {this.renderDetails()}
           {this.renderMembers()}
-          {showLeaveGroupButton && this.renderLeaveGroupButton()}
+          {canLeaveGroup && this.renderLeaveGroupButton()}
         </div>
       </div>
     );

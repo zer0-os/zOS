@@ -1,9 +1,8 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setReconnecting, setActiveConversationId, setIsErrorDialogOpen, SagaActionTypes } from '.';
-import { startChannelsAndConversationsAutoRefresh } from '../channels-list';
-import { Events, createChatConnection, getChatBus } from './bus';
+import { setActiveConversationId, setIsErrorDialogOpen, SagaActionTypes } from '.';
+import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -99,10 +98,6 @@ export function* saga() {
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
-
-  const chatBus = yield call(getChatBus);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStart, listenForReconnectStart);
-  yield takeEveryFromBus(chatBus, Events.ReconnectStop, listenForReconnectStop);
 
   yield takeLatest(SagaActionTypes.CloseErrorDialog, closeErrorDialog);
   yield takeLatest(SagaActionTypes.ValidateActiveConversation, performValidateActiveConversation);

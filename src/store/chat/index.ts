@@ -7,7 +7,6 @@ const initialState: ChatState = {
     value: null,
   },
   activeConversationId: null,
-  activeChannelId: null,
   isErrorDialogOpen: false,
 };
 
@@ -35,6 +34,6 @@ const slice = createSlice({
   },
 });
 
-export const { setChatAccessToken, setReconnecting, setActiveConversationId, setIsErrorDialogOpen } = slice.actions;
+export const { setChatAccessToken, setActiveConversationId, setIsErrorDialogOpen } = slice.actions;
 export const { reducer } = slice;
 export { closeErrorDialog, validateActiveConversation };

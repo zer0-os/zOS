@@ -225,7 +225,6 @@ export function* fetchChannelsAndConversations() {
 }
 
 export function* channelsReceived(action) {
-  console.log('WOWOWSA');
   const { channels } = action.payload;
 
   const newChannels = channels.map(toLocalChannel);

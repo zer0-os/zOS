@@ -135,8 +135,6 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   };
 
   render() {
-    const { canLeaveGroup } = this.props;
-
     return (
       <div {...cn()}>
         {this.renderBanner()}
@@ -144,7 +142,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         <div {...cn('body')}>
           {this.renderDetails()}
           {this.renderMembers()}
-          {canLeaveGroup && this.renderLeaveGroupButton()}
+          {this.props.canLeaveGroup && this.renderLeaveGroupButton()}
         </div>
       </div>
     );

@@ -1,7 +1,7 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest, all } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, SagaActionTypes } from '.';
+import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -12,7 +12,8 @@ import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
-import { rawConversationsList } from '../channels-list/saga';
+import { openFirstConversation } from '../channels/saga';
+import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
 
 function* initChat(userId, chatAccessToken) {
@@ -73,59 +74,60 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
+export function* validateActiveConversation() {
+  const isLoaded = yield call(waitForChannelListLoad);
+  if (isLoaded) {
+    yield call(performValidateActiveConversation);
+  }
+}
+
 function isAlias(id) {
   return id.startsWith('#');
 }
 
-function* isMemberOfActiveConversation(activeConversationId) {
-  const conversationList = yield select(rawConversationsList());
-  return conversationList.includes(activeConversationId);
-}
+export function* performValidateActiveConversation() {
+  const [conversationList, activeConversationId] = yield all([
+    select(rawConversationsList()),
+    select(activeConversationIdSelector),
+  ]);
 
-function* validateActiveConversation(activeConversationIdOrAlias) {
-  // conversation can be referenced by an id or an alias
-  const chatClient = yield call(chat.get);
-  let activeConversationId = activeConversationIdOrAlias;
-  if (isAlias(activeConversationIdOrAlias)) {
-    activeConversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationIdOrAlias);
+  if (!activeConversationId) {
+    yield put(setIsConversationErrorDialogOpen(false));
+    return;
   }
 
+  const chatClient = yield call(chat.get);
+  let conversationId = activeConversationId;
+  if (isAlias(activeConversationId)) {
+    // conversation can be referenced by an id or an alias
+    conversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationId);
+  }
+
+  const isMemberOfActiveConversation = conversationList.includes(conversationId);
+  yield put(setIsConversationErrorDialogOpen(!isMemberOfActiveConversation));
+
   // either the room does not exist, or the user isn't a part of it
-  if (!activeConversationId || !isMemberOfActiveConversation(activeConversationId)) {
+  if (!conversationId || !isMemberOfActiveConversation) {
     if (!featureFlags.allowJoinRoom) {
       return;
     }
 
-    activeConversationId = yield call([chatClient, chatClient.joinRoom], activeConversationIdOrAlias);
-    return;
+    conversationId = yield call(
+      [chatClient, chatClient.joinRoom],
+      conversationId ? conversationId : activeConversationId
+    );
   }
-
-  yield put(setActiveConversationId(activeConversationId));
+  yield put(setActiveConversationId(conversationId));
 }
 
-export function* validateActiveConversationAfterConversationsLoaded() {
-  const { conversationsLoaded } = yield race({
-    conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
-    abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
-  });
-
-  const activeConversationId = yield select(activeConversationIdSelector);
-  if (conversationsLoaded && activeConversationId) {
-    yield call(validateActiveConversation, activeConversationId);
-  }
-}
-
-function* validateAndSetActiveConversationId(action) {
-  const { id } = action.payload;
-  if (!id) return;
-
-  yield put(setActiveConversationId(id));
-  yield call(validateActiveConversationAfterConversationsLoaded);
+export function* closeErrorDialog() {
+  yield put(setIsConversationErrorDialogOpen(false));
+  yield call(openFirstConversation);
 }
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeEvery(SagaActionTypes.ValidateAndSetActiveConversationId, validateAndSetActiveConversationId);
+  yield takeLatest(setActiveConversationId.type, validateActiveConversation);
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

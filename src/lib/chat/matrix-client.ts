@@ -613,6 +613,12 @@ export class MatrixClient implements IChatClient {
     await this.matrix.redactEvent(roomId, messageId);
   }
 
+  async getRoomIdForAlias(alias: string): Promise<string | undefined> {
+    await this.waitForConnection();
+    const aliasInfo = await this.matrix.getRoomIdForAlias(alias); // { room_id, servers[] }
+    return aliasInfo?.room_id;
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getRoomsUserIsIn();

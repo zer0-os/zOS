@@ -80,6 +80,7 @@ export interface IChatClient {
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
+  getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
 }
 
 export class Chat {
@@ -190,6 +191,10 @@ export class Chat {
 
   async displayDeviceList(userIds: string[]) {
     return this.matrix.displayDeviceList(userIds);
+  }
+
+  async getRoomIdForAlias(alias: string) {
+    return this.matrix.getRoomIdForAlias(alias);
   }
 
   async displayRoomKeys(roomId: string) {

@@ -13,7 +13,7 @@ import { ConversationEvents, getConversationsBus } from '../channels-list/channe
 import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
-import { rawConversationsList } from '../channels-list/saga';
+import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -73,31 +73,26 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
-function* validateActiveConversation() {
+export function* validateActiveConversation() {
+  const isLoaded = yield call(waitForChannelListLoad);
+  if (isLoaded) {
+    yield call(performValidateActiveConversation);
+  }
+}
+
+export function* performValidateActiveConversation() {
   const [conversationList, activeConversationId] = yield all([
     select(rawConversationsList()),
     select(activeConversationIdSelector),
   ]);
 
-  if (!activeConversationId || conversationList.length === 0) {
+  if (!activeConversationId) {
+    yield put(setIsConversationErrorDialogOpen(false));
     return;
   }
 
   const isMemberOfActiveConversation = conversationList.includes(activeConversationId);
   yield put(setIsConversationErrorDialogOpen(!isMemberOfActiveConversation));
-}
-
-function* watchForConversationChange() {
-  while (true) {
-    const { conversationsLoaded, activeIdChanged } = yield race({
-      conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
-      activeIdChanged: take(setActiveConversationId.type),
-    });
-
-    if (conversationsLoaded || activeIdChanged) {
-      yield call(validateActiveConversation);
-    }
-  }
 }
 
 export function* closeErrorDialog() {
@@ -107,7 +102,7 @@ export function* closeErrorDialog() {
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield spawn(watchForConversationChange);
+  yield takeLatest(setActiveConversationId.type, validateActiveConversation);
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

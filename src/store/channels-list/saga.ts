@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
-import { receive, denormalizeConversations } from '.';
+import { fork, put, call, take, all, select, spawn, race } from 'redux-saga/effects';
+import { receive, denormalizeConversations, setStatus } from '.';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
@@ -11,7 +11,7 @@ import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
 import { clearChannels, openConversation, openFirstConversation } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
-import { Events, getAuthChannel } from '../authentication/channels';
+import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
@@ -23,8 +23,8 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
+import { channelListStatus } from './selectors';
 
-const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
 export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -61,6 +61,7 @@ export function* fetchUserPresence(users) {
 }
 
 export function* fetchConversations() {
+  yield put(setStatus(AsyncListStatus.Fetching));
   const chatClient = yield call(chat.get);
   const conversations = yield call([
     chatClient,
@@ -89,6 +90,7 @@ export function* fetchConversations() {
     ])
   );
 
+  yield put(setStatus(AsyncListStatus.Stopped));
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
 }
@@ -219,7 +221,7 @@ export function* clearChannelsAndConversations() {
 }
 
 export function* fetchChannelsAndConversations() {
-  if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
+  if (String(yield select(channelListStatus)) !== AsyncListStatus.Stopped) {
     yield call(fetchConversations);
   }
 }
@@ -248,7 +250,7 @@ export function* channelsReceived(action) {
 function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
-    yield take(userChannel, Events.UserLogin);
+    yield take(userChannel, AuthEvents.UserLogin);
     yield call(fetchChannelsAndConversations);
   }
 }
@@ -277,8 +279,13 @@ function* currentUserLeftChannel(channelId) {
   }
 }
 
+function* clearOnLogout() {
+  yield put(setStatus(AsyncListStatus.Idle));
+}
+
 export function* saga() {
   yield spawn(listenForUserLogin);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);
@@ -368,4 +375,18 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
       otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
     })
   );
+}
+
+export function* waitForChannelListLoad() {
+  const status = String(yield select(channelListStatus));
+  if (status !== AsyncListStatus.Stopped) {
+    const { abort } = yield race({
+      conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
+      abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
+    });
+    if (abort) {
+      return false;
+    }
+  }
+  return true;
 }

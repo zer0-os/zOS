@@ -22,6 +22,7 @@ export interface Properties {
   otherMembers: User[];
   errors: EditConversationErrors;
   state: EditConversationState;
+  conversationAdminIds: string[];
 
   onBack: () => void;
   onRemoveMember: (userId: string) => void;
@@ -120,8 +121,8 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   };
 
   renderMembers = () => {
-    const { otherMembers } = this.props;
-    const sortedOtherMembers = sortMembers(otherMembers);
+    const { conversationAdminIds, otherMembers } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
 
     return (
       <div {...cn('members')}>

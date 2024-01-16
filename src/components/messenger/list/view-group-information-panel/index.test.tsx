@@ -17,7 +17,9 @@ describe(ViewGroupInformationPanel, () => {
       currentUser: { userId: 'current-user' } as User,
       otherMembers: [],
       conversationAdminIds: [],
-      isCurrentUserRoomAdmin: false,
+      canAddMembers: false,
+      canEditGroup: false,
+      canLeaveGroup: false,
 
       onAdd: () => null,
       onLeave: () => null,
@@ -40,7 +42,7 @@ describe(ViewGroupInformationPanel, () => {
 
   it('publishes onEdit event', () => {
     const onEdit = jest.fn();
-    const wrapper = subject({ onEdit, isCurrentUserRoomAdmin: true });
+    const wrapper = subject({ onEdit, canEditGroup: true });
 
     wrapper.find(Button).simulate('press');
 
@@ -49,7 +51,7 @@ describe(ViewGroupInformationPanel, () => {
 
   it('publishes onAdd event', () => {
     const onAdd = jest.fn();
-    const wrapper = subject({ onAdd, isCurrentUserRoomAdmin: true });
+    const wrapper = subject({ onAdd, canAddMembers: true });
 
     wrapper.find(c('add-icon')).simulate('click');
 
@@ -60,7 +62,7 @@ describe(ViewGroupInformationPanel, () => {
     const onLeave = jest.fn();
     const wrapper = subject({
       onLeave,
-      isCurrentUserRoomAdmin: false,
+      canLeaveGroup: true,
       otherMembers: [
         { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
         { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
@@ -88,14 +90,19 @@ describe(ViewGroupInformationPanel, () => {
     expect(wrapper).toHaveElement(IconUsers1);
   });
 
-  it('renders edit button when current user is admin', () => {
-    const wrapper = subject({ isCurrentUserRoomAdmin: true });
+  it('renders edit button when user can edit group', () => {
+    const wrapper = subject({ canEditGroup: true });
     expect(wrapper).toHaveElement(Button);
   });
 
-  it('renders leave group button when current user is not admin and more than 1 other member', () => {
+  it('does not render edit button when user cannot edit group', () => {
+    const wrapper = subject({ canEditGroup: false });
+    expect(wrapper).not.toHaveElement(Button);
+  });
+
+  it('renders leave group button when current user can leave group and more than 1 other member', () => {
     const wrapper = subject({
-      isCurrentUserRoomAdmin: false,
+      canLeaveGroup: true,
       otherMembers: [
         { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
         { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
@@ -104,9 +111,19 @@ describe(ViewGroupInformationPanel, () => {
     expect(wrapper).toHaveElement(c('leave-group-button'));
   });
 
-  it('renders add icon button when current user is admin', () => {
-    const wrapper = subject({ isCurrentUserRoomAdmin: true });
+  it('does not render leave group button when current user cannot leave group', () => {
+    const wrapper = subject({ canLeaveGroup: false });
+    expect(wrapper).not.toHaveElement(c('leave-group-button'));
+  });
+
+  it('renders add icon button when current user can add members', () => {
+    const wrapper = subject({ canAddMembers: true });
     expect(wrapper).toHaveElement(c('add-icon'));
+  });
+
+  it('does not render add icon button when current user cannot add members', () => {
+    const wrapper = subject({ canAddMembers: false });
+    expect(wrapper).not.toHaveElement(c('add-icon'));
   });
 
   it('renders member header with correct count', () => {

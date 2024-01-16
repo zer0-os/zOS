@@ -4,6 +4,7 @@ import { Channel, User, normalize as normalizeChannel } from '../channels';
 import { normalize as normalizeUser } from '../users';
 import { User as AuthenticatedUser } from '../authentication/types';
 import { initialState as initialGroupManagementState } from '../group-management';
+import { ChatState } from '../chat/types';
 
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
@@ -15,9 +16,16 @@ export class StoreBuilder {
   currentUser: Partial<AuthenticatedUser> = stubAuthenticatedUser();
   groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
+  chatState: Partial<ChatState> = {};
+  activeConversationId: string = '';
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
+    return this;
+  }
+
+  withActiveConversationId(conversationId: string) {
+    this.activeConversationId = conversationId;
     return this;
   }
 
@@ -57,6 +65,11 @@ export class StoreBuilder {
     return this;
   }
 
+  withChat(chatState: Partial<ChatState>) {
+    this.chatState = chatState;
+    return this;
+  }
+
   withOtherState(data: any) {
     this.otherState = data;
     return this;
@@ -90,7 +103,8 @@ export class StoreBuilder {
         },
       } as any,
       chat: {
-        activeConversationId: this.activeConversation.id || null,
+        ...this.chatState,
+        activeConversationId: this.activeConversation.id || this.activeConversationId || null,
       },
       layout: {
         value: {

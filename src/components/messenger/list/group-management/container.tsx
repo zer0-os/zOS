@@ -38,7 +38,9 @@ export interface Properties extends PublicProperties {
   name: string;
   conversationIcon: string;
   editConversationState: EditConversationState;
-  isCurrentUserRoomAdmin: boolean;
+  canAddMembers: boolean;
+  canEditGroup: boolean;
+  canLeaveGroup: boolean;
   conversationAdminIds: string[];
 
   back: () => void;
@@ -59,8 +61,8 @@ export class Container extends React.Component<Properties> {
 
     const conversation = denormalizeChannel(activeConversationId, state);
     const currentUser = currentUserSelector(state);
-    const isCurrentUserRoomAdmin = conversation?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
     const conversationAdminIds = conversation?.adminMatrixIds;
+    const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
 
     return {
       activeConversationId,
@@ -79,7 +81,9 @@ export class Container extends React.Component<Properties> {
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
-      isCurrentUserRoomAdmin,
+      canAddMembers: isCurrentUserRoomAdmin,
+      canEditGroup: isCurrentUserRoomAdmin,
+      canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,
     };
   }
@@ -126,7 +130,9 @@ export class Container extends React.Component<Properties> {
           onEditConversation={this.onEditConversation}
           editConversationState={this.props.editConversationState}
           onRemoveMember={this.openRemoveMember}
-          isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
+          canAddMembers={this.props.canAddMembers}
+          canEditGroup={this.props.canEditGroup}
+          canLeaveGroup={this.props.canLeaveGroup}
           startEditConversation={this.props.startEditConversation}
           conversationAdminIds={this.props.conversationAdminIds}
           startAddGroupMember={this.props.startAddGroupMember}

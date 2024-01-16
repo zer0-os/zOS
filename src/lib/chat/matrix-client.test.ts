@@ -757,4 +757,32 @@ describe('matrix client', () => {
       expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });
+
+  describe('getRoomIdForAlias', () => {
+    it('returns room ID for alias', async () => {
+      const roomId = '!heExvpcoNDAMAPMsRd:zos-dev.zero.io';
+      const getRoomIdForAlias = jest.fn().mockResolvedValue({ room_id: roomId });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRoomIdForAlias })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getRoomIdForAlias('#test-room:zos-dev.zero.io');
+
+      expect(result).toEqual(roomId);
+    });
+
+    it('returns undefined if room alias is not found (M_NOT_FOUND)', async () => {
+      const getRoomIdForAlias = jest.fn().mockRejectedValue({ errcode: 'M_NOT_FOUND' });
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRoomIdForAlias })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getRoomIdForAlias('#test-room:zos-dev.zero.io');
+
+      expect(result).toBeUndefined();
+    });
+  });
 });

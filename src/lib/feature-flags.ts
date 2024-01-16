@@ -81,6 +81,14 @@ export class FeatureFlags {
   set internalUsage(value: boolean) {
     this._setBoolean('internalUsage', value);
   }
+
+  get allowJoinRoom() {
+    return this._getBoolean('allowJoinRoom', false);
+  }
+
+  set allowJoinRoom(value: boolean) {
+    this._setBoolean('allowJoinRoom', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

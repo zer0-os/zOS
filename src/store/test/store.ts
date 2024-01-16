@@ -17,9 +17,15 @@ export class StoreBuilder {
   groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
   chatState: Partial<ChatState> = {};
+  activeConversationId: string = '';
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
+    return this;
+  }
+
+  withActiveConversationId(conversationId: string) {
+    this.activeConversationId = conversationId;
     return this;
   }
 
@@ -98,7 +104,7 @@ export class StoreBuilder {
       } as any,
       chat: {
         ...this.chatState,
-        activeConversationId: this.activeConversation.id || null,
+        activeConversationId: this.activeConversation.id || this.activeConversationId || null,
       },
       layout: {
         value: {

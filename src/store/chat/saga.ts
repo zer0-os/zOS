@@ -13,7 +13,7 @@ import { ConversationEvents, getConversationsBus } from '../channels-list/channe
 import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
-import { rawConversationsList } from '../channels-list/saga';
+import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 import { channelListStatus } from '../channels-list/selectors';
 import { AsyncListStatus } from '../normalized';
 
@@ -75,24 +75,21 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
-function* validateActiveConversation() {
-  const status = String(yield select(channelListStatus));
-  if (status !== AsyncListStatus.Stopped) {
-    const { abort } = yield race({
-      conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
-      abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
-    });
-    if (abort) {
-      return;
-    }
+export function* validateActiveConversation() {
+  const isLoaded = yield call(waitForChannelListLoad);
+  if (isLoaded) {
+    yield call(performValidateActiveConversation);
   }
+}
 
+export function* performValidateActiveConversation() {
   const [conversationList, activeConversationId] = yield all([
     select(rawConversationsList()),
     select(activeConversationIdSelector),
   ]);
 
-  if (!activeConversationId || conversationList.length === 0) {
+  if (!activeConversationId) {
+    yield put(setIsConversationErrorDialogOpen(false));
     return;
   }
 

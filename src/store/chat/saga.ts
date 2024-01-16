@@ -13,6 +13,7 @@ import { ConversationEvents, getConversationsBus } from '../channels-list/channe
 import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
 import { rawConversationsList } from '../channels-list/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -82,17 +83,24 @@ function* isMemberOfActiveConversation(activeConversationId) {
 }
 
 function* validateActiveConversation(activeConversationIdOrAlias) {
+  // conversation can be referenced by an id or an alias
   const chatClient = yield call(chat.get);
   let activeConversationId = activeConversationIdOrAlias;
   if (isAlias(activeConversationIdOrAlias)) {
-    // conversation can be referenced by an id or an alias
     activeConversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationIdOrAlias);
   }
 
   // either the room does not exist, or the user isn't a part of it
   if (!activeConversationId || !isMemberOfActiveConversation(activeConversationId)) {
+    if (!featureFlags.allowJoinRoom) {
+      return;
+    }
+
+    activeConversationId = yield call([chatClient, chatClient.joinRoom], activeConversationIdOrAlias);
     return;
   }
+
+  yield put(setActiveConversationId(activeConversationId));
 }
 
 export function* validateActiveConversationAfterConversationsLoaded() {

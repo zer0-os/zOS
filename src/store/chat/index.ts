@@ -1,5 +1,5 @@
 import { ChatState } from './types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: ChatState = {
   chatAccessToken: {
@@ -7,7 +7,14 @@ const initialState: ChatState = {
     value: null,
   },
   activeConversationId: null,
+  isConversationErrorDialogOpen: false,
 };
+
+export enum SagaActionTypes {
+  CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
+}
+
+const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
 
 const slice = createSlice({
   name: 'chat',
@@ -19,8 +26,12 @@ const slice = createSlice({
     setActiveConversationId: (state, action: PayloadAction<ChatState['activeConversationId']>) => {
       state.activeConversationId = action.payload;
     },
+    setIsConversationErrorDialogOpen: (state, action: PayloadAction<ChatState['isConversationErrorDialogOpen']>) => {
+      state.isConversationErrorDialogOpen = action.payload;
+    },
   },
 });
 
-export const { setChatAccessToken, setActiveConversationId } = slice.actions;
+export const { setChatAccessToken, setActiveConversationId, setIsConversationErrorDialogOpen } = slice.actions;
 export const { reducer } = slice;
+export { closeConversationErrorDialog };

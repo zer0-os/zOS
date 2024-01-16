@@ -1,7 +1,7 @@
-import { put, select, call, take, takeEvery, spawn, race } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest, all } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId } from '.';
+import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -11,6 +11,9 @@ import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
+import { activeConversationIdSelector } from './selectors';
+import { openFirstConversation } from '../channels/saga';
+import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -70,10 +73,40 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
+export function* validateActiveConversation() {
+  const isLoaded = yield call(waitForChannelListLoad);
+  if (isLoaded) {
+    yield call(performValidateActiveConversation);
+  }
+}
+
+export function* performValidateActiveConversation() {
+  const [conversationList, activeConversationId] = yield all([
+    select(rawConversationsList()),
+    select(activeConversationIdSelector),
+  ]);
+
+  if (!activeConversationId) {
+    yield put(setIsConversationErrorDialogOpen(false));
+    return;
+  }
+
+  const isMemberOfActiveConversation = conversationList.includes(activeConversationId);
+  yield put(setIsConversationErrorDialogOpen(!isMemberOfActiveConversation));
+}
+
+export function* closeErrorDialog() {
+  yield put(setIsConversationErrorDialogOpen(false));
+  yield call(openFirstConversation);
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
+  yield takeLatest(setActiveConversationId.type, validateActiveConversation);
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
+
+  yield takeLatest(SagaActionTypes.CloseConversationErrorDialog, closeErrorDialog);
 }

@@ -14,8 +14,6 @@ import { getHistory } from '../../lib/browser';
 import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
-import { channelListStatus } from '../channels-list/selectors';
-import { AsyncListStatus } from '../normalized';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());

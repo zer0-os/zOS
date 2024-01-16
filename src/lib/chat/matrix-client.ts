@@ -619,6 +619,12 @@ export class MatrixClient implements IChatClient {
     return aliasInfo?.room_id;
   }
 
+  async joinRoom(aliasOrId: string): Promise<string> {
+    console.log('joinRoom', aliasOrId);
+    //await post('/matrix/room/join').send({ roomAliasORId: aliasOrId });
+    return undefined;
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getRoomsUserIsIn();

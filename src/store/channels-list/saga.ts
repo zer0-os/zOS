@@ -23,8 +23,8 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
+import { channelListStatus } from './selectors';
 
-const rawAsyncListStatus = () => (state) => getDeepProperty(state, 'channelsList.status', 'idle');
 const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
 export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -219,7 +219,7 @@ export function* clearChannelsAndConversations() {
 }
 
 export function* fetchChannelsAndConversations() {
-  if (String(yield select(rawAsyncListStatus())) !== AsyncListStatus.Stopped) {
+  if (String(yield select(channelListStatus)) !== AsyncListStatus.Stopped) {
     yield call(fetchConversations);
   }
 }

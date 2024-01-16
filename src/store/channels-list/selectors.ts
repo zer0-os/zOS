@@ -2,6 +2,10 @@ import getDeepProperty from 'lodash.get';
 import { denormalize } from '../channels';
 import { compareDatesDesc } from '../../lib/date';
 
+export function channelListStatus(state) {
+  return getDeepProperty(state, 'channelsList.status', 'idle');
+}
+
 export function mostRecentConversation(state) {
   const roomIds = getDeepProperty(state, 'channelsList.value', []);
   if (!roomIds.length) {

@@ -4,7 +4,7 @@ export enum JoinRoomApiErrorCode {
   GENERAL_ERROR = 'GENERAL_ERROR',
 }
 
-const ERROR_DIALOG_CONTENT = {
+export const ERROR_DIALOG_CONTENT = {
   [JoinRoomApiErrorCode.ROOM_NOT_FOUND]: {
     header: 'Conversation Not Found',
     body: 'This conversation does not exist.',

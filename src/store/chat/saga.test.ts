@@ -1,7 +1,7 @@
 import { expectSaga } from '../../test/saga';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { closeErrorDialog, performValidateActiveConversation, validateActiveConversation } from './saga';
+import { closeErrorDialog, joinRoom, performValidateActiveConversation, validateActiveConversation } from './saga';
 import { openFirstConversation } from '../channels/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
@@ -10,6 +10,7 @@ import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
 import { chat } from '../../lib/chat';
 import { setActiveConversationId } from '.';
+import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError } from './utils';
 
 const featureFlags = { allowJoinRoom: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -179,6 +180,32 @@ describe(closeErrorDialog, () => {
 
   it('opens the first conversation', async () => {
     await subject(closeErrorDialog).withReducer(rootReducer).call(openFirstConversation).run();
+  });
+});
+
+describe(joinRoom, () => {
+  describe('error scenarios', () => {
+    const roomIdOrAlias = 'some-room-id-or-alias';
+
+    it.each([
+      [JoinRoomApiErrorCode.ROOM_NOT_FOUND, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ROOM_NOT_FOUND]],
+      [JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED]],
+      [JoinRoomApiErrorCode.GENERAL_ERROR, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.GENERAL_ERROR]],
+    ])('handles error "%s"', async (errorCode, expectedErrorContent) => {
+      const initialState = new StoreBuilder().withChat({}).build();
+
+      const { storeState } = await expectSaga(joinRoom, roomIdOrAlias)
+        .withReducer(rootReducer, initialState)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.apiJoinRoom), { success: false, response: errorCode }],
+          [matchers.call.fn(translateJoinRoomApiError), expectedErrorContent],
+        ])
+        .run();
+
+      expect(storeState.chat.joinRoomErrorContent).toEqual(expectedErrorContent);
+      expect(storeState.chat.isConversationErrorDialogOpen).toBe(true);
+    });
   });
 });
 

@@ -8,7 +8,7 @@ import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { chat } from '../../lib/chat';
+import { apiJoinRoom, chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 //import { activeConversationIdSelector } from './selectors';
@@ -88,8 +88,7 @@ function isAlias(id) {
 }
 
 function* joinRoom(roomIdOrAlias: string) {
-  const chatClient = yield call(chat.get);
-  const { success, response } = yield call([chatClient, chatClient.apiJoinRoom], roomIdOrAlias);
+  const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
     // deal with different error states here (token_invalid, user doesn't hold token etc)
@@ -110,8 +109,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   let conversationId = activeConversationId;
   if (isAlias(activeConversationId)) {
-    const chatClient = yield call(chat.get);
-    conversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationId);
+    conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
   const isMemberOfActiveConversation = conversationList.includes(conversationId);

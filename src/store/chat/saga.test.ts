@@ -8,7 +8,7 @@ import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
-import { chat } from '../../lib/chat';
+import { apiJoinRoom, getRoomIdForAlias } from '../../lib/chat';
 import { setActiveConversationId } from '.';
 
 const featureFlags = { allowJoinRoom: false };
@@ -16,17 +16,11 @@ jest.mock('../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
 
-const chatClient = {
-  getRoomIdForAlias: jest.fn(),
-  apiJoinRoom: jest.fn(),
-};
-
 describe(performValidateActiveConversation, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
-      [matchers.call.fn(chat.get), chatClient],
-      [matchers.call.fn(chatClient.getRoomIdForAlias), 'room-id'],
-      [matchers.call.fn(chatClient.apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
+      [matchers.call.fn(getRoomIdForAlias), 'room-id'],
+      [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
     ]);
   }
 
@@ -70,11 +64,10 @@ describe(performValidateActiveConversation, () => {
     const { storeState } = await subject(performValidateActiveConversation, alias)
       .withReducer(rootReducer, initialState.build())
       .provide([
-        [matchers.call.fn(chatClient.getRoomIdForAlias), conversationId],
+        [matchers.call.fn(getRoomIdForAlias), conversationId],
       ])
-      .call(chat.get)
-      .call([chatClient, chatClient.getRoomIdForAlias], alias)
-      .not.call([chatClient, chatClient.apiJoinRoom], conversationId)
+      .call(getRoomIdForAlias, alias)
+      .not.call(apiJoinRoom, conversationId)
       .put(setActiveConversationId(conversationId))
       .run();
 
@@ -89,10 +82,9 @@ describe(performValidateActiveConversation, () => {
     await subject(performValidateActiveConversation, '#convo-not-exists')
       .withReducer(rootReducer, initialState.build())
       .provide([
-        [matchers.call.fn(chatClient.getRoomIdForAlias), undefined],
+        [matchers.call.fn(getRoomIdForAlias), undefined],
       ])
-      .call(chat.get)
-      .call([chatClient, chatClient.apiJoinRoom], '#convo-not-exists')
+      .call(apiJoinRoom, '#convo-not-exists')
       .run();
   });
 
@@ -107,11 +99,10 @@ describe(performValidateActiveConversation, () => {
     await subject(performValidateActiveConversation, alias)
       .withReducer(rootReducer, initialState.build())
       .provide([
-        [matchers.call.fn(chatClient.getRoomIdForAlias), '!some-other-convo:matrix.org'],
+        [matchers.call.fn(getRoomIdForAlias), '!some-other-convo:matrix.org'],
       ])
-      .call(chat.get)
-      .call([chatClient, chatClient.getRoomIdForAlias], alias)
-      .call([chatClient, chatClient.apiJoinRoom], '!some-other-convo:matrix.org')
+      .call(getRoomIdForAlias, alias)
+      .call(apiJoinRoom, '!some-other-convo:matrix.org')
       .run();
   });
 });

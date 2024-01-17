@@ -618,8 +618,6 @@ export class MatrixClient implements IChatClient {
     return await this.matrix
       .getRoomIdForAlias(alias) // { room_id, servers[] }
       .catch((err) => {
-        console.log('getRoomIdForAlias error', err);
-
         if (err.errcode === 'M_NOT_FOUND') {
           Promise.resolve(undefined);
         }

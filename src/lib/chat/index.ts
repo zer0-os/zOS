@@ -275,3 +275,11 @@ export const chat = {
 export async function fetchConversationsWithUsers(users: User[]) {
   return chat.get().fetchConversationsWithUsers(users);
 }
+
+export async function getRoomIdForAlias(alias: string) {
+  return chat.get().getRoomIdForAlias(alias);
+}
+
+export async function apiJoinRoom(aliasOrId: string) {
+  return chat.get().apiJoinRoom(aliasOrId);
+}

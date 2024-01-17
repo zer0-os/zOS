@@ -618,12 +618,8 @@ export class MatrixClient implements IChatClient {
     return await this.matrix
       .getRoomIdForAlias(alias) // { room_id, servers[] }
       .catch((err) => {
-        if (err.errcode === 'M_NOT_FOUND') {
+        if (err.errcode === 'M_NOT_FOUND' || err.errcode === 'M_INVALID_PARAM') {
           Promise.resolve(undefined);
-        }
-
-        if (err.errcode === 'M_INVALID_PARAM') {
-          // handle invalid alias error
         }
       })
       .then((response) => response && response.room_id);

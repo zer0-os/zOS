@@ -18,7 +18,7 @@ jest.mock('../../lib/feature-flags', () => ({
 
 const chatClient = {
   getRoomIdForAlias: jest.fn(),
-  joinRoom: jest.fn(),
+  apiJoinRoom: jest.fn(),
 };
 
 describe(performValidateActiveConversation, () => {
@@ -26,7 +26,7 @@ describe(performValidateActiveConversation, () => {
     return expectSaga(...args).provide([
       [matchers.call.fn(chat.get), chatClient],
       [matchers.call.fn(chatClient.getRoomIdForAlias), 'room-id'],
-      [matchers.call.fn(chatClient.joinRoom), { roomId: 'room-id' }],
+      [matchers.call.fn(chatClient.apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
     ]);
   }
 
@@ -51,7 +51,7 @@ describe(performValidateActiveConversation, () => {
       .withActiveConversationId('convo-not-exists')
       .withChat({ isConversationErrorDialogOpen: false });
 
-    const { storeState } = await subject(performValidateActiveConversation)
+    const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -61,23 +61,20 @@ describe(performValidateActiveConversation, () => {
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
     const alias = '#wildebeest:matrix.org';
     const conversationId = '!wildebeest:matrix.org';
-    const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
-      .withConversationList({
-        id: '!wildebeest:matrix.org',
-        name: 'Conversation 1',
-        otherMembers: [{ userId: 'user-2' } as User],
-      })
-      .withActiveConversationId(alias);
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({
+      id: '!wildebeest:matrix.org',
+      name: 'Conversation 1',
+      otherMembers: [{ userId: 'user-2' } as User],
+    });
 
-    const { storeState } = await subject(performValidateActiveConversation)
+    const { storeState } = await subject(performValidateActiveConversation, alias)
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(chatClient.getRoomIdForAlias), conversationId],
       ])
       .call(chat.get)
       .call([chatClient, chatClient.getRoomIdForAlias], alias)
-      .not.call([chatClient, chatClient.joinRoom], conversationId)
+      .not.call([chatClient, chatClient.apiJoinRoom], conversationId)
       .put(setActiveConversationId(conversationId))
       .run();
 
@@ -87,17 +84,15 @@ describe(performValidateActiveConversation, () => {
   it('joins the conversation if the active conversation does not exist', async () => {
     featureFlags.allowJoinRoom = true;
 
-    const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
-      .withActiveConversationId('#convo-not-exists');
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
-    await subject(performValidateActiveConversation)
+    await subject(performValidateActiveConversation, '#convo-not-exists')
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(chatClient.getRoomIdForAlias), undefined],
       ])
       .call(chat.get)
-      .call([chatClient, chatClient.joinRoom], '#convo-not-exists')
+      .call([chatClient, chatClient.apiJoinRoom], '#convo-not-exists')
       .run();
   });
 
@@ -107,17 +102,16 @@ describe(performValidateActiveConversation, () => {
     const alias = '#some-other-convo:matrix.org';
     const initialState = new StoreBuilder()
       .withCurrentUser({ id: 'current-user' })
-      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
-      .withActiveConversationId(alias);
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
 
-    await subject(performValidateActiveConversation)
+    await subject(performValidateActiveConversation, alias)
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(chatClient.getRoomIdForAlias), '!some-other-convo:matrix.org'],
       ])
       .call(chat.get)
       .call([chatClient, chatClient.getRoomIdForAlias], alias)
-      .call([chatClient, chatClient.joinRoom], '!some-other-convo:matrix.org')
+      .call([chatClient, chatClient.apiJoinRoom], '!some-other-convo:matrix.org')
       .run();
   });
 });
@@ -141,17 +135,17 @@ describe(closeErrorDialog, () => {
 
 describe(validateActiveConversation, () => {
   it('waits for channel load before validating', async () => {
-    testSaga(validateActiveConversation)
+    testSaga(validateActiveConversation, 'convo-1')
       .next()
       .call(waitForChannelListLoad)
       .next(true)
-      .call(performValidateActiveConversation)
+      .call(performValidateActiveConversation, 'convo-1')
       .next()
       .isDone();
   });
 
   it('does not validate if channel load fails', async () => {
-    testSaga(validateActiveConversation)
+    testSaga(validateActiveConversation, 'convo-1')
       .next()
       .call(waitForChannelListLoad)
       .next(false) // Channels did not load

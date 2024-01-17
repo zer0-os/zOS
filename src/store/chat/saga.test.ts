@@ -107,6 +107,25 @@ describe(performValidateActiveConversation, () => {
       .call(apiJoinRoom, '!some-other-convo:matrix.org')
       .run();
   });
+
+  it('sets the dialog to open if user fails to join room', async () => {
+    featureFlags.allowJoinRoom = true;
+
+    const initialState = new StoreBuilder()
+      .withCurrentUser({ id: 'current-user' })
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
+      .withActiveConversationId('convo-not-exists')
+      .withChat({ isConversationErrorDialogOpen: false });
+
+    const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(apiJoinRoom), { success: false, response: 'M_UNKNOWN', message: 'error message' }],
+      ])
+      .run();
+
+    expect(storeState.chat.isConversationErrorDialogOpen).toBe(true);
+  });
 });
 
 describe(closeErrorDialog, () => {

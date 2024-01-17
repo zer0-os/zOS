@@ -88,9 +88,11 @@ function isAlias(id) {
 }
 
 function* joinRoom(roomIdOrAlias: string) {
-  const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
+  const { success, response, message } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
+    console.log('joinRoom failed', message); // error message
+
     // deal with different error states here (token_invalid, user doesn't hold token etc)
     yield put(setIsConversationErrorDialogOpen(true));
     return undefined;

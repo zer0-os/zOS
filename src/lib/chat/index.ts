@@ -81,7 +81,7 @@ export interface IChatClient {
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
-  apiJoinRoom: (aliasOrId: string) => Promise<{ success: boolean; response: any }>;
+  apiJoinRoom: (aliasOrId: string) => Promise<{ success: boolean; response: any; message: string }>;
 }
 
 export class Chat {

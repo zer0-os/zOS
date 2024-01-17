@@ -1,3 +1,5 @@
+import { ErrorDialogContent } from '../../components/error-dialog';
+
 export interface ChatState {
   chatAccessToken: {
     value: string;
@@ -5,4 +7,5 @@ export interface ChatState {
   };
   activeConversationId: string;
   isConversationErrorDialogOpen: boolean;
+  joinRoomErrorContent: ErrorDialogContent;
 }

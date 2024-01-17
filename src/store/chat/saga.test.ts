@@ -58,6 +58,43 @@ describe(performValidateActiveConversation, () => {
     expect(storeState.chat.isConversationErrorDialogOpen).toBe(true);
   });
 
+  it('sets the join room error content to null if user is member of conversation', async () => {
+    const initialState = new StoreBuilder()
+      .withCurrentUser({ id: 'current-user' })
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
+      .withActiveConversation({ id: 'convo-1' })
+      .withChat({
+        joinRoomErrorContent: {
+          header: 'Access Denied',
+          body: 'You do not have permission to join this conversation.',
+        },
+      });
+
+    const { storeState } = await subject(performValidateActiveConversation)
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(storeState.chat.joinRoomErrorContent).toBe(null);
+  });
+
+  it('sets the join room error content if user is NOT member of conversation', async () => {
+    featureFlags.allowJoinRoom = false;
+    const initialState = new StoreBuilder()
+      .withCurrentUser({ id: 'current-user' })
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
+      .withActiveConversationId('convo-not-exists')
+      .withChat({ joinRoomErrorContent: null });
+
+    const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(storeState.chat.joinRoomErrorContent).toStrictEqual({
+      header: 'Access Denied',
+      body: 'You do not have permission to join this conversation.',
+    });
+  });
+
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
     const alias = '#wildebeest:matrix.org';
     const conversationId = '!wildebeest:matrix.org';
@@ -126,6 +163,18 @@ describe(closeErrorDialog, () => {
     const { storeState } = await subject(closeErrorDialog).withReducer(rootReducer, initialState.build()).run();
 
     expect(storeState.chat.isConversationErrorDialogOpen).toBe(false);
+  });
+
+  it('sets the join room error content state', async () => {
+    const initialState = new StoreBuilder().withChat({
+      joinRoomErrorContent: {
+        header: 'Access Denied',
+        body: 'You do not have permission to join this conversation.',
+      },
+    });
+    const { storeState } = await subject(closeErrorDialog).withReducer(rootReducer, initialState.build()).run();
+
+    expect(storeState.chat.joinRoomErrorContent).toBe(null);
   });
 
   it('opens the first conversation', async () => {

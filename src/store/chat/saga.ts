@@ -1,7 +1,7 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
+import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes, setJoinRoomErrorContent } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -11,10 +11,10 @@ import { receive } from '../users';
 import { chat } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-//import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
+import { translateJoinRoomApiError } from './utils';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -87,12 +87,13 @@ function isAlias(id) {
   return id.startsWith('#');
 }
 
-function* joinRoom(roomIdOrAlias: string) {
+export function* joinRoom(roomIdOrAlias: string) {
   const chatClient = yield call(chat.get);
   const { success, response } = yield call([chatClient, chatClient.apiJoinRoom], roomIdOrAlias);
 
   if (!success) {
-    // deal with different error states here (token_invalid, user doesn't hold token etc)
+    const error = translateJoinRoomApiError(response);
+    yield put(setJoinRoomErrorContent(error));
     yield put(setIsConversationErrorDialogOpen(true));
     return undefined;
   } else {
@@ -102,6 +103,8 @@ function* joinRoom(roomIdOrAlias: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
+  yield put(setJoinRoomErrorContent(null));
+
   const conversationList = yield select(rawConversationsList());
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
@@ -117,6 +120,12 @@ export function* performValidateActiveConversation(activeConversationId: string)
   const isMemberOfActiveConversation = conversationList.includes(conversationId);
   if (!featureFlags.allowJoinRoom && !isMemberOfActiveConversation) {
     yield put(setIsConversationErrorDialogOpen(true));
+    yield put(
+      setJoinRoomErrorContent({
+        header: 'Access Denied',
+        body: 'You do not have permission to join this conversation.',
+      })
+    );
     return;
   }
 
@@ -134,6 +143,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
 export function* closeErrorDialog() {
   yield put(setIsConversationErrorDialogOpen(false));
+  yield put(setJoinRoomErrorContent(null));
   yield call(openFirstConversation);
 }
 

@@ -9,6 +9,11 @@ import './styles.scss';
 
 const cn = bemClassName('error-dialog');
 
+export type ErrorDialogContent = {
+  header: string;
+  body: string;
+};
+
 export interface Properties {
   onClose?: () => void;
 }

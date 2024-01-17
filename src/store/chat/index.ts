@@ -12,9 +12,11 @@ const initialState: ChatState = {
 
 export enum SagaActionTypes {
   CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
+  setActiveConversationId = 'chat/saga/setActiveConversationId',
 }
 
 const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
+export const setActiveConversationId = createAction<{ id: string }>(SagaActionTypes.setActiveConversationId);
 
 const slice = createSlice({
   name: 'chat',
@@ -23,7 +25,7 @@ const slice = createSlice({
     setChatAccessToken: (state, action: PayloadAction<ChatState['chatAccessToken']>) => {
       state.chatAccessToken = action.payload;
     },
-    setActiveConversationId: (state, action: PayloadAction<ChatState['activeConversationId']>) => {
+    rawSetActiveConversationId: (state, action: PayloadAction<ChatState['activeConversationId']>) => {
       state.activeConversationId = action.payload;
     },
     setIsConversationErrorDialogOpen: (state, action: PayloadAction<ChatState['isConversationErrorDialogOpen']>) => {
@@ -32,6 +34,6 @@ const slice = createSlice({
   },
 });
 
-export const { setChatAccessToken, setActiveConversationId, setIsConversationErrorDialogOpen } = slice.actions;
+export const { setChatAccessToken, rawSetActiveConversationId, setIsConversationErrorDialogOpen } = slice.actions;
 export const { reducer } = slice;
 export { closeConversationErrorDialog };

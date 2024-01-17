@@ -1,19 +1,20 @@
-import { put, select, call, take, takeEvery, spawn, race, takeLatest, all } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
+import { rawSetActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { chat } from '../../lib/chat';
+import { apiJoinRoom, chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-import { activeConversationIdSelector } from './selectors';
+//import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -60,7 +61,7 @@ function* activateWhenConversationsLoaded(activate) {
 }
 
 function* clearOnLogout() {
-  yield put(setActiveConversationId(null));
+  yield put(rawSetActiveConversationId(null));
 }
 
 function* addAdminUser() {
@@ -73,26 +74,66 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
-export function* validateActiveConversation() {
+export function* validateActiveConversation(conversationId: string) {
   const isLoaded = yield call(waitForChannelListLoad);
   if (isLoaded) {
-    yield call(performValidateActiveConversation);
+    yield call(performValidateActiveConversation, conversationId);
   }
 }
 
-export function* performValidateActiveConversation() {
-  const [conversationList, activeConversationId] = yield all([
-    select(rawConversationsList()),
-    select(activeConversationIdSelector),
-  ]);
+// conversation can be referenced by an id or an alias
+function isAlias(id) {
+  return id.startsWith('#');
+}
 
+function* joinRoom(roomIdOrAlias: string) {
+  const { success, response, message } = yield call(apiJoinRoom, roomIdOrAlias);
+
+  if (!success) {
+    console.log('joinRoom failed', message); // error message
+
+    // deal with different error states here (token_invalid, user doesn't hold token etc)
+    yield put(setIsConversationErrorDialogOpen(true));
+    return undefined;
+  } else {
+    yield put(setIsConversationErrorDialogOpen(false));
+    return response.roomId;
+  }
+}
+
+function* isMemberOfActiveConversation(activeConversationId) {
+  const conversationList = yield select(rawConversationsList());
+  return conversationList.includes(activeConversationId);
+}
+
+export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
     return;
   }
 
-  const isMemberOfActiveConversation = conversationList.includes(activeConversationId);
-  yield put(setIsConversationErrorDialogOpen(!isMemberOfActiveConversation));
+  if (!featureFlags.allowJoinRoom) {
+    const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
+    yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
+    return;
+  }
+
+  let conversationId = activeConversationId;
+  if (isAlias(activeConversationId)) {
+    conversationId = yield call(getRoomIdForAlias, activeConversationId);
+  }
+
+  // either the room does not exist, or the user isn't a part of it
+  const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
+  if (!conversationId || !isUserMemberOfActiveConversation) {
+    conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
+  }
+
+  if (!conversationId) {
+    return;
+  }
+
+  yield put(rawSetActiveConversationId(conversationId));
 }
 
 export function* closeErrorDialog() {
@@ -102,7 +143,9 @@ export function* closeErrorDialog() {
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeLatest(setActiveConversationId.type, validateActiveConversation);
+  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
+    validateActiveConversation(payload.id)
+  );
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

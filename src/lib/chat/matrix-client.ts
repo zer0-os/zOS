@@ -613,6 +613,40 @@ export class MatrixClient implements IChatClient {
     await this.matrix.redactEvent(roomId, messageId);
   }
 
+  async getRoomIdForAlias(alias: string): Promise<string | undefined> {
+    await this.waitForConnection();
+    return await this.matrix
+      .getRoomIdForAlias(alias) // { room_id, servers[] }
+      .catch((err) => {
+        if (err.errcode === 'M_NOT_FOUND' || err.errcode === 'M_INVALID_PARAM') {
+          Promise.resolve(undefined);
+        }
+      })
+      .then((response) => response && response.room_id);
+  }
+
+  async apiJoinRoom(aliasOrId: string): Promise<{ success: boolean; response: any; message: string }> {
+    try {
+      const response = await post('/matrix/room/join').send({
+        roomAliasORId: aliasOrId,
+      });
+      return {
+        success: true,
+        response: response.body,
+        message: 'OK',
+      };
+    } catch (error: any) {
+      if (error?.response?.status === 400) {
+        return {
+          success: false,
+          response: error.response.body.code,
+          message: error.response.body.message,
+        };
+      }
+      throw error;
+    }
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getRoomsUserIsIn();

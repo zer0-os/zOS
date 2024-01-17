@@ -1,7 +1,7 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
+import { rawSetActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -61,7 +61,7 @@ function* activateWhenConversationsLoaded(activate) {
 }
 
 function* clearOnLogout() {
-  yield put(setActiveConversationId(null));
+  yield put(rawSetActiveConversationId(null));
 }
 
 function* addAdminUser() {
@@ -133,7 +133,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
     return;
   }
 
-  yield put(setActiveConversationId(conversationId));
+  yield put(rawSetActiveConversationId(conversationId));
 }
 
 export function* closeErrorDialog() {
@@ -143,7 +143,7 @@ export function* closeErrorDialog() {
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeLatest(SagaActionTypes.ValidateAndSetActiveConversationId, ({ payload }: any) =>
+  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
 

@@ -9,7 +9,7 @@ import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
 import { apiJoinRoom, getRoomIdForAlias } from '../../lib/chat';
-import { setActiveConversationId } from '.';
+import { rawSetActiveConversationId } from '.';
 
 const featureFlags = { allowJoinRoom: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -70,7 +70,7 @@ describe(performValidateActiveConversation, () => {
       ])
       .call(getRoomIdForAlias, alias)
       .not.call(apiJoinRoom, conversationId)
-      .put(setActiveConversationId(conversationId))
+      .put(rawSetActiveConversationId(conversationId))
       .run();
 
     expect(storeState.chat.activeConversationId).toBe(conversationId);

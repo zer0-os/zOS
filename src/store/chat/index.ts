@@ -12,9 +12,13 @@ const initialState: ChatState = {
 
 export enum SagaActionTypes {
   CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
+  ValidateAndSetActiveConversationId = 'channelsList/saga/ValidateAndSetActiveConversationId',
 }
 
 const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
+export const validateAndSetActiveConversationId = createAction<{ id: string }>(
+  SagaActionTypes.ValidateAndSetActiveConversationId
+);
 
 const slice = createSlice({
   name: 'chat',

@@ -100,10 +100,20 @@ function* joinRoom(roomIdOrAlias: string) {
   }
 }
 
-export function* performValidateActiveConversation(activeConversationId: string) {
+function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
+  return conversationList.includes(activeConversationId);
+}
+
+export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
+    return;
+  }
+
+  if (!featureFlags.allowJoinRoom) {
+    const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
+    yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
     return;
   }
 
@@ -112,14 +122,9 @@ export function* performValidateActiveConversation(activeConversationId: string)
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
-  const isMemberOfActiveConversation = conversationList.includes(conversationId);
-  if (!featureFlags.allowJoinRoom && !isMemberOfActiveConversation) {
-    yield put(setIsConversationErrorDialogOpen(true));
-    return;
-  }
-
   // either the room does not exist, or the user isn't a part of it
-  if (!conversationId || !isMemberOfActiveConversation) {
+  const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
+  if (!conversationId || !isUserMemberOfActiveConversation) {
     conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
   }
 

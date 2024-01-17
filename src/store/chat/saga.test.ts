@@ -53,6 +53,8 @@ describe(performValidateActiveConversation, () => {
   });
 
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
+    featureFlags.allowJoinRoom = true;
+
     const alias = '#wildebeest:matrix.org';
     const conversationId = '!wildebeest:matrix.org';
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({

@@ -38,6 +38,7 @@ describe('messenger-list', () => {
       isInviteNotificationOpen: false,
       myUserId: '',
       isConversationErrorDialogOpen: false,
+      joinRoomErrorContent: null,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       closeConversationErrorDialog: () => null,
@@ -239,7 +240,7 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '', isConversationErrorDialogOpen: false }
+      chat = { activeConversationId: '', isConversationErrorDialogOpen: false, joinRoomErrorContent: null }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
@@ -375,6 +376,7 @@ describe('messenger-list', () => {
       const state = subject([], {}, undefined, {
         activeConversationId: 'active-channel-id',
         isConversationErrorDialogOpen: false,
+        joinRoomErrorContent: null,
       });
 
       expect(state.activeConversationId).toEqual('active-channel-id');
@@ -384,9 +386,20 @@ describe('messenger-list', () => {
       const state = subject([], {}, undefined, {
         activeConversationId: 'active-channel-id',
         isConversationErrorDialogOpen: true,
+        joinRoomErrorContent: null,
       });
 
       expect(state.isConversationErrorDialogOpen).toEqual(true);
+    });
+
+    test('joinRoomErrorContent', () => {
+      const state = subject([], {}, undefined, {
+        activeConversationId: 'active-channel-id',
+        isConversationErrorDialogOpen: true,
+        joinRoomErrorContent: { header: 'header', body: 'body' },
+      });
+
+      expect(state.joinRoomErrorContent).toEqual({ header: 'header', body: 'body' });
     });
 
     test('stage', () => {

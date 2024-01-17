@@ -28,7 +28,7 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { ErrorDialog } from '../../error-dialog';
+import { ErrorDialog, ErrorDialogContent } from '../../error-dialog';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
@@ -56,6 +56,7 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
   isConversationErrorDialogOpen: boolean;
+  joinRoomErrorContent: ErrorDialogContent;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -78,7 +79,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId, isConversationErrorDialogOpen },
+      chat: { activeConversationId, isConversationErrorDialogOpen, joinRoomErrorContent },
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -100,6 +101,7 @@ export class Container extends React.Component<Properties, State> {
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
       isConversationErrorDialogOpen,
+      joinRoomErrorContent,
     };
   }
 
@@ -165,6 +167,10 @@ export class Container extends React.Component<Properties, State> {
     return this.props.isConversationErrorDialogOpen;
   }
 
+  get errorDialogContent(): ErrorDialogContent {
+    return this.props.joinRoomErrorContent;
+  }
+
   renderInviteDialog = (): JSX.Element => {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
@@ -176,7 +182,7 @@ export class Container extends React.Component<Properties, State> {
   renderErrorDialog = (): JSX.Element => {
     return (
       <Modal open={this.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
-        <ErrorDialog onClose={this.closeErrorDialog} />
+        <ErrorDialog content={this.errorDialogContent} onClose={this.closeErrorDialog} />
       </Modal>
     );
   };

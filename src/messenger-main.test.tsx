@@ -38,18 +38,31 @@ describe('MessengerMain', () => {
     const setActiveConversationId = jest.fn();
     subject({ setActiveConversationId, match: { params: { conversationId: '123' } } });
 
-    expect(setActiveConversationId).toHaveBeenCalledWith('123');
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '123' });
+  });
+
+  it('decodeURIComponent the conversationId from the url on mount', () => {
+    const setActiveConversationId = jest.fn();
+    subject({
+      setActiveConversationId,
+      match: { params: { conversationId: '%23wilderworld:zos-dev.zero.io' } },
+    });
+
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '#wilderworld:zos-dev.zero.io' });
   });
 
   it('updates the conversation id when the route changes', () => {
     const setActiveConversationId = jest.fn();
-    const wrapper = subject({ setActiveConversationId, match: { params: { conversationId: '123' } } });
+    const wrapper = subject({
+      setActiveConversationId,
+      match: { params: { conversationId: '123' } },
+    });
 
-    expect(setActiveConversationId).toHaveBeenCalledWith('123');
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '123' });
     jest.clearAllMocks();
 
     wrapper.setProps({ match: { params: { conversationId: '456' } } });
-    expect(setActiveConversationId).toHaveBeenCalledWith('456');
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '456' });
   });
 
   it('does not update the conversation id when the route does not change', () => {
@@ -60,7 +73,7 @@ describe('MessengerMain', () => {
       isAuthenticated: true, // To allow us to force a property change
     });
 
-    expect(setActiveConversationId).toHaveBeenCalledWith('123');
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '123' });
     jest.clearAllMocks();
 
     wrapper.setProps({ isAuthenticated: false }); // force prop change without changing `match`

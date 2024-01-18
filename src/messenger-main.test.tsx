@@ -11,7 +11,6 @@ describe('MessengerMain', () => {
       isAuthenticated: false,
       match: { params: { conversationId: '' } },
       setActiveConversationId: () => null,
-      validateAndSetActiveConversationId: () => null,
       ...props,
     };
 
@@ -33,13 +32,6 @@ describe('MessengerMain', () => {
   it('renders the Main component', () => {
     const wrapper = subject();
     expect(wrapper.find(Main)).toHaveLength(1);
-  });
-
-  it('parses the conversationId from the url on mount', () => {
-    const validateAndSetActiveConversationId = jest.fn();
-    subject({ validateAndSetActiveConversationId, match: { params: { conversationId: '123' } } });
-
-    expect(validateAndSetActiveConversationId).toHaveBeenCalledWith({ id: '123' });
   });
 
   it('decodeURIComponent the conversationId from the url on mount', () => {
@@ -68,10 +60,8 @@ describe('MessengerMain', () => {
 
   it('does not update the conversation id when the route does not change', () => {
     const setActiveConversationId = jest.fn();
-    const validateAndSetActiveConversationId = jest.fn();
     const wrapper = subject({
       setActiveConversationId,
-      validateAndSetActiveConversationId,
       match: { params: { conversationId: '123' } },
       isAuthenticated: true, // To allow us to force a property change
     });

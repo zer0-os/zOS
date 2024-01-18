@@ -8,8 +8,9 @@ import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
-import { apiJoinRoom, getRoomIdForAlias } from '../../lib/chat';
+import { getRoomIdForAlias } from '../../lib/chat';
 import { rawSetActiveConversationId } from '.';
+import { joinRoom as apiJoinRoom } from './api';
 
 const featureFlags = { allowJoinRoom: false };
 jest.mock('../../lib/feature-flags', () => ({

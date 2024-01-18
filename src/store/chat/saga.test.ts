@@ -198,17 +198,47 @@ describe(closeErrorDialog, () => {
 describe(joinRoom, () => {
   describe('error scenarios', () => {
     const roomIdOrAlias = 'some-room-id-or-alias';
-    it.each([
-      [JoinRoomApiErrorCode.ROOM_NOT_FOUND, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ROOM_NOT_FOUND]],
-      [JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED]],
-      [JoinRoomApiErrorCode.GENERAL_ERROR, ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.GENERAL_ERROR]],
-    ])('handles error "%s"', async (errorCode, expectedErrorContent) => {
+
+    it('handles ROOM_NOT_FOUND error', async () => {
       const initialState = new StoreBuilder().withChat({}).build();
+      const expectedErrorContent = ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ROOM_NOT_FOUND];
 
       const { storeState } = await expectSaga(joinRoom, roomIdOrAlias)
         .withReducer(rootReducer, initialState)
         .provide([
-          [matchers.call.fn(apiJoinRoom), { success: false, response: errorCode }],
+          [matchers.call.fn(apiJoinRoom), { success: false, response: JoinRoomApiErrorCode.ROOM_NOT_FOUND }],
+          [matchers.call.fn(translateJoinRoomApiError), expectedErrorContent],
+        ])
+        .run();
+
+      expect(storeState.chat.joinRoomErrorContent).toEqual(expectedErrorContent);
+      expect(storeState.chat.isConversationErrorDialogOpen).toBe(true);
+    });
+
+    it('handles ACCESS_TOKEN_REQUIRED error', async () => {
+      const initialState = new StoreBuilder().withChat({}).build();
+      const expectedErrorContent = ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED];
+
+      const { storeState } = await expectSaga(joinRoom, roomIdOrAlias)
+        .withReducer(rootReducer, initialState)
+        .provide([
+          [matchers.call.fn(apiJoinRoom), { success: false, response: JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED }],
+          [matchers.call.fn(translateJoinRoomApiError), expectedErrorContent],
+        ])
+        .run();
+
+      expect(storeState.chat.joinRoomErrorContent).toEqual(expectedErrorContent);
+      expect(storeState.chat.isConversationErrorDialogOpen).toBe(true);
+    });
+
+    it('handles GENERAL_ERROR error', async () => {
+      const initialState = new StoreBuilder().withChat({}).build();
+      const expectedErrorContent = ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.GENERAL_ERROR];
+
+      const { storeState } = await expectSaga(joinRoom, roomIdOrAlias)
+        .withReducer(rootReducer, initialState)
+        .provide([
+          [matchers.call.fn(apiJoinRoom), { success: false, response: JoinRoomApiErrorCode.GENERAL_ERROR }],
           [matchers.call.fn(translateJoinRoomApiError), expectedErrorContent],
         ])
         .run();

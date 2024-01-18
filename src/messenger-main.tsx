@@ -5,13 +5,12 @@ import { connectContainer } from './store/redux-container';
 import { Main } from './Main';
 import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
-import { rawSetActiveConversationId, setActiveConversationId } from './store/chat';
+import { setActiveConversationId } from './store/chat';
 
 export interface Properties {
   isAuthenticated: boolean;
 
   match: { params: { conversationId: string } };
-  rawSetActiveConversationId: (id: string) => void;
   setActiveConversationId: ({ id }: { id: string }) => void;
 }
 
@@ -24,7 +23,6 @@ export class Container extends React.Component<Properties> {
 
   static mapActions() {
     return {
-      rawSetActiveConversationId,
       setActiveConversationId,
     };
   }
@@ -35,7 +33,7 @@ export class Container extends React.Component<Properties> {
 
   componentDidUpdate(prevProps: Properties): void {
     if (this.idChanged(prevProps)) {
-      this.props.rawSetActiveConversationId(this.conversationId);
+      this.props.setActiveConversationId({ id: this.conversationId });
     }
   }
 

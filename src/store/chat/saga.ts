@@ -115,6 +115,9 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (!featureFlags.allowJoinRoom) {
     const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
     yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
+    if (isUserMemberOfActiveConversation) {
+      yield put(rawSetActiveConversationId(activeConversationId));
+    }
     return;
   }
 

@@ -57,7 +57,6 @@ function* activateWhenConversationsLoaded(activate) {
 
   if (conversationsLoaded) {
     activate();
-    console.log('activate');
   } // else: abort. noop. Just stop listening for events.
 }
 

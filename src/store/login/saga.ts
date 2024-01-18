@@ -1,4 +1,4 @@
-import { call, put, race, select, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
   EmailLoginErrors,
@@ -14,9 +14,6 @@ import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } fr
 import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
-import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
-import { openFirstConversation } from '../channels/saga';
-import { activeConversationIdSelector } from '../chat/selectors';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -140,21 +137,9 @@ function* listenForUserLogin() {
   while (true) {
     yield take(authChannel, AuthEvents.UserLogin);
 
-    // After successful login
-    yield spawn(openFirstConversationAfterChannelsLoaded);
-
     if (yield call(isWeb3AccountConnected)) {
       yield spawn(listenForWeb3AccountChanges);
     }
-  }
-}
-
-export function* openFirstConversationAfterChannelsLoaded() {
-  const channel = yield call(getConversationsBus);
-  yield take(channel, ConversationEvents.ConversationsLoaded);
-  const activeConversationId = yield select(activeConversationIdSelector);
-  if (!activeConversationId) {
-    yield call(openFirstConversation);
   }
 }
 

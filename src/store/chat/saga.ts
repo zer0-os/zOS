@@ -109,6 +109,7 @@ function* isMemberOfActiveConversation(activeConversationId) {
 export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
+    yield call(openFirstConversation);
     return;
   }
 

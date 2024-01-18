@@ -1,14 +1,14 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
+import { rawSetActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { chat } from '../../lib/chat';
+import { apiJoinRoom, chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 //import { activeConversationIdSelector } from './selectors';
@@ -62,7 +62,7 @@ function* activateWhenConversationsLoaded(activate) {
 }
 
 function* clearOnLogout() {
-  yield put(setActiveConversationId(null));
+  yield put(rawSetActiveConversationId(null));
 }
 
 function* addAdminUser() {
@@ -88,10 +88,11 @@ function isAlias(id) {
 }
 
 function* joinRoom(roomIdOrAlias: string) {
-  const chatClient = yield call(chat.get);
-  const { success, response } = yield call([chatClient, chatClient.apiJoinRoom], roomIdOrAlias);
+  const { success, response, message } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
+    console.log('joinRoom failed', message); // error message
+
     // deal with different error states here (token_invalid, user doesn't hold token etc)
     yield put(setIsConversationErrorDialogOpen(true));
     return undefined;
@@ -101,27 +102,31 @@ function* joinRoom(roomIdOrAlias: string) {
   }
 }
 
-export function* performValidateActiveConversation(activeConversationId: string) {
+function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
+  return conversationList.includes(activeConversationId);
+}
+
+export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
     return;
   }
 
-  let conversationId = activeConversationId;
-  if (isAlias(activeConversationId)) {
-    const chatClient = yield call(chat.get);
-    conversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationId);
-  }
-
-  const isMemberOfActiveConversation = conversationList.includes(conversationId);
-  if (!featureFlags.allowJoinRoom && !isMemberOfActiveConversation) {
-    yield put(setIsConversationErrorDialogOpen(true));
+  if (!featureFlags.allowJoinRoom) {
+    const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
+    yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
     return;
   }
 
+  let conversationId = activeConversationId;
+  if (isAlias(activeConversationId)) {
+    conversationId = yield call(getRoomIdForAlias, activeConversationId);
+  }
+
   // either the room does not exist, or the user isn't a part of it
-  if (!conversationId || !isMemberOfActiveConversation) {
+  const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
+  if (!conversationId || !isUserMemberOfActiveConversation) {
     conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
   }
 
@@ -129,7 +134,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
     return;
   }
 
-  yield put(setActiveConversationId(conversationId));
+  yield put(rawSetActiveConversationId(conversationId));
 }
 
 export function* closeErrorDialog() {
@@ -139,7 +144,7 @@ export function* closeErrorDialog() {
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeLatest(SagaActionTypes.ValidateAndSetActiveConversationId, ({ payload }: any) =>
+  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
 

@@ -74,7 +74,7 @@ describe(createConversation, () => {
       .next(true)
       // .call(createOptimisticConversation)
       .next(stubOptimisticConversation)
-      // .put(setactiveConversationId)
+      // .put(rawSetActiveConversationId)
       .next()
       // .call([chatClient, chatClient.createConversation])
       .throw(new Error('simulated error'))

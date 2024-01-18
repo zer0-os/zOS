@@ -122,6 +122,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (!featureFlags.allowJoinRoom) {
     const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
     yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
+    // For now while allowJoinRoom is feature flagged and error dialog is open we display a generic error message
     if (!isUserMemberOfActiveConversation) {
       yield put(
         setJoinRoomErrorContent({

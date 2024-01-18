@@ -10,7 +10,6 @@ describe('MessengerMain', () => {
     const allProps = {
       isAuthenticated: false,
       match: { params: { conversationId: '' } },
-      rawSetActiveConversationId: () => null,
       setActiveConversationId: () => null,
       ...props,
     };
@@ -53,10 +52,8 @@ describe('MessengerMain', () => {
   });
 
   it('updates the conversation id when the route changes', () => {
-    const rawSetActiveConversationId = jest.fn();
     const setActiveConversationId = jest.fn();
     const wrapper = subject({
-      rawSetActiveConversationId,
       setActiveConversationId,
       match: { params: { conversationId: '123' } },
     });
@@ -65,14 +62,12 @@ describe('MessengerMain', () => {
     jest.clearAllMocks();
 
     wrapper.setProps({ match: { params: { conversationId: '456' } } });
-    expect(rawSetActiveConversationId).toHaveBeenCalledWith('456');
+    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '456' });
   });
 
   it('does not update the conversation id when the route does not change', () => {
-    const rawSetActiveConversationId = jest.fn();
     const setActiveConversationId = jest.fn();
     const wrapper = subject({
-      rawSetActiveConversationId,
       setActiveConversationId,
       match: { params: { conversationId: '123' } },
       isAuthenticated: true, // To allow us to force a property change
@@ -82,6 +77,6 @@ describe('MessengerMain', () => {
     jest.clearAllMocks();
 
     wrapper.setProps({ isAuthenticated: false }); // force prop change without changing `match`
-    expect(rawSetActiveConversationId).not.toHaveBeenCalled();
+    expect(setActiveConversationId).not.toHaveBeenCalled();
   });
 });

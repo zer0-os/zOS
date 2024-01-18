@@ -9,7 +9,7 @@ import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
 import { getRoomIdForAlias } from '../../lib/chat';
-import { rawSetActiveConversationId } from '.';
+import { rawSetActiveConversationId, setIsConversationErrorDialogOpen } from '.';
 import { joinRoom as apiJoinRoom } from './api';
 
 const featureFlags = { allowJoinRoom: false };
@@ -22,8 +22,24 @@ describe(performValidateActiveConversation, () => {
     return expectSaga(...args).provide([
       [matchers.call.fn(getRoomIdForAlias), 'room-id'],
       [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
+      [matchers.call.fn(openFirstConversation), null],
     ]);
   }
+
+  it('sets the dialog to closed & opens the first conversation if no active conversation', async () => {
+    const initialState = new StoreBuilder()
+      .withChat({ isConversationErrorDialogOpen: true })
+      .withCurrentUser({ id: 'current-user' })
+      .withActiveConversation({ id: null });
+
+    const { storeState } = await subject(performValidateActiveConversation, undefined)
+      .withReducer(rootReducer, initialState.build())
+      .put(setIsConversationErrorDialogOpen(false))
+      .call(openFirstConversation)
+      .run();
+
+    expect(storeState.chat.isConversationErrorDialogOpen).toBe(false);
+  });
 
   it('sets the dialog to closed if user is member of conversation', async () => {
     const initialState = new StoreBuilder()

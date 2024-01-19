@@ -179,7 +179,6 @@ describe('messenger-chat', () => {
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url(avatar-url)' });
-
       expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
     });
 

@@ -276,7 +276,7 @@ export class Container extends React.Component<Properties, State> {
         <div {...cn('')}>
           {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
-          {this.renderErrorDialog()}
+          {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.renderToastNotification()}
         </div>
       </>

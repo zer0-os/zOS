@@ -28,7 +28,8 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { ErrorDialog, ErrorDialogContent } from '../../error-dialog';
+import { ErrorDialog } from '../../error-dialog';
+import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
@@ -176,7 +177,11 @@ export class Container extends React.Component<Properties, State> {
   renderErrorDialog = (): JSX.Element => {
     return (
       <Modal open={this.isErrorDialogOpen} onOpenChange={this.closeErrorDialog}>
-        <ErrorDialog onClose={this.closeErrorDialog} />
+        <ErrorDialog
+          header={this.props.joinRoomErrorContent.header}
+          body={this.props.joinRoomErrorContent.body}
+          onClose={this.closeErrorDialog}
+        />
       </Modal>
     );
   };
@@ -268,7 +273,7 @@ export class Container extends React.Component<Properties, State> {
         <div {...cn('')}>
           {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
-          {this.renderErrorDialog()}
+          {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.renderToastNotification()}
         </div>
       </>

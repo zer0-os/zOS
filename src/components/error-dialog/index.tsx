@@ -15,21 +15,26 @@ export type ErrorDialogContent = {
 };
 
 export interface Properties {
+  header: string;
+  body: string;
+
   onClose?: () => void;
 }
 
 export class ErrorDialog extends React.Component<Properties> {
   render() {
+    const { header, body, onClose } = this.props;
+
     return (
       <div {...cn('')}>
-        <IconButton {...cn('close')} size={40} Icon={IconXClose} onClick={this.props.onClose} />
+        <IconButton {...cn('close')} size={40} Icon={IconXClose} onClick={onClose} />
 
         <div {...cn('heading-container')}>
-          <div {...cn('header')}>Access Denied</div>
+          <div {...cn('header')}>{header}</div>
         </div>
-        <div {...cn('body')}>You are not a member of this conversation.</div>
+        <div {...cn('body')}>{body}</div>
         <div {...cn('footer')}>
-          <Button onPress={this.props.onClose} variant='text'>
+          <Button onPress={onClose} variant='text'>
             Dismiss
           </Button>
         </div>

@@ -8,13 +8,13 @@ import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { apiJoinRoom, chat, getRoomIdForAlias } from '../../lib/chat';
+import { chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-//import { activeConversationIdSelector } from './selectors';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
+import { joinRoom as apiJoinRoom } from './api';
 
 function* initChat(userId, chatAccessToken) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, chatAccessToken, chat.get());
@@ -82,7 +82,7 @@ export function* validateActiveConversation(conversationId: string) {
 }
 
 // conversation can be referenced by an id or an alias
-function isAlias(id) {
+function isAlias(id: string) {
   return id.startsWith('#');
 }
 
@@ -109,12 +109,16 @@ function* isMemberOfActiveConversation(activeConversationId) {
 export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
     yield put(setIsConversationErrorDialogOpen(false));
+    yield call(openFirstConversation);
     return;
   }
 
   if (!featureFlags.allowJoinRoom) {
     const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
     yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
+    if (isUserMemberOfActiveConversation) {
+      yield put(rawSetActiveConversationId(activeConversationId));
+    }
     return;
   }
 

@@ -15,22 +15,24 @@ export type ErrorDialogContent = {
 };
 
 export interface Properties {
-  content: ErrorDialogContent;
+  header: string;
+  body: string;
+
   onClose?: () => void;
 }
 
 export class ErrorDialog extends React.Component<Properties> {
   render() {
-    const { content, onClose } = this.props;
+    const { header, body, onClose } = this.props;
 
     return (
       <div {...cn('')}>
         <IconButton {...cn('close')} size={40} Icon={IconXClose} onClick={onClose} />
 
         <div {...cn('heading-container')}>
-          <div {...cn('header')}>{content.header}</div>
+          <div {...cn('header')}>{header}</div>
         </div>
-        <div {...cn('body')}>{content.body}</div>
+        <div {...cn('body')}>{body}</div>
         <div {...cn('footer')}>
           <Button onPress={onClose} variant='text'>
             Dismiss

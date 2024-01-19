@@ -11,7 +11,8 @@ const c = bem('.error-dialog');
 describe('ErrorDialog', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      content: { header: '', body: '' },
+      header: '',
+      body: '',
       ...props,
     };
 
@@ -37,13 +38,13 @@ describe('ErrorDialog', () => {
   });
 
   it('displays the provided error header', function () {
-    const wrapper = subject({ content: { header: 'Test error header', body: '' } });
+    const wrapper = subject({ header: 'Test error header' });
 
     expect(wrapper.find(c('header'))).toHaveText('Test error header');
   });
 
   it('displays the provided error body', function () {
-    const wrapper = subject({ content: { header: '', body: 'Test error message' } });
+    const wrapper = subject({ body: 'Test error message' });
 
     expect(wrapper.find(c('body'))).toHaveText('Test error message');
   });

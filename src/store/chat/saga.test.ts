@@ -14,9 +14,10 @@ import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
-import { apiJoinRoom, getRoomIdForAlias } from '../../lib/chat';
 import { clearJoinRoomErrorContent, rawSetActiveConversationId } from '.';
 import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError } from './utils';
+import { getRoomIdForAlias } from '../../lib/chat';
+import { joinRoom as apiJoinRoom } from './api';
 
 const featureFlags = { allowJoinRoom: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -28,6 +29,7 @@ describe(performValidateActiveConversation, () => {
     return expectSaga(...args).provide([
       [matchers.call.fn(getRoomIdForAlias), 'room-id'],
       [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
+      [matchers.call.fn(openFirstConversation), null],
     ]);
   }
 

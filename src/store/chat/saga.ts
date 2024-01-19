@@ -1,12 +1,7 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import {
-  rawSetActiveConversationId,
-  setIsConversationErrorDialogOpen,
-  SagaActionTypes,
-  setJoinRoomErrorContent,
-} from '.';
+import { rawSetActiveConversationId, SagaActionTypes, setJoinRoomErrorContent, clearJoinRoomErrorContent } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -92,37 +87,32 @@ function isAlias(id) {
 }
 
 export function* joinRoom(roomIdOrAlias: string) {
-  const { success, response, message } = yield call(apiJoinRoom, roomIdOrAlias);
+  const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
-    console.log('joinRoom failed', message); // error message
     const error = translateJoinRoomApiError(response);
     yield put(setJoinRoomErrorContent(error));
-    yield put(setIsConversationErrorDialogOpen(true));
     return undefined;
   } else {
-    yield put(setIsConversationErrorDialogOpen(false));
+    yield put(clearJoinRoomErrorContent());
     return response.roomId;
   }
 }
 
-function* isMemberOfActiveConversation(activeConversationId) {
+export function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
   return conversationList.includes(activeConversationId);
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
-  yield put(setJoinRoomErrorContent(null));
-
   if (!activeConversationId) {
-    yield put(setIsConversationErrorDialogOpen(false));
+    yield put(clearJoinRoomErrorContent());
     return;
   }
 
   if (!featureFlags.allowJoinRoom) {
     const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
-    yield put(setIsConversationErrorDialogOpen(!isUserMemberOfActiveConversation));
-    // For now while allowJoinRoom is feature flagged and error dialog is open we display a generic error message
+    // For now while allowJoinRoom is feature flagged - set generic error content
     if (!isUserMemberOfActiveConversation) {
       yield put(
         setJoinRoomErrorContent({
@@ -139,7 +129,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
-  // either the room does not exist, or the user isn't a part of it
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
     conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
@@ -153,8 +142,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 }
 
 export function* closeErrorDialog() {
-  yield put(setIsConversationErrorDialogOpen(false));
-  yield put(setJoinRoomErrorContent(null));
+  yield put(clearJoinRoomErrorContent());
   yield call(openFirstConversation);
 }
 

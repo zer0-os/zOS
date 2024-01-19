@@ -164,7 +164,7 @@ describe('messenger-chat', () => {
       expect(offlineAvatar.exists()).toBeTrue();
     });
 
-    it('header renders avatar', function () {
+    it('header renders users avatar when there is a avatar url', function () {
       const wrapper = subject({
         directMessage: {
           isOneOnOne: true,
@@ -178,8 +178,26 @@ describe('messenger-chat', () => {
 
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
 
-      expect(headerAvatar.prop('style').backgroundImage).toEqual('url(avatar-url)');
+      expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url(avatar-url)' });
       expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
+    });
+
+    it('header renders avatar with eth icon when there is no avatar url', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              profileImage: '',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+
+      expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
+      expect(headerAvatar.find('IconCurrencyEthereum').exists()).toBeTrue();
     });
 
     it('header renders group management menu icon button', function () {
@@ -315,15 +333,15 @@ describe('messenger-chat', () => {
       expect(offlineAvatar.exists()).toBeTrue();
     });
 
-    it('header renders avatar with users icon', function () {
+    it('header renders avatar with group icon when there is no avatar url', function () {
       const wrapper = subject({
         directMessage: {
           otherMembers: [
             stubUser({
-              profileImage: 'avatar-url-1',
+              profileImage: '',
             }),
             stubUser({
-              profileImage: 'avatar-url-2',
+              profileImage: '',
             }),
           ],
         } as Channel,
@@ -331,11 +349,11 @@ describe('messenger-chat', () => {
 
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
 
-      expect(headerAvatar.prop('style').backgroundImage).toEqual('url()');
+      expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
       expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
     });
 
-    it('header renders avatar in case if custom icon is set', function () {
+    it('header renders avatar with custom background when there is an avatar url', function () {
       const wrapper = subject({
         directMessage: {
           icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
@@ -352,9 +370,10 @@ describe('messenger-chat', () => {
 
       const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
 
-      expect(headerAvatar.prop('style').backgroundImage).toEqual(
-        'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)'
-      );
+      expect(headerAvatar).toHaveProp('style', {
+        backgroundImage:
+          'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)',
+      });
     });
   });
 

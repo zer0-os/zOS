@@ -81,7 +81,7 @@ export interface IChatClient {
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
-  apiJoinRoom: (aliasOrId: string) => Promise<{ success: boolean; response: any }>;
+  apiJoinRoom: (aliasOrId: string) => Promise<{ success: boolean; response: any; message: string }>;
 }
 
 export class Chat {
@@ -274,4 +274,12 @@ export const chat = {
 
 export async function fetchConversationsWithUsers(users: User[]) {
   return chat.get().fetchConversationsWithUsers(users);
+}
+
+export async function getRoomIdForAlias(alias: string) {
+  return chat.get().getRoomIdForAlias(alias);
+}
+
+export async function apiJoinRoom(aliasOrId: string) {
+  return chat.get().apiJoinRoom(aliasOrId);
 }

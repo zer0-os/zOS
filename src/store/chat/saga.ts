@@ -1,14 +1,14 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { setActiveConversationId, setIsConversationErrorDialogOpen, SagaActionTypes, setJoinRoomErrorContent } from '.';
+import { rawSetActiveConversationId, SagaActionTypes, setJoinRoomErrorContent, clearJoinRoomErrorContent } from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { chat } from '../../lib/chat';
+import { apiJoinRoom, chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
@@ -57,12 +57,11 @@ function* activateWhenConversationsLoaded(activate) {
 
   if (conversationsLoaded) {
     activate();
-    console.log('activate');
   } // else: abort. noop. Just stop listening for events.
 }
 
 function* clearOnLogout() {
-  yield put(setActiveConversationId(null));
+  yield put(rawSetActiveConversationId(null));
 }
 
 function* addAdminUser() {
@@ -88,49 +87,50 @@ function isAlias(id) {
 }
 
 export function* joinRoom(roomIdOrAlias: string) {
-  const chatClient = yield call(chat.get);
-  const { success, response } = yield call([chatClient, chatClient.apiJoinRoom], roomIdOrAlias);
+  const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
     const error = translateJoinRoomApiError(response);
     yield put(setJoinRoomErrorContent(error));
-    yield put(setIsConversationErrorDialogOpen(true));
     return undefined;
   } else {
-    yield put(setIsConversationErrorDialogOpen(false));
+    yield put(clearJoinRoomErrorContent());
     return response.roomId;
   }
 }
 
-export function* performValidateActiveConversation(activeConversationId: string) {
-  yield put(setJoinRoomErrorContent(null));
-
+export function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
+  return conversationList.includes(activeConversationId);
+}
+
+export function* performValidateActiveConversation(activeConversationId: string) {
   if (!activeConversationId) {
-    yield put(setIsConversationErrorDialogOpen(false));
+    yield put(clearJoinRoomErrorContent());
+    return;
+  }
+
+  if (!featureFlags.allowJoinRoom) {
+    const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
+    // For now while allowJoinRoom is feature flagged - set generic error content
+    if (!isUserMemberOfActiveConversation) {
+      yield put(
+        setJoinRoomErrorContent({
+          header: 'Access Denied',
+          body: 'You do not have permission to join this conversation.',
+        })
+      );
+    }
     return;
   }
 
   let conversationId = activeConversationId;
   if (isAlias(activeConversationId)) {
-    const chatClient = yield call(chat.get);
-    conversationId = yield call([chatClient, chatClient.getRoomIdForAlias], activeConversationId);
+    conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
-  const isMemberOfActiveConversation = conversationList.includes(conversationId);
-  if (!featureFlags.allowJoinRoom && !isMemberOfActiveConversation) {
-    yield put(setIsConversationErrorDialogOpen(true));
-    yield put(
-      setJoinRoomErrorContent({
-        header: 'Access Denied',
-        body: 'You do not have permission to join this conversation.',
-      })
-    );
-    return;
-  }
-
-  // either the room does not exist, or the user isn't a part of it
-  if (!conversationId || !isMemberOfActiveConversation) {
+  const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
+  if (!conversationId || !isUserMemberOfActiveConversation) {
     conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
   }
 
@@ -138,18 +138,17 @@ export function* performValidateActiveConversation(activeConversationId: string)
     return;
   }
 
-  yield put(setActiveConversationId(conversationId));
+  yield put(rawSetActiveConversationId(conversationId));
 }
 
 export function* closeErrorDialog() {
-  yield put(setIsConversationErrorDialogOpen(false));
-  yield put(setJoinRoomErrorContent(null));
+  yield put(clearJoinRoomErrorContent());
   yield call(openFirstConversation);
 }
 
 export function* saga() {
   yield spawn(connectOnLogin);
-  yield takeLatest(SagaActionTypes.ValidateAndSetActiveConversationId, ({ payload }: any) =>
+  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
 

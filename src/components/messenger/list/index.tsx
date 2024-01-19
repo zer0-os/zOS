@@ -55,7 +55,6 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
-  isConversationErrorDialogOpen: boolean;
   joinRoomErrorContent: ErrorDialogContent;
 
   startCreateConversation: () => void;
@@ -79,7 +78,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId, isConversationErrorDialogOpen, joinRoomErrorContent },
+      chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
     } = state;
     const hasWallet = user?.data?.wallets?.length > 0;
@@ -100,7 +99,6 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
-      isConversationErrorDialogOpen,
       joinRoomErrorContent,
     };
   }
@@ -164,7 +162,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get isErrorDialogOpen(): boolean {
-    return this.props.isConversationErrorDialogOpen;
+    return this.props.joinRoomErrorContent !== null;
   }
 
   get errorDialogContent(): ErrorDialogContent {

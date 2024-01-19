@@ -618,20 +618,14 @@ export class MatrixClient implements IChatClient {
     return await this.matrix
       .getRoomIdForAlias(alias) // { room_id, servers[] }
       .catch((err) => {
-        console.log('getRoomIdForAlias error', err);
-
-        if (err.errcode === 'M_NOT_FOUND') {
+        if (err.errcode === 'M_NOT_FOUND' || err.errcode === 'M_INVALID_PARAM') {
           Promise.resolve(undefined);
-        }
-
-        if (err.errcode === 'M_INVALID_PARAM') {
-          // handle invalid alias error
         }
       })
       .then((response) => response && response.room_id);
   }
 
-  async apiJoinRoom(aliasOrId: string): Promise<{ success: boolean; response: any }> {
+  async apiJoinRoom(aliasOrId: string): Promise<{ success: boolean; response: any; message: string }> {
     try {
       const response = await post('/matrix/room/join').send({
         roomAliasORId: aliasOrId,
@@ -639,15 +633,17 @@ export class MatrixClient implements IChatClient {
       return {
         success: true,
         response: response.body,
+        message: 'OK',
       };
     } catch (error: any) {
       if (error?.response?.status === 400) {
         return {
           success: false,
           response: error.response.body.code,
+          message: error.response.body.message,
         };
       }
-      // throw error;
+      throw error;
     }
   }
 

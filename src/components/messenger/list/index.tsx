@@ -28,7 +28,8 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal, ToastNotification } from '@zero-tech/zui/components';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { ErrorDialog, ErrorDialogContent } from '../../error-dialog';
+import { ErrorDialog } from '../../error-dialog';
+import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';

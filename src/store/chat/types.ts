@@ -1,4 +1,7 @@
-import { ErrorDialogContent } from '../../components/error-dialog';
+export type ErrorDialogContent = {
+  header: string;
+  body: string;
+};
 
 export interface ChatState {
   chatAccessToken: {

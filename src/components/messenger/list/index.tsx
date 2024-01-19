@@ -162,7 +162,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   get isErrorDialogOpen(): boolean {
-    return this.props.joinRoomErrorContent !== null;
+    return !!this.props.joinRoomErrorContent;
   }
 
   renderInviteDialog = (): JSX.Element => {

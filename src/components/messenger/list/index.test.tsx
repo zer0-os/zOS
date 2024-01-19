@@ -37,7 +37,7 @@ describe('messenger-list', () => {
       userIsOnline: true,
       isInviteNotificationOpen: false,
       myUserId: '',
-      isConversationErrorDialogOpen: false,
+      joinRoomErrorContent: null,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       closeConversationErrorDialog: () => null,
@@ -214,9 +214,9 @@ describe('messenger-list', () => {
     expect(wrapper).not.toHaveElement(GroupManagementContainer);
   });
 
-  it('renders Error Dialog Container if isConversationErrorDialogOpen is true', function () {
+  it('renders Error Dialog Container if joinRoomErrorContent is set and not null', function () {
     const wrapper = subject({
-      isConversationErrorDialogOpen: true,
+      joinRoomErrorContent: { header: 'header', body: 'body' },
     });
 
     expect(wrapper).toHaveElement(ErrorDialog);
@@ -225,7 +225,7 @@ describe('messenger-list', () => {
   it('calls closeConversationErrorDialog when error dialog is closed', function () {
     const closeConversationErrorDialog = jest.fn();
     const wrapper = subject({
-      isConversationErrorDialogOpen: true,
+      joinRoomErrorContent: { header: 'header', body: 'body' },
       closeConversationErrorDialog,
     });
 
@@ -239,7 +239,7 @@ describe('messenger-list', () => {
       channels,
       createConversationState = {},
       currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
-      chat = { activeConversationId: '', isConversationErrorDialogOpen: false }
+      chat = { activeConversationId: '', joinRoomErrorContent: null }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
     };
@@ -374,19 +374,19 @@ describe('messenger-list', () => {
     test('activeConversationId', () => {
       const state = subject([], {}, undefined, {
         activeConversationId: 'active-channel-id',
-        isConversationErrorDialogOpen: false,
+        joinRoomErrorContent: null,
       });
 
       expect(state.activeConversationId).toEqual('active-channel-id');
     });
 
-    test('isConversationErrorDialogOpen', () => {
+    test('joinRoomErrorContent', () => {
       const state = subject([], {}, undefined, {
         activeConversationId: 'active-channel-id',
-        isConversationErrorDialogOpen: true,
+        joinRoomErrorContent: { header: 'header', body: 'body' },
       });
 
-      expect(state.isConversationErrorDialogOpen).toEqual(true);
+      expect(state.joinRoomErrorContent).toEqual({ header: 'header', body: 'body' });
     });
 
     test('stage', () => {

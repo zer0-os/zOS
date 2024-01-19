@@ -9,6 +9,7 @@ import { chat } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
+import { rawSetActiveConversationId } from '../chat';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -60,7 +61,7 @@ export function* openFirstConversation() {
     yield call(openConversation, conversation.id);
   } else {
     // Not sure this is the right choice. Maybe there's a redirectToRoot at some point.
-    yield call(setActiveConversation, '');
+    yield call(rawSetActiveConversationId, null);
   }
 }
 

@@ -2,7 +2,7 @@ import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'red
 import { takeEveryFromBus } from '../../lib/saga';
 
 import { rawSetActiveConversationId, SagaActionTypes, setJoinRoomErrorContent, clearJoinRoomErrorContent } from '.';
-import { createChatConnection, getChatBus } from './bus';
+import { Events as ChatBusEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -93,16 +93,28 @@ export function* joinRoom(roomIdOrAlias: string) {
   if (!success) {
     const error = translateJoinRoomApiError(response);
     yield put(setJoinRoomErrorContent(error));
-    return undefined;
   } else {
     yield put(clearJoinRoomErrorContent());
-    return response.roomId;
+    yield call(setWhenUserJoinedRoom, response.roomId); // wait for user to join room
   }
 }
 
 export function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
   return conversationList.includes(activeConversationId);
+}
+
+// NOTE: we're waiting for the event to be fired, but if it doesn't..then
+// we should just keep showing the loading spinner?
+export function* setWhenUserJoinedRoom(conversationId: string) {
+  const { userJoined } = yield race({
+    userJoined: take(yield call(getChatBus), ChatBusEvents.UserJoinedChannel),
+    abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
+  });
+
+  if (userJoined) {
+    yield put(rawSetActiveConversationId(conversationId));
+  }
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
@@ -134,10 +146,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
-    conversationId = yield call(joinRoom, conversationId ?? activeConversationId);
-  }
-
-  if (!conversationId) {
+    yield call(joinRoom, conversationId ?? activeConversationId);
     return;
   }
 

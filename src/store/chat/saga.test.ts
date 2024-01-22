@@ -7,6 +7,7 @@ import {
   performValidateActiveConversation,
   validateActiveConversation,
   isMemberOfActiveConversation,
+  setWhenUserJoinedRoom,
 } from './saga';
 import { openFirstConversation } from '../channels/saga';
 import { rootReducer } from '../reducer';
@@ -148,8 +149,10 @@ describe(performValidateActiveConversation, () => {
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), undefined],
+        [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'new-room-id' } }],
       ])
       .call(apiJoinRoom, '#convo-not-exists')
+      .call(setWhenUserJoinedRoom, 'new-room-id')
       .run();
   });
 

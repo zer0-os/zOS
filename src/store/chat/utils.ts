@@ -7,12 +7,14 @@ export enum JoinRoomApiErrorCode {
 
 export const ERROR_DIALOG_CONTENT = {
   [JoinRoomApiErrorCode.ROOM_NOT_FOUND]: {
-    header: 'Conversation Not Found',
-    body: 'This conversation does not exist.',
+    header: 'There’s no one here...',
+    body: 'This conversation does not exist or you are not a member.',
   },
   [JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED]: {
     header: 'World Members Only',
-    body: 'You cannot join this conversation as you do not own a domain in this World.',
+    body: 'You cannot join this conversation as your wallet does not hold a domain in this world. Buy a domain or switch to a wallet that holds one.',
+    linkPath: 'https://explorer.zero.tech/{roomAlias}',
+    linkText: 'Buy A Domain',
   },
   [JoinRoomApiErrorCode.GENERAL_ERROR]: {
     header: 'Error',
@@ -24,6 +26,12 @@ export const ERROR_DIALOG_CONTENT = {
   },
 };
 
-export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string) {
-  return ERROR_DIALOG_CONTENT[errorCode] || ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR];
+export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string, roomAlias?: string) {
+  const content = ERROR_DIALOG_CONTENT[errorCode] || ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR];
+
+  if (content.linkPath && content.linkPath.includes('{roomAlias}')) {
+    content.linkPath = content.linkPath.replace('{roomAlias}', roomAlias);
+  }
+
+  return content;
 }

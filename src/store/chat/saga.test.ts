@@ -67,8 +67,8 @@ describe(performValidateActiveConversation, () => {
       .run();
 
     expect(storeState.chat.joinRoomErrorContent).toStrictEqual({
-      header: 'Access Denied',
-      body: 'You do not have permission to join this conversation.',
+      header: 'There’s no one here...',
+      body: 'This conversation does not exist or you are not a member.',
     });
   });
 

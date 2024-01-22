@@ -24,6 +24,7 @@ body {
   background-image: url(cloudAsset('Messenger-BG-02.png'));
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center top;
 
   transition: color animation.$animation-duration-double ease-out;
 

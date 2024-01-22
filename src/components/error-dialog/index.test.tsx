@@ -48,4 +48,34 @@ describe('ErrorDialog', () => {
 
     expect(wrapper.find(c('body'))).toHaveText('Test error message');
   });
+
+  it('renders a link when linkPath and linkText are provided', function () {
+    const wrapper = subject({ linkPath: 'https://example.com', linkText: 'External Link' });
+
+    expect(wrapper.find('a')).toExist();
+  });
+
+  it('does not render a link when linkText is not provided', function () {
+    const wrapper = subject({ linkPath: 'https://example.com', linkText: '' });
+
+    expect(wrapper.find('a')).not.toExist();
+  });
+
+  it('does not render a link when linkPath is not provided', function () {
+    const wrapper = subject({ linkPath: '', linkText: 'External Link' });
+
+    expect(wrapper.find('a')).not.toExist();
+  });
+
+  it('renders the primary button variant when linkPath is not provided', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find(Button)).toHaveProp('variant', 'primary');
+  });
+
+  it('renders the text button variant when linkPath and linkText is provided', function () {
+    const wrapper = subject({ linkPath: 'https://example.com', linkText: 'External Link' });
+
+    expect(wrapper.find(Button)).toHaveProp('variant', 'text');
+  });
 });

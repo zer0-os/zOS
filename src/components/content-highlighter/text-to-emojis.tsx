@@ -1,5 +1,6 @@
-import nodeEmoji from 'node-emoji';
+// import * as nodeEmoji from 'node-emoji';
 
 export const textToPlainEmojis = (message: string) => {
-  return nodeEmoji.emojify(message);
+  return message;
+  //return nodeEmoji.emojify(message);
 };

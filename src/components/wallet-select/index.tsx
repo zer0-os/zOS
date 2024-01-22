@@ -47,7 +47,7 @@ export class WalletSelect extends React.Component<Properties> {
         <div {...cn('connecting-indicator')}>
           <div {...cn('connecting-wallet-name')}>{this.state.selectedWalletName}</div>
           <Button {...cn('connecting-wallet-button-spinner')} isLoading={this.props.isConnecting} variant='text'>
-            {}
+            <></>
           </Button>
         </div>
       );

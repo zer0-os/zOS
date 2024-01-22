@@ -1,24 +1,18 @@
 {
   "name": "zOS",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
-  "main": "./public/electron.js",
+  "main": ".webpack/main",
   "engines": {
-    "node": "^16.17.0",
-    "npm": "^8.15.0"
+    "node": "^20.10.0",
+    "npm": "^10.2.3"
   },
   "dependencies": {
-    "@craco/craco": "^6.4.3",
     "@ethersproject/bytes": "^5.4.0",
     "@giphy/js-fetch-api": "^4.7.1",
     "@giphy/react-components": "^6.5.2",
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^7.13.0",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.20.37",
-    "@types/react": "^16.14.21",
-    "@types/react-dom": "^16.9.14",
-    "@types/react-redux": "^7.1.20",
     "@web3-react/core": "^6.1.9",
     "@web3-react/fortmatic-connector": "^6.1.6",
     "@web3-react/injected-connector": "^6.0.7",
@@ -30,6 +24,7 @@
     "@zero-tech/zui": "^1.7.0",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
+    "electron-squirrel-startup": "^1.0.0",
     "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",
@@ -42,44 +37,42 @@
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
     "matrix-encrypt-attachment": "^1.0.3",
-    "matrix-js-sdk": "^29.1.0",
+    "matrix-js-sdk": "^30.3.0",
     "millify": "^6.1.0",
     "moment": "^2.29.4",
+    "node-emoji": "^2.1.3",
     "normalizr": "^3.6.2",
     "rc-tooltip": "^5.3.1",
     "react": "^17.0.2",
+    "react-app-polyfill": "^3.0.0",
     "react-dom": "^17.0.2",
     "react-dropzone": "^14.2.3",
     "react-mentions": "^4.4.7",
     "react-portal": "^4.2.1",
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "4.0.3",
     "react-waypoint": "^10.3.0",
     "redux": "^4.1.2",
     "redux-saga": "^1.1.3",
-    "sass": "^1.49.7",
     "superagent": "^6.1.0",
-    "typescript": "^4.1.6",
-    "web3-utils": "^1.7.5"
+    "web3-utils": "^4.1.0"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true craco start",
+    "start": "DISABLE_ESLINT_PLUGIN=true node scripts/start.js",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' node scripts/build.js",
+    "test": "node scripts/test.js --env=node",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",
-    "test": "craco test --env=node",
-    "eject": "react-scripts eject",
-    "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
-    "electron:package:publish": "craco build && electron-builder -m -w -c.extraMetadata.main=build/electron.js --config electron/electron-builder-config.js --publish=always",
-    "electron:package:mac": "craco build && electron-builder -m -c.extraMetadata.main=build/electron.js",
-    "electron:package:win": "craco build && electron-builder -w -c.extraMetadata.main=build/electron.js",
-    "electron:package:linux": "craco build && electron-builder -l -c.extraMetadata.main=build/electron.js",
     "code-format:staged:fix": "pretty-quick --staged",
     "code-format:validate": "prettier --check 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "code-format:fix": "prettier --write 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "prepare": "husky install",
-    "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx"
+    "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx",
+    "web:start": "webpack server --config ./webpack/webpack.config.web.ts",
+    "electron:start": "electron-forge start",
+    "electron:package": "electron-forge package",
+    "electron:make": "electron-forge make",
+    "electron:publish": "electron-forge publish"
   },
   "browserslist": {
     "production": [
@@ -96,34 +89,178 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@electron-forge/plugin-webpack": "^7.2.0",
+    "@electron-forge/publisher-github": "^7.2.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
+    "@svgr/webpack": "^8.1.0",
+    "@swc/cli": "^0.1.63",
+    "@swc/core": "^1.3.102",
     "@types/enzyme": "^3.10.10",
     "@types/jest-when": "^3.5.2",
     "@types/react-portal": "^4.0.4",
+    "@types/webpack": "^5.28.5",
+    "@types/webpack-dev-server": "^4.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
+    "babel-jest": "^27.4.2",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-named-asset-import": "^0.3.8",
+    "babel-preset-react-app": "^10.0.1",
+    "bfj": "^7.0.2",
+    "browserify-zlib": "^0.2.0",
+    "browserslist": "^4.18.1",
+    "buffer": "^6.0.3",
+    "camelcase": "^6.2.1",
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
+    "clean-webpack-plugin": "^4.0.0",
     "concurrently": "^7.1.0",
+    "copy-webpack-plugin": "^12.0.1",
     "cross-env": "^7.0.3",
-    "electron": "^18.1.0",
-    "electron-builder": "^23.0.3",
-    "electronmon": "^2.0.2",
+    "css-loader": "^6.5.1",
+    "css-minimizer-webpack-plugin": "^3.2.0",
+    "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
+    "dotenv-webpack": "^8.0.1",
+    "electron": "28.1.3",
     "enzyme": "^3.11.0",
+    "esbuild-loader": "^4.0.2",
+    "eslint": "^8.3.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-webpack-plugin": "^3.1.1",
+    "file-loader": "^6.2.0",
+    "fork-ts-checker-webpack-plugin": "^7.3.0",
+    "fs-extra": "^10.0.0",
+    "html-webpack-plugin": "^5.6.0",
+    "https-browserify": "^1.0.0",
     "husky": "^8.0.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.4.3",
     "jest-environment-enzyme": "^7.1.2",
     "jest-enzyme": "^7.1.2",
     "jest-extended": "^1.2.0",
+    "jest-resolve": "^27.4.2",
+    "jest-watch-typeahead": "^1.0.0",
     "jest-when": "^3.5.2",
+    "mini-css-extract-plugin": "^2.4.5",
     "mustache": "^4.2.0",
+    "node-loader": "^2.0.0",
+    "path-browserify": "^1.0.1",
+    "postcss": "^8.4.4",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-loader": "^6.2.1",
+    "postcss-normalize": "^10.0.1",
+    "postcss-preset-env": "^7.0.1",
     "prettier": "^2.7.1",
     "prettier-plugin-multiline-arrays": "^1.0.0",
     "pretty-quick": "^3.1.3",
+    "prompts": "^2.4.2",
+    "react-dev-utils": "^12.0.1",
+    "react-refresh": "^0.11.0",
     "redux-saga-test-plan": "^4.0.4",
+    "remark-emoji": "^4.0.1",
+    "resolve": "^1.22.8",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "^1.49.7",
+    "sass-loader": "^12.3.0",
+    "semver": "^7.3.5",
+    "source-map-loader": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "style-loader": "^3.3.1",
+    "swc-loader": "^0.2.3",
+    "tailwindcss": "^3.0.2",
+    "terser-webpack-plugin": "^5.2.5",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "url": "^0.11.3",
     "uuid": "^9.0.0",
-    "wait-on": "^6.0.1"
+    "wait-on": "^6.0.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "webpack-manifest-plugin": "^4.0.2",
+    "workbox-webpack-plugin": "^6.4.1"
   },
   "overrides": {
     "@types/react": "^16.14.21",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.20.37",
+    "@types/react-dom": "^16.9.14",
+    "@types/react-redux": "^7.1.20",
     "react@16.x": "^17.0.2",
     "@zer0-os/zos-component-library": "$@zer0-os/zos-component-library",
     "@zero-tech/zui": "$@zero-tech/zui",
-    "@radix-ui/react-popper": "1.0.0"
+    "@radix-ui/react-popper": "1.0.0",
+    "react-scripts": {
+      "typescript": "^5"
+    }
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "resetMocks": true
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }

@@ -40,14 +40,17 @@ export class ChatSkeleton extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        {this.state.skeletonId === 0 && <ChatSkeleton1 short={!!this.props.short} />}
+        {/* @TODO: temporarily workaround due to error
+		{this.state.skeletonId === 0 && <ChatSkeleton1 short={!!this.props.short} />}
         {this.state.skeletonId === 1 && <ChatSkeleton2 short={!!this.props.short} />}
-        {this.state.skeletonId >= 2 && <ChatSkeleton3 short={!!this.props.short} />}
+        {this.state.skeletonId >= 2 && <ChatSkeleton3 short={!!this.props.short} />} 
+		*/}
       </div>
     );
   }
 }
 
+/*
 class ChatSkeleton1 extends React.PureComponent<{ short: boolean }> {
   get nodes() {
     return [
@@ -253,3 +256,4 @@ class ChatSkeleton3 extends React.PureComponent<{ short: boolean }> {
     return renderNodes.map((n, index) => <Fragment key={index}>{n}</Fragment>);
   }
 }
+*/

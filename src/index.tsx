@@ -19,6 +19,9 @@ import { LoginPage } from './pages';
 import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
 
+import { platform } from './lib/platform';
+console.log('platform', platform);
+
 runSagas();
 
 initializeErrorBoundary();

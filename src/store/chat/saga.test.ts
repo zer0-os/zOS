@@ -88,7 +88,7 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(isMemberOfActiveConversation), false],
         [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'convo-1' } }],
       ])
-      .put(rawSetActiveConversationId('convo-1'))
+      .call(setWhenUserJoinedRoom, 'convo-1')
       .put(clearJoinRoomErrorContent())
       .run();
 
@@ -109,6 +109,7 @@ describe(performValidateActiveConversation, () => {
       .provide([
         [matchers.call.fn(apiJoinRoom), { success: false, response: 'M_UNKNOWN', message: 'error message' }],
       ])
+      .not.call(setWhenUserJoinedRoom, expect.any(String))
       .run();
 
     expect(storeState.chat.joinRoomErrorContent).toStrictEqual(

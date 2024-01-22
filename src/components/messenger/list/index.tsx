@@ -180,6 +180,8 @@ export class Container extends React.Component<Properties, State> {
         <ErrorDialog
           header={this.props.joinRoomErrorContent.header}
           body={this.props.joinRoomErrorContent.body}
+          linkText={this.props.joinRoomErrorContent?.linkText}
+          linkPath={this.props.joinRoomErrorContent?.linkPath}
           onClose={this.closeErrorDialog}
         />
       </Modal>

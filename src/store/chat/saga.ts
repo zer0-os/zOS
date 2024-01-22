@@ -119,8 +119,8 @@ export function* performValidateActiveConversation(activeConversationId: string)
     } else {
       yield put(
         setJoinRoomErrorContent({
-          header: 'Access Denied',
-          body: 'You do not have permission to join this conversation.',
+          header: 'There’s no one here...',
+          body: 'This conversation does not exist or you are not a member.',
         })
       );
     }

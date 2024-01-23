@@ -892,6 +892,11 @@ export class MatrixClient implements IChatClient {
         if (event.getContent().membership === MembershipStateType.Leave) {
           this.events.onUserLeft(event.getRoomId(), user.matrixId);
         }
+
+        if (event.getContent().membership === MembershipStateType.Join) {
+          const room = this.matrix.getRoom(event.getRoomId());
+          this.events.onUserJoinedChannel(await this.mapConversation(room));
+        }
       }
 
       const message = await mapEventToAdminMessage(event.getEffectiveEvent());

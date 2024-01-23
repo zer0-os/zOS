@@ -37,7 +37,10 @@ export class UserHeader extends React.Component<Properties> {
             userStatus={this.userStatus}
           />
         )}
-        <div {...cn('user-name')}>{this.props.userName}</div>
+        <div {...cn('user-details')}>
+          <div {...cn('name')}>{this.props.userName}</div>
+          {this.props.userHandle && <div {...cn('handle')}>{this.props.userHandle}</div>}
+        </div>
 
         <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={32} />
       </div>

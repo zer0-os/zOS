@@ -95,7 +95,7 @@ export function* joinRoom(roomIdOrAlias: string) {
     yield put(setJoinRoomErrorContent(error));
   } else {
     yield put(clearJoinRoomErrorContent());
-    yield call(setWhenUserJoinedRoom, response.roomId); // wait for user to join room
+    yield call(setWhenUserJoinedRoom, response.roomId);
   }
 }
 

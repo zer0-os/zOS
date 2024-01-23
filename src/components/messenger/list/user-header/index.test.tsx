@@ -3,6 +3,10 @@ import { Properties, UserHeader } from '.';
 import { SettingsMenu } from '../../../settings-menu';
 import { IconButton } from '@zero-tech/zui/components';
 
+import { bem } from '../../../../lib/bem';
+
+const cn = bem('.user-header');
+
 describe(UserHeader, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -22,20 +26,22 @@ describe(UserHeader, () => {
 
   it('renders SettingsMenu when includeUserSettings is true', function () {
     const wrapper = subject({ includeUserSettings: true });
-
     expect(wrapper).toHaveElement(SettingsMenu);
   });
 
   it('does not render SettingsMenu when includeUserSettings is false', function () {
     const wrapper = subject({ includeUserSettings: false });
-
     expect(wrapper).not.toHaveElement(SettingsMenu);
   });
 
-  it('renders users name ', function () {
-    const wrapper = subject({ userName: 'Joe Bloggs' });
+  it('renders userHandle when user handle is not empty', function () {
+    const wrapper = subject({ userHandle: '0://zid.example' });
+    expect(wrapper.find(cn('handle'))).toExist();
+  });
 
-    expect(wrapper.find('.user-header__user-name').text()).toEqual('Joe Bloggs');
+  it('does not render userHandle when user handle is empty', function () {
+    const wrapper = subject({ userHandle: '' });
+    expect(wrapper.find(cn('handle'))).not.toExist();
   });
 
   it('renders IconButton', function () {

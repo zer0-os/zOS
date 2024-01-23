@@ -82,7 +82,7 @@ export class Container extends React.Component<Properties, State> {
       chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
     } = state;
-    const hasWallet = user?.data?.wallets?.length > 0;
+    const hasPrimaryZID = user?.data?.primaryZID;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
 
@@ -95,7 +95,7 @@ export class Container extends React.Component<Properties, State> {
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
       userName: user?.data?.profileSummary?.firstName || '',
-      userHandle: (hasWallet ? user?.data?.wallets[0]?.publicAddress : user?.data?.profileSummary?.primaryEmail) || '',
+      userHandle: (hasPrimaryZID ? user?.data?.primaryZID : user?.data?.wallets[0]?.publicAddress) || '',
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,

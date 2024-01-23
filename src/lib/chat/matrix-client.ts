@@ -944,6 +944,7 @@ export class MatrixClient implements IChatClient {
       isOnline: false,
       profileImage: user?.avatarUrl,
       lastSeenAt: '',
+      primaryZID: '',
     };
   }
 

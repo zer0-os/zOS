@@ -560,6 +560,7 @@ function stubUser(attrs: Partial<User> = {}): User {
     profileId: 'profile-id',
     profileImage: 'image-url',
     lastSeenAt: 'last-seen',
+    primaryZID: 'primary-zid',
     ...attrs,
   };
 }

@@ -5,7 +5,7 @@ import { IconButton } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
 
-const cn = bem('.user-header');
+const c = bem('.user-header');
 
 describe(UserHeader, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -36,17 +36,17 @@ describe(UserHeader, () => {
 
   it('renders userHandle when user handle is not empty', function () {
     const wrapper = subject({ userHandle: '0://zid.example' });
-    expect(wrapper.find(cn('handle'))).toExist();
+    expect(wrapper).toHaveElement(c('handle'));
   });
 
   it('does not render userHandle when user handle is empty', function () {
     const wrapper = subject({ userHandle: '' });
-    expect(wrapper.find(cn('handle'))).not.toExist();
+    expect(wrapper).not.toHaveElement(c('handle'));
   });
 
   it('renders IconButton', function () {
     const wrapper = subject();
-    expect(wrapper.find(IconButton).exists()).toBe(true);
+    expect(wrapper).toHaveElement(IconButton);
   });
 
   it('calls startConversation when IconButton is clicked', function () {

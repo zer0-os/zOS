@@ -1,4 +1,4 @@
-import { isUserAdmin, sortMembers } from './utils';
+import { getUserHandle, isUserAdmin, sortMembers } from './utils';
 import { User } from '../../../../store/channels';
 
 describe('sortMembers', () => {
@@ -42,5 +42,22 @@ describe('isUserAdmin', () => {
     const adminIds: string[] = [];
 
     expect(isUserAdmin(user, adminIds)).toBe(false);
+  });
+});
+
+describe('getUserHandle', () => {
+  it('returns primaryZID when it is present', () => {
+    const user = { primaryZID: 'zid123', wallets: [{ id: 'wallet-id-1', publicAddress: 'address456' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('zid123');
+  });
+
+  it('returns truncated publicAddress from the first wallet when primaryZID is absent', () => {
+    const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '123456789' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('1234...6789');
+  });
+
+  it('returns empty string when both primaryZID and wallets are absent', () => {
+    const user = { primaryZID: null, wallets: [] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('');
   });
 });

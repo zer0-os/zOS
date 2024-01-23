@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { EditProfileContainer } from '../edit-profile/container';
 import { IconLock1, IconLogOut3, IconUser1 } from '@zero-tech/zui/icons';
-import { Address, Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
+import { Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../lib/bem';
 
@@ -36,14 +36,6 @@ export class SettingsMenu extends React.Component<Properties, State> {
     };
   }
 
-  containsAtSymbol() {
-    return this.props.userHandle.includes('@');
-  }
-
-  getUserHandle() {
-    return this.containsAtSymbol() ? this.props.userHandle : <Address address={this.props.userHandle} />;
-  }
-
   handleLogout = () => {
     this.props.onLogout();
   };
@@ -59,7 +51,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
         <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
         <div {...cn('user-details')}>
           <div {...cn('name')}>{this.props.userName}</div>
-          <div {...cn('address')}>{this.getUserHandle()}</div>
+          <div {...cn('handle')}>{this.props.userHandle}</div>
         </div>
       </div>
     );

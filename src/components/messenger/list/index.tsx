@@ -34,6 +34,7 @@ import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
+import { getUserHandle } from './utils/utils';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -82,9 +83,9 @@ export class Container extends React.Component<Properties, State> {
       chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
     } = state;
-    const hasPrimaryZID = user?.data?.primaryZID;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
+    const userHandle = getUserHandle(user?.data?.primaryZID, user?.data?.wallets);
 
     return {
       conversations,
@@ -95,7 +96,7 @@ export class Container extends React.Component<Properties, State> {
       isFirstTimeLogin: registration.isFirstTimeLogin,
       isInviteNotificationOpen: registration.isInviteToastOpen,
       userName: user?.data?.profileSummary?.firstName || '',
-      userHandle: (hasPrimaryZID ? user?.data?.primaryZID : user?.data?.wallets[0]?.publicAddress) || '',
+      userHandle,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,

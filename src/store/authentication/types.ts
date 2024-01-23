@@ -3,7 +3,7 @@ export interface AuthorizationResponse {
   nonceToken?: string;
 }
 
-interface Wallet {
+export interface Wallet {
   id: string;
   publicAddress: string;
 }

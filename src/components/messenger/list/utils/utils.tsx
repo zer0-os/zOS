@@ -1,5 +1,6 @@
 import { monthsSince, fromNow } from '../../../../lib/date';
 import { User } from '../../../../store/channels';
+import { Wallet } from '../../../../store/authentication/types';
 
 export function lastSeenText(user): string {
   if (user.isOnline) {
@@ -40,4 +41,13 @@ export function sortMembers(members: User[], adminIds: string[]) {
     // Finally sort alphabetically by firstName
     return a.firstName!.localeCompare(b.firstName);
   });
+}
+
+export function getUserHandle(primaryZID: string, wallets: Wallet[]) {
+  if (primaryZID) {
+    return primaryZID;
+  }
+
+  const publicAddress = wallets?.[0]?.publicAddress;
+  return publicAddress || '';
 }

@@ -107,14 +107,26 @@ export function* isMemberOfActiveConversation(activeConversationId) {
 // NOTE: we're waiting for the event to be fired, but if it doesn't..then
 // we should just keep showing the loading spinner?
 export function* setWhenUserJoinedRoom(conversationId: string) {
-  const { userJoined } = yield race({
-    userJoined: take(yield call(getChatBus), ChatBusEvents.UserJoinedChannel),
-    abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
-  });
-
-  if (userJoined) {
+  if (yield call(isMemberOfActiveConversation, conversationId)) {
     yield put(rawSetActiveConversationId(conversationId));
+    return;
   }
+
+  let success = false;
+  while (!success) {
+    const { userJoined, abort } = yield race({
+      userJoined: take(yield call(getChatBus), ChatBusEvents.UserJoinedChannel),
+      abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
+    });
+
+    if (abort) {
+      return;
+    }
+
+    success = userJoined.payload.channel.id === conversationId;
+  }
+
+  yield put(rawSetActiveConversationId(conversationId));
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {

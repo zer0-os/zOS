@@ -8,6 +8,11 @@ import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
 import { Media } from '../../message-input/utils';
+import { otherMembersToString } from '../../../platform-apps/channels/util';
+
+import { bem } from '../../../lib/bem';
+
+const c = bem('.direct-message-chat');
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -18,7 +23,7 @@ jest.mock('../../../platform-apps/channels/util/api', () => {
   };
 });
 
-describe('messenger-chat', () => {
+describe(DirectMessageChat, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       activeConversationId: '1',
@@ -37,76 +42,38 @@ describe('messenger-chat', () => {
     return shallow(<DirectMessageChat {...allProps} />);
   };
 
-  const getDirectMessageChat = (wrapper) => wrapper.find('.direct-message-chat');
-
-  it('render direct message chat', function () {
-    const wrapper = subject({});
-
-    expect(getDirectMessageChat(wrapper).exists()).toBe(true);
-  });
-
   it('render channel view component', function () {
-    const activeDirectMessageId = '123';
+    const wrapper = subject({ activeConversationId: '123' });
 
-    const wrapper = subject({
-      activeConversationId: activeDirectMessageId,
-    });
-
-    expect(wrapper.find(ChatViewContainer).hasClass('direct-message-chat__channel')).toBe(true);
-    expect(wrapper.find(ChatViewContainer).prop('channelId')).toStrictEqual(activeDirectMessageId);
+    expect(wrapper.find(ChatViewContainer)).toHaveProp('channelId', '123');
   });
 
   describe('title', () => {
-    it('channel name as title and otherMembers in tooltip', function () {
-      const directMessage = {
-        name: 'this is my channel name',
-        otherMembers: [
-          { firstName: 'first-name', lastName: 'last-name' },
-          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
-        ],
-      };
+    it('renders channel name as title when name is provided', function () {
+      const directMessage = { name: 'this is my channel name', otherMembers: [] };
 
       const tooltip = subject({ directMessage } as any).find(Tooltip);
 
       expect(tooltip.html()).toContain(directMessage.name);
-      expect(tooltip.prop('overlay')).toEqual(
-        directMessage.otherMembers
-          .map((o) =>
-            [
-              o.firstName,
-              o.lastName,
-            ]
-              .filter((e) => e)
-              .join(' ')
-          )
-          .join(', ')
-      );
     });
 
-    it('otherMembers as title', function () {
+    it('renders otherMembers as title when name is NOT provided', function () {
       const directMessage = {
-        otherMembers: [
-          { firstName: 'first-name', lastName: 'last-name' },
-          { firstName: 'another-first-name-but-no-lastname', lastName: '' },
-        ],
         name: undefined,
+        otherMembers: [{ firstName: 'first-name', lastName: 'last-name' }] as User[],
       };
 
       const tooltip = subject({ directMessage } as any).find(Tooltip);
 
-      const otherMembersExpectation = directMessage.otherMembers
-        .map((o) =>
-          [
-            o.firstName,
-            o.lastName,
-          ]
-            .filter((e) => e)
-            .join(' ')
-        )
-        .join(', ');
+      expect(tooltip.html()).toContain(otherMembersToString(directMessage.otherMembers));
+    });
 
-      expect(tooltip.html()).toContain(otherMembersExpectation);
-      expect(tooltip.prop('overlay')).toEqual(otherMembersExpectation);
+    it('renders otherMembers in tooltip', function () {
+      const directMessage = { otherMembers: [{ firstName: 'first-name', lastName: 'last-name' }] as User[] };
+
+      const tooltip = subject({ directMessage } as any).find(Tooltip);
+
+      expect(tooltip).toHaveProp('overlay', otherMembersToString(directMessage.otherMembers));
     });
   });
 
@@ -114,12 +81,7 @@ describe('messenger-chat', () => {
     it('header renders full name in the title', function () {
       const wrapper = subject({
         directMessage: {
-          otherMembers: [
-            stubUser({
-              firstName: 'Johnny',
-              lastName: 'Sanderson',
-            }),
-          ],
+          otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
         } as Channel,
       });
 
@@ -130,91 +92,69 @@ describe('messenger-chat', () => {
 
     it('header renders online status in the subtitle', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser({ isOnline: true })],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: true })] } as Channel,
       });
 
-      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+      const subtitle = wrapper.find(c('subtitle'));
 
-      expect(subtitle.text()).toEqual('Online');
+      expect(subtitle).toHaveText('Online');
     });
 
-    it('header renders online status', function () {
+    it('header renders avatar online status', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser({ isOnline: true })],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: true })] } as Channel,
       });
 
-      const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
-
-      expect(onlineAvatar.exists()).toBeTrue();
+      expect(wrapper).toHaveElement(c('header-avatar--online'));
     });
 
     it('header renders offline status', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser({ isOnline: false })],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: false })] } as Channel,
       });
 
-      const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
-
-      expect(offlineAvatar.exists()).toBeTrue();
+      expect(wrapper).toHaveElement(c('header-avatar--offline'));
     });
 
     it('header renders users avatar when there is a avatar url', function () {
       const wrapper = subject({
         directMessage: {
           isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
+          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
         } as Channel,
       });
 
-      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+      const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url(avatar-url)' });
-      expect(headerAvatar.find('IconUsers1').exists()).toBeFalse();
+      expect(headerAvatar).not.toHaveElement('IconUsers1');
+      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
     });
 
     it('header renders avatar with eth icon when there is no avatar url', function () {
       const wrapper = subject({
         directMessage: {
           isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: '',
-            }),
-          ],
+          otherMembers: [stubUser({ profileImage: '' })],
         } as Channel,
       });
 
-      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+      const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar.find('IconCurrencyEthereum').exists()).toBeTrue();
+      expect(headerAvatar).not.toHaveElement('IconUsers1');
+      expect(headerAvatar).toHaveElement('IconCurrencyEthereum');
     });
 
     it('header renders group management menu icon button', function () {
       const wrapper = subject({
         directMessage: {
           isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
+          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
         } as Channel,
       });
 
-      const groupManagementMenuContainer = wrapper.find('.direct-message-chat__group-management-menu-container');
-
-      expect(groupManagementMenuContainer.exists()).toBeTrue();
+      expect(wrapper).toHaveElement(c('group-management-menu-container'));
     });
 
     it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
@@ -222,45 +162,31 @@ describe('messenger-chat', () => {
         isCurrentUserRoomAdmin: false,
         directMessage: {
           isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
+          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
         } as Channel,
       });
 
       const groupManagementMenu = wrapper.find(GroupManagementMenu);
 
-      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(false);
+      expect(groupManagementMenu).toHaveProp('canLeaveRoom', false);
     });
 
     it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
       const wrapper = subject({
         isCurrentUserRoomAdmin: false,
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-            stubUser({
-              profileImage: 'avatar-url',
-            }),
-          ],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
       });
 
       const groupManagementMenu = wrapper.find(GroupManagementMenu);
 
-      expect(groupManagementMenu.prop('canLeaveRoom')).toBe(true);
+      expect(groupManagementMenu).toHaveProp('canLeaveRoom', true);
     });
 
     it('can start add group member group management saga', async function () {
       const startAddGroupMember = jest.fn();
       const wrapper = subject({ startAddGroupMember });
 
-      wrapper.find(GroupManagementMenu).prop('onStartAddMember')();
+      wrapper.find(GroupManagementMenu).simulate('startAddMember');
 
       expect(startAddGroupMember).toHaveBeenCalledOnce();
     });
@@ -271,14 +197,8 @@ describe('messenger-chat', () => {
       const wrapper = subject({
         directMessage: {
           otherMembers: [
-            stubUser({
-              firstName: 'Johnny',
-              lastName: 'Sanderson',
-            }),
-            stubUser({
-              firstName: 'Jack',
-              lastName: 'Black',
-            }),
+            stubUser({ firstName: 'Johnny', lastName: 'Sanderson' }),
+            stubUser({ firstName: 'Jack', lastName: 'Black' }),
           ],
         } as Channel,
       });
@@ -298,9 +218,9 @@ describe('messenger-chat', () => {
         } as Channel,
       });
 
-      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+      const subtitle = wrapper.find(c('subtitle'));
 
-      expect(subtitle.text()).toEqual('Online');
+      expect(subtitle).toHaveText('Online');
     });
 
     it('header renders online status if any member is online', function () {
@@ -313,67 +233,49 @@ describe('messenger-chat', () => {
         } as Channel,
       });
 
-      const onlineAvatar = wrapper.find('.direct-message-chat__header-avatar--online');
-
-      expect(onlineAvatar.exists()).toBeTrue();
+      expect(wrapper).toHaveElement(c('header-avatar--online'));
     });
 
     it('header renders offline status', function () {
       const wrapper = subject({
         directMessage: {
-          otherMembers: [
-            stubUser({ isOnline: false }),
-            stubUser({ isOnline: false }),
-          ],
+          otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })],
         } as Channel,
       });
 
-      const offlineAvatar = wrapper.find('.direct-message-chat__header-avatar--offline');
-
-      expect(offlineAvatar.exists()).toBeTrue();
+      expect(wrapper).toHaveElement(c('header-avatar--offline'));
     });
 
     it('header renders avatar with group icon when there is no avatar url', function () {
       const wrapper = subject({
         directMessage: {
-          otherMembers: [
-            stubUser({
-              profileImage: '',
-            }),
-            stubUser({
-              profileImage: '',
-            }),
-          ],
+          otherMembers: [stubUser(), stubUser()],
         } as Channel,
       });
 
-      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+      const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar.find('IconUsers1').exists()).toBeTrue();
+      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
+      expect(headerAvatar).toHaveElement('IconUsers1');
     });
 
     it('header renders avatar with custom background when there is an avatar url', function () {
       const wrapper = subject({
         directMessage: {
           icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
-          otherMembers: [
-            stubUser({
-              profileImage: 'avatar-url-1',
-            }),
-            stubUser({
-              profileImage: 'avatar-url-2',
-            }),
-          ],
+          otherMembers: [stubUser(), stubUser()],
         } as Channel,
       });
 
-      const headerAvatar = wrapper.find('.direct-message-chat__header-avatar');
+      const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', {
         backgroundImage:
           'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)',
       });
+      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
+      expect(headerAvatar).not.toHaveElement('IconUsers1');
     });
   });
 
@@ -383,11 +285,11 @@ describe('messenger-chat', () => {
         leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
       });
 
-      // Modal is the wrapper for the leave group dialog
-      expect(wrapper.find('Modal').exists()).toBeTrue();
+      expect(wrapper).toHaveElement('Modal');
 
       wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.IN_PROGRESS });
-      expect(wrapper.find('Modal').exists()).toBeTrue();
+
+      expect(wrapper).toHaveElement('Modal');
     });
 
     it('does not render leave group dialog when LeaveGroupDialogStatus is closed', () => {
@@ -395,7 +297,7 @@ describe('messenger-chat', () => {
         leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       });
 
-      expect(wrapper.find('Modal').exists()).toBeFalse();
+      expect(wrapper).not.toHaveElement('Modal');
     });
 
     it('passes name and roomId to leave group dialog', () => {

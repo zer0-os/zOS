@@ -114,6 +114,6 @@ export function rawUserToDomainUser(u): User {
     lastName: u.profileSummary?.lastName,
     profileImage: u.profileSummary?.profileImage,
     lastSeenAt: u.lastActiveAt,
-    primaryZID: u?.primaryZID,
+    primaryZID: u.primaryZID,
   };
 }

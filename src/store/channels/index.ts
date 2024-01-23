@@ -15,6 +15,7 @@ export interface User {
   isOnline: Boolean;
   profileImage: string;
   lastSeenAt: string;
+  primaryZID: string;
 }
 
 export enum GroupChannelType {

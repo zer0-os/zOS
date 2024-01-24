@@ -4,6 +4,8 @@ import { SettingsMenu } from '../../../settings-menu';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconPlus } from '@zero-tech/zui/icons';
 
+import { featureFlags } from '../../../../lib/feature-flags';
+
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
 
@@ -45,7 +47,7 @@ export class UserHeader extends React.Component<Properties> {
         {this.props.userHandle && (
           <div {...cn('handle')}>
             {this.props.userHandle}
-            {this.isWalletAddress && this.renderLink()}
+            {featureFlags.allowVerifyId && this.isWalletAddress && this.renderLink()}
           </div>
         )}
       </div>

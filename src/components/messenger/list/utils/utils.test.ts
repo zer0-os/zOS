@@ -52,8 +52,8 @@ describe('getUserHandle', () => {
   });
 
   it('returns truncated publicAddress from the first wallet when primaryZID is absent', () => {
-    const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '123456789' }] };
-    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('1234...6789');
+    const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '0x123456789' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('0x1234...6789');
   });
 
   it('returns empty string when both primaryZID and wallets are absent', () => {

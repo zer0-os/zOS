@@ -4,6 +4,7 @@ import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 import { select } from 'redux-saga/effects';
 import { currentUserSelector } from '../authentication/selectors';
+import { getUserHandle } from '../../components/messenger/list/utils/utils';
 
 export function filterChannelsList(state, filter: ChannelType) {
   const channelIdList = getDeepProperty(state, 'channelsList.value', []);
@@ -92,6 +93,7 @@ export function replaceZOSUserFields(
     lastName: string;
     profileImage: string;
     profileId: string;
+    primaryZID: string;
   },
   zeroUser: User
 ) {
@@ -101,6 +103,7 @@ export function replaceZOSUserFields(
     member.firstName = zeroUser.firstName;
     member.lastName = zeroUser.lastName;
     member.profileImage = zeroUser.profileImage;
+    member.primaryZID = getUserHandle(zeroUser.primaryZID, zeroUser.wallets);
   }
 }
 
@@ -115,5 +118,6 @@ export function rawUserToDomainUser(u): User {
     profileImage: u.profileSummary?.profileImage,
     lastSeenAt: u.lastActiveAt,
     primaryZID: u.primaryZID,
+    wallets: u.wallets,
   };
 }

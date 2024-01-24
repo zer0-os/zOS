@@ -136,4 +136,4 @@ function convertToNotifiableEventType(eventType) {
   }
 }
 
-const ADMIN_USER = { userId: 'admin', firstName: '', lastName: '', profileImage: '', profileId: '' };
+const ADMIN_USER = { userId: 'admin', firstName: '', lastName: '', profileImage: '', profileId: '', primaryZID: '' };

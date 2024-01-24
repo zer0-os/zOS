@@ -19,6 +19,7 @@ interface Sender {
   lastName: string;
   profileImage: string;
   profileId: string;
+  primaryZID: string;
 }
 
 export enum MediaType {

@@ -255,11 +255,6 @@ function* listenForUserLogin() {
   }
 }
 
-export function* currentUserAddedToChannel(_action) {
-  // For now, just force a fetch of conversations to refresh the list.
-  yield fetchConversations();
-}
-
 export function* userLeftChannel(channelId, matrixId) {
   const currentUser = yield select(currentUserSelector);
 
@@ -288,7 +283,6 @@ export function* saga() {
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 
   const chatBus = yield call(getChatBus);
-  yield takeEveryFromBus(chatBus, ChatEvents.ChannelInvitationReceived, currentUserAddedToChannel);
   yield takeEveryFromBus(chatBus, ChatEvents.UserLeftChannel, ({ payload }) =>
     userLeftChannel(payload.channelId, payload.userId)
   );

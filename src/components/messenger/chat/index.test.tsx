@@ -9,6 +9,8 @@ import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
 import { Media } from '../../message-input/utils';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
+import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
+import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
 import { bem } from '../../../lib/bem';
 
@@ -80,9 +82,7 @@ describe(DirectMessageChat, () => {
   describe('one on one chat', function () {
     it('header renders full name in the title', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })] } as Channel,
       });
 
       const tooltip = wrapper.find(Tooltip);
@@ -118,40 +118,31 @@ describe(DirectMessageChat, () => {
 
     it('header renders users avatar when there is a avatar url', function () {
       const wrapper = subject({
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
-        } as Channel,
+        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,
       });
 
       const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url(avatar-url)' });
-      expect(headerAvatar).not.toHaveElement('IconUsers1');
-      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
+      expect(headerAvatar).not.toHaveElement(IconUsers1);
+      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
     });
 
     it('header renders avatar with eth icon when there is no avatar url', function () {
       const wrapper = subject({
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [stubUser({ profileImage: '' })],
-        } as Channel,
+        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: '' })] } as Channel,
       });
 
       const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar).not.toHaveElement('IconUsers1');
-      expect(headerAvatar).toHaveElement('IconCurrencyEthereum');
+      expect(headerAvatar).not.toHaveElement(IconUsers1);
+      expect(headerAvatar).toHaveElement(IconCurrencyEthereum);
     });
 
     it('header renders group management menu icon button', function () {
       const wrapper = subject({
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
-        } as Channel,
+        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,
       });
 
       expect(wrapper).toHaveElement(c('group-management-menu-container'));
@@ -160,10 +151,7 @@ describe(DirectMessageChat, () => {
     it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
       const wrapper = subject({
         isCurrentUserRoomAdmin: false,
-        directMessage: {
-          isOneOnOne: true,
-          otherMembers: [stubUser({ profileImage: 'avatar-url' })],
-        } as Channel,
+        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,
       });
 
       const groupManagementMenu = wrapper.find(GroupManagementMenu);
@@ -210,12 +198,7 @@ describe(DirectMessageChat, () => {
 
     it('header renders online status in the subtitle if any member is online', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [
-            stubUser({ isOnline: false }),
-            stubUser({ isOnline: true }),
-          ],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
       });
 
       const subtitle = wrapper.find(c('subtitle'));
@@ -225,12 +208,7 @@ describe(DirectMessageChat, () => {
 
     it('header renders online status if any member is online', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [
-            stubUser({ isOnline: false }),
-            stubUser({ isOnline: true }),
-          ],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
       });
 
       expect(wrapper).toHaveElement(c('header-avatar--online'));
@@ -238,9 +216,7 @@ describe(DirectMessageChat, () => {
 
     it('header renders offline status', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })] } as Channel,
       });
 
       expect(wrapper).toHaveElement(c('header-avatar--offline'));
@@ -248,16 +224,14 @@ describe(DirectMessageChat, () => {
 
     it('header renders avatar with group icon when there is no avatar url', function () {
       const wrapper = subject({
-        directMessage: {
-          otherMembers: [stubUser(), stubUser()],
-        } as Channel,
+        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
       });
 
       const headerAvatar = wrapper.find(c('header-avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
-      expect(headerAvatar).toHaveElement('IconUsers1');
+      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
+      expect(headerAvatar).toHaveElement(IconUsers1);
     });
 
     it('header renders avatar with custom background when there is an avatar url', function () {
@@ -274,46 +248,41 @@ describe(DirectMessageChat, () => {
         backgroundImage:
           'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)',
       });
-      expect(headerAvatar).not.toHaveElement('IconCurrencyEthereum');
-      expect(headerAvatar).not.toHaveElement('IconUsers1');
+      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
+      expect(headerAvatar).not.toHaveElement(IconUsers1);
     });
   });
 
   describe('leave group dialog', () => {
-    it('renders leave group dialog when status is NOT closed', () => {
-      let wrapper = subject({
-        leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
-      });
+    it('renders leave group dialog when status is OPEN', () => {
+      const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN });
 
-      expect(wrapper).toHaveElement('Modal');
+      expect(wrapper).toHaveElement(LeaveGroupDialogContainer);
+    });
 
-      wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.IN_PROGRESS });
+    it('renders leave group dialog when status is IN_PROGRESS', () => {
+      const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.IN_PROGRESS });
 
-      expect(wrapper).toHaveElement('Modal');
+      expect(wrapper).toHaveElement(LeaveGroupDialogContainer);
     });
 
     it('does not render leave group dialog when LeaveGroupDialogStatus is closed', () => {
-      const wrapper = subject({
-        leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
-      });
+      const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED });
 
-      expect(wrapper).not.toHaveElement('Modal');
+      expect(wrapper).not.toHaveElement(LeaveGroupDialogContainer);
     });
 
     it('passes name and roomId to leave group dialog', () => {
       const wrapper = subject({
         leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
-        directMessage: {
-          name: 'group-name',
-          id: '1',
-          otherMembers: [],
-        } as any,
+        directMessage: { name: 'group-name', otherMembers: [] } as Channel,
         activeConversationId: 'room-id',
       });
 
-      const leaveGroupDialog = wrapper.find('Modal').prop('children');
-      expect(leaveGroupDialog['props'].roomId).toEqual('room-id');
-      expect(leaveGroupDialog['props'].groupName).toEqual('group-name');
+      const leaveGroupDialog = wrapper.find(LeaveGroupDialogContainer);
+
+      expect(leaveGroupDialog).toHaveProp('roomId', 'room-id');
+      expect(leaveGroupDialog).toHaveProp('groupName', 'group-name');
     });
   });
 
@@ -322,7 +291,9 @@ describe(DirectMessageChat, () => {
       it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
         const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(true);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canEdit', true);
       });
 
       it('does NOT allow editing if user is NOT an admin', () => {
@@ -331,7 +302,9 @@ describe(DirectMessageChat, () => {
           directMessage: stubConversation({ isOneOnOne: false }),
         });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canEdit', false);
       });
 
       it('does NOT allow editing if conversation is considered a 1 on 1', () => {
@@ -340,7 +313,9 @@ describe(DirectMessageChat, () => {
           directMessage: stubConversation({ isOneOnOne: true }),
         });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canEdit')).toBe(false);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canEdit', false);
       });
     });
 
@@ -348,7 +323,9 @@ describe(DirectMessageChat, () => {
       it('allows adding of members if user is an admin and conversation is not a 1 on 1', () => {
         const wrapper = subject({ isCurrentUserRoomAdmin: true });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(true);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canAddMembers', true);
       });
 
       it('does NOT allow adding of members if user is NOT an admin', () => {
@@ -357,7 +334,9 @@ describe(DirectMessageChat, () => {
           directMessage: stubConversation({ isOneOnOne: false }),
         });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canAddMembers', false);
       });
 
       it('does NOT allow adding of members if conversation is considered a 1 on 1', () => {
@@ -366,7 +345,9 @@ describe(DirectMessageChat, () => {
           directMessage: stubConversation({ isOneOnOne: true }),
         });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canAddMembers')).toBe(false);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canAddMembers', false);
       });
     });
 
@@ -374,7 +355,9 @@ describe(DirectMessageChat, () => {
       it('allows viewing of group information if conversation is not a 1 on 1', () => {
         const wrapper = subject({ directMessage: stubConversation({ isOneOnOne: false }) });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canViewGroupInformation')).toBe(true);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', true);
       });
 
       it('does NOT allow viewing of group information if conversation is considered a 1 on 1', () => {
@@ -383,18 +366,14 @@ describe(DirectMessageChat, () => {
           directMessage: stubConversation({ isOneOnOne: true }),
         });
 
-        expect(wrapper.find(GroupManagementMenu).prop('canViewGroupInformation')).toBe(false);
+        const groupManagementMenu = wrapper.find(GroupManagementMenu);
+
+        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', false);
       });
     });
   });
 
   describe('message input', () => {
-    it('renders message input', () => {
-      const wrapper = subject({});
-
-      expect(wrapper.find(MessageInput).exists()).toBe(true);
-    });
-
     it('passes sendMessage prop to message input', () => {
       const sendMessage = jest.fn();
       const message = 'test message';

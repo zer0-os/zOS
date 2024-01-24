@@ -51,7 +51,7 @@ export function getUserHandle(primaryZID: string, wallets: Wallet[]) {
   const publicAddress = wallets?.[0]?.publicAddress;
 
   if (publicAddress) {
-    return `${publicAddress.substring(0, 4)}...${publicAddress.substring(publicAddress.length - 4)}`;
+    return `${publicAddress.substring(0, 6)}...${publicAddress.substring(publicAddress.length - 4)}`;
   }
 
   return '';

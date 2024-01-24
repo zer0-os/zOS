@@ -16,7 +16,6 @@
   }
 
   &__name {
-    color: theme.$color-white;
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
@@ -25,6 +24,16 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+
+    @include glass-text-primary-color;
+  }
+
+  &__primary-zid {
+    font-size: 10px;
+    font-weight: 400;
+    display: flex;
+
+    @include glass-text-tertiary-color;
   }
 
   &__remove {

@@ -35,7 +35,11 @@ export class CitizenListItem extends React.Component<Properties> {
           tabIndex={-1}
           statusType={this.statusType}
         />
-        <span {...cn('name')}>{displayName(this.props.user)}</span>
+        <div>
+          <span {...cn('name')}>{displayName(this.props.user)}</span>
+          <span {...cn('primary-zid')}>{this.props.user.primaryZID}</span>
+        </div>
+
         {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}
         {this.props.onRemove && (
           <div {...cn('remove')}>

@@ -44,6 +44,7 @@ jobs:
       REACT_APP_ASSETS_PATH: ${{vars.ASSETS_PATH}}
       REACT_APP_ANDROID_STORE_PATH: ${{vars.ANDROID_STORE_PATH}}
       REACT_APP_MATRIX_HOME_SERVER_URL: ${{vars.MATRIX_HOME_SERVER_URL}}
+      REACT_APP_ZNS_EXPLORER_URL: ${{vars.ZNS_EXPLORER_URL}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

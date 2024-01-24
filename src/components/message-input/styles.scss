@@ -219,7 +219,7 @@
         align-items: center;
         gap: 10px;
         border-radius: 8px;
-        line-height: 24px;
+        line-height: 14px;
 
         &--focused {
           background-color: theme.$color-primary-4;
@@ -234,6 +234,19 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+
+        @include glass-text-primary-color;
+      }
+
+      &__item-zid {
+        font-size: 10px;
+        font-weight: 400;
+        display: flex;
+
+        @include glass-text-tertiary-color;
       }
     }
   }

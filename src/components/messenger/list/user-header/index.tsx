@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { config } from '../../../../config';
 import { SettingsMenu } from '../../../settings-menu';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconPlus } from '@zero-tech/zui/icons';
@@ -33,7 +34,7 @@ export class UserHeader extends React.Component<Properties> {
 
   renderLink() {
     return (
-      <a {...cn('link')} href={'https://explorer.zero.tech/'} target='_blank' rel='noopener noreferrer'>
+      <a {...cn('link')} href={config.znsExplorerUrl} target='_blank' rel='noopener noreferrer'>
         Verify ID
       </a>
     );

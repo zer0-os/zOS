@@ -895,7 +895,9 @@ export class MatrixClient implements IChatClient {
 
         if (event.getContent().membership === MembershipStateType.Join) {
           const room = this.matrix.getRoom(event.getRoomId());
-          this.events.onUserJoinedChannel(await this.mapConversation(room));
+          if (room) {
+            this.events.onUserJoinedChannel(await this.mapConversation(room));
+          }
         }
       }
 

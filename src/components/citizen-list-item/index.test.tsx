@@ -22,6 +22,12 @@ describe(CitizenListItem, () => {
     expect(wrapper.find(c('name')).text()).toEqual('John Doe');
   });
 
+  it('renders the user primary zid', function () {
+    const wrapper = subject({ user: { primaryZID: '0://zero:tech' } as any });
+
+    expect(wrapper.find(c('primary-zid')).text()).toEqual('0://zero:tech');
+  });
+
   it('renders the user status', function () {
     const wrapper = subject({ user: { isOnline: false } as any });
 

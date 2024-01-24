@@ -1,3 +1,4 @@
+import { config } from '../../config';
 import { translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
 
 describe(translateJoinRoomApiError, () => {
@@ -25,7 +26,7 @@ describe(translateJoinRoomApiError, () => {
     expect(accessTokenRequiredErrorMessage).toEqual({
       header: 'World Members Only',
       body: 'You cannot join this conversation as your wallet does not hold a domain in this world. Buy a domain or switch to a wallet that holds one.',
-      linkPath: 'https://explorer.zero.tech/exampleRoom',
+      linkPath: `${config.znsExplorerUrl}/exampleRoom`,
       linkText: 'Buy A Domain',
     });
   });

@@ -23,4 +23,5 @@ export const config = {
     homeServerUrl: process.env.REACT_APP_MATRIX_HOME_SERVER_URL,
   },
   androidStorePath: process.env.REACT_APP_ANDROID_STORE_PATH,
+  znsExplorerUrl: process.env.REACT_APP_ZNS_EXPLORER_URL,
 };

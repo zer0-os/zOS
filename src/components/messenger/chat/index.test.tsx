@@ -100,7 +100,56 @@ describe(DirectMessageChat, () => {
       expect(subtitle).toHaveText('Online');
     });
 
-    it('header renders avatar online status', function () {
+    it('renders primaryZID in the subtitle if oneOnOne chat', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              primaryZID: '0://arc:vet',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+      expect(subtitle.text()).toEqual('0://arc:vet');
+    });
+
+    it('does not render primaryZID in the subtitle if group chat', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: false,
+          otherMembers: [
+            stubUser({
+              primaryZID: '0://arc:vet',
+              isOnline: false,
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+      expect(subtitle.text()).toEqual('Offline');
+    });
+
+    it('renders empty subtitle in oneOnOne chat if no primaryZID', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              primaryZID: '',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find('.direct-message-chat__subtitle');
+      expect(subtitle.text()).toEqual('');
+    });
+
+    it('header renders online status', function () {
       const wrapper = subject({
         directMessage: { otherMembers: [stubUser({ isOnline: true })] } as Channel,
       });

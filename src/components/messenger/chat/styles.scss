@@ -190,9 +190,11 @@ $recent-indicator-size: 8px;
     text-overflow: ellipsis;
     display: inline-block;
     font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
-    color: theme.$color-greyscale-11;
+    font-size: 10px;
+    line-height: normal;
+    font-family: 'Roboto Mono';
+
+    @include glass-text-tertiary-color;
   }
 
   &__group-management-menu-container {

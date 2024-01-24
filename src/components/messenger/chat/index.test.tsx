@@ -116,6 +116,55 @@ describe(DirectMessageChat, () => {
       expect(wrapper).toHaveElement(c('header-avatar--offline'));
     });
 
+    it('renders primaryZID in the subtitle if oneOnOne chat', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              primaryZID: '0://arc:vet',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find(c('subtitle'));
+      expect(subtitle.text()).toEqual('0://arc:vet');
+    });
+
+    it('does not render primaryZID in the subtitle if group chat', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: false,
+          otherMembers: [
+            stubUser({
+              primaryZID: '0://arc:vet',
+              isOnline: false,
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find(c('subtitle'));
+      expect(subtitle.text()).toEqual('Offline');
+    });
+
+    it('renders empty subtitle in oneOnOne chat if no primaryZID', function () {
+      const wrapper = subject({
+        directMessage: {
+          isOneOnOne: true,
+          otherMembers: [
+            stubUser({
+              primaryZID: '',
+            }),
+          ],
+        } as Channel,
+      });
+
+      const subtitle = wrapper.find(c('subtitle'));
+      expect(subtitle.text()).toEqual('');
+    });
+
     it('header renders users avatar when there is a avatar url', function () {
       const wrapper = subject({
         directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,

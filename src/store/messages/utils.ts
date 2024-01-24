@@ -53,6 +53,7 @@ export function createOptimisticMessageObject(
       lastName: user.profileSummary.lastName,
       profileImage: user.profileSummary.profileImage,
       profileId: user.profileId,
+      primaryZID: user.primaryZID,
     },
     updatedAt: 0,
     preview: null,

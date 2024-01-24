@@ -2,7 +2,7 @@ import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'red
 import { takeEveryFromBus } from '../../lib/saga';
 
 import { rawSetActiveConversationId, SagaActionTypes, setJoinRoomErrorContent, clearJoinRoomErrorContent } from '.';
-import { Events as ChatBusEvents, createChatConnection, getChatBus } from './bus';
+import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -115,7 +115,7 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
   let success = false;
   while (!success) {
     const { userJoined, abort } = yield race({
-      userJoined: take(yield call(getChatBus), ChatBusEvents.UserJoinedChannel),
+      userJoined: take(yield call(getConversationsBus), ConversationEvents.UserJoinedConversation),
       abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
     });
 
@@ -123,7 +123,7 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
       return;
     }
 
-    success = userJoined.payload.channel.id === conversationId;
+    success = userJoined.conversationId === conversationId;
   }
 
   yield put(rawSetActiveConversationId(conversationId));

@@ -716,7 +716,9 @@ export class MatrixClient implements IChatClient {
         this.debug('encryped message: ', event);
       }
       if (event.type === EventType.RoomCreate) {
-        await this.roomCreated(event);
+      }
+      if (event.type === EventType.RoomMember) {
+        await this.publishMembershipChange(event);
       }
       if (event.type === EventType.RoomAvatar) {
         this.publishRoomAvatarChange(event);
@@ -745,7 +747,7 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
-    this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
+    //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
 
     // Log events during development to help with understanding which events are happening
@@ -846,12 +848,6 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  private async roomCreated(event) {
-    const room = this.matrix.getRoom(event.room_id);
-    this.initializeRoomEventHandlers(room);
-    this.events.onUserJoinedChannel(await this.mapConversation(room));
-  }
-
   private receiveDeleteMessage = (event) => {
     this.events.receiveDeleteMessage(event.room_id, event.redacts);
   };
@@ -879,32 +875,34 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
-  private publishMembershipChange = async (event: MatrixEvent) => {
-    if (event.getType() === EventType.RoomMember) {
-      const user = this.mapUser(event.getStateKey());
-      if (event.getStateKey() !== this.userId) {
-        if (event.getContent().membership === MembershipStateType.Leave) {
-          this.events.onOtherUserLeftChannel(event.getRoomId(), user);
-        } else {
-          this.events.onOtherUserJoinedChannel(event.getRoomId(), user);
-        }
+  private publishMembershipChange = async (event) => {
+    const user = this.mapUser(event.state_key);
+    const membership = event.content.membership;
+    const roomId = event.room_id;
+
+    if (event.state_key !== this.userId) {
+      if (membership === MembershipStateType.Leave) {
+        this.events.onOtherUserLeftChannel(roomId, user);
       } else {
-        if (event.getContent().membership === MembershipStateType.Leave) {
-          this.events.onUserLeft(event.getRoomId(), user.matrixId);
-        }
-
-        if (event.getContent().membership === MembershipStateType.Join) {
-          const room = this.matrix.getRoom(event.getRoomId());
-          if (room) {
-            this.events.onUserJoinedChannel(await this.mapConversation(room));
-          }
-        }
+        this.events.onOtherUserJoinedChannel(roomId, user);
+      }
+    } else {
+      if (membership === MembershipStateType.Leave) {
+        this.events.onUserLeft(roomId, user.matrixId);
       }
 
-      const message = await mapEventToAdminMessage(event.getEffectiveEvent());
-      if (message) {
-        this.events.receiveNewMessage(event.getRoomId(), message);
+      if (membership === MembershipStateType.Join) {
+        const room = this.matrix.getRoom(roomId);
+        if (room) {
+          this.events.onUserJoinedChannel(await this.mapConversation(room));
+          this.initializeRoomEventHandlers(room);
+        }
       }
+    }
+
+    const message = await mapEventToAdminMessage(event);
+    if (message) {
+      this.events.receiveNewMessage(roomId, message);
     }
   };
 

@@ -301,6 +301,9 @@ export function* saga() {
 
 function* userJoinedChannelAction({ payload }) {
   yield addChannel(payload.channel);
+
+  const channel = yield call(getConversationsBus);
+  yield put(channel, { type: ConversationEvents.UserJoinedConversation, conversationId: payload.channel.id });
 }
 
 function* roomNameChangedAction(action) {

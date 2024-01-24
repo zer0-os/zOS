@@ -3,6 +3,7 @@ import { call } from 'redux-saga/effects';
 
 export enum ConversationEvents {
   ConversationsLoaded = 'conversations/loaded',
+  UserJoinedConversation = 'conversations/user-joined-conversation',
 }
 
 let theConversationsChannel;

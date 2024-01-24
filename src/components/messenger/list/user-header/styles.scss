@@ -28,7 +28,16 @@
   &__handle {
     @include glass-text-tertiary-color;
 
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+
     font-size: 10px;
     line-height: 13px;
+  }
+
+  &__link {
+    color: theme.$color-secondary-11;
   }
 }

@@ -27,6 +27,15 @@
     white-space: nowrap;
   }
 
+  &__primary-zid {
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    display: flex;
+
+    @include glass-text-tertiary-color;
+  }
+
   &__remove {
     display: none;
   }

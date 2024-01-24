@@ -89,6 +89,14 @@ export class FeatureFlags {
   set allowJoinRoom(value: boolean) {
     this._setBoolean('allowJoinRoom', value);
   }
+
+  get allowVerifyId() {
+    return this._getBoolean('allowVerifyId', false);
+  }
+
+  set allowVerifyId(value: boolean) {
+    this._setBoolean('allowVerifyId', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

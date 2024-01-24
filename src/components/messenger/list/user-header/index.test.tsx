@@ -7,6 +7,11 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.user-header');
 
+const featureFlags = { allowVerifyId: false };
+jest.mock('../../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe(UserHeader, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -55,5 +60,19 @@ describe(UserHeader, () => {
 
     wrapper.find(IconButton).simulate('click');
     expect(startConversationMock).toHaveBeenCalled();
+  });
+
+  it('renders navigation link when user handle is a wallet address', function () {
+    featureFlags.allowVerifyId = true;
+
+    const wrapper = subject({ userHandle: '0x1234567890abcdef' });
+    expect(wrapper).toHaveElement(c('link'));
+  });
+
+  it('does not render navigation link when user handle is not a wallet address', function () {
+    featureFlags.allowVerifyId = true;
+
+    const wrapper = subject({ userHandle: 'user123' });
+    expect(wrapper).not.toHaveElement(c('link'));
   });
 });

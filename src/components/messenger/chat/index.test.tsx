@@ -122,7 +122,7 @@ describe(DirectMessageChat, () => {
           isOneOnOne: true,
           otherMembers: [
             stubUser({
-              primaryZID: '0://arc:vet',
+              primaryZIDDisplayHandle: '0://arc:vet',
             }),
           ],
         } as Channel,
@@ -138,7 +138,7 @@ describe(DirectMessageChat, () => {
           isOneOnOne: false,
           otherMembers: [
             stubUser({
-              primaryZID: '0://arc:vet',
+              primaryZIDDisplayHandle: '0://arc:vet',
               isOnline: false,
             }),
           ],
@@ -155,7 +155,7 @@ describe(DirectMessageChat, () => {
           isOneOnOne: true,
           otherMembers: [
             stubUser({
-              primaryZID: '',
+              primaryZIDDisplayHandle: '',
             }),
           ],
         } as Channel,

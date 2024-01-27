@@ -344,6 +344,7 @@ describe('channels list saga', () => {
         firstName: 'first-1',
         lastName: 'last-1',
         primaryZID: 'primary-zid-1',
+        primaryZIDDisplayHandle: 'primary-zid-1',
       },
       {
         userId: 'user-2',
@@ -352,6 +353,7 @@ describe('channels list saga', () => {
         firstName: 'first-2',
         lastName: 'last-2',
         primaryZID: 'primary-zid-2',
+        primaryZIDDisplayHandle: 'primary-zid-2',
       },
       {
         userId: 'user-3',
@@ -360,6 +362,7 @@ describe('channels list saga', () => {
         firstName: 'first-3',
         lastName: 'last-3',
         primaryZID: '',
+        primaryZIDDisplayHandle: '',
       },
     ] as any;
 
@@ -379,6 +382,7 @@ describe('channels list saga', () => {
           firstName: 'first-1',
           lastName: 'last-1',
           primaryZID: 'primary-zid-1',
+          primaryZIDDisplayHandle: 'primary-zid-1',
         },
         'matrix-id-2': {
           userId: 'user-2',
@@ -387,6 +391,7 @@ describe('channels list saga', () => {
           firstName: 'first-2',
           lastName: 'last-2',
           primaryZID: 'primary-zid-2',
+          primaryZIDDisplayHandle: 'primary-zid-2',
         },
         'matrix-id-3': {
           userId: 'user-3',
@@ -395,6 +400,7 @@ describe('channels list saga', () => {
           firstName: 'first-3',
           lastName: 'last-3',
           primaryZID: '',
+          primaryZIDDisplayHandle: '',
         },
       };
 
@@ -423,6 +429,7 @@ describe('channels list saga', () => {
           lastName: 'last-1',
           profileImage: undefined,
           primaryZID: 'primary-zid-1',
+          primaryZIDDisplayHandle: 'primary-zid-1',
         },
         {
           matrixId: 'matrix-id-2',
@@ -432,6 +439,7 @@ describe('channels list saga', () => {
           lastName: 'last-2',
           profileImage: undefined,
           primaryZID: 'primary-zid-2',
+          primaryZIDDisplayHandle: 'primary-zid-2',
         },
       ]);
 
@@ -445,6 +453,7 @@ describe('channels list saga', () => {
           lastName: 'last-3',
           profileImage: undefined,
           primaryZID: '',
+          primaryZIDDisplayHandle: '',
         },
       ]);
     });
@@ -470,6 +479,7 @@ describe('channels list saga', () => {
         lastName: 'last-1',
         profileImage: undefined,
         primaryZID: 'primary-zid-1',
+        primaryZIDDisplayHandle: 'primary-zid-1',
       });
       expect(channels[0].messages[1].sender).toStrictEqual({
         userId: 'user-2',
@@ -478,6 +488,7 @@ describe('channels list saga', () => {
         lastName: 'last-2',
         profileImage: undefined,
         primaryZID: 'primary-zid-2',
+        primaryZIDDisplayHandle: 'primary-zid-2',
       });
       expect(channels[1].messages[0].sender).toStrictEqual({
         userId: 'user-3',
@@ -486,6 +497,7 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         profileImage: undefined,
         primaryZID: '',
+        primaryZIDDisplayHandle: '',
       });
     });
   });

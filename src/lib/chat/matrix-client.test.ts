@@ -4,6 +4,7 @@ import { setAsDM } from './matrix/utils';
 import { uploadImage as _uploadImage } from '../../store/channels-list/api';
 import { when } from 'jest-when';
 import { config } from '../../config';
+import { PowerLevels } from './types';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -363,7 +364,7 @@ describe('matrix client', () => {
       );
     });
 
-    it('set the appropriate power_level_content_override for each user in group conversation', async () => {
+    it('set the appropriate defaul power_levels in group conversation', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom }, { userId: '@this.user' });
 
@@ -381,26 +382,32 @@ describe('matrix client', () => {
         expect.objectContaining({
           power_level_content_override: {
             users: {
-              '@first.user': 0,
-              '@second.user': 0,
               '@this.user': 100, // the user who created the room
             },
+            invite: PowerLevels.Owner,
+            kick: PowerLevels.Owner,
+            redact: PowerLevels.Owner,
+            ban: PowerLevels.Owner,
+            users_default: PowerLevels.Viewer,
           },
         })
       );
     });
 
-    it('specifies the invited users', async () => {
+    it('invites the users after createRoom', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const invite = jest.fn().mockResolvedValue({});
       const users = [
         { userId: 'id-1', matrixId: '@first.user' },
         { userId: 'id-2', matrixId: '@second.user' },
       ];
-      const client = await subject({ createRoom });
+      const client = await subject({ createRoom, invite });
 
       await client.createConversation(users, null, null, null);
 
-      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: ['@first.user', '@second.user'] }));
+      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: [] }));
+      expect(invite).toHaveBeenCalledWith('new-room-id', '@first.user');
+      expect(invite).toHaveBeenCalledWith('new-room-id', '@second.user');
     });
 
     it('sets the conversation as a Matrix direct message', async () => {

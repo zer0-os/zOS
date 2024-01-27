@@ -396,14 +396,19 @@ export class MatrixClient implements IChatClient {
     const options: ICreateRoomOpts = {
       preset: Preset.TrustedPrivateChat,
       visibility: Visibility.Private,
-      invite: users.map((u) => u.matrixId),
+      invite: [],
       is_direct: true,
       initial_state,
       power_level_content_override: {
         users: {
-          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: PowerLevels.Viewer }), {}),
           [this.userId]: PowerLevels.Owner,
         },
+        invite: PowerLevels.Owner, // default is PL0
+        // all below except users_default, default to PL50
+        kick: PowerLevels.Owner,
+        redact: PowerLevels.Owner,
+        ban: PowerLevels.Owner,
+        users_default: PowerLevels.Viewer,
       },
     };
     if (name) {
@@ -416,6 +421,9 @@ export class MatrixClient implements IChatClient {
 
     const room = this.matrix.getRoom(result.room_id);
     this.initializeRoomEventHandlers(room);
+    for (const user of users) {
+      await this.matrix.invite(result.room_id, user.matrixId);
+    }
     return await this.mapConversation(room);
   }
 

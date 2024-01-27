@@ -401,11 +401,10 @@ export class MatrixClient implements IChatClient {
       initial_state,
       power_level_content_override: {
         users: {
-          ...users.reduce((acc, u) => ({ ...acc, [u.matrixId]: PowerLevels.Viewer }), {}),
           [this.userId]: PowerLevels.Owner,
         },
         invite: PowerLevels.Owner, // default is PL0
-        // default is PL50
+        // all below except users_default, default to PL50
         kick: PowerLevels.Owner,
         redact: PowerLevels.Owner,
         ban: PowerLevels.Owner,

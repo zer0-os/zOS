@@ -364,7 +364,7 @@ describe('matrix client', () => {
       );
     });
 
-    it('set the appropriate power_level_content_override for each user, and other defaults in group conversation', async () => {
+    it('set the appropriate defaul power_levels in group conversation', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom }, { userId: '@this.user' });
 
@@ -382,8 +382,6 @@ describe('matrix client', () => {
         expect.objectContaining({
           power_level_content_override: {
             users: {
-              '@first.user': 0,
-              '@second.user': 0,
               '@this.user': 100, // the user who created the room
             },
             invite: PowerLevels.Owner,

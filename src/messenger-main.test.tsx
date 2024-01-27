@@ -41,16 +41,6 @@ describe('MessengerMain', () => {
     expect(setActiveConversationId).toHaveBeenCalledWith({ id: '123' });
   });
 
-  it('decodeURIComponent the conversationId from the url on mount', () => {
-    const setActiveConversationId = jest.fn();
-    subject({
-      setActiveConversationId,
-      match: { params: { conversationId: '%23wilderworld:zos-dev.zero.io' } },
-    });
-
-    expect(setActiveConversationId).toHaveBeenCalledWith({ id: '#wilderworld:zos-dev.zero.io' });
-  });
-
   it('updates the conversation id when the route changes', () => {
     const setActiveConversationId = jest.fn();
     const wrapper = subject({

@@ -120,7 +120,7 @@ describe(performValidateActiveConversation, () => {
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
     featureFlags.allowJoinRoom = true;
 
-    const alias = '#wildebeest:matrix.org';
+    const alias = 'wildebeest:matrix.org';
     const conversationId = '!wildebeest:matrix.org';
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({
       id: '!wildebeest:matrix.org',
@@ -133,7 +133,7 @@ describe(performValidateActiveConversation, () => {
       .provide([
         [matchers.call.fn(getRoomIdForAlias), conversationId],
       ])
-      .call(getRoomIdForAlias, alias)
+      .call(getRoomIdForAlias, '#' + alias)
       .not.call(apiJoinRoom, conversationId)
       .put(rawSetActiveConversationId(conversationId))
       .run();
@@ -146,7 +146,7 @@ describe(performValidateActiveConversation, () => {
 
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
-    await subject(performValidateActiveConversation, '#convo-not-exists')
+    await subject(performValidateActiveConversation, 'convo-not-exists')
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), undefined],
@@ -160,7 +160,7 @@ describe(performValidateActiveConversation, () => {
   it('joins the conversation if the active conversation id is an alias and the user is not a member', async () => {
     featureFlags.allowJoinRoom = true;
 
-    const alias = '#some-other-convo:matrix.org';
+    const alias = 'some-other-convo:matrix.org';
     const initialState = new StoreBuilder()
       .withCurrentUser({ id: 'current-user' })
       .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
@@ -170,7 +170,7 @@ describe(performValidateActiveConversation, () => {
       .provide([
         [matchers.call.fn(getRoomIdForAlias), '!some-other-convo:matrix.org'],
       ])
-      .call(getRoomIdForAlias, alias)
+      .call(getRoomIdForAlias, '#' + alias)
       .call(apiJoinRoom, '!some-other-convo:matrix.org')
       .run();
   });

@@ -231,7 +231,12 @@ export class MessageInput extends React.Component<Properties, State> {
         renderSuggestion={(suggestion) => (
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
-            <div className='message-input__mentions-text-area-wrap__suggestions__item-name'>{suggestion.display}</div>
+            <div>
+              <div className='message-input__mentions-text-area-wrap__suggestions__item-name'>{suggestion.display}</div>
+              <div className='message-input__mentions-text-area-wrap__suggestions__item-zid'>
+                {suggestion.primaryZID}
+              </div>
+            </div>
           </>
         )}
       />,

@@ -268,7 +268,12 @@ export class MatrixClient implements IChatClient {
 
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
     const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
-    return searchResults.map((u) => ({ id: u.id, display: u.displayName, profileImage: u.profileImage }));
+    return searchResults.map((u) => ({
+      id: u.id,
+      display: u.displayName,
+      profileImage: u.profileImage,
+      primaryZID: u.primaryZID,
+    }));
   }
 
   private getRelatedEventId(event): string {

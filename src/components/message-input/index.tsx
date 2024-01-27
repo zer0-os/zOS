@@ -234,7 +234,7 @@ export class MessageInput extends React.Component<Properties, State> {
             <div>
               <div className='message-input__mentions-text-area-wrap__suggestions__item-name'>{suggestion.display}</div>
               <div className='message-input__mentions-text-area-wrap__suggestions__item-zid'>
-                {suggestion.primaryZID}
+                {suggestion.displayHandle}
               </div>
             </div>
           </>

@@ -272,7 +272,7 @@ export class MatrixClient implements IChatClient {
       id: u.id,
       display: u.displayName,
       profileImage: u.profileImage,
-      primaryZID: u.primaryZID,
+      displayHandle: u.displayHandle,
     }));
   }
 

@@ -97,6 +97,14 @@ export class FeatureFlags {
   set allowVerifyId(value: boolean) {
     this._setBoolean('allowVerifyId', value);
   }
+
+  get allowEditPrimaryZID() {
+    return this._getBoolean('allowEditPrimaryZID', false);
+  }
+
+  set allowEditPrimaryZID(value: boolean) {
+    this._setBoolean('allowEditPrimaryZID', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -40,13 +40,7 @@ export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | stri
 
 // conversation can be referenced by an id or an alias
 export function isAlias(id: string) {
-  const isAlias = !id.startsWith('!');
-  if (isAlias) {
-    id = '#' + id;
-    return true;
-  }
-
-  return false;
+  return !id.startsWith('!');
 }
 
 // alias is prefixed with a #, and we don't want to store that in the URL,

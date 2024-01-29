@@ -12,6 +12,7 @@ describe('Container', () => {
       editProfileState: 0, // Set the initial editProfileState to State.NONE
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
+      currentPrimaryZID: '0://john:doe',
       editProfile: () => null,
       startProfileEdit: () => null,
       leaveGlobalNetwork: () => null,
@@ -31,6 +32,7 @@ describe('Container', () => {
         editProfileState: 0,
         currentDisplayName: 'John Doe',
         currentProfileImage: 'profile.jpg',
+        currentPrimaryZID: '0://john:doe',
       })
     );
   });
@@ -58,6 +60,7 @@ describe('Container', () => {
               firstName: 'John Doe',
               profileImage: 'profile.jpg',
             },
+            primaryZID: '0://john:doe',
           },
         },
       },
@@ -79,6 +82,12 @@ describe('Container', () => {
       const props = Container.mapState(stateMock);
 
       expect(props.currentProfileImage).toEqual('profile.jpg');
+    });
+
+    it('currentPrimaryZID', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.currentPrimaryZID).toEqual('0://john:doe');
     });
 
     it('errors', () => {

@@ -26,6 +26,7 @@ export const initialState: EditProfileState = {
 export const editProfile = createAction<{
   name: string;
   image: File | null;
+  primaryZID: string;
 }>(SagaActionTypes.EditProfile);
 
 export const leaveGlobalNetwork = createAction(SagaActionTypes.LeaveGlobal);

@@ -7,7 +7,7 @@ import { ImageUpload } from '../../components/image-upload';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { buttonLabelled } from '../../test/utils';
 
-const featureFlags = { internalUsage: false };
+const featureFlags = { internalUsage: false, allowEditPrimaryZID: false };
 jest.mock('../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
@@ -19,6 +19,7 @@ describe('EditProfile', () => {
       errors: {},
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
+      currentPrimaryZID: '0://john:doe',
       onEdit: () => null,
       onClose: () => null,
       onLeaveGlobal: () => null,
@@ -59,6 +60,7 @@ describe('EditProfile', () => {
     expect(onEditMock).toHaveBeenCalledWith({
       name: 'John Doe',
       image: null,
+      primaryZID: '0://john:doe',
     });
   });
 
@@ -75,7 +77,11 @@ describe('EditProfile', () => {
   });
 
   it('disables Save Changes button when no changes are made', () => {
-    const wrapper = subject({ currentDisplayName: 'John Doe', currentProfileImage: 'profile.jpg' });
+    const wrapper = subject({
+      currentDisplayName: 'John Doe',
+      currentProfileImage: 'profile.jpg',
+      currentPrimaryZID: '0://john:doe',
+    });
 
     expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
   });
@@ -88,16 +94,20 @@ describe('EditProfile', () => {
   });
 
   it('calls onEdit with correct data when Save Changes button is clicked', () => {
+    featureFlags.allowEditPrimaryZID = true;
+
     const onEditMock = jest.fn();
     const wrapper = subject({ onEdit: onEditMock });
 
     const formData = {
       name: 'Jane Smith',
       image: 'new-image.jpg', // note: this is actually supposed to be a nodejs FILE object
+      primaryZID: '0://jane:smith',
     };
 
     wrapper.find('Input[name="name"]').simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
+    wrapper.find('Input[name="primaryZID"]').simulate('change', formData.primaryZID);
     saveButton(wrapper).simulate('press');
 
     expect(onEditMock).toHaveBeenCalledWith(formData);

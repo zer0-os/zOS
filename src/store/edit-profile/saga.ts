@@ -13,7 +13,8 @@ import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
 
 export function* editProfile(action) {
-  const { name, image } = action.payload;
+  const { name, image, primaryZID } = action.payload;
+  console.log('primaryZID ', primaryZID);
 
   yield put(setState(State.INPROGRESS));
   try {

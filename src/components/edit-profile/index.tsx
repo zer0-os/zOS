@@ -19,8 +19,9 @@ export interface Properties {
     general?: string;
   };
   currentDisplayName: string;
+  currentPrimaryZID: string;
   currentProfileImage: string;
-  onEdit: (data: { name: string; image: File }) => void;
+  onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
 
   onLeaveGlobal: () => void;
@@ -30,11 +31,13 @@ export interface Properties {
 interface State {
   name: string;
   image: File | null;
+  primaryZID: string;
 }
 
 export class EditProfile extends React.Component<Properties, State> {
   state = {
     name: this.props.currentDisplayName,
+    primaryZID: this.props.currentPrimaryZID,
     image: null,
   };
 
@@ -42,11 +45,13 @@ export class EditProfile extends React.Component<Properties, State> {
     this.props.onEdit({
       name: this.state.name,
       image: this.state.image,
+      primaryZID: this.state.primaryZID,
     });
   };
 
   trackName = (value) => this.setState({ name: value });
   trackImage = (image) => this.setState({ image });
+  trackPrimaryZID = (value) => this.setState({ primaryZID: value });
 
   get isValid() {
     return this.state.name.trim().length > 0;
@@ -79,7 +84,9 @@ export class EditProfile extends React.Component<Properties, State> {
     return (
       !!this.nameError ||
       this.isLoading ||
-      (this.state.name === this.props.currentDisplayName && this.state.image === null)
+      (this.state.name === this.props.currentDisplayName &&
+        this.state.image === null &&
+        this.state.primaryZID === this.props.currentPrimaryZID)
     );
   }
 
@@ -112,6 +119,15 @@ export class EditProfile extends React.Component<Properties, State> {
             alert={this.nameError}
             className={c('body-input')}
           />
+          {featureFlags.allowEditPrimaryZID && (
+            <Input
+              label='Primary ZID'
+              name='primaryZID'
+              value={this.state.primaryZID}
+              onChange={this.trackPrimaryZID}
+              className={c('body-input')}
+            />
+          )}
         </div>
         {this.imageError && (
           <Alert className={c('alert-large')} variant='error'>

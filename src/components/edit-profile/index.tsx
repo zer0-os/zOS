@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input } from '@zero-tech/zui/components';
+import { IconButton, Alert, Button, Input, Tooltip } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
-import { IconUpload2, IconXClose } from '@zero-tech/zui/icons';
+import { IconUpload2, IconXClose, IconHelpCircle } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { featureFlags } from '../../lib/feature-flags';
 
@@ -92,6 +92,17 @@ export class EditProfile extends React.Component<Properties, State> {
 
   renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled={true} />;
 
+  renderZeroIDLabel = (): JSX.Element => (
+    <div className={c('primary-zid-lable')}>
+      Primary ZERO ID
+      <Tooltip content='Your primary ZERO ID is displayed with your username and other members can find you by searching for it.'>
+        <div className={c('info-tooltip')}>
+          <IconHelpCircle size={16} />
+        </div>
+      </Tooltip>
+    </div>
+  );
+
   render() {
     return (
       <div className={c('')}>
@@ -120,13 +131,15 @@ export class EditProfile extends React.Component<Properties, State> {
             className={c('body-input')}
           />
           {featureFlags.allowEditPrimaryZID && (
-            <Input
-              label='Primary ZID'
-              name='primaryZID'
-              value={this.state.primaryZID}
-              onChange={this.trackPrimaryZID}
-              className={c('body-input')}
-            />
+            <div>
+              <Input
+                label={this.renderZeroIDLabel()}
+                name='primaryZID'
+                value={this.state.primaryZID}
+                onChange={this.trackPrimaryZID}
+                className={c('body-input')}
+              />
+            </div>
           )}
         </div>
         {this.imageError && (

@@ -1,15 +1,15 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
 
 .edit-profile {
-  width: 608px;
-  padding: 10px;
+  padding: 16px;
 
   &__header {
     display: flex;
     height: 52px;
-    border-bottom: 1px solid theme.$color-primary-4;
     margin-bottom: 40px;
 
+    @include glass-state-active-stroke;
     color: theme.$color-greyscale-12;
 
     > *:first-child {
@@ -22,10 +22,11 @@
   }
 
   &__title {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 24px;
     line-height: 29px;
     margin: 0px;
+    @include glass-text-primary-color;
   }
 
   &__close {
@@ -46,7 +47,17 @@
   &__body-input {
     width: 240px;
     gap: 4px;
-    line-height: 24px;
+    line-height: normal;
+  }
+
+  &__primary-zid-lable {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__info-tooltip:hover {
+    cursor: pointer;
   }
 
   &__footer {

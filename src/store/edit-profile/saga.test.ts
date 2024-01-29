@@ -12,33 +12,38 @@ import { throwError } from 'redux-saga-test-plan/providers';
 describe('editProfile', () => {
   const name = 'John Doe';
   const image: any = { some: 'new-file' };
+  const primaryZID = 'primary-zid';
 
   it('edits the profile successfully', async () => {
-    const profileId = 'profile-id';
     const profileImage = 'profile-image-url';
+    const primaryZID = 'primary-zid';
 
     const {
       storeState: { editProfile, authentication },
-    } = await expectSaga(editProfileSaga, { payload: { name, image } })
+    } = await expectSaga(editProfileSaga, { payload: { name, image, primaryZID } })
       .provide([
         [
           call(uploadImage, image),
           { url: profileImage },
         ],
         [
-          call(apiEditUserProfile, { profileId, name, profileImage }),
+          call(apiEditUserProfile, { name, profileImage, primaryZID }),
           { success: true },
         ],
       ])
-      .call(updateUserProfile, { name, profileImage })
+      .call(updateUserProfile, { name, profileImage, primaryZID })
       .withReducer(
         rootReducer,
-        initialState({}, { profileId, profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any })
+        initialState(
+          {},
+          { profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any, primaryZID: 'old-zid' }
+        )
       )
       .run();
 
     expect(authentication.user.data.profileSummary.firstName).toEqual('John Doe');
     expect(authentication.user.data.profileSummary.profileImage).toEqual('profile-image-url');
+    expect(authentication.user.data.primaryZID).toEqual('primary-zid');
     expect(editProfile.state).toEqual(State.SUCCESS);
     expect(editProfile.errors).toEqual([]);
   });
@@ -72,7 +77,7 @@ describe('editProfile', () => {
           { url: 'profile-image-url' },
         ],
         [
-          call(apiEditUserProfile, { profileId, name, profileImage: 'profile-image-url' }),
+          call(apiEditUserProfile, { name, primaryZID, profileImage: 'profile-image-url' }),
           throwError(new Error('API call failed')),
         ],
       ])
@@ -84,20 +89,18 @@ describe('editProfile', () => {
   });
 
   it('updates profile without an image', async () => {
-    const profileId = 'profile-id';
-
     const {
       storeState: { editProfile, authentication },
-    } = await expectSaga(editProfileSaga, { payload: { name } })
+    } = await expectSaga(editProfileSaga, { payload: { name, primaryZID } })
       .provide([
         [
-          call(apiEditUserProfile, { profileId, name, profileImage: undefined }),
+          call(apiEditUserProfile, { name, primaryZID, profileImage: undefined }),
           { success: true },
         ],
       ])
       .withReducer(
         rootReducer,
-        initialState({}, { profileId, profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any })
+        initialState({}, { profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any })
       )
       .run();
 

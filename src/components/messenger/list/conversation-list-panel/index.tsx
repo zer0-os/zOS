@@ -81,19 +81,25 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     for (const conversation of this.props.conversations) {
       const isNameMatch = searchRegEx.test(conversation.name ?? '');
       const isDirectMatch =
-        conversation.otherMembers.length === 1 && searchRegEx.test(otherMembersToString(conversation.otherMembers));
+        conversation.otherMembers.length === 1 &&
+        (searchRegEx.test(otherMembersToString(conversation.otherMembers)) ||
+          conversation.otherMembers.some((member) => searchRegEx.test(member.primaryZID)));
 
       if (isNameMatch || isDirectMatch) {
         directMatches.push(conversation);
-      } else if (searchRegEx.test(otherMembersToString(conversation.otherMembers))) {
-        inDirectMatches.push(conversation);
+      } else {
+        const isIndirectNameMatch = searchRegEx.test(otherMembersToString(conversation.otherMembers));
+        const isIndirectZIDMatch = conversation.otherMembers.some(
+          (member) => member.primaryZID && searchRegEx.test(member.primaryZID)
+        );
+
+        if (isIndirectNameMatch || isIndirectZIDMatch) {
+          inDirectMatches.push(conversation);
+        }
       }
     }
 
-    return [
-      ...directMatches,
-      ...inDirectMatches,
-    ];
+    return [...directMatches, ...inDirectMatches];
   }
 
   openInviteDialog = (): void => {

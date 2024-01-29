@@ -68,6 +68,29 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
+  // Checks if the conversation's name matches the search filter.
+  isFilterNameMatch(conversation, searchRegEx) {
+    return searchRegEx.test(conversation.name ?? '');
+  }
+
+  // Determines if there's a direct match in a one-on-one conversation based on name or primaryZID.
+  isFilterDirectMatch(conversation, searchRegEx) {
+    return (
+      conversation.otherMembers.length === 1 &&
+      (searchRegEx.test(otherMembersToString(conversation.otherMembers)) ||
+        conversation.otherMembers.some((member) => searchRegEx.test(member.primaryZID)))
+    );
+  }
+
+  // Determines if there's an indirect match in a conversation with multiple members based on name or primaryZID.
+  isFilterIndirectMatch(conversation, searchRegEx) {
+    return (
+      !this.isFilterDirectMatch(conversation, searchRegEx) &&
+      (searchRegEx.test(otherMembersToString(conversation.otherMembers)) ||
+        conversation.otherMembers.some((member) => member.primaryZID && searchRegEx.test(member.primaryZID)))
+    );
+  }
+
   get filteredConversations() {
     if (this.state.filter === '') {
       return this.props.conversations;
@@ -75,31 +98,16 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
 
-    const directMatches = [];
-    const inDirectMatches = [];
+    const directMatches = this.props.conversations.filter(
+      (conversation) =>
+        this.isFilterNameMatch(conversation, searchRegEx) || this.isFilterDirectMatch(conversation, searchRegEx)
+    );
 
-    for (const conversation of this.props.conversations) {
-      const isNameMatch = searchRegEx.test(conversation.name ?? '');
-      const isDirectMatch =
-        conversation.otherMembers.length === 1 &&
-        (searchRegEx.test(otherMembersToString(conversation.otherMembers)) ||
-          conversation.otherMembers.some((member) => searchRegEx.test(member.primaryZID)));
+    const indirectMatches = this.props.conversations.filter(
+      (conversation) => !directMatches.includes(conversation) && this.isFilterIndirectMatch(conversation, searchRegEx)
+    );
 
-      if (isNameMatch || isDirectMatch) {
-        directMatches.push(conversation);
-      } else {
-        const isIndirectNameMatch = searchRegEx.test(otherMembersToString(conversation.otherMembers));
-        const isIndirectZIDMatch = conversation.otherMembers.some(
-          (member) => member.primaryZID && searchRegEx.test(member.primaryZID)
-        );
-
-        if (isIndirectNameMatch || isIndirectZIDMatch) {
-          inDirectMatches.push(conversation);
-        }
-      }
-    }
-
-    return [...directMatches, ...inDirectMatches];
+    return [...directMatches, ...indirectMatches];
   }
 
   openInviteDialog = (): void => {

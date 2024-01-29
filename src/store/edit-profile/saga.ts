@@ -14,7 +14,6 @@ import { setUser } from '../authentication';
 
 export function* editProfile(action) {
   const { name, image, primaryZID } = action.payload;
-  console.log('primaryZID ', primaryZID);
 
   yield put(setState(State.INPROGRESS));
   try {
@@ -29,14 +28,13 @@ export function* editProfile(action) {
       }
     }
 
-    const { profileId } = yield select((state) => state.authentication.user.data);
     const response = yield call(apiEditUserProfile, {
-      profileId,
       name,
+      primaryZID,
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      yield call(updateUserProfile, { name, profileImage });
+      yield call(updateUserProfile, { name, profileImage, primaryZID });
       yield put(setState(State.SUCCESS));
       return;
     }
@@ -69,6 +67,7 @@ export function* updateUserProfile(payload) {
     firstName: payload.name,
     profileImage: payload.profileImage || currentUser.profileSummary.profileImage,
   };
+  currentUser.primaryZID = payload.primaryZID;
   yield put(setUser({ data: currentUser }));
 }
 

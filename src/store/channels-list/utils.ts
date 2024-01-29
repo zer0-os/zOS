@@ -94,6 +94,7 @@ export function replaceZOSUserFields(
     profileImage: string;
     profileId: string;
     primaryZID: string;
+    displaySubHandle?: string;
   },
   zeroUser: User
 ) {
@@ -103,7 +104,8 @@ export function replaceZOSUserFields(
     member.firstName = zeroUser.firstName;
     member.lastName = zeroUser.lastName;
     member.profileImage = zeroUser.profileImage;
-    member.primaryZID = getUserHandle(zeroUser.primaryZID, zeroUser.wallets);
+    member.primaryZID = zeroUser.primaryZID;
+    member.displaySubHandle = getUserHandle(zeroUser.primaryZID, zeroUser.wallets);
   }
 }
 

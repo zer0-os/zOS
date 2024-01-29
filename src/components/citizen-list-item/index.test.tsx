@@ -23,7 +23,7 @@ describe(CitizenListItem, () => {
   });
 
   it('renders the user primary zid', function () {
-    const wrapper = subject({ user: { primaryZID: '0://zero:tech' } as any });
+    const wrapper = subject({ user: { displaySubHandle: '0://zero:tech' } as any });
 
     expect(wrapper.find(c('primary-zid')).text()).toEqual('0://zero:tech');
   });

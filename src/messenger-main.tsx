@@ -45,7 +45,7 @@ export class Container extends React.Component<Properties> {
   }
 
   get conversationId() {
-    return decodeURIComponent(this.idFrom(this.props));
+    return this.idFrom(this.props);
   }
 
   idChanged(prevProps: Properties) {

@@ -14,7 +14,7 @@ import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
-import { translateJoinRoomApiError } from './utils';
+import { translateJoinRoomApiError, parseAlias, isAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 
 function* initChat(userId, chatAccessToken) {
@@ -80,11 +80,6 @@ export function* validateActiveConversation(conversationId: string) {
   if (isLoaded) {
     yield call(performValidateActiveConversation, conversationId);
   }
-}
-
-// conversation can be referenced by an id or an alias
-function isAlias(id: string) {
-  return id.startsWith('#');
 }
 
 export function* joinRoom(roomIdOrAlias: string) {
@@ -153,6 +148,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   let conversationId = activeConversationId;
   if (isAlias(activeConversationId)) {
+    activeConversationId = parseAlias(activeConversationId);
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 

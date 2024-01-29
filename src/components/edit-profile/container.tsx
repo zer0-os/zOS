@@ -17,7 +17,8 @@ export interface Properties extends PublicProperties {
   editProfileState: State;
   currentDisplayName: string;
   currentProfileImage: string;
-  editProfile: (data: { name: string; image: File }) => void;
+  currentPrimaryZID: string;
+  editProfile: (data: { name: string; image: File; primaryZID: string }) => void;
   startProfileEdit: () => void;
   leaveGlobalNetwork: () => void;
   joinGlobalNetwork: () => void;
@@ -33,6 +34,7 @@ export class Container extends React.Component<Properties> {
       errors: RegistrationContainer.mapErrors(editProfile.errors),
       currentDisplayName: user?.data?.profileSummary.firstName,
       currentProfileImage: user?.data?.profileSummary.profileImage,
+      currentPrimaryZID: user?.data?.primaryZID,
       editProfileState: editProfile.state,
     };
   }
@@ -54,6 +56,7 @@ export class Container extends React.Component<Properties> {
         editProfileState={this.props.editProfileState}
         currentDisplayName={this.props.currentDisplayName}
         currentProfileImage={this.props.currentProfileImage}
+        currentPrimaryZID={this.props.currentPrimaryZID}
         onLeaveGlobal={this.props.leaveGlobalNetwork}
         onJoinGlobal={this.props.joinGlobalNetwork}
       />

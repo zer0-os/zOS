@@ -20,7 +20,7 @@ interface Sender {
   profileImage: string;
   profileId: string;
   primaryZID: string;
-  primaryZIDDisplayHandle?: string;
+  displaySubHandle?: string;
 }
 
 export enum MediaType {

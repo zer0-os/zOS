@@ -109,7 +109,7 @@ export class Container extends React.Component<Properties> {
     if (!this.props.directMessage?.otherMembers) {
       return '';
     } else if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
-      return this.props.directMessage.otherMembers[0].primaryZIDDisplayHandle;
+      return this.props.directMessage.otherMembers[0].displaySubHandle;
     } else {
       return this.anyOthersOnline() ? 'Online' : 'Offline';
     }

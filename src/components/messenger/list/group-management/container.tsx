@@ -80,7 +80,7 @@ export class Container extends React.Component<Properties> {
         matrixId: currentUser?.matrixId,
         isOnline: currentUser?.isOnline,
         primaryZID: currentUser?.primaryZID,
-        primaryZIDDisplayHandle: getUserHandle(currentUser?.primaryZID, currentUser?.wallets),
+        displaySubHandle: getUserHandle(currentUser?.primaryZID, currentUser?.wallets),
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,

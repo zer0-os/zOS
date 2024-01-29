@@ -51,7 +51,7 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
         id: member.userId || member.matrixId,
         displayName: `${member.firstName || ''} ${member.lastName || ''}`,
         profileImage: member.profileImage,
-        displayHandle: member.primaryZIDDisplayHandle,
+        displayHandle: member.displaySubHandle,
       });
     }
   }

@@ -18,7 +18,7 @@ export interface User {
   lastSeenAt: string;
   primaryZID: string;
   wallets?: Wallet[];
-  primaryZIDDisplayHandle?: string;
+  displaySubHandle?: string;
 }
 
 export enum GroupChannelType {

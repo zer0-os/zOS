@@ -37,7 +37,7 @@ export class CitizenListItem extends React.Component<Properties> {
         />
         <div>
           <span {...cn('name')}>{displayName(this.props.user)}</span>
-          <span {...cn('primary-zid')}>{this.props.user.primaryZIDDisplayHandle}</span>
+          <span {...cn('primary-zid')}>{this.props.user.displaySubHandle}</span>
         </div>
 
         {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}

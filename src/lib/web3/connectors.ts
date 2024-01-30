@@ -21,6 +21,7 @@ export const get = (connectorType: Connectors) => {
           Chains.Rinkeby,
           Chains.Ropsten,
           Chains.Goerli,
+          Chains.Sepolia,
         ],
       });
     case Connectors.WalletConnect:
@@ -33,6 +34,7 @@ export const get = (connectorType: Connectors) => {
           Chains.Rinkeby,
           Chains.Ropsten,
           Chains.Goerli,
+          Chains.Sepolia,
         ],
       });
     case Connectors.Coinbase:
@@ -55,6 +57,7 @@ export const get = (connectorType: Connectors) => {
           Chains.Rinkeby,
           Chains.Ropsten,
           Chains.Goerli,
+          Chains.Sepolia,
         ],
       });
     default:

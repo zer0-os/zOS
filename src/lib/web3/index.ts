@@ -25,6 +25,7 @@ export enum Chains {
   Rinkeby = 4,
   Goerli = 5,
   Kovan = 42,
+  Sepolia = 11155111,
   Local = 5777,
 }
 

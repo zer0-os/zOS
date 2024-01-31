@@ -22,11 +22,12 @@ import {
 } from '../../../store/group-management';
 import { Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
-
-import './styles.scss';
+import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
+
+import './styles.scss';
 
 export interface PublicProperties {}
 
@@ -34,6 +35,7 @@ export interface Properties extends PublicProperties {
   activeConversationId: string;
   directMessage: Channel;
   isCurrentUserRoomAdmin: boolean;
+  isJoiningConversation: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -53,7 +55,7 @@ export class Container extends React.Component<Properties> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      chat: { activeConversationId },
+      chat: { activeConversationId, isJoiningConversation },
       groupManagement,
     } = state;
 
@@ -66,6 +68,7 @@ export class Container extends React.Component<Properties> {
       directMessage,
       isCurrentUserRoomAdmin,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
+      isJoiningConversation,
     };
   }
 
@@ -216,7 +219,7 @@ export class Container extends React.Component<Properties> {
   };
 
   render() {
-    if (!this.props.activeConversationId || !this.props.directMessage) {
+    if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
     }
 
@@ -260,14 +263,16 @@ export class Container extends React.Component<Properties> {
             </div>
           </div>
 
-          <ChatViewContainer
-            key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
-            channelId={this.props.activeConversationId}
-            className='direct-message-chat__channel'
-            isDirectMessage
-            showSenderAvatar={!this.isOneOnOne()}
-            ref={this.chatViewContainerRef}
-          />
+          {!this.props.isJoiningConversation && (
+            <ChatViewContainer
+              key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
+              channelId={this.props.activeConversationId}
+              className='direct-message-chat__channel'
+              isDirectMessage
+              showSenderAvatar={!this.isOneOnOne()}
+              ref={this.chatViewContainerRef}
+            />
+          )}
 
           <div className='direct-message-chat__footer-position'>
             <div className='direct-message-chat__footer'>
@@ -275,7 +280,7 @@ export class Container extends React.Component<Properties> {
                 id={this.props.activeConversationId}
                 onSubmit={this.handleSendMessage}
                 getUsersForMentions={this.searchMentionableUsers}
-                reply={this.props.directMessage.reply}
+                reply={this.props.directMessage?.reply}
                 onRemoveReply={this.props.onRemoveReply}
               />
             </div>
@@ -283,6 +288,7 @@ export class Container extends React.Component<Properties> {
           <div className='direct-message-chat__footer-gradient'></div>
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
+          {this.props.isJoiningConversation && <JoiningConversationDialog />}
         </div>
       </div>
     );

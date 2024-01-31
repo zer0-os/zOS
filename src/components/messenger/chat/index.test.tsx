@@ -11,6 +11,7 @@ import { Media } from '../../message-input/utils';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
+import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 
 import { bem } from '../../../lib/bem';
 
@@ -34,6 +35,7 @@ describe(DirectMessageChat, () => {
       sendMessage: () => null,
       onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,
+      isJoiningConversation: false,
       startAddGroupMember: () => null,
       startEditConversation: () => null,
       setLeaveGroupStatus: () => null,
@@ -48,6 +50,34 @@ describe(DirectMessageChat, () => {
     const wrapper = subject({ activeConversationId: '123' });
 
     expect(wrapper.find(ChatViewContainer)).toHaveProp('channelId', '123');
+  });
+
+  it('renders JoiningConversationDialog when isJoiningConversation is true', () => {
+    const wrapper = subject({ isJoiningConversation: true });
+
+    expect(wrapper).toHaveElement(JoiningConversationDialog);
+  });
+
+  it('does not render ChatViewContainer when isJoiningConversation is true', () => {
+    const wrapper = subject({ isJoiningConversation: true });
+
+    expect(wrapper).not.toHaveElement(ChatViewContainer);
+  });
+
+  it('renders ChatViewContainer when isJoiningConversation is false', () => {
+    const wrapper = subject({
+      isJoiningConversation: false,
+      activeConversationId: '123',
+      directMessage: { otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })] } as Channel,
+    });
+
+    expect(wrapper).toHaveElement(ChatViewContainer);
+  });
+
+  it('does not render JoiningConversationDialog when isJoiningConversation is false', () => {
+    const wrapper = subject({ isJoiningConversation: false });
+
+    expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
   describe('title', () => {

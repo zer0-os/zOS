@@ -55,6 +55,7 @@ export enum ProfileDetailsErrors {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   NAME_REQUIRED = 'NAME_REQUIRED',
   FILE_UPLOAD_ERROR = 'FILE_UPLOAD_ERROR',
+  FetchOwned_ZIDs_ERROR = 'FetchOwned_ZIDs_ERROR',
 }
 
 export const initialState: RegistrationState = {

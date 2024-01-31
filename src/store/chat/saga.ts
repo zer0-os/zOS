@@ -135,8 +135,6 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
-  yield put(setIsJoiningConversation(true));
-
   if (!activeConversationId) {
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
@@ -155,7 +153,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
         })
       );
     }
-    yield put(setIsJoiningConversation(false));
     return;
   }
 
@@ -172,7 +169,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
   }
 
   yield put(rawSetActiveConversationId(conversationId));
-  yield put(setIsJoiningConversation(false));
 }
 
 export function* closeErrorDialog() {

@@ -15,7 +15,7 @@ import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { waitForChannelListLoad } from '../channels-list/saga';
-import { clearJoinRoomErrorContent, rawSetActiveConversationId } from '.';
+import { clearJoinRoomErrorContent, rawSetActiveConversationId, setIsJoiningConversation } from '.';
 import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError } from './utils';
 import { getRoomIdForAlias } from '../../lib/chat';
 import { joinRoom as apiJoinRoom } from './api';
@@ -227,9 +227,13 @@ describe(validateActiveConversation, () => {
   it('waits for channel load before validating', async () => {
     testSaga(validateActiveConversation, 'convo-1')
       .next()
+      .put(setIsJoiningConversation(true))
+      .next()
       .call(waitForChannelListLoad)
       .next(true)
       .call(performValidateActiveConversation, 'convo-1')
+      .next()
+      .put(setIsJoiningConversation(false))
       .next()
       .isDone();
   });
@@ -237,8 +241,12 @@ describe(validateActiveConversation, () => {
   it('does not validate if channel load fails', async () => {
     testSaga(validateActiveConversation, 'convo-1')
       .next()
+      .put(setIsJoiningConversation(true))
+      .next()
       .call(waitForChannelListLoad)
       .next(false) // Channels did not load
+      .put(setIsJoiningConversation(false))
+      .next()
       .isDone();
   });
 });

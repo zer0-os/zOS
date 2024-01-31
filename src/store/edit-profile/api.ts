@@ -14,7 +14,7 @@ export async function editUserProfile({
     profileImage,
     primaryZID,
   };
-  const response = await put('/api/v2/users/edit-profile').send({ profileData });
+  const response = await put('/api/v2/users/profile').send({ profileData });
   return {
     success: response.status === 200,
   };

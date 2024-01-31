@@ -1,0 +1,22 @@
+@import '../../glass';
+
+.joining-conversation-dialog {
+  @include glass-text-secondary-color;
+
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(163, 162, 163, 0.1);
+
+  width: fit-content;
+
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}

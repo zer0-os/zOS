@@ -144,8 +144,7 @@ describe('matrix client', () => {
       // initializes underlying matrix client
       await client.connect(null, 'token');
 
-      expect(clearSession).not.toHaveBeenCalled();
-
+      clearSession.mockClear();
       await client.disconnect();
 
       expect(clearSession).toHaveBeenCalledOnce();
@@ -164,7 +163,7 @@ describe('matrix client', () => {
 
       const client = subject({ createClient }, { get: () => matrixSession });
 
-      client.connect(null, 'token');
+      client.connect('@bob:zos-matrix', 'token');
 
       await new Promise((resolve) => setImmediate(resolve));
 
@@ -304,7 +303,7 @@ describe('matrix client', () => {
   });
 
   describe('createConversation', () => {
-    const subject = async (stubs = {}, sessionStorage = {}) => {
+    const subject = async (stubs = {}, sessionStorage = { userId: 'stub-user-id' }) => {
       const allStubs = {
         createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
         getRoom: jest.fn().mockReturnValue(stubRoom({})),
@@ -314,8 +313,8 @@ describe('matrix client', () => {
         createClient: (_opts: any) => getSdkClient(allStubs),
       };
 
-      const client = new MatrixClient(allProps, { get: () => sessionStorage } as any);
-      await client.connect(null, 'token');
+      const client = new MatrixClient(allProps, { get: () => sessionStorage, clear: () => {} } as any);
+      await client.connect(sessionStorage.userId || 'stub-user-id', 'token');
       return client;
     };
 

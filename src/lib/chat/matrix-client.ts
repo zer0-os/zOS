@@ -70,9 +70,9 @@ export class MatrixClient implements IChatClient {
     return false;
   }
 
-  async connect(_userId: string, accessToken: string) {
+  async connect(userId: string, accessToken: string) {
     this.setConnectionStatus(ConnectionStatus.Connecting);
-    this.userId = await this.initializeClient(this.userId, this.accessToken || accessToken);
+    this.userId = await this.initializeClient(userId, this.accessToken || accessToken);
     await this.initializeEventHandlers();
 
     this.setConnectionStatus(ConnectionStatus.Connected);
@@ -80,10 +80,13 @@ export class MatrixClient implements IChatClient {
   }
 
   async disconnect() {
-    await this.matrix.logout(true);
-    this.matrix.removeAllListeners();
-    await this.matrix.clearStores();
-    await this.matrix.store?.destroy();
+    if (this.matrix) {
+      await this.matrix.logout(true);
+      this.matrix.removeAllListeners();
+      await this.matrix.clearStores();
+      await this.matrix.store?.destroy();
+    }
+
     this.sessionStorage.clear();
   }
 
@@ -769,13 +772,14 @@ export class MatrixClient implements IChatClient {
     return (data) => this.debug('Received Event', name, data);
   }
 
-  private async getCredentials(accessToken: string) {
+  private async getCredentials(userId: string, accessToken: string) {
     const credentials = this.sessionStorage.get();
 
-    if (credentials) {
+    if (credentials && credentials.userId === userId) {
       return credentials;
     }
 
+    this.sessionStorage.clear();
     return await this.login(accessToken);
   }
 
@@ -793,12 +797,12 @@ export class MatrixClient implements IChatClient {
     return { accessToken: access_token, userId: user_id, deviceId: device_id };
   }
 
-  private async initializeClient(_userId: string, ssoToken: string) {
+  private async initializeClient(userId: string, ssoToken: string) {
     if (!this.matrix) {
       const opts: any = {
         baseUrl: config.matrix.homeServerUrl,
         cryptoCallbacks: { getSecretStorageKey: this.getSecretStorageKey },
-        ...(await this.getCredentials(ssoToken)),
+        ...(await this.getCredentials(userId, ssoToken)),
       };
 
       this.matrix = this.sdk.createClient(opts);

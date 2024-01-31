@@ -21,6 +21,7 @@ export interface Properties {
   currentDisplayName: string;
   currentPrimaryZID: string;
   currentProfileImage: string;
+  ownedZIDs: string[];
   onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
 

@@ -8,11 +8,13 @@ const initialState: ChatState = {
   },
   activeConversationId: null,
   joinRoomErrorContent: null,
+  isJoiningConversation: false,
 };
 
 export enum SagaActionTypes {
   CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
   setActiveConversationId = 'chat/saga/setActiveConversationId',
+  SetIsJoiningConversation = 'chat/saga/setIsJoiningConversation',
 }
 
 const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
@@ -34,10 +36,18 @@ const slice = createSlice({
     clearJoinRoomErrorContent: (state) => {
       state.joinRoomErrorContent = null;
     },
+    setIsJoiningConversation: (state, action: PayloadAction<ChatState['isJoiningConversation']>) => {
+      state.isJoiningConversation = action.payload;
+    },
   },
 });
 
-export const { setChatAccessToken, rawSetActiveConversationId, setJoinRoomErrorContent, clearJoinRoomErrorContent } =
-  slice.actions;
+export const {
+  setChatAccessToken,
+  rawSetActiveConversationId,
+  setJoinRoomErrorContent,
+  clearJoinRoomErrorContent,
+  setIsJoiningConversation,
+} = slice.actions;
 export const { reducer } = slice;
 export { closeConversationErrorDialog };

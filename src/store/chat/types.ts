@@ -12,4 +12,5 @@ export interface ChatState {
   };
   activeConversationId: string;
   joinRoomErrorContent: ErrorDialogContent;
+  isJoiningConversation: boolean;
 }

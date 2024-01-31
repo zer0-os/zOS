@@ -1,7 +1,13 @@
 import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
-import { rawSetActiveConversationId, SagaActionTypes, setJoinRoomErrorContent, clearJoinRoomErrorContent } from '.';
+import {
+  rawSetActiveConversationId,
+  SagaActionTypes,
+  setJoinRoomErrorContent,
+  clearJoinRoomErrorContent,
+  setIsJoiningConversation,
+} from '.';
 import { createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
@@ -76,10 +82,14 @@ export function* setActiveConversation(id: string) {
 }
 
 export function* validateActiveConversation(conversationId: string) {
+  yield put(setIsJoiningConversation(true));
+
   const isLoaded = yield call(waitForChannelListLoad);
   if (isLoaded) {
     yield call(performValidateActiveConversation, conversationId);
   }
+
+  yield put(setIsJoiningConversation(false));
 }
 
 export function* joinRoom(roomIdOrAlias: string) {
@@ -125,6 +135,8 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
+  yield put(setIsJoiningConversation(true));
+
   if (!activeConversationId) {
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
@@ -143,6 +155,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
         })
       );
     }
+    yield put(setIsJoiningConversation(false));
     return;
   }
 
@@ -159,6 +172,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
   }
 
   yield put(rawSetActiveConversationId(conversationId));
+  yield put(setIsJoiningConversation(false));
 }
 
 export function* closeErrorDialog() {

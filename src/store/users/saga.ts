@@ -16,7 +16,13 @@ export function* receiveSearchResults(searchResults) {
   const mappedUsers = searchResults
     .filter((r) => !existingUserIds.includes(r.id))
     .map((r) => {
-      return { userId: r.id, firstName: r.name, profileImage: r.profileImage, matrixId: r.matrixId };
+      return {
+        userId: r.id,
+        firstName: r.name,
+        profileImage: r.profileImage,
+        matrixId: r.matrixId,
+        primaryZID: r.primaryZID,
+      };
     });
   yield put(receive(mappedUsers));
 }

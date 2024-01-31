@@ -28,8 +28,8 @@ describe(clearUsers, () => {
 
 describe(receiveSearchResults, () => {
   it('translates the search results into user records', async () => {
-    const user1 = { id: 'user-1', name: 'Test User 1', profileImage: 'image-url-1' };
-    const user2 = { id: 'user-2', name: 'Test User 2', profileImage: 'image-url-2' };
+    const user1 = { id: 'user-1', name: 'Test User 1', profileImage: 'image-url-1', primaryZID: 'zid-1' };
+    const user2 = { id: 'user-2', name: 'Test User 2', profileImage: 'image-url-2', primaryZID: 'zid-2' };
 
     const { storeState } = await expectSaga(receiveSearchResults, [
       user1,
@@ -43,6 +43,7 @@ describe(receiveSearchResults, () => {
         userId: user1.id,
         firstName: user1.name,
         profileImage: user1.profileImage,
+        primaryZID: user1.primaryZID,
       })
     );
     expect(denormalize(user2.id, storeState)).toEqual(
@@ -50,6 +51,7 @@ describe(receiveSearchResults, () => {
         userId: user2.id,
         firstName: user2.name,
         profileImage: user2.profileImage,
+        primaryZID: user2.primaryZID,
       })
     );
   });

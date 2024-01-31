@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { Channel } from '../../../../store/channels';
 import { IconUserPlus1 } from '@zero-tech/zui/icons';
 import { ConversationItem } from '../conversation-item';
@@ -11,6 +10,7 @@ import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import escapeRegExp from 'lodash/escapeRegExp';
+import { getDirectMatches, getIndirectMatches } from './utils';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
@@ -69,31 +69,15 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   };
 
   get filteredConversations() {
-    if (this.state.filter === '') {
+    if (!this.state.filter) {
       return this.props.conversations;
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
+    const directMatches = getDirectMatches(this.props.conversations, searchRegEx);
+    const indirectMatches = getIndirectMatches(this.props.conversations, searchRegEx);
 
-    const directMatches = [];
-    const inDirectMatches = [];
-
-    for (const conversation of this.props.conversations) {
-      const isNameMatch = searchRegEx.test(conversation.name ?? '');
-      const isDirectMatch =
-        conversation.otherMembers.length === 1 && searchRegEx.test(otherMembersToString(conversation.otherMembers));
-
-      if (isNameMatch || isDirectMatch) {
-        directMatches.push(conversation);
-      } else if (searchRegEx.test(otherMembersToString(conversation.otherMembers))) {
-        inDirectMatches.push(conversation);
-      }
-    }
-
-    return [
-      ...directMatches,
-      ...inDirectMatches,
-    ];
+    return [...directMatches, ...indirectMatches];
   }
 
   openInviteDialog = (): void => {

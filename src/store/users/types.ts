@@ -4,4 +4,5 @@ export interface MemberNetworks {
   profileImage: string;
   name: string;
   type: string;
+  primaryZID: string;
 }

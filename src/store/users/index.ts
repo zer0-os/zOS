@@ -9,6 +9,7 @@ export interface SearchResult {
   id: string;
   name: string;
   profileImage: string;
+  primaryZID: string;
 }
 
 const slice = createNormalizedSlice({

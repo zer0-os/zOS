@@ -1,18 +1,22 @@
-import { patch, post } from '../../lib/api/rest';
+import { post, put } from '../../lib/api/rest';
 
 export async function editUserProfile({
-  profileId,
   name,
+  primaryZID,
   profileImage,
 }: {
-  profileId: string;
   name: string;
+  primaryZID: string;
   profileImage?: string;
 }) {
-  const response = await patch(`/api/profiles/${profileId}`).send({ profileId, firstName: name, profileImage });
+  const profileData = {
+    firstName: name,
+    profileImage,
+    primaryZID,
+  };
+  const response = await put('/api/v2/users/edit-profile').send({ profileData });
   return {
-    success: true,
-    response: response.body,
+    success: response.status === 200,
   };
 }
 

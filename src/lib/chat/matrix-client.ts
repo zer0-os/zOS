@@ -120,6 +120,15 @@ export class MatrixClient implements IChatClient {
     return [];
   }
 
+  async isRoomMember(userId: string, roomId: string) {
+    if (!userId || !roomId) {
+      return false;
+    }
+
+    const roomIds = (await this.matrix.getJoinedRooms()).joined_rooms;
+    return roomIds.includes(roomId);
+  }
+
   private getRoomAdmins(room: Room): string[] {
     const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
     if (!powerLevels) {

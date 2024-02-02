@@ -12,10 +12,10 @@ import {
 import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { saveUserMatrixCredentials } from '../edit-profile/saga';
 import { receive } from '../users';
-import { chat, getRoomIdForAlias } from '../../lib/chat';
+import { chat, getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
@@ -65,7 +65,7 @@ function* convertToBusEvents(action) {
 
 function* connectOnLogin() {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogin);
-  const user = yield select(currentUserSelector());
+  const user = yield select(currentUserSelector);
   const userId = user.matrixId;
   const token = yield call(getSSOToken);
   const chatAccessToken = token.token;
@@ -133,7 +133,15 @@ export function* joinRoom(roomIdOrAlias: string) {
 
 export function* isMemberOfActiveConversation(activeConversationId) {
   const conversationList = yield select(rawConversationsList());
-  return conversationList.includes(activeConversationId);
+  const isRoomInState = conversationList.includes(activeConversationId);
+  if (isRoomInState) {
+    return true;
+  }
+
+  // Check with the chat client just in case it knows better
+  // This is a slower call which is why we check the state first.
+  const user = yield select(currentUserSelector);
+  return yield call(isRoomMember, user.id, activeConversationId);
 }
 
 // NOTE: we're waiting for the event to be fired, but if it doesn't..then
@@ -189,8 +197,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
-  const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
-  if (!conversationId || !isUserMemberOfActiveConversation) {
+  if (!conversationId || !(yield call(isMemberOfActiveConversation, conversationId))) {
     yield call(joinRoom, activeConversationId);
     return;
   }

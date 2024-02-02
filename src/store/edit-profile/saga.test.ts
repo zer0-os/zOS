@@ -149,10 +149,7 @@ describe('fetchOwnedZIDs', () => {
       storeState: { editProfile },
     } = await expectSaga(fetchOwnedZIDs)
       .provide([
-        [
-          call(apiFetchOwnedZIDs),
-          ownedZIDs,
-        ],
+        [call(apiFetchOwnedZIDs), ownedZIDs],
       ])
       .withReducer(rootReducer, initialState())
       .put(setOwnedZIDs(ownedZIDs))

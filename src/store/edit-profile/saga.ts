@@ -85,7 +85,7 @@ export function* fetchOwnedZIDs() {
     const ownedZIDs = yield call(fetchOwnedZIDsApi);
     yield put(setOwnedZIDs(ownedZIDs));
   } catch (error) {
-    yield put(setErrors([ProfileDetailsErrors.FetchOwned_ZIDs_ERROR]));
+    yield put(setErrors([ProfileDetailsErrors.FETCH_OWNED_ZIDs_ERROR]));
   }
 }
 

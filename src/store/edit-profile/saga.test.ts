@@ -66,22 +66,17 @@ describe('editProfile', () => {
   });
 
   it('sets an error if API response is not successful', async () => {
-    const profileId = 'profile-id';
-
     const {
       storeState: { editProfile },
-    } = await expectSaga(editProfileSaga, { payload: { name, image } })
+    } = await expectSaga(editProfileSaga, { payload: { name, image, primaryZID } })
       .provide([
-        [
-          call(uploadImage, image),
-          { url: 'profile-image-url' },
-        ],
+        [call(uploadImage, image), { url: 'profile-image-url' }],
         [
           call(apiEditUserProfile, { name, primaryZID, profileImage: 'profile-image-url' }),
           throwError(new Error('API call failed')),
         ],
       ])
-      .withReducer(rootReducer, initialState({}, { profileId }))
+      .withReducer(rootReducer, initialState({}))
       .run();
 
     expect(editProfile.state).toEqual(State.LOADED);

@@ -13,10 +13,12 @@ describe('Container', () => {
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
       currentPrimaryZID: '0://john:doe',
+      ownedZIDs: [],
       editProfile: () => null,
       startProfileEdit: () => null,
       leaveGlobalNetwork: () => null,
       joinGlobalNetwork: () => null,
+      fetchOwnedZIDs: () => null,
       ...props,
     };
 
@@ -33,6 +35,7 @@ describe('Container', () => {
         currentDisplayName: 'John Doe',
         currentProfileImage: 'profile.jpg',
         currentPrimaryZID: '0://john:doe',
+        ownedZIDs: [],
       })
     );
   });
@@ -46,12 +49,22 @@ describe('Container', () => {
     expect(startProfileEditMock).toHaveBeenCalled();
   });
 
+  it('calls fetchOwnedZIDs on componentDidMount', () => {
+    const fetchOwnedZIDsMock = jest.fn();
+    const wrapper = subject({ fetchOwnedZIDs: fetchOwnedZIDsMock });
+
+    wrapper.instance().componentDidMount();
+
+    expect(fetchOwnedZIDsMock).toHaveBeenCalled();
+  });
+
   describe('mapState', () => {
     // Mock the state with relevant properties for the editProfileState and user
     const stateMock: RootState = {
       editProfile: {
         errors: [],
         state: 0, // Set the initial editProfileState to State.NONE
+        ownedZIDs: [],
       },
       authentication: {
         user: {
@@ -88,6 +101,12 @@ describe('Container', () => {
       const props = Container.mapState(stateMock);
 
       expect(props.currentPrimaryZID).toEqual('0://john:doe');
+    });
+
+    it('ownedZIDs', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.ownedZIDs).toEqual([]);
     });
 
     it('errors', () => {

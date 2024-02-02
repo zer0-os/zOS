@@ -1,13 +1,14 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { editProfile as editProfileSaga, updateUserProfile } from './saga';
-import { editUserProfile as apiEditUserProfile } from './api';
+import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
+import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
 import { EditProfileState, State, initialState as initialEditProfileState } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { setOwnedZIDs } from './index';
 
 describe('editProfile', () => {
   const name = 'John Doe';
@@ -132,6 +133,24 @@ describe('updateUserProfile', () => {
     };
 
     expect(authentication.user.data).toEqual(updatedUser);
+  });
+});
+
+describe('fetchOwnedZIDs', () => {
+  it('fetches owned ZIDs', async () => {
+    const ownedZIDs = ['0://zid:1', '0://zid:2'];
+
+    const {
+      storeState: { editProfile },
+    } = await expectSaga(fetchOwnedZIDs)
+      .provide([
+        [call(apiFetchOwnedZIDs), ownedZIDs],
+      ])
+      .withReducer(rootReducer, initialState())
+      .put(setOwnedZIDs(ownedZIDs))
+      .run();
+
+    expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
   });
 });
 

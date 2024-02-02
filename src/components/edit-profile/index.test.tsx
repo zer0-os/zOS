@@ -20,6 +20,7 @@ describe('EditProfile', () => {
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
       currentPrimaryZID: '0://john:doe',
+      ownedZIDs: [],
       onEdit: () => null,
       onClose: () => null,
       onLeaveGlobal: () => null,

@@ -31,10 +31,13 @@ export const ERROR_DIALOG_CONTENT = {
 export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string, roomAlias?: string) {
   const content = ERROR_DIALOG_CONTENT[errorCode] || ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR];
 
-  if (content.linkPath && content.linkPath.includes('{roomAlias}')) {
-    content.linkPath = content.linkPath.replace('{roomAlias}', roomAlias);
-  }
+  if (errorCode === JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED && roomAlias) {
+    const alias = extractRoomAlias(roomAlias);
 
+    if (content.linkPath && content.linkPath.includes('{roomAlias}')) {
+      content.linkPath = content.linkPath.replace('{roomAlias}', alias);
+    }
+  }
   return content;
 }
 
@@ -51,4 +54,9 @@ export function parseAlias(id: string) {
   }
 
   return id;
+}
+
+export function extractRoomAlias(roomIdOrAlias) {
+  const aliasMatch = roomIdOrAlias.match(/^#([^:]+):.*/);
+  return aliasMatch ? aliasMatch[1] : '';
 }

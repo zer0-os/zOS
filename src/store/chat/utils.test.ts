@@ -1,5 +1,5 @@
 import { config } from '../../config';
-import { translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
+import { translateJoinRoomApiError, JoinRoomApiErrorCode, extractRoomAlias } from './utils';
 
 describe(translateJoinRoomApiError, () => {
   it('returns expected message for known error codes', () => {
@@ -21,7 +21,7 @@ describe(translateJoinRoomApiError, () => {
   it('returns expected message with link data for ACCESS_TOKEN_REQUIRED error code', () => {
     const accessTokenRequiredErrorMessage = translateJoinRoomApiError(
       JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED,
-      'exampleRoom'
+      '#exampleRoom:server'
     );
     expect(accessTokenRequiredErrorMessage).toEqual({
       header: 'World Members Only',
@@ -29,5 +29,10 @@ describe(translateJoinRoomApiError, () => {
       linkPath: `${config.znsExplorerUrl}/exampleRoom`,
       linkText: 'Buy A Domain',
     });
+  });
+
+  it('correctly extracts alias from room ID or alias', () => {
+    const alias = extractRoomAlias('#exampleRoom:server');
+    expect(alias).toEqual('exampleRoom');
   });
 });

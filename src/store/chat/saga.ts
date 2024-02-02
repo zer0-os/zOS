@@ -96,7 +96,7 @@ export function* joinRoom(roomIdOrAlias: string) {
   const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
-    const error = translateJoinRoomApiError(response);
+    const error = translateJoinRoomApiError(response, roomIdOrAlias);
     yield put(setJoinRoomErrorContent(error));
   } else {
     yield put(clearJoinRoomErrorContent());

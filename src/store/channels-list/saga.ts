@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
-import { fork, put, call, take, all, select, spawn, race } from 'redux-saga/effects';
+import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
 import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
@@ -91,6 +91,11 @@ export function* fetchConversations() {
   );
 
   yield put(setStatus(AsyncListStatus.Stopped));
+
+  // This event means an initial fetch of conversations has completed and is now in
+  // state but it does not mean _all_ current known conversations are in state
+  // as there are often follow up events still to be processed which would add
+  // new conversations to the state. You may prefer waitForChatConnectionCompletion
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
 }
@@ -372,18 +377,4 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
       otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
     })
   );
-}
-
-export function* waitForChannelListLoad() {
-  const status = String(yield select(channelListStatus));
-  if (status !== AsyncListStatus.Stopped) {
-    const { abort } = yield race({
-      conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
-      abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
-    });
-    if (abort) {
-      return false;
-    }
-  }
-  return true;
 }

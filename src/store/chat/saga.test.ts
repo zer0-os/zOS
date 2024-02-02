@@ -8,13 +8,13 @@ import {
   validateActiveConversation,
   isMemberOfActiveConversation,
   setWhenUserJoinedRoom,
+  waitForChatConnectionCompletion,
 } from './saga';
 import { openFirstConversation } from '../channels/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
-import { waitForChannelListLoad } from '../channels-list/saga';
 import { clearJoinRoomErrorContent, rawSetActiveConversationId, setIsJoiningConversation } from '.';
 import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError } from './utils';
 import { getRoomIdForAlias } from '../../lib/chat';
@@ -229,7 +229,7 @@ describe(validateActiveConversation, () => {
       .next()
       .put(setIsJoiningConversation(true))
       .next()
-      .call(waitForChannelListLoad)
+      .call(waitForChatConnectionCompletion)
       .next(true)
       .call(performValidateActiveConversation, 'convo-1')
       .next()
@@ -243,10 +243,39 @@ describe(validateActiveConversation, () => {
       .next()
       .put(setIsJoiningConversation(true))
       .next()
-      .call(waitForChannelListLoad)
+      .call(waitForChatConnectionCompletion)
       .next(false) // Channels did not load
       .put(setIsJoiningConversation(false))
       .next()
       .isDone();
+  });
+});
+
+describe(waitForChatConnectionCompletion, () => {
+  it('returns true if channel list already loaded', () => {
+    testSaga(waitForChatConnectionCompletion).next().next(true).returns(true);
+  });
+
+  it('waits for load if channel list not yet loaded', () => {
+    testSaga(waitForChatConnectionCompletion)
+      .next()
+      .next(false)
+      .next('fake/chat/bus')
+      .next('fake/auth/bus')
+      // Conversation bus fires event
+      .next({ complete: {} })
+      .next()
+      .returns(true);
+  });
+
+  it('returns false if the channel load was aborted', () => {
+    testSaga(waitForChatConnectionCompletion)
+      .next()
+      .next(false)
+      .next('fake/chat/bus')
+      .next('fake/auth/bus')
+      // Auth bus fires user logout event
+      .next({ abort: {} })
+      .returns(false);
   });
 });

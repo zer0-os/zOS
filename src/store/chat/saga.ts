@@ -7,8 +7,9 @@ import {
   setJoinRoomErrorContent,
   clearJoinRoomErrorContent,
   setIsJoiningConversation,
+  setIsChatConnectionComplete,
 } from '.';
-import { createChatConnection, getChatBus } from './bus';
+import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { getSSOToken } from '../authentication/api';
 import { currentUserSelector } from '../authentication/saga';
@@ -18,7 +19,7 @@ import { chat, getRoomIdForAlias } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
-import { rawConversationsList, waitForChannelListLoad } from '../channels-list/saga';
+import { rawConversationsList } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { translateJoinRoomApiError, parseAlias, isAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
@@ -33,6 +34,28 @@ function* initChat(userId, chatAccessToken) {
 
   yield spawn(closeConnectionOnLogout, chatConnection);
   yield spawn(activateWhenConversationsLoaded, activate);
+}
+
+// This will wait until all the initial batch of "snapshot state" rooms
+// have been loaded into the state AND the "catchup events" have all been
+// published. However, there is no way to know if all the handlers of those
+// "catchup events" have actually completed as any handler may have async
+// operations.
+export function* waitForChatConnectionCompletion() {
+  const isComplete = yield select((state) => state.chat.isChatConnectionComplete);
+  if (isComplete) {
+    return true;
+  }
+
+  const { complete } = yield race({
+    complete: take(yield call(getChatBus), ChatEvents.ChatConnectionComplete),
+    abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
+  });
+  if (complete) {
+    yield put(setIsChatConnectionComplete(true));
+    return true;
+  }
+  return false;
 }
 
 function* convertToBusEvents(action) {
@@ -69,6 +92,7 @@ function* activateWhenConversationsLoaded(activate) {
 
 function* clearOnLogout() {
   yield put(rawSetActiveConversationId(null));
+  yield put(setIsChatConnectionComplete(false));
 }
 
 function* addAdminUser() {
@@ -84,7 +108,7 @@ export function* setActiveConversation(id: string) {
 export function* validateActiveConversation(conversationId: string) {
   yield put(setIsJoiningConversation(true));
 
-  const isLoaded = yield call(waitForChannelListLoad);
+  const isLoaded = yield call(waitForChatConnectionCompletion);
   if (isLoaded) {
     yield call(performValidateActiveConversation, conversationId);
   }

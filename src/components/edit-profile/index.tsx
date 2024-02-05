@@ -107,19 +107,21 @@ export class EditProfile extends React.Component<Properties, State> {
   renderOwnedZIDItem(label, icon = null) {
     return (
       <div className={c('zid-menu-item-label')}>
-        {label} <div className={c('check_icon')}>{icon}</div>
+        {label} {icon}
       </div>
     );
   }
 
   get menuItems() {
-    const options = [
-      {
+    const options = [];
+
+    if (this.props.currentPrimaryZID) {
+      options.push({
         id: this.props.currentPrimaryZID,
         label: this.renderOwnedZIDItem(this.props.currentPrimaryZID, <IconCheck size={24} />),
         onSelect: () => this.trackPrimaryZID(this.props.currentPrimaryZID),
-      },
-    ];
+      });
+    }
 
     for (const zid of this.props.ownedZIDs) {
       if (zid === this.props.currentPrimaryZID) continue;

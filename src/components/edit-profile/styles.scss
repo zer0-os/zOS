@@ -50,6 +50,13 @@
     line-height: normal;
   }
 
+  &__zid-select-menu {
+    min-width: 224px;
+
+    height: 220px;
+    overflow-y: auto;
+  }
+
   &__zid-menu-item-label {
     display: flex;
     flex-direction: row;
@@ -90,8 +97,4 @@
   &__alert-large {
     height: 56px;
   }
-}
-
-.zui-dropdown-menu {
-  min-width: 224px;
 }

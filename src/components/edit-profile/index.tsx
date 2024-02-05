@@ -171,6 +171,8 @@ export class EditProfile extends React.Component<Properties, State> {
                 placeholder={this.props.currentPrimaryZID}
                 value={this.state.primaryZID}
                 className={c('select-input')}
+                itemSize='spacious'
+                menuClassName={c('zid-select-menu')}
               />
             </div>
           )}

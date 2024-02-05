@@ -19,14 +19,11 @@ describe(translateJoinRoomApiError, () => {
   });
 
   it('returns expected message with link data for ACCESS_TOKEN_REQUIRED error code', () => {
-    const accessTokenRequiredErrorMessage = translateJoinRoomApiError(
-      JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED,
-      'exampleRoom'
-    );
+    const accessTokenRequiredErrorMessage = translateJoinRoomApiError(JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED);
     expect(accessTokenRequiredErrorMessage).toEqual({
       header: 'World Members Only',
       body: 'You cannot join this conversation as your wallet does not hold a domain in this world. Buy a domain or switch to a wallet that holds one.',
-      linkPath: `${config.znsExplorerUrl}/exampleRoom`,
+      linkPath: config.znsExplorerUrl,
       linkText: 'Buy A Domain',
     });
   });

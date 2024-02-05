@@ -1,13 +1,14 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { editProfile as editProfileSaga, updateUserProfile } from './saga';
-import { editUserProfile as apiEditUserProfile } from './api';
+import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
+import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
 import { EditProfileState, State, initialState as initialEditProfileState } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { setOwnedZIDs } from './index';
 
 describe('editProfile', () => {
   const name = 'John Doe';
@@ -66,22 +67,17 @@ describe('editProfile', () => {
   });
 
   it('sets an error if API response is not successful', async () => {
-    const profileId = 'profile-id';
-
     const {
       storeState: { editProfile },
-    } = await expectSaga(editProfileSaga, { payload: { name, image } })
+    } = await expectSaga(editProfileSaga, { payload: { name, image, primaryZID } })
       .provide([
-        [
-          call(uploadImage, image),
-          { url: 'profile-image-url' },
-        ],
+        [call(uploadImage, image), { url: 'profile-image-url' }],
         [
           call(apiEditUserProfile, { name, primaryZID, profileImage: 'profile-image-url' }),
           throwError(new Error('API call failed')),
         ],
       ])
-      .withReducer(rootReducer, initialState({}, { profileId }))
+      .withReducer(rootReducer, initialState({}))
       .run();
 
     expect(editProfile.state).toEqual(State.LOADED);
@@ -137,6 +133,24 @@ describe('updateUserProfile', () => {
     };
 
     expect(authentication.user.data).toEqual(updatedUser);
+  });
+});
+
+describe('fetchOwnedZIDs', () => {
+  it('fetches owned ZIDs', async () => {
+    const ownedZIDs = ['0://zid:1', '0://zid:2'];
+
+    const {
+      storeState: { editProfile },
+    } = await expectSaga(fetchOwnedZIDs)
+      .provide([
+        [call(apiFetchOwnedZIDs), ownedZIDs],
+      ])
+      .withReducer(rootReducer, initialState())
+      .put(setOwnedZIDs(ownedZIDs))
+      .run();
+
+    expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
   });
 });
 

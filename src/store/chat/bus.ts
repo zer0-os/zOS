@@ -17,6 +17,7 @@ export enum Events {
   OtherUserJoinedChannel = 'chat/channel/otherUserJoined',
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
   LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
+  ChatConnectionComplete = 'chat/connection/complete',
 }
 
 let theBus;
@@ -35,14 +36,33 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       setActivationResult = (result) => resolve(result);
     });
 
+    const queuedEvents = [];
+    let queueing = true;
+    const processQueuePromise = new Promise(async (resolve) => {
+      await activationPromise;
+      queueing = false;
+      await Promise.all(queuedEvents);
+      rawEmit({ type: Events.ChatConnectionComplete });
+      resolve(null);
+    });
+
     const emit = async (event) => {
+      if (queueing) {
+        queuedEvents.push(queuedEmit(event));
+      } else {
+        await processQueuePromise;
+        rawEmit(event);
+      }
+    };
+
+    async function queuedEmit(event) {
       const activated = await activationPromise;
       if (activated) {
         // This may not be necessary as the eventChannel stops broadcasting
         // when the it's closed so we could just do this willy nilly.
         rawEmit(event);
       }
-    };
+    }
 
     const receiveNewMessage = (channelId, message) =>
       emit({ type: Events.MessageReceived, payload: { channelId, message } });

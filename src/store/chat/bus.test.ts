@@ -7,11 +7,16 @@ describe('chat bus', () => {
       receivedEvents.push(action);
     }
 
+    // Set up the chat connection fully
     const { chatConnection, activate } = createChatConnection('user-id', 'token', stubClient as any);
-    chatConnection.take(trackEvents);
+    await chatConnection.take(trackEvents);
     await activate();
+    // Consume the ChatConnectionComplete event
+    await chatConnection.take(trackEvents);
+    receivedEvents.pop();
 
     await stubClient.handlers.onOtherUserJoinedChannel('channel-id', 'user-id');
+    await chatConnection.take(trackEvents);
 
     expect(receivedEvents.map((e) => e.type)).toEqual(['chat/channel/otherUserJoined']);
   });
@@ -23,7 +28,7 @@ describe('chat bus', () => {
     }
 
     const { chatConnection, activate } = createChatConnection('user-id', 'token', stubClient as any);
-    chatConnection.take(trackEvents);
+    await chatConnection.take(trackEvents);
 
     stubClient.handlers.onOtherUserJoinedChannel('channel-id', 'user-id');
     expect(receivedEvents.map((e) => e.type)).toEqual([]);

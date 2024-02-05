@@ -1,4 +1,4 @@
-import { post, put } from '../../lib/api/rest';
+import { get, post, put } from '../../lib/api/rest';
 
 export async function editUserProfile({
   name,
@@ -39,4 +39,9 @@ export async function leaveGlobalNetwork() {
 
 export async function joinGlobalNetwork() {
   await post('/networks/global/join').send();
+}
+
+export async function fetchOwnedZIDs() {
+  const response = await get('/api/v2/users/owned-zids');
+  return response.body;
 }

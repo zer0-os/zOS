@@ -2,7 +2,14 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { EditProfile } from '.';
-import { State, editProfile, joinGlobalNetwork, leaveGlobalNetwork, startProfileEdit } from '../../store/edit-profile';
+import {
+  State,
+  editProfile,
+  joinGlobalNetwork,
+  leaveGlobalNetwork,
+  startProfileEdit,
+  fetchOwnedZIDs,
+} from '../../store/edit-profile';
 import { Container as RegistrationContainer } from '../../authentication/create-account-details/container';
 export interface PublicProperties {
   onClose?: () => void;
@@ -18,10 +25,12 @@ export interface Properties extends PublicProperties {
   currentDisplayName: string;
   currentProfileImage: string;
   currentPrimaryZID: string;
+  ownedZIDs: string[];
   editProfile: (data: { name: string; image: File; primaryZID: string }) => void;
   startProfileEdit: () => void;
   leaveGlobalNetwork: () => void;
   joinGlobalNetwork: () => void;
+  fetchOwnedZIDs: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -35,16 +44,18 @@ export class Container extends React.Component<Properties> {
       currentDisplayName: user?.data?.profileSummary.firstName,
       currentProfileImage: user?.data?.profileSummary.profileImage,
       currentPrimaryZID: user?.data?.primaryZID,
+      ownedZIDs: editProfile.ownedZIDs,
       editProfileState: editProfile.state,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { editProfile, startProfileEdit, joinGlobalNetwork, leaveGlobalNetwork };
+    return { editProfile, startProfileEdit, joinGlobalNetwork, leaveGlobalNetwork, fetchOwnedZIDs };
   }
 
   componentDidMount(): void {
     this.props.startProfileEdit();
+    this.props.fetchOwnedZIDs();
   }
 
   render() {
@@ -57,6 +68,7 @@ export class Container extends React.Component<Properties> {
         currentDisplayName={this.props.currentDisplayName}
         currentProfileImage={this.props.currentProfileImage}
         currentPrimaryZID={this.props.currentPrimaryZID}
+        ownedZIDs={this.props.ownedZIDs}
         onLeaveGlobal={this.props.leaveGlobalNetwork}
         onJoinGlobal={this.props.joinGlobalNetwork}
       />

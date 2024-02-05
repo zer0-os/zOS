@@ -13,7 +13,6 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   fetchUserPresence,
-  waitForChannelListLoad,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -25,7 +24,6 @@ import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 import { openFirstConversation } from '../channels/saga';
-import { AsyncListStatus } from '../normalized';
 
 const mockChannel = (id: string) => ({
   id: `channel_${id}`,
@@ -593,33 +591,5 @@ describe('channels list saga', () => {
         .next()
         .isDone();
     });
-  });
-});
-
-describe(waitForChannelListLoad, () => {
-  it('returns true if channel list already loaded', () => {
-    testSaga(waitForChannelListLoad).next().next(AsyncListStatus.Stopped).returns(true);
-  });
-
-  it('waits for load if channel list not yet loaded', () => {
-    testSaga(waitForChannelListLoad)
-      .next()
-      .next(AsyncListStatus.Fetching)
-      .next('fake/conversation/bus')
-      .next('fake/auth/bus')
-      // Conversation bus fires event
-      .next({ conversationsLoaded: {} })
-      .returns(true);
-  });
-
-  it('returns false if the channel load was aborted', () => {
-    testSaga(waitForChannelListLoad)
-      .next()
-      .next(AsyncListStatus.Fetching)
-      .next('fake/conversation/bus')
-      .next('fake/auth/bus')
-      // Auth bus fires user logout event
-      .next({ abort: {} })
-      .returns(false);
   });
 });

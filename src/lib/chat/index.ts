@@ -80,6 +80,7 @@ export interface IChatClient {
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
+  getAliasForRoomId: (id: string) => Promise<string | undefined>;
 }
 
 export class Chat {
@@ -196,6 +197,10 @@ export class Chat {
     return this.matrix.getRoomIdForAlias(alias);
   }
 
+  async getAliasForRoomId(id: string) {
+    return this.matrix.getAliasForRoomId(id);
+  }
+
   async displayRoomKeys(roomId: string) {
     return this.matrix.displayRoomKeys(roomId);
   }
@@ -272,4 +277,8 @@ export async function fetchConversationsWithUsers(users: User[]) {
 
 export async function getRoomIdForAlias(alias: string) {
   return chat.get().getRoomIdForAlias(alias);
+}
+
+export async function getAliasForRoomId(id: string) {
+  return chat.get().getAliasForRoomId(id);
 }

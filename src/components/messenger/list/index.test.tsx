@@ -234,26 +234,38 @@ describe('messenger-list', () => {
     expect(closeConversationErrorDialog).toHaveBeenCalledOnce();
   });
 
-  it('excludes the current user from the search results (usersInMyNetworks)', async () => {
-    when(mockSearchMyNetworksByName)
-      .calledWith('Ja')
-      .mockResolvedValue([
-        { id: 'user-1', name: 'Jack', profileImage: 'image-url-1' },
-        { id: 'my-user-id', name: 'Janet', profileImage: 'image-url-2' },
-        { id: 'user-3', name: 'Jake', profileImage: 'image-url-3' },
-      ]);
+  describe('usersInMyNetworks', () => {
+    const myUserId = 'my-user-id';
+    const mockSearchResults = [
+      { id: 'user-1', name: 'Jack', profileImage: 'image-url-1' },
+      { id: myUserId, name: 'Janet', profileImage: 'image-url-2' }, // Current user
+      { id: 'user-3', name: 'Jake', profileImage: 'image-url-3' },
+    ];
 
-    const wrapper = subject({
-      stage: Stage.None,
-      myUserId: 'my-user-id',
+    const stages = [
+      { stage: Stage.None, component: ConversationListPanel, searchProp: 'search' },
+      { stage: Stage.CreateOneOnOne, component: CreateConversationPanel, searchProp: 'search' },
+      { stage: Stage.StartGroupChat, component: StartGroupPanel, searchProp: 'searchUsers' },
+    ];
+
+    stages.forEach(({ stage, component, searchProp }) => {
+      it(`excludes the current user from search results in stage: ${stage}`, async () => {
+        when(mockSearchMyNetworksByName).calledWith('Ja').mockResolvedValue(mockSearchResults);
+
+        const wrapper = subject({
+          stage: stage,
+          myUserId: myUserId,
+        });
+
+        const searchResults = await wrapper.find(component).prop(searchProp)('Ja');
+
+        expect(searchResults).toEqual(expect.not.arrayContaining([{ id: myUserId }]));
+        expect(searchResults).toEqual([
+          { id: 'user-1', name: 'Jack', image: 'image-url-1', profileImage: 'image-url-1' },
+          { id: 'user-3', name: 'Jake', image: 'image-url-3', profileImage: 'image-url-3' },
+        ]);
+      });
     });
-
-    const searchResults = await wrapper.find(ConversationListPanel).prop('search')('Ja');
-
-    expect(searchResults).toEqual([
-      { id: 'user-1', name: 'Jack', image: 'image-url-1', profileImage: 'image-url-1' },
-      { id: 'user-3', name: 'Jake', image: 'image-url-3', profileImage: 'image-url-3' },
-    ]);
   });
 
   describe('mapState', () => {

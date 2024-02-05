@@ -1,15 +1,34 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   webpack: {
-    alias: {
-      react: path.resolve('./node_modules/react'),
-      'react-dom': path.resolve('./node_modules/react-dom'),
-      'react-router': path.resolve('./node_modules/react-router'),
-      'react-router-dom': path.resolve('./node_modules/react-router-dom'),
-      '@zer0-os/zos-component-library': path.resolve('./node_modules/@zer0-os/zos-component-library'),
-    },
+    alias: {},
     configure: {
+      resolve: {
+        // https://webpack.js.org/configuration/resolve/#resolvefallback
+        // https://web3auth.io/docs/troubleshooting/webpack-issues#react-create-react-app
+        // https://docs.cloud.coinbase.com/wallet-sdk/docs/web3-react
+        fallback: {
+          crypto: false,
+          fs: false,
+          buffer: require.resolve('buffer'),
+          stream: require.resolve('stream-browserify'),
+          util: require.resolve('util/'),
+          assert: require.resolve('assert/'),
+        },
+      },
+      // https://github.com/facebook/create-react-app/discussions/11767
+      ignoreWarnings: [
+        function ignoreSourcemapsloaderWarnings(warning) {
+          return (
+            warning.module &&
+            warning.module.resource.includes('node_modules') &&
+            warning.details &&
+            warning.details.includes('source-map-loader')
+          );
+        },
+      ],
       module: {
         rules: [
           {
@@ -20,12 +39,15 @@ module.exports = {
         ],
       },
     },
-  },
-  devServer: {
-    watchOptions: {
-      ignored: '**/node_modules/**',
+    plugins: {
+      add: [
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        }),
+      ],
     },
   },
+  devServer: {},
   jest: {
     configure: (jestConfig) => {
       return {

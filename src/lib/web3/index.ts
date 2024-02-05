@@ -1,4 +1,4 @@
-import Web3Utils from 'web3-utils';
+import { toHex } from 'web3-utils';
 import { config } from '../../config';
 
 export enum ConnectionStatus {
@@ -31,7 +31,7 @@ export enum Chains {
 
 export async function personalSignToken(web3Provider, currentAddress): Promise<any> {
   const method = 'personal_sign';
-  const from = Web3Utils.toHex(currentAddress.toLowerCase());
+  const from = toHex(currentAddress.toLowerCase());
   const params = [
     config.web3AuthenticationMessage,
     from,

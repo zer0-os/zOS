@@ -234,6 +234,28 @@ describe('messenger-list', () => {
     expect(closeConversationErrorDialog).toHaveBeenCalledOnce();
   });
 
+  it('excludes the current user from the search results (usersInMyNetworks)', async () => {
+    when(mockSearchMyNetworksByName)
+      .calledWith('Ja')
+      .mockResolvedValue([
+        { id: 'user-1', name: 'Jack', profileImage: 'image-url-1' },
+        { id: 'my-user-id', name: 'Janet', profileImage: 'image-url-2' },
+        { id: 'user-3', name: 'Jake', profileImage: 'image-url-3' },
+      ]);
+
+    const wrapper = subject({
+      stage: Stage.None,
+      myUserId: 'my-user-id',
+    });
+
+    const searchResults = await wrapper.find(ConversationListPanel).prop('search')('Ja');
+
+    expect(searchResults).toEqual([
+      { id: 'user-1', name: 'Jack', image: 'image-url-1', profileImage: 'image-url-1' },
+      { id: 'user-3', name: 'Jake', image: 'image-url-3', profileImage: 'image-url-3' },
+    ]);
+  });
+
   describe('mapState', () => {
     const subject = (
       channels,

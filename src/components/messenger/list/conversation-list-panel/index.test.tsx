@@ -203,31 +203,6 @@ describe('ConversationListPanel', () => {
     });
   });
 
-  it('excludes current user and users in one-on-one conversations from the search results', async function () {
-    const search = jest.fn();
-    search.mockResolvedValue([
-      { name: 'jack', id: 'user-1', image: 'image-1' },
-      { name: 'jake', id: 'user-2', image: 'image-2' },
-      { name: 'jacklyn', id: 'user-3', image: 'image-3' },
-      { name: 'janet', id: 'user-4', image: 'image-4' },
-    ]);
-
-    const conversations = [
-      { id: 'convo-id-1', otherMembers: [{ userId: 'user-4' }], isOneOnOne: true } as Channel,
-    ];
-
-    const wrapper = subject({ search, myUserId: 'user-2', conversations });
-
-    await searchFor(wrapper, 'ja');
-
-    const userSearchResults = renderedUserSearchResults(wrapper);
-
-    expect(userSearchResults).toEqual([
-      { value: 'user-1', label: 'jack', image: 'image-1' },
-      { value: 'user-3', label: 'jacklyn', image: 'image-3' },
-    ]);
-  });
-
   it('selecting an existing conversation announces click event', async function () {
     const onConversationClick = jest.fn();
     const conversations = [

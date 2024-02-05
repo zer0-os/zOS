@@ -62,9 +62,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
 
     const items: Item[] = await this.props.search(tempSearch);
-    const filteredItems = items?.filter(
-      (item) => !oneOnOneConversationMemberIds.includes(item.id) && item.id !== this.props.myUserId
-    );
+    const filteredItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id) && item.id);
 
     this.scrollToTop();
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });

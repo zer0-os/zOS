@@ -21,7 +21,7 @@ import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
-import { translateJoinRoomApiError, parseAlias, isAlias } from './utils';
+import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 
 function* initChat(userId, chatAccessToken) {
@@ -116,11 +116,14 @@ export function* validateActiveConversation(conversationId: string) {
   yield put(setIsJoiningConversation(false));
 }
 
-export function* joinRoom(roomIdOrAlias: string, extractedDomainFromAlias?: string) {
+export function* joinRoom(roomIdOrAlias: string) {
   const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
-    const error = translateJoinRoomApiError(response, extractedDomainFromAlias);
+    const domain = extractDomainFromAlias(roomIdOrAlias);
+
+    const error = translateJoinRoomApiError(response, domain);
+
     yield put(setJoinRoomErrorContent(error));
   } else {
     yield put(clearJoinRoomErrorContent());
@@ -180,17 +183,15 @@ export function* performValidateActiveConversation(activeConversationId: string)
     return;
   }
 
-  let extractedDomainFromAlias = '';
   let conversationId = activeConversationId;
   if (isAlias(activeConversationId)) {
-    extractedDomainFromAlias = activeConversationId.split(':')[0];
     activeConversationId = parseAlias(activeConversationId);
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
-    yield call(joinRoom, conversationId ?? activeConversationId, extractedDomainFromAlias);
+    yield call(joinRoom, activeConversationId);
     return;
   }
 

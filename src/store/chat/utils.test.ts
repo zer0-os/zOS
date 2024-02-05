@@ -1,5 +1,5 @@
 import { config } from '../../config';
-import { translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
+import { extractDomainFromAlias, translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
 
 describe(translateJoinRoomApiError, () => {
   it('returns expected message for known error codes', () => {
@@ -29,5 +29,17 @@ describe(translateJoinRoomApiError, () => {
       linkPath: `${config.znsExplorerUrl}/exampleDomain`,
       linkText: 'Buy A Domain',
     });
+  });
+});
+
+describe(extractDomainFromAlias, () => {
+  it('correctly extracts the domain from an alias', () => {
+    const alias = '#exampleDomain:matrix.org';
+    expect(extractDomainFromAlias(alias)).toEqual('exampleDomain');
+  });
+
+  it('returns an empty string when the input is not an alias', () => {
+    const notAlias = '!notAnAlias:matrix.org';
+    expect(extractDomainFromAlias(notAlias)).toEqual('');
   });
 });

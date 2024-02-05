@@ -31,9 +31,10 @@ export const ERROR_DIALOG_CONTENT = {
 export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string, domain?: string) {
   const content = ERROR_DIALOG_CONTENT[errorCode] || ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR];
 
-  if (errorCode === JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED) {
+  if (errorCode === JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED && content.linkPath?.includes('{domain}')) {
     content.linkPath = content.linkPath.replace('{domain}', domain);
   }
+
   return content;
 }
 
@@ -50,4 +51,12 @@ export function parseAlias(id: string) {
   }
 
   return id;
+}
+
+export function extractDomainFromAlias(alias: string): string {
+  if (isAlias(alias)) {
+    return alias.substring(1).split(':')[0];
+  }
+
+  return '';
 }

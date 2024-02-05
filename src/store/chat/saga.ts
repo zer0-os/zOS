@@ -190,10 +190,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
-    console.log('CONVERSATION ID', conversationId);
-    console.log('ACTIVE CONVERSATION ID', activeConversationId);
-    console.log('EXTRACTED DOMAIN FROM ALIAS', extractedDomainFromAlias);
-
     yield call(joinRoom, conversationId ?? activeConversationId, extractedDomainFromAlias);
     return;
   }

@@ -125,9 +125,12 @@ export class Container extends React.Component<Properties, State> {
 
   usersInMyNetworks = async (search: string) => {
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
-    this.props.receiveSearchResults(users);
 
-    return users.map((user) => ({ ...user, image: user.profileImage }));
+    const filteredUsers = users?.filter((user) => user.id !== this.props.myUserId);
+
+    this.props.receiveSearchResults(filteredUsers);
+
+    return filteredUsers?.map((user) => ({ ...user, image: user.profileImage }));
   };
 
   createOneOnOneConversation = (id: string) => {

@@ -621,6 +621,18 @@ export class MatrixClient implements IChatClient {
       .then((response) => response && response.room_id);
   }
 
+  async getAliasForRoomId(id: string): Promise<string | undefined> {
+    await this.waitForConnection();
+    return await this.matrix
+      .getLocalAliases(id)
+      .catch((err) => {
+        if (err.errcode === 'M_NOT_FOUND' || err.errcode === 'M_INVALID_PARAM') {
+          Promise.resolve(undefined);
+        }
+      })
+      .then((response) => response && response.aliases[0]);
+  }
+
   async fetchConversationsWithUsers(users: User[]) {
     const userMatrixIds = users.map((u) => u.matrixId);
     const rooms = await this.getRoomsUserIsIn();

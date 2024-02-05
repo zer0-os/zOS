@@ -15,7 +15,7 @@ export const ERROR_DIALOG_CONTENT = {
   [JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED]: {
     header: 'World Members Only',
     body: 'You cannot join this conversation as your wallet does not hold a domain in this world. Buy a domain or switch to a wallet that holds one.',
-    linkPath: `${config.znsExplorerUrl}/{roomAlias}`,
+    linkPath: `${config.znsExplorerUrl}/{domain}`,
     linkText: 'Buy A Domain',
   },
   [JoinRoomApiErrorCode.GENERAL_ERROR]: {
@@ -28,15 +28,11 @@ export const ERROR_DIALOG_CONTENT = {
   },
 };
 
-export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string, roomAlias?: string) {
+export function translateJoinRoomApiError(errorCode: JoinRoomApiErrorCode | string, domain?: string) {
   const content = ERROR_DIALOG_CONTENT[errorCode] || ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR];
 
-  if (errorCode === JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED && roomAlias) {
-    const alias = extractRoomAlias(roomAlias);
-
-    if (content.linkPath && content.linkPath.includes('{roomAlias}')) {
-      content.linkPath = content.linkPath.replace('{roomAlias}', alias);
-    }
+  if (errorCode === JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED) {
+    content.linkPath = content.linkPath.replace('{domain}', domain);
   }
   return content;
 }
@@ -54,9 +50,4 @@ export function parseAlias(id: string) {
   }
 
   return id;
-}
-
-export function extractRoomAlias(roomIdOrAlias) {
-  const aliasMatch = roomIdOrAlias.match(/^#([^:]+):.*/);
-  return aliasMatch ? aliasMatch[1] : '';
 }

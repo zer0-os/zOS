@@ -116,11 +116,11 @@ export function* validateActiveConversation(conversationId: string) {
   yield put(setIsJoiningConversation(false));
 }
 
-export function* joinRoom(roomIdOrAlias: string) {
+export function* joinRoom(roomIdOrAlias: string, extractedDomainFromAlias?: string) {
   const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
-    const error = translateJoinRoomApiError(response, roomIdOrAlias);
+    const error = translateJoinRoomApiError(response, extractedDomainFromAlias);
     yield put(setJoinRoomErrorContent(error));
   } else {
     yield put(clearJoinRoomErrorContent());
@@ -180,15 +180,21 @@ export function* performValidateActiveConversation(activeConversationId: string)
     return;
   }
 
+  let extractedDomainFromAlias = '';
   let conversationId = activeConversationId;
   if (isAlias(activeConversationId)) {
+    extractedDomainFromAlias = activeConversationId.split(':')[0];
     activeConversationId = parseAlias(activeConversationId);
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
-    yield call(joinRoom, conversationId ?? activeConversationId);
+    console.log('CONVERSATION ID', conversationId);
+    console.log('ACTIVE CONVERSATION ID', activeConversationId);
+    console.log('EXTRACTED DOMAIN FROM ALIAS', extractedDomainFromAlias);
+
+    yield call(joinRoom, conversationId ?? activeConversationId, extractedDomainFromAlias);
     return;
   }
 

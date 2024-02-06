@@ -171,7 +171,7 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(getRoomIdForAlias), '!some-other-convo:matrix.org'],
       ])
       .call(getRoomIdForAlias, '#' + alias)
-      .call(apiJoinRoom, '!some-other-convo:matrix.org')
+      .call(apiJoinRoom, '#some-other-convo:matrix.org')
       .run();
   });
 });

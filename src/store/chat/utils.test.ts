@@ -1,5 +1,5 @@
 import { config } from '../../config';
-import { translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
+import { extractDomainFromAlias, translateJoinRoomApiError, JoinRoomApiErrorCode } from './utils';
 
 describe(translateJoinRoomApiError, () => {
   it('returns expected message for known error codes', () => {
@@ -18,16 +18,28 @@ describe(translateJoinRoomApiError, () => {
     });
   });
 
-  it('returns expected message with link data for ACCESS_TOKEN_REQUIRED error code', () => {
+  it('appends passed in domain to linkPath for ACCESS_TOKEN_REQUIRED error', () => {
     const accessTokenRequiredErrorMessage = translateJoinRoomApiError(
       JoinRoomApiErrorCode.ACCESS_TOKEN_REQUIRED,
-      'exampleRoom'
+      'exampleDomain'
     );
     expect(accessTokenRequiredErrorMessage).toEqual({
       header: 'World Members Only',
       body: 'You cannot join this conversation as your wallet does not hold a domain in this world. Buy a domain or switch to a wallet that holds one.',
-      linkPath: `${config.znsExplorerUrl}/exampleRoom`,
+      linkPath: `${config.znsExplorerUrl}/exampleDomain`,
       linkText: 'Buy A Domain',
     });
+  });
+});
+
+describe(extractDomainFromAlias, () => {
+  it('correctly extracts the domain from an alias', () => {
+    const alias = '#exampleDomain:matrix.org';
+    expect(extractDomainFromAlias(alias)).toEqual('exampleDomain');
+  });
+
+  it('returns an empty string when the input is not an alias', () => {
+    const notAlias = '!notAnAlias:matrix.org';
+    expect(extractDomainFromAlias(notAlias)).toEqual('');
   });
 });

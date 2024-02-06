@@ -21,7 +21,7 @@ import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList } from '../channels-list/saga';
 import { featureFlags } from '../../lib/feature-flags';
-import { translateJoinRoomApiError, parseAlias, isAlias } from './utils';
+import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 
 function* initChat(userId, chatAccessToken) {
@@ -120,7 +120,10 @@ export function* joinRoom(roomIdOrAlias: string) {
   const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
   if (!success) {
-    const error = translateJoinRoomApiError(response);
+    const domain = extractDomainFromAlias(roomIdOrAlias);
+
+    const error = translateJoinRoomApiError(response, domain);
+
     yield put(setJoinRoomErrorContent(error));
   } else {
     yield put(clearJoinRoomErrorContent());
@@ -188,7 +191,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, conversationId);
   if (!conversationId || !isUserMemberOfActiveConversation) {
-    yield call(joinRoom, conversationId ?? activeConversationId);
+    yield call(joinRoom, activeConversationId);
     return;
   }
 

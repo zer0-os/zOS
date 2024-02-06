@@ -30,10 +30,11 @@ jobs:
       REACT_APP_ZNS_EXPLORER_URL: ${{vars.ZNS_EXPLORER_URL}}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Common Setup
+        uses: ./.github/actions/common
+
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+
       - run: npm install
       - name: get-npm-version
         id: package-version

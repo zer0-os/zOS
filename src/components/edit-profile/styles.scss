@@ -53,21 +53,26 @@
   &__zid-select-menu {
     min-width: 224px;
 
-    height: 220px;
+    max-height: 220px;
     overflow-y: auto;
   }
 
-  &__zid-menu-item-label {
+  &__zid-menu-item-option {
     display: flex;
     flex-direction: row;
     font-size: 16px;
     line-height: 24px;
+    width: 100%;
 
     @include glass-text-primary-color;
   }
 
-  &__check_icon {
-    margin-left: 20px;
+  &__zid-menu-item-option-label {
+    flex-grow: 1;
+  }
+
+  &__zid-menu-item-option-icon {
+    flex-grow: 0;
   }
 
   &__primary-zid-lable {

@@ -313,6 +313,7 @@ describe(DirectMessageChat, () => {
     });
   });
 
+  // Skipping these tests as modal doesn't render in `mount` mode - will restore once reverted back to shallow render
   describe.skip('leave group dialog', () => {
     it('renders leave group dialog when status is OPEN', async () => {
       const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN });

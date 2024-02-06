@@ -22,7 +22,7 @@ import { GroupManagementErrors, EditConversationState } from '../../../../store/
 import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { RemoveMemberDialogContainer } from '../../../group-management/remove-member-dialog/container';
-import { getUserHandle } from '../utils/utils';
+import { getUserHandle } from '../../lib/utils';
 
 export interface PublicProperties {
   searchUsers: (search: string) => Promise<any>;

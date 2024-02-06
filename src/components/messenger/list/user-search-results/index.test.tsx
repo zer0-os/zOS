@@ -23,9 +23,9 @@ describe('UserSearchResults', () => {
 
   it('renders user search results', function () {
     const userResults = [
-      { value: 'user-1', label: 'jack', image: 'image-1' },
-      { value: 'user-2', label: 'bob', image: 'image-2' },
-      { value: 'user-3', label: 'jacklyn', image: 'image-3' },
+      { value: 'user-1', label: 'jack', image: 'image-1', subLabel: '0://jack.test' },
+      { value: 'user-2', label: 'bob', image: 'image-2', subLabel: '0://bob.test' },
+      { value: 'user-3', label: 'jacklyn', image: 'image-3', subLabel: '0x1234...3456' },
     ];
     const wrapper = subject({ results: userResults });
 
@@ -36,6 +36,7 @@ describe('UserSearchResults', () => {
       expect(node.key()).toEqual(userResults[index].value);
       expect(node.find('Avatar').prop('imageURL')).toEqual(userResults[index].image);
       expect(node.find('.user-search-results__label').text()).toEqual(userResults[index].label);
+      expect(node.find('.user-search-results__sub-label').text()).toEqual(userResults[index].subLabel);
     });
   });
 

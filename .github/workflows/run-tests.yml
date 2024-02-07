@@ -1,10 +1,6 @@
 name: run-tests
 on:
   pull_request: {}
-  push:
-    branches-ignore:
-      - main
-      - development
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

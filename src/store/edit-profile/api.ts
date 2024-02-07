@@ -42,6 +42,6 @@ export async function joinGlobalNetwork() {
 }
 
 export async function fetchOwnedZIDs() {
-  const response = await get('/api/v2/users/owned-zids');
+  const response = await get('/api/v2/users/zids');
   return response.body;
 }

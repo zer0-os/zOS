@@ -22,6 +22,7 @@ export function* receiveSearchResults(searchResults) {
         profileImage: r.profileImage,
         matrixId: r.matrixId,
         primaryZID: r.primaryZID,
+        wallets: r?.wallets?.map((address) => address),
       };
     });
   yield put(receive(mappedUsers));

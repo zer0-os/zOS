@@ -23,7 +23,7 @@ describe('UserSearchResults', () => {
   it('renders the title', function () {
     const wrapper = subject({});
 
-    expect(wrapper.find(c('title')).text()).toEqual('Start a new conversation:');
+    expect(wrapper.find(c('title'))).toHaveText('Start a new conversation:');
   });
 
   it('renders user search results', function () {

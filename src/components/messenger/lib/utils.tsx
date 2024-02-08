@@ -1,9 +1,8 @@
 import { Item, Option } from './types';
 import { Channel, User } from '../../../store/channels';
-import { Wallet } from '../../../store/authentication/types';
 
 export const itemToOption = (item: Item): Option => {
-  const userHandle = getUserHandle(item?.primaryZID, item?.wallets);
+  const userHandle = getUserHandle(item?.primaryZID, item?.wallets?.[0]);
 
   return {
     value: item.id,
@@ -39,15 +38,13 @@ export const highlightFilter = (text, filter) => {
   return text;
 };
 
-export function getUserHandle(primaryZID: string, wallets: Wallet[]) {
+export function getUserHandle(primaryZID: string, primaryWallet: string) {
   if (primaryZID) {
     return primaryZID;
   }
 
-  const publicAddress = wallets?.[0]?.publicAddress;
-
-  if (publicAddress) {
-    return `${publicAddress.substring(0, 6)}...${publicAddress.substring(publicAddress.length - 4)}`;
+  if (primaryWallet) {
+    return `${primaryWallet.substring(0, 6)}...${primaryWallet.substring(primaryWallet.length - 4)}`;
   }
 
   return '';

@@ -33,19 +33,27 @@ describe(receiveSearchResults, () => {
       name: 'Test User 1',
       profileImage: 'image-url-1',
       primaryZID: 'zid-1',
-      wallets: [{ publicAddress: 'address-1' }],
+      wallets: ['0x9876543231'],
     };
     const user2 = {
       id: 'user-2',
       name: 'Test User 2',
       profileImage: 'image-url-2',
-      primaryZID: 'zid-2',
-      wallets: [{ publicAddress: 'address-2' }],
+      primaryZID: null,
+      wallets: ['0x123456789'],
+    };
+    const user3 = {
+      id: 'user-3',
+      name: 'Test User 3',
+      profileImage: 'image-url-3',
+      primaryZID: null,
+      wallets: null,
     };
 
     const { storeState } = await expectSaga(receiveSearchResults, [
       user1,
       user2,
+      user3,
     ])
       .withReducer(rootReducer)
       .run();
@@ -56,7 +64,7 @@ describe(receiveSearchResults, () => {
         firstName: user1.name,
         profileImage: user1.profileImage,
         primaryZID: user1.primaryZID,
-        wallets: user1.wallets,
+        displaySubHandle: 'zid-1',
       })
     );
     expect(denormalize(user2.id, storeState)).toEqual(
@@ -65,7 +73,16 @@ describe(receiveSearchResults, () => {
         firstName: user2.name,
         profileImage: user2.profileImage,
         primaryZID: user2.primaryZID,
-        wallets: user2.wallets,
+        displaySubHandle: '0x1234...6789',
+      })
+    );
+    expect(denormalize(user3.id, storeState)).toEqual(
+      expect.objectContaining({
+        userId: user3.id,
+        firstName: user3.name,
+        profileImage: user3.profileImage,
+        primaryZID: user3.primaryZID,
+        displaySubHandle: '',
       })
     );
   });

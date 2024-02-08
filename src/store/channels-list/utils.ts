@@ -105,7 +105,7 @@ export function replaceZOSUserFields(
     member.lastName = zeroUser.lastName;
     member.profileImage = zeroUser.profileImage;
     member.primaryZID = zeroUser.primaryZID;
-    member.displaySubHandle = getUserHandle(zeroUser.primaryZID, zeroUser.wallets);
+    member.displaySubHandle = getUserHandle(zeroUser.primaryZID, zeroUser.wallets?.[0]?.publicAddress);
   }
 }
 

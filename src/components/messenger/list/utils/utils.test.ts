@@ -49,16 +49,16 @@ describe('isUserAdmin', () => {
 describe('getUserHandle', () => {
   it('returns primaryZID when it is present', () => {
     const user = { primaryZID: 'zid123', wallets: [{ id: 'wallet-id-1', publicAddress: 'address456' }] };
-    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('zid123');
+    expect(getUserHandle(user.primaryZID, user.wallets?.[0]?.publicAddress)).toEqual('zid123');
   });
 
   it('returns truncated publicAddress from the first wallet when primaryZID is absent', () => {
     const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '0x123456789' }] };
-    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('0x1234...6789');
+    expect(getUserHandle(user.primaryZID, user.wallets?.[0]?.publicAddress)).toEqual('0x1234...6789');
   });
 
   it('returns empty string when both primaryZID and wallets are absent', () => {
     const user = { primaryZID: null, wallets: [] };
-    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('');
+    expect(getUserHandle(user.primaryZID, user.wallets?.[0]?.publicAddress)).toEqual('');
   });
 });

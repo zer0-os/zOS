@@ -64,7 +64,6 @@ describe('WalletSelect', () => {
     const renderedNames = wrapper.find('.zos-wallet-select__wallet-name').map((element) => element.text().trim());
 
     expect(renderedNames).toIncludeSameMembers([
-      'Wallet Connect',
       'Metamask',
       'Coinbase Wallet',
     ]);

@@ -2,7 +2,6 @@ import { config } from '../../config';
 
 export enum WalletType {
   Metamask = 'metamask',
-  WalletConnect = 'wallet-connect',
   Coinbase = 'coinbase',
 }
 
@@ -17,11 +16,6 @@ const wallets: { [walletType: string]: Wallet } = {
     type: WalletType.Metamask,
     name: 'Metamask',
     imageSource: 'metamask.svg',
-  },
-  [WalletType.WalletConnect]: {
-    type: WalletType.WalletConnect,
-    name: 'Wallet Connect',
-    imageSource: 'wallet-connect.svg',
   },
   [WalletType.Coinbase]: {
     type: WalletType.Coinbase,

@@ -1,7 +1,6 @@
 export const config = {
   INFURA_URL: process.env.REACT_APP_INFURA_URL,
   ZERO_API_URL: process.env.REACT_APP_ZERO_API_URL,
-  infuraId: process.env.REACT_APP_INFURA_ID,
   supportedChainId: process.env.REACT_APP_ETH_CHAIN || '1',
   appVersion: process.env.REACT_APP_VERSION,
   cloudinary: {

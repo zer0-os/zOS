@@ -12,7 +12,6 @@ export enum Connectors {
   None = 'none',
   Infura = 'infura',
   Metamask = 'metamask',
-  WalletConnect = 'wallet-connect',
   Coinbase = 'coinbase',
 }
 

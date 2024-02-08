@@ -164,9 +164,9 @@ export class Container extends React.Component<Properties> {
               canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
               canViewGroupInformation={!this.isOneOnOne()}
               onLeave={this.openLeaveGroupDialog}
-              onViewGroupInformation={this.onViewGroupInformation}
-              startAddGroupMember={this.props.startAddGroupMember}
-              startEditConversation={this.props.startEditConversation}
+              onView={this.onViewGroupInformation}
+              onAddMember={this.props.startAddGroupMember}
+              onEdit={this.props.startEditConversation}
             />
           </div>
 

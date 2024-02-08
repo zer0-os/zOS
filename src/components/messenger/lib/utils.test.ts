@@ -1,4 +1,4 @@
-import { highlightFilter } from './utils';
+import { getUserHandle, highlightFilter } from './utils';
 
 describe('highlightFilter', () => {
   it('returns unmodified text when filter is an empty string', () => {
@@ -56,5 +56,22 @@ describe('highlightFilter', () => {
     expect(result[1].type).toEqual('span');
     expect(result[1].props.children).toEqual('lo');
     expect(result[2]).toEqual(' World');
+  });
+});
+
+describe('getUserHandle', () => {
+  it('returns primaryZID when it is present', () => {
+    const user = { primaryZID: 'zid123', wallets: [{ id: 'wallet-id-1', publicAddress: 'address456' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('zid123');
+  });
+
+  it('returns truncated publicAddress from the first wallet when primaryZID is absent', () => {
+    const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '0x123456789' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('0x1234...6789');
+  });
+
+  it('returns empty string when both primaryZID and wallets are absent', () => {
+    const user = { primaryZID: null, wallets: [] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('');
   });
 });

@@ -1,5 +1,6 @@
-import { getUserHandle, isUserAdmin, sortMembers } from './utils';
+import { isUserAdmin, sortMembers } from './utils';
 import { User } from '../../../../store/channels';
+import { getUserHandle } from '../../lib/utils';
 
 describe('sortMembers', () => {
   it('sorts members correctly with admins first, then online status and alphabetically', () => {

@@ -4,7 +4,7 @@ export interface AuthorizationResponse {
 }
 
 export interface Wallet {
-  id?: string;
+  id: string;
   publicAddress: string;
 }
 

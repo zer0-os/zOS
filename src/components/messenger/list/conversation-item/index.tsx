@@ -58,23 +58,23 @@ export class ConversationItem extends React.Component<Properties> {
   };
 
   renderAvatar() {
-    if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
-      return (
-        <Avatar
-          size={'regular'}
-          type={'circle'}
-          imageURL={this.props.conversation.otherMembers[0].profileImage}
-          statusType={this.conversationStatus}
-          tabIndex={-1}
-          isRaised
-        />
-      );
-    } else if (isCustomIcon(this.props.conversation.icon)) {
+    if (isCustomIcon(this.props.conversation.icon)) {
       return (
         <Avatar
           size={'regular'}
           type={'circle'}
           imageURL={this.props.conversation.icon}
+          statusType={this.conversationStatus}
+          tabIndex={-1}
+          isRaised
+        />
+      );
+    } else if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
+      return (
+        <Avatar
+          size={'regular'}
+          type={'circle'}
+          imageURL={this.props.conversation.otherMembers[0].profileImage}
           statusType={this.conversationStatus}
           tabIndex={-1}
           isRaised

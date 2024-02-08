@@ -154,20 +154,22 @@ export class Container extends React.Component<Properties> {
         <div className='direct-message-chat__content'>
           <div className='direct-message-chat__header-gradient'></div>
           <div className='direct-message-chat__header-position'>
-            <ConversationHeader
-              icon={this.props.directMessage.icon}
-              name={this.props.directMessage.name}
-              isOneOnOne={this.isOneOnOne()}
-              otherMembers={this.props.directMessage.otherMembers}
-              canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-              canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage.otherMembers.length > 1}
-              canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-              canViewDetails={!this.isOneOnOne()}
-              onLeaveRoom={this.openLeaveGroupDialog}
-              onViewDetails={this.onViewGroupInformation}
-              onAddMember={this.props.startAddGroupMember}
-              onEdit={this.props.startEditConversation}
-            />
+            {this.props.directMessage && (
+              <ConversationHeader
+                icon={this.props.directMessage.icon}
+                name={this.props.directMessage.name}
+                isOneOnOne={this.isOneOnOne()}
+                otherMembers={this.props.directMessage.otherMembers}
+                canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage.otherMembers.length > 1}
+                canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                canViewDetails={!this.isOneOnOne()}
+                onLeaveRoom={this.openLeaveGroupDialog}
+                onViewDetails={this.onViewGroupInformation}
+                onAddMember={this.props.startAddGroupMember}
+                onEdit={this.props.startEditConversation}
+              />
+            )}
           </div>
 
           {!this.props.isJoiningConversation && (

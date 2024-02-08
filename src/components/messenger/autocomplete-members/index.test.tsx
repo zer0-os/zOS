@@ -52,7 +52,7 @@ describe('autocomplete-members', () => {
 
     // Ensure that state.results is correctly updated with filtered results
     expect(wrapper.state('results')).toEqual([
-      { value: 'result-2', label: 'Result 2', image: undefined },
+      { value: 'result-2', label: 'Result 2', image: undefined, subLabel: '' },
     ]);
 
     // Ensure that the component renders the filtered result
@@ -123,7 +123,7 @@ describe('autocomplete-members', () => {
       .find('.autocomplete-members__search-results > div')
       .simulate('click', { currentTarget: { dataset: { id: 'result-1' } } });
 
-    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
+    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1', subLabel: '' });
   });
 
   it('fires onSelect when enter is pressed on a result', async () => {
@@ -139,7 +139,7 @@ describe('autocomplete-members', () => {
       .find('.autocomplete-members__search-results > div')
       .simulate('keydown', { key: 'Enter', currentTarget: { dataset: { id: 'result-1' } } });
 
-    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1' });
+    expect(onSelect).toHaveBeenCalledWith({ value: 'result-1', label: 'Result 1', subLabel: '' });
   });
 
   it('clears search input when a member is selected', async () => {

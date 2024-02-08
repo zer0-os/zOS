@@ -3,10 +3,13 @@ import { Channel, User } from '../../../store/channels';
 import { Wallet } from '../../../store/authentication/types';
 
 export const itemToOption = (item: Item): Option => {
+  const userHandle = getUserHandle(item?.primaryZID, item?.wallets);
+
   return {
     value: item.id,
     label: item.name,
     image: item.image,
+    subLabel: userHandle,
   };
 };
 

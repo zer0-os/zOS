@@ -247,8 +247,8 @@ describe('ConversationListPanel', () => {
     let userSearchResults = renderedUserSearchResults(wrapper);
 
     expect(userSearchResults).toStrictEqual([
-      { value: 'user-1', label: 'jack', image: 'image-1' },
-      { value: 'user-3', label: 'jacklyn', image: 'image-3' },
+      { value: 'user-1', label: 'jack', image: 'image-1', subLabel: '' },
+      { value: 'user-3', label: 'jacklyn', image: 'image-3', subLabel: '' },
     ]);
   });
 

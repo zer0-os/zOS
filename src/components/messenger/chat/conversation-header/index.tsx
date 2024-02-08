@@ -61,7 +61,7 @@ export class ConversationHeader extends React.Component<Properties> {
 
   renderIcon = () => {
     return this.isOneOnOne() ? (
-      <IconCurrencyEthereum size={16} className={this.isOneOnOne && 'direct-message-chat__header-avatar--isOneOnOne'} />
+      <IconCurrencyEthereum size={16} className='direct-message-chat__header-avatar--isOneOnOne' />
     ) : (
       <IconUsers1 size={16} />
     );

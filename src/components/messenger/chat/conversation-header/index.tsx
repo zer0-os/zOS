@@ -19,11 +19,11 @@ export interface Properties {
   canAddMembers: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
-  canViewGroupInformation: boolean;
+  canViewDetails: boolean;
   onAddMember: () => void;
   onEdit: () => void;
-  onLeave: () => void;
-  onView: () => void;
+  onLeaveRoom: () => void;
+  onViewDetails: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
@@ -128,11 +128,11 @@ export class ConversationHeader extends React.Component<Properties> {
             canAddMembers={this.props.canAddMembers}
             canLeaveRoom={this.props.canLeaveRoom}
             canEdit={this.props.canEdit}
-            canViewGroupInformation={this.props.canViewGroupInformation}
+            canViewGroupInformation={this.props.canViewDetails}
             onStartAddMember={this.props.onAddMember}
-            onLeave={this.props.onLeave}
+            onLeave={this.props.onLeaveRoom}
             onEdit={this.props.onEdit}
-            onViewGroupInformation={this.props.onView}
+            onViewGroupInformation={this.props.onViewDetails}
           />
         </div>
       </div>

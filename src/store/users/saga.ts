@@ -27,7 +27,6 @@ export function* receiveSearchResults(searchResults) {
         displaySubHandle: getUserHandle(r.primaryZID, r.primaryWalletAddress),
       };
     });
-  console.log(mappedUsers);
   yield put(receive(mappedUsers));
 }
 

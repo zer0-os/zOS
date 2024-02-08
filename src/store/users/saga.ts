@@ -23,9 +23,11 @@ export function* receiveSearchResults(searchResults) {
         profileImage: r.profileImage,
         matrixId: r.matrixId,
         primaryZID: r.primaryZID,
-        displaySubHandle: getUserHandle(r.primaryZID, r.wallets?.[0]),
+        primaryWalletAddress: r.primaryWalletAddress,
+        displaySubHandle: getUserHandle(r.primaryZID, r.primaryWalletAddress),
       };
     });
+  console.log(mappedUsers);
   yield put(receive(mappedUsers));
 }
 

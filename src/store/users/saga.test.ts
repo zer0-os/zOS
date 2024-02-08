@@ -33,21 +33,21 @@ describe(receiveSearchResults, () => {
       name: 'Test User 1',
       profileImage: 'image-url-1',
       primaryZID: 'zid-1',
-      wallets: ['0x9876543231'],
+      primaryWalletAddress: '0x9876543231',
     };
     const user2 = {
       id: 'user-2',
       name: 'Test User 2',
       profileImage: 'image-url-2',
       primaryZID: null,
-      wallets: ['0x123456789'],
+      primaryWalletAddress: '0x123456789',
     };
     const user3 = {
       id: 'user-3',
       name: 'Test User 3',
       profileImage: 'image-url-3',
       primaryZID: null,
-      wallets: null,
+      primaryWalletAddress: null,
     };
 
     const { storeState } = await expectSaga(receiveSearchResults, [

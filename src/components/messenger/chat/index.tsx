@@ -155,7 +155,10 @@ export class Container extends React.Component<Properties> {
           <div className='direct-message-chat__header-gradient'></div>
           <div className='direct-message-chat__header-position'>
             <ConversationHeader
-              directMessage={this.props.directMessage}
+              isOneOnOne={this.isOneOnOne()}
+              otherMembers={this.props.directMessage.otherMembers}
+              icon={this.props.directMessage.icon}
+              name={this.props.directMessage.name}
               onLeave={this.openLeaveGroupDialog}
               onViewGroupInformation={this.onViewGroupInformation}
               isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}

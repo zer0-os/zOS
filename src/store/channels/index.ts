@@ -17,6 +17,7 @@ export interface User {
   profileImage: string;
   lastSeenAt: string;
   primaryZID: string;
+  primaryWallet?: Wallet;
   wallets?: Wallet[];
   displaySubHandle?: string;
 }

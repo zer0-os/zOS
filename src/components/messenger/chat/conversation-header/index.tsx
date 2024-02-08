@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Channel } from '../../../../store/channels';
+import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import Tooltip from '../../../tooltip';
 import { isCustomIcon } from '../../list/utils/utils';
@@ -12,37 +12,43 @@ import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 
 export interface Properties {
-  directMessage: Channel;
-  isCurrentUserRoomAdmin: boolean;
-  startAddGroupMember: () => void;
-  startEditConversation: () => void;
-  onLeave: () => void;
-  onViewGroupInformation: () => void;
+  isOneOnOne: boolean;
+  otherMembers: User[];
+  icon: string;
+  name: string;
+  canAddMembers: boolean;
+  canLeaveRoom: boolean;
+  canEdit: boolean;
+  canViewDetails: boolean;
+  onAddMember: () => void;
+  onEdit: () => void;
+  onLeaveRoom: () => void;
+  onViewDetails: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
   isOneOnOne() {
-    return this.props.directMessage?.isOneOnOne;
+    return this.props.isOneOnOne;
   }
 
   avatarUrl() {
-    if (!this.props.directMessage?.otherMembers) {
+    if (!this.props.otherMembers) {
       return '';
     }
 
-    if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
-      return this.props.directMessage.otherMembers[0].profileImage;
+    if (this.isOneOnOne() && this.props.otherMembers[0]) {
+      return this.props.otherMembers[0].profileImage;
     }
 
-    if (isCustomIcon(this.props.directMessage?.icon)) {
-      return this.props.directMessage?.icon;
+    if (isCustomIcon(this.props.icon)) {
+      return this.props.icon;
     }
 
     return '';
   }
 
   avatarStatus() {
-    if (!this.props.directMessage?.otherMembers) {
+    if (!this.props.otherMembers) {
       return 'unknown';
     }
 
@@ -50,38 +56,38 @@ export class ConversationHeader extends React.Component<Properties> {
   }
 
   anyOthersOnline() {
-    return this.props.directMessage.otherMembers.some((m) => m.isOnline);
+    return this.props.otherMembers.some((m) => m.isOnline);
   }
 
   renderIcon = () => {
     return this.isOneOnOne() ? (
-      <IconCurrencyEthereum size={16} className={this.isOneOnOne && 'direct-message-chat__header-avatar--isOneOnOne'} />
+      <IconCurrencyEthereum size={16} className='direct-message-chat__header-avatar--isOneOnOne' />
     ) : (
       <IconUsers1 size={16} />
     );
   };
 
   renderSubTitle() {
-    if (!this.props.directMessage?.otherMembers) {
+    if (!this.props.otherMembers) {
       return '';
-    } else if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
-      return this.props.directMessage.otherMembers[0].displaySubHandle;
+    } else if (this.isOneOnOne() && this.props.otherMembers[0]) {
+      return this.props.otherMembers[0].displaySubHandle;
     } else {
       return this.anyOthersOnline() ? 'Online' : 'Offline';
     }
   }
 
   renderTitle() {
-    const { directMessage } = this.props;
+    const { otherMembers, name } = this.props;
 
-    if (!directMessage) return '';
+    if (!name && !otherMembers) return '';
 
-    const otherMembers = otherMembersToString(directMessage.otherMembers);
+    const otherMembersString = otherMembersToString(otherMembers);
 
     return (
       <Tooltip
         placement='left'
-        overlay={otherMembers}
+        overlay={otherMembersString}
         align={{
           offset: [
             -10,
@@ -89,9 +95,8 @@ export class ConversationHeader extends React.Component<Properties> {
           ],
         }}
         className='direct-message-chat__user-tooltip'
-        key={directMessage.id}
       >
-        <div>{directMessage.name || otherMembers}</div>
+        <div>{name || otherMembersString}</div>
       </Tooltip>
     );
   }
@@ -120,14 +125,14 @@ export class ConversationHeader extends React.Component<Properties> {
 
         <div className='direct-message-chat__group-management-menu-container'>
           <GroupManagementMenu
-            canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-            onStartAddMember={this.props.startAddGroupMember}
-            onLeave={this.props.onLeave}
-            canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1}
-            canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-            onEdit={this.props.startEditConversation}
-            onViewGroupInformation={this.props.onViewGroupInformation}
-            canViewGroupInformation={!this.isOneOnOne()}
+            canAddMembers={this.props.canAddMembers}
+            canLeaveRoom={this.props.canLeaveRoom}
+            canEdit={this.props.canEdit}
+            canViewGroupInformation={this.props.canViewDetails}
+            onStartAddMember={this.props.onAddMember}
+            onLeave={this.props.onLeaveRoom}
+            onEdit={this.props.onEdit}
+            onViewGroupInformation={this.props.onViewDetails}
           />
         </div>
       </div>

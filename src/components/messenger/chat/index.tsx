@@ -1,15 +1,9 @@
 import React from 'react';
-import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import Tooltip from '../../tooltip';
 import { Channel, denormalize, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { getProvider } from '../../../lib/cloudinary/provider';
-import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { GroupManagementMenu } from '../../group-management-menu';
-import { isCustomIcon } from '../list/utils/utils';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
@@ -26,6 +20,7 @@ import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
+import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
 
@@ -83,79 +78,18 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  renderTitle() {
-    const { directMessage } = this.props;
-
-    if (!directMessage) return '';
-
-    const otherMembers = otherMembersToString(directMessage.otherMembers);
-
-    return (
-      <Tooltip
-        placement='left'
-        overlay={otherMembers}
-        align={{
-          offset: [
-            -10,
-            0,
-          ],
-        }}
-        className='direct-message-chat__user-tooltip'
-        key={directMessage.id}
-      >
-        <div>{directMessage.name || otherMembers}</div>
-      </Tooltip>
-    );
-  }
-
-  renderSubTitle() {
-    if (!this.props.directMessage?.otherMembers) {
-      return '';
-    } else if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
-      return this.props.directMessage.otherMembers[0].displaySubHandle;
-    } else {
-      return this.anyOthersOnline() ? 'Online' : 'Offline';
-    }
-  }
-
-  avatarUrl() {
-    if (!this.props.directMessage?.otherMembers) {
-      return '';
-    }
-
-    if (this.isOneOnOne() && this.props.directMessage.otherMembers[0]) {
-      return this.props.directMessage.otherMembers[0].profileImage;
-    }
-
-    if (isCustomIcon(this.props.directMessage?.icon)) {
-      return this.props.directMessage?.icon;
-    }
-
-    return '';
-  }
-
   isOneOnOne() {
     return this.props.directMessage?.isOneOnOne;
-  }
-
-  avatarStatus() {
-    if (!this.props.directMessage?.otherMembers) {
-      return 'unknown';
-    }
-
-    return this.anyOthersOnline() ? 'online' : 'offline';
-  }
-
-  anyOthersOnline() {
-    return this.props.directMessage.otherMembers.some((m) => m.isOnline);
   }
 
   get isLeaveGroupDialogOpen() {
     return this.props.leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
   }
+
   openLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.OPEN);
   };
+
   closeLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
   };
@@ -210,14 +144,6 @@ export class Container extends React.Component<Properties> {
     }
   };
 
-  renderIcon = () => {
-    return this.isOneOnOne() ? (
-      <IconCurrencyEthereum size={16} className={this.isOneOnOne && 'direct-message-chat__header-avatar--isOneOnOne'} />
-    ) : (
-      <IconUsers1 size={16} />
-    );
-  };
-
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -228,39 +154,14 @@ export class Container extends React.Component<Properties> {
         <div className='direct-message-chat__content'>
           <div className='direct-message-chat__header-gradient'></div>
           <div className='direct-message-chat__header-position'>
-            <div className='direct-message-chat__header'>
-              <span>
-                <div
-                  style={{
-                    backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
-                  }}
-                  className={classNames(
-                    'direct-message-chat__header-avatar',
-                    `direct-message-chat__header-avatar--${this.avatarStatus()}`
-                  )}
-                >
-                  {!this.avatarUrl() && this.renderIcon()}
-                </div>
-              </span>
-              <span className='direct-message-chat__description'>
-                <div className='direct-message-chat__title'>{this.renderTitle()}</div>
-                <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
-              </span>
-              <div className='direct-message-chat__group-management-menu-container'>
-                <GroupManagementMenu
-                  canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                  onStartAddMember={this.props.startAddGroupMember}
-                  onLeave={this.openLeaveGroupDialog}
-                  canLeaveRoom={
-                    !this.props.isCurrentUserRoomAdmin && this.props.directMessage?.otherMembers?.length > 1
-                  }
-                  canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                  onEdit={this.props.startEditConversation}
-                  onViewGroupInformation={this.onViewGroupInformation}
-                  canViewGroupInformation={!this.isOneOnOne()}
-                />
-              </div>
-            </div>
+            <ConversationHeader
+              directMessage={this.props.directMessage}
+              onLeave={this.openLeaveGroupDialog}
+              onViewGroupInformation={this.onViewGroupInformation}
+              isCurrentUserRoomAdmin={this.props.isCurrentUserRoomAdmin}
+              startAddGroupMember={this.props.startAddGroupMember}
+              startEditConversation={this.props.startEditConversation}
+            />
           </div>
 
           {!this.props.isJoiningConversation && (

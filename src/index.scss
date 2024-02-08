@@ -107,5 +107,5 @@ hr.glow:before {
 // and add a permanent node at the root level and set it as the popup container.
 // Using this method for now due to time constraints.
 [data-radix-popper-content-wrapper] {
-  z-index: 9999 !important;
+  z-index: 10001 !important;
 }

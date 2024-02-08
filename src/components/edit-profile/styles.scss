@@ -50,10 +50,36 @@
     line-height: normal;
   }
 
+  &__zid-select-menu {
+    min-width: 224px;
+
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  &__zid-menu-item-option {
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+    line-height: 24px;
+    width: 100%;
+
+    @include glass-text-primary-color;
+  }
+
+  &__zid-menu-item-option-label {
+    flex-grow: 1;
+  }
+
+  &__zid-menu-item-option-icon {
+    flex-grow: 0;
+  }
+
   &__primary-zid-lable {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 4px;
   }
 
   &__info-tooltip:hover {

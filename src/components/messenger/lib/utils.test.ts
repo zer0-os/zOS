@@ -61,17 +61,17 @@ describe('highlightFilter', () => {
 
 describe('getUserHandle', () => {
   it('returns primaryZID when it is present', () => {
-    const user = { primaryZID: 'zid123', primaryWallet: { id: 'wallet-id-1', publicAddress: 'address456' } };
-    expect(getUserHandle(user.primaryZID, user.primaryWallet.publicAddress)).toEqual('zid123');
+    const user = { primaryZID: 'zid123', wallets: [{ id: 'wallet-id-1', publicAddress: 'address456' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('zid123');
   });
 
   it('returns truncated publicAddress from the first wallet when primaryZID is absent', () => {
-    const user = { primaryZID: null, primaryWallet: { id: 'wallet-id-1', publicAddress: '0x123456789' } };
-    expect(getUserHandle(user.primaryZID, user.primaryWallet.publicAddress)).toEqual('0x1234...6789');
+    const user = { primaryZID: null, wallets: [{ id: 'wallet-id-1', publicAddress: '0x123456789' }] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('0x1234...6789');
   });
 
   it('returns empty string when both primaryZID and wallets are absent', () => {
-    const user = { primaryZID: null, primaryWallet: null };
-    expect(getUserHandle(user.primaryZID, user.primaryWallet)).toEqual('');
+    const user = { primaryZID: null, wallets: [] };
+    expect(getUserHandle(user.primaryZID, user.wallets)).toEqual('');
   });
 });

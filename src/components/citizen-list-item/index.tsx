@@ -28,22 +28,24 @@ export class CitizenListItem extends React.Component<Properties> {
   render() {
     return (
       <div {...cn()}>
-        <Avatar
-          size={'small'}
-          type={'circle'}
-          imageURL={this.props.user.profileImage}
-          tabIndex={-1}
-          statusType={this.statusType}
-        />
-        <div>
-          <span {...cn('name')}>{displayName(this.props.user)}</span>
-          <span {...cn('primary-zid')}>{this.props.user.displaySubHandle}</span>
+        <div {...cn('details')}>
+          <Avatar
+            size={'small'}
+            type={'circle'}
+            imageURL={this.props.user.profileImage}
+            tabIndex={-1}
+            statusType={this.statusType}
+          />
+          <div>
+            <span {...cn('name')}>{displayName(this.props.user)}</span>
+            <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>
+          </div>
         </div>
 
         {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}
         {this.props.onRemove && (
           <div {...cn('remove')}>
-            <IconButton Icon={IconXClose} onClick={this.publishRemove} />
+            <IconButton Icon={IconXClose} size={24} onClick={this.publishRemove} />
           </div>
         )}
       </div>

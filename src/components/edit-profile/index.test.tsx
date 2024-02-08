@@ -94,11 +94,30 @@ describe('EditProfile', () => {
     expect(saveButton(wrapper).prop('isDisabled')).toEqual(false);
   });
 
+  it('renders dropdown with ownedZIDs with the primaryZID as the first option', () => {
+    featureFlags.allowEditPrimaryZID = true;
+
+    const wrapper = subject({
+      currentPrimaryZID: '0://jane:smith',
+      ownedZIDs: ['0://john:doe', '0://jane:smith', '0://jijitsu:kaezen'],
+    });
+
+    const dropdown = wrapper.find('SelectInput[label=""]');
+    const items: any = dropdown.prop('items');
+
+    expect(items.length).toEqual(3);
+    expect(items[0].id).toEqual('0://jane:smith');
+  });
+
   it('calls onEdit with correct data when Save Changes button is clicked', () => {
     featureFlags.allowEditPrimaryZID = true;
 
     const onEditMock = jest.fn();
-    const wrapper = subject({ onEdit: onEditMock });
+    const wrapper = subject({
+      onEdit: onEditMock,
+      ownedZIDs: ['0://jane:smith', '0://john:doe'],
+      currentPrimaryZID: '0://john:doe',
+    });
 
     const formData = {
       name: 'Jane Smith',
@@ -108,7 +127,11 @@ describe('EditProfile', () => {
 
     wrapper.find('Input[name="name"]').simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
-    wrapper.find('Input[name="primaryZID"]').simulate('change', formData.primaryZID);
+
+    const dropdown: any = wrapper.find('SelectInput[label=""]');
+    const item = dropdown.prop('items').find((i) => i.id === formData.primaryZID);
+    item.onSelect();
+
     saveButton(wrapper).simulate('press');
 
     expect(onEditMock).toHaveBeenCalledWith(formData);

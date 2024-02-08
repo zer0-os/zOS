@@ -4,8 +4,6 @@ export enum WalletType {
   Metamask = 'metamask',
   WalletConnect = 'wallet-connect',
   Coinbase = 'coinbase',
-  Fortmatic = 'fortmatic',
-  Portis = 'portis',
 }
 
 export interface Wallet {
@@ -29,16 +27,6 @@ const wallets: { [walletType: string]: Wallet } = {
     type: WalletType.Coinbase,
     name: 'Coinbase Wallet',
     imageSource: 'coinbase-wallet.svg',
-  },
-  [WalletType.Fortmatic]: {
-    type: WalletType.Fortmatic,
-    name: 'Fortmatic',
-    imageSource: 'fortmatic.svg',
-  },
-  [WalletType.Portis]: {
-    type: WalletType.Portis,
-    name: 'Portis',
-    imageSource: 'portis.svg',
   },
 };
 

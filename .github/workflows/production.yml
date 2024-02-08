@@ -12,8 +12,6 @@ jobs:
     environment: production
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
-      REACT_APP_FORTMATIC_API_KEY: ${{secrets.FORTMATIC_API_KEY}}
-      REACT_APP_PORTIS_DAPP_ID: ${{secrets.PORTIS_DAPP_ID}}
       REACT_APP_INFURA_ID: ${{secrets.INFURA_ID}}
       REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
       REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}

@@ -67,8 +67,6 @@ describe('WalletSelect', () => {
       'Wallet Connect',
       'Metamask',
       'Coinbase Wallet',
-      'Fortmatic',
-      'Portis',
     ]);
   });
 

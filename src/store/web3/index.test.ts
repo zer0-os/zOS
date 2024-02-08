@@ -21,9 +21,9 @@ describe('web3 reducer', () => {
   });
 
   it('should replace existing state with new connector', () => {
-    const actual = reducer(initialExistingState, setConnector(Connectors.Portis));
+    const actual = reducer(initialExistingState, setConnector(Connectors.Coinbase));
 
-    expect(actual.value.connector).toEqual(Connectors.Portis);
+    expect(actual.value.connector).toEqual(Connectors.Coinbase);
   });
 
   it('should replace existing state with new address', () => {

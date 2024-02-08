@@ -16,7 +16,10 @@ export interface Properties {
   otherMembers: User[];
   icon: string;
   name: string;
-  isCurrentUserRoomAdmin: boolean;
+  canAddMembers: boolean;
+  canLeaveRoom: boolean;
+  canEdit: boolean;
+  canViewGroupInformation: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   onLeave: () => void;
@@ -122,14 +125,14 @@ export class ConversationHeader extends React.Component<Properties> {
 
         <div className='direct-message-chat__group-management-menu-container'>
           <GroupManagementMenu
-            canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+            canAddMembers={this.props.canAddMembers}
+            canLeaveRoom={this.props.canLeaveRoom}
+            canEdit={this.props.canEdit}
+            canViewGroupInformation={this.props.canViewGroupInformation}
             onStartAddMember={this.props.startAddGroupMember}
             onLeave={this.props.onLeave}
-            canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.otherMembers.length > 1}
-            canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
             onEdit={this.props.startEditConversation}
             onViewGroupInformation={this.props.onViewGroupInformation}
-            canViewGroupInformation={!this.isOneOnOne()}
           />
         </div>
       </div>

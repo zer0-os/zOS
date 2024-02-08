@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input, Tooltip } from '@zero-tech/zui/components';
+import { IconButton, Alert, Button, Input, Tooltip, SelectInput } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
 import { ImageUpload } from '../../components/image-upload';
-import { IconUpload2, IconXClose, IconHelpCircle } from '@zero-tech/zui/icons';
+import { IconUpload2, IconXClose, IconHelpCircle, IconCheck } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { featureFlags } from '../../lib/feature-flags';
 
@@ -104,6 +104,40 @@ export class EditProfile extends React.Component<Properties, State> {
     </div>
   );
 
+  renderOwnedZIDItem(label, icon = null) {
+    return (
+      <div className={c('zid-menu-item-option')}>
+        <div className={c('zid-menu-item-option-label')}>{label}</div> {icon}
+      </div>
+    );
+  }
+
+  get menuItems() {
+    const options = [];
+
+    if (this.props.currentPrimaryZID) {
+      options.push({
+        id: this.props.currentPrimaryZID,
+        label: this.renderOwnedZIDItem(
+          this.props.currentPrimaryZID,
+          <IconCheck className={c('zid-menu-item-option-icon')} size={24} />
+        ),
+        onSelect: () => this.trackPrimaryZID(this.props.currentPrimaryZID),
+      });
+    }
+
+    for (const zid of this.props.ownedZIDs) {
+      if (zid === this.props.currentPrimaryZID) continue;
+
+      options.push({
+        id: zid,
+        label: this.renderOwnedZIDItem(zid),
+        onSelect: () => this.trackPrimaryZID(zid),
+      });
+    }
+    return options;
+  }
+
   render() {
     return (
       <div className={c('')}>
@@ -132,13 +166,16 @@ export class EditProfile extends React.Component<Properties, State> {
             className={c('body-input')}
           />
           {featureFlags.allowEditPrimaryZID && (
-            <div>
-              <Input
-                label={this.renderZeroIDLabel()}
-                name='primaryZID'
+            <div className={c('body-input')}>
+              {this.renderZeroIDLabel()}
+              <SelectInput
+                items={this.menuItems}
+                label=''
+                placeholder={this.props.currentPrimaryZID}
                 value={this.state.primaryZID}
-                onChange={this.trackPrimaryZID}
-                className={c('body-input')}
+                className={c('select-input')}
+                itemSize='spacious'
+                menuClassName={c('zid-select-menu')}
               />
             </div>
           )}

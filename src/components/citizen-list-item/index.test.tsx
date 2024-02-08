@@ -19,19 +19,25 @@ describe(CitizenListItem, () => {
   it('renders the user display name', function () {
     const wrapper = subject({ user: { firstName: 'John', lastName: 'Doe' } as any });
 
-    expect(wrapper.find(c('name')).text()).toEqual('John Doe');
+    const name = wrapper.find(c('name'));
+
+    expect(name).toHaveText('John Doe');
   });
 
-  it('renders the user primary zid', function () {
+  it('renders the handle (primaryZID or public wallet address)', function () {
     const wrapper = subject({ user: { displaySubHandle: '0://zero:tech' } as any });
 
-    expect(wrapper.find(c('primary-zid')).text()).toEqual('0://zero:tech');
+    const handle = wrapper.find(c('handle'));
+
+    expect(handle).toHaveText('0://zero:tech');
   });
 
   it('renders the user status', function () {
     const wrapper = subject({ user: { isOnline: false } as any });
 
-    expect(wrapper.find(Avatar).prop('statusType')).toEqual('offline');
+    const avatar = wrapper.find(Avatar);
+
+    expect(avatar).toHaveProp('statusType', 'offline');
   });
 
   it('publishes remove event', function () {

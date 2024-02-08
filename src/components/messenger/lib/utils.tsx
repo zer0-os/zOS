@@ -2,13 +2,11 @@ import { Item, Option } from './types';
 import { Channel, User } from '../../../store/channels';
 
 export const itemToOption = (item: Item): Option => {
-  const userHandle = getUserHandle(item?.primaryZID, item?.wallets?.[0]);
-
   return {
     value: item.id,
     label: item.name,
     image: item.image,
-    subLabel: userHandle,
+    subLabel: getUserHandle(item.primaryZID, item.primaryWalletAddress),
   };
 };
 
@@ -38,13 +36,15 @@ export const highlightFilter = (text, filter) => {
   return text;
 };
 
-export function getUserHandle(primaryZID: string, primaryWallet: string) {
+export function getUserHandle(primaryZID: string, primaryWalletAddress: string) {
   if (primaryZID) {
     return primaryZID;
   }
 
-  if (primaryWallet) {
-    return `${primaryWallet.substring(0, 6)}...${primaryWallet.substring(primaryWallet.length - 4)}`;
+  if (primaryWalletAddress) {
+    return `${primaryWalletAddress.substring(0, 6)}...${primaryWalletAddress.substring(
+      primaryWalletAddress.length - 4
+    )}`;
   }
 
   return '';

@@ -2,8 +2,8 @@ export interface Item {
   id: string;
   name: string;
   image?: string;
-  primaryZID?: string;
-  wallets?: string[];
+  primaryZID: string;
+  primaryWalletAddress: string;
 }
 
 export interface Option {

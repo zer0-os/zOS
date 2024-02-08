@@ -105,7 +105,7 @@ export function replaceZOSUserFields(
     member.lastName = zeroUser.lastName;
     member.profileImage = zeroUser.profileImage;
     member.primaryZID = zeroUser.primaryZID;
-    member.displaySubHandle = getUserHandle(zeroUser.primaryZID, zeroUser.wallets?.[0]?.publicAddress);
+    member.displaySubHandle = getUserHandle(zeroUser.primaryZID, zeroUser.primaryWallet?.publicAddress);
   }
 }
 
@@ -120,6 +120,7 @@ export function rawUserToDomainUser(u): User {
     profileImage: u.profileSummary?.profileImage,
     lastSeenAt: u.lastActiveAt,
     primaryZID: u.primaryZID,
+    primaryWallet: u.primaryWallet,
     wallets: u.wallets,
   };
 }

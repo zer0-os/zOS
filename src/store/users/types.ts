@@ -5,4 +5,5 @@ export interface MemberNetworks {
   name: string;
   type: string;
   primaryZID: string;
+  primaryWalletAddress: string;
 }

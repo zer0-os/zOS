@@ -90,7 +90,13 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
                   onClick={this.itemClicked}
                 >
                   <Avatar size='regular' type='circle' imageURL={r.image} tabIndex={-1} />
-                  <div>{highlightFilter(r.label, this.state.searchString)}</div>
+
+                  <div className='autocomplete-members__user-details'>
+                    <div className='autocomplete-members__label'>
+                      {highlightFilter(r.label, this.state.searchString)}
+                    </div>
+                    {r?.subLabel && <div className='autocomplete-members__sub-label'>{r.subLabel}</div>}
+                  </div>
                 </div>
               ))}
             </div>

@@ -126,13 +126,13 @@ describe('Web3Connect', () => {
 
     const web3Connect = subject({
       connectors: {
-        get: jest.fn((c: Connectors) => (c === Connectors.Portis ? connector : null)),
+        get: jest.fn((c: Connectors) => (c === Connectors.Coinbase ? connector : null)),
       },
       web3: { activate } as any,
       currentConnector: Connectors.Infura,
     });
 
-    web3Connect.setProps({ currentConnector: Connectors.Portis });
+    web3Connect.setProps({ currentConnector: Connectors.Coinbase });
 
     expect(activate).toHaveBeenCalledWith(connector, null, true);
   });
@@ -147,7 +147,7 @@ describe('Web3Connect', () => {
       currentConnector: Connectors.Infura,
     });
 
-    web3Connect.setProps({ currentConnector: Connectors.Portis });
+    web3Connect.setProps({ currentConnector: Connectors.Coinbase });
 
     expect(deactivate).toHaveBeenCalledOnce();
   });
@@ -281,7 +281,7 @@ describe('Web3Connect', () => {
       currentConnector: Connectors.Infura,
     });
 
-    web3Connect.setProps({ currentConnector: Connectors.Portis });
+    web3Connect.setProps({ currentConnector: Connectors.Coinbase });
 
     expect(setConnectionStatus).toHaveBeenCalledWith(ConnectionStatus.Disconnected);
     expect(updateConnector).toHaveBeenCalledWith(Connectors.None);
@@ -384,9 +384,9 @@ describe('Web3Connect', () => {
     });
 
     test('currentConnector', () => {
-      const state = subject(getState({ web3: { value: { connector: Connectors.Fortmatic } } }));
+      const state = subject(getState({ web3: { value: { connector: Connectors.Coinbase } } }));
 
-      expect(state.currentConnector).toEqual(Connectors.Fortmatic);
+      expect(state.currentConnector).toEqual(Connectors.Coinbase);
     });
   });
 

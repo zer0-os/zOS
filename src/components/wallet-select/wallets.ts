@@ -2,10 +2,7 @@ import { config } from '../../config';
 
 export enum WalletType {
   Metamask = 'metamask',
-  WalletConnect = 'wallet-connect',
   Coinbase = 'coinbase',
-  Fortmatic = 'fortmatic',
-  Portis = 'portis',
 }
 
 export interface Wallet {
@@ -20,25 +17,10 @@ const wallets: { [walletType: string]: Wallet } = {
     name: 'Metamask',
     imageSource: 'metamask.svg',
   },
-  [WalletType.WalletConnect]: {
-    type: WalletType.WalletConnect,
-    name: 'Wallet Connect',
-    imageSource: 'wallet-connect.svg',
-  },
   [WalletType.Coinbase]: {
     type: WalletType.Coinbase,
     name: 'Coinbase Wallet',
     imageSource: 'coinbase-wallet.svg',
-  },
-  [WalletType.Fortmatic]: {
-    type: WalletType.Fortmatic,
-    name: 'Fortmatic',
-    imageSource: 'fortmatic.svg',
-  },
-  [WalletType.Portis]: {
-    type: WalletType.Portis,
-    name: 'Portis',
-    imageSource: 'portis.svg',
   },
 };
 

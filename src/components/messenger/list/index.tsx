@@ -85,7 +85,7 @@ export class Container extends React.Component<Properties, State> {
     } = state;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
-    const userHandle = getUserHandle(user?.data?.primaryZID, user?.data?.wallets);
+    const userHandle = getUserHandle(user?.data?.primaryZID, user?.data?.wallets?.[0]?.publicAddress);
 
     return {
       conversations,

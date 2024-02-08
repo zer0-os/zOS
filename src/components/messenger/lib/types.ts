@@ -1,11 +1,9 @@
-import { Wallet } from '../../../store/authentication/types';
-
 export interface Item {
   id: string;
   name: string;
   image?: string;
-  primaryZID?: string;
-  wallets?: Wallet[];
+  primaryZID: string;
+  primaryWalletAddress: string;
 }
 
 export interface Option {

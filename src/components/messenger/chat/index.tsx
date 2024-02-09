@@ -159,9 +159,11 @@ export class Container extends React.Component<Properties> {
                 icon={this.props.directMessage.icon}
                 name={this.props.directMessage.name}
                 isOneOnOne={this.isOneOnOne()}
-                otherMembers={this.props.directMessage.otherMembers}
+                otherMembers={this.props.directMessage.otherMembers || []}
                 canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                canLeaveRoom={!this.props.isCurrentUserRoomAdmin && this.props.directMessage.otherMembers.length > 1}
+                canLeaveRoom={
+                  !this.props.isCurrentUserRoomAdmin && (this.props.directMessage.otherMembers || []).length > 1
+                }
                 canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
                 canViewDetails={!this.isOneOnOne()}
                 onLeaveRoom={this.openLeaveGroupDialog}

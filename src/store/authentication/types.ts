@@ -39,6 +39,7 @@ export interface User {
   matrixId?: string;
   matrixAccessToken?: string;
   primaryZID?: string;
+  primaryWalletAddress?: string;
 }
 
 export interface AuthenticationState {

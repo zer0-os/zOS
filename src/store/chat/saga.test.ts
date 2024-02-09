@@ -17,8 +17,9 @@ import { User } from '../channels';
 import { testSaga } from 'redux-saga-test-plan';
 import { clearJoinRoomErrorContent, rawSetActiveConversationId, setIsJoiningConversation } from '.';
 import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError } from './utils';
-import { getRoomIdForAlias } from '../../lib/chat';
+import { getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { joinRoom as apiJoinRoom } from './api';
+import { call } from 'redux-saga/effects';
 
 const featureFlags = { allowJoinRoom: false };
 jest.mock('../../lib/feature-flags', () => ({
@@ -29,7 +30,7 @@ describe(performValidateActiveConversation, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [matchers.call.fn(getRoomIdForAlias), 'room-id'],
-      [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'room-id' } }],
+      [matchers.call.fn(joinRoom), undefined],
       [matchers.call.fn(openFirstConversation), null],
     ]);
   }
@@ -57,13 +58,12 @@ describe(performValidateActiveConversation, () => {
   // while allowJoinRoom is feature flagged - set generic error content
   it('sets the join room error content if user is NOT member of conversation', async () => {
     featureFlags.allowJoinRoom = false;
-    const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
-      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
-      .withActiveConversationId('convo-not-exists')
-      .withChat({ joinRoomErrorContent: null });
+    const initialState = new StoreBuilder().withChat({ joinRoomErrorContent: null });
 
     const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
+      .provide([
+        [call(isMemberOfActiveConversation, 'convo-not-exists'), false],
+      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -71,50 +71,6 @@ describe(performValidateActiveConversation, () => {
       header: 'There’s no one here...',
       body: 'This conversation does not exist or you are not a member.',
     });
-  });
-
-  it('clears the join room error content if user successfully joins room', async () => {
-    featureFlags.allowJoinRoom = true;
-
-    const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
-      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
-      .withActiveConversationId('convo-1')
-      .withChat({ joinRoomErrorContent: { header: 'Previous Error', body: 'Previous error message' } });
-
-    const { storeState } = await subject(performValidateActiveConversation, 'convo-1')
-      .withReducer(rootReducer, initialState.build())
-      .provide([
-        [matchers.call.fn(isMemberOfActiveConversation), false],
-        [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'convo-1' } }],
-      ])
-      .call(setWhenUserJoinedRoom, 'convo-1')
-      .put(clearJoinRoomErrorContent())
-      .run();
-
-    expect(storeState.chat.joinRoomErrorContent).toBeNull();
-  });
-
-  it('sets the join room error content if user fails to join room', async () => {
-    featureFlags.allowJoinRoom = true;
-
-    const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
-      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] })
-      .withActiveConversationId('convo-not-exists')
-      .withChat({ joinRoomErrorContent: null });
-
-    const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
-      .withReducer(rootReducer, initialState.build())
-      .provide([
-        [matchers.call.fn(apiJoinRoom), { success: false, response: 'M_UNKNOWN', message: 'error message' }],
-      ])
-      .not.call(setWhenUserJoinedRoom, expect.any(String))
-      .run();
-
-    expect(storeState.chat.joinRoomErrorContent).toStrictEqual(
-      ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR]
-    );
   });
 
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
@@ -141,7 +97,21 @@ describe(performValidateActiveConversation, () => {
     expect(storeState.chat.activeConversationId).toBe(conversationId);
   });
 
-  it('joins the conversation if the active conversation does not exist', async () => {
+  it('joins the conversation when an id is provided and the user is not a member', async () => {
+    featureFlags.allowJoinRoom = true;
+
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
+
+    await subject(performValidateActiveConversation, '!convo-not-exists')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(isMemberOfActiveConversation), false],
+        [call(joinRoom, '#convo-not-exists'), undefined],
+      ])
+      .run();
+  });
+
+  it('joins the conversation when an alias is provided that does not exist', async () => {
     featureFlags.allowJoinRoom = true;
 
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
@@ -150,14 +120,12 @@ describe(performValidateActiveConversation, () => {
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), undefined],
-        [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'new-room-id' } }],
+        [call(joinRoom, '#convo-not-exists'), undefined],
       ])
-      .call(apiJoinRoom, '#convo-not-exists')
-      .call(setWhenUserJoinedRoom, 'new-room-id')
       .run();
   });
 
-  it('joins the conversation if the active conversation id is an alias and the user is not a member', async () => {
+  it('joins the conversation when an alias is provided and the user is not a member', async () => {
     featureFlags.allowJoinRoom = true;
 
     const alias = 'some-other-convo:matrix.org';
@@ -168,11 +136,46 @@ describe(performValidateActiveConversation, () => {
     await subject(performValidateActiveConversation, alias)
       .withReducer(rootReducer, initialState.build())
       .provide([
-        [matchers.call.fn(getRoomIdForAlias), '!some-other-convo:matrix.org'],
+        [call(getRoomIdForAlias, `#${alias}`), '!some-other-convo:matrix.org'],
+        [call(isMemberOfActiveConversation, '!some-other-convo:matrix.org'), false],
+        [matchers.call.fn(joinRoom), undefined],
       ])
-      .call(getRoomIdForAlias, '#' + alias)
-      .call(apiJoinRoom, '#some-other-convo:matrix.org')
+      .call(joinRoom, '#some-other-convo:matrix.org')
       .run();
+  });
+});
+
+describe(isMemberOfActiveConversation, () => {
+  it('returns true if conversation is in state', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'convo-1' });
+
+    const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'convo-1')
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(returnValue).toBe(true);
+  });
+
+  it('returns true if conversation is not in state but the chat client returns true', async () => {
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'user-id' }).withConversationList({ id: 'convo-1' });
+
+    const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'not-in-state')
+      .provide([[call(isRoomMember, 'user-id', 'not-in-state'), true]])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(returnValue).toBe(true);
+  });
+
+  it('returns false if conversation is not in state and chat client returns false', async () => {
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'user-id' }).withConversationList({ id: 'convo-1' });
+
+    const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'not-a-member')
+      .provide([[call(isRoomMember, 'user-id', 'not-a-member'), false]])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(returnValue).toBe(false);
   });
 });
 
@@ -203,6 +206,48 @@ describe(closeErrorDialog, () => {
 });
 
 describe(joinRoom, () => {
+  it('joins the conversation', async () => {
+    const initialState = new StoreBuilder();
+
+    await expectSaga(joinRoom, '#convo-id')
+      .provide([
+        [call(apiJoinRoom, '#convo-id'), { success: true, response: { roomId: 'new-room-id' } }],
+        [matchers.call.fn(setWhenUserJoinedRoom), undefined],
+      ])
+      .withReducer(rootReducer, initialState.build())
+      .call(setWhenUserJoinedRoom, 'new-room-id')
+      .run();
+  });
+
+  it('clears the join room error content if user successfully joins room', async () => {
+    const initialState = new StoreBuilder().withChat({
+      joinRoomErrorContent: { header: 'Previous Error', body: 'Previous error message' },
+    });
+
+    const { storeState } = await expectSaga(joinRoom, '#convo-id')
+      .provide([
+        [matchers.call.fn(apiJoinRoom), { success: true, response: { roomId: 'new-room-id' } }],
+        [matchers.call.fn(setWhenUserJoinedRoom), undefined],
+      ])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(storeState.chat.joinRoomErrorContent).toBeNull();
+  });
+
+  it('sets the join room error content if user fails to join room', async () => {
+    const initialState = new StoreBuilder().withChat({ joinRoomErrorContent: null });
+
+    const { storeState } = await expectSaga(joinRoom, '#convo-id')
+      .provide([[matchers.call.fn(apiJoinRoom), { success: false, response: 'UNKNOWN_ERROR' }]])
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    expect(storeState.chat.joinRoomErrorContent).toStrictEqual(
+      ERROR_DIALOG_CONTENT[JoinRoomApiErrorCode.UNKNOWN_ERROR]
+    );
+  });
+
   describe('error scenarios', () => {
     const roomIdOrAlias = 'some-room-id-or-alias';
 

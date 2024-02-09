@@ -273,3 +273,7 @@ export async function fetchConversationsWithUsers(users: User[]) {
 export async function getRoomIdForAlias(alias: string) {
   return chat.get().getRoomIdForAlias(alias);
 }
+
+export async function isRoomMember(userId: string, roomId: string) {
+  return await chat.get().matrix.isRoomMember(userId, roomId);
+}

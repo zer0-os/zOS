@@ -44,7 +44,6 @@ export class ConversationHeader extends React.Component<Properties> {
       return this.props.otherMembers[0].profileImage;
     }
 
-
     return '';
   }
 

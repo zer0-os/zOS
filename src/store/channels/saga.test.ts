@@ -2,10 +2,10 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { joinChannel as joinChannelAPI } from './api';
-import { joinChannel, markAllMessagesAsRead, markConversationAsRead, unreadCountUpdated } from './saga';
+import { joinChannel, markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
 
 import { rootReducer } from '../reducer';
-import { denormalize as denormalizeChannel } from '../channels';
+import { ConversationStatus, GroupChannelType, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
 
@@ -106,3 +106,50 @@ describe(unreadCountUpdated, () => {
     expect(channel.unreadCount).toEqual(updatedUnreadCount);
   });
 });
+
+describe(receiveChannel, () => {
+  it('puts only the provided values if channel already exists', async () => {
+    const initialChannel = { id: 'channel-id', isChannel: false, unreadCount: 5, name: 'channel-name' };
+    const initialState = new StoreBuilder().withConversationList(initialChannel);
+    const { storeState } = await expectSaga(receiveChannel, { id: 'channel-id', unreadCount: 3 })
+      .withReducer(rootReducer, initialState.build())
+      .run();
+
+    const channel = denormalizeChannel('channel-id', storeState);
+    // Clean up because full comparison is important here
+    delete channel.__denormalized;
+    expect(channel).toEqual({ ...initialChannel, unreadCount: 3 });
+  });
+
+  it('defaults the conversation state if channel does not exist yet', async () => {
+    const { storeState } = await expectSaga(receiveChannel, { id: 'channel-id', unreadCount: 3 })
+      .withReducer(rootReducer)
+      .run();
+
+    const channel = denormalizeChannel('channel-id', storeState);
+    // Clean up because full comparison is important here
+    delete channel.__denormalized;
+    expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: 3 });
+  });
+});
+
+const CHANNEL_DEFAULTS = {
+  optimisticId: '',
+  name: '',
+  messages: [],
+  otherMembers: [],
+  memberHistory: [],
+  hasMore: true,
+  createdAt: 0,
+  lastMessage: null,
+  unreadCount: 0,
+  hasJoined: true,
+  groupChannelType: GroupChannelType.Private,
+  icon: '',
+  isOneOnOne: true,
+  isChannel: false,
+  hasLoadedMessages: false,
+  conversationStatus: ConversationStatus.CREATED,
+  messagesFetchStatus: null,
+  adminMatrixIds: [],
+};

@@ -36,13 +36,14 @@ export class ConversationHeader extends React.Component<Properties> {
       return '';
     }
 
+    if (isCustomIcon(this.props.icon)) {
+      return this.props.icon;
+    }
+
     if (this.isOneOnOne() && this.props.otherMembers[0]) {
       return this.props.otherMembers[0].profileImage;
     }
 
-    if (isCustomIcon(this.props.icon)) {
-      return this.props.icon;
-    }
 
     return '';
   }

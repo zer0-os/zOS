@@ -102,7 +102,7 @@ describe('EditProfile', () => {
       ownedZIDs: ['0://john:doe', '0://jane:smith', '0://jijitsu:kaezen'],
     });
 
-    const dropdown = wrapper.find('SelectInput[label=""]');
+    const dropdown = wrapper.find('SelectInput');
     const items: any = dropdown.prop('items');
 
     expect(items.length).toEqual(3);
@@ -128,7 +128,7 @@ describe('EditProfile', () => {
     wrapper.find('Input[name="name"]').simulate('change', formData.name);
     wrapper.find(ImageUpload).simulate('change', formData.image);
 
-    const dropdown: any = wrapper.find('SelectInput[label=""]');
+    const dropdown: any = wrapper.find('SelectInput');
     const item = dropdown.prop('items').find((i) => i.id === formData.primaryZID);
     item.onSelect();
 

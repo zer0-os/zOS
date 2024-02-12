@@ -97,6 +97,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/enzyme": "^3.10.10",
     "@types/jest-when": "^3.5.2",
     "@types/react-portal": "^4.0.4",

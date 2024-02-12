@@ -75,6 +75,11 @@
     flex-grow: 0;
   }
 
+  &__zid-menu-item-option-loading-spinner {
+    width: 24px;
+    height: 22px;
+  }
+
   &__primary-zid-lable {
     display: flex;
     align-items: center;

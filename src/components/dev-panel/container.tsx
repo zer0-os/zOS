@@ -7,7 +7,7 @@ import {
   Channel,
   ConversationStatus,
   denormalize as denormalizeChannel,
-  receive as receiveChannel,
+  rawReceive as receiveChannel,
 } from '../../store/channels';
 import { Message, MessageSendStatus, receive } from '../../store/messages';
 import { denormalizeConversations } from '../../store/channels-list';

@@ -27,13 +27,11 @@ describe('InviteDialog', () => {
     expect(wrapper.find('.invite-dialog__remaining-invite').text()).toEqual('2');
   });
 
-  it('copies the invitation to the clipboard', async function () {
+  it('copies the invitation to the clipboard', function () {
     const clipboard = { write: jest.fn() };
     const wrapper = subject({ clipboard, inviteCode: '23817' });
 
-    await withMockedSetTimeout(async () => {
-      wrapper.find(Button).simulate('press');
-    });
+    wrapper.find(Button).simulate('press');
 
     expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
     expect(clipboard.write).toHaveBeenCalledWith(expect.stringContaining('23817'));
@@ -41,18 +39,15 @@ describe('InviteDialog', () => {
 
   it('sets copy text to copied for a few seconds after copying the text', async function () {
     const clipboard = { write: jest.fn().mockResolvedValue(null) };
+    jest.useFakeTimers();
     const wrapper = subject({ clipboard });
 
-    await withMockedSetTimeout(async (resolveTimeout) => {
-      wrapper.find(Button).simulate('press');
-      await releaseThread();
-      expect(wrapper.state('copyText')).toEqual('Copied');
+    wrapper.find(Button).simulate('press');
+    await new Promise(setImmediate);
 
-      resolveTimeout();
-      await releaseThread();
-
-      expect(wrapper.state('copyText')).toEqual('Copy Invite Code');
-    });
+    expect(wrapper.state('copyText')).toEqual('Copied');
+    jest.runAllTimers();
+    expect(wrapper.state('copyText')).toEqual('Copy Invite Code');
   });
 
   it('disables copy button if code does not exist', function () {
@@ -70,24 +65,3 @@ describe('InviteDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 });
-
-function releaseThread() {
-  return new Promise(setImmediate);
-}
-
-async function withMockedSetTimeout(runTest) {
-  let resolveTimeout;
-  const delayPromise = new Promise((resolve) => (resolveTimeout = resolve));
-
-  const originalSetTimeout = globalThis.setTimeout;
-  (globalThis.setTimeout as any) = jest.fn().mockImplementation(async (fn) => {
-    await delayPromise;
-    fn();
-  });
-  await runTest(resolveTimeout);
-
-  // In case a test does not follow all the way through, allow timeouts to complete
-  resolveTimeout();
-  // Restore the original set timeout
-  globalThis.setTimeout = originalSetTimeout;
-}

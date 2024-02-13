@@ -47,7 +47,7 @@ export class EditProfile extends React.Component<Properties, State> {
     this.props.onEdit({
       name: this.state.name,
       image: this.state.image,
-      primaryZID: this.state.primaryZID,
+      primaryZID: this.state.primaryZID === 'None (wallet address)' ? '' : this.state.primaryZID,
     });
   };
 
@@ -113,6 +113,14 @@ export class EditProfile extends React.Component<Properties, State> {
     );
   }
 
+  getNoneOption() {
+    return {
+      id: 'None (wallet address)',
+      label: this.renderOwnedZIDItem('None (wallet address)'),
+      onSelect: () => this.trackPrimaryZID('None (wallet address)'),
+    };
+  }
+
   renderLoadingState() {
     return [
       {
@@ -152,6 +160,10 @@ export class EditProfile extends React.Component<Properties, State> {
         onSelect: () => this.trackPrimaryZID(zid),
       });
     }
+
+    if (this.props.currentPrimaryZID) {
+      options.push(this.getNoneOption());
+    }
     return options;
   }
 
@@ -188,7 +200,7 @@ export class EditProfile extends React.Component<Properties, State> {
               <SelectInput
                 items={this.menuItems}
                 label=''
-                placeholder={this.props.currentPrimaryZID}
+                placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
                 value={this.state.primaryZID}
                 className={c('select-input')}
                 itemSize='spacious'

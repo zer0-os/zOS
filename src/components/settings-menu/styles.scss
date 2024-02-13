@@ -1,6 +1,8 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .settings-menu {
+  max-width: 195px;
+
   > *:first-child {
     &:hover {
       background: none;
@@ -13,14 +15,20 @@
     align-items: center;
     gap: 16px;
     pointer-events: none;
+    overflow: hidden;
 
     &__user-details {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      overflow: hidden;
     }
 
     &__name {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+
       font-size: 14px;
       font-weight: 700;
       line-height: 17px;

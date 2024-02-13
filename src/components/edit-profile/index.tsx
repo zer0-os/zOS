@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input, Tooltip, SelectInput } from '@zero-tech/zui/components';
+import { IconButton, Alert, Button, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
@@ -22,6 +22,7 @@ export interface Properties {
   currentPrimaryZID: string;
   currentProfileImage: string;
   ownedZIDs: string[];
+  loading: boolean;
   onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
 
@@ -46,7 +47,7 @@ export class EditProfile extends React.Component<Properties, State> {
     this.props.onEdit({
       name: this.state.name,
       image: this.state.image,
-      primaryZID: this.state.primaryZID,
+      primaryZID: this.state.primaryZID === 'None (wallet address)' ? '' : this.state.primaryZID,
     });
   };
 
@@ -112,9 +113,33 @@ export class EditProfile extends React.Component<Properties, State> {
     );
   }
 
-  get menuItems() {
-    const options = [];
+  getNoneOption() {
+    return {
+      id: 'None (wallet address)',
+      label: this.renderOwnedZIDItem('None (wallet address)'),
+      onSelect: () => this.trackPrimaryZID('None (wallet address)'),
+    };
+  }
 
+  renderLoadingState() {
+    return [
+      {
+        id: 'Fetching ZERO IDs',
+        label: this.renderOwnedZIDItem(
+          'Fetching ZERO IDs',
+          <LoadingIndicator className={c('zid-menu-item-option-loading-spinner')} />
+        ),
+        onSelect: () => {},
+      },
+    ];
+  }
+
+  get menuItems() {
+    if (this.props.loading) {
+      return this.renderLoadingState();
+    }
+
+    const options = [];
     if (this.props.currentPrimaryZID) {
       options.push({
         id: this.props.currentPrimaryZID,
@@ -134,6 +159,10 @@ export class EditProfile extends React.Component<Properties, State> {
         label: this.renderOwnedZIDItem(zid),
         onSelect: () => this.trackPrimaryZID(zid),
       });
+    }
+
+    if (this.props.currentPrimaryZID) {
+      options.push(this.getNoneOption());
     }
     return options;
   }
@@ -171,7 +200,7 @@ export class EditProfile extends React.Component<Properties, State> {
               <SelectInput
                 items={this.menuItems}
                 label=''
-                placeholder={this.props.currentPrimaryZID}
+                placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
                 value={this.state.primaryZID}
                 className={c('select-input')}
                 itemSize='spacious'

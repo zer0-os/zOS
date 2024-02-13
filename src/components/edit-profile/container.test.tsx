@@ -14,6 +14,7 @@ describe('Container', () => {
       currentProfileImage: 'profile.jpg',
       currentPrimaryZID: '0://john:doe',
       ownedZIDs: [],
+      loading: false,
       editProfile: () => null,
       startProfileEdit: () => null,
       leaveGlobalNetwork: () => null,

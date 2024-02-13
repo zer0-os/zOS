@@ -9,13 +9,13 @@ import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
-import { clearChannels, openConversation, openFirstConversation } from '../channels/saga';
+import { clearChannels, openConversation, openFirstConversation, receiveChannel } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
-import { ConversationStatus, GroupChannelType, MessagesFetchState, User, receive as receiveChannel } from '../channels';
+import { ConversationStatus, GroupChannelType, MessagesFetchState, User } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { getUserByMatrixId } from '../users/saga';
@@ -131,7 +131,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
 
 export function* handleCreateConversationError(optimisticConversation) {
   if (optimisticConversation) {
-    yield put(receiveChannel({ id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR }));
+    yield call(receiveChannel, { id: optimisticConversation.id, conversationStatus: ConversationStatus.ERROR });
   }
 }
 
@@ -331,11 +331,11 @@ export function* addChannel(channel) {
 }
 
 export function* roomNameChanged(id: string, name: string) {
-  yield put(receiveChannel({ id, name }));
+  yield call(receiveChannel, { id, name });
 }
 
 export function* roomAvatarChanged(id: string, url: string) {
-  yield put(receiveChannel({ id, icon: url }));
+  yield call(receiveChannel, { id, icon: url });
 }
 
 export function* otherUserJoinedChannel(roomId: string, user: User) {
@@ -350,13 +350,7 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
 
   if (!channel?.otherMembers?.includes(user.userId)) {
     const otherMembers = [...(channel?.otherMembers || []), user];
-    yield put(
-      receiveChannel({
-        id: channel.id,
-        isOneOnOne: otherMembers.length === 1,
-        otherMembers,
-      })
-    );
+    yield call(receiveChannel, { id: channel.id, isOneOnOne: otherMembers.length === 1, otherMembers });
   }
 }
 
@@ -371,10 +365,8 @@ export function* otherUserLeftChannel(roomId: string, user: User) {
     return;
   }
 
-  yield put(
-    receiveChannel({
-      id: channel.id,
-      otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
-    })
-  );
+  yield call(receiveChannel, {
+    id: channel.id,
+    otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
+  });
 }

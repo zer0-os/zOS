@@ -1,5 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
-import { SagaActionTypes, State, setErrors, setOwnedZIDs, setState } from '.';
+import { SagaActionTypes, State, setErrors, setLoading, setOwnedZIDs, setState } from '.';
 import {
   editUserProfile as apiEditUserProfile,
   saveUserMatrixCredentials as apiSaveUserMatrixCredentials,
@@ -81,12 +81,16 @@ export function* joinGlobalNetwork() {
 }
 
 export function* fetchOwnedZIDs() {
+  yield put(setLoading(true));
+
   try {
     const ownedZIDs = yield call(fetchOwnedZIDsApi);
     yield put(setOwnedZIDs(ownedZIDs));
   } catch (error) {
     yield put(setErrors([ProfileDetailsErrors.FETCH_OWNED_ZIDs_ERROR]));
   }
+
+  yield put(setLoading(false));
 }
 
 export function* saga() {

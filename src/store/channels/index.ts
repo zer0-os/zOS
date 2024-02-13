@@ -64,6 +64,27 @@ export interface Channel {
   reply?: ParentMessage;
 }
 
+export const CHANNEL_DEFAULTS = {
+  optimisticId: '',
+  name: '',
+  messages: [],
+  otherMembers: [],
+  memberHistory: [],
+  hasMore: true,
+  createdAt: 0,
+  lastMessage: null,
+  unreadCount: 0,
+  hasJoined: true,
+  groupChannelType: GroupChannelType.Private,
+  icon: '',
+  isOneOnOne: true,
+  isChannel: false,
+  hasLoadedMessages: false,
+  conversationStatus: ConversationStatus.CREATED,
+  messagesFetchStatus: null,
+  adminMatrixIds: [],
+};
+
 export enum SagaActionTypes {
   JoinChannel = 'channels/saga/joinChannel',
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
@@ -87,6 +108,6 @@ const slice = createNormalizedSlice({
   },
 });
 
-export const { receiveNormalized, receive } = slice.actions;
+export const { receive: rawReceive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
 export { joinChannel, unreadCountUpdated, removeAll, openConversation, onReply, onRemoveReply };

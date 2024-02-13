@@ -1,6 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, receive, schema, removeAll } from '.';
+import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
 import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
@@ -20,12 +20,7 @@ export function* joinChannel(action) {
 
   yield call(joinChannelAPI, channelId);
 
-  yield put(
-    receive({
-      id: channelId,
-      hasJoined: true,
-    })
-  );
+  yield call(receiveChannel, { id: channelId, hasJoined: true });
 }
 
 export function* markAllMessagesAsRead(channelId, userId) {
@@ -36,13 +31,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
   const chatClient = yield call(chat.get);
   try {
     yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
-
-    yield put(
-      receive({
-        id: channelId,
-        unreadCount: 0,
-      })
-    );
+    yield call(receiveChannel, { id: channelId, unreadCount: 0 });
   } catch (error) {}
 }
 
@@ -83,12 +72,7 @@ export function* unreadCountUpdated(action) {
     return;
   }
 
-  yield put(
-    receive({
-      id: channelId,
-      unreadCount: unreadCount,
-    })
-  );
+  yield call(receiveChannel, { id: channelId, unreadCount: unreadCount });
 }
 
 export function* onReply(reply: ParentMessage) {
@@ -97,12 +81,7 @@ export function* onReply(reply: ParentMessage) {
     return;
   }
 
-  yield put(
-    receive({
-      id: activeConversationId,
-      reply,
-    })
-  );
+  yield call(receiveChannel, { id: activeConversationId, reply });
 }
 
 export function* onRemoveReply() {
@@ -111,16 +90,20 @@ export function* onRemoveReply() {
     return;
   }
 
-  yield put(
-    receive({
-      id: activeConversationId,
-      reply: null,
-    })
-  );
+  yield call(receiveChannel, { id: activeConversationId, reply: null });
 }
 
 export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
+}
+
+export function* receiveChannel(channel: Partial<Channel>) {
+  const existing = yield select(rawChannelSelector(channel.id));
+  let data = { ...channel };
+  if (!existing) {
+    data = { ...CHANNEL_DEFAULTS, ...data };
+  }
+  yield put(rawReceive(data));
 }
 
 export function* saga() {

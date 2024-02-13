@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input, Tooltip, SelectInput } from '@zero-tech/zui/components';
+import { IconButton, Alert, Button, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
@@ -22,6 +22,7 @@ export interface Properties {
   currentPrimaryZID: string;
   currentProfileImage: string;
   ownedZIDs: string[];
+  loading: boolean;
   onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
 
@@ -112,9 +113,25 @@ export class EditProfile extends React.Component<Properties, State> {
     );
   }
 
-  get menuItems() {
-    const options = [];
+  renderLoadingState() {
+    return [
+      {
+        id: 'Fetching ZERO IDs',
+        label: this.renderOwnedZIDItem(
+          'Fetching ZERO IDs',
+          <LoadingIndicator className={c('zid-menu-item-option-loading-spinner')} />
+        ),
+        onSelect: () => {},
+      },
+    ];
+  }
 
+  get menuItems() {
+    if (this.props.loading) {
+      return this.renderLoadingState();
+    }
+
+    const options = [];
     if (this.props.currentPrimaryZID) {
       options.push({
         id: this.props.currentPrimaryZID,

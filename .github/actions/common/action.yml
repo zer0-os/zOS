@@ -6,9 +6,9 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: '20'
 
     - name: Get node version
       id: node
@@ -17,7 +17,7 @@ runs:
 
     # rebuild the cache if OS, package-lock.json or node version changes
     - name: Get node_modules cache
-      uses: actions/cache@v3.0.2
+      uses: actions/cache@v4
       id: node_modules
       with:
         path: |

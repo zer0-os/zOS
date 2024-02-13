@@ -4,8 +4,8 @@
   "private": true,
   "main": "./public/electron.js",
   "engines": {
-    "node": "^16.17.0",
-    "npm": "^8.15.0"
+    "node": "^20.11.0",
+    "npm": "^10.2.4"
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
@@ -24,7 +24,7 @@
     "@web3-react/network-connector": "^6.1.9",
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "0.18.9",
-    "@zero-tech/zui": "^1.7.1",
+    "@zero-tech/zui": "1.8.0",
     "audio-react-recorder-fixed": "^1.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",
@@ -61,10 +61,10 @@
     "web3-utils": "^1.7.5"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true craco start",
+    "start": "NODE_OPTIONS='--openssl-legacy-provider' DISABLE_ESLINT_PLUGIN=true craco start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build",
+    "build": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' craco build",
     "test": "craco test --env=node",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",

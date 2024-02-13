@@ -21,6 +21,7 @@ describe('EditProfile', () => {
       currentProfileImage: 'profile.jpg',
       currentPrimaryZID: '0://john:doe',
       ownedZIDs: [],
+      loading: false,
       onEdit: () => null,
       onClose: () => null,
       onLeaveGlobal: () => null,
@@ -107,6 +108,18 @@ describe('EditProfile', () => {
 
     expect(items.length).toEqual(3);
     expect(items[0].id).toEqual('0://jane:smith');
+  });
+
+  it('renders dropdown with loading state when fetching ownedZIDs', () => {
+    featureFlags.allowEditPrimaryZID = true;
+
+    const wrapper = subject({ currentPrimaryZID: '0://jane:smith', loading: true });
+
+    const dropdown = wrapper.find('SelectInput');
+    const items: any = dropdown.prop('items');
+
+    expect(items.length).toEqual(1);
+    expect(items[0].id).toEqual('Fetching ZERO IDs');
   });
 
   it('calls onEdit with correct data when Save Changes button is clicked', () => {

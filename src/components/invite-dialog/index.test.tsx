@@ -43,7 +43,7 @@ describe('InviteDialog', () => {
     const wrapper = subject({ clipboard });
 
     wrapper.find(Button).simulate('press');
-    await new Promise(setImmediate);
+    await releaseThread();
 
     expect(wrapper.state('copyText')).toEqual('Copied');
     jest.runAllTimers();
@@ -65,3 +65,7 @@ describe('InviteDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 });
+
+async function releaseThread() {
+  await new Promise(jest.requireActual('timers').setImmediate);
+}

@@ -289,6 +289,7 @@ async function performSearch(dropdown, searchString) {
   jest.useFakeTimers();
   input.simulate('change', { target: { value: searchString } });
   jest.runAllTimers();
+  jest.useRealTimers();
   // Release the thread so the async search can complete
   await new Promise(setImmediate);
 }

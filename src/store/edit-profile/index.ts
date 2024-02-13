@@ -18,12 +18,14 @@ export type EditProfileState = {
   errors: string[];
   state: State;
   ownedZIDs: string[];
+  loading: boolean;
 };
 
 export const initialState: EditProfileState = {
   errors: [],
   state: State.NONE,
   ownedZIDs: [],
+  loading: false,
 };
 
 export const editProfile = createAction<{
@@ -54,8 +56,11 @@ const slice = createSlice({
     setOwnedZIDs: (state, action: PayloadAction<EditProfileState['ownedZIDs']>) => {
       state.ownedZIDs = action.payload;
     },
+    setLoading: (state, action: PayloadAction<EditProfileState['loading']>) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setErrors, startProfileEdit, setState, setOwnedZIDs } = slice.actions;
+export const { setErrors, startProfileEdit, setState, setOwnedZIDs, setLoading } = slice.actions;
 export const { reducer } = slice;

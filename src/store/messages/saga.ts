@@ -3,8 +3,8 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
-import { ConversationStatus, MessagesFetchState, receive } from '../channels';
-import { markConversationAsRead, rawChannelSelector } from '../channels/saga';
+import { ConversationStatus, MessagesFetchState } from '../channels';
+import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { getLinkPreviews } from './api';
@@ -128,10 +128,10 @@ export function* fetch(action) {
     const chatClient = yield call(chat.get);
 
     if (referenceTimestamp) {
-      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS }));
+      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS });
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId, referenceTimestamp);
     } else {
-      yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS }));
+      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS });
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
@@ -143,17 +143,15 @@ export function* fetch(action) {
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
 
-    yield put(
-      receive({
-        id: channelId,
-        messages,
-        hasMore: messagesResponse.hasMore,
-        hasLoadedMessages: true,
-        messagesFetchStatus: MessagesFetchState.SUCCESS,
-      })
-    );
+    yield call(receiveChannel, {
+      id: channelId,
+      messages,
+      hasMore: messagesResponse.hasMore,
+      hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+    });
   } catch (error) {
-    yield put(receive({ id: channelId, messagesFetchStatus: MessagesFetchState.FAILED }));
+    yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
 }
 
@@ -218,15 +216,7 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
 
   const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
 
-  yield put(
-    receive({
-      id: channelId,
-      messages: [
-        ...existingMessages,
-        temporaryMessage,
-      ],
-    })
-  );
+  yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
   return { optimisticMessage: temporaryMessage };
 }
@@ -276,7 +266,7 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
     if (messages) {
-      yield put(receive({ id: channelId, messages: messages }));
+      yield call(receiveChannel, { id: channelId, messages: messages });
     }
     return createdMessage;
   } catch (e) {
@@ -304,12 +294,10 @@ export function* deleteMessage(action) {
 
   messageIdsToDelete.unshift(messageId);
 
-  yield put(
-    receive({
-      id: channelId,
-      messages: existingMessageIds.filter((id) => !messageIdsToDelete.includes(id)),
-    })
-  );
+  yield call(receiveChannel, {
+    id: channelId,
+    messages: existingMessageIds.filter((id) => !messageIdsToDelete.includes(id)),
+  });
 
   const nonOptimisticMessagesIds = fullMessages
     .filter((m) => messageIdsToDelete.includes(m.id))
@@ -341,12 +329,7 @@ export function* editMessage(action) {
     }
   });
 
-  yield put(
-    receive({
-      id: channelId,
-      messages,
-    })
-  );
+  yield call(receiveChannel, { id: channelId, messages });
 
   const chatClient = yield call(chat.get);
   const messagesResponse = yield call(
@@ -361,12 +344,7 @@ export function* editMessage(action) {
   const isMessageSent = messagesResponse === 200;
 
   if (!isMessageSent) {
-    yield put(
-      receive({
-        id: channelId,
-        messages: [...existingMessages],
-      })
-    );
+    yield call(receiveChannel, { id: channelId, messages: [...existingMessages] });
   }
 }
 
@@ -395,12 +373,7 @@ export function* receiveDelete(action) {
     return;
   }
 
-  yield put(
-    receive({
-      id: channelId,
-      messages: existingMessages.filter((id) => id !== messageId),
-    })
-  );
+  yield call(receiveChannel, { id: channelId, messages: existingMessages.filter((id) => id !== messageId) });
 }
 
 let savedMessages = [];
@@ -445,7 +418,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       currentMessages = newMessages;
     }
 
-    yield put(receive({ id: channelId, messages: uniqNormalizedList(currentMessages, true) }));
+    yield call(receiveChannel, { id: channelId, messages: uniqNormalizedList(currentMessages, true) });
     if (yield select(_isActive(channelId))) {
       yield spawn(markConversationAsRead, channelId);
     }

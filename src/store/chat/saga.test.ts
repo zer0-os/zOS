@@ -21,11 +21,6 @@ import { getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { joinRoom as apiJoinRoom } from './api';
 import { call } from 'redux-saga/effects';
 
-const featureFlags = { allowJoinRoom: false };
-jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe(performValidateActiveConversation, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
@@ -55,27 +50,7 @@ describe(performValidateActiveConversation, () => {
     expect(storeState.chat.joinRoomErrorContent).toBeNull();
   });
 
-  // while allowJoinRoom is feature flagged - set generic error content
-  it('sets the join room error content if user is NOT member of conversation', async () => {
-    featureFlags.allowJoinRoom = false;
-    const initialState = new StoreBuilder().withChat({ joinRoomErrorContent: null });
-
-    const { storeState } = await subject(performValidateActiveConversation, 'convo-not-exists')
-      .provide([
-        [call(isMemberOfActiveConversation, 'convo-not-exists'), false],
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    expect(storeState.chat.joinRoomErrorContent).toStrictEqual({
-      header: 'There’s no one here...',
-      body: 'This conversation does not exist or you are not a member.',
-    });
-  });
-
   it('gets the matrix roomId if the active conversation id is an alias', async () => {
-    featureFlags.allowJoinRoom = true;
-
     const alias = 'wildebeest:matrix.org';
     const conversationId = '!wildebeest:matrix.org';
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({
@@ -98,8 +73,6 @@ describe(performValidateActiveConversation, () => {
   });
 
   it('joins the conversation when an id is provided and the user is not a member', async () => {
-    featureFlags.allowJoinRoom = true;
-
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
     await subject(performValidateActiveConversation, '!convo-not-exists')
@@ -112,8 +85,6 @@ describe(performValidateActiveConversation, () => {
   });
 
   it('joins the conversation when an alias is provided that does not exist', async () => {
-    featureFlags.allowJoinRoom = true;
-
     const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' });
 
     await subject(performValidateActiveConversation, 'convo-not-exists')
@@ -126,8 +97,6 @@ describe(performValidateActiveConversation, () => {
   });
 
   it('joins the conversation when an alias is provided and the user is not a member', async () => {
-    featureFlags.allowJoinRoom = true;
-
     const alias = 'some-other-convo:matrix.org';
     const initialState = new StoreBuilder()
       .withCurrentUser({ id: 'current-user' })

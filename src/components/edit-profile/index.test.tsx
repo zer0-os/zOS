@@ -95,7 +95,7 @@ describe('EditProfile', () => {
     expect(saveButton(wrapper).prop('isDisabled')).toEqual(false);
   });
 
-  it('renders dropdown with ownedZIDs with the primaryZID as the first option', () => {
+  it('renders dropdown with ownedZIDs with the primaryZID as the first option and NONE(wallet address) as the last', () => {
     featureFlags.allowEditPrimaryZID = true;
 
     const wrapper = subject({
@@ -106,8 +106,24 @@ describe('EditProfile', () => {
     const dropdown = wrapper.find('SelectInput');
     const items: any = dropdown.prop('items');
 
-    expect(items.length).toEqual(3);
+    expect(items.length).toEqual(4);
     expect(items[0].id).toEqual('0://jane:smith');
+    expect(items[3].id).toEqual('None (wallet address)');
+  });
+
+  it('does not render NONE (wallet address) option, if primaryZID is not set', () => {
+    featureFlags.allowEditPrimaryZID = true;
+
+    const wrapper = subject({
+      currentPrimaryZID: '', // none
+      ownedZIDs: ['0://john:doe'],
+    });
+
+    const dropdown = wrapper.find('SelectInput');
+    const items: any = dropdown.prop('items');
+
+    expect(items.length).toEqual(1); // NONE option is not rendered
+    expect(items[0].id).toEqual('0://john:doe');
   });
 
   it('renders dropdown with loading state when fetching ownedZIDs', () => {

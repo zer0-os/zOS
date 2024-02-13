@@ -91,7 +91,7 @@ export class FeatureFlags {
   }
 
   get allowVerifyId() {
-    return this._getBoolean('allowVerifyId', false);
+    return this._getBoolean('allowVerifyId', true);
   }
 
   set allowVerifyId(value: boolean) {

@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { InviteDialog, Properties } from '.';
 import { Button } from '@zero-tech/zui/components';
+import { releaseThread } from '../../test/utils';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -65,7 +66,3 @@ describe('InviteDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 });
-
-async function releaseThread() {
-  await new Promise(jest.requireActual('timers').setImmediate);
-}

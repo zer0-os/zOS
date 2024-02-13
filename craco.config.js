@@ -38,6 +38,9 @@ module.exports = {
           },
         ],
       },
+      watchOptions: {
+        ignored: '**/node_modules/**',
+      },
     },
     plugins: {
       add: [

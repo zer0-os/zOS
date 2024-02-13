@@ -14,15 +14,21 @@
     flex-direction: column;
     align-items: flex-start;
     flex: 1 0 0;
+    width: 100%;
+    overflow: hidden;
   }
 
   &__name {
     @include glass-text-primary-color;
 
-    width: 100%;
     font-size: $font-size-small;
     font-weight: 600;
     line-height: 15px;
+
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__handle {

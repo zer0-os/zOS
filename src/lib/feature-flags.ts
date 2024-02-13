@@ -83,7 +83,7 @@ export class FeatureFlags {
   }
 
   get allowJoinRoom() {
-    return this._getBoolean('allowJoinRoom', false);
+    return this._getBoolean('allowJoinRoom', true);
   }
 
   set allowJoinRoom(value: boolean) {

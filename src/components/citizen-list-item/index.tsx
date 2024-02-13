@@ -36,7 +36,7 @@ export class CitizenListItem extends React.Component<Properties> {
             tabIndex={-1}
             statusType={this.statusType}
           />
-          <div>
+          <div {...cn('text-container')}>
             <span {...cn('name')}>{displayName(this.props.user)}</span>
             <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>
           </div>

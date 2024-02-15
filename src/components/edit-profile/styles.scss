@@ -36,25 +36,24 @@
   }
 
   &__body {
-    //margin-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 32px;
-    margin: 40px 0px;
+    margin: 40px 0px 0px 0px;
   }
 
   &__body-input {
-    width: 240px;
+    width: 256px;
     gap: 4px;
     line-height: normal;
   }
 
   &__zid-select-menu {
-    min-width: 224px;
-
     max-height: 220px;
     overflow-y: auto;
+
+    width: 240px;
   }
 
   &__zid-menu-item-option {
@@ -104,7 +103,13 @@
     width: 144px;
   }
 
-  &__alert-large {
-    height: 56px;
+  &__alert-small {
+    margin-top: 8px;
+    padding: 4px 8px 4px 8px;
+  }
+
+  &__alert-text {
+    font-size: 14px;
+    line-height: 20px;
   }
 }

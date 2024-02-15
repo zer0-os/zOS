@@ -37,13 +37,22 @@
     display: flex;
     align-items: flex-start;
     gap: 4px;
-    align-self: stretch;
 
     font-size: 10px;
     line-height: 13px;
   }
 
-  &__link {
-    color: theme.$color-secondary-11;
+  &__verify-id-button {
+    height: fit-content;
+
+    > *:first-child {
+      margin: 0 2px;
+    }
+  }
+
+  &__verify-id-button-text {
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 13px;
   }
 }

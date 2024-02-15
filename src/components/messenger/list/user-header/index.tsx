@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import { config } from '../../../../config';
 import { SettingsMenu } from '../../../settings-menu';
-import { IconButton } from '@zero-tech/zui/components';
+import { Button, IconButton } from '@zero-tech/zui/components';
 import { IconPlus } from '@zero-tech/zui/icons';
 
 import { featureFlags } from '../../../../lib/feature-flags';
@@ -20,6 +19,7 @@ export interface Properties {
   includeUserSettings?: boolean;
 
   onLogout?: () => void;
+  onVerifyId: () => void;
   startConversation: () => void;
 }
 
@@ -32,11 +32,11 @@ export class UserHeader extends React.Component<Properties> {
     return this.props.userHandle.startsWith('0x');
   }
 
-  renderLink() {
+  renderVerifyIdButton() {
     return (
-      <a {...cn('link')} href={config.znsExplorerUrl} target='_blank' rel='noopener noreferrer'>
-        Verify ID
-      </a>
+      <Button {...cn('verify-id-button')} variant='text' isSubmit onPress={this.props.onVerifyId}>
+        <div {...cn('verify-id-button-text')}>Verify ID</div>
+      </Button>
     );
   }
 
@@ -48,7 +48,7 @@ export class UserHeader extends React.Component<Properties> {
         {this.props.userHandle && (
           <div {...cn('handle')}>
             {this.props.userHandle}
-            {featureFlags.allowVerifyId && this.isWalletAddress && this.renderLink()}
+            {featureFlags.allowVerifyId && this.isWalletAddress && this.renderVerifyIdButton()}
           </div>
         )}
       </div>

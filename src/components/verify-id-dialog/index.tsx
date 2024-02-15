@@ -27,7 +27,7 @@ export class VerifyIdDialog extends React.Component<Properties> {
   renderExampleZids() {
     return (
       <>
-        <span {...cn('example-zid')}>0://john</span> or <span {...cn('example-zid')}>0://john.smith</span>
+        <span {...cn('zid')}>0://john</span> or <span {...cn('zid')}>0://john.smith</span>
       </>
     );
   }

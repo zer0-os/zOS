@@ -4,7 +4,7 @@ import { Events, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { userByMatrixIdSelector } from './selectors';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { getUserSubHandle } from '../../components/messenger/lib/utils';
+import { getUserSubHandle } from '../../lib/user';
 
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));

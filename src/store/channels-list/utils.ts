@@ -4,7 +4,7 @@ import { denormalize } from './../channels/index';
 import getDeepProperty from 'lodash.get';
 import { select } from 'redux-saga/effects';
 import { currentUserSelector } from '../authentication/selectors';
-import { getUserSubHandle } from '../../components/messenger/lib/utils';
+import { getUserSubHandle } from '../../lib/user';
 
 export function filterChannelsList(state, filter: ChannelType) {
   const channelIdList = getDeepProperty(state, 'channelsList.value', []);

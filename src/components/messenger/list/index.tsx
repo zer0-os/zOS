@@ -34,7 +34,7 @@ import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
-import { getUserSubHandle } from '../lib/utils';
+import { getUserSubHandle } from '../../../lib/user';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';

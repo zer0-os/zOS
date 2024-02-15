@@ -1,5 +1,6 @@
 import { Item, Option } from './types';
 import { Channel, User } from '../../../store/channels';
+import { getUserSubHandle } from '../../../lib/user';
 
 export const itemToOption = (item: Item): Option => {
   return {
@@ -35,17 +36,3 @@ export const highlightFilter = (text, filter) => {
 
   return text;
 };
-
-export function getUserSubHandle(primaryZID: string, primaryWalletAddress: string) {
-  if (primaryZID) {
-    return primaryZID;
-  }
-
-  if (primaryWalletAddress) {
-    return `${primaryWalletAddress.substring(0, 6)}...${primaryWalletAddress.substring(
-      primaryWalletAddress.length - 4
-    )}`;
-  }
-
-  return '';
-}

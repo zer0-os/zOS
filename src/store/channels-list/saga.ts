@@ -78,13 +78,8 @@ export function* fetchConversations() {
     .filter((c) => c.conversationStatus !== ConversationStatus.CREATED)
     .map((c) => c.id);
 
-  const channelsList = yield select(rawChannelsList());
-  const conversationIds = conversations.map((c) => c.id);
-  // Channels can change to conversations (due to the nature of Matrix)
-  const filteredChannelsList = channelsList.filter((id) => !conversationIds.includes(id));
   yield put(
     receive([
-      ...filteredChannelsList,
       ...optimisticConversationIds,
       ...conversations,
     ])

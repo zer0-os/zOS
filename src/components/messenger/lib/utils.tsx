@@ -6,7 +6,7 @@ export const itemToOption = (item: Item): Option => {
     value: item.id,
     label: item.name,
     image: item.image,
-    subLabel: getUserHandle(item.primaryZID, item.primaryWalletAddress),
+    subLabel: getUserSubHandle(item.primaryZID, item.primaryWalletAddress),
   };
 };
 
@@ -36,7 +36,7 @@ export const highlightFilter = (text, filter) => {
   return text;
 };
 
-export function getUserHandle(primaryZID: string, primaryWalletAddress: string) {
+export function getUserSubHandle(primaryZID: string, primaryWalletAddress: string) {
   if (primaryZID) {
     return primaryZID;
   }

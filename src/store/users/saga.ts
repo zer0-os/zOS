@@ -4,7 +4,7 @@ import { Events, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { userByMatrixIdSelector } from './selectors';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { getUserHandle } from '../../components/messenger/lib/utils';
+import { getUserSubHandle } from '../../components/messenger/lib/utils';
 
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
@@ -24,7 +24,7 @@ export function* receiveSearchResults(searchResults) {
         matrixId: r.matrixId,
         primaryZID: r.primaryZID,
         primaryWalletAddress: r.primaryWalletAddress,
-        displaySubHandle: getUserHandle(r.primaryZID, r.primaryWalletAddress),
+        displaySubHandle: getUserSubHandle(r.primaryZID, r.primaryWalletAddress),
       };
     });
   yield put(receive(mappedUsers));

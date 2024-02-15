@@ -40,12 +40,15 @@ export class VerifyIdDialog extends React.Component<Properties> {
           <IconButton {...cn('close')} size={32} Icon={IconXClose} onClick={this.props.onClose} />
         </div>
 
-        <p {...cn('text-content')}>
-          You can verify your ID in Messenger if you own a ZERO ID domain, e.g. {this.renderExampleZids()}. To verify
-          your ID, make sure your ZERO ID is in the Web3 wallet associated with your Messenger account, and click on
-          your profile picture. Then, select “Edit Profile” and pick from the dropdown list of ZERO ID options. To
-          purchase a ZERO ID, visit ZERO’s {this.renderLink()} app.
-        </p>
+        <div {...cn('text-content')}>
+          <p>You can verify your ID in Messenger if you own a ZERO ID domain, e.g. {this.renderExampleZids()}.</p>
+          <p>
+            To verify your ID, make sure your ZERO ID is in the Web3 wallet associated with your Messenger account, and
+            click on your profile picture. Then, select “Edit Profile” and pick from the dropdown list of ZERO ID
+            options.
+          </p>
+          <p>To purchase a ZERO ID, visit ZERO’s {this.renderLink()} app.</p>
+        </div>
       </div>
     );
   }

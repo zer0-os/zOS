@@ -34,7 +34,7 @@ import { receiveSearchResults } from '../../../store/users';
 import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
-import { getUserHandle } from '../lib/utils';
+import { getUserSubHandle } from '../../../lib/user';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -85,7 +85,7 @@ export class Container extends React.Component<Properties, State> {
     } = state;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
-    const userHandle = getUserHandle(user?.data?.primaryZID, user?.data?.primaryWalletAddress);
+    const userHandle = getUserSubHandle(user?.data?.primaryZID, user?.data?.primaryWalletAddress);
     return {
       conversations,
       activeConversationId,

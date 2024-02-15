@@ -22,7 +22,7 @@ import { GroupManagementErrors, EditConversationState } from '../../../../store/
 import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { RemoveMemberDialogContainer } from '../../../group-management/remove-member-dialog/container';
-import { getUserHandle } from '../../lib/utils';
+import { getUserSubHandle } from '../../../../lib/user';
 
 export interface PublicProperties {
   searchUsers: (search: string) => Promise<any>;
@@ -80,7 +80,7 @@ export class Container extends React.Component<Properties> {
         matrixId: currentUser?.matrixId,
         isOnline: currentUser?.isOnline,
         primaryZID: currentUser?.primaryZID,
-        displaySubHandle: getUserHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
+        displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,

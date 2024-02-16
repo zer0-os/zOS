@@ -35,6 +35,7 @@ import { Stage as GroupManagementSagaStage } from '../../../store/group-manageme
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
+import { VerifyIdDialog } from '../../verify-id-dialog';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -72,6 +73,7 @@ export interface Properties extends PublicProperties {
 
 interface State {
   isInviteDialogOpen: boolean;
+  isVerifyIdDialogOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -120,6 +122,7 @@ export class Container extends React.Component<Properties, State> {
 
   state = {
     isInviteDialogOpen: false,
+    isVerifyIdDialogOpen: false,
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -157,6 +160,14 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isInviteDialogOpen: false });
   };
 
+  openVerifyIdDialog = () => {
+    this.setState({ isVerifyIdDialogOpen: true });
+  };
+
+  closeVerifyIdDialog = () => {
+    this.setState({ isVerifyIdDialogOpen: false });
+  };
+
   closeErrorDialog = () => {
     this.props.closeConversationErrorDialog();
   };
@@ -173,6 +184,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
+
+  renderVerifyIdDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.isVerifyIdDialogOpen} onOpenChange={this.closeVerifyIdDialog}>
+        <VerifyIdDialog onClose={this.closeVerifyIdDialog} />
       </Modal>
     );
   };
@@ -217,6 +236,7 @@ export class Container extends React.Component<Properties, State> {
         includeUserSettings={true}
         startConversation={this.props.startCreateConversation}
         onLogout={this.props.logout}
+        onVerifyId={this.openVerifyIdDialog}
       />
     );
   }
@@ -278,6 +298,7 @@ export class Container extends React.Component<Properties, State> {
         <div {...cn('')}>
           {this.renderPanel()}
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
+          {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.renderToastNotification()}
         </div>

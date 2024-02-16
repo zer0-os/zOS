@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import { Properties, UserHeader } from '.';
 import { SettingsMenu } from '../../../settings-menu';
-import { IconButton } from '@zero-tech/zui/components';
+import { Button, IconButton } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
 
@@ -22,6 +22,7 @@ describe(UserHeader, () => {
       includeUserSettings: false,
 
       onLogout: () => null,
+      onVerifyId: () => null,
       startConversation: () => null,
       ...props,
     };
@@ -62,17 +63,26 @@ describe(UserHeader, () => {
     expect(startConversationMock).toHaveBeenCalled();
   });
 
-  it('renders navigation link when user handle is a wallet address', function () {
+  it('renders verify id button when user handle is a wallet address', function () {
     featureFlags.allowVerifyId = true;
 
     const wrapper = subject({ userHandle: '0x1234567890abcdef' });
-    expect(wrapper).toHaveElement(c('link'));
+    expect(wrapper).toHaveElement(Button);
   });
 
-  it('does not render navigation link when user handle is not a wallet address', function () {
+  it('does not verify id button when user handle is not a wallet address', function () {
     featureFlags.allowVerifyId = true;
 
     const wrapper = subject({ userHandle: 'user123' });
-    expect(wrapper).not.toHaveElement(c('link'));
+    expect(wrapper).not.toHaveElement(Button);
+  });
+
+  it('onVerifyId', function () {
+    featureFlags.allowVerifyId = true;
+    const onVerifyIdMock = jest.fn();
+
+    subject({ userHandle: '0x1234567890abcdef', onVerifyId: onVerifyIdMock }).find(Button).simulate('press');
+
+    expect(onVerifyIdMock).toHaveBeenCalled();
   });
 });

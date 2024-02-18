@@ -29,3 +29,7 @@ yarn-error.log*
 /.idea
 
 .husky/_
+
+# electron
+electron/node_modules
+electron/.webpack

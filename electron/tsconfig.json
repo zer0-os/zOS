@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES6"
+  },
+  "include": ["src"],
+  // This is needed so that the ts-node CLI will be able to load the webpack config
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    },
+    "include": ["./webpack"]
+  }
+}

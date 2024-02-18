@@ -210,18 +210,19 @@ export class EditProfile extends React.Component<Properties, State> {
           )}
         </div>
         {this.imageError && (
-          <Alert className={c('alert-large')} variant='error'>
-            {this.imageError}
+          <Alert className={c('alert-small')} variant='error'>
+            <div className={c('alert-text')}>{this.imageError}</div>
           </Alert>
         )}
         {this.generalError && (
-          <Alert className={c('alert-large')} variant='error'>
-            {this.generalError}
+          <Alert className={c('alert-small')} variant='error'>
+            <div className={c('alert-text')}>{this.generalError}</div>
           </Alert>
         )}
+
         {this.changesSaved && (
-          <Alert className={c('alert-large')} variant='success'>
-            Your changes have been saved
+          <Alert className={c('alert-small')} variant='success'>
+            <div className={c('alert-text')}>Changes saved successfully</div>
           </Alert>
         )}
 

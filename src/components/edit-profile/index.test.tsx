@@ -169,7 +169,7 @@ describe('EditProfile', () => {
   it('renders image errors', () => {
     const wrapper = subject({ errors: { image: 'error uploading image' } });
 
-    expect(wrapper.find(Alert).prop('children')).toEqual('error uploading image');
+    expect(wrapper.find(Alert).childAt(0)).toHaveText('error uploading image');
   });
 
   it('renders name error when name is empty', () => {
@@ -190,13 +190,13 @@ describe('EditProfile', () => {
   it('renders general errors', () => {
     const wrapper = subject({ errors: { general: 'invalid' } });
 
-    expect(wrapper.find(Alert).prop('children')).toEqual('invalid');
+    expect(wrapper.find(Alert).childAt(0)).toHaveText('invalid');
   });
 
   it('renders changesSaved message when editProfileState is SUCCESS', () => {
     const wrapper = subject({ editProfileState: EditProfileState.SUCCESS });
 
-    expect(wrapper.find(Alert).prop('children')).toEqual('Your changes have been saved');
+    expect(wrapper.find(Alert).childAt(0)).toHaveText('Changes saved successfully');
   });
 
   it('does not render changesSaved message when editProfileState is not SUCCESS', () => {

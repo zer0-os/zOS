@@ -82,14 +82,6 @@ export class FeatureFlags {
     this._setBoolean('internalUsage', value);
   }
 
-  get allowJoinRoom() {
-    return this._getBoolean('allowJoinRoom', true);
-  }
-
-  set allowJoinRoom(value: boolean) {
-    this._setBoolean('allowJoinRoom', value);
-  }
-
   get allowVerifyId() {
     return this._getBoolean('allowVerifyId', true);
   }

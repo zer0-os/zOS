@@ -11,3 +11,7 @@ export function inputEvent(attrs = {}) {
 export function buttonLabelled(wrapper, label) {
   return wrapper.findWhere((node) => node.type() === Button && node.children().text() === label);
 }
+
+export async function releaseThread() {
+  await new Promise(jest.requireActual('timers').setImmediate);
+}

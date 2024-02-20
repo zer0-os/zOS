@@ -3,6 +3,7 @@ import React from 'react';
 import { AutocompleteDropdown, AutocompleteItem, Properties, Result, ResultProperties } from './';
 import { shallow } from 'enzyme';
 import { Key } from '../../lib/keyboard-search';
+import { releaseThread } from '../../test/utils';
 
 let onSelect;
 let onCancel;
@@ -289,8 +290,7 @@ async function performSearch(dropdown, searchString) {
   jest.useFakeTimers();
   input.simulate('change', { target: { value: searchString } });
   jest.runAllTimers();
-  // Release the thread so the async search can complete
-  await new Promise(setImmediate);
+  await releaseThread();
 }
 
 function stubSearchFor(expectedSearch, results) {

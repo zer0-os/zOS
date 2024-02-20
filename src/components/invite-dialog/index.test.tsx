@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { InviteDialog, Properties } from '.';
 import { Button } from '@zero-tech/zui/components';
+import { releaseThread } from '../../test/utils';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -43,7 +44,7 @@ describe('InviteDialog', () => {
     const wrapper = subject({ clipboard });
 
     wrapper.find(Button).simulate('press');
-    await new Promise(setImmediate);
+    await releaseThread();
 
     expect(wrapper.state('copyText')).toEqual('Copied');
     jest.runAllTimers();

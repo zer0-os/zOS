@@ -13,6 +13,7 @@ export enum SagaActionTypes {
   DiscardOlm = 'chat/discard-olm',
   RestartOlm = 'chat/restart-olm',
   ShareHistoryKeys = 'chat/share-history-keys',
+  CloseBackupDialog = 'chat/close-backup-dialog',
 }
 
 export type MatrixState = {
@@ -22,6 +23,8 @@ export type MatrixState = {
   successMessage: string;
   errorMessage: string;
   deviceId: string;
+  isBackupCheckComplete: boolean;
+  isBackupDialogOpen: boolean;
 };
 
 export const initialState: MatrixState = {
@@ -31,6 +34,8 @@ export const initialState: MatrixState = {
   successMessage: '',
   errorMessage: '',
   deviceId: '',
+  isBackupCheckComplete: false,
+  isBackupDialogOpen: false,
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -45,6 +50,7 @@ export const resendKeyRequests = createAction(SagaActionTypes.ResendKeyRequests)
 export const discardOlm = createAction<string>(SagaActionTypes.DiscardOlm);
 export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
 export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
+export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
 
 const slice = createSlice({
   name: 'matrix',
@@ -68,9 +74,23 @@ const slice = createSlice({
     setDeviceId: (state, action: PayloadAction<MatrixState['deviceId']>) => {
       state.deviceId = action.payload;
     },
+    setIsBackupCheckComplete: (state, action: PayloadAction<MatrixState['isBackupCheckComplete']>) => {
+      state.isBackupCheckComplete = action.payload;
+    },
+    setIsBackupDialogOpen: (state, action: PayloadAction<MatrixState['isBackupDialogOpen']>) => {
+      state.isBackupDialogOpen = action.payload;
+    },
   },
 });
 
-export const { setLoaded, setGeneratedRecoveryKey, setTrustInfo, setSuccessMessage, setErrorMessage, setDeviceId } =
-  slice.actions;
+export const {
+  setLoaded,
+  setIsBackupCheckComplete,
+  setIsBackupDialogOpen,
+  setGeneratedRecoveryKey,
+  setTrustInfo,
+  setSuccessMessage,
+  setErrorMessage,
+  setDeviceId,
+} = slice.actions;
 export const { reducer } = slice;

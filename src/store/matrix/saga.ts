@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import {
   SagaActionTypes,
@@ -8,6 +8,8 @@ import {
   setLoaded,
   setSuccessMessage,
   setTrustInfo,
+  setIsBackupCheckComplete,
+  setIsBackupDialogOpen,
 } from '.';
 import { chat } from '../../lib/chat';
 
@@ -26,6 +28,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
+  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
 }
 
 export function* getBackup() {
@@ -124,4 +127,47 @@ export function* restartOlm(action) {
 export function* shareHistoryKeys(action) {
   const chatClient = yield call(chat.get);
   yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
+}
+
+export function* manageSecureBackupPrompt() {
+  const isBackupCheckComplete = yield select((state) => state.matrix.isBackupCheckComplete);
+
+  if (!isBackupCheckComplete) {
+    const chatClient = yield call(chat.get);
+    const backupExists = yield call([chatClient, chatClient.getSecureBackup]);
+
+    if (!backupExists || !backupExists.backupInfo) {
+      yield delay(10000);
+      yield put(setIsBackupDialogOpen(true));
+    }
+
+    yield call(markBackupCheckCompleted);
+  }
+}
+
+export function* markBackupCheckCompleted() {
+  yield put(setIsBackupCheckComplete(true));
+  setBackupCheckStatusInLocalStorage();
+}
+
+export function* resetBackupCheckStatus() {
+  yield put(setIsBackupCheckComplete(false));
+  clearBackupCheckStatusFromLocalStorage();
+}
+
+export function setBackupCheckStatusInLocalStorage() {
+  localStorage.setItem('isBackupCheckComplete', 'true');
+}
+
+export function clearBackupCheckStatusFromLocalStorage() {
+  localStorage.removeItem('isBackupCheckComplete');
+}
+
+export function* loadBackupCheckStatus() {
+  const isBackupCheckComplete = JSON.parse(localStorage.getItem('isBackupCheckComplete') || 'false');
+  yield put(setIsBackupCheckComplete(isBackupCheckComplete));
+}
+
+export function* closeBackupDialog() {
+  yield put(setIsBackupDialogOpen(false));
 }

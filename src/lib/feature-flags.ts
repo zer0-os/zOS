@@ -107,7 +107,7 @@ export class FeatureFlags {
   }
 
   get allowManageSecureBackupPrompt() {
-    return this._getBoolean('allowManageSecureBackupPrompt', true);
+    return this._getBoolean('allowManageSecureBackupPrompt', false);
   }
 
   set allowManageSecureBackupPrompt(value: boolean) {

@@ -105,6 +105,14 @@ export class FeatureFlags {
   set allowEditPrimaryZID(value: boolean) {
     this._setBoolean('allowEditPrimaryZID', value);
   }
+
+  get allowManageSecureBackupPrompt() {
+    return this._getBoolean('allowManageSecureBackupPrompt', true);
+  }
+
+  set allowManageSecureBackupPrompt(value: boolean) {
+    this._setBoolean('allowManageSecureBackupPrompt', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

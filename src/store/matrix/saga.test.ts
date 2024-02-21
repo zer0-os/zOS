@@ -6,9 +6,12 @@ import { expectSaga } from '../../test/saga';
 import { chat } from '../../lib/chat';
 import {
   clearBackupState,
+  closeBackupDialog,
   generateBackup,
   getBackup,
   manageSecureBackupPrompt,
+  markBackupCheckCompleted,
+  resetBackupCheckStatus,
   restoreBackup,
   saveBackup,
 } from './saga';
@@ -209,64 +212,120 @@ describe(clearBackupState, () => {
   });
 });
 
-describe(manageSecureBackupPrompt, () => {
-  it('opens the backup dialog if backup does not exist', async () => {
-    const initialState = {
-      matrix: {
-        isBackupCheckComplete: false,
-        isBackupDialogOpen: false,
-      },
-    };
-
-    const { storeState } = await subject(manageSecureBackupPrompt)
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [call([chatClient, chatClient.getSecureBackup]), undefined],
-        [
-          call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
-          true,
-        ],
-      ])
-      .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-    expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+describe('secure backup status management', () => {
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  it('does not open the backup dialog if backup exists', async () => {
-    const initialState = {
-      matrix: {
-        isBackupCheckComplete: false,
-        isBackupDialogOpen: false,
-      },
-    };
+  describe(manageSecureBackupPrompt, () => {
+    it('opens the backup dialog if backup does not exist', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: false,
+          isBackupDialogOpen: false,
+        },
+      };
 
-    const { storeState } = await subject(manageSecureBackupPrompt)
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          call([chatClient, chatClient.getSecureBackup]),
-          { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
-        ],
-      ])
-      .run();
+      const { storeState } = await subject(manageSecureBackupPrompt)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [call([chatClient, chatClient.getSecureBackup]), undefined],
+          [
+            call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
+            true,
+          ],
+        ])
+        .run();
 
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
-    expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+      expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+    });
+
+    it('does not open the backup dialog if backup exists', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: false,
+          isBackupDialogOpen: false,
+        },
+      };
+
+      const { storeState } = await subject(manageSecureBackupPrompt)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [
+            call([chatClient, chatClient.getSecureBackup]),
+            { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
+          ],
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+    });
+
+    it('does nothing if backup check has already been completed', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: true,
+          isBackupDialogOpen: false,
+        },
+      };
+
+      const { storeState } = await subject(manageSecureBackupPrompt)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
   });
 
-  it('does nothing if backup check has already been completed', async () => {
-    const initialState = {
-      matrix: {
-        isBackupCheckComplete: true,
-        isBackupDialogOpen: false,
-      },
-    };
+  describe(closeBackupDialog, () => {
+    it('closes the backup dialog', async () => {
+      const initialState = {
+        matrix: {
+          isBackupDialogOpen: true,
+        },
+      };
 
-    const { storeState } = await subject(manageSecureBackupPrompt)
-      .withReducer(rootReducer, initialState as any)
-      .run();
+      const { storeState } = await subject(closeBackupDialog)
+        .withReducer(rootReducer, initialState as any)
+        .run();
 
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+  });
+
+  describe(markBackupCheckCompleted, () => {
+    it('marks backup check as completed', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: false,
+        },
+      };
+
+      const { storeState } = await subject(markBackupCheckCompleted)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(localStorage.setItem).toHaveBeenCalledWith('isBackupCheckComplete', 'true');
+      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+    });
+  });
+
+  describe(resetBackupCheckStatus, () => {
+    it('resets backup check status', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: true,
+        },
+      };
+
+      const { storeState } = await subject(resetBackupCheckStatus)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(localStorage.removeItem).toHaveBeenCalledWith('isBackupCheckComplete');
+      expect(storeState.matrix.isBackupCheckComplete).toBe(false);
+    });
   });
 });

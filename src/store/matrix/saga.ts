@@ -155,17 +155,17 @@ export function* resetBackupCheckStatus() {
   clearBackupCheckStatusFromLocalStorage();
 }
 
+export function* loadBackupCheckStatus() {
+  const isBackupCheckComplete = JSON.parse(localStorage.getItem('isBackupCheckComplete') || 'false');
+  yield put(setIsBackupCheckComplete(isBackupCheckComplete));
+}
+
 export function setBackupCheckStatusInLocalStorage() {
   localStorage.setItem('isBackupCheckComplete', 'true');
 }
 
 export function clearBackupCheckStatusFromLocalStorage() {
   localStorage.removeItem('isBackupCheckComplete');
-}
-
-export function* loadBackupCheckStatus() {
-  const isBackupCheckComplete = JSON.parse(localStorage.getItem('isBackupCheckComplete') || 'false');
-  yield put(setIsBackupCheckComplete(isBackupCheckComplete));
 }
 
 export function* closeBackupDialog() {

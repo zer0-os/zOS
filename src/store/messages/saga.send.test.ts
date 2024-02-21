@@ -19,14 +19,22 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { MessageSendStatus } from '.';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
+import { manageSecureBackupPrompt } from '../matrix/saga';
 
 const mockCreateUploadableFile = jest.fn();
 jest.mock('./uploadable', () => ({
   createUploadableFile: (file) => mockCreateUploadableFile(file),
 }));
 
+const featureFlags = { allowManageSecureBackupPrompt: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe(send, () => {
   it('creates optimistic messages then fetches preview and sends the message in parallel', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
     const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = [
@@ -44,10 +52,14 @@ describe(send, () => {
       .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
       .next({ id: 'message-id' })
       .next()
+      .call(manageSecureBackupPrompt)
+      .next()
       .isDone();
   });
 
   it('creates optimistic file messages then sends files', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
     const channelId = 'channel-id';
     const uploadableFile = { file: { nativeFile: {} } };
     const files = [{ id: 'file-id' }];
@@ -60,10 +72,14 @@ describe(send, () => {
       .next({ uploadableFiles: [uploadableFile] })
       .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
+      .call(manageSecureBackupPrompt)
+      .next()
       .isDone();
   });
 
   it('sends files with a rootMessageId if text is included', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
     const channelId = 'channel-id';
     const uploadableFile = { nativeFile: {} };
     const files = [{ id: 'file-id' }];
@@ -75,10 +91,14 @@ describe(send, () => {
       .next({ id: 'root-id' })
       .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
       .next()
+      .call(manageSecureBackupPrompt)
+      .next()
       .isDone();
   });
 
   it('sends all but the first file if the text root message fails', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
     const channelId = 'channel-id';
     const uploadableFile1 = { nativeFile: {} };
     const uploadableFile2 = { nativeFile: {} };
@@ -96,6 +116,8 @@ describe(send, () => {
       .next()
       .next(null) // Fail
       .call(uploadFileMessages, channelId, '', [uploadableFile2])
+      .next()
+      .call(manageSecureBackupPrompt)
       .next()
       .isDone();
   });

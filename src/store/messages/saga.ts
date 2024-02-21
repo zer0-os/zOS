@@ -20,6 +20,8 @@ import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
+import { manageSecureBackupPrompt } from '../matrix/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Payload {
   channelId: string;
@@ -190,6 +192,10 @@ export function* send(action) {
   }
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
+
+  if (featureFlags.allowManageSecureBackupPrompt) {
+    yield call(manageSecureBackupPrompt);
+  }
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {

@@ -16,6 +16,7 @@ import {
   publishUserLogout,
   authenticateByEmail,
   setAuthentication,
+  initializeSecureBackupManagementState,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -36,6 +37,12 @@ import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
+import { resetBackupCheckStatus } from '../matrix/saga';
+
+const featureFlags = { allowManageSecureBackupPrompt: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -102,6 +109,18 @@ describe(completeUserLogin, () => {
       .run();
   });
 
+  it('sets up secure backup check management state', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
+    await expectSaga(completeUserLogin)
+      .provide([
+        stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        ...successResponses(),
+      ])
+      .call(initializeSecureBackupManagementState)
+      .run();
+  });
+
   it('completes the pending user profile if user is in pending state', async () => {
     const user = { isPending: true };
     await expectSaga(completeUserLogin)
@@ -158,6 +177,15 @@ describe('terminate', () => {
     await expectSaga(terminate)
       .provide([...successResponses()])
       .call(clearUserState)
+      .run();
+  });
+
+  it('resets the secure backup check management state', async () => {
+    featureFlags.allowManageSecureBackupPrompt = true;
+
+    await expectSaga(terminate)
+      .provide([...successResponses()])
+      .call(resetBackupCheckStatus)
       .run();
   });
 

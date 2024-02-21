@@ -19,6 +19,8 @@ import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { completePendingUserProfile } from '../registration/saga';
+import { resetBackupCheckStatus, loadBackupCheckStatus } from '../matrix/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -53,6 +55,11 @@ export function* completeUserLogin(user = null) {
 
   yield put(setUser({ data: user }));
   yield call(initializeUserState, user);
+
+  if (featureFlags.allowManageSecureBackupPrompt) {
+    yield call(initializeSecureBackupManagementState);
+  }
+
   yield call(publishUserLogin, user);
 }
 
@@ -67,6 +74,11 @@ export function* terminate(isAccountChange = false) {
   }
 
   yield call(clearUserState);
+
+  if (featureFlags.allowManageSecureBackupPrompt) {
+    yield call(resetSecureBackupManagementState);
+  }
+
   yield call(redirectUnauthenticatedUser, isAccountChange);
   yield call(publishUserLogout);
 }
@@ -110,6 +122,14 @@ export function* clearUserState() {
     call(clearUsers),
     call(clearUserLayout),
   ]);
+}
+
+export function* initializeSecureBackupManagementState() {
+  yield call(loadBackupCheckStatus);
+}
+
+export function* resetSecureBackupManagementState() {
+  yield call(resetBackupCheckStatus);
 }
 
 export function* saga() {

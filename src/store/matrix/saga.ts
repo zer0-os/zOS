@@ -37,19 +37,20 @@ export function* saga() {
 
 export function* getBackup() {
   yield put(setLoaded(false));
+  let trustInfo = null;
+
   const existingBackup = yield call(getSecureBackup);
-  if (!existingBackup || !existingBackup.backupInfo) {
-    yield put(setTrustInfo(null));
-  } else {
-    yield put(
-      setTrustInfo({
-        usable: existingBackup.trustInfo.usable,
-        trustedLocally: existingBackup.trustInfo.trusted_locally,
-        isLegacy: existingBackup.isLegacy,
-      })
-    );
+  if (existingBackup?.backupInfo) {
+    trustInfo = {
+      usable: existingBackup.trustInfo.usable,
+      trustedLocally: existingBackup.trustInfo.trusted_locally,
+      isLegacy: existingBackup.isLegacy,
+    };
   }
+
+  yield put(setTrustInfo(trustInfo));
   yield put(setLoaded(true));
+  return trustInfo;
 }
 
 export function* generateBackup() {

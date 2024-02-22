@@ -32,7 +32,7 @@ function subject(...args: Parameters<typeof expectSaga>) {
 
 describe(getBackup, () => {
   it('fetches the existing backup', async () => {
-    const { storeState } = await subject(getBackup)
+    const { returnValue, storeState } = await subject(getBackup)
       .provide([
         [
           call(getSecureBackup),
@@ -51,10 +51,11 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
   });
 
   it('clears the backup if none found', async () => {
-    const { storeState } = await subject(getBackup)
+    const { returnValue, storeState } = await subject(getBackup)
       .provide([[call(getSecureBackup), undefined]])
       .withReducer(rootReducer)
       .run();
@@ -68,10 +69,11 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toBeNull();
   });
 
   it('clears the backup if backupInfo not found', async () => {
-    const { storeState } = await subject(getBackup)
+    const { returnValue, storeState } = await subject(getBackup)
       .provide([[call(getSecureBackup), { backupInfo: undefined }]])
       .withReducer(rootReducer)
       .run();
@@ -85,6 +87,7 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toBeNull();
   });
 });
 

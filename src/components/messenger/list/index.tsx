@@ -36,9 +36,11 @@ import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
+import { closeBackupDialog } from '../../../store/matrix';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
+import { SecureBackupContainer } from '../../secure-backup/container';
 
 const cn = bemClassName('direct-message-members');
 
@@ -59,6 +61,7 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
   joinRoomErrorContent: ErrorDialogContent;
+  isBackupDialogOpen: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -69,6 +72,7 @@ export interface Properties extends PublicProperties {
   logout: () => void;
   receiveSearchResults: (data) => void;
   closeConversationErrorDialog: () => void;
+  closeBackupDialog: () => void;
 }
 
 interface State {
@@ -84,6 +88,7 @@ export class Container extends React.Component<Properties, State> {
       authentication: { user },
       chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
+      matrix: { isBackupDialogOpen },
     } = state;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
@@ -103,6 +108,7 @@ export class Container extends React.Component<Properties, State> {
       myUserId: user?.data?.id,
       groupManangemenetStage: groupManagement.stage,
       joinRoomErrorContent,
+      isBackupDialogOpen,
     };
   }
 
@@ -117,6 +123,7 @@ export class Container extends React.Component<Properties, State> {
       logout,
       receiveSearchResults,
       closeConversationErrorDialog,
+      closeBackupDialog,
     };
   }
 
@@ -172,6 +179,10 @@ export class Container extends React.Component<Properties, State> {
     this.props.closeConversationErrorDialog();
   };
 
+  closeBackupDialog = () => {
+    this.props.closeBackupDialog();
+  };
+
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
   }
@@ -206,6 +217,14 @@ export class Container extends React.Component<Properties, State> {
           linkPath={this.props.joinRoomErrorContent?.linkPath}
           onClose={this.closeErrorDialog}
         />
+      </Modal>
+    );
+  };
+
+  renderSecureBackupDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.props.isBackupDialogOpen} onOpenChange={this.closeBackupDialog}>
+        <SecureBackupContainer onClose={this.closeBackupDialog} />
       </Modal>
     );
   };
@@ -300,6 +319,8 @@ export class Container extends React.Component<Properties, State> {
           {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
+          {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
+
           {this.renderToastNotification()}
         </div>
       </>

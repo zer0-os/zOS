@@ -14,6 +14,7 @@ import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
+import { waitForChatConnectionCompletion } from '../chat/saga';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -150,11 +151,33 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
-    yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
+    yield call(handleBackupUserPrompts);
   }
 }
 
-function* checkBackupOnFirstSentMessage() {
+export function* handleBackupUserPrompts() {
+  const doneLoading = yield call(waitForChatConnectionCompletion);
+  if (!doneLoading) {
+    return;
+  }
+
+  const trustInfo = yield call(getBackup);
+  if (!trustInfo) {
+    return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
+  }
+
+  if (isBackupRestored(trustInfo)) {
+    return;
+  }
+
+  yield put(setIsBackupDialogOpen(true));
+}
+
+function isBackupRestored(trustInfo: any) {
+  return trustInfo?.usable && trustInfo?.trustedLocally;
+}
+
+export function* checkBackupOnFirstSentMessage() {
   const bus = yield call(getChatMessageBus);
   yield take(bus, ChatMessageEvents.Sent);
   yield call(ensureUserHasBackup);

@@ -141,31 +141,8 @@ export function* manageSecureBackupPrompt() {
       yield put(setIsBackupDialogOpen(true));
     }
 
-    yield call(markBackupCheckCompleted);
+    yield put(setIsBackupCheckComplete(true));
   }
-}
-
-export function* markBackupCheckCompleted() {
-  yield put(setIsBackupCheckComplete(true));
-  setBackupCheckStatusInLocalStorage();
-}
-
-export function* resetBackupCheckStatus() {
-  yield put(setIsBackupCheckComplete(false));
-  clearBackupCheckStatusFromLocalStorage();
-}
-
-export function* loadBackupCheckStatus() {
-  const isBackupCheckComplete = JSON.parse(localStorage.getItem('isBackupCheckComplete') || 'false');
-  yield put(setIsBackupCheckComplete(isBackupCheckComplete));
-}
-
-export function setBackupCheckStatusInLocalStorage() {
-  localStorage.setItem('isBackupCheckComplete', 'true');
-}
-
-export function clearBackupCheckStatusFromLocalStorage() {
-  localStorage.removeItem('isBackupCheckComplete');
 }
 
 export function* closeBackupDialog() {

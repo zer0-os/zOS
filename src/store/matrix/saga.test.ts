@@ -10,8 +10,6 @@ import {
   generateBackup,
   getBackup,
   manageSecureBackupPrompt,
-  markBackupCheckCompleted,
-  resetBackupCheckStatus,
   restoreBackup,
   saveBackup,
 } from './saga';
@@ -292,40 +290,6 @@ describe('secure backup status management', () => {
         .run();
 
       expect(storeState.matrix.isBackupDialogOpen).toBe(false);
-    });
-  });
-
-  describe(markBackupCheckCompleted, () => {
-    it('marks backup check as completed', async () => {
-      const initialState = {
-        matrix: {
-          isBackupCheckComplete: false,
-        },
-      };
-
-      const { storeState } = await subject(markBackupCheckCompleted)
-        .withReducer(rootReducer, initialState as any)
-        .run();
-
-      expect(localStorage.setItem).toHaveBeenCalledWith('isBackupCheckComplete', 'true');
-      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
-    });
-  });
-
-  describe(resetBackupCheckStatus, () => {
-    it('resets backup check status', async () => {
-      const initialState = {
-        matrix: {
-          isBackupCheckComplete: true,
-        },
-      };
-
-      const { storeState } = await subject(resetBackupCheckStatus)
-        .withReducer(rootReducer, initialState as any)
-        .run();
-
-      expect(localStorage.removeItem).toHaveBeenCalledWith('isBackupCheckComplete');
-      expect(storeState.matrix.isBackupCheckComplete).toBe(false);
     });
   });
 });

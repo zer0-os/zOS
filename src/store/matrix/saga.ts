@@ -134,9 +134,8 @@ export function* ensureUserHasBackup() {
     return;
   }
 
-  const backupExists = yield call(getSecureBackup);
-
-  if (!backupExists || !backupExists.backupInfo) {
+  const backup = yield call(getSecureBackup);
+  if (!backup?.backupInfo) {
     yield delay(10000);
     yield put(setIsBackupDialogOpen(true));
   }

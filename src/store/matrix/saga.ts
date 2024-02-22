@@ -12,6 +12,7 @@ import {
   setIsBackupDialogOpen,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
+import { performUnlessLogout } from '../utils';
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
@@ -130,17 +131,18 @@ export function* shareHistoryKeys(action) {
 }
 
 export function* ensureUserHasBackup() {
+  // Only perform backup check once
   if (yield select((state) => state.matrix.isBackupCheckComplete)) {
     return;
   }
+  yield put(setIsBackupCheckComplete(true));
 
   const backup = yield call(getSecureBackup);
   if (!backup?.backupInfo) {
-    yield delay(10000);
-    yield put(setIsBackupDialogOpen(true));
+    if (yield call(performUnlessLogout, delay(10000))) {
+      yield put(setIsBackupDialogOpen(true));
+    }
   }
-
-  yield put(setIsBackupCheckComplete(true));
 }
 
 export function* closeBackupDialog() {

@@ -1,4 +1,4 @@
-import { call } from 'redux-saga/effects';
+import { call, delay } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { expectSaga, stubDelay } from '../../test/saga';
@@ -12,6 +12,7 @@ import {
   restoreBackup,
   saveBackup,
 } from './saga';
+import { performUnlessLogout } from '../utils';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -263,6 +264,22 @@ describe('secure backup status management', () => {
 
       const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+
+    it('does not open the backup if user logs out during wait period', async () => {
+      const initialState = {
+        matrix: { isBackupCheckComplete: false, isBackupDialogOpen: false },
+      };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [call(getSecureBackup), undefined],
+          [call(performUnlessLogout, delay(10000)), false],
+        ])
         .run();
 
       expect(storeState.matrix.isBackupDialogOpen).toBe(false);

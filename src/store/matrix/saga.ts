@@ -129,7 +129,7 @@ export function* shareHistoryKeys(action) {
   yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
 }
 
-export function* manageSecureBackupPrompt() {
+export function* ensureUserHasBackup() {
   const isBackupCheckComplete = yield select((state) => state.matrix.isBackupCheckComplete);
 
   if (!isBackupCheckComplete) {

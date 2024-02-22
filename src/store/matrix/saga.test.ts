@@ -9,7 +9,7 @@ import {
   closeBackupDialog,
   generateBackup,
   getBackup,
-  manageSecureBackupPrompt,
+  ensureUserHasBackup,
   restoreBackup,
   saveBackup,
 } from './saga';
@@ -215,7 +215,7 @@ describe('secure backup status management', () => {
     localStorage.clear();
   });
 
-  describe(manageSecureBackupPrompt, () => {
+  describe(ensureUserHasBackup, () => {
     it('opens the backup dialog if backup does not exist', async () => {
       const initialState = {
         matrix: {
@@ -224,7 +224,7 @@ describe('secure backup status management', () => {
         },
       };
 
-      const { storeState } = await subject(manageSecureBackupPrompt)
+      const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [call([chatClient, chatClient.getSecureBackup]), undefined],
@@ -247,7 +247,7 @@ describe('secure backup status management', () => {
         },
       };
 
-      const { storeState } = await subject(manageSecureBackupPrompt)
+      const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [
@@ -269,7 +269,7 @@ describe('secure backup status management', () => {
         },
       };
 
-      const { storeState } = await subject(manageSecureBackupPrompt)
+      const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .run();
 

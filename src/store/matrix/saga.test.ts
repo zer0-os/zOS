@@ -213,32 +213,18 @@ describe(clearBackupState, () => {
 describe('secure backup status management', () => {
   describe(ensureUserHasBackup, () => {
     it('opens the backup dialog if backup does not exist', async () => {
-      const initialState = {
-        matrix: {
-          isBackupCheckComplete: false,
-          isBackupDialogOpen: false,
-        },
-      };
+      const initialState = { matrix: { isBackupDialogOpen: false } };
 
       const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
-        .provide([
-          [call(getSecureBackup), undefined],
-          stubDelay(10000),
-        ])
+        .provide([[call(getSecureBackup), undefined], stubDelay(10000)])
         .run();
 
       expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
     });
 
     it('does not open the backup dialog if backup exists', async () => {
-      const initialState = {
-        matrix: {
-          isBackupCheckComplete: false,
-          isBackupDialogOpen: false,
-        },
-      };
+      const initialState = { matrix: { isBackupDialogOpen: false } };
 
       const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
@@ -251,28 +237,10 @@ describe('secure backup status management', () => {
         .run();
 
       expect(storeState.matrix.isBackupDialogOpen).toBe(false);
-      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
-    });
-
-    it('does nothing if backup check has already been completed', async () => {
-      const initialState = {
-        matrix: {
-          isBackupCheckComplete: true,
-          isBackupDialogOpen: false,
-        },
-      };
-
-      const { storeState } = await subject(ensureUserHasBackup)
-        .withReducer(rootReducer, initialState as any)
-        .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
 
     it('does not open the backup if user logs out during wait period', async () => {
-      const initialState = {
-        matrix: { isBackupCheckComplete: false, isBackupDialogOpen: false },
-      };
+      const initialState = { matrix: { isBackupDialogOpen: false } };
 
       const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)

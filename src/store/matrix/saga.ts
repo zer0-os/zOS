@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import {
   SagaActionTypes,
@@ -8,8 +8,11 @@ import {
   setLoaded,
   setSuccessMessage,
   setTrustInfo,
+  setIsBackupCheckComplete,
+  setIsBackupDialogOpen,
 } from '.';
-import { chat } from '../../lib/chat';
+import { chat, getSecureBackup } from '../../lib/chat';
+import { performUnlessLogout } from '../utils';
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
@@ -26,6 +29,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
+  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
 }
 
 export function* getBackup() {
@@ -124,4 +128,23 @@ export function* restartOlm(action) {
 export function* shareHistoryKeys(action) {
   const chatClient = yield call(chat.get);
   yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
+}
+
+export function* ensureUserHasBackup() {
+  // Only perform backup check once
+  if (yield select((state) => state.matrix.isBackupCheckComplete)) {
+    return;
+  }
+  yield put(setIsBackupCheckComplete(true));
+
+  const backup = yield call(getSecureBackup);
+  if (!backup?.backupInfo) {
+    if (yield call(performUnlessLogout, delay(10000))) {
+      yield put(setIsBackupDialogOpen(true));
+    }
+  }
+}
+
+export function* closeBackupDialog() {
+  yield put(setIsBackupDialogOpen(false));
 }

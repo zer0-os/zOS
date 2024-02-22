@@ -1,9 +1,18 @@
-import { call } from 'redux-saga/effects';
+import { call, delay } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { expectSaga } from '../../test/saga';
-import { chat } from '../../lib/chat';
-import { clearBackupState, generateBackup, getBackup, restoreBackup, saveBackup } from './saga';
+import { expectSaga, stubDelay } from '../../test/saga';
+import { chat, getSecureBackup } from '../../lib/chat';
+import {
+  clearBackupState,
+  closeBackupDialog,
+  generateBackup,
+  getBackup,
+  ensureUserHasBackup,
+  restoreBackup,
+  saveBackup,
+} from './saga';
+import { performUnlessLogout } from '../utils';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -197,6 +206,99 @@ describe(clearBackupState, () => {
       trustInfo: null,
       successMessage: '',
       errorMessage: '',
+    });
+  });
+});
+
+describe('secure backup status management', () => {
+  describe(ensureUserHasBackup, () => {
+    it('opens the backup dialog if backup does not exist', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: false,
+          isBackupDialogOpen: false,
+        },
+      };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [call(getSecureBackup), undefined],
+          stubDelay(10000),
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+    });
+
+    it('does not open the backup dialog if backup exists', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: false,
+          isBackupDialogOpen: false,
+        },
+      };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [
+            call(getSecureBackup),
+            { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
+          ],
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+      expect(storeState.matrix.isBackupCheckComplete).toBe(true);
+    });
+
+    it('does nothing if backup check has already been completed', async () => {
+      const initialState = {
+        matrix: {
+          isBackupCheckComplete: true,
+          isBackupDialogOpen: false,
+        },
+      };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+
+    it('does not open the backup if user logs out during wait period', async () => {
+      const initialState = {
+        matrix: { isBackupCheckComplete: false, isBackupDialogOpen: false },
+      };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [call(getSecureBackup), undefined],
+          [call(performUnlessLogout, delay(10000)), false],
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+  });
+
+  describe(closeBackupDialog, () => {
+    it('closes the backup dialog', async () => {
+      const initialState = {
+        matrix: {
+          isBackupDialogOpen: true,
+        },
+      };
+
+      const { storeState } = await subject(closeBackupDialog)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
   });
 });

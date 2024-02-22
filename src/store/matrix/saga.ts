@@ -8,7 +8,6 @@ import {
   setLoaded,
   setSuccessMessage,
   setTrustInfo,
-  setIsBackupCheckComplete,
   setIsBackupDialogOpen,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';

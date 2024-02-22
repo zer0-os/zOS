@@ -1,4 +1,4 @@
-import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
   SagaActionTypes,
@@ -8,13 +8,16 @@ import {
   setLoaded,
   setSuccessMessage,
   setTrustInfo,
-  setIsBackupCheckComplete,
   setIsBackupDialogOpen,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
+import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 
 export function* saga() {
+  yield spawn(listenForUserLogin);
+
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
   yield takeLatest(SagaActionTypes.GenerateBackup, generateBackup);
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
@@ -131,12 +134,6 @@ export function* shareHistoryKeys(action) {
 }
 
 export function* ensureUserHasBackup() {
-  // Only perform backup check once
-  if (yield select((state) => state.matrix.isBackupCheckComplete)) {
-    return;
-  }
-  yield put(setIsBackupCheckComplete(true));
-
   const backup = yield call(getSecureBackup);
   if (!backup?.backupInfo) {
     if (yield call(performUnlessLogout, delay(10000))) {
@@ -147,4 +144,18 @@ export function* ensureUserHasBackup() {
 
 export function* closeBackupDialog() {
   yield put(setIsBackupDialogOpen(false));
+}
+
+function* listenForUserLogin() {
+  const userChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(userChannel, AuthEvents.UserLogin);
+    yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
+  }
+}
+
+function* checkBackupOnFirstSentMessage() {
+  const bus = yield call(getChatMessageBus);
+  yield take(bus, ChatMessageEvents.Sent);
+  yield call(ensureUserHasBackup);
 }

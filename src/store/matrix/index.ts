@@ -23,7 +23,6 @@ export type MatrixState = {
   successMessage: string;
   errorMessage: string;
   deviceId: string;
-  isBackupCheckComplete: boolean;
   isBackupDialogOpen: boolean;
 };
 
@@ -34,7 +33,6 @@ export const initialState: MatrixState = {
   successMessage: '',
   errorMessage: '',
   deviceId: '',
-  isBackupCheckComplete: false,
   isBackupDialogOpen: false,
 };
 
@@ -74,9 +72,6 @@ const slice = createSlice({
     setDeviceId: (state, action: PayloadAction<MatrixState['deviceId']>) => {
       state.deviceId = action.payload;
     },
-    setIsBackupCheckComplete: (state, action: PayloadAction<MatrixState['isBackupCheckComplete']>) => {
-      state.isBackupCheckComplete = action.payload;
-    },
     setIsBackupDialogOpen: (state, action: PayloadAction<MatrixState['isBackupDialogOpen']>) => {
       state.isBackupDialogOpen = action.payload;
     },
@@ -85,7 +80,6 @@ const slice = createSlice({
 
 export const {
   setLoaded,
-  setIsBackupCheckComplete,
   setIsBackupDialogOpen,
   setGeneratedRecoveryKey,
   setTrustInfo,

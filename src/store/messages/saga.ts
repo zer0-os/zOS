@@ -20,6 +20,7 @@ import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
+import { ChatMessageEvents, getChatMessageBus } from './messages';
 
 export interface Payload {
   channelId: string;
@@ -190,6 +191,11 @@ export function* send(action) {
   }
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
+  yield call(publishMessageSent);
+}
+
+export function* publishMessageSent() {
+  yield put(yield call(getChatMessageBus), { type: ChatMessageEvents.Sent });
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {

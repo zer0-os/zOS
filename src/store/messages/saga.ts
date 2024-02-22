@@ -429,10 +429,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       yield spawn(markConversationAsRead, channelId);
     }
   }
-
-  // Since the conversation load happens via these events now, this can't just happen. We need to figure out if this is a bullk load or a
-  // "fresh" message
-  // yield spawn(sendBrowserNotification, channelId, message);
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

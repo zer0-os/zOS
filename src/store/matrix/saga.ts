@@ -130,19 +130,19 @@ export function* shareHistoryKeys(action) {
 }
 
 export function* ensureUserHasBackup() {
-  const isBackupCheckComplete = yield select((state) => state.matrix.isBackupCheckComplete);
-
-  if (!isBackupCheckComplete) {
-    const chatClient = yield call(chat.get);
-    const backupExists = yield call([chatClient, chatClient.getSecureBackup]);
-
-    if (!backupExists || !backupExists.backupInfo) {
-      yield delay(10000);
-      yield put(setIsBackupDialogOpen(true));
-    }
-
-    yield put(setIsBackupCheckComplete(true));
+  if (yield select((state) => state.matrix.isBackupCheckComplete)) {
+    return;
   }
+
+  const chatClient = yield call(chat.get);
+  const backupExists = yield call([chatClient, chatClient.getSecureBackup]);
+
+  if (!backupExists || !backupExists.backupInfo) {
+    yield delay(10000);
+    yield put(setIsBackupDialogOpen(true));
+  }
+
+  yield put(setIsBackupCheckComplete(true));
 }
 
 export function* closeBackupDialog() {

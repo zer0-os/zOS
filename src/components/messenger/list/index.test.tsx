@@ -23,11 +23,6 @@ jest.mock('../../../platform-apps/channels/util/api', () => {
   return { searchMyNetworksByName: async (...args) => await mockSearchMyNetworksByName(...args) };
 });
 
-const featureFlags = { allowManageSecureBackupPrompt: false };
-jest.mock('../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -231,8 +226,6 @@ describe('messenger-list', () => {
   });
 
   it('renders Secure Backup Dialog if isBackupDialogOpen', function () {
-    featureFlags.allowManageSecureBackupPrompt = true;
-
     const wrapper = subject({ isBackupDialogOpen: true });
 
     expect(wrapper).toHaveElement(SecureBackupContainer);

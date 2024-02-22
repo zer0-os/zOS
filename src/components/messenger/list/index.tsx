@@ -41,7 +41,6 @@ import { closeBackupDialog } from '../../../store/matrix';
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 import { SecureBackupContainer } from '../../secure-backup/container';
-import { featureFlags } from '../../../lib/feature-flags';
 
 const cn = bemClassName('direct-message-members');
 

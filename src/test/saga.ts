@@ -1,10 +1,17 @@
 import { expectSaga as sourceExpectSaga } from 'redux-saga-test-plan';
+import delayP from '@redux-saga/delay-p';
+import { call } from 'redux-saga/effects';
 
 export function stubResponse(matcher, response) {
   return [
     matcher,
     response,
   ] as any;
+}
+
+export function stubDelay(timeout: number) {
+  // delayP is what delay calls behind the scenes. Not ideal but it works.
+  return [call(delayP, timeout), true] as any;
 }
 
 // Wrap expectSaga to allow for multiple provide calls

@@ -1,8 +1,7 @@
 import { call } from 'redux-saga/effects';
-import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { expectSaga } from '../../test/saga';
+import { expectSaga, stubDelay } from '../../test/saga';
 import { chat, getSecureBackup } from '../../lib/chat';
 import {
   clearBackupState,
@@ -224,10 +223,7 @@ describe('secure backup status management', () => {
         .withReducer(rootReducer, initialState as any)
         .provide([
           [call(getSecureBackup), undefined],
-          [
-            call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
-            true,
-          ],
+          stubDelay(10000),
         ])
         .run();
 

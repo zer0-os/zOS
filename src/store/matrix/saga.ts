@@ -11,7 +11,7 @@ import {
   setIsBackupCheckComplete,
   setIsBackupDialogOpen,
 } from '.';
-import { chat } from '../../lib/chat';
+import { chat, getSecureBackup } from '../../lib/chat';
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
@@ -134,8 +134,7 @@ export function* ensureUserHasBackup() {
     return;
   }
 
-  const chatClient = yield call(chat.get);
-  const backupExists = yield call([chatClient, chatClient.getSecureBackup]);
+  const backupExists = yield call(getSecureBackup);
 
   if (!backupExists || !backupExists.backupInfo) {
     yield delay(10000);

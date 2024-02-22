@@ -3,7 +3,7 @@ import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { expectSaga } from '../../test/saga';
-import { chat } from '../../lib/chat';
+import { chat, getSecureBackup } from '../../lib/chat';
 import {
   clearBackupState,
   closeBackupDialog,
@@ -211,10 +211,6 @@ describe(clearBackupState, () => {
 });
 
 describe('secure backup status management', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
   describe(ensureUserHasBackup, () => {
     it('opens the backup dialog if backup does not exist', async () => {
       const initialState = {
@@ -227,7 +223,7 @@ describe('secure backup status management', () => {
       const { storeState } = await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
-          [call([chatClient, chatClient.getSecureBackup]), undefined],
+          [call(getSecureBackup), undefined],
           [
             call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
             true,
@@ -251,7 +247,7 @@ describe('secure backup status management', () => {
         .withReducer(rootReducer, initialState as any)
         .provide([
           [
-            call([chatClient, chatClient.getSecureBackup]),
+            call(getSecureBackup),
             { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
           ],
         ])

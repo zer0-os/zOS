@@ -277,3 +277,7 @@ export async function getRoomIdForAlias(alias: string) {
 export async function isRoomMember(userId: string, roomId: string) {
   return await chat.get().matrix.isRoomMember(userId, roomId);
 }
+
+export async function getSecureBackup() {
+  return await chat.get().matrix.getSecureBackup();
+}

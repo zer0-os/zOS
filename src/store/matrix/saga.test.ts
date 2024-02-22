@@ -11,11 +11,15 @@ import {
   ensureUserHasBackup,
   restoreBackup,
   saveBackup,
+  handleBackupUserPrompts,
+  checkBackupOnFirstSentMessage,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { StoreBuilder } from '../test/store';
+import { waitForChatConnectionCompletion } from '../chat/saga';
 
 const chatClient = {
   generateSecureBackup: () => null,
@@ -273,3 +277,50 @@ describe('secure backup status management', () => {
     });
   });
 });
+
+describe(handleBackupUserPrompts, () => {
+  function subject(getBackupResponse) {
+    return expectSaga(handleBackupUserPrompts)
+      .provide([
+        [matchers.call.fn(waitForChatConnectionCompletion), true],
+        [call(getSecureBackup), getBackupResponse],
+      ])
+      .withReducer(rootReducer, new StoreBuilder().build());
+  }
+
+  it('opens the backup dialog if user has not restored their backup', async () => {
+    const { storeState } = await subject(unrestoredBackupResponse())
+      .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+  });
+
+  it('waits for first sent message if user does not have a backup', async () => {
+    const { storeState } = await subject(noBackupResponse())
+      .call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+  });
+
+  it('does nothing if backup is already set up for this session', async () => {
+    const { storeState } = await subject(restoredBackupResponse())
+      .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+  });
+});
+
+function noBackupResponse(): any {
+  return { backupInfo: null };
+}
+
+function unrestoredBackupResponse(): any {
+  return { backupInfo: {}, trustInfo: { usable: false, trusted_locally: false }, isLegacy: false };
+}
+
+function restoredBackupResponse(): any {
+  return { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: false };
+}

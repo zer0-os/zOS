@@ -18,7 +18,6 @@ import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 
 const chatClient = {
-  getSecureBackup: () => null,
   generateSecureBackup: () => null,
   restoreSecureBackup: (_key) => null,
   saveSecureBackup: (_backup) => null,
@@ -27,6 +26,7 @@ const chatClient = {
 function subject(...args: Parameters<typeof expectSaga>) {
   return expectSaga(...args).provide([
     [matchers.call.fn(chat.get), chatClient],
+    [matchers.call.fn(getSecureBackup), true],
   ]);
 }
 
@@ -35,7 +35,7 @@ describe(getBackup, () => {
     const { storeState } = await subject(getBackup)
       .provide([
         [
-          call([chatClient, chatClient.getSecureBackup]),
+          call(getSecureBackup),
           { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
         ],
       ])
@@ -55,7 +55,7 @@ describe(getBackup, () => {
 
   it('clears the backup if none found', async () => {
     const { storeState } = await subject(getBackup)
-      .provide([[call([chatClient, chatClient.getSecureBackup]), undefined]])
+      .provide([[call(getSecureBackup), undefined]])
       .withReducer(rootReducer)
       .run();
 
@@ -72,7 +72,7 @@ describe(getBackup, () => {
 
   it('clears the backup if backupInfo not found', async () => {
     const { storeState } = await subject(getBackup)
-      .provide([[call([chatClient, chatClient.getSecureBackup]), { backupInfo: undefined }]])
+      .provide([[call(getSecureBackup), { backupInfo: undefined }]])
       .withReducer(rootReducer)
       .run();
 

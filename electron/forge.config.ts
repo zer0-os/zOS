@@ -43,15 +43,8 @@ const config: ForgeConfig = {
     icon: path.join(paths.electronStatic, 'icons', 'zero-white-icon'),
     appBundleId: 'com.zero.zOS',
     usageDescription: {
-      Camera: 'Access is needed by certain built-in fiddles in addition to any custom fiddles that use the Camera',
-      Microphone:
-        'Access is needed by certain built-in fiddles in addition to any custom fiddles that use the Microphone',
-      Calendars:
-        'Access is needed by certain built-in fiddles in addition to any custom fiddles that may access Calendars',
-      Contacts:
-        'Access is needed by certain built-in fiddles in addition to any custom fiddles that may access Contacts',
-      Reminders:
-        'Access is needed by certain built-in fiddles in addition to any custom fiddles that may access Reminders',
+      Camera: 'Needed for video calls',
+      Microphone: 'Needed for voice calls',
     },
     appCategoryType: 'public.app-category.social-networking',
     protocols: [
@@ -90,8 +83,8 @@ const config: ForgeConfig = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'thewarman',
-          name: 'zOS',
+          owner: process.env.FORGE_GITHUB_PUBLISH_REPO_OWNER || 'zer0-os',
+          name: process.env.FORGE_GITHUB_PUBLISH_REPO_NAME || 'zOS',
         },
         draft: true,
         prerelease: false,
@@ -111,15 +104,17 @@ function notarizeMaybe() {
     return;
   }
 
-  if (!process.env.APPLE_ID || !process.env.APPLE_ID_PASSWORD) {
-    console.warn('Should be notarizing, but environment variables APPLE_ID or APPLE_ID_PASSWORD are missing!');
+  if (!process.env.APPLE_ID || !process.env.APPLE_ID_PASSWORD || !process.env.APPLE_TEAM_ID) {
+    console.warn(
+      'Should be notarizing, but environment variables APPLE_ID or APPLE_ID_PASSWORD or APPLE_TEAM_ID are missing!'
+    );
     return;
   }
 
   config.packagerConfig!.osxNotarize = {
     appleId: process.env.APPLE_ID,
     appleIdPassword: process.env.APPLE_ID_PASSWORD,
-    teamId: 'R69LH6W94B',
+    teamId: process.env.APPLE_TEAM_ID,
   };
 }
 

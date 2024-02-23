@@ -7,7 +7,7 @@ export function setupUpdates() {
       updateSource: {
         type: UpdateSourceType.ElectronPublicUpdateService,
         host: 'https://update.electronjs.org',
-        repo: 'thewarman/zOS',
+        repo: 'zer0-os/zOS',
       },
       updateInterval: '1 hour',
       logger: log,

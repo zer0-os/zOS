@@ -46,7 +46,6 @@ export function createMainWindow(): Electron.BrowserWindow {
   mainWindow.loadURL(APP_WINDOW_WEBPACK_ENTRY);
 
   // Wait for the content to be fully loaded
-  // mainWindow.webContents.once('did-finish-load', () => {
   mainWindow.webContents.once('dom-ready', () => {
     if (splashScreen) {
       splashScreen.close();
@@ -63,7 +62,7 @@ export function createMainWindow(): Electron.BrowserWindow {
   });
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Open external URLs in the default browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

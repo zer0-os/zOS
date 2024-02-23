@@ -1,10 +1,7 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge } from 'electron';
 
 contextBridge.exposeInMainWorld('electron', {
   enabled: true,
-  getPreloadPath: () => ipcRenderer.sendSync('get-preload-path'),
 });
 
 contextBridge.exposeInMainWorld('versions', {

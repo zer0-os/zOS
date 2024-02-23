@@ -3,12 +3,12 @@
 # Check if app path is provided
 if [ -z "$1" ]
 then
-  echo "No app path provided. Usage: ./validate-macos-signing.sh /path/to/your/app.app"
+  echo "No app path provided. Usage: ./validate-macos-signing.sh /path/to/your/app.app <expected_team_id>"
   exit 1
 fi
 
 APP_PATH=$1
-EXPECTED_TEAM_ID="R69LH6W94B"
+EXPECTED_TEAM_ID=$2
 
 # Verify the code signing
 echo "Verifying code signing..."

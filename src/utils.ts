@@ -4,7 +4,6 @@ import { config } from './config';
 interface ElectronWindow extends Window {
   electron: {
     enabled: boolean;
-    getPreloadPath: () => string;
   };
 }
 

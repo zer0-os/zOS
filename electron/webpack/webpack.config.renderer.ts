@@ -5,15 +5,13 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import DotEnv from 'dotenv-webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 
-import paths, { resolveApp } from './paths';
+import paths from './paths';
 
 export const rendererConfig: webpack.Configuration = {
   mode: 'development',
   entry: paths.appIndexJs,
   resolve: {
-    alias: {
-      './lib/platform': resolveApp('./src/lib/platform/index.desktop.ts'),
-    },
+    alias: {},
     extensions: [
       '.ts',
       '.tsx',

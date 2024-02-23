@@ -1,8 +1,8 @@
 import log from 'electron-log/main';
+import { updateElectronApp, UpdateSourceType } from 'update-electron-app';
 
 export function setupUpdates() {
   setTimeout(() => {
-    const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
     updateElectronApp({
       updateSource: {
         type: UpdateSourceType.ElectronPublicUpdateService,

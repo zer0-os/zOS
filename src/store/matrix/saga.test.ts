@@ -1,15 +1,27 @@
-import { call } from 'redux-saga/effects';
+import { call, delay } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { expectSaga } from '../../test/saga';
-import { chat } from '../../lib/chat';
-import { clearBackupState, generateBackup, getBackup, restoreBackup, saveBackup } from './saga';
+import { expectSaga, stubDelay } from '../../test/saga';
+import { chat, getSecureBackup } from '../../lib/chat';
+import {
+  clearBackupState,
+  closeBackupDialog,
+  generateBackup,
+  getBackup,
+  ensureUserHasBackup,
+  restoreBackup,
+  saveBackup,
+  handleBackupUserPrompts,
+  checkBackupOnFirstSentMessage,
+} from './saga';
+import { performUnlessLogout } from '../utils';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { StoreBuilder } from '../test/store';
+import { waitForChatConnectionCompletion } from '../chat/saga';
 
 const chatClient = {
-  getSecureBackup: () => null,
   generateSecureBackup: () => null,
   restoreSecureBackup: (_key) => null,
   saveSecureBackup: (_backup) => null,
@@ -18,15 +30,16 @@ const chatClient = {
 function subject(...args: Parameters<typeof expectSaga>) {
   return expectSaga(...args).provide([
     [matchers.call.fn(chat.get), chatClient],
+    [matchers.call.fn(getSecureBackup), true],
   ]);
 }
 
 describe(getBackup, () => {
   it('fetches the existing backup', async () => {
-    const { storeState } = await subject(getBackup)
+    const { returnValue, storeState } = await subject(getBackup)
       .provide([
         [
-          call([chatClient, chatClient.getSecureBackup]),
+          call(getSecureBackup),
           { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
         ],
       ])
@@ -42,11 +55,12 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
   });
 
   it('clears the backup if none found', async () => {
-    const { storeState } = await subject(getBackup)
-      .provide([[call([chatClient, chatClient.getSecureBackup]), undefined]])
+    const { returnValue, storeState } = await subject(getBackup)
+      .provide([[call(getSecureBackup), undefined]])
       .withReducer(rootReducer)
       .run();
 
@@ -59,11 +73,12 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toBeNull();
   });
 
   it('clears the backup if backupInfo not found', async () => {
-    const { storeState } = await subject(getBackup)
-      .provide([[call([chatClient, chatClient.getSecureBackup]), { backupInfo: undefined }]])
+    const { returnValue, storeState } = await subject(getBackup)
+      .provide([[call(getSecureBackup), { backupInfo: undefined }]])
       .withReducer(rootReducer)
       .run();
 
@@ -76,6 +91,7 @@ describe(getBackup, () => {
         errorMessage: '',
       })
     );
+    expect(returnValue).toBeNull();
   });
 });
 
@@ -200,3 +216,111 @@ describe(clearBackupState, () => {
     });
   });
 });
+
+describe('secure backup status management', () => {
+  describe(ensureUserHasBackup, () => {
+    it('opens the backup dialog if backup does not exist', async () => {
+      const initialState = { matrix: { isBackupDialogOpen: false } };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([[call(getSecureBackup), undefined], stubDelay(10000)])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    });
+
+    it('does not open the backup dialog if backup exists', async () => {
+      const initialState = { matrix: { isBackupDialogOpen: false } };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [
+            call(getSecureBackup),
+            { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
+          ],
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+
+    it('does not open the backup if user logs out during wait period', async () => {
+      const initialState = { matrix: { isBackupDialogOpen: false } };
+
+      const { storeState } = await subject(ensureUserHasBackup)
+        .withReducer(rootReducer, initialState as any)
+        .provide([
+          [call(getSecureBackup), undefined],
+          [call(performUnlessLogout, delay(10000)), false],
+        ])
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+  });
+
+  describe(closeBackupDialog, () => {
+    it('closes the backup dialog', async () => {
+      const initialState = {
+        matrix: {
+          isBackupDialogOpen: true,
+        },
+      };
+
+      const { storeState } = await subject(closeBackupDialog)
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+    });
+  });
+});
+
+describe(handleBackupUserPrompts, () => {
+  function subject(getBackupResponse) {
+    return expectSaga(handleBackupUserPrompts)
+      .provide([
+        [matchers.call.fn(waitForChatConnectionCompletion), true],
+        [call(getSecureBackup), getBackupResponse],
+      ])
+      .withReducer(rootReducer, new StoreBuilder().build());
+  }
+
+  it('opens the backup dialog if user has not restored their backup', async () => {
+    const { storeState } = await subject(unrestoredBackupResponse())
+      .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+  });
+
+  it('waits for first sent message if user does not have a backup', async () => {
+    const { storeState } = await subject(noBackupResponse())
+      .call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+  });
+
+  it('does nothing if backup is already set up for this session', async () => {
+    const { storeState } = await subject(restoredBackupResponse())
+      .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+  });
+});
+
+function noBackupResponse(): any {
+  return { backupInfo: null };
+}
+
+function unrestoredBackupResponse(): any {
+  return { backupInfo: {}, trustInfo: { usable: false, trusted_locally: false }, isLegacy: false };
+}
+
+function restoredBackupResponse(): any {
+  return { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: false };
+}

@@ -9,6 +9,7 @@ import {
   createOptimisticPreview,
   messageSendFailed,
   performSend,
+  publishMessageSent,
   send,
   uploadFileMessages,
 } from './saga';
@@ -44,6 +45,7 @@ describe(send, () => {
       .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
       .next({ id: 'message-id' })
       .next()
+      .next()
       .isDone();
   });
 
@@ -60,6 +62,7 @@ describe(send, () => {
       .next({ uploadableFiles: [uploadableFile] })
       .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
+      .next()
       .isDone();
   });
 
@@ -74,6 +77,7 @@ describe(send, () => {
       .next()
       .next({ id: 'root-id' })
       .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
+      .next()
       .next()
       .isDone();
   });
@@ -96,6 +100,19 @@ describe(send, () => {
       .next()
       .next(null) // Fail
       .call(uploadFileMessages, channelId, '', [uploadableFile2])
+      .next()
+      .next()
+      .isDone();
+  });
+
+  it('publishes message sent event', async () => {
+    testSaga(send, { payload: { channelId: 'channel-id', message: 'hello' } })
+      .next()
+      .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
+      .next()
+      .next({ id: 'message-id' })
+      .next()
+      .call(publishMessageSent)
       .next()
       .isDone();
   });

@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
   SagaActionTypes,
@@ -8,10 +8,17 @@ import {
   setLoaded,
   setSuccessMessage,
   setTrustInfo,
+  setIsBackupDialogOpen,
 } from '.';
-import { chat } from '../../lib/chat';
+import { chat, getSecureBackup } from '../../lib/chat';
+import { performUnlessLogout } from '../utils';
+import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
+import { waitForChatConnectionCompletion } from '../chat/saga';
 
 export function* saga() {
+  yield spawn(listenForUserLogin);
+
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
   yield takeLatest(SagaActionTypes.GenerateBackup, generateBackup);
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
@@ -26,24 +33,25 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
+  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
 }
 
 export function* getBackup() {
   yield put(setLoaded(false));
-  const chatClient = yield call(chat.get);
-  const existingBackup = yield call([chatClient, chatClient.getSecureBackup]);
-  if (!existingBackup || !existingBackup.backupInfo) {
-    yield put(setTrustInfo(null));
-  } else {
-    yield put(
-      setTrustInfo({
-        usable: existingBackup.trustInfo.usable,
-        trustedLocally: existingBackup.trustInfo.trusted_locally,
-        isLegacy: existingBackup.isLegacy,
-      })
-    );
+  let trustInfo = null;
+
+  const existingBackup = yield call(getSecureBackup);
+  if (existingBackup?.backupInfo) {
+    trustInfo = {
+      usable: existingBackup.trustInfo.usable,
+      trustedLocally: existingBackup.trustInfo.trusted_locally,
+      isLegacy: existingBackup.isLegacy,
+    };
   }
+
+  yield put(setTrustInfo(trustInfo));
   yield put(setLoaded(true));
+  return trustInfo;
 }
 
 export function* generateBackup() {
@@ -124,4 +132,53 @@ export function* restartOlm(action) {
 export function* shareHistoryKeys(action) {
   const chatClient = yield call(chat.get);
   yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
+}
+
+export function* ensureUserHasBackup() {
+  const backup = yield call(getSecureBackup);
+  if (!backup?.backupInfo) {
+    if (yield call(performUnlessLogout, delay(10000))) {
+      yield put(setIsBackupDialogOpen(true));
+    }
+  }
+}
+
+export function* closeBackupDialog() {
+  yield put(setIsBackupDialogOpen(false));
+}
+
+function* listenForUserLogin() {
+  const userChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(userChannel, AuthEvents.UserLogin);
+    yield call(handleBackupUserPrompts);
+  }
+}
+
+export function* handleBackupUserPrompts() {
+  const doneLoading = yield call(waitForChatConnectionCompletion);
+  if (!doneLoading) {
+    return;
+  }
+
+  const trustInfo = yield call(getBackup);
+  if (!trustInfo) {
+    return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
+  }
+
+  if (isBackupRestored(trustInfo)) {
+    return;
+  }
+
+  yield put(setIsBackupDialogOpen(true));
+}
+
+function isBackupRestored(trustInfo: any) {
+  return trustInfo?.usable && trustInfo?.trustedLocally;
+}
+
+export function* checkBackupOnFirstSentMessage() {
+  const bus = yield call(getChatMessageBus);
+  yield take(bus, ChatMessageEvents.Sent);
+  yield call(ensureUserHasBackup);
 }

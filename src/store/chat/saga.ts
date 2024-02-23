@@ -20,7 +20,6 @@ import { ConversationEvents, getConversationsBus } from '../channels-list/channe
 import { getHistory } from '../../lib/browser';
 import { openFirstConversation } from '../channels/saga';
 import { rawConversationsList } from '../channels-list/saga';
-import { featureFlags } from '../../lib/feature-flags';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 
@@ -173,21 +172,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (!activeConversationId) {
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
-    return;
-  }
-
-  if (!featureFlags.allowJoinRoom) {
-    const isUserMemberOfActiveConversation = yield call(isMemberOfActiveConversation, activeConversationId);
-    if (isUserMemberOfActiveConversation) {
-      yield put(rawSetActiveConversationId(activeConversationId));
-    } else {
-      yield put(
-        setJoinRoomErrorContent({
-          header: 'There’s no one here...',
-          body: 'This conversation does not exist or you are not a member.',
-        })
-      );
-    }
     return;
   }
 

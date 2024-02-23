@@ -16,6 +16,7 @@ import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { ErrorDialog } from '../../error-dialog';
+import { SecureBackupContainer } from '../../secure-backup/container';
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -40,6 +41,7 @@ describe('messenger-list', () => {
       joinRoomErrorContent: null,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
+      isBackupDialogOpen: false,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,
@@ -47,6 +49,7 @@ describe('messenger-list', () => {
       back: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
+      closeBackupDialog: () => null,
 
       ...props,
     };
@@ -222,6 +225,12 @@ describe('messenger-list', () => {
     expect(wrapper).toHaveElement(ErrorDialog);
   });
 
+  it('renders Secure Backup Dialog if isBackupDialogOpen', function () {
+    const wrapper = subject({ isBackupDialogOpen: true });
+
+    expect(wrapper).toHaveElement(SecureBackupContainer);
+  });
+
   it('calls closeConversationErrorDialog when error dialog is closed', function () {
     const closeConversationErrorDialog = jest.fn();
     const wrapper = subject({
@@ -308,6 +317,7 @@ describe('messenger-list', () => {
         },
         registration: {},
         groupManagement: {},
+        matrix: {},
       } as RootState;
     };
 

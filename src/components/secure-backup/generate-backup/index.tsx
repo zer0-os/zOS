@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
+import { clipboard } from '../../../lib/clipboard';
 
 import { Button } from '@zero-tech/zui/components';
 import { IconArrowRight } from '@zero-tech/zui/icons';
@@ -11,24 +12,37 @@ const cn = bemClassName('secure-backup');
 
 export interface Properties {
   recoveryKey: string;
-  hasCopied: boolean;
   errorMessage: string;
 
-  onCopy: () => void;
+  clipboard?: Clipboard;
+
   onSave: () => void;
 }
 
-export class GenerateBackup extends React.Component<Properties> {
+export interface State {
+  hasCopied: boolean;
+}
+
+export interface Clipboard {
+  write: (text: string) => Promise<void>;
+}
+
+export class GenerateBackup extends React.Component<Properties, State> {
+  static defaultProps = { clipboard: clipboard };
+
+  state = { hasCopied: false };
+
+  copyKey = () => {
+    this.props.clipboard.write(this.props.recoveryKey);
+    this.setState({ hasCopied: true });
+  };
+
   onSave = () => {
     this.props.onSave();
   };
 
-  onCopy = () => {
-    this.props.onCopy();
-  };
-
   get copyButtonText() {
-    return this.props.hasCopied ? 'Copied' : 'Copy';
+    return this.state.hasCopied ? 'Copied' : 'Copy';
   }
 
   render() {
@@ -42,7 +56,7 @@ export class GenerateBackup extends React.Component<Properties> {
 
           <div {...cn('recovery-key')}>{this.props.recoveryKey}</div>
 
-          <Button {...cn('button')} onPress={this.onCopy} variant='text'>
+          <Button {...cn('button')} onPress={this.copyKey} variant='text'>
             {this.copyButtonText}
           </Button>
 
@@ -53,7 +67,7 @@ export class GenerateBackup extends React.Component<Properties> {
           <Button
             {...cn('button')}
             onPress={this.onSave}
-            isDisabled={!this.props.hasCopied}
+            isDisabled={!this.state.hasCopied}
             endEnhancer={<IconArrowRight isFilled size={24} />}
           >
             I’ve safely stored my backup

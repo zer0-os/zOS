@@ -43,18 +43,10 @@ export interface Properties {
 
 export interface State {
   userInputRecoveryKey: string;
-  hasCopied: boolean;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
-  static defaultProps = { clipboard: clipboard };
-
-  state = { userInputRecoveryKey: '', hasCopied: false };
-
-  copyKey = () => {
-    this.props.clipboard.write(this.props.recoveryKey);
-    this.setState({ hasCopied: true });
-  };
+  state = { userInputRecoveryKey: '' };
 
   trackRecoveryKey = (value) => {
     this.setState({ userInputRecoveryKey: value });
@@ -138,15 +130,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         );
 
       case BackupStage.GenerateBackup:
-        return (
-          <GenerateBackup
-            recoveryKey={recoveryKey}
-            errorMessage={errorMessage}
-            hasCopied={this.state.hasCopied}
-            onCopy={this.copyKey}
-            onSave={onSave}
-          />
-        );
+        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onSave} />;
 
       case BackupStage.RestoreBackup:
         return (

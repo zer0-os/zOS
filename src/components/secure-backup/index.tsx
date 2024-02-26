@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { bemClassName } from '../../lib/bem';
-import { clipboard } from '../../lib/clipboard';
 import { BackupStage } from '../../store/matrix';
 
 import { GeneratePrompt } from './generate-prompt';

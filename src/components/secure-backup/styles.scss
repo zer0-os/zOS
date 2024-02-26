@@ -1,15 +1,20 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
 
 .secure-backup {
-  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+
+  gap: 40px;
+  padding: 16px;
+  width: 528px;
 
   &__header {
-    display: flex;
-    height: 52px;
-    border-bottom: 1px solid theme.$color-primary-4;
-    margin-bottom: 40px;
+    @include glass-text-primary-color;
+    @include glass-state-active-stroke;
 
-    color: theme.$color-greyscale-12;
+    display: flex;
+    height: 53px;
 
     > *:first-child {
       flex-grow: 1;
@@ -21,7 +26,7 @@
   }
 
   &__title {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 24px;
     line-height: 29px;
     margin: 0px;
@@ -33,24 +38,182 @@
     }
   }
 
-  &__messages {
-    margin-top: 40px;
+  &__video-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__video {
+    width: 100%;
+    height: 148.9px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  &__primary-text {
+    @include glass-text-primary-color;
+
+    margin: 0;
+    line-height: 24px;
+  }
+
+  &__secondary-text {
+    @include glass-text-secondary-color;
+
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__status-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__status-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+
+    &--success {
+      color: theme.$color-success-11;
+    }
+
+    &--warning {
+      color: theme.$color-warning-11;
+    }
+  }
+
+  &__status-text {
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
   }
 
   &__footer {
-    margin-top: 40px;
     display: flex;
     justify-content: flex-end;
+    gap: 16px;
+
+    &--hasSecondaryButton {
+      justify-content: space-between;
+    }
+  }
+
+  &__button {
+    padding: 8px;
+  }
+
+  &__error-message {
+    text-align: center;
+    color: theme.$color-failure-11;
+
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+
+  &__success-message {
+    text-align: center;
+    color: theme.$color-success-11;
+
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+
+  &__recovery-key-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+
     gap: 16px;
   }
 
   &__recovery-key {
-    padding: 16px;
-    border: 1px solid var(--color-greyscale-6);
-    background: var(--color-greyscale-2);
-    border-radius: 8px;
-    color: var(--color-greyscale-11);
-    font-weight: 400;
-    font-size: 16px;
+    @include glass-text-secondary-color;
+
+    max-width: 206px;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: justify;
+  }
+
+  &__input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 8px;
   }
 }
+
+// @mixin primary-text {
+//   @include glass-text-primary-color;
+
+//   margin: 0;
+//   line-height: 24px;
+// }
+
+// @mixin secondary-text {
+//   @include glass-text-secondary-color;
+
+//   margin: 0;
+//   font-size: 14px;
+//   line-height: 20px;
+// }
+
+// @mixin status-group {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 8px;
+// }
+
+// @mixin status-container {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+//   align-self: stretch;
+
+//   &--success {
+//     color: theme.$color-success-11;
+//   }
+
+//   &--warning {
+//     color: theme.$color-warning-11;
+//   }
+// }
+
+// @mixin status-text {
+//   font-size: 14px;
+//   line-height: 20px;
+//   margin: 0;
+// }
+
+// @mixin footer {
+//   display: flex;
+//   justify-content: flex-end;
+//   gap: 16px;
+
+//   &--hasSecondaryButton {
+//     justify-content: space-between;
+//   }
+// }
+
+// @mixin button {
+//   padding: 8px;
+// }
+
+// @mixin error-message {
+//   font-size: 14px;
+//   line-height: 20px;
+// }

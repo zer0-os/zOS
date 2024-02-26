@@ -1,8 +1,22 @@
 import * as React from 'react';
+
+import { config } from '../../config';
+
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
+import {
+  BackupStage,
+  clearBackup,
+  generateBackup,
+  getBackup,
+  restoreBackup,
+  saveBackup,
+  onVerifyKey,
+} from '../../store/matrix';
+
 import { SecureBackup } from '.';
-import { clearBackup, generateBackup, getBackup, restoreBackup, saveBackup } from '../../store/matrix';
+
+import { LoadingIndicator } from '@zero-tech/zui/components';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -16,17 +30,20 @@ export interface Properties extends PublicProperties {
   recoveryKey: string;
   successMessage: string;
   errorMessage: string;
+  backupStage: BackupStage;
+  assetsPath: string;
 
   getBackup: () => void;
   generateBackup: () => void;
   saveBackup: () => void;
   restoreBackup: (recoveryKey: string) => void;
   clearBackup: () => void;
+  onVerifyKey: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { isLoaded, generatedRecoveryKey, trustInfo, successMessage, errorMessage } = state.matrix;
+    const { isLoaded, generatedRecoveryKey, trustInfo, successMessage, errorMessage, backupStage } = state.matrix;
     return {
       isLoaded,
       backupExists: !!trustInfo,
@@ -35,11 +52,13 @@ export class Container extends React.Component<Properties> {
       recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
+      assetsPath: config.assetsPath,
+      backupStage,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup };
+    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, onVerifyKey };
   }
 
   componentDidMount(): void {
@@ -52,7 +71,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     if (!this.props.isLoaded) {
-      return null;
+      return <LoadingIndicator />;
     }
 
     return (
@@ -67,6 +86,9 @@ export class Container extends React.Component<Properties> {
         onGenerate={this.props.generateBackup}
         onSave={this.props.saveBackup}
         onRestore={this.props.restoreBackup}
+        onVerifyKey={this.props.onVerifyKey}
+        assetsPath={this.props.assetsPath}
+        backupStage={this.props.backupStage}
       />
     );
   }

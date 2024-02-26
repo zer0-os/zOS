@@ -1,12 +1,20 @@
 import * as React from 'react';
 
-import { Alert, Button, IconButton, Input } from '@zero-tech/zui/components';
-
-import { clipboard } from '../../lib/clipboard';
-
 import { bemClassName } from '../../lib/bem';
-import './styles.scss';
+import { clipboard } from '../../lib/clipboard';
+import { BackupStage } from '../../store/matrix';
+
+import { GeneratePrompt } from './generate-prompt';
+import { GenerateBackup } from './generate-backup';
+import { RestorePrompt } from './restore-prompt';
+import { RestoreBackup } from './restore-backup';
+import { RecoveredBackup } from './recovered-backup';
+import { Success } from './success';
+
 import { IconXClose } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
+
+import './styles.scss';
 
 const cn = bemClassName('secure-backup');
 
@@ -21,6 +29,8 @@ export interface Properties {
   isLegacy: boolean;
   successMessage: string;
   errorMessage: string;
+  assetsPath: string;
+  backupStage: BackupStage;
 
   clipboard?: Clipboard;
 
@@ -28,6 +38,7 @@ export interface Properties {
   onGenerate: () => void;
   onSave: () => void;
   onRestore: (recoveryKey) => void;
+  onVerifyKey: () => void;
 }
 
 export interface State {
@@ -49,6 +60,10 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.setState({ userInputRecoveryKey: value });
   };
 
+  get backupStage() {
+    return this.props.backupStage;
+  }
+
   get isRecovered() {
     return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
   }
@@ -61,92 +76,106 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     return this.props.backupExists && !this.props.isBackupRecovered;
   }
 
-  renderBackedUpMode() {
-    const { isLegacy } = this.props;
-    const button = isLegacy ? <Button onPress={() => this.props.onGenerate()}>Generate new backup</Button> : null;
+  get generateNewBackup() {
+    if (this.props.isLegacy) {
+      return this.props.onGenerate;
+    }
+  }
+
+  get isSystemPrompt() {
+    return this.backupStage === BackupStage.SystemPrompt;
+  }
+
+  renderHeader = () => {
     return (
-      <div {...cn('backed-up')}>
-        <p>This session is backing up your keys.</p>
-        <p>This backup is trusted because it has been restored on this session.</p>
-        {this.renderButtons(button)}
+      <div {...cn('header')}>
+        <h3 {...cn('title')}>Account Backup</h3>
+        <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} size={40} />
       </div>
     );
-  }
+  };
 
-  renderNoBackupMode() {
+  renderVideoBanner = () => {
     return (
-      <>
-        <p>
-          Your keys are <b>not being backed up from this session.</b>
-        </p>
-        <p>Back up your keys before signing out to avoid losing them.</p>
-        {this.renderButtons(<Button onPress={() => this.props.onGenerate()}>Generate backup</Button>)}
-      </>
-    );
-  }
-
-  renderCreationMode() {
-    return (
-      <>
-        <p>
-          The following recovery key has been generated for you. Click `Copy` to copy it to your clipboard. Store it in
-          a secure place such as a password manager of vault then click `Save Backup` to complete the backup process.
-        </p>
-        {this.props.recoveryKey && <div {...cn('recovery-key')}>{this.props.recoveryKey}</div>}
-        {this.renderButtons(
-          <>
-            {this.props.recoveryKey && <Button onPress={this.copyKey}>Copy</Button>}
-            <Button onPress={() => this.props.onSave()} isDisabled={!this.state.hasCopied}>
-              Save backup
-            </Button>
-          </>
-        )}
-      </>
-    );
-  }
-
-  renderRestoreMode() {
-    return (
-      <>
-        <Input
-          placeholder='Enter your recovery key'
-          onChange={this.trackRecoveryKey}
-          value={this.state.userInputRecoveryKey}
+      <div {...cn('video-banner')}>
+        <video
+          {...cn('video')}
+          // TODO: uncomment when env vars updated
+          // src={`${this.props.assetsPath}/E2EEncryption.mp4`}
+          autoPlay
+          loop
+          muted
         />
-        {this.renderButtons(
-          <Button onPress={() => this.props.onRestore(this.state.userInputRecoveryKey)}>Restore backup</Button>
-        )}
-      </>
+      </div>
     );
-  }
+  };
 
-  renderButtons = (buttons) => {
-    return (
-      <>
-        <div {...cn('messages')}>
-          {this.props.successMessage && <Alert variant='success'>{this.props.successMessage}</Alert>}
-          {this.props.errorMessage && <Alert variant='error'>{this.props.errorMessage}</Alert>}
-        </div>
-        <div {...cn('footer')}>{buttons}</div>
-      </>
-    );
+  renderBackupContent = () => {
+    const {
+      backupStage,
+      onGenerate,
+      onRestore,
+      onVerifyKey,
+      onClose,
+      onSave,
+      recoveryKey,
+      errorMessage,
+      successMessage,
+    } = this.props;
+
+    switch (backupStage) {
+      case BackupStage.None:
+      case BackupStage.SystemPrompt:
+        const promptProps = { ...(this.isSystemPrompt && { onClose }) };
+        return (
+          <>
+            {this.noBackupExists && (
+              <GeneratePrompt isSystemPrompt={this.isSystemPrompt} onGenerate={onGenerate} {...promptProps} />
+            )}
+
+            {this.backupNotRestored && (
+              <RestorePrompt isSystemPrompt={this.isSystemPrompt} onVerifyKey={onVerifyKey} {...promptProps} />
+            )}
+
+            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={this.generateNewBackup} />}
+          </>
+        );
+
+      case BackupStage.GenerateBackup:
+        return (
+          <GenerateBackup
+            recoveryKey={recoveryKey}
+            errorMessage={errorMessage}
+            hasCopied={this.state.hasCopied}
+            onCopy={this.copyKey}
+            onSave={onSave}
+          />
+        );
+
+      case BackupStage.RestoreBackup:
+        return (
+          <RestoreBackup
+            userInputRecoveryKey={this.state.userInputRecoveryKey}
+            errorMessage={errorMessage}
+            trackRecoveryKey={this.trackRecoveryKey}
+            onRestore={onRestore}
+          />
+        );
+
+      case BackupStage.Success:
+        return <Success successMessage={successMessage} onClose={onClose} />;
+
+      default:
+        return null;
+    }
   };
 
   render() {
     return (
       <div {...cn()}>
-        <div {...cn('header')}>
-          <h3 {...cn('title')}>Secure Backup</h3>
-          <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} size={32} />
-        </div>
-        <p>
-          Back up your encryption keys with your account data in case you lose access to your sessions. Your keys will
-          be secured with a unique Security Key.
-        </p>
-        {this.isRecovered && this.renderBackedUpMode()}
-        {this.noBackupExists && this.renderNoBackupMode()}
-        {this.props.recoveryKey && this.renderCreationMode()}
-        {this.backupNotRestored && this.renderRestoreMode()}
+        {this.renderHeader()}
+        {this.renderVideoBanner()}
+        {this.renderBackupContent()}
       </div>
     );
   }

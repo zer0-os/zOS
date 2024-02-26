@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
-import { BackupStage } from '../../../store/matrix';
 
 import { Button } from '@zero-tech/zui/components';
 import { IconAlertCircle } from '@zero-tech/zui/icons';

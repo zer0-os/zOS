@@ -152,7 +152,7 @@ describe('fetchOwnedZIDs', () => {
       .run();
 
     expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
-    expect(editProfile.loading).toEqual(false);
+    expect(editProfile.loadingZIDs).toEqual(false);
   });
 });
 

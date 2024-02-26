@@ -11,6 +11,7 @@ const cn = bemClassName('secure-backup');
 
 export interface Properties {
   isSystemPrompt: boolean;
+  errorMessage: string;
 
   onGenerate: () => void;
   onClose: () => void;
@@ -43,6 +44,8 @@ export class GeneratePrompt extends React.Component<Properties> {
           <IconAlertCircle size={16} />
           <p {...cn('status-text')}>Your account is not backed up</p>
         </div>
+
+        {this.props.errorMessage && <p {...cn('error-message')}>{this.props.errorMessage}</p>}
 
         <div {...cn('footer', `${this.props.isSystemPrompt && 'has-secondary-button'}`)}>
           {this.props.isSystemPrompt && (

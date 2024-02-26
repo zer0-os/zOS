@@ -99,6 +99,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
             {this.noBackupExists && (
               <GeneratePrompt
                 isSystemPrompt={this.isSystemPrompt}
+                errorMessage={errorMessage}
                 onGenerate={onGenerate}
                 onClose={this.props.onClose}
               />

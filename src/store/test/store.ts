@@ -5,6 +5,7 @@ import { normalize as normalizeUser } from '../users';
 import { User as AuthenticatedUser } from '../authentication/types';
 import { initialState as initialGroupManagementState } from '../group-management';
 import { ChatState } from '../chat/types';
+import { initialState as authenticationInitialState } from '../authentication';
 
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
@@ -112,6 +113,7 @@ export class StoreBuilder {
         },
       },
       authentication: {
+        ...authenticationInitialState,
         user: { data: this.currentUser },
       },
       groupManagement: this.groupManagement,

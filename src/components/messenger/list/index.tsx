@@ -15,7 +15,7 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
-import { logout } from '../../../store/authentication';
+import { forceLogout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { closeConversationErrorDialog } from '../../../store/chat';
 
@@ -120,7 +120,7 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
-      logout,
+      logout: forceLogout,
       receiveSearchResults,
       closeConversationErrorDialog,
       closeBackupDialog,

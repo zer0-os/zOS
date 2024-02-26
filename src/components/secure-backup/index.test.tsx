@@ -46,18 +46,6 @@ describe('SecureBackup', () => {
       expect(wrapper).toHaveElement(GeneratePrompt);
     });
 
-    it('passes onClose to GeneratePrompt when backupStage is SystemPrompt', function () {
-      const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: false,
-        recoveryKey: '',
-        onClose,
-      });
-
-      expect(wrapper.find(GeneratePrompt)).toHaveProp('onClose', onClose);
-    });
-
     it('does not pass onClose to GeneratePrompt when backupStage is None', function () {
       const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
 
@@ -73,7 +61,7 @@ describe('SecureBackup', () => {
         onGenerate,
       });
 
-      wrapper.find(GeneratePrompt).prop('onGenerate')();
+      wrapper.find(GeneratePrompt).simulate('generate');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -82,13 +70,12 @@ describe('SecureBackup', () => {
       const onClose = jest.fn();
       const wrapper = subject({
         backupStage: BackupStage.SystemPrompt,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
+        backupExists: false,
+        recoveryKey: '',
         onClose,
       });
 
-      wrapper.find(RestorePrompt).prop('onClose')();
+      wrapper.find(GeneratePrompt).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -117,18 +104,6 @@ describe('SecureBackup', () => {
       expect(wrapper).toHaveElement(RestorePrompt);
     });
 
-    it('passes onClose to RestorePrompt when backupStage is SystemPrompt', function () {
-      const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: true,
-        recoveryKey: 'key',
-        onClose,
-      });
-
-      expect(wrapper.find(RestorePrompt)).toHaveProp('onClose', onClose);
-    });
-
     it('does not pass onClose to RestorePrompt when backupStage is None', function () {
       const wrapper = subject({
         backupStage: BackupStage.None,
@@ -150,7 +125,7 @@ describe('SecureBackup', () => {
         onVerifyKey,
       });
 
-      wrapper.find(RestorePrompt).prop('onVerifyKey')();
+      wrapper.find(RestorePrompt).simulate('verifyKey');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -165,7 +140,7 @@ describe('SecureBackup', () => {
         onClose,
       });
 
-      wrapper.find(RestorePrompt).prop('onClose')();
+      wrapper.find(RestorePrompt).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -193,7 +168,7 @@ describe('SecureBackup', () => {
         onClose,
       });
 
-      wrapper.find(RecoveredBackup).prop('onClose')();
+      wrapper.find(RecoveredBackup).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -209,7 +184,7 @@ describe('SecureBackup', () => {
         isLegacy: true,
       });
 
-      wrapper.find(RecoveredBackup).prop('onGenerate')();
+      wrapper.find(RecoveredBackup).simulate('generate');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -226,7 +201,7 @@ describe('SecureBackup', () => {
       const onSave = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onSave });
 
-      wrapper.find(GenerateBackup).prop('onSave')();
+      wrapper.find(GenerateBackup).simulate('save');
 
       expect(onSave).toHaveBeenCalled();
     });
@@ -243,7 +218,7 @@ describe('SecureBackup', () => {
       const onRestore = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.RestoreBackup, onRestore });
 
-      wrapper.find(RestoreBackup).prop('onRestore')('abcd 1234');
+      wrapper.find(RestoreBackup).simulate('restore', 'abcd 1234');
 
       expect(onRestore).toHaveBeenCalledWith('abcd 1234');
     });
@@ -259,7 +234,7 @@ describe('SecureBackup', () => {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.Success, successMessage: 'success', onClose });
 
-      wrapper.find(Success).prop('onClose')();
+      wrapper.find(Success).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });

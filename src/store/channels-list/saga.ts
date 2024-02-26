@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
@@ -8,7 +7,7 @@ import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
-import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
+import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
 import { clearChannels, openConversation, openFirstConversation, receiveChannel } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
@@ -25,7 +24,7 @@ import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 import { channelListStatus } from './selectors';
 
-export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
+export const rawConversationsList = () => (state) => getDeepProperty(state, 'channelsList.value', []);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* mapToZeroUsers(channels: any[]) {

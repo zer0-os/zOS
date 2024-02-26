@@ -28,7 +28,7 @@ export class Container extends React.Component<Properties> {
     return {
       inviteCode: createInvitation.code,
       inviteUrl: createInvitation.url,
-      assetPath: config.assetsPath,
+      assetPath: config.imageAssetsPath,
       invitesUsed: createInvitation.invitesUsed,
       maxUses: createInvitation.maxUses,
       isLoading: createInvitation.isLoading,

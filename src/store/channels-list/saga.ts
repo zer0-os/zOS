@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ChannelType } from './types';
 import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
@@ -8,7 +7,7 @@ import { chat } from '../../lib/chat';
 import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
-import { toLocalChannel, filterChannelsList, mapChannelMembers, mapChannelMessages } from './utils';
+import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
 import { clearChannels, openConversation, openFirstConversation, receiveChannel } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
@@ -23,10 +22,8 @@ import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
-import { channelListStatus } from './selectors';
+import { channelListStatus, rawConversationsList } from './selectors';
 
-const rawChannelsList = () => (state) => filterChannelsList(state, ChannelType.Channel);
-export const rawConversationsList = () => (state) => filterChannelsList(state, ChannelType.DirectMessage);
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function* mapToZeroUsers(channels: any[]) {
@@ -164,13 +161,11 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     lastMessageAt: adminMessage.createdAt,
   };
 
-  const existingConversationsList = yield select(rawConversationsList());
-  const existingChannelsList = yield select(rawChannelsList());
+  const existingConversationsList = yield select(rawConversationsList);
 
   yield put(
     receive([
       ...existingConversationsList,
-      ...existingChannelsList,
       conversation,
     ])
   );
@@ -183,7 +178,7 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     return;
   }
 
-  const existingConversationsList = yield select(rawConversationsList());
+  const existingConversationsList = yield select(rawConversationsList);
   const listWithoutOptimistic = existingConversationsList.filter((id) => id !== optimisticConversation.id);
 
   if (!existingConversationsList.includes(conversation.id)) {
@@ -202,14 +197,7 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     listWithoutOptimistic.push(conversation);
   }
 
-  const channelsList = yield select(rawChannelsList());
-  yield put(
-    receive([
-      ...channelsList,
-      ...listWithoutOptimistic,
-    ])
-  );
-
+  yield put(receive(listWithoutOptimistic));
   yield call(openConversation, conversation.id);
 }
 
@@ -230,14 +218,10 @@ export function* channelsReceived(action) {
   const { channels } = action.payload;
 
   const newChannels = channels.map(toLocalChannel);
-
-  // Silly to get them separately but we'll be splitting these anyway
-  const existingDirectMessages = yield select(rawConversationsList());
-  const existingChannels = yield select(rawChannelsList());
+  const existingDirectMessages = yield select(rawConversationsList);
 
   const newChannelList = uniqBy(
     [
-      ...existingChannels,
       ...existingDirectMessages,
       ...newChannels,
     ],
@@ -317,12 +301,11 @@ function* otherUserLeftChannelAction({ payload }) {
 }
 
 export function* addChannel(channel) {
-  const conversationsList = yield select(rawConversationsList());
-  const channelsList = yield select(rawChannelsList());
+  const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
   yield fork(fetchUserPresence, channel.otherMembers);
 
-  yield put(receive(uniqNormalizedList([...channelsList, ...conversationsList, channel])));
+  yield put(receive(uniqNormalizedList([...conversationsList, channel])));
 }
 
 export function* roomNameChanged(id: string, name: string) {

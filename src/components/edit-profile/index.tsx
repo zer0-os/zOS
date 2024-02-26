@@ -22,7 +22,7 @@ export interface Properties {
   currentPrimaryZID: string;
   currentProfileImage: string;
   ownedZIDs: string[];
-  loading: boolean;
+  loadingZIDs: boolean;
   onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
 
@@ -135,7 +135,7 @@ export class EditProfile extends React.Component<Properties, State> {
   }
 
   get menuItems() {
-    if (this.props.loading) {
+    if (this.props.loadingZIDs) {
       return this.renderLoadingState();
     }
 

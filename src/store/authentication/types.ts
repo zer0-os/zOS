@@ -45,4 +45,5 @@ export interface User {
 export interface AuthenticationState {
   user: UserPayload;
   nonce?: string;
+  displayLogoutModal: boolean;
 }

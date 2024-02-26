@@ -1,6 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all } from 'redux-saga/effects';
-import { SagaActionTypes, setUser } from '.';
+import { SagaActionTypes, setDisplayLogoutModal, setUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -113,10 +113,20 @@ export function* clearUserState() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Logout, logout);
+  yield takeLatest(SagaActionTypes.Logout, logoutRequest);
+  yield takeLatest(SagaActionTypes.ForceLogout, forceLogout);
 }
 
-export function* logout() {
+export function* logoutRequest() {
+  yield put(setDisplayLogoutModal(true));
+}
+
+export function* closeLogoutModal() {
+  yield put(setDisplayLogoutModal(false));
+}
+
+export function* forceLogout() {
+  yield closeLogoutModal();
   yield call(updateConnector, { payload: Connectors.None });
   yield call(terminate);
 }

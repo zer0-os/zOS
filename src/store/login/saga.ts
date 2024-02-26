@@ -11,7 +11,7 @@ import {
   setStage,
 } from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
-import { authenticateByEmail, logout, nonceOrAuthorize, terminate } from '../authentication/saga';
+import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
 
@@ -97,7 +97,7 @@ export function* web3ChangeAccount() {
     // in a weird state where the cookie doesn't match the current connection.
     // You an always log back in. It may not be ideal but at least we're not in
     // a corrupt state.
-    yield call(logout);
+    yield call(forceLogout);
     return;
   }
 

@@ -9,13 +9,14 @@ import {
   getCurrentUserWithChatAccessToken,
   initializeUserState,
   clearUserState,
-  logout,
+  forceLogout,
   redirectUnauthenticatedUser,
   completeUserLogin,
   publishUserLogin,
   publishUserLogout,
   authenticateByEmail,
   setAuthentication,
+  logoutRequest,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -36,6 +37,7 @@ import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
+import { StoreBuilder } from '../test/store';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -269,19 +271,31 @@ describe('clearUserState', () => {
   });
 });
 
-describe('logout', () => {
+describe(logoutRequest, () => {
+  it('prompts the user when they try to logout', async () => {
+    const state = new StoreBuilder();
+
+    const { storeState } = await expectSaga(logoutRequest).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.authentication.displayLogoutModal).toEqual(true);
+  });
+});
+
+describe(forceLogout, () => {
   function expectLogoutSaga() {
-    return expectSaga(logout).provide([
-      [
-        matchers.call.fn(updateConnector),
-        null,
-      ],
-      [
-        call(terminate),
-        null,
-      ],
+    return expectSaga(forceLogout).provide([
+      [matchers.call.fn(updateConnector), null],
+      [call(terminate), null],
     ]);
   }
+
+  it('closes the logout modal', async () => {
+    const state = new StoreBuilder().withOtherState({ authentication: { displayLogoutModal: true, user: {} } });
+
+    const { storeState } = await expectLogoutSaga().withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.authentication.displayLogoutModal).toEqual(false);
+  });
 
   it('clears the web3 connection', async () => {
     await expectLogoutSaga().call(updateConnector, { payload: Connectors.None }).run();

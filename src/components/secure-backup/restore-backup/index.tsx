@@ -8,21 +8,28 @@ import '../styles.scss';
 
 const cn = bemClassName('secure-backup');
 
-export interface Properties {
+export interface State {
   userInputRecoveryKey: string;
-  errorMessage: string;
+}
 
-  trackRecoveryKey: (recoveryKey: string) => void;
+export interface Properties {
+  errorMessage: string;
   onRestore: (recoveryKey: string) => void;
 }
 
-export class RestoreBackup extends React.Component<Properties> {
+export class RestoreBackup extends React.Component<Properties, State> {
+  state = { userInputRecoveryKey: '' };
+
+  trackRecoveryKey = (value) => {
+    this.setState({ userInputRecoveryKey: value });
+  };
+
   restoreKey = () => {
     this.props.onRestore(this.recoveryKey);
   };
 
   get recoveryKey() {
-    return this.props.userInputRecoveryKey;
+    return this.state.userInputRecoveryKey;
   }
 
   render() {
@@ -37,11 +44,7 @@ export class RestoreBackup extends React.Component<Properties> {
           </p>
 
           <div {...cn('input-container')}>
-            <Input
-              placeholder='Enter your recovery key'
-              onChange={this.props.trackRecoveryKey}
-              value={this.recoveryKey}
-            />
+            <Input placeholder='Enter your recovery key' onChange={this.trackRecoveryKey} value={this.recoveryKey} />
 
             {this.props.errorMessage && (
               <Alert {...cn('error-message')} variant='error'>

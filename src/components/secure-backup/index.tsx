@@ -41,17 +41,7 @@ export interface Properties {
   onVerifyKey: () => void;
 }
 
-export interface State {
-  userInputRecoveryKey: string;
-}
-
-export class SecureBackup extends React.PureComponent<Properties, State> {
-  state = { userInputRecoveryKey: '' };
-
-  trackRecoveryKey = (value) => {
-    this.setState({ userInputRecoveryKey: value });
-  };
-
+export class SecureBackup extends React.PureComponent<Properties> {
   get backupStage() {
     return this.props.backupStage;
   }
@@ -133,14 +123,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onSave} />;
 
       case BackupStage.RestoreBackup:
-        return (
-          <RestoreBackup
-            userInputRecoveryKey={this.state.userInputRecoveryKey}
-            errorMessage={errorMessage}
-            trackRecoveryKey={this.trackRecoveryKey}
-            onRestore={onRestore}
-          />
-        );
+        return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
 
       case BackupStage.Success:
         return <Success successMessage={successMessage} onClose={onClose} />;

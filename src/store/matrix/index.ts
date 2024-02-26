@@ -14,6 +14,15 @@ export enum SagaActionTypes {
   RestartOlm = 'chat/restart-olm',
   ShareHistoryKeys = 'chat/share-history-keys',
   CloseBackupDialog = 'chat/close-backup-dialog',
+  VerifyKey = 'chat/verify-key',
+}
+
+export enum BackupStage {
+  None = 'none',
+  SystemPrompt = 'system_prompt',
+  GenerateBackup = 'generate_backup',
+  RestoreBackup = 'restore_backup',
+  Success = 'success',
 }
 
 export type MatrixState = {
@@ -24,6 +33,7 @@ export type MatrixState = {
   errorMessage: string;
   deviceId: string;
   isBackupDialogOpen: boolean;
+  backupStage: BackupStage;
 };
 
 export const initialState: MatrixState = {
@@ -34,6 +44,7 @@ export const initialState: MatrixState = {
   errorMessage: '',
   deviceId: '',
   isBackupDialogOpen: false,
+  backupStage: BackupStage.None,
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -49,6 +60,7 @@ export const discardOlm = createAction<string>(SagaActionTypes.DiscardOlm);
 export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
 export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
 export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
+export const onVerifyKey = createAction(SagaActionTypes.VerifyKey);
 
 const slice = createSlice({
   name: 'matrix',
@@ -75,6 +87,9 @@ const slice = createSlice({
     setIsBackupDialogOpen: (state, action: PayloadAction<MatrixState['isBackupDialogOpen']>) => {
       state.isBackupDialogOpen = action.payload;
     },
+    setBackupStage: (state, action: PayloadAction<MatrixState['backupStage']>) => {
+      state.backupStage = action.payload;
+    },
   },
 });
 
@@ -86,5 +101,6 @@ export const {
   setSuccessMessage,
   setErrorMessage,
   setDeviceId,
+  setBackupStage,
 } = slice.actions;
 export const { reducer } = slice;

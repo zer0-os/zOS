@@ -76,14 +76,6 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     return this.props.backupExists && !this.props.isBackupRecovered;
   }
 
-  get generateNewBackup() {
-    if (this.props.isLegacy) {
-      return this.props.onGenerate;
-    }
-
-    return;
-  }
-
   get isSystemPrompt() {
     return this.backupStage === BackupStage.SystemPrompt;
   }
@@ -139,7 +131,9 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
               <RestorePrompt isSystemPrompt={this.isSystemPrompt} onVerifyKey={onVerifyKey} {...promptProps} />
             )}
 
-            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={this.generateNewBackup} />}
+            {this.isRecovered && (
+              <RecoveredBackup onClose={onClose} onGenerate={this.props.onGenerate} isLegacy={this.props.isLegacy} />
+            )}
           </>
         );
 

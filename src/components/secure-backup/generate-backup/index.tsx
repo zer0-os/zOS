@@ -40,13 +40,11 @@ export class GenerateBackup extends React.Component<Properties> {
             and never share it with anyone:
           </p>
 
-          {this.props.recoveryKey && <div {...cn('recovery-key')}>{this.props.recoveryKey}</div>}
+          <div {...cn('recovery-key')}>{this.props.recoveryKey}</div>
 
-          {this.props.recoveryKey && (
-            <Button {...cn('button')} onPress={this.onCopy} variant='text'>
-              {this.copyButtonText}
-            </Button>
-          )}
+          <Button {...cn('button')} onPress={this.onCopy} variant='text'>
+            {this.copyButtonText}
+          </Button>
 
           {this.props.errorMessage && <p {...cn('error-message')}>{this.props.errorMessage}</p>}
         </div>

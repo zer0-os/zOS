@@ -115,6 +115,17 @@ describe(generateBackup, () => {
 
     expect(storeState.matrix.backupStage).toEqual(BackupStage.GenerateBackup);
   });
+
+  it('handles error during backup generation', async () => {
+    const error = new Error('Failed to generate backup');
+    const { storeState } = await subject(generateBackup)
+      .provide([[call([chatClient, chatClient.generateSecureBackup]), throwError(error)]])
+      .withReducer(rootReducer)
+      .run();
+
+    expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup. Please try again.');
+    expect(storeState.matrix.backupStage).toEqual(BackupStage.None);
+  });
 });
 
 describe(saveBackup, () => {

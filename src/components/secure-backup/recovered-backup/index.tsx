@@ -44,7 +44,7 @@ export class RecoveredBackup extends React.Component<Properties> {
           {this.renderStatus('Your current login is verified')}
         </div>
 
-        <div {...cn('footer', `${this.props.isLegacy && 'hasSecondaryButton'}`)}>
+        <div {...cn('footer', `${this.props.isLegacy && 'has-secondary-button'}`)}>
           {this.props.isLegacy && (
             <Button {...cn('button')} onPress={this.generateBackup}>
               Generate new backup

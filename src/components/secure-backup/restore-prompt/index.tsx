@@ -60,7 +60,7 @@ export class RestorePrompt extends React.Component<Properties> {
           {this.renderStatus(Status.Warning, 'Your current login is not verified, some messages may be hidden')}
         </div>
 
-        <div {...cn('footer', `${this.props.isSystemPrompt && 'hasSecondaryButton'}`)}>
+        <div {...cn('footer', `${this.props.isSystemPrompt && 'has-secondary-button'}`)}>
           {this.props.isSystemPrompt && (
             <Button {...cn('button')} onPress={this.close} variant='text'>
               Continue without verifying

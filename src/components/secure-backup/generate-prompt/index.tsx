@@ -44,7 +44,7 @@ export class GeneratePrompt extends React.Component<Properties> {
           <p {...cn('status-text')}>Your account is not backed up</p>
         </div>
 
-        <div {...cn('footer', `${this.props.isSystemPrompt && 'hasSecondaryButton'}`)}>
+        <div {...cn('footer', `${this.props.isSystemPrompt && 'has-secondary-button'}`)}>
           {this.props.isSystemPrompt && (
             <Button {...cn('button')} onPress={this.close} variant='text'>
               Backup later

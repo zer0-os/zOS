@@ -21,7 +21,7 @@ describe('EditProfile', () => {
       currentProfileImage: 'profile.jpg',
       currentPrimaryZID: '0://john:doe',
       ownedZIDs: [],
-      loading: false,
+      loadingZIDs: false,
       onEdit: () => null,
       onClose: () => null,
       onLeaveGlobal: () => null,
@@ -129,7 +129,7 @@ describe('EditProfile', () => {
   it('renders dropdown with loading state when fetching ownedZIDs', () => {
     featureFlags.allowEditPrimaryZID = true;
 
-    const wrapper = subject({ currentPrimaryZID: '0://jane:smith', loading: true });
+    const wrapper = subject({ currentPrimaryZID: '0://jane:smith', loadingZIDs: true });
 
     const dropdown = wrapper.find('SelectInput');
     const items: any = dropdown.prop('items');

@@ -3,7 +3,7 @@ import { call } from 'redux-saga/effects';
 import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
-import { EditProfileState, State, initialState as initialEditProfileState, setLoading } from '.';
+import { EditProfileState, State, initialState as initialEditProfileState, setLoadingZIDs } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
@@ -147,12 +147,12 @@ describe('fetchOwnedZIDs', () => {
         [call(apiFetchOwnedZIDs), ownedZIDs],
       ])
       .withReducer(rootReducer, initialState())
-      .put(setLoading(true))
+      .put(setLoadingZIDs(true))
       .put(setOwnedZIDs(ownedZIDs))
       .run();
 
     expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
-    expect(editProfile.loading).toEqual(false);
+    expect(editProfile.loadingZIDs).toEqual(false);
   });
 });
 

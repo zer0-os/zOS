@@ -15,7 +15,8 @@ export const config = {
   },
   giphySdkKey: process.env.REACT_APP_GIPHY_SDK_KEY,
   inviteUrl: process.env.REACT_APP_MESSENGER_INVITE_PATH,
-  assetsPath: process.env.REACT_APP_ASSETS_PATH,
+  videoAssetsPath: process.env.REACT_APP_VIDEO_ASSETS_PATH,
+  imageAssetsPath: process.env.REACT_APP_IMAGE_ASSETS_PATH,
   matrix: {
     homeServerUrl: process.env.REACT_APP_MATRIX_HOME_SERVER_URL,
   },

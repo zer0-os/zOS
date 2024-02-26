@@ -1,10 +1,5 @@
 import { Channel, User } from '../channels';
 
-export enum ChannelType {
-  Channel,
-  DirectMessage,
-}
-
 export interface DirectMessage extends Channel {
   otherMembers: User[];
 }

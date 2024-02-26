@@ -80,6 +80,8 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     if (this.props.isLegacy) {
       return this.props.onGenerate;
     }
+
+    return;
   }
 
   get isSystemPrompt() {

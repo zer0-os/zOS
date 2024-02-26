@@ -13,7 +13,7 @@ export interface Properties {
   isSystemPrompt: boolean;
 
   onGenerate: () => void;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 export class GeneratePrompt extends React.Component<Properties> {

@@ -18,7 +18,7 @@ export interface Properties {
   isSystemPrompt: boolean;
 
   onVerifyKey: () => void;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 export class RestorePrompt extends React.Component<Properties> {

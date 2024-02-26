@@ -26,7 +26,7 @@ export interface Properties extends PublicProperties {
   currentProfileImage: string;
   currentPrimaryZID: string;
   ownedZIDs: string[];
-  loading: boolean;
+  loadingZIDs: boolean;
   editProfile: (data: { name: string; image: File; primaryZID: string }) => void;
   startProfileEdit: () => void;
   leaveGlobalNetwork: () => void;
@@ -47,7 +47,7 @@ export class Container extends React.Component<Properties> {
       currentPrimaryZID: user?.data?.primaryZID,
       ownedZIDs: editProfile.ownedZIDs,
       editProfileState: editProfile.state,
-      loading: editProfile.loading,
+      loadingZIDs: editProfile.loadingZIDs,
     };
   }
 
@@ -71,7 +71,7 @@ export class Container extends React.Component<Properties> {
         currentProfileImage={this.props.currentProfileImage}
         currentPrimaryZID={this.props.currentPrimaryZID}
         ownedZIDs={this.props.ownedZIDs}
-        loading={this.props.loading}
+        loadingZIDs={this.props.loadingZIDs}
         onLeaveGlobal={this.props.leaveGlobalNetwork}
         onJoinGlobal={this.props.joinGlobalNetwork}
       />

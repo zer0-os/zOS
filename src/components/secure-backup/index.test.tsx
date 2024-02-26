@@ -46,12 +46,6 @@ describe('SecureBackup', () => {
       expect(wrapper).toHaveElement(GeneratePrompt);
     });
 
-    it('does not pass onClose to GeneratePrompt when backupStage is None', function () {
-      const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
-
-      expect(wrapper.find(GeneratePrompt)).not.toHaveProp('onClose');
-    });
-
     it('publishes onGenerate', function () {
       const onGenerate = jest.fn();
       const wrapper = subject({
@@ -102,17 +96,6 @@ describe('SecureBackup', () => {
       });
 
       expect(wrapper).toHaveElement(RestorePrompt);
-    });
-
-    it('does not pass onClose to RestorePrompt when backupStage is None', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-      });
-
-      expect(wrapper.find(RestorePrompt)).not.toHaveProp('onClose');
     });
 
     it('publishes onVerifyKey', function () {

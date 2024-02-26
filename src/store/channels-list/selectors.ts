@@ -7,6 +7,10 @@ export function channelListStatus(state) {
   return getDeepProperty(state, 'channelsList.status', AsyncListStatus.Idle);
 }
 
+export function rawConversationsList(state) {
+  return getDeepProperty(state, 'channelsList.value', []);
+}
+
 export function mostRecentConversation(state) {
   const roomIds = getDeepProperty(state, 'channelsList.value', []);
   if (!roomIds.length) {

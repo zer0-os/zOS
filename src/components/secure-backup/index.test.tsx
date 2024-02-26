@@ -226,13 +226,13 @@ describe('SecureBackup', () => {
 
   describe(Success, () => {
     it('renders Success component when in Success stage', function () {
-      const wrapper = subject({ backupStage: BackupStage.Success, successMessage: 'success' });
+      const wrapper = subject({ backupStage: BackupStage.Success });
       expect(wrapper).toHaveElement(Success);
     });
 
     it('publishes onClose', function () {
       const onClose = jest.fn();
-      const wrapper = subject({ backupStage: BackupStage.Success, successMessage: 'success', onClose });
+      const wrapper = subject({ backupStage: BackupStage.Success, onClose });
 
       wrapper.find(Success).simulate('close');
 

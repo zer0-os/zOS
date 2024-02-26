@@ -33,6 +33,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
+  yield takeLatest(SagaActionTypes.OpenBackupDialog, openBackupDialog);
   yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
 }
 
@@ -145,6 +146,10 @@ export function* ensureUserHasBackup() {
 
 export function* closeBackupDialog() {
   yield put(setIsBackupDialogOpen(false));
+}
+
+export function* openBackupDialog() {
+  yield put(setIsBackupDialogOpen(true));
 }
 
 function* listenForUserLogin() {

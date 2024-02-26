@@ -1,12 +1,15 @@
 import { shallow } from 'enzyme';
 
 import { LogoutConfirmationModal, Properties } from '.';
+import { Modal } from '../modal';
 
 describe(LogoutConfirmationModal, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       backupExists: false,
       backupVerified: false,
+      onClose: () => null,
+      onLogout: () => null,
       ...props,
     };
 
@@ -29,5 +32,32 @@ describe(LogoutConfirmationModal, () => {
     const wrapper = subject({ backupExists: true, backupVerified: true });
 
     expect(wrapper.find('div').text()).toMatch('You will need to enter');
+  });
+
+  it('publishes close event on secondary action', async () => {
+    const onClose = jest.fn();
+    const wrapper = subject({ onClose });
+
+    wrapper.find(Modal).simulate('secondary');
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('publishes close event on close action', async () => {
+    const onClose = jest.fn();
+    const wrapper = subject({ onClose });
+
+    wrapper.find(Modal).simulate('close');
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('publishes logout event', async () => {
+    const onLogout = jest.fn();
+    const wrapper = subject({ onLogout });
+
+    wrapper.find(Modal).simulate('primary');
+
+    expect(onLogout).toHaveBeenCalled();
   });
 });

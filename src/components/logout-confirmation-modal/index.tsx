@@ -1,9 +1,18 @@
-import { ModalConfirmation } from '@zero-tech/zui/components';
 import * as React from 'react';
+
+import { Modal } from '../modal';
+import { bemClassName } from '../../lib/bem';
+
+import './styles.scss';
+
+const cn = bemClassName('logout-confirmation-modal');
 
 export interface Properties {
   backupExists: boolean;
   backupVerified: boolean;
+
+  onClose: () => void;
+  onLogout: () => void;
 }
 
 export class LogoutConfirmationModal extends React.Component<Properties> {
@@ -41,21 +50,20 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
 
   render() {
     return (
-      <ModalConfirmation
-        open
+      <Modal
         title='Are you sure?'
-        cancelLabel='Cancel'
-        confirmationLabel='Log Out'
-        onCancel={() => null}
-        onConfirm={() => null}
-        inProgress={false}
+        primaryText='Log Out'
+        secondaryText='Cancel'
+        onPrimary={this.props.onLogout}
+        onSecondary={this.props.onClose}
+        onClose={this.props.onClose}
       >
-        <div>
+        <div {...cn()}>
           {!this.props.backupExists && this.noBackupText}
           {this.props.backupExists && !this.props.backupVerified && this.unverifiedText}
           {this.props.backupExists && this.props.backupVerified && this.logoutWarningText}
         </div>
-      </ModalConfirmation>
+      </Modal>
     );
   }
 }

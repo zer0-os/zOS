@@ -115,6 +115,7 @@ export function* clearUserState() {
 export function* saga() {
   yield takeLatest(SagaActionTypes.Logout, logoutRequest);
   yield takeLatest(SagaActionTypes.ForceLogout, forceLogout);
+  yield takeLatest(SagaActionTypes.CloseLogoutModal, closeLogoutModal);
 }
 
 export function* logoutRequest() {
@@ -122,7 +123,9 @@ export function* logoutRequest() {
 }
 
 export function* closeLogoutModal() {
+  console.time('XXX closeLogoutModal');
   yield put(setDisplayLogoutModal(false));
+  console.timeEnd('XXX closeLogoutModal');
 }
 
 export function* forceLogout() {

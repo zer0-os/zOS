@@ -3,6 +3,7 @@ import * as React from 'react';
 import { connectContainer } from '../../store/redux-container';
 import { RootState } from '../../store/reducer';
 import { LogoutConfirmationModal } from '.';
+import { closeLogoutModal, forceLogout } from '../../store/authentication';
 
 export interface PublicProperties {}
 
@@ -10,7 +11,8 @@ export interface Properties extends PublicProperties {
   backupExists: boolean;
   backupVerified: boolean;
 
-  action: () => void;
+  closeLogoutModal: () => void;
+  forceLogout: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -24,13 +26,18 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {
-      action: () => null,
-    };
+    return { closeLogoutModal, forceLogout };
   }
 
   render() {
-    return <LogoutConfirmationModal backupExists={true} backupVerified={true} />;
+    return (
+      <LogoutConfirmationModal
+        backupExists={this.props.backupExists}
+        backupVerified={this.props.backupVerified}
+        onLogout={this.props.forceLogout}
+        onClose={this.props.closeLogoutModal}
+      />
+    );
   }
 }
 

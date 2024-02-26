@@ -17,7 +17,7 @@ export interface Properties {
 }
 
 export class GeneratePrompt extends React.Component<Properties> {
-  closePrompt = () => {
+  close = () => {
     if (this.props.onClose) {
       this.props.onClose();
     }
@@ -46,7 +46,7 @@ export class GeneratePrompt extends React.Component<Properties> {
 
         <div {...cn('footer', `${this.props.isSystemPrompt && 'hasSecondaryButton'}`)}>
           {this.props.isSystemPrompt && (
-            <Button {...cn('button')} onPress={this.closePrompt} variant='text'>
+            <Button {...cn('button')} onPress={this.close} variant='text'>
               Backup later
             </Button>
           )}

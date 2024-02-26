@@ -22,7 +22,7 @@ export interface Properties {
 }
 
 export class RestorePrompt extends React.Component<Properties> {
-  closePrompt = () => {
+  close = () => {
     if (this.props.onClose) {
       this.props.onClose();
     }
@@ -62,7 +62,7 @@ export class RestorePrompt extends React.Component<Properties> {
 
         <div {...cn('footer', `${this.props.isSystemPrompt && 'hasSecondaryButton'}`)}>
           {this.props.isSystemPrompt && (
-            <Button {...cn('button')} onPress={this.closePrompt} variant='text'>
+            <Button {...cn('button')} onPress={this.close} variant='text'>
               Continue without verifying
             </Button>
           )}

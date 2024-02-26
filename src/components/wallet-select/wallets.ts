@@ -26,7 +26,7 @@ const wallets: { [walletType: string]: Wallet } = {
 
 for (const wallet in wallets) {
   wallets[wallet].imageSource = [
-    config.assetsPath,
+    config.imageAssetsPath,
     wallets[wallet].imageSource,
   ].join('/');
 }

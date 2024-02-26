@@ -9,6 +9,8 @@ import {
   setSuccessMessage,
   setTrustInfo,
   setIsBackupDialogOpen,
+  setBackupStage,
+  BackupStage,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -34,6 +36,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
   yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
+  yield takeLatest(SagaActionTypes.VerifyKey, onVerifyKey);
 }
 
 export function* getBackup() {
@@ -55,6 +58,7 @@ export function* getBackup() {
 }
 
 export function* generateBackup() {
+  yield put(setBackupStage(BackupStage.GenerateBackup));
   const chatClient = yield call(chat.get);
   const key = yield call([chatClient, chatClient.generateSecureBackup]);
   yield put(setGeneratedRecoveryKey(key));
@@ -69,9 +73,10 @@ export function* saveBackup() {
     yield call([chatClient, chatClient.saveSecureBackup], key);
     yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
-    yield put(setSuccessMessage('Backup saved successfully'));
+    yield put(setBackupStage(BackupStage.Success));
+    yield put(setSuccessMessage('Account backup successful'));
   } catch {
-    yield put(setErrorMessage('Backup save failed'));
+    yield put(setErrorMessage('Account backup failed'));
   }
 }
 
@@ -83,7 +88,8 @@ export function* restoreBackup(action) {
   try {
     yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
     yield call(getBackup);
-    yield put(setSuccessMessage('Backup restored successfully'));
+    yield put(setBackupStage(BackupStage.Success));
+    yield put(setSuccessMessage('Login successfully verified!'));
   } catch (e) {
     yield put(setErrorMessage('Failed to restore backup: Check your recovery key and try again'));
   }
@@ -95,6 +101,7 @@ export function* clearBackupState() {
   yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+  yield put(setBackupStage(BackupStage.None));
 }
 
 export function* debugDeviceList(action) {
@@ -138,6 +145,7 @@ export function* ensureUserHasBackup() {
   const backup = yield call(getSecureBackup);
   if (!backup?.backupInfo) {
     if (yield call(performUnlessLogout, delay(10000))) {
+      yield put(setBackupStage(BackupStage.SystemPrompt));
       yield put(setIsBackupDialogOpen(true));
     }
   }
@@ -170,6 +178,7 @@ export function* handleBackupUserPrompts() {
     return;
   }
 
+  yield put(setBackupStage(BackupStage.SystemPrompt));
   yield put(setIsBackupDialogOpen(true));
 }
 
@@ -181,4 +190,8 @@ export function* checkBackupOnFirstSentMessage() {
   const bus = yield call(getChatMessageBus);
   yield take(bus, ChatMessageEvents.Sent);
   yield call(ensureUserHasBackup);
+}
+
+export function* onVerifyKey() {
+  yield put(setBackupStage(BackupStage.RestoreBackup));
 }

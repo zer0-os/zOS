@@ -31,7 +31,7 @@ export interface Properties extends PublicProperties {
   successMessage: string;
   errorMessage: string;
   backupStage: BackupStage;
-  assetsPath: string;
+  videoAssetsPath: string;
 
   getBackup: () => void;
   generateBackup: () => void;
@@ -52,7 +52,7 @@ export class Container extends React.Component<Properties> {
       recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
-      assetsPath: config.assetsPath,
+      videoAssetsPath: config.videoAssetsPath,
       backupStage,
     };
   }
@@ -87,7 +87,7 @@ export class Container extends React.Component<Properties> {
         onSave={this.props.saveBackup}
         onRestore={this.props.restoreBackup}
         onVerifyKey={this.props.onVerifyKey}
-        assetsPath={this.props.assetsPath}
+        videoAssetsPath={this.props.videoAssetsPath}
         backupStage={this.props.backupStage}
       />
     );

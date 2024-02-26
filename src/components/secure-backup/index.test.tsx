@@ -26,7 +26,7 @@ describe('SecureBackup', () => {
       onClose: () => null,
       onVerifyKey: () => null,
       clipboard: { write: () => null },
-      assetsPath: 'stub-assets-path',
+      videoAssetsPath: 'stub-assets-path',
       ...props,
     };
 

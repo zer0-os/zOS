@@ -29,7 +29,7 @@ export interface Properties {
   isLegacy: boolean;
   successMessage: string;
   errorMessage: string;
-  assetsPath: string;
+  videoAssetsPath: string;
   backupStage: BackupStage;
 
   clipboard?: Clipboard;
@@ -92,14 +92,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   renderVideoBanner = () => {
     return (
       <div {...cn('video-banner')}>
-        <video
-          {...cn('video')}
-          // TODO: uncomment when env vars updated
-          // src={`${this.props.assetsPath}/E2EEncryption.mp4`}
-          autoPlay
-          loop
-          muted
-        />
+        <video {...cn('video')} src={`${this.props.videoAssetsPath}/E2EEncryption.mp4`} autoPlay loop muted />
       </div>
     );
   };

@@ -58,9 +58,10 @@ export function* getBackup() {
 }
 
 export function* generateBackup() {
+  yield put(setBackupStage(BackupStage.GenerateBackup));
+  const chatClient = yield call(chat.get);
+
   try {
-    yield put(setBackupStage(BackupStage.GenerateBackup));
-    const chatClient = yield call(chat.get);
     const key = yield call([chatClient, chatClient.generateSecureBackup]);
     yield put(setGeneratedRecoveryKey(key));
   } catch (error) {

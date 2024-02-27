@@ -36,13 +36,13 @@ describe(GeneratePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('shows the "Backup later" button for system prompt', function () {
+  it('shows the secondary button for system prompt', function () {
     const wrapper = subject({ isSystemPrompt: true });
 
     expect(buttonLabelled(wrapper, 'Backup later')).toExist();
   });
 
-  it('does not show the "Backup later" button for non-system prompt', function () {
+  it('does not show the secondary button for non-system prompt', function () {
     const wrapper = subject({ isSystemPrompt: false });
 
     expect(buttonLabelled(wrapper, 'Backup later')).not.toExist();

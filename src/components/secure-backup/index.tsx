@@ -62,9 +62,11 @@ export class SecureBackup extends React.PureComponent<Properties> {
   }
 
   renderHeader = () => {
+    const header = this.backupNotRestored ? 'Verify Login' : 'Account Backup';
+
     return (
       <div {...cn('header')}>
-        <h3 {...cn('title')}>Account Backup</h3>
+        <h3 {...cn('title')}>{header}</h3>
         <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} size={40} />
       </div>
     );

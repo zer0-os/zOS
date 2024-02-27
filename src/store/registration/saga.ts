@@ -1,4 +1,4 @@
-import { call, delay, put, race, select, spawn, take } from 'redux-saga/effects';
+import { call, put, race, select, spawn, take } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
   InviteCodeStatus,
@@ -12,9 +12,7 @@ import {
   setInviteCode,
   setUserId,
   setFirstTimeLogin,
-  setInviteToastOpen,
 } from '.';
-import { SagaActionTypes as RewardsSagaActionTypes } from '../rewards';
 import {
   validateInvite as apiValidateInvite,
   createAccount as apiCreateAccount,
@@ -225,7 +223,6 @@ export function* clearRegistrationStateOnLogout() {
   const authChannel = yield call(getAuthChannel);
   yield take(authChannel, AuthEvents.UserLogout);
   yield put(setFirstTimeLogin(false));
-  yield put(setInviteToastOpen(false));
 }
 
 // sets initial state & takes the user to "complete profile" page
@@ -246,15 +243,6 @@ export function* saga() {
   yield validateInvitePage();
   yield createAccountPage();
   yield updateProfilePage();
-
-  // After successful registration
-  yield spawn(openInviteToastWhenRewardsPopupClosed);
-}
-
-export function* openInviteToastWhenRewardsPopupClosed() {
-  yield take(RewardsSagaActionTypes.RewardsPopupClosed);
-  yield delay(10000);
-  yield put(setInviteToastOpen(true));
 }
 
 export function* createWelcomeConversation(userId: string, inviter: { id: string; matrixId: string }) {

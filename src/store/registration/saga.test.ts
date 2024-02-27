@@ -1,5 +1,4 @@
 import { expectSaga } from '../../test/saga';
-import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
@@ -7,7 +6,6 @@ import {
   clearRegistrationStateOnLogout,
   createAccount,
   createWelcomeConversation,
-  openInviteToastWhenRewardsPopupClosed,
   updateProfile,
   validateAccountInfo,
   validateInvite,
@@ -29,7 +27,6 @@ import {
   RegistrationState,
   initialState as initialRegistrationState,
 } from '.';
-import { SagaActionTypes as RewardsSagaActionTypes } from '../rewards';
 import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
@@ -500,28 +497,6 @@ describe('validateAccountInfo', () => {
     const errors = validateAccountInfo({ email, password });
 
     expect(errors).toEqual([AccountCreationErrors.PASSWORD_TOO_WEAK]);
-  });
-});
-
-describe('openInviteToastWhenRewardsPopupClosed', () => {
-  it('sets the invite open flag after the rewards propup is closed', async () => {
-    const {
-      storeState: { registration },
-    } = await expectSaga(openInviteToastWhenRewardsPopupClosed)
-      .provide([
-        [
-          matchers.take(RewardsSagaActionTypes.RewardsPopupClosed),
-          { type: RewardsSagaActionTypes.RewardsPopupClosed },
-        ],
-        [
-          call(delayP, 10000), // delayP is what delay calls behind the scenes. Not ideal but it works.
-          true,
-        ],
-      ])
-      .withReducer(rootReducer, initialState({ isInviteToastOpen: false }))
-      .run();
-
-    expect(registration.isInviteToastOpen).toEqual(true);
   });
 });
 

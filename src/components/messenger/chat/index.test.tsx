@@ -137,38 +137,6 @@ describe(DirectMessageChat, () => {
   });
 
   describe('room management', () => {
-    describe('edit members', () => {
-      it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
-        const wrapper = subject({ isCurrentUserRoomAdmin: true });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', true);
-      });
-
-      it('does NOT allow editing if user is NOT an admin', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: false,
-          directMessage: stubConversation({ isOneOnOne: false }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', false);
-      });
-
-      it('does NOT allow editing if conversation is considered a 1 on 1', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: true,
-          directMessage: stubConversation({ isOneOnOne: true }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', false);
-      });
-    });
-
     describe('add members', () => {
       it('allows adding of members if user is an admin and conversation is not a 1 on 1', () => {
         const wrapper = subject({ isCurrentUserRoomAdmin: true });
@@ -306,6 +274,30 @@ describe(DirectMessageChat, () => {
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: true }));
+      });
+    });
+
+    describe('canEdit', () => {
+      it('is false when one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: true }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+      });
+
+      it('is false when current user is not room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['other-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+      });
+
+      it('is true when current user is room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
       });
     });
   });

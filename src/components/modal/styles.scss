@@ -1,0 +1,87 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  overflow: hidden;
+  padding: calc(40px - 24px); // zUI has 24px padding right now but we want 40 total.
+
+  &__title-bar {
+    display: flex;
+    height: 53px;
+    @include glass-text-primary-color;
+    border-bottom: 1px solid $glass-separator-secondary-color;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__close {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__body {
+    @include glass-text-primary-color;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+
+    &:has(*:nth-child(2)) {
+      // If there are at least 2 buttons
+      justify-content: space-between;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  // TODO: add button sizes (eg. "small", "medium", "large") in zUI instead
+  // of setting the height here
+  &__primary-button {
+    height: 40px;
+    max-width: 144px;
+  }
+
+  &__secondary-button {
+    height: 40px;
+    max-width: 144px;
+
+    div {
+      color: $glass-highlight-color;
+    }
+
+    &:hover {
+      background-color: transparent;
+      @include glass-glow-highlight-medium;
+    }
+  }
+
+  &__text-button-text {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    color: theme.$color-greyscale-12;
+  }
+}

@@ -3,7 +3,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { LeaveGroupDialog, Properties } from '.';
-import { buttonLabelled } from '../../../test/utils';
+import { bem } from '../../../lib/bem';
+import { Modal } from '../../modal';
+
+const c = bem('.leave-group-dialog');
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -21,20 +24,20 @@ describe('InviteDialog', () => {
   it('renders the name of group', function () {
     const wrapper = subject({ name: 'zOS test group' });
 
-    expect(wrapper.find('.leave-group-dialog__body').text()).toContain('zOS test group');
+    expect(wrapper.find(c('')).text()).toContain('zOS test group');
   });
 
   it('renders different text if group name is not provided', function () {
     const wrapper = subject({ name: '' });
 
-    expect(wrapper.find('.leave-group-dialog__body').text()).toContain('this group');
+    expect(wrapper.find(c('')).text()).toContain('this group');
   });
 
   it('publishes close event when modal is closed', function () {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });
 
-    wrapper.find('IconButton').simulate('click');
+    wrapper.find(Modal).simulate('close');
 
     expect(onClose).toHaveBeenCalled();
   });
@@ -43,7 +46,8 @@ describe('InviteDialog', () => {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });
 
-    buttonLabelled(wrapper, 'Cancel').simulate('press');
+    wrapper.find(Modal).simulate('secondary');
+
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -51,7 +55,8 @@ describe('InviteDialog', () => {
     const onLeave = jest.fn();
     const wrapper = subject({ onLeave });
 
-    buttonLabelled(wrapper, 'Leave Group').simulate('press');
+    wrapper.find(Modal).simulate('primary');
+
     expect(onLeave).toHaveBeenCalled();
   });
 });

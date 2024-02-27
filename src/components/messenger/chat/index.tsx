@@ -14,7 +14,6 @@ import {
   startEditConversation,
   viewGroupInformation,
 } from '../../../store/group-management';
-import { Modal } from '@zero-tech/zui/components';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
@@ -108,13 +107,11 @@ export class Container extends React.Component<Properties> {
 
   renderLeaveGroupDialog = (): JSX.Element => {
     return (
-      <Modal open={this.isLeaveGroupDialogOpen} onOpenChange={this.closeLeaveGroupDialog}>
-        <LeaveGroupDialogContainer
-          groupName={this.props.directMessage.name}
-          onClose={this.closeLeaveGroupDialog}
-          roomId={this.props.activeConversationId}
-        />
-      </Modal>
+      <LeaveGroupDialogContainer
+        groupName={this.props.directMessage.name}
+        onClose={this.closeLeaveGroupDialog}
+        roomId={this.props.activeConversationId}
+      />
     );
   };
 

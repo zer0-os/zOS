@@ -9,6 +9,9 @@ import { GenerateBackup } from './generate-backup';
 import { RestoreBackup } from './restore-backup';
 import { Success } from './success';
 
+import { bem } from '../../lib/bem';
+const c = bem('.secure-backup');
+
 describe('SecureBackup', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
@@ -220,6 +223,20 @@ describe('SecureBackup', () => {
       wrapper.find(Success).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('header container', () => {
+    it('renders title as "Account Backup" if backup does not exist and backup is not restored', function () {
+      const wrapper = subject({ backupExists: false, isBackupRecovered: false });
+
+      expect(wrapper.find(c('title'))).toHaveText('Account Backup');
+    });
+
+    it('renders title as "Verify Login" if backup exists and backup is not restored', function () {
+      const wrapper = subject({ backupExists: true, isBackupRecovered: false });
+
+      expect(wrapper.find(c('title'))).toHaveText('Verify Login');
     });
   });
 });

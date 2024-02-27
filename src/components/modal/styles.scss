@@ -1,17 +1,18 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
 
 .modal {
   display: flex;
   flex-direction: column;
   gap: 40px;
   overflow: hidden;
-  padding: 10px;
+  padding: calc(40px - 24px); // zUI has 24px padding right now but we want 40 total.
 
   &__title-bar {
     display: flex;
     height: 53px;
-    border-bottom: 1px solid theme.$color-primary-4;
-    color: theme.$color-greyscale-12;
+    @include glass-text-primary-color;
+    border-bottom: 1px solid $glass-separator-secondary-color;
 
     > *:first-child {
       flex-grow: 1;
@@ -23,7 +24,7 @@
   }
 
   &__title {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 24px;
     line-height: 29px;
     margin: 0px;
@@ -35,8 +36,37 @@
     }
   }
 
+  &__body {
+    @include glass-text-primary-color;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
   &__footer {
     display: flex;
     justify-content: space-between;
+  }
+
+  // TODO: add button sizes (eg. "small", "medium", "large") in zUI instead
+  // of setting the height here
+  &__text-button {
+    height: 40px;
+    max-width: 144px;
+
+    div {
+      color: theme.$color-greyscale-12;
+    }
+
+    &:hover {
+      color: theme.$color-secondary-1;
+    }
+  }
+
+  &__text-button-text {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    color: theme.$color-greyscale-12;
   }
 }

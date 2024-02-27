@@ -24,27 +24,18 @@ interface State {}
 export class LeaveGroupDialog extends React.Component<Properties, State> {
   render() {
     return (
-      <Modal title='Leave Group ?' onClose={this.props.onClose}>
+      <Modal
+        title='Leave Group?'
+        onClose={this.props.onClose}
+        primaryText='Leave Group'
+        secondaryText='Cancel'
+        onPrimary={this.props.onLeave}
+        onSecondary={this.props.onClose}
+        // isLoading={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
+      >
         <div {...cn('')}>
-          <div {...cn('body')}>
-            Are you sure you want to leave {this.props.name || 'this group'}? You will lose access to the conversation
-            and its history.
-          </div>
-
-          <div {...cn('footer')}>
-            <Button {...cn('text-button')} variant='text' onPress={this.props.onClose}>
-              <div {...cn('text-button-text')}>Cancel</div>
-            </Button>
-
-            <Button
-              {...cn('text-button')}
-              variant='negative'
-              onPress={this.props.onLeave}
-              isLoading={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
-            >
-              <div {...cn('text-button-text')}>Leave Group</div>
-            </Button>
-          </div>
+          Are you sure you want to leave {this.props.name || 'this group'}? You will lose access to the conversation and
+          its history.
         </div>
       </Modal>
     );

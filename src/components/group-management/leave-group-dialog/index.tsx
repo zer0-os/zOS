@@ -26,11 +26,11 @@ export class LeaveGroupDialog extends React.Component<Properties, State> {
     return (
       <Modal
         title='Leave Group?'
-        onClose={this.props.onClose}
         primaryText='Leave Group'
         secondaryText='Cancel'
         onPrimary={this.props.onLeave}
         onSecondary={this.props.onClose}
+        onClose={this.props.onClose}
         isProcessing={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
       >
         <div {...cn('')}>

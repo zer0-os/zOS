@@ -100,13 +100,11 @@ export class Container extends React.Component<Properties> {
 
   renderLeaveGroupDialog = (): JSX.Element => {
     return (
-      <Modal open={this.isLeaveGroupDialogOpen} onOpenChange={this.closeLeaveGroupDialog}>
-        <LeaveGroupDialogContainer
-          groupName={this.props.directMessage.name}
-          onClose={this.closeLeaveGroupDialog}
-          roomId={this.props.activeConversationId}
-        />
-      </Modal>
+      <LeaveGroupDialogContainer
+        groupName={this.props.directMessage.name}
+        onClose={this.closeLeaveGroupDialog}
+        roomId={this.props.activeConversationId}
+      />
     );
   };
 

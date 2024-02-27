@@ -1,0 +1,42 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  overflow: hidden;
+  padding: 10px;
+
+  &__title-bar {
+    display: flex;
+    height: 53px;
+    border-bottom: 1px solid theme.$color-primary-4;
+    color: theme.$color-greyscale-12;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__close {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+}

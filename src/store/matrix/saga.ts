@@ -61,8 +61,14 @@ export function* getBackup() {
 export function* generateBackup() {
   yield put(setBackupStage(BackupStage.GenerateBackup));
   const chatClient = yield call(chat.get);
-  const key = yield call([chatClient, chatClient.generateSecureBackup]);
-  yield put(setGeneratedRecoveryKey(key));
+
+  try {
+    const key = yield call([chatClient, chatClient.generateSecureBackup]);
+    yield put(setGeneratedRecoveryKey(key));
+  } catch (error) {
+    yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
+    yield put(setBackupStage(BackupStage.None));
+  }
 }
 
 export function* saveBackup() {

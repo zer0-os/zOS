@@ -34,6 +34,7 @@ export interface Properties extends PublicProperties {
   canLeaveRoom: boolean;
   canEdit: boolean;
   canAddMembers: boolean;
+  canViewDetails: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -63,6 +64,7 @@ export class Container extends React.Component<Properties> {
     const canLeaveRoom = !isCurrentUserRoomAdmin && (directMessage?.otherMembers || []).length > 1;
     const canEdit = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
+    const canViewDetails = !directMessage?.isOneOnOne;
 
     return {
       activeConversationId,
@@ -73,6 +75,7 @@ export class Container extends React.Component<Properties> {
       canLeaveRoom,
       canEdit,
       canAddMembers,
+      canViewDetails,
     };
   }
 
@@ -172,7 +175,7 @@ export class Container extends React.Component<Properties> {
                 canAddMembers={this.props.canAddMembers}
                 canLeaveRoom={this.props.canLeaveRoom}
                 canEdit={this.props.canEdit}
-                canViewDetails={!this.isOneOnOne()}
+                canViewDetails={this.props.canViewDetails}
                 onLeaveRoom={this.openLeaveGroupDialog}
                 onViewDetails={this.onViewGroupInformation}
                 onAddMember={this.props.startAddGroupMember}

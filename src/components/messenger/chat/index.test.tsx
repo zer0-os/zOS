@@ -136,29 +136,6 @@ describe(DirectMessageChat, () => {
     });
   });
 
-  describe('room management', () => {
-    describe('view group information', () => {
-      it('allows viewing of group information if conversation is not a 1 on 1', () => {
-        const wrapper = subject({ directMessage: stubConversation({ isOneOnOne: false }) });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', true);
-      });
-
-      it('does NOT allow viewing of group information if conversation is considered a 1 on 1', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: true,
-          directMessage: stubConversation({ isOneOnOne: true }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', false);
-      });
-    });
-  });
-
   describe('message input', () => {
     it('passes sendMessage prop to message input', () => {
       const sendMessage = jest.fn();
@@ -290,6 +267,20 @@ describe(DirectMessageChat, () => {
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+      });
+    });
+
+    describe('canViewDetails', () => {
+      it('is false when one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: true }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: false }));
+      });
+
+      it('is true when not a one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: false }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: true }));
       });
     });
   });

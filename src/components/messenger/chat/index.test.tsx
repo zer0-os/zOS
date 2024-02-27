@@ -20,6 +20,7 @@ import { bem } from '../../../lib/bem';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { store } from '../../../store';
+import { StoreBuilder, stubAuthenticatedUser } from '../../../store/test/store';
 
 const c = bem('.direct-message-chat');
 
@@ -91,28 +92,6 @@ describe(DirectMessageChat, () => {
   });
 
   describe('one on one chat', function () {
-    it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,
-      });
-
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-      expect(groupManagementMenu).toHaveProp('canLeaveRoom', false);
-    });
-
-    it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
-      });
-
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-      expect(groupManagementMenu).toHaveProp('canLeaveRoom', true);
-    });
-
     it('can start add group member group management saga', async function () {
       const startAddGroupMember = jest.fn();
       const wrapper = subject({ startAddGroupMember });
@@ -371,6 +350,36 @@ describe(DirectMessageChat, () => {
       await input.prop('getUsersForMentions')('bob');
 
       expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', []);
+    });
+  });
+
+  describe('mapState', () => {
+    describe('canLeaveRoom', () => {
+      it('is false when only when one other member', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ otherMembers: [stubUser()] }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+      });
+
+      it('is false when user is admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['current-user-matrix-id'] })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+      });
+
+      it('is true when user is not admin and more than one other member', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['other-user-matrix-id'] })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: true }));
+      });
     });
   });
 });

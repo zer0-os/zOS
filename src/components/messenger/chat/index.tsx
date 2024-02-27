@@ -33,6 +33,7 @@ export interface Properties extends PublicProperties {
   isJoiningConversation: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
+  canAddMembers: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -61,6 +62,7 @@ export class Container extends React.Component<Properties> {
     const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
     const canLeaveRoom = !isCurrentUserRoomAdmin && (directMessage?.otherMembers || []).length > 1;
     const canEdit = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
+    const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
 
     return {
       activeConversationId,
@@ -70,6 +72,7 @@ export class Container extends React.Component<Properties> {
       isJoiningConversation,
       canLeaveRoom,
       canEdit,
+      canAddMembers,
     };
   }
 
@@ -166,7 +169,7 @@ export class Container extends React.Component<Properties> {
                 name={this.props.directMessage.name}
                 isOneOnOne={this.isOneOnOne()}
                 otherMembers={this.props.directMessage.otherMembers || []}
-                canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
+                canAddMembers={this.props.canAddMembers}
                 canLeaveRoom={this.props.canLeaveRoom}
                 canEdit={this.props.canEdit}
                 canViewDetails={!this.isOneOnOne()}

@@ -38,7 +38,7 @@ export class Modal extends React.Component<Properties> {
 
           <div {...cn('footer')}>
             {this.props.onSecondary && (
-              <Button {...cn('text-button')} variant='text' onPress={this.props.onSecondary}>
+              <Button {...cn('secondary-button')} variant='text' onPress={this.props.onSecondary}>
                 <div {...cn('text-button-text')}>{this.props.secondaryText}</div>
               </Button>
             )}
@@ -46,7 +46,7 @@ export class Modal extends React.Component<Properties> {
             {/* XXX: text-button styles? */}
             {this.props.onPrimary && (
               <Button
-                {...cn('text-button')}
+                {...cn('primary-button')}
                 variant='negative'
                 onPress={this.props.onPrimary}
                 // isLoading={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}

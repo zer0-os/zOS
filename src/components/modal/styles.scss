@@ -50,16 +50,22 @@
 
   // TODO: add button sizes (eg. "small", "medium", "large") in zUI instead
   // of setting the height here
-  &__text-button {
+  &__primary-button {
+    height: 40px;
+    max-width: 144px;
+  }
+
+  &__secondary-button {
     height: 40px;
     max-width: 144px;
 
     div {
-      color: theme.$color-greyscale-12;
+      color: $glass-highlight-color;
     }
 
     &:hover {
-      color: theme.$color-secondary-1;
+      background-color: transparent;
+      @include glass-glow-highlight-medium;
     }
   }
 

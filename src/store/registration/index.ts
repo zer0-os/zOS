@@ -35,7 +35,6 @@ export type RegistrationState = {
   userId: string;
   inviteCode: string;
   isFirstTimeLogin: boolean;
-  isInviteToastOpen: boolean;
 };
 
 export enum AccountCreationErrors {
@@ -67,7 +66,6 @@ export const initialState: RegistrationState = {
   userId: '',
   inviteCode: '',
   isFirstTimeLogin: false,
-  isInviteToastOpen: false,
 };
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
@@ -108,9 +106,6 @@ const slice = createSlice({
       state.stage = RegistrationStage.WalletAccountCreation;
       state.errors = [];
     },
-    setInviteToastOpen: (state, action: PayloadAction<RegistrationState['isInviteToastOpen']>) => {
-      state.isInviteToastOpen = action.payload;
-    },
   },
 });
 
@@ -124,6 +119,5 @@ export const {
   setFirstTimeLogin,
   registerWithEmail,
   registerWithWallet,
-  setInviteToastOpen,
 } = slice.actions;
 export const { reducer } = slice;

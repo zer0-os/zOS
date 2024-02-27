@@ -26,8 +26,7 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
-import { Modal, ToastNotification } from '@zero-tech/zui/components';
-import { InviteDialogContainer } from '../../invite-dialog/container';
+import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
@@ -57,7 +56,6 @@ export interface Properties extends PublicProperties {
   userHandle: string;
   userAvatarUrl: string;
   userIsOnline: boolean;
-  isInviteNotificationOpen: boolean;
   myUserId: string;
   activeConversationId?: string;
   groupManangemenetStage: GroupManagementSagaStage;
@@ -78,7 +76,6 @@ export interface Properties extends PublicProperties {
 }
 
 interface State {
-  isInviteDialogOpen: boolean;
   isVerifyIdDialogOpen: boolean;
 }
 
@@ -102,7 +99,6 @@ export class Container extends React.Component<Properties, State> {
       groupUsers: createConversation.groupUsers,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
       isFirstTimeLogin: registration.isFirstTimeLogin,
-      isInviteNotificationOpen: registration.isInviteToastOpen,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -131,7 +127,6 @@ export class Container extends React.Component<Properties, State> {
   }
 
   state = {
-    isInviteDialogOpen: false,
     isVerifyIdDialogOpen: false,
   };
 
@@ -162,14 +157,6 @@ export class Container extends React.Component<Properties, State> {
     this.props.createConversation(conversation);
   };
 
-  openInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: true });
-  };
-
-  closeInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: false });
-  };
-
   openVerifyIdDialog = () => {
     this.setState({ isVerifyIdDialogOpen: true });
   };
@@ -193,14 +180,6 @@ export class Container extends React.Component<Properties, State> {
   get isErrorDialogOpen(): boolean {
     return !!this.props.joinRoomErrorContent;
   }
-
-  renderInviteDialog = (): JSX.Element => {
-    return (
-      <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
-        <InviteDialogContainer onClose={this.closeInviteDialog} />
-      </Modal>
-    );
-  };
 
   renderVerifyIdDialog = (): JSX.Element => {
     return (
@@ -229,22 +208,6 @@ export class Container extends React.Component<Properties, State> {
       <Modal open={this.props.isBackupDialogOpen} onOpenChange={this.closeBackupDialog}>
         <SecureBackupContainer onClose={this.closeBackupDialog} />
       </Modal>
-    );
-  };
-
-  renderToastNotification = (): JSX.Element => {
-    return (
-      <ToastNotification
-        viewportClassName='invite-toast-notification'
-        title={'Invite your friends'}
-        description={'Build your network and message friends to earn more rewards.'}
-        actionTitle={'Invite Friends'}
-        actionAltText={'invite dialog modal call to action'}
-        positionVariant='left'
-        openToast={this.props.isInviteNotificationOpen}
-        onClick={this.openInviteDialog}
-        duration={10000}
-      />
     );
   };
 
@@ -319,13 +282,10 @@ export class Container extends React.Component<Properties, State> {
 
         <div {...cn('')}>
           {this.renderPanel()}
-          {this.state.isInviteDialogOpen && this.renderInviteDialog()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
-
-          {this.renderToastNotification()}
         </div>
       </>
     );

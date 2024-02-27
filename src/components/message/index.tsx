@@ -44,6 +44,8 @@ interface Properties extends MessageModel {
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
   showAuthorName: boolean;
+  isHidden: boolean;
+  onHiddenMessageInfoClick: () => void;
 }
 
 export interface State {
@@ -276,11 +278,17 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderBody() {
-    const { message } = this.props;
+    const { message, isHidden } = this.props;
 
     return (
       <div {...cn('block-body')}>
-        {message && <ContentHighlighter message={message} />}
+        {message && (
+          <ContentHighlighter
+            message={message}
+            isHidden={isHidden}
+            onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
+          />
+        )}
         {this.renderFooter()}
       </div>
     );

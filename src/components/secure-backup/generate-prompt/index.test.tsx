@@ -19,7 +19,7 @@ describe(GeneratePrompt, () => {
     return shallow(<GeneratePrompt {...allProps} />);
   };
 
-  it('renders the primary text when isSystemPrompt is true', function () {
+  it('renders the expected primary text when isSystemPrompt is true', function () {
     const wrapper = subject({ isSystemPrompt: true });
 
     const expectedText =
@@ -28,7 +28,7 @@ describe(GeneratePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('renders the primary text when isSystemPrompt is false', function () {
+  it('renders the expected primary text when isSystemPrompt is false', function () {
     const wrapper = subject({ isSystemPrompt: false });
 
     const expectedText = 'Access your encrypted messages between devices and logins with an account backup.';

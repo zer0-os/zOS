@@ -123,7 +123,7 @@ describe(generateBackup, () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup. Please try again.');
+    expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup key. Please try again.');
     expect(storeState.matrix.backupStage).toEqual(BackupStage.None);
   });
 });

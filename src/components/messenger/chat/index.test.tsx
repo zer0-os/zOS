@@ -39,6 +39,7 @@ describe(DirectMessageChat, () => {
       activeConversationId: '1',
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       directMessage: { id: '1', otherMembers: [] } as any,
+      canLeaveRoom: false,
       sendMessage: () => null,
       onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,

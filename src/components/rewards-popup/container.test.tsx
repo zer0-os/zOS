@@ -44,7 +44,6 @@ describe('Container', () => {
     function baseState() {
       return {
         ...authState(),
-        ...layoutState(),
         ...rewardState(),
       } as RootState;
     }
@@ -84,16 +83,6 @@ function authState(user = {}) {
           isAMemberOfWorlds: false,
           ...user,
         },
-      },
-    },
-  };
-}
-
-function layoutState(layout = {}) {
-  return {
-    layout: {
-      value: {
-        ...layout,
       },
     },
   };

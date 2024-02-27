@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 import { reducer as pageload } from './page-load';
-import { reducer as layout } from './layout';
 import { reducer as channelsList } from './channels-list';
 import { reducer as web3 } from './web3';
 import { reducer as theme } from './theme';
@@ -21,7 +20,6 @@ import { reducer as groupManagement } from './group-management';
 
 export const rootReducer = combineReducers({
   pageload,
-  layout,
   channelsList,
   web3,
   theme,

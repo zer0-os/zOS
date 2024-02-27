@@ -72,4 +72,10 @@ describe(GenerateBackup, () => {
 
     expect(wrapper.find(c('error-message'))).toHaveText('test-error-message');
   });
+
+  it('does not render an error message if none provided', () => {
+    const wrapper = subject({ errorMessage: '' });
+
+    expect(wrapper.find(c('error-message'))).not.toExist();
+  });
 });

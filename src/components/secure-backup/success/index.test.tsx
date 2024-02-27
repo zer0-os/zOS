@@ -19,7 +19,7 @@ describe(Success, () => {
     const onClose = jest.fn();
     const wrapper = subject({ onClose });
 
-    wrapper.find(Button).simulate('close');
+    wrapper.find(Button).simulate('press');
 
     expect(onClose).toHaveBeenCalledOnce();
   });

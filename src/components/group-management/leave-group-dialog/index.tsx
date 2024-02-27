@@ -31,7 +31,7 @@ export class LeaveGroupDialog extends React.Component<Properties, State> {
         secondaryText='Cancel'
         onPrimary={this.props.onLeave}
         onSecondary={this.props.onClose}
-        // isLoading={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
+        isProcessing={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
       >
         <div {...cn('')}>
           Are you sure you want to leave {this.props.name || 'this group'}? You will lose access to the conversation and

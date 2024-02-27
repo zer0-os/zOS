@@ -12,6 +12,7 @@ export interface Properties {
   title: string;
   primaryText?: string;
   secondaryText?: string;
+  isProcessing?: boolean;
 
   onClose: () => void;
   onPrimary?: () => void;
@@ -43,13 +44,12 @@ export class Modal extends React.Component<Properties> {
               </Button>
             )}
 
-            {/* XXX: text-button styles? */}
             {this.props.onPrimary && (
               <Button
                 {...cn('primary-button')}
                 variant='negative'
                 onPress={this.props.onPrimary}
-                // isLoading={this.props.status === LeaveGroupDialogStatus.IN_PROGRESS}
+                isLoading={this.props.isProcessing}
               >
                 <div {...cn('text-button-text')}>{this.props.primaryText}</div>
               </Button>

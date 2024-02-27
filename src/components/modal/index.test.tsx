@@ -2,7 +2,6 @@ import { shallow } from 'enzyme';
 
 import { Modal, Properties } from '.';
 import { bem } from '../../lib/bem';
-import { Button } from '@zero-tech/zui/components';
 import { buttonLabelled } from '../../test/utils';
 
 const c = bem('.modal');
@@ -70,5 +69,11 @@ describe(Modal, () => {
     const wrapper = subject({ onSecondary: undefined, secondaryText: 'Secondary Action' });
 
     expect(buttonLabelled(wrapper, 'Secondary Action').exists()).toBe(false);
+  });
+
+  it('sets loading state on primary button', function () {
+    const wrapper = subject({ isProcessing: true, onPrimary: () => null, primaryText: 'Primary' });
+
+    expect(buttonLabelled(wrapper, 'Primary')).toHaveProp('isLoading', true);
   });
 });

@@ -21,6 +21,7 @@ import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { store } from '../../../store';
 import { StoreBuilder, stubAuthenticatedUser } from '../../../store/test/store';
+import { ConversationHeader } from './conversation-header';
 
 const c = bem('.direct-message-chat');
 
@@ -92,88 +93,13 @@ describe(DirectMessageChat, () => {
     expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
-  describe('one on one chat', function () {
-    it('can start add group member group management saga', async function () {
-      const startAddGroupMember = jest.fn();
-      const wrapper = subject({ startAddGroupMember });
+  it('calls start add group member', async function () {
+    const startAddGroupMember = jest.fn();
+    const wrapper = subject({ startAddGroupMember });
 
-      wrapper.find(GroupManagementMenu).prop('onStartAddMember')();
+    wrapper.find(ConversationHeader).prop('onAddMember')();
 
-      expect(startAddGroupMember).toHaveBeenCalledOnce();
-    });
-  });
-
-  describe('one to many chat', function () {
-    it('header renders full names in the title', function () {
-      const wrapper = subject({
-        directMessage: {
-          otherMembers: [
-            stubUser({ firstName: 'Johnny', lastName: 'Sanderson' }),
-            stubUser({ firstName: 'Jack', lastName: 'Black' }),
-          ],
-        } as Channel,
-      });
-
-      const tooltip = wrapper.find(Tooltip);
-
-      expect(tooltip.html()).toContain('Johnny Sanderson, Jack Black');
-    });
-
-    it('header renders online status in the subtitle if any member is online', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
-      });
-
-      const subtitle = wrapper.find(c('subtitle'));
-
-      expect(subtitle).toHaveText('Online');
-    });
-
-    it('header renders online status if any member is online', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
-      });
-
-      expect(wrapper).toHaveElement(c('header-avatar--online'));
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })] } as Channel,
-      });
-
-      expect(wrapper).toHaveElement(c('header-avatar--offline'));
-    });
-
-    it('header renders avatar with group icon when there is no avatar url', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
-      });
-
-      const headerAvatar = wrapper.find(c('header-avatar'));
-
-      expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
-      expect(headerAvatar).toHaveElement(IconUsers1);
-    });
-
-    it('header renders avatar with custom background when there is an avatar url', function () {
-      const wrapper = subject({
-        directMessage: {
-          icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
-          otherMembers: [stubUser(), stubUser()],
-        } as Channel,
-      });
-
-      const headerAvatar = wrapper.find(c('header-avatar'));
-
-      expect(headerAvatar).toHaveProp('style', {
-        backgroundImage:
-          'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)',
-      });
-      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
-      expect(headerAvatar).not.toHaveElement(IconUsers1);
-    });
+    expect(startAddGroupMember).toHaveBeenCalledOnce();
   });
 
   // Skipping these tests as modal doesn't render in `mount` mode - will restore once reverted back to shallow render

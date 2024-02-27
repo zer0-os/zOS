@@ -1,29 +1,16 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-// import { shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
-import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
 import { Media } from '../../message-input/utils';
-import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 
-import { bem } from '../../../lib/bem';
-import { mount } from 'enzyme';
-import { Provider } from 'react-redux';
-import { store } from '../../../store';
 import { StoreBuilder, stubAuthenticatedUser } from '../../../store/test/store';
 import { ConversationHeader } from './conversation-header';
-
-const c = bem('.direct-message-chat');
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -41,6 +28,9 @@ describe(DirectMessageChat, () => {
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       directMessage: { id: '1', otherMembers: [] } as any,
       canLeaveRoom: false,
+      canEdit: false,
+      canAddMembers: false,
+      canViewDetails: false,
       sendMessage: () => null,
       onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,
@@ -52,11 +42,7 @@ describe(DirectMessageChat, () => {
       ...props,
     };
 
-    return mount(
-      <Provider store={store}>
-        <DirectMessageChat {...allProps} />
-      </Provider>
-    );
+    return shallow(<DirectMessageChat {...allProps} />);
   };
 
   it('render channel view component', function () {
@@ -97,13 +83,12 @@ describe(DirectMessageChat, () => {
     const startAddGroupMember = jest.fn();
     const wrapper = subject({ startAddGroupMember });
 
-    wrapper.find(ConversationHeader).prop('onAddMember')();
+    wrapper.find(ConversationHeader).simulate('addMember');
 
     expect(startAddGroupMember).toHaveBeenCalledOnce();
   });
 
-  // Skipping these tests as modal doesn't render in `mount` mode - will restore once reverted back to shallow render
-  describe.skip('leave group dialog', () => {
+  describe('leave group dialog', () => {
     it('renders leave group dialog when status is OPEN', async () => {
       const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN });
 
@@ -145,7 +130,7 @@ describe(DirectMessageChat, () => {
 
       const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, mentionedUserIds, []);
+      wrapper.find(MessageInput).simulate('submit', message, mentionedUserIds, []);
 
       expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, message, mentionedUserIds }));
     });
@@ -162,7 +147,7 @@ describe(DirectMessageChat, () => {
         directMessage: { reply, otherMembers: [] } as any,
       });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, [], []);
+      wrapper.find(MessageInput).simulate('submit', message, [], []);
 
       expect(sendMessage).toHaveBeenCalledWith(
         expect.objectContaining({ channelId, message, mentionedUserIds: [], parentMessage: reply })
@@ -176,7 +161,7 @@ describe(DirectMessageChat, () => {
 
       const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
+      wrapper.find(MessageInput).simulate('submit', message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
 
       expect(sendMessage).toHaveBeenCalledWith(
         expect.objectContaining({ channelId, files: [{ id: 'file-id', name: 'file-name' }] })

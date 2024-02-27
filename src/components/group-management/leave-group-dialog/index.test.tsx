@@ -3,7 +3,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { LeaveGroupDialog, Properties } from '.';
-import { buttonLabelled } from '../../../test/utils';
 import { bem } from '../../../lib/bem';
 import { Modal } from '../../modal';
 

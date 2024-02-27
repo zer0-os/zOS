@@ -1,8 +1,5 @@
 import * as React from 'react';
 
-import { IconButton, Button } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
-
 import './styles.scss';
 
 import { bemClassName } from '../../../lib/bem';

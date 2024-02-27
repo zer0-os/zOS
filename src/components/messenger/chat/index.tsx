@@ -106,10 +106,6 @@ export class Container extends React.Component<Properties> {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
   };
 
-  onViewGroupInformation = () => {
-    this.props.viewGroupInformation();
-  };
-
   renderLeaveGroupDialog = (): JSX.Element => {
     return (
       <Modal open={this.isLeaveGroupDialogOpen} onOpenChange={this.closeLeaveGroupDialog}>
@@ -177,7 +173,7 @@ export class Container extends React.Component<Properties> {
                 canEdit={this.props.canEdit}
                 canViewDetails={this.props.canViewDetails}
                 onLeaveRoom={this.openLeaveGroupDialog}
-                onViewDetails={this.onViewGroupInformation}
+                onViewDetails={this.props.viewGroupInformation}
                 onAddMember={this.props.startAddGroupMember}
                 onEdit={this.props.startEditConversation}
               />

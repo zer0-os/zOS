@@ -46,7 +46,12 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
           <p {...cn('secondary-text')}>Confirm that you have safely stored your backup phrase by entering it below</p>
 
           <div {...cn('input-container')}>
-            <Input placeholder='Enter your backup phrase' onChange={this.trackKeyPhrase} value={this.keyPhrase} />
+            <Input
+              {...cn('input', `${this.props.errorMessage && 'error'}`)}
+              placeholder='Enter your backup phrase'
+              onChange={this.trackKeyPhrase}
+              value={this.keyPhrase}
+            />
 
             {this.props.errorMessage && (
               <Alert {...cn('alert')} variant='error'>

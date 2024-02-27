@@ -110,6 +110,11 @@
     padding: 8px;
   }
 
+  &__alert {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
   &__error-message {
     text-align: center;
     color: theme.$color-failure-11;

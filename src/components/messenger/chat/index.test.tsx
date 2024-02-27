@@ -1,27 +1,16 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-// import { shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
 import { Channel, User } from '../../../store/channels';
-import Tooltip from '../../tooltip';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { GroupManagementMenu } from '../../group-management-menu';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
 import { Media } from '../../message-input/utils';
-import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 
-import { bem } from '../../../lib/bem';
-import { mount } from 'enzyme';
-import { Provider } from 'react-redux';
-import { store } from '../../../store';
-
-const c = bem('.direct-message-chat');
+import { StoreBuilder, stubAuthenticatedUser } from '../../../store/test/store';
+import { ConversationHeader } from './conversation-header';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -38,6 +27,10 @@ describe(DirectMessageChat, () => {
       activeConversationId: '1',
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       directMessage: { id: '1', otherMembers: [] } as any,
+      canLeaveRoom: false,
+      canEdit: false,
+      canAddMembers: false,
+      canViewDetails: false,
       sendMessage: () => null,
       onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,
@@ -49,11 +42,7 @@ describe(DirectMessageChat, () => {
       ...props,
     };
 
-    return mount(
-      <Provider store={store}>
-        <DirectMessageChat {...allProps} />
-      </Provider>
-    );
+    return shallow(<DirectMessageChat {...allProps} />);
   };
 
   it('render channel view component', function () {
@@ -90,114 +79,16 @@ describe(DirectMessageChat, () => {
     expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
-  describe('one on one chat', function () {
-    it('passes canLeaveRoom prop as false to group management menu if only 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: { isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] } as Channel,
-      });
+  it('calls start add group member', async function () {
+    const startAddGroupMember = jest.fn();
+    const wrapper = subject({ startAddGroupMember });
 
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
+    wrapper.find(ConversationHeader).simulate('addMember');
 
-      expect(groupManagementMenu).toHaveProp('canLeaveRoom', false);
-    });
-
-    it('passes canLeaveRoom prop as true to group management menu if more than 2 members are in conversation', function () {
-      const wrapper = subject({
-        isCurrentUserRoomAdmin: false,
-        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
-      });
-
-      const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-      expect(groupManagementMenu).toHaveProp('canLeaveRoom', true);
-    });
-
-    it('can start add group member group management saga', async function () {
-      const startAddGroupMember = jest.fn();
-      const wrapper = subject({ startAddGroupMember });
-
-      wrapper.find(GroupManagementMenu).prop('onStartAddMember')();
-
-      expect(startAddGroupMember).toHaveBeenCalledOnce();
-    });
+    expect(startAddGroupMember).toHaveBeenCalledOnce();
   });
 
-  describe('one to many chat', function () {
-    it('header renders full names in the title', function () {
-      const wrapper = subject({
-        directMessage: {
-          otherMembers: [
-            stubUser({ firstName: 'Johnny', lastName: 'Sanderson' }),
-            stubUser({ firstName: 'Jack', lastName: 'Black' }),
-          ],
-        } as Channel,
-      });
-
-      const tooltip = wrapper.find(Tooltip);
-
-      expect(tooltip.html()).toContain('Johnny Sanderson, Jack Black');
-    });
-
-    it('header renders online status in the subtitle if any member is online', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
-      });
-
-      const subtitle = wrapper.find(c('subtitle'));
-
-      expect(subtitle).toHaveText('Online');
-    });
-
-    it('header renders online status if any member is online', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })] } as Channel,
-      });
-
-      expect(wrapper).toHaveElement(c('header-avatar--online'));
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })] } as Channel,
-      });
-
-      expect(wrapper).toHaveElement(c('header-avatar--offline'));
-    });
-
-    it('header renders avatar with group icon when there is no avatar url', function () {
-      const wrapper = subject({
-        directMessage: { otherMembers: [stubUser(), stubUser()] } as Channel,
-      });
-
-      const headerAvatar = wrapper.find(c('header-avatar'));
-
-      expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
-      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
-      expect(headerAvatar).toHaveElement(IconUsers1);
-    });
-
-    it('header renders avatar with custom background when there is an avatar url', function () {
-      const wrapper = subject({
-        directMessage: {
-          icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
-          otherMembers: [stubUser(), stubUser()],
-        } as Channel,
-      });
-
-      const headerAvatar = wrapper.find(c('header-avatar'));
-
-      expect(headerAvatar).toHaveProp('style', {
-        backgroundImage:
-          'url(https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg)',
-      });
-      expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
-      expect(headerAvatar).not.toHaveElement(IconUsers1);
-    });
-  });
-
-  // Skipping these tests as modal doesn't render in `mount` mode - will restore once reverted back to shallow render
-  describe.skip('leave group dialog', () => {
+  describe('leave group dialog', () => {
     it('renders leave group dialog when status is OPEN', async () => {
       const wrapper = subject({ leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN });
 
@@ -230,93 +121,6 @@ describe(DirectMessageChat, () => {
     });
   });
 
-  describe('room management', () => {
-    describe('edit members', () => {
-      it('allows editing if user is an admin and conversation is not a 1 on 1', () => {
-        const wrapper = subject({ isCurrentUserRoomAdmin: true });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', true);
-      });
-
-      it('does NOT allow editing if user is NOT an admin', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: false,
-          directMessage: stubConversation({ isOneOnOne: false }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', false);
-      });
-
-      it('does NOT allow editing if conversation is considered a 1 on 1', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: true,
-          directMessage: stubConversation({ isOneOnOne: true }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canEdit', false);
-      });
-    });
-
-    describe('add members', () => {
-      it('allows adding of members if user is an admin and conversation is not a 1 on 1', () => {
-        const wrapper = subject({ isCurrentUserRoomAdmin: true });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canAddMembers', true);
-      });
-
-      it('does NOT allow adding of members if user is NOT an admin', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: false,
-          directMessage: stubConversation({ isOneOnOne: false }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canAddMembers', false);
-      });
-
-      it('does NOT allow adding of members if conversation is considered a 1 on 1', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: true,
-          directMessage: stubConversation({ isOneOnOne: true }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canAddMembers', false);
-      });
-    });
-
-    describe('view group information', () => {
-      it('allows viewing of group information if conversation is not a 1 on 1', () => {
-        const wrapper = subject({ directMessage: stubConversation({ isOneOnOne: false }) });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', true);
-      });
-
-      it('does NOT allow viewing of group information if conversation is considered a 1 on 1', () => {
-        const wrapper = subject({
-          isCurrentUserRoomAdmin: true,
-          directMessage: stubConversation({ isOneOnOne: true }),
-        });
-
-        const groupManagementMenu = wrapper.find(GroupManagementMenu);
-
-        expect(groupManagementMenu).toHaveProp('canViewGroupInformation', false);
-      });
-    });
-  });
-
   describe('message input', () => {
     it('passes sendMessage prop to message input', () => {
       const sendMessage = jest.fn();
@@ -326,7 +130,7 @@ describe(DirectMessageChat, () => {
 
       const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, mentionedUserIds, []);
+      wrapper.find(MessageInput).simulate('submit', message, mentionedUserIds, []);
 
       expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ channelId, message, mentionedUserIds }));
     });
@@ -343,7 +147,7 @@ describe(DirectMessageChat, () => {
         directMessage: { reply, otherMembers: [] } as any,
       });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, [], []);
+      wrapper.find(MessageInput).simulate('submit', message, [], []);
 
       expect(sendMessage).toHaveBeenCalledWith(
         expect.objectContaining({ channelId, message, mentionedUserIds: [], parentMessage: reply })
@@ -357,7 +161,7 @@ describe(DirectMessageChat, () => {
 
       const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
-      wrapper.find(MessageInput).prop('onSubmit')(message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
+      wrapper.find(MessageInput).simulate('submit', message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
 
       expect(sendMessage).toHaveBeenCalledWith(
         expect.objectContaining({ channelId, files: [{ id: 'file-id', name: 'file-name' }] })
@@ -371,6 +175,98 @@ describe(DirectMessageChat, () => {
       await input.prop('getUsersForMentions')('bob');
 
       expect(mockSearchMentionableUsersForChannel).toHaveBeenCalledWith('5', 'bob', []);
+    });
+  });
+
+  describe('mapState', () => {
+    describe('canLeaveRoom', () => {
+      it('is false when only when one other member', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ otherMembers: [stubUser()] }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+      });
+
+      it('is false when user is admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['current-user-matrix-id'] })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+      });
+
+      it('is true when user is not admin and more than one other member', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['other-user-matrix-id'] })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: true }));
+      });
+    });
+
+    describe('canEdit', () => {
+      it('is false when one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: true }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+      });
+
+      it('is false when current user is not room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['other-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+      });
+
+      it('is true when current user is room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
+      });
+    });
+
+    describe('canAddMembers', () => {
+      it('is false when one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: true }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+      });
+
+      it('is false when current user is not room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['other-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+      });
+
+      it('is true when current user is room admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+      });
+    });
+
+    describe('canViewDetails', () => {
+      it('is false when one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: true }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: false }));
+      });
+
+      it('is true when not a one on one conversation', () => {
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ isOneOnOne: false }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: true }));
+      });
     });
   });
 });

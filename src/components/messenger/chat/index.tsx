@@ -31,6 +31,10 @@ export interface Properties extends PublicProperties {
   directMessage: Channel;
   isCurrentUserRoomAdmin: boolean;
   isJoiningConversation: boolean;
+  canLeaveRoom: boolean;
+  canEdit: boolean;
+  canAddMembers: boolean;
+  canViewDetails: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -57,6 +61,10 @@ export class Container extends React.Component<Properties> {
     const directMessage = denormalize(activeConversationId, state);
     const currentUser = currentUserSelector(state);
     const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
+    const canLeaveRoom = !isCurrentUserRoomAdmin && (directMessage?.otherMembers || []).length > 1;
+    const canEdit = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
+    const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
+    const canViewDetails = !directMessage?.isOneOnOne;
 
     return {
       activeConversationId,
@@ -64,6 +72,10 @@ export class Container extends React.Component<Properties> {
       isCurrentUserRoomAdmin,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isJoiningConversation,
+      canLeaveRoom,
+      canEdit,
+      canAddMembers,
+      canViewDetails,
     };
   }
 
@@ -92,10 +104,6 @@ export class Container extends React.Component<Properties> {
 
   closeLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
-  };
-
-  onViewGroupInformation = () => {
-    this.props.viewGroupInformation();
   };
 
   renderLeaveGroupDialog = (): JSX.Element => {
@@ -160,14 +168,12 @@ export class Container extends React.Component<Properties> {
                 name={this.props.directMessage.name}
                 isOneOnOne={this.isOneOnOne()}
                 otherMembers={this.props.directMessage.otherMembers || []}
-                canAddMembers={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                canLeaveRoom={
-                  !this.props.isCurrentUserRoomAdmin && (this.props.directMessage.otherMembers || []).length > 1
-                }
-                canEdit={this.props.isCurrentUserRoomAdmin && !this.isOneOnOne()}
-                canViewDetails={!this.isOneOnOne()}
+                canAddMembers={this.props.canAddMembers}
+                canLeaveRoom={this.props.canLeaveRoom}
+                canEdit={this.props.canEdit}
+                canViewDetails={this.props.canViewDetails}
                 onLeaveRoom={this.openLeaveGroupDialog}
-                onViewDetails={this.onViewGroupInformation}
+                onViewDetails={this.props.viewGroupInformation}
                 onAddMember={this.props.startAddGroupMember}
                 onEdit={this.props.startEditConversation}
               />

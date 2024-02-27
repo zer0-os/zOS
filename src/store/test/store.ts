@@ -123,7 +123,7 @@ export class StoreBuilder {
 }
 
 let stubCount = 0;
-function stubAuthenticatedUser(attrs: Partial<AuthenticatedUser> = {}): Partial<AuthenticatedUser> {
+export function stubAuthenticatedUser(attrs: Partial<AuthenticatedUser> = {}): Partial<AuthenticatedUser> {
   stubCount++;
   return {
     id: `default-stub-user-id-${stubCount}`,

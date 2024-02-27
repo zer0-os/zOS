@@ -48,7 +48,7 @@ describe(GenerateBackup, () => {
 
   it('enables the Save Backup button when code has been copied', function () {
     const saveButtonLabel = 'I’ve safely stored my backup';
-    const wrapper = subject({ recoveryKey: 'abcd 1234' });
+    const wrapper = subject();
 
     expect(buttonLabelled(wrapper, saveButtonLabel)).toHaveProp('isDisabled', true);
 
@@ -59,7 +59,7 @@ describe(GenerateBackup, () => {
 
   it('publishes onSave event', function () {
     const onSave = jest.fn();
-    const wrapper = subject({ onSave, recoveryKey: 'abcd 1234' });
+    const wrapper = subject({ onSave });
 
     pressButton(wrapper, 'Copy');
     pressButton(wrapper, 'I’ve safely stored my backup');

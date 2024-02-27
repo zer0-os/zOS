@@ -7,7 +7,7 @@ import { MessengerChat } from './components/messenger/chat';
 
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
-    const allProps = {
+    const allProps: Properties = {
       isMessengerFullScreen: false,
       context: {
         isAuthenticated: false,

@@ -20,6 +20,7 @@ import { waitForChatConnectionCompletion } from '../chat/saga';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
+  yield spawn(listenForUserLogout);
 
   yield takeLatest(SagaActionTypes.GetBackup, getBackup);
   yield takeLatest(SagaActionTypes.GenerateBackup, generateBackup);
@@ -104,7 +105,6 @@ export function* restoreBackup(action) {
 
 export function* clearBackupState() {
   yield put(setLoaded(false));
-  yield put(setTrustInfo(null));
   yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
@@ -164,6 +164,14 @@ export function* closeBackupDialog() {
 
 export function* openBackupDialog() {
   yield put(setIsBackupDialogOpen(true));
+}
+
+function* listenForUserLogout() {
+  const userChannel = yield call(getAuthChannel);
+  while (true) {
+    yield take(userChannel, AuthEvents.UserLogout);
+    yield put(setTrustInfo(null));
+  }
 }
 
 function* listenForUserLogin() {

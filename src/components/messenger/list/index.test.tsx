@@ -42,6 +42,7 @@ describe('messenger-list', () => {
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       isBackupDialogOpen: false,
+      displayLogoutModal: false,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,

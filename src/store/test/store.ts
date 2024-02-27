@@ -6,6 +6,7 @@ import { User as AuthenticatedUser } from '../authentication/types';
 import { initialState as initialGroupManagementState } from '../group-management';
 import { ChatState } from '../chat/types';
 import { initialState as authenticationInitialState } from '../authentication';
+import { MatrixState, initialState as initialMatrixState } from '../matrix';
 
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
@@ -19,6 +20,7 @@ export class StoreBuilder {
   otherState: any = {};
   chatState: Partial<ChatState> = {};
   activeConversationId: string = '';
+  matrix: MatrixState = { ...initialMatrixState };
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
@@ -81,6 +83,21 @@ export class StoreBuilder {
     return this;
   }
 
+  withoutBackup() {
+    this.matrix.trustInfo = null;
+    return this;
+  }
+
+  withUnverifiedBackup() {
+    this.matrix.trustInfo = { usable: false, trustedLocally: false, isLegacy: false };
+    return this;
+  }
+
+  withVerifiedBackup() {
+    this.matrix.trustInfo = { usable: false, trustedLocally: true, isLegacy: false };
+    return this;
+  }
+
   build() {
     const { result: channelsList, entities: channelEntitities } = normalizeChannel(
       [
@@ -117,6 +134,9 @@ export class StoreBuilder {
         user: { data: this.currentUser },
       },
       groupManagement: this.groupManagement,
+      matrix: {
+        ...this.matrix,
+      },
       ...this.otherState,
     } as RootState;
   }

@@ -15,7 +15,7 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
-import { forceLogout } from '../../../store/authentication';
+import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { closeConversationErrorDialog } from '../../../store/chat';
 
@@ -41,6 +41,7 @@ import { closeBackupDialog } from '../../../store/matrix';
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 import { SecureBackupContainer } from '../../secure-backup/container';
+import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 
 const cn = bemClassName('direct-message-members');
 
@@ -62,6 +63,7 @@ export interface Properties extends PublicProperties {
   groupManangemenetStage: GroupManagementSagaStage;
   joinRoomErrorContent: ErrorDialogContent;
   isBackupDialogOpen: boolean;
+  displayLogoutModal: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -85,7 +87,7 @@ export class Container extends React.Component<Properties, State> {
     const {
       createConversation,
       registration,
-      authentication: { user },
+      authentication: { user, displayLogoutModal },
       chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
       matrix: { isBackupDialogOpen },
@@ -109,6 +111,7 @@ export class Container extends React.Component<Properties, State> {
       groupManangemenetStage: groupManagement.stage,
       joinRoomErrorContent,
       isBackupDialogOpen,
+      displayLogoutModal,
     };
   }
 
@@ -120,7 +123,7 @@ export class Container extends React.Component<Properties, State> {
       back,
       startGroup,
       membersSelected,
-      logout: forceLogout,
+      logout,
       receiveSearchResults,
       closeConversationErrorDialog,
       closeBackupDialog,
@@ -320,6 +323,7 @@ export class Container extends React.Component<Properties, State> {
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
+          {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
 
           {this.renderToastNotification()}
         </div>

@@ -10,7 +10,6 @@ import { withContext as withAuthenticationContext } from './components/authentic
 import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
-import { LogoutConfirmationModalContainer } from './components/logout-confirmation-modal/container';
 
 export interface Properties {
   isMessengerFullScreen: boolean;

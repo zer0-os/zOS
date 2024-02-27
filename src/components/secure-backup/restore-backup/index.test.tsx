@@ -33,6 +33,12 @@ describe('RestoreBackup', () => {
     expect(wrapper).toHaveElement(Alert);
   });
 
+  it('does not render Alert when errorMessage is not provided', function () {
+    const wrapper = subject({ errorMessage: '' });
+
+    expect(wrapper).not.toHaveElement(Alert);
+  });
+
   it('disables the button when recovery key is empty', function () {
     const wrapper = subject();
 

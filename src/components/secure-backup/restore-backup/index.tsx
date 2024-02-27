@@ -47,7 +47,7 @@ export class RestoreBackup extends React.Component<Properties, State> {
             <Input placeholder='Enter your recovery key' onChange={this.trackRecoveryKey} value={this.recoveryKey} />
 
             {this.props.errorMessage && (
-              <Alert {...cn('error-message')} variant='error'>
+              <Alert {...cn('alert')} variant='error'>
                 {this.props.errorMessage}
               </Alert>
             )}

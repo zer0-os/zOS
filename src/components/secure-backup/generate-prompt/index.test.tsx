@@ -36,18 +36,6 @@ describe(GeneratePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('shows the secondary button when isSystemPrompt is true', function () {
-    const wrapper = subject({ isSystemPrompt: true });
-
-    expect(buttonLabelled(wrapper, 'Backup later')).toExist();
-  });
-
-  it('does not show the secondary button when isSystemPrompt is false', function () {
-    const wrapper = subject({ isSystemPrompt: false });
-
-    expect(buttonLabelled(wrapper, 'Backup later')).not.toExist();
-  });
-
   it('publishes onGenerate event', function () {
     const onGenerate = jest.fn();
     const wrapper = subject({ onGenerate });
@@ -64,6 +52,12 @@ describe(GeneratePrompt, () => {
     pressButton(wrapper, 'Backup later');
 
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('does not render / publish the secondary button when isSystemPrompt is false', function () {
+    const wrapper = subject({ isSystemPrompt: false });
+
+    expect(buttonLabelled(wrapper, 'Backup later')).not.toExist();
   });
 
   it('renders an error message', () => {

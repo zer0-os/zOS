@@ -45,7 +45,12 @@
 
   &__footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+
+    &:has(*:nth-child(2)) {
+      // If there are at least 2 buttons
+      justify-content: space-between;
+    }
 
     &:empty {
       display: none;

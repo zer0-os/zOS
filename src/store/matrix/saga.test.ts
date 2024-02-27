@@ -224,7 +224,7 @@ describe(onVerifyKey, () => {
 });
 
 describe(clearBackupState, () => {
-  it('clears the state', async () => {
+  it('clears the temporary state but keeps the trustInfo', async () => {
     const initialState = {
       matrix: {
         isLoaded: true,
@@ -242,7 +242,7 @@ describe(clearBackupState, () => {
     expect(storeState.matrix).toEqual({
       generatedRecoveryKey: null,
       isLoaded: false,
-      trustInfo: null,
+      trustInfo: { trustData: 'here' },
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.None,

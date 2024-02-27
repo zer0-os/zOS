@@ -19,7 +19,7 @@ describe(GeneratePrompt, () => {
     return shallow(<GeneratePrompt {...allProps} />);
   };
 
-  it('renders the primary text for system prompt', function () {
+  it('renders the primary text when isSystemPrompt is true', function () {
     const wrapper = subject({ isSystemPrompt: true });
 
     const expectedText =
@@ -28,7 +28,7 @@ describe(GeneratePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('renders the primary text for non-system prompt', function () {
+  it('renders the primary text when isSystemPrompt is false', function () {
     const wrapper = subject({ isSystemPrompt: false });
 
     const expectedText = 'Access your encrypted messages between devices and logins with an account backup.';
@@ -36,13 +36,13 @@ describe(GeneratePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('shows the secondary button for system prompt', function () {
+  it('shows the secondary button when isSystemPrompt is true', function () {
     const wrapper = subject({ isSystemPrompt: true });
 
     expect(buttonLabelled(wrapper, 'Backup later')).toExist();
   });
 
-  it('does not show the secondary button for non-system prompt', function () {
+  it('does not show the secondary button when isSystemPrompt is false', function () {
     const wrapper = subject({ isSystemPrompt: false });
 
     expect(buttonLabelled(wrapper, 'Backup later')).not.toExist();
@@ -57,7 +57,7 @@ describe(GeneratePrompt, () => {
     expect(onGenerate).toHaveBeenCalledOnce();
   });
 
-  it('publishes onClose event for system prompt', function () {
+  it('publishes onClose event when isSystemPrompt is true', function () {
     const onClose = jest.fn();
     const wrapper = subject({ onClose, isSystemPrompt: true });
 

@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { VerifyKeyPhrase, Properties } from '.';
 import { buttonLabelled, pressButton } from '../../../test/utils';
 
-import { Alert, Button, Input } from '@zero-tech/zui/components';
+import { Alert, Input } from '@zero-tech/zui/components';
 
 describe(VerifyKeyPhrase, () => {
   const subject = (props: Partial<Properties> = {}) => {

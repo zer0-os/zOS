@@ -43,6 +43,7 @@ describe('ChatView', () => {
       isOneOnOne: false,
       sendDisabledMessage: '',
       conversationErrorMessage: '',
+      onHiddenMessageInfoClick: () => null,
       ...props,
     };
 

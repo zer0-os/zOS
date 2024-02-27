@@ -46,4 +46,18 @@ describe('ContentHighlighter', () => {
     });
     expect(wrapper.find('.content-highlighter__user-mention').prop('data-variant')).toEqual('negative');
   });
+
+  it('renders content with hidden message', () => {
+    const onHiddenMessageInfoClick = jest.fn();
+    const wrapper = render({
+      message: 'Message hidden',
+      isHidden: true,
+      onHiddenMessageInfoClick,
+    });
+
+    expect(wrapper.find('.content-highlighter__hidden-message-text')).toHaveText('Message hidden');
+
+    wrapper.find('IconButton').simulate('click');
+    expect(onHiddenMessageInfoClick).toHaveBeenCalled();
+  });
 });

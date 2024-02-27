@@ -12,25 +12,14 @@ import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 
 export interface Properties {
-  isMessengerFullScreen: boolean;
   context: {
     isAuthenticated: boolean;
   };
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
-    const layout = state.layout.value;
-
-    if (layout.isMessengerFullScreen) {
-      return {
-        isMessengerFullScreen: true,
-      };
-    }
-
-    return {
-      isMessengerFullScreen: false,
-    };
+  static mapState(_state: RootState): Partial<Properties> {
+    return {};
   }
 
   static mapActions(_state: RootState): Partial<Properties> {
@@ -38,9 +27,8 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    const mainClassName = classNames('main', {
+    const mainClassName = classNames('main', 'messenger-full-screen', {
       'sidekick-panel-open': this.props.context.isAuthenticated,
-      'messenger-full-screen': this.props.isMessengerFullScreen,
     });
 
     return (

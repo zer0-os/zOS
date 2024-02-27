@@ -7,7 +7,6 @@ import {
   nonceOrAuthorize,
   terminate,
   getCurrentUserWithChatAccessToken,
-  initializeUserState,
   clearUserState,
   forceLogout,
   redirectUnauthenticatedUser,
@@ -28,10 +27,8 @@ import {
 import { reducer } from '.';
 import { setChatAccessToken } from '../chat';
 import { receive } from '../channels-list';
-import { update } from '../layout';
 import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
-import { clearUserLayout } from '../layout/saga';
 import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
@@ -94,16 +91,6 @@ describe(completeUserLogin, () => {
     expect(storeState.authentication.user).toMatchObject({ data: { fake: 'user-response' } });
   });
 
-  it('sets up user state', async () => {
-    await expectSaga(completeUserLogin)
-      .provide([
-        stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
-        ...successResponses(),
-      ])
-      .call(initializeUserState, { fake: 'user-response' })
-      .run();
-  });
-
   it('completes the pending user profile if user is in pending state', async () => {
     const user = { isPending: true };
     await expectSaga(completeUserLogin)
@@ -114,7 +101,6 @@ describe(completeUserLogin, () => {
       ])
       .withReducer(rootReducer)
       .call(completePendingUserProfile, user)
-      .not.call(initializeUserState, user)
       .run();
   });
 
@@ -133,10 +119,6 @@ describe(completeUserLogin, () => {
       [
         call(fetchCurrentUser),
         { user: 'stubbed' },
-      ],
-      [
-        matchers.call.fn(initializeUserState),
-        null,
       ],
       [
         matchers.call.fn(publishUserLogin),
@@ -253,11 +235,7 @@ describe(getCurrentUserWithChatAccessToken, () => {
 
 describe('clearUserState', () => {
   it('resets layout', async () => {
-    await expectSaga(clearUserState)
-      .put(update({ isMessengerFullScreen: true }))
-      .put(receive([]))
-      .withReducer(rootReducer)
-      .run();
+    await expectSaga(clearUserState).put(receive([])).withReducer(rootReducer).run();
   });
 
   it('verifies state reset calls', async () => {
@@ -265,7 +243,6 @@ describe('clearUserState', () => {
       .call(clearChannelsAndConversations)
       .call(clearMessages)
       .call(clearUsers)
-      .call(clearUserLayout)
       .withReducer(rootReducer)
       .run();
   });

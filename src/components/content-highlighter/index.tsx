@@ -1,15 +1,22 @@
 import React from 'react';
 import { textToPlainEmojis } from './text-to-emojis';
+import { IconButton } from '@zero-tech/zui/components';
+import { IconHelpCircle } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import Linkify from 'linkify-react';
 import * as linkifyjs from 'linkifyjs';
+import { bemClassName } from '../../lib/bem';
 
 export interface Properties {
   message: string;
   variant?: 'negative';
   tabIndex?: number;
+  isHidden?: boolean;
+  onHiddenMessageInfoClick?: () => void;
 }
+
+const cn = bemClassName('content-highlighter');
 
 export class ContentHighlighter extends React.Component<Properties> {
   renderContent(message) {
@@ -24,7 +31,7 @@ export class ContentHighlighter extends React.Component<Properties> {
       if (match[2] === 'user') {
         const mention = `${match[1]}`.trim();
         const props: { className: string; key: string } = {
-          className: 'content-highlighter__user-mention',
+          ...cn('user-mention'),
           key: match[3] + index,
         };
 
@@ -55,15 +62,28 @@ export class ContentHighlighter extends React.Component<Properties> {
             },
           }}
         >
-          <div className='content-highlighter'>{this.renderContent(this.props.message)}</div>
+          <div {...cn('')}>{this.renderContent(this.props.message)}</div>
         </Linkify>
       );
     } else {
-      return <div className='content-highlighter'>{this.renderContent(this.props.message)}</div>;
+      return <div {...cn('')}>{this.renderContent(this.props.message)}</div>;
     }
   }
 
+  renderHiddenMessage(): React.ReactElement {
+    return (
+      <div {...cn('hidden-message-block')}>
+        <span {...cn('hidden-message-text')}>{this.props.message}</span>
+        <IconButton Icon={IconHelpCircle} size={24} onClick={this.props.onHiddenMessageInfoClick} />
+      </div>
+    );
+  }
+
   render() {
+    if (this.props.isHidden) {
+      return this.renderHiddenMessage();
+    }
+
     return this.renderMessageWithLinks();
   }
 }

@@ -8,6 +8,7 @@ import { Channel, ConversationStatus, denormalize, joinChannel, onReply } from '
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
+import { openBackupDialog } from '../../store/matrix';
 import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
@@ -20,7 +21,7 @@ export interface Properties extends PublicProperties {
   editMessage: (payload: EditPayload) => void;
   joinChannel: (payload: PayloadJoinChannel) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
-
+  openBackupDialog: () => void;
   activeConversationId?: string;
   context: {
     isAuthenticated: boolean;
@@ -64,6 +65,7 @@ export class Container extends React.Component<Properties> {
       joinChannel,
       editMessage,
       onReply,
+      openBackupDialog,
     };
   }
 
@@ -221,6 +223,7 @@ export class Container extends React.Component<Properties> {
           isOneOnOne={this.isOneOnOne}
           onReply={this.props.onReply}
           conversationErrorMessage={this.conversationErrorMessage}
+          onHiddenMessageInfoClick={this.props.openBackupDialog}
           ref={this.chatViewRef}
         />
       </>

@@ -47,6 +47,7 @@ export interface Properties {
     data?: Partial<EditMessageOptions>
   ) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
+  onHiddenMessageInfoClick: () => void;
   joinChannel: () => void;
   className?: string;
   isDirectMessage: boolean;
@@ -152,6 +153,7 @@ export class ChatView extends React.Component<Properties, State> {
                 messageId={message.id}
                 updatedAt={message.updatedAt}
                 isOwner={this.isUserOwnerOfMessage(message)}
+                isHidden={message.isHidden}
                 onDelete={this.props.deleteMessage}
                 onEdit={this.props.editMessage}
                 onReply={this.props.onReply}
@@ -163,6 +165,7 @@ export class ChatView extends React.Component<Properties, State> {
                 showSenderAvatar={this.props.showSenderAvatar}
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
+                onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
                 {...message}
               />
             </div>

@@ -13,6 +13,7 @@ export enum SagaActionTypes {
   DiscardOlm = 'chat/discard-olm',
   RestartOlm = 'chat/restart-olm',
   ShareHistoryKeys = 'chat/share-history-keys',
+  OpenBackupDialog = 'chat/open-backup-dialog',
   CloseBackupDialog = 'chat/close-backup-dialog',
   VerifyKey = 'chat/verify-key',
 }
@@ -59,6 +60,7 @@ export const resendKeyRequests = createAction(SagaActionTypes.ResendKeyRequests)
 export const discardOlm = createAction<string>(SagaActionTypes.DiscardOlm);
 export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
 export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
+export const openBackupDialog = createAction(SagaActionTypes.OpenBackupDialog);
 export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
 export const onVerifyKey = createAction(SagaActionTypes.VerifyKey);
 

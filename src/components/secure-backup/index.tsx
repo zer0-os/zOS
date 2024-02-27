@@ -81,6 +81,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
   renderBackupContent = () => {
     const {
       backupStage,
+      isLegacy,
       onGenerate,
       onRestore,
       onVerifyKey,
@@ -101,21 +102,15 @@ export class SecureBackup extends React.PureComponent<Properties> {
                 isSystemPrompt={this.isSystemPrompt}
                 errorMessage={errorMessage}
                 onGenerate={onGenerate}
-                onClose={this.props.onClose}
+                onClose={onClose}
               />
             )}
 
             {this.backupNotRestored && (
-              <RestorePrompt
-                isSystemPrompt={this.isSystemPrompt}
-                onVerifyKey={onVerifyKey}
-                onClose={this.props.onClose}
-              />
+              <RestorePrompt isSystemPrompt={this.isSystemPrompt} onVerifyKey={onVerifyKey} onClose={onClose} />
             )}
 
-            {this.isRecovered && (
-              <RecoveredBackup onClose={onClose} onGenerate={this.props.onGenerate} isLegacy={this.props.isLegacy} />
-            )}
+            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />}
           </>
         );
 

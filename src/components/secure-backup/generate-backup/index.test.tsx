@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 
-import { buttonLabelled } from '../../../test/utils';
+import { buttonLabelled, pressButton } from '../../../test/utils';
 
 import { GenerateBackup, Properties } from '.';
 
@@ -73,7 +73,3 @@ describe(GenerateBackup, () => {
     expect(wrapper.find(c('error-message'))).toHaveText('test-error-message');
   });
 });
-
-function pressButton(wrapper, label: string) {
-  buttonLabelled(wrapper, label).simulate('press');
-}

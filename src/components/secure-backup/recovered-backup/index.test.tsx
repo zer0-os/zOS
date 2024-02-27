@@ -3,6 +3,9 @@ import { shallow } from 'enzyme';
 import { buttonLabelled, pressButton } from '../../../test/utils';
 import { RecoveredBackup, Properties } from '.';
 
+import { bem } from '../../../lib/bem';
+const c = bem('.secure-backup');
+
 describe(RecoveredBackup, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -37,5 +40,17 @@ describe(RecoveredBackup, () => {
     const wrapper = subject({ isLegacy: false });
 
     expect(buttonLabelled(wrapper, 'Generate new backup')).not.toExist();
+  });
+
+  it('applies the has-secondary-button class when isLegacy is true', function () {
+    const wrapper = subject({ isLegacy: true });
+
+    expect(wrapper.find(c('footer--has-secondary-button'))).toExist();
+  });
+
+  it('does not apply the has-secondary-button class when isLegacy is false', function () {
+    const wrapper = subject({ isLegacy: false });
+
+    expect(wrapper.find(c('footer--has-secondary-button'))).not.toExist();
   });
 });

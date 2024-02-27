@@ -106,6 +106,10 @@ export function* mapMessagesAndPreview(messages, channelId) {
   const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
   yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
   for (const message of messages) {
+    if (message.isHidden) {
+      message.message = 'Message hidden';
+    }
+
     const preview = yield call(getPreview, message.message);
     if (preview) {
       message.preview = preview;

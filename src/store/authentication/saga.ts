@@ -123,9 +123,7 @@ export function* logoutRequest() {
 }
 
 export function* closeLogoutModal() {
-  console.time('XXX closeLogoutModal');
   yield put(setDisplayLogoutModal(false));
-  console.timeEnd('XXX closeLogoutModal');
 }
 
 export function* forceLogout() {

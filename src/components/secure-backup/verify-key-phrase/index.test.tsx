@@ -5,6 +5,9 @@ import { buttonLabelled, pressButton } from '../../../test/utils';
 
 import { Alert, Input } from '@zero-tech/zui/components';
 
+import { bem } from '../../../lib/bem';
+const c = bem('.secure-backup');
+
 describe(VerifyKeyPhrase, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -61,5 +64,17 @@ describe(VerifyKeyPhrase, () => {
     const wrapper = subject({ errorMessage: '' });
 
     expect(wrapper).not.toHaveElement(Alert);
+  });
+
+  it('applies the error class to Input when error message exists', function () {
+    const wrapper = subject({ errorMessage: 'Invalid key prhase' });
+
+    expect(wrapper.find(c('input--error'))).toExist();
+  });
+
+  it('does not apply the error class to Input when error message does not exist', function () {
+    const wrapper = subject({ errorMessage: '' });
+
+    expect(wrapper.find(c('input--error'))).not.toExist();
   });
 });

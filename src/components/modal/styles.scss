@@ -46,6 +46,10 @@
   &__footer {
     display: flex;
     justify-content: space-between;
+
+    &:empty {
+      display: none;
+    }
   }
 
   // TODO: add button sizes (eg. "small", "medium", "large") in zUI instead

@@ -20,6 +20,16 @@ export interface Properties {
 }
 
 export class Modal extends React.Component<Properties> {
+  componentWillUnmount(): void {
+    // The radix-ui library that underpins zUI has issues where the various dropdowns/selects/etc
+    // end up modifying the body and disabling pointer events when the dialog is closed.
+    // This is a total hack to re-enable pointer events after a short delay.
+    // https://github.com/radix-ui/primitives/issues/1241
+    setTimeout(() => {
+      document.body.style.pointerEvents = '';
+    }, 1000);
+  }
+
   publishIfClosing = (open: boolean) => {
     if (!open) {
       this.props.onClose();

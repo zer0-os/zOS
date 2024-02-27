@@ -35,6 +35,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
+  yield takeLatest(SagaActionTypes.OpenBackupDialog, openBackupDialog);
   yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
   yield takeLatest(SagaActionTypes.VerifyKey, onVerifyKey);
 }
@@ -58,13 +59,14 @@ export function* getBackup() {
 }
 
 export function* generateBackup() {
+  yield put(setBackupStage(BackupStage.GenerateBackup));
+  const chatClient = yield call(chat.get);
+
   try {
-    yield put(setBackupStage(BackupStage.GenerateBackup));
-    const chatClient = yield call(chat.get);
     const key = yield call([chatClient, chatClient.generateSecureBackup]);
     yield put(setGeneratedRecoveryKey(key));
   } catch (error) {
-    yield put(setErrorMessage('Failed to generate backup. Please try again.'));
+    yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
     yield put(setBackupStage(BackupStage.None));
   }
 }
@@ -158,6 +160,10 @@ export function* ensureUserHasBackup() {
 
 export function* closeBackupDialog() {
   yield put(setIsBackupDialogOpen(false));
+}
+
+export function* openBackupDialog() {
+  yield put(setIsBackupDialogOpen(true));
 }
 
 function* listenForUserLogin() {

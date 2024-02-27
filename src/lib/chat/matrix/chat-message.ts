@@ -1,4 +1,4 @@
-import { CustomEventType, MembershipStateType, NotifiableEventType } from './types';
+import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
@@ -58,6 +58,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     },
     parentMessageText: '',
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
+    isHidden: content?.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE,
     ...(await parseMediaData(matrixMessage)),
   };
 }

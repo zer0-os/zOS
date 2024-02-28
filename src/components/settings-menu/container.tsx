@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { connectContainer } from '../../store/redux-container';
 import { RootState } from '../../store/reducer';
+import { openBackupDialog } from '../../store/matrix';
 import { SettingsMenu } from '.';
 
 export interface PublicProperties {
@@ -13,7 +14,9 @@ export interface PublicProperties {
   onLogout: () => void;
 }
 
-export interface Properties extends PublicProperties {}
+export interface Properties extends PublicProperties {
+  openBackupDialog: typeof openBackupDialog;
+}
 
 export class Container extends React.Component<Properties> {
   static mapState(_state: RootState): Partial<Properties> {
@@ -21,7 +24,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return { openBackupDialog };
   }
 
   render() {
@@ -32,6 +35,7 @@ export class Container extends React.Component<Properties> {
         userAvatarUrl={this.props.userAvatarUrl}
         userStatus={this.props.userStatus}
         onLogout={this.props.onLogout}
+        onSecureBackup={this.props.openBackupDialog}
       />
     );
   }

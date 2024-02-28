@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 import { Properties, SettingsMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
 import { EditProfileContainer } from '../edit-profile/container';
-import { SecureBackupContainer } from '../secure-backup/container';
 import { selectDropdownItem } from '../../test/utils';
 
 describe('settings-menu', () => {
@@ -14,6 +13,7 @@ describe('settings-menu', () => {
       userAvatarUrl: '',
       userStatus: 'active',
       onLogout: () => {},
+      onSecureBackup: () => {},
 
       ...props,
     };
@@ -29,12 +29,13 @@ describe('settings-menu', () => {
     expect(wrapper.find(EditProfileContainer).parent().prop('open')).toBe(true);
   });
 
-  it('opens secure backup dialog', function () {
-    const wrapper = subject({});
+  it('fires secure backup selected event', function () {
+    const onSecureBackup = jest.fn();
+    const wrapper = subject({ onSecureBackup });
 
     selectDropdownItem(wrapper, DropdownMenu, 'secure_backup');
 
-    expect(wrapper.find(SecureBackupContainer).parent().prop('open')).toBe(true);
+    expect(onSecureBackup).toHaveBeenCalled();
   });
 
   it('calls onLogout prop when logout item is selected', function () {

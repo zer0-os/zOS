@@ -11,6 +11,9 @@ import {
   setIsBackupDialogOpen,
   setBackupStage,
   BackupStage,
+  setBackupExists,
+  setBackupRestored,
+  MatrixState,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -54,9 +57,20 @@ export function* getBackup() {
     };
   }
 
-  yield put(setTrustInfo(trustInfo));
+  const backupData = yield call(updateTrustInfo, trustInfo);
   yield put(setLoaded(true));
-  return trustInfo;
+
+  return backupData.trustInfo;
+}
+
+export function* updateTrustInfo(trustInfo: MatrixState['trustInfo'] | null) {
+  const data = { trustInfo };
+
+  yield put(setTrustInfo(trustInfo || null));
+  yield put(setBackupExists(!!trustInfo));
+  yield put(setBackupRestored(isBackupRestored(trustInfo)));
+
+  return data;
 }
 
 export function* generateBackup() {
@@ -204,7 +218,7 @@ function* listenForUserLogout() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogout);
-    yield put(setTrustInfo(null));
+    yield call(updateTrustInfo, null);
   }
 }
 
@@ -250,7 +264,7 @@ export function* systemInitiatedBackupDialog() {
 }
 
 function isBackupRestored(trustInfo: any) {
-  return trustInfo?.usable || trustInfo?.trustedLocally;
+  return Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
 }
 
 export function* checkBackupOnFirstSentMessage() {

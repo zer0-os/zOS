@@ -33,6 +33,8 @@ export enum BackupStage {
 export type MatrixState = {
   isLoaded: boolean;
   trustInfo: { trustedLocally: boolean; usable: boolean; isLegacy: boolean } | null;
+  backupExists: boolean;
+  backupRestored: boolean;
   generatedRecoveryKey: string | null;
   successMessage: string;
   errorMessage: string;
@@ -44,6 +46,8 @@ export type MatrixState = {
 export const initialState: MatrixState = {
   isLoaded: false,
   trustInfo: null,
+  backupExists: false,
+  backupRestored: false,
   generatedRecoveryKey: null,
   successMessage: '',
   errorMessage: '',
@@ -96,6 +100,12 @@ const slice = createSlice({
     setBackupStage: (state, action: PayloadAction<MatrixState['backupStage']>) => {
       state.backupStage = action.payload;
     },
+    setBackupExists: (state, action: PayloadAction<MatrixState['backupExists']>) => {
+      state.backupExists = action.payload;
+    },
+    setBackupRestored: (state, action: PayloadAction<MatrixState['backupRestored']>) => {
+      state.backupRestored = action.payload;
+    },
   },
 });
 
@@ -108,5 +118,7 @@ export const {
   setErrorMessage,
   setDeviceId,
   setBackupStage,
+  setBackupExists,
+  setBackupRestored,
 } = slice.actions;
 export const { reducer } = slice;

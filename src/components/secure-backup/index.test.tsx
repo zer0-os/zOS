@@ -246,7 +246,7 @@ describe('SecureBackup', () => {
       const onSave = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onSave });
 
-      wrapper.find(VerifyKeyPhrase).simulate('submit', 'abcd 1234');
+      wrapper.find(VerifyKeyPhrase).simulate('save', 'abcd 1234');
 
       expect(onSave).toHaveBeenCalled();
     });

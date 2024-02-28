@@ -15,7 +15,7 @@ export interface State {
 export interface Properties {
   errorMessage: string;
   onBack: () => void;
-  onSubmit: (keyPhrase: string) => void;
+  onSave: (keyPhrase: string) => void;
 }
 
 export class VerifyKeyPhrase extends React.Component<Properties, State> {
@@ -29,8 +29,8 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
     this.props.onBack();
   };
 
-  submitKeyPhrase = () => {
-    this.props.onSubmit(this.keyPhrase);
+  save = () => {
+    this.props.onSave(this.keyPhrase);
   };
 
   get keyPhrase() {
@@ -66,7 +66,7 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
             Back to phrase
           </Button>
 
-          <Button {...cn('button')} onPress={this.submitKeyPhrase} isDisabled={!this.keyPhrase}>
+          <Button {...cn('button')} onPress={this.save} isDisabled={!this.keyPhrase}>
             Verify and complete backup
           </Button>
         </div>

@@ -13,7 +13,7 @@ describe(VerifyKeyPhrase, () => {
     const allProps: Properties = {
       errorMessage: '',
       onBack: () => null,
-      onSubmit: () => null,
+      onSave: () => null,
       ...props,
     };
 
@@ -29,15 +29,15 @@ describe(VerifyKeyPhrase, () => {
     expect(onBack).toHaveBeenCalledOnce();
   });
 
-  it('publishes onSubmit with the key phrase when the verify button is pressed', function () {
-    const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit });
+  it('publishes onSave with the key phrase when the verify button is pressed', function () {
+    const onSave = jest.fn();
+    const wrapper = subject({ onSave });
 
     wrapper.find(Input).simulate('change', 'test-key-phrase');
 
     pressButton(wrapper, 'Verify and complete backup');
 
-    expect(onSubmit).toHaveBeenCalledWith('test-key-phrase');
+    expect(onSave).toHaveBeenCalledWith('test-key-phrase');
   });
 
   it('disables the verify button when recovery key is empty', function () {

@@ -124,7 +124,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
 
       case BackupStage.VerifyKeyPhrase:
-        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSubmit={onSave} />;
+        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
 
       case BackupStage.Success:
         return <Success successMessage={successMessage} onClose={onClose} />;

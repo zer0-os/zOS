@@ -16,6 +16,7 @@ import {
   checkBackupOnFirstSentMessage,
   systemInitiatedBackupDialog,
   userInitiatedBackupDialog,
+  updateTrustInfo,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -40,7 +41,7 @@ function subject(...args: Parameters<typeof expectSaga>) {
 
 describe(getBackup, () => {
   it('fetches the existing backup', async () => {
-    const { returnValue, storeState } = await subject(getBackup)
+    const { returnValue } = await subject(getBackup)
       .provide([
         [
           call(getSecureBackup),
@@ -48,53 +49,29 @@ describe(getBackup, () => {
         ],
       ])
       .withReducer(rootReducer)
+      .call(updateTrustInfo, { usable: true, trustedLocally: true, isLegacy: true })
       .run();
 
-    expect(storeState.matrix).toEqual(
-      expect.objectContaining({
-        generatedRecoveryKey: null,
-        isLoaded: true,
-        trustInfo: { usable: true, trustedLocally: true, isLegacy: true },
-        successMessage: '',
-        errorMessage: '',
-      })
-    );
     expect(returnValue).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
   });
 
   it('clears the backup if none found', async () => {
-    const { returnValue, storeState } = await subject(getBackup)
+    const { returnValue } = await subject(getBackup)
       .provide([[call(getSecureBackup), undefined]])
       .withReducer(rootReducer)
+      .call(updateTrustInfo, null)
       .run();
 
-    expect(storeState.matrix).toEqual(
-      expect.objectContaining({
-        generatedRecoveryKey: null,
-        isLoaded: true,
-        trustInfo: null,
-        successMessage: '',
-        errorMessage: '',
-      })
-    );
     expect(returnValue).toBeNull();
   });
 
   it('clears the backup if backupInfo not found', async () => {
-    const { returnValue, storeState } = await subject(getBackup)
+    const { returnValue } = await subject(getBackup)
       .provide([[call(getSecureBackup), { backupInfo: undefined }]])
       .withReducer(rootReducer)
+      .call(updateTrustInfo, null)
       .run();
 
-    expect(storeState.matrix).toEqual(
-      expect.objectContaining({
-        generatedRecoveryKey: null,
-        isLoaded: true,
-        trustInfo: null,
-        successMessage: '',
-        errorMessage: '',
-      })
-    );
     expect(returnValue).toBeNull();
   });
 });
@@ -438,6 +415,51 @@ describe(userInitiatedBackupDialog, () => {
 
     expect(storeState.matrix.isBackupDialogOpen).toBe(true);
     expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);
+  });
+});
+
+describe(updateTrustInfo, () => {
+  it('updates the trustInfo', async () => {
+    const { storeState } = await subject(updateTrustInfo, {
+      usable: true,
+      trustedLocally: true,
+      isLegacy: true,
+    })
+      .withReducer(rootReducer, new StoreBuilder().build())
+      .run();
+
+    expect(storeState.matrix.trustInfo).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
+  });
+
+  it('sets metadata if backup exists but is not restored', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: true } });
+
+    const { storeState } = await subject(updateTrustInfo, unrestoredBackupResponse().trustInfo)
+      .withReducer(rootReducer, state.build())
+      .run();
+
+    expect(storeState.matrix.backupExists).toBe(true);
+    expect(storeState.matrix.backupRestored).toBe(false);
+  });
+
+  it('sets metadata if backup exists and is restored', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
+
+    const { storeState } = await subject(updateTrustInfo, restoredBackupResponse().trustInfo)
+      .withReducer(rootReducer, state.build())
+      .run();
+
+    expect(storeState.matrix.backupExists).toBe(true);
+    expect(storeState.matrix.backupRestored).toBe(true);
+  });
+
+  it('sets metadata if backup does not exist', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
+
+    const { storeState } = await subject(updateTrustInfo, null).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.backupExists).toBe(false);
+    expect(storeState.matrix.backupRestored).toBe(false);
   });
 });
 

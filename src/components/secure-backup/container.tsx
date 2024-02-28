@@ -25,7 +25,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   isLoaded: boolean;
   backupExists: boolean;
-  isBackupRecovered: boolean;
+  backupRecovered: boolean;
   isLegacy: boolean;
   recoveryKey: string;
   successMessage: string;
@@ -43,11 +43,20 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { isLoaded, generatedRecoveryKey, trustInfo, successMessage, errorMessage, backupStage } = state.matrix;
+    const {
+      isLoaded,
+      generatedRecoveryKey,
+      trustInfo,
+      backupExists,
+      backupRestored,
+      successMessage,
+      errorMessage,
+      backupStage,
+    } = state.matrix;
     return {
       isLoaded,
-      backupExists: !!trustInfo,
-      isBackupRecovered: trustInfo?.usable || trustInfo?.trustedLocally,
+      backupExists,
+      isBackupRecovered: backupRestored,
       isLegacy: trustInfo?.isLegacy,
       recoveryKey: generatedRecoveryKey || '',
       successMessage,
@@ -77,7 +86,7 @@ export class Container extends React.Component<Properties> {
     return (
       <SecureBackup
         backupExists={this.props.backupExists}
-        isBackupRecovered={this.props.isBackupRecovered}
+        isBackupRecovered={this.props.backupRecovered}
         isLegacy={this.props.isLegacy}
         recoveryKey={this.props.recoveryKey}
         successMessage={this.props.successMessage}

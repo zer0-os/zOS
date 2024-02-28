@@ -67,8 +67,8 @@ export function* updateTrustInfo(trustInfo: MatrixState['trustInfo'] | null) {
   const data = { trustInfo };
 
   yield put(setTrustInfo(trustInfo || null));
-  yield put(setBackupExists(!!trustInfo));
-  yield put(setBackupRestored(isBackupRestored(trustInfo)));
+  yield put(setBackupExists(!!trustInfo && !trustInfo.isLegacy));
+  yield put(setBackupRestored(isBackupRestored(trustInfo) && !trustInfo?.isLegacy));
 
   return data;
 }

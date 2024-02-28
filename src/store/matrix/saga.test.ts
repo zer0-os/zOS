@@ -484,6 +484,21 @@ describe(updateTrustInfo, () => {
     expect(storeState.matrix.backupExists).toBe(false);
     expect(storeState.matrix.backupRestored).toBe(false);
   });
+
+  it('sets metadata if backup is a legacy backup', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
+
+    const { storeState } = await subject(updateTrustInfo, {
+      usable: true,
+      trustedLocally: true,
+      isLegacy: true,
+    })
+      .withReducer(rootReducer, state.build())
+      .run();
+
+    expect(storeState.matrix.backupExists).toBe(false);
+    expect(storeState.matrix.backupRestored).toBe(false);
+  });
 });
 
 function noBackupResponse(): any {

@@ -13,7 +13,7 @@ import { Success } from './success';
 import { bem } from '../../lib/bem';
 const c = bem('.secure-backup');
 
-describe('SecureBackup', () => {
+describe(SecureBackup, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       recoveryKey: 'stub-key',

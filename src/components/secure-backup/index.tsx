@@ -25,7 +25,7 @@ export interface Clipboard {
 export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
-  backupRecovered: boolean;
+  backupRestored: boolean;
   isLegacy: boolean;
   successMessage: string;
   errorMessage: string;
@@ -43,7 +43,7 @@ export interface Properties {
 
 export class SecureBackup extends React.PureComponent<Properties> {
   get existingBackupNotRestored() {
-    return this.props.backupExists && !this.props.backupRecovered;
+    return this.props.backupExists && !this.props.backupRestored;
   }
 
   renderHeader = () => {

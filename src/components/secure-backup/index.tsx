@@ -36,7 +36,7 @@ export interface Properties {
 
   onClose: () => void;
   onGenerate: () => void;
-  onSave: () => void;
+  onSave: (recoveryKey) => void;
   onRestore: (recoveryKey) => void;
   onVerifyKey: () => void;
 }

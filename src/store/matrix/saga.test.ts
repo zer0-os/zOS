@@ -245,12 +245,11 @@ describe(proceedToVerifyKey, () => {
 });
 
 describe(clearBackupState, () => {
-  it('clears the temporary state but keeps the trustInfo and the stage', async () => {
+  it('clears the temporary state but keeps the stage', async () => {
     const initialState = {
       matrix: {
         isLoaded: true,
         generatedRecoveryKey: 'a key',
-        trustInfo: { trustData: 'here' },
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
         backupStage: BackupStage.SystemGeneratePrompt,
@@ -263,7 +262,6 @@ describe(clearBackupState, () => {
     expect(storeState.matrix).toEqual({
       generatedRecoveryKey: null,
       isLoaded: false,
-      trustInfo: { trustData: 'here' },
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.SystemGeneratePrompt,
@@ -419,18 +417,6 @@ describe(userInitiatedBackupDialog, () => {
 });
 
 describe(updateTrustInfo, () => {
-  it('updates the trustInfo', async () => {
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: true,
-      trustedLocally: true,
-      isLegacy: true,
-    })
-      .withReducer(rootReducer, new StoreBuilder().build())
-      .run();
-
-    expect(storeState.matrix.trustInfo).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
-  });
-
   it('sets metadata if backup exists but is not restored', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: true } });
 

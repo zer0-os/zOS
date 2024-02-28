@@ -7,7 +7,6 @@ import {
   setErrorMessage,
   setLoaded,
   setSuccessMessage,
-  setTrustInfo,
   setIsBackupDialogOpen,
   setBackupStage,
   BackupStage,
@@ -63,10 +62,9 @@ export function* getBackup() {
   return backupData.trustInfo;
 }
 
-export function* updateTrustInfo(trustInfo: MatrixState['trustInfo'] | null) {
+export function* updateTrustInfo(trustInfo: { usable: boolean; trustedLocally: boolean; isLegacy: boolean } | null) {
   const data = { trustInfo };
 
-  yield put(setTrustInfo(trustInfo || null));
   yield put(setBackupExists(!!trustInfo && !trustInfo.isLegacy));
   yield put(setBackupRestored(isBackupRestored(trustInfo) && !trustInfo?.isLegacy));
 
@@ -201,11 +199,11 @@ export function* closeBackupDialog() {
 }
 
 export function* userInitiatedBackupDialog() {
-  const trustInfo = yield select((state) => state.matrix.trustInfo);
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
 
-  if (!trustInfo) {
+  if (!backupExists) {
     yield put(setBackupStage(BackupStage.UserGeneratePrompt));
-  } else if (!isBackupRestored(trustInfo)) {
+  } else if (!backupRestored) {
     yield put(setBackupStage(BackupStage.UserRestorePrompt));
   } else {
     yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
@@ -249,11 +247,11 @@ export function* handleBackupUserPrompts() {
 }
 
 export function* systemInitiatedBackupDialog() {
-  const trustInfo = yield select((state) => state.matrix.trustInfo);
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
 
-  if (!trustInfo) {
+  if (!backupExists) {
     yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
-  } else if (!isBackupRestored(trustInfo)) {
+  } else if (!backupRestored) {
     yield put(setBackupStage(BackupStage.SystemRestorePrompt));
   } else {
     // Probably never trigger this stage by the system but keep it as a default case

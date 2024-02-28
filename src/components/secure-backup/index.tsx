@@ -18,10 +18,6 @@ import { VerifyKeyPhrase } from './verify-key-phrase';
 
 const cn = bemClassName('secure-backup');
 
-export interface Clipboard {
-  write: (text: string) => Promise<void>;
-}
-
 export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
@@ -30,8 +26,6 @@ export interface Properties {
   errorMessage: string;
   videoAssetsPath: string;
   backupStage: BackupStage;
-
-  clipboard?: Clipboard;
 
   onClose: () => void;
   onGenerate: () => void;

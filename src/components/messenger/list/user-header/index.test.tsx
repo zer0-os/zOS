@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme';
 import { Properties, UserHeader } from '.';
-import { SettingsMenu } from '../../../settings-menu';
 import { Button, IconButton } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
+import { SettingsMenuContainer } from '../../../settings-menu/container';
 
 const c = bem('.user-header');
 
@@ -32,12 +32,12 @@ describe(UserHeader, () => {
 
   it('renders SettingsMenu when includeUserSettings is true', function () {
     const wrapper = subject({ includeUserSettings: true });
-    expect(wrapper).toHaveElement(SettingsMenu);
+    expect(wrapper).toHaveElement(SettingsMenuContainer);
   });
 
   it('does not render SettingsMenu when includeUserSettings is false', function () {
     const wrapper = subject({ includeUserSettings: false });
-    expect(wrapper).not.toHaveElement(SettingsMenu);
+    expect(wrapper).not.toHaveElement(SettingsMenuContainer);
   });
 
   it('renders userHandle when user handle is not empty', function () {

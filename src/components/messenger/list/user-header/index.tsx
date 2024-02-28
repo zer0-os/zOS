@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SettingsMenu } from '../../../settings-menu';
+import { SettingsMenuContainer } from '../../../settings-menu/container';
 import { Button, IconButton } from '@zero-tech/zui/components';
 import { IconPlus } from '@zero-tech/zui/icons';
 
@@ -59,7 +59,7 @@ export class UserHeader extends React.Component<Properties> {
     return (
       <div {...cn('')}>
         {this.props.includeUserSettings && (
-          <SettingsMenu
+          <SettingsMenuContainer
             onLogout={this.props.onLogout}
             userName={this.props.userName}
             userHandle={this.props.userHandle}

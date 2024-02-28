@@ -19,7 +19,6 @@ describe(SecureBackup, () => {
       recoveryKey: 'stub-key',
       backupExists: false,
       backupRestored: false,
-      isLegacy: false,
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.UserGeneratePrompt,
@@ -133,16 +132,6 @@ describe(SecureBackup, () => {
       wrapper.find(RecoveredBackup).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
-    });
-
-    // TODO: this goes away!
-    it('publishes onGenerate when isLegacy is true', function () {
-      const onGenerate = jest.fn();
-      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onGenerate, isLegacy: true });
-
-      wrapper.find(RecoveredBackup).simulate('generate');
-
-      expect(onGenerate).toHaveBeenCalled();
     });
   });
 

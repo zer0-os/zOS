@@ -10,17 +10,10 @@ import '../styles.scss';
 const cn = bemClassName('secure-backup');
 
 export interface Properties {
-  isLegacy: boolean;
-
   onClose: () => void;
-  onGenerate: () => void;
 }
 
 export class RecoveredBackup extends React.Component<Properties> {
-  generateBackup = () => {
-    this.props.onGenerate();
-  };
-
   closeBackup = () => {
     this.props.onClose();
   };
@@ -44,13 +37,7 @@ export class RecoveredBackup extends React.Component<Properties> {
           {this.renderStatus('Your current login is verified')}
         </div>
 
-        <div {...cn('footer', `${this.props.isLegacy && 'has-secondary-button'}`)}>
-          {this.props.isLegacy && (
-            <Button {...cn('button')} onPress={this.generateBackup}>
-              Generate new backup
-            </Button>
-          )}
-
+        <div {...cn('footer')}>
           <Button {...cn('button')} onPress={this.closeBackup}>
             Dismiss
           </Button>

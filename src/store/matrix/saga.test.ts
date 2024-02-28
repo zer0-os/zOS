@@ -14,6 +14,8 @@ import {
   saveBackup,
   handleBackupUserPrompts,
   checkBackupOnFirstSentMessage,
+  systemInitiatedBackupDialog,
+  userInitiatedBackupDialog,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -121,10 +123,10 @@ describe(generateBackup, () => {
     const { storeState } = await subject(generateBackup)
       .provide([[call([chatClient, chatClient.generateSecureBackup]), throwError(error)]])
       .withReducer(rootReducer)
+      .call(userInitiatedBackupDialog)
       .run();
 
     expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup key. Please try again.');
-    expect(storeState.matrix.backupStage).toEqual(BackupStage.None);
   });
 
   it('reuses existing backup key if present and does not call generateSecureBackup', async () => {
@@ -266,7 +268,7 @@ describe(proceedToVerifyKey, () => {
 });
 
 describe(clearBackupState, () => {
-  it('clears the temporary state but keeps the trustInfo', async () => {
+  it('clears the temporary state but keeps the trustInfo and the stage', async () => {
     const initialState = {
       matrix: {
         isLoaded: true,
@@ -274,7 +276,7 @@ describe(clearBackupState, () => {
         trustInfo: { trustData: 'here' },
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
-        backupStage: BackupStage.SystemPrompt,
+        backupStage: BackupStage.SystemGeneratePrompt,
       },
     };
     const { storeState } = await subject(clearBackupState)
@@ -287,29 +289,31 @@ describe(clearBackupState, () => {
       trustInfo: { trustData: 'here' },
       successMessage: '',
       errorMessage: '',
-      backupStage: BackupStage.None,
+      backupStage: BackupStage.SystemGeneratePrompt,
     });
   });
 });
 
 describe('secure backup status management', () => {
   describe(ensureUserHasBackup, () => {
-    it('opens the backup dialog and sets stage if backup does not exist', async () => {
+    it('opens the backup dialog if backup does not exist', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
-        .provide([[call(getSecureBackup), undefined], stubDelay(10000)])
+        .provide([
+          [call(getSecureBackup), undefined],
+          stubDelay(10000),
+          [call(systemInitiatedBackupDialog), undefined],
+        ])
+        .call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-      expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
     });
 
     it('does not open the backup dialog if backup exists', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [
@@ -317,23 +321,21 @@ describe('secure backup status management', () => {
             { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
           ],
         ])
+        .not.call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
 
     it('does not open the backup if user logs out during wait period', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [call(getSecureBackup), undefined],
           [call(performUnlessLogout, delay(10000)), false],
         ])
+        .not.call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
   });
 
@@ -365,28 +367,77 @@ describe(handleBackupUserPrompts, () => {
   }
 
   it('opens the backup dialog and sets stage if user has not restored their backup', async () => {
-    const { storeState } = await subject(unrestoredBackupResponse())
+    await subject(unrestoredBackupResponse())
+      .provide([[call(systemInitiatedBackupDialog), undefined]])
       .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .call(systemInitiatedBackupDialog)
       .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
   });
 
   it('waits for first sent message if user does not have a backup', async () => {
-    const { storeState } = await subject(noBackupResponse())
+    await subject(noBackupResponse())
       .call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .not.call(systemInitiatedBackupDialog)
       .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
   });
 
   it('does nothing if backup is already set up for this session', async () => {
-    const { storeState } = await subject(restoredBackupResponse())
+    await subject(restoredBackupResponse())
       .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .not.call(systemInitiatedBackupDialog)
       .run();
+  });
+});
 
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+describe(systemInitiatedBackupDialog, () => {
+  it('opens the backup dialog in SystemGeneratePrompt state if user has no backup', async () => {
+    const state = new StoreBuilder().withoutBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemGeneratePrompt);
+  });
+
+  it('opens the backup dialog in SystemRestorePrompt state if user has an unrestored backup', async () => {
+    const state = new StoreBuilder().withUnrestoredBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemRestorePrompt);
+  });
+
+  it('opens the backup dialog in RecoveredBackupInfo state if user has a restored backup - default but probably should not happen', async () => {
+    const state = new StoreBuilder().withRestoredBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);
+  });
+});
+
+describe(userInitiatedBackupDialog, () => {
+  it('opens the backup dialog in UserGeneratePrompt state if user has no backup', async () => {
+    const state = new StoreBuilder().withoutBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.UserGeneratePrompt);
+  });
+
+  it('opens the backup dialog in UserRestorePrompt state if user has an unrestored backup', async () => {
+    const state = new StoreBuilder().withUnrestoredBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.UserRestorePrompt);
+  });
+
+  it('opens the backup dialog in RecoveredBackupInfo state if user has a restored backup - default but probably should not happen', async () => {
+    const state = new StoreBuilder().withRestoredBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);
   });
 });
 

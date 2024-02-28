@@ -13,7 +13,7 @@ import { Success } from './success';
 import { bem } from '../../lib/bem';
 const c = bem('.secure-backup');
 
-describe('SecureBackup', () => {
+describe(SecureBackup, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       recoveryKey: 'stub-key',
@@ -22,7 +22,7 @@ describe('SecureBackup', () => {
       isLegacy: false,
       successMessage: '',
       errorMessage: '',
-      backupStage: BackupStage.None,
+      backupStage: BackupStage.UserGeneratePrompt,
 
       onGenerate: () => null,
       onRestore: () => null,
@@ -38,40 +38,39 @@ describe('SecureBackup', () => {
   };
 
   describe(GeneratePrompt, () => {
-    it('renders GeneratePrompt when stage is None, backup does not exists and no recovery key', function () {
-      const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
+    it('renders GeneratePrompt when stage is SystemGeneratePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt });
 
-      expect(wrapper).toHaveElement(GeneratePrompt);
+      expect(wrapper.find(GeneratePrompt)).toHaveProp('isSystemPrompt', true);
     });
 
-    it('renders GeneratePrompt when stage is SystemPrompt, backup does not exists and no recovery key', function () {
-      const wrapper = subject({ backupStage: BackupStage.SystemPrompt, backupExists: false, recoveryKey: '' });
+    it('renders GeneratePrompt when stage is UserGeneratePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt });
 
-      expect(wrapper).toHaveElement(GeneratePrompt);
+      expect(wrapper.find(GeneratePrompt).prop('isSystemPrompt')).toBeFalsy();
     });
 
-    it('publishes onGenerate', function () {
+    it('publishes onGenerate for system prompt', function () {
       const onGenerate = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: false,
-        recoveryKey: '',
-        onGenerate,
-      });
+      const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onGenerate });
 
       wrapper.find(GeneratePrompt).simulate('generate');
 
       expect(onGenerate).toHaveBeenCalled();
     });
 
-    it('publishes onClose (when backup stage is SystemPrompt)', function () {
+    it('publishes onGenerate for user prompt', function () {
+      const onGenerate = jest.fn();
+      const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt, onGenerate });
+
+      wrapper.find(GeneratePrompt).simulate('generate');
+
+      expect(onGenerate).toHaveBeenCalled();
+    });
+
+    it('publishes onClose (only valid when in system generated mode)', function () {
       const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: false,
-        recoveryKey: '',
-        onClose,
-      });
+      const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onClose });
 
       wrapper.find(GeneratePrompt).simulate('close');
 
@@ -80,37 +79,30 @@ describe('SecureBackup', () => {
   });
 
   describe(RestorePrompt, () => {
-    it('renders RestorePrompt when stage is None, backup exists, backup not restored and recovery key exists', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-      });
+    it('renders RestorePrompt when stage is SystemRestorePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt });
 
-      expect(wrapper).toHaveElement(RestorePrompt);
+      expect(wrapper.find(RestorePrompt)).toHaveProp('isSystemPrompt', true);
     });
 
-    it('renders RestorePrompt when stage is SystemPrompt, backup exists, backup not restored and recovery key exists', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-      });
+    it('renders RestorePrompt when stage is UserRestoreBackup', function () {
+      const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt });
 
-      expect(wrapper).toHaveElement(RestorePrompt);
+      expect(wrapper.find(RestorePrompt).prop('isSystemPrompt')).toBeFalsy();
     });
 
-    it('publishes onVerifyKey', function () {
+    it('publishes onVerifyKey (system)', function () {
       const onVerifyKey = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-        onVerifyKey,
-      });
+      const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onVerifyKey });
+
+      wrapper.find(RestorePrompt).simulate('next');
+
+      expect(onVerifyKey).toHaveBeenCalled();
+    });
+
+    it('publishes onVerifyKey (user)', function () {
+      const onVerifyKey = jest.fn();
+      const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt, onVerifyKey });
 
       wrapper.find(RestorePrompt).simulate('next');
 
@@ -119,13 +111,7 @@ describe('SecureBackup', () => {
 
     it('publishes onClose, (when backup stage is SystemPrompt)', function () {
       const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.SystemPrompt,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-        onClose,
-      });
+      const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onClose });
 
       wrapper.find(RestorePrompt).simulate('close');
 
@@ -134,42 +120,25 @@ describe('SecureBackup', () => {
   });
 
   describe(RecoveredBackup, () => {
-    it('renders RecoveredBackup when stage is None, backup is recovered, backup exists and no recovery key', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-      });
+    it('renders RecoveredBackup when stage is RecoveredBackupInfo', function () {
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo });
 
       expect(wrapper).toHaveElement(RecoveredBackup);
     });
 
     it('publishes onClose', function () {
       const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-        onClose,
-      });
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onClose });
 
       wrapper.find(RecoveredBackup).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });
 
+    // TODO: this goes away!
     it('publishes onGenerate when isLegacy is true', function () {
       const onGenerate = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-        onGenerate,
-        isLegacy: true,
-      });
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onGenerate, isLegacy: true });
 
       wrapper.find(RecoveredBackup).simulate('generate');
 

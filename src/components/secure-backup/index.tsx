@@ -42,28 +42,12 @@ export interface Properties {
 }
 
 export class SecureBackup extends React.PureComponent<Properties> {
-  get backupStage() {
-    return this.props.backupStage;
-  }
-
-  get isRecovered() {
-    return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
-  }
-
-  get noBackupExists() {
-    return !this.props.backupExists && !this.props.recoveryKey;
-  }
-
-  get backupNotRestored() {
+  get existingBackupNotRestored() {
     return this.props.backupExists && !this.props.isBackupRecovered;
   }
 
-  get isSystemPrompt() {
-    return this.backupStage === BackupStage.SystemPrompt;
-  }
-
   renderHeader = () => {
-    const title = this.backupNotRestored ? 'Verify Login' : 'Account Backup';
+    const title = this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
 
     return (
       <div {...cn('header')}>
@@ -96,26 +80,20 @@ export class SecureBackup extends React.PureComponent<Properties> {
     } = this.props;
 
     switch (backupStage) {
-      case BackupStage.None:
-      case BackupStage.SystemPrompt:
-        return (
-          <>
-            {this.noBackupExists && (
-              <GeneratePrompt
-                isSystemPrompt={this.isSystemPrompt}
-                errorMessage={errorMessage}
-                onGenerate={onGenerate}
-                onClose={onClose}
-              />
-            )}
+      case BackupStage.UserGeneratePrompt:
+        return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
 
-            {this.backupNotRestored && (
-              <RestorePrompt isSystemPrompt={this.isSystemPrompt} onNext={onVerifyKey} onClose={onClose} />
-            )}
+      case BackupStage.UserRestorePrompt:
+        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
 
-            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />}
-          </>
-        );
+      case BackupStage.SystemGeneratePrompt:
+        return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+
+      case BackupStage.SystemRestorePrompt:
+        return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
+
+      case BackupStage.RecoveredBackupInfo:
+        return <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />;
 
       case BackupStage.GenerateBackup:
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
@@ -130,7 +108,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <Success successMessage={successMessage} onClose={onClose} />;
 
       default:
-        return null;
+        assertNeverReached(backupStage);
     }
   };
 
@@ -143,4 +121,9 @@ export class SecureBackup extends React.PureComponent<Properties> {
       </div>
     );
   }
+}
+
+// Ensure all enum values are handled
+function assertNeverReached(x: never): never {
+  throw new Error('Unexpected type: ' + x);
 }

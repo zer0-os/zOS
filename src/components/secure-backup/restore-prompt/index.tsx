@@ -15,7 +15,7 @@ enum Status {
 }
 
 export interface Properties {
-  isSystemPrompt: boolean;
+  isSystemPrompt?: boolean;
 
   onNext: () => void;
   onClose: () => void;

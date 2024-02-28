@@ -10,7 +10,7 @@ import '../styles.scss';
 const cn = bemClassName('secure-backup');
 
 export interface Properties {
-  isSystemPrompt: boolean;
+  isSystemPrompt?: boolean;
   errorMessage: string;
 
   onGenerate: () => void;

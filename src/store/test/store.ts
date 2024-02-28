@@ -142,7 +142,7 @@ export function stubAuthenticatedUser(attrs: Partial<AuthenticatedUser> = {}): P
   };
 }
 
-function stubUser(attrs: Partial<User> = {}): Partial<User> {
+export function stubUser(attrs: Partial<User> = {}): Partial<User> {
   stubCount++;
   return {
     userId: `default-stub-user-id-${stubCount}`,
@@ -151,6 +151,14 @@ function stubUser(attrs: Partial<User> = {}): Partial<User> {
     firstName: 'DefaultStubFirstName',
     lastName: 'DefaultStubLastName',
     profileImage: '/default-stub-image.jpg',
+    ...attrs,
+  };
+}
+
+export function stubConversation(attrs: Partial<Channel> = {}): Partial<Channel> {
+  return {
+    id: 'channel-id',
+    otherMembers: [],
     ...attrs,
   };
 }

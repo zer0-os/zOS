@@ -275,7 +275,7 @@ describe(clearBackupState, () => {
         trustInfo: { trustData: 'here' },
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
-        backupStage: BackupStage.SystemPrompt,
+        backupStage: BackupStage.SystemGeneratePrompt,
       },
     };
     const { storeState } = await subject(clearBackupState)

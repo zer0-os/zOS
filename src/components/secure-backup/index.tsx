@@ -58,10 +58,6 @@ export class SecureBackup extends React.PureComponent<Properties> {
     return this.props.backupExists && !this.props.isBackupRecovered;
   }
 
-  get isSystemPrompt() {
-    return this.backupStage === BackupStage.SystemPrompt;
-  }
-
   renderHeader = () => {
     const title = this.backupNotRestored ? 'Verify Login' : 'Account Backup';
 
@@ -103,21 +99,18 @@ export class SecureBackup extends React.PureComponent<Properties> {
       case BackupStage.RecoveredBackupInfo:
         return <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />;
       case BackupStage.None:
-      case BackupStage.SystemPrompt:
         return (
           <>
             {this.noBackupExists && (
               <GeneratePrompt
-                isSystemPrompt={this.isSystemPrompt}
+                isSystemPrompt={false}
                 errorMessage={errorMessage}
                 onGenerate={onGenerate}
                 onClose={onClose}
               />
             )}
 
-            {this.backupNotRestored && (
-              <RestorePrompt isSystemPrompt={this.isSystemPrompt} onNext={onVerifyKey} onClose={onClose} />
-            )}
+            {this.backupNotRestored && <RestorePrompt isSystemPrompt={false} onNext={onVerifyKey} onClose={onClose} />}
 
             {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />}
           </>

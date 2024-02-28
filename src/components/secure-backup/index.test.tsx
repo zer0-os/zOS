@@ -47,7 +47,7 @@ describe('SecureBackup', () => {
     it('renders GeneratePrompt when stage is None, backup does not exists and no recovery key', function () {
       const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
 
-      expect(wrapper).toHaveElement(GeneratePrompt);
+      expect(wrapper.find(GeneratePrompt)).toHaveProp('isSystemPrompt', false);
     });
 
     it('publishes onGenerate for system prompt', function () {

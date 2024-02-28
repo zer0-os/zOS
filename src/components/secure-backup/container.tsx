@@ -86,7 +86,7 @@ export class Container extends React.Component<Properties> {
     return (
       <SecureBackup
         backupExists={this.props.backupExists}
-        isBackupRecovered={this.props.backupRecovered}
+        backupRecovered={this.props.backupRecovered}
         isLegacy={this.props.isLegacy}
         recoveryKey={this.props.recoveryKey}
         successMessage={this.props.successMessage}

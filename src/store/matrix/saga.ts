@@ -178,8 +178,7 @@ export function* ensureUserHasBackup() {
   const backup = yield call(getSecureBackup);
   if (!backup?.backupInfo) {
     if (yield call(performUnlessLogout, delay(10000))) {
-      yield put(setBackupStage(BackupStage.SystemPrompt));
-      yield put(setIsBackupDialogOpen(true));
+      yield call(systemInitiatedBackupDialog);
     }
   }
 }

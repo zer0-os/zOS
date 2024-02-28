@@ -295,22 +295,24 @@ describe(clearBackupState, () => {
 
 describe('secure backup status management', () => {
   describe(ensureUserHasBackup, () => {
-    it('opens the backup dialog and sets stage if backup does not exist', async () => {
+    it('opens the backup dialog if backup does not exist', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
-        .provide([[call(getSecureBackup), undefined], stubDelay(10000)])
+        .provide([
+          [call(getSecureBackup), undefined],
+          stubDelay(10000),
+          [call(systemInitiatedBackupDialog), undefined],
+        ])
+        .call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-      expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
     });
 
     it('does not open the backup dialog if backup exists', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [
@@ -318,23 +320,21 @@ describe('secure backup status management', () => {
             { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
           ],
         ])
+        .not.call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
 
     it('does not open the backup if user logs out during wait period', async () => {
       const initialState = { matrix: { isBackupDialogOpen: false } };
 
-      const { storeState } = await subject(ensureUserHasBackup)
+      await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
           [call(getSecureBackup), undefined],
           [call(performUnlessLogout, delay(10000)), false],
         ])
+        .not.call(systemInitiatedBackupDialog)
         .run();
-
-      expect(storeState.matrix.isBackupDialogOpen).toBe(false);
     });
   });
 
@@ -374,19 +374,17 @@ describe(handleBackupUserPrompts, () => {
   });
 
   it('waits for first sent message if user does not have a backup', async () => {
-    const { storeState } = await subject(noBackupResponse())
+    await subject(noBackupResponse())
       .call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .not.call(systemInitiatedBackupDialog)
       .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
   });
 
   it('does nothing if backup is already set up for this session', async () => {
-    const { storeState } = await subject(restoredBackupResponse())
+    await subject(restoredBackupResponse())
       .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .not.call(systemInitiatedBackupDialog)
       .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(false);
   });
 });
 

@@ -33,7 +33,7 @@ export class Container extends React.Component<Properties> {
     return (
       <LogoutConfirmationModal
         backupExists={this.props.backupExists}
-        backupVerified={this.props.backupRestored}
+        backupRestored={this.props.backupRestored}
         onLogout={this.props.forceLogout}
         onClose={this.props.closeLogoutModal}
       />

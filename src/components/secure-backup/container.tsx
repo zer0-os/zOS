@@ -11,7 +11,7 @@ import {
   getBackup,
   restoreBackup,
   saveBackup,
-  onVerifyKey,
+  proceedToVerifyKey,
 } from '../../store/matrix';
 
 import { SecureBackup } from '.';
@@ -38,7 +38,7 @@ export interface Properties extends PublicProperties {
   saveBackup: () => void;
   restoreBackup: (recoveryKey: string) => void;
   clearBackup: () => void;
-  onVerifyKey: () => void;
+  proceedToVerifyKey: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -58,7 +58,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, onVerifyKey };
+    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, proceedToVerifyKey };
   }
 
   componentDidMount(): void {
@@ -86,7 +86,7 @@ export class Container extends React.Component<Properties> {
         onGenerate={this.props.generateBackup}
         onSave={this.props.saveBackup}
         onRestore={this.props.restoreBackup}
-        onVerifyKey={this.props.onVerifyKey}
+        onVerifyKey={this.props.proceedToVerifyKey}
         videoAssetsPath={this.props.videoAssetsPath}
         backupStage={this.props.backupStage}
       />

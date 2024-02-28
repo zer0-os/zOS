@@ -63,7 +63,7 @@ export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
 export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
 export const openBackupDialog = createAction(SagaActionTypes.OpenBackupDialog);
 export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
-export const onVerifyKey = createAction(SagaActionTypes.VerifyKey);
+export const proceedToVerifyKey = createAction(SagaActionTypes.VerifyKey);
 
 const slice = createSlice({
   name: 'matrix',

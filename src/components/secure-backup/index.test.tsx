@@ -188,7 +188,7 @@ describe('SecureBackup', () => {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onVerifyKey });
 
-      wrapper.find(GenerateBackup).simulate('save');
+      wrapper.find(GenerateBackup).simulate('next');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });

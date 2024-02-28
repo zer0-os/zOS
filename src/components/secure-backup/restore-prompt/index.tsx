@@ -17,7 +17,7 @@ enum Status {
 export interface Properties {
   isSystemPrompt: boolean;
 
-  onVerifyKey: () => void;
+  onNext: () => void;
   onClose: () => void;
 }
 
@@ -28,8 +28,8 @@ export class RestorePrompt extends React.Component<Properties> {
     }
   };
 
-  navigateToVerifyWithKey = () => {
-    this.props.onVerifyKey();
+  next = () => {
+    this.props.onNext();
   };
 
   renderStatus = (status: Status, text: string) => {
@@ -67,7 +67,7 @@ export class RestorePrompt extends React.Component<Properties> {
             </Button>
           )}
 
-          <Button {...cn('button')} onPress={this.navigateToVerifyWithKey}>
+          <Button {...cn('button')} onPress={this.next}>
             Verify with backup phrase
           </Button>
         </div>

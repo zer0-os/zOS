@@ -10,7 +10,7 @@ describe(RestorePrompt, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isSystemPrompt: false,
-      onVerifyKey: () => null,
+      onNext: () => null,
       onClose: () => null,
       ...props,
     };
@@ -35,13 +35,13 @@ describe(RestorePrompt, () => {
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
   });
 
-  it('publishes onVerifyKey event', function () {
-    const onVerifyKey = jest.fn();
-    const wrapper = subject({ onVerifyKey });
+  it('publishes onNext event', function () {
+    const onNext = jest.fn();
+    const wrapper = subject({ onNext });
 
     pressButton(wrapper, 'Verify with backup phrase');
 
-    expect(onVerifyKey).toHaveBeenCalledOnce();
+    expect(onNext).toHaveBeenCalledOnce();
   });
 
   it('publishes onClose event when isSystemPrompt is true', function () {

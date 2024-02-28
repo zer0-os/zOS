@@ -7,7 +7,7 @@ describe(Container, () => {
       const state = new StoreBuilder().withoutBackup();
 
       expect(Container.mapState(state.build())).toEqual(
-        expect.objectContaining({ backupExists: false, backupVerified: false })
+        expect.objectContaining({ backupExists: false, backupRestored: false })
       );
     });
 
@@ -15,7 +15,7 @@ describe(Container, () => {
       const state = new StoreBuilder().withUnrestoredBackup();
 
       expect(Container.mapState(state.build())).toEqual(
-        expect.objectContaining({ backupExists: true, backupVerified: false })
+        expect.objectContaining({ backupExists: true, backupRestored: false })
       );
     });
 
@@ -23,7 +23,7 @@ describe(Container, () => {
       const state = new StoreBuilder().withRestoredBackup();
 
       expect(Container.mapState(state.build())).toEqual(
-        expect.objectContaining({ backupExists: true, backupVerified: true })
+        expect.objectContaining({ backupExists: true, backupRestored: true })
       );
     });
   });

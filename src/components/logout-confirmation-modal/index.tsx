@@ -9,7 +9,7 @@ const cn = bemClassName('logout-confirmation-modal');
 
 export interface Properties {
   backupExists: boolean;
-  backupVerified: boolean;
+  backupRestored: boolean;
 
   onClose: () => void;
   onLogout: () => void;
@@ -25,7 +25,7 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
     );
   }
 
-  get unverifiedText() {
+  get unrestoredText() {
     return (
       <>
         <p>
@@ -60,8 +60,8 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
       >
         <div {...cn()}>
           {!this.props.backupExists && this.noBackupText}
-          {this.props.backupExists && !this.props.backupVerified && this.unverifiedText}
-          {this.props.backupExists && this.props.backupVerified && this.logoutWarningText}
+          {this.props.backupExists && !this.props.backupRestored && this.unrestoredText}
+          {this.props.backupExists && this.props.backupRestored && this.logoutWarningText}
         </div>
       </Modal>
     );

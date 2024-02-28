@@ -77,12 +77,12 @@ export class StoreBuilder {
     return this;
   }
 
-  withUnverifiedBackup() {
+  withUnrestoredBackup() {
     this.matrix.trustInfo = { usable: false, trustedLocally: false, isLegacy: false };
     return this;
   }
 
-  withVerifiedBackup() {
+  withRestoredBackup() {
     this.matrix.trustInfo = { usable: false, trustedLocally: true, isLegacy: false };
     return this;
   }

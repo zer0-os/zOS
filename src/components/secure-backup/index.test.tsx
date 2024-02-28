@@ -86,6 +86,12 @@ describe('SecureBackup', () => {
   });
 
   describe(RestorePrompt, () => {
+    it('renders RestorePrompt when stage is SystemRestorePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt });
+
+      expect(wrapper.find(RestorePrompt)).toHaveProp('isSystemPrompt', true);
+    });
+
     it('renders RestorePrompt when stage is None, backup exists, backup not restored and recovery key exists', function () {
       const wrapper = subject({
         backupStage: BackupStage.None,

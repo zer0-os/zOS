@@ -391,7 +391,7 @@ describe(handleBackupUserPrompts, () => {
 });
 
 describe(systemInitiatedBackupDialog, () => {
-  it('opens the backup dialog in GeneratePrompt state if user has no backup', async () => {
+  it('opens the backup dialog in SystemGeneratePrompt state if user has no backup', async () => {
     const state = new StoreBuilder().withoutBackup();
     const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
 
@@ -399,8 +399,16 @@ describe(systemInitiatedBackupDialog, () => {
     expect(storeState.matrix.backupStage).toBe(BackupStage.SystemGeneratePrompt);
   });
 
-  it('opens the backup dialog and sets stage - deprecated', async () => {
-    const state = new StoreBuilder().withUnverifiedBackup();
+  it('opens the backup dialog in SystemRestorePrompt state if user has an unrestored backup', async () => {
+    const state = new StoreBuilder().withUnrestoredBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemRestorePrompt);
+  });
+
+  it('opens the backup dialog in Deprecated state if user has a restored backup - default but probably should not happen', async () => {
+    const state = new StoreBuilder().withRestoredBackup();
     const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
 
     expect(storeState.matrix.isBackupDialogOpen).toBe(true);

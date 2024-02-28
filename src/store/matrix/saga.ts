@@ -228,11 +228,15 @@ export function* handleBackupUserPrompts() {
 
 export function* systemInitiatedBackupDialog() {
   const trustInfo = yield select((state) => state.matrix.trustInfo);
+
   if (!trustInfo) {
     yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
+  } else if (!trustInfo.usable && !trustInfo.trustedLocally) {
+    yield put(setBackupStage(BackupStage.SystemRestorePrompt));
   } else {
     yield put(setBackupStage(BackupStage.SystemPrompt));
   }
+
   yield put(setIsBackupDialogOpen(true));
 }
 

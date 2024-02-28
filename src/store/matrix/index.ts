@@ -22,6 +22,7 @@ export enum BackupStage {
   None = 'none',
   SystemPrompt = 'system_prompt',
   SystemGeneratePrompt = 'system_generate_prompt',
+  SystemRestorePrompt = 'system_restore_prompt',
   VerifyKeyPhrase = 'verify_key_phrase',
   GenerateBackup = 'generate_backup',
   RestoreBackup = 'restore_backup',

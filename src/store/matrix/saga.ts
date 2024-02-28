@@ -27,6 +27,9 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
+  yield takeLatest(SagaActionTypes.OpenBackupDialog, openBackupDialog);
+  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
+  yield takeLatest(SagaActionTypes.VerifyKey, proceedToVerifyKey);
 
   // For debugging
   yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
@@ -36,9 +39,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
   yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
   yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
-  yield takeLatest(SagaActionTypes.OpenBackupDialog, openBackupDialog);
-  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
-  yield takeLatest(SagaActionTypes.VerifyKey, onVerifyKey);
 }
 
 export function* getBackup() {
@@ -60,7 +60,15 @@ export function* getBackup() {
 }
 
 export function* generateBackup() {
+  yield put(setErrorMessage(''));
   yield put(setBackupStage(BackupStage.GenerateBackup));
+
+  const existingKey = yield select((state) => state.matrix.generatedRecoveryKey);
+  if (existingKey) {
+    yield put(setGeneratedRecoveryKey(existingKey));
+    return;
+  }
+
   const chatClient = yield call(chat.get);
 
   try {
@@ -72,17 +80,35 @@ export function* generateBackup() {
   }
 }
 
-export function* saveBackup() {
+export function* proceedToVerifyKey() {
+  const existingKey = yield select((state) => state.matrix.generatedRecoveryKey);
+
+  if (existingKey) {
+    yield put(setBackupStage(BackupStage.VerifyKeyPhrase));
+  } else {
+    yield put(setBackupStage(BackupStage.RestoreBackup));
+  }
+}
+
+export function* saveBackup(action) {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
-  const key = yield select((state) => state.matrix.generatedRecoveryKey);
+  const generatedKey = yield select((state) => state.matrix.generatedRecoveryKey);
+  const userInputKeyPhrase = action.payload;
+
+  if (userInputKeyPhrase !== generatedKey) {
+    yield put(setErrorMessage('The phrase you entered does not match. Backup phrases are case sensitive'));
+    return;
+  }
+
   const chatClient = yield call(chat.get);
   try {
-    yield call([chatClient, chatClient.saveSecureBackup], key);
+    yield call([chatClient, chatClient.saveSecureBackup], generatedKey);
     yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
     yield put(setBackupStage(BackupStage.Success));
     yield put(setSuccessMessage('Account backup successful'));
+    yield put(setErrorMessage(''));
   } catch {
     yield put(setErrorMessage('Account backup failed'));
   }
@@ -209,8 +235,4 @@ export function* checkBackupOnFirstSentMessage() {
   const bus = yield call(getChatMessageBus);
   yield take(bus, ChatMessageEvents.Sent);
   yield call(ensureUserHasBackup);
-}
-
-export function* onVerifyKey() {
-  yield put(setBackupStage(BackupStage.RestoreBackup));
 }

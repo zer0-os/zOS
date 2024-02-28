@@ -7,6 +7,7 @@ import { RestorePrompt } from './restore-prompt';
 import { RecoveredBackup } from './recovered-backup';
 import { GenerateBackup } from './generate-backup';
 import { RestoreBackup } from './restore-backup';
+import { VerifyKeyPhrase } from './verify-key-phrase';
 import { Success } from './success';
 
 import { bem } from '../../lib/bem';
@@ -184,12 +185,12 @@ describe('SecureBackup', () => {
     });
 
     it('publishes onSave', function () {
-      const onSave = jest.fn();
-      const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onSave });
+      const onVerifyKey = jest.fn();
+      const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onVerifyKey });
 
       wrapper.find(GenerateBackup).simulate('save');
 
-      expect(onSave).toHaveBeenCalled();
+      expect(onVerifyKey).toHaveBeenCalled();
     });
   });
 
@@ -223,6 +224,31 @@ describe('SecureBackup', () => {
       wrapper.find(Success).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe(VerifyKeyPhrase, () => {
+    it('renders VerifyKeyPhrase component when in VerifyKeyPhrase stage', function () {
+      const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase });
+      expect(wrapper).toHaveElement(VerifyKeyPhrase);
+    });
+
+    it('publishes onGenerate', function () {
+      const onGenerate = jest.fn();
+      const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onGenerate });
+
+      wrapper.find(VerifyKeyPhrase).simulate('back');
+
+      expect(onGenerate).toHaveBeenCalled();
+    });
+
+    it('publishes onSave', function () {
+      const onSave = jest.fn();
+      const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onSave });
+
+      wrapper.find(VerifyKeyPhrase).simulate('submit', 'abcd 1234');
+
+      expect(onSave).toHaveBeenCalled();
     });
   });
 

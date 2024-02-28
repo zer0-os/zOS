@@ -10,7 +10,7 @@ import {
   getBackup,
   ensureUserHasBackup,
   restoreBackup,
-  onVerifyKey,
+  proceedToVerifyKey,
   saveBackup,
   handleBackupUserPrompts,
   checkBackupOnFirstSentMessage,
@@ -126,29 +126,45 @@ describe(generateBackup, () => {
     expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup key. Please try again.');
     expect(storeState.matrix.backupStage).toEqual(BackupStage.None);
   });
+
+  it('reuses existing backup key if present and does not call generateSecureBackup', async () => {
+    const initialState = { matrix: { generatedRecoveryKey: 'existing-key' } };
+    const generateSecureBackupMock = jest.fn();
+
+    const { storeState } = await subject(generateBackup)
+      .withReducer(rootReducer, initialState as any)
+      .provide([
+        [matchers.call.fn(chat.get), { ...chatClient, generateSecureBackup: generateSecureBackupMock }],
+        [matchers.call.fn(getSecureBackup), true],
+      ])
+      .run();
+
+    expect(storeState.matrix.generatedRecoveryKey).toEqual('existing-key');
+    expect(generateSecureBackupMock).not.toHaveBeenCalled();
+  });
 });
 
 describe(saveBackup, () => {
   describe('success', () => {
-    function successSubject() {
-      const initialState = { matrix: { generatedRecoveryKey: 'the key' } };
+    function successSubject(userInputKeyPhrase) {
+      const initialState = { matrix: { generatedRecoveryKey: 'generated-key' } };
 
-      return subject(saveBackup)
-        .provide([[call([chatClient, chatClient.saveSecureBackup], 'the key'), { version: 1 }]])
+      return subject(saveBackup, { payload: userInputKeyPhrase })
+        .provide([[call([chatClient, chatClient.saveSecureBackup], 'generated-key'), { version: 1 }]])
         .withReducer(rootReducer, initialState as any);
     }
     it('clears the generated backup', async () => {
-      const { storeState } = await successSubject().run();
+      const { storeState } = await successSubject('generated-key').run();
 
       expect(storeState.matrix.generatedRecoveryKey).toEqual(null);
     });
 
     it('fetches the saved backup', async () => {
-      await successSubject().call(getBackup).run();
+      await successSubject('generated-key').call(getBackup).run();
     });
 
     it('sets a success message', async () => {
-      const { storeState } = await successSubject().run();
+      const { storeState } = await successSubject('generated-key').run();
 
       expect(storeState.matrix.successMessage).toEqual('Account backup successful');
     });
@@ -156,9 +172,9 @@ describe(saveBackup, () => {
 
   describe('failure', () => {
     it('sets a failure message', async () => {
-      const initialState = { matrix: { generatedRecoveryKey: 'a key' } };
+      const initialState = { matrix: { generatedRecoveryKey: 'generated-key' } };
 
-      const { storeState } = await subject(saveBackup)
+      const { storeState } = await subject(saveBackup, { payload: 'generated-key' })
         .provide([
           [
             matchers.call.like({ context: chatClient, fn: chatClient.saveSecureBackup }),
@@ -169,6 +185,19 @@ describe(saveBackup, () => {
         .run();
 
       expect(storeState.matrix.errorMessage).toEqual('Account backup failed');
+    });
+
+    it('sets error message and aborts if user input key phrase does not match the generated key', async () => {
+      const initialState = { matrix: { generatedRecoveryKey: 'generated-key' } };
+
+      const { storeState } = await subject(saveBackup, { payload: 'user-input-wrong-key' })
+        .withReducer(rootReducer, initialState as any)
+        .run();
+
+      expect(storeState.matrix.errorMessage).toEqual(
+        'The phrase you entered does not match. Backup phrases are case sensitive'
+      );
+      expect(storeState.matrix.backupStage).not.toEqual(BackupStage.Success);
     });
   });
 });
@@ -215,11 +244,24 @@ describe(restoreBackup, () => {
   });
 });
 
-describe(onVerifyKey, () => {
-  it('sets stage to RestoreBackup', async () => {
-    const { storeState } = await subject(onVerifyKey).withReducer(rootReducer).run();
+describe(proceedToVerifyKey, () => {
+  it('sets stage to RestoreBackup when no existing key is found', async () => {
+    const initialState = { matrix: { generatedRecoveryKey: null } };
+    const { storeState } = await subject(proceedToVerifyKey)
+      .withReducer(rootReducer, initialState as any)
+      .run();
 
     expect(storeState.matrix.backupStage).toEqual(BackupStage.RestoreBackup);
+  });
+
+  it('sets stage to VerifyKeyPhrase when existing key is found', async () => {
+    const initialState = { matrix: { generatedRecoveryKey: 'existing-key' } };
+
+    const { storeState } = await subject(proceedToVerifyKey)
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(storeState.matrix.backupStage).toEqual(BackupStage.VerifyKeyPhrase);
   });
 });
 

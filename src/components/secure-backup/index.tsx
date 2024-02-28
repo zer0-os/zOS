@@ -42,24 +42,12 @@ export interface Properties {
 }
 
 export class SecureBackup extends React.PureComponent<Properties> {
-  get backupStage() {
-    return this.props.backupStage;
-  }
-
-  get isRecovered() {
-    return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
-  }
-
-  get noBackupExists() {
-    return !this.props.backupExists && !this.props.recoveryKey;
-  }
-
-  get backupNotRestored() {
+  get existingBackupNotRestored() {
     return this.props.backupExists && !this.props.isBackupRecovered;
   }
 
   renderHeader = () => {
-    const title = this.backupNotRestored ? 'Verify Login' : 'Account Backup';
+    const title = this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
 
     return (
       <div {...cn('header')}>

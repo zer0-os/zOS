@@ -21,7 +21,7 @@ export class Container extends React.Component<Properties> {
 
     return {
       backupExists,
-      backupRestored: backupRestored,
+      backupRestored,
     };
   }
 

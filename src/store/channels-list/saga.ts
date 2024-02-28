@@ -24,8 +24,6 @@ import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
 
-export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
   for (const channel of channels) {

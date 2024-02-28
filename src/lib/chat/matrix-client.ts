@@ -348,6 +348,7 @@ export class MatrixClient implements IChatClient {
       ...message,
       content: { ...message.content, body: newContent.body },
       updatedAt: timestamp,
+      isHidden: false,
     };
   }
 
@@ -355,8 +356,9 @@ export class MatrixClient implements IChatClient {
     return {
       ...message,
       content: { ...message.content },
-      message: 'Message edit cannot be decrypted.',
+      message: 'Message hidden',
       updatedAt: timestamp,
+      isHidden: true,
     };
   }
 

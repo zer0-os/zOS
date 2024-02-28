@@ -27,7 +27,7 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
       }
 
       message.parentMessage = parentMessage;
-      message.parentMessageText = parentMessage.message;
+      message.parentMessageText = parentMessage.isHidden ? 'Message hidden' : parentMessage.message;
     }
   }
 }

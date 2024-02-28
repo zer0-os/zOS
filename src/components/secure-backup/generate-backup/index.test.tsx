@@ -12,7 +12,7 @@ describe(GenerateBackup, () => {
     const allProps: Properties = {
       recoveryKey: 'stub-key',
       errorMessage: '',
-      onSave: () => null,
+      onNext: () => null,
       clipboard: { write: () => Promise.resolve() },
       ...props,
     };
@@ -57,14 +57,14 @@ describe(GenerateBackup, () => {
     expect(buttonLabelled(wrapper, saveButtonLabel)).toHaveProp('isDisabled', false);
   });
 
-  it('publishes onSave event', function () {
-    const onSave = jest.fn();
-    const wrapper = subject({ onSave });
+  it('publishes onNext event', function () {
+    const onNext = jest.fn();
+    const wrapper = subject({ onNext });
 
     pressButton(wrapper, 'Copy');
     pressButton(wrapper, 'I’ve safely stored my backup');
 
-    expect(onSave).toHaveBeenCalledOnce();
+    expect(onNext).toHaveBeenCalledOnce();
   });
 
   it('renders an error message', () => {

@@ -118,7 +118,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         );
 
       case BackupStage.GenerateBackup:
-        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onVerifyKey} />;
+        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
 
       case BackupStage.RestoreBackup:
         return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;

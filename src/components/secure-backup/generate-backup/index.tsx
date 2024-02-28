@@ -16,7 +16,7 @@ export interface Properties {
 
   clipboard?: Clipboard;
 
-  onSave: () => void;
+  onNext: () => void;
 }
 
 export interface State {
@@ -37,8 +37,8 @@ export class GenerateBackup extends React.Component<Properties, State> {
     this.setState({ hasCopied: true });
   };
 
-  onSave = () => {
-    this.props.onSave();
+  next = () => {
+    this.props.onNext();
   };
 
   get copyButtonText() {
@@ -66,7 +66,7 @@ export class GenerateBackup extends React.Component<Properties, State> {
         <div {...cn('footer')}>
           <Button
             {...cn('button')}
-            onPress={this.onSave}
+            onPress={this.next}
             isDisabled={!this.state.hasCopied}
             endEnhancer={<IconArrowRight isFilled size={24} />}
           >

@@ -9,7 +9,7 @@ export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   backupExists: boolean;
-  backupVerified: boolean;
+  backupRestored: boolean;
 
   closeLogoutModal: () => void;
   forceLogout: () => void;
@@ -17,11 +17,11 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { trustInfo } = state.matrix;
+    const { backupExists, backupRestored } = state.matrix;
 
     return {
-      backupExists: !!trustInfo,
-      backupVerified: Boolean(trustInfo?.usable || trustInfo?.trustedLocally),
+      backupExists,
+      backupRestored: backupRestored,
     };
   }
 
@@ -33,7 +33,7 @@ export class Container extends React.Component<Properties> {
     return (
       <LogoutConfirmationModal
         backupExists={this.props.backupExists}
-        backupVerified={this.props.backupVerified}
+        backupVerified={this.props.backupRestored}
         onLogout={this.props.forceLogout}
         onClose={this.props.closeLogoutModal}
       />

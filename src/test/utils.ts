@@ -19,3 +19,9 @@ export function pressButton(wrapper, label: string) {
 export async function releaseThread() {
   await new Promise(jest.requireActual('timers').setImmediate);
 }
+
+export function selectDropdownItem(wrapper, selector, itemId: string) {
+  const dropdownMenu = wrapper.find(selector);
+  const menuItem = dropdownMenu.prop('items').find((item) => item.id === itemId);
+  menuItem.onSelect();
+}

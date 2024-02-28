@@ -11,7 +11,7 @@ describe(Container, () => {
       );
     });
 
-    test('when a backup exists but is unverified', () => {
+    test('when a backup exists but is unrestored', () => {
       const state = new StoreBuilder().withUnrestoredBackup();
 
       expect(Container.mapState(state.build())).toEqual(
@@ -19,7 +19,7 @@ describe(Container, () => {
       );
     });
 
-    test('when verified backup exists', () => {
+    test('when restored backup exists', () => {
       const state = new StoreBuilder().withRestoredBackup();
 
       expect(Container.mapState(state.build())).toEqual(

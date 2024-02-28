@@ -16,7 +16,7 @@ import {
   checkBackupOnFirstSentMessage,
   systemInitiatedBackupDialog,
   userInitiatedBackupDialog,
-  updateTrustInfo,
+  receiveBackupData,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -46,7 +46,7 @@ describe(getBackup, () => {
         [call(getSecureBackup), restoredBackupResponse()],
       ])
       .withReducer(rootReducer)
-      .call(updateTrustInfo, restoredBackupResponse())
+      .call(receiveBackupData, restoredBackupResponse())
       .run();
 
     expect(returnValue).toEqual({ backupExists: true, backupRestored: true });
@@ -65,7 +65,7 @@ describe(getBackup, () => {
     const { returnValue } = await subject(getBackup)
       .provide([[call(getSecureBackup), { trustInfo: undefined }]])
       .withReducer(rootReducer)
-      .call(updateTrustInfo, { trustInfo: undefined })
+      .call(receiveBackupData, { trustInfo: undefined })
       .run();
 
     expect(returnValue).toEqual({ backupExists: false, backupRestored: false });
@@ -412,11 +412,11 @@ describe(userInitiatedBackupDialog, () => {
   });
 });
 
-describe(updateTrustInfo, () => {
+describe(receiveBackupData, () => {
   it('sets metadata if backup exists but is not restored', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: true } });
 
-    const { returnValue, storeState } = await subject(updateTrustInfo, unrestoredBackupResponse())
+    const { returnValue, storeState } = await subject(receiveBackupData, unrestoredBackupResponse())
       .withReducer(rootReducer, state.build())
       .run();
 
@@ -429,7 +429,7 @@ describe(updateTrustInfo, () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
     const { returnValue, storeState } = await subject(
-      updateTrustInfo,
+      receiveBackupData,
       restoredBackupResponse({ usable: true, trusted_locally: false })
     )
       .withReducer(rootReducer, state.build())
@@ -444,7 +444,7 @@ describe(updateTrustInfo, () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
     const { returnValue, storeState } = await subject(
-      updateTrustInfo,
+      receiveBackupData,
       restoredBackupResponse({ usable: false, trusted_locally: true })
     )
       .withReducer(rootReducer, state.build())
@@ -458,7 +458,7 @@ describe(updateTrustInfo, () => {
   it('sets metadata if backup does not exist', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
 
-    const { returnValue, storeState } = await subject(updateTrustInfo, { trustedInfo: null })
+    const { returnValue, storeState } = await subject(receiveBackupData, { trustedInfo: null })
       .withReducer(rootReducer, state.build())
       .run();
 
@@ -472,7 +472,7 @@ describe(updateTrustInfo, () => {
 
     const backupResponse = unrestoredBackupResponse();
     backupResponse.isLegacy = true;
-    const { returnValue, storeState } = await subject(updateTrustInfo, backupResponse)
+    const { returnValue, storeState } = await subject(receiveBackupData, backupResponse)
       .withReducer(rootReducer, state.build())
       .run();
 

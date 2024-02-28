@@ -47,13 +47,13 @@ export function* getBackup() {
   yield put(setLoaded(false));
 
   const existingBackup = yield call(getSecureBackup);
-  const backupState = yield call(updateTrustInfo, existingBackup);
+  const backupState = yield call(receiveBackupData, existingBackup);
   yield put(setLoaded(true));
 
   return backupState;
 }
 
-export function* updateTrustInfo(existingBackup?) {
+export function* receiveBackupData(existingBackup?) {
   let backupExists = false;
   let backupRestored = false;
 
@@ -223,7 +223,7 @@ function* listenForUserLogout() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogout);
-    yield call(updateTrustInfo, null);
+    yield call(receiveBackupData, null);
   }
 }
 

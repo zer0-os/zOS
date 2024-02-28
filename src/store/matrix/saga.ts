@@ -56,19 +56,22 @@ export function* getBackup() {
     };
   }
 
-  const backupData = yield call(updateTrustInfo, trustInfo);
+  const backupState = yield call(updateTrustInfo, trustInfo);
   yield put(setLoaded(true));
 
-  return backupData.trustInfo;
+  return backupState;
 }
 
 export function* updateTrustInfo(trustInfo: { usable: boolean; trustedLocally: boolean; isLegacy: boolean } | null) {
-  const data = { trustInfo };
+  const backupExists = !!trustInfo && !trustInfo.isLegacy;
 
-  yield put(setBackupExists(!!trustInfo && !trustInfo.isLegacy));
-  yield put(setBackupRestored(isBackupRestored(trustInfo) && !trustInfo?.isLegacy));
+  const isMatrixRestored = Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
+  const backupRestored = isMatrixRestored && !trustInfo?.isLegacy;
 
-  return data;
+  yield put(setBackupExists(backupExists));
+  yield put(setBackupRestored(backupRestored));
+
+  return { backupExists, backupRestored };
 }
 
 export function* generateBackup() {
@@ -234,12 +237,12 @@ export function* handleBackupUserPrompts() {
     return;
   }
 
-  const trustInfo = yield call(getBackup);
-  if (!trustInfo) {
+  const { backupExists, backupRestored } = yield call(getBackup);
+  if (!backupExists) {
     return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
   }
 
-  if (isBackupRestored(trustInfo)) {
+  if (backupRestored) {
     return;
   }
 
@@ -259,10 +262,6 @@ export function* systemInitiatedBackupDialog() {
   }
 
   yield put(setIsBackupDialogOpen(true));
-}
-
-function isBackupRestored(trustInfo: any) {
-  return Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
 }
 
 export function* checkBackupOnFirstSentMessage() {

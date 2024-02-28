@@ -14,6 +14,7 @@ import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
+import { VerifyKeyPhrase } from './verify-key-phrase';
 
 const cn = bemClassName('secure-backup');
 
@@ -35,7 +36,7 @@ export interface Properties {
 
   onClose: () => void;
   onGenerate: () => void;
-  onSave: () => void;
+  onSave: (recoveryKey) => void;
   onRestore: (recoveryKey) => void;
   onVerifyKey: () => void;
 }
@@ -117,10 +118,13 @@ export class SecureBackup extends React.PureComponent<Properties> {
         );
 
       case BackupStage.GenerateBackup:
-        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onSave} />;
+        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onVerifyKey} />;
 
       case BackupStage.RestoreBackup:
         return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
+
+      case BackupStage.VerifyKeyPhrase:
+        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSubmit={onSave} />;
 
       case BackupStage.Success:
         return <Success successMessage={successMessage} onClose={onClose} />;

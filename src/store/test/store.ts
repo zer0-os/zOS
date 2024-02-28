@@ -151,6 +151,8 @@ export function stubUser(attrs: Partial<User> = {}): Partial<User> {
     firstName: 'DefaultStubFirstName',
     lastName: 'DefaultStubLastName',
     profileImage: '/default-stub-image.jpg',
+    lastSeenAt: 'default-stub-last-seen',
+    primaryZID: 'default-stub-primary-zid',
     ...attrs,
   };
 }

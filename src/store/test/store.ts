@@ -14,7 +14,6 @@ export class StoreBuilder {
   users: Partial<{ userId: string }>[] = [];
 
   activeConversation: Partial<Channel> = {};
-  isFullScreenMessenger: boolean = true;
   currentUser: Partial<AuthenticatedUser> = stubAuthenticatedUser();
   groupManagement: Partial<RootState['groupManagement']> = initialGroupManagementState;
   otherState: any = {};
@@ -56,16 +55,6 @@ export class StoreBuilder {
 
   withCurrentUserId(id: string) {
     return this.withCurrentUser({ id });
-  }
-
-  inFullScreenMessenger() {
-    this.isFullScreenMessenger = true;
-    return this;
-  }
-
-  inWindowedMode() {
-    this.isFullScreenMessenger = false;
-    return this;
   }
 
   withChat(chatState: Partial<ChatState>) {
@@ -123,11 +112,6 @@ export class StoreBuilder {
       chat: {
         ...this.chatState,
         activeConversationId: this.activeConversation.id || this.activeConversationId || null,
-      },
-      layout: {
-        value: {
-          isMessengerFullScreen: this.isFullScreenMessenger,
-        },
       },
       authentication: {
         ...authenticationInitialState,

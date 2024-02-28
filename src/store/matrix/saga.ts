@@ -7,13 +7,11 @@ import {
   setErrorMessage,
   setLoaded,
   setSuccessMessage,
-  setTrustInfo,
   setIsBackupDialogOpen,
   setBackupStage,
   BackupStage,
   setBackupExists,
   setBackupRestored,
-  MatrixState,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -46,31 +44,37 @@ export function* saga() {
 
 export function* getBackup() {
   yield put(setLoaded(false));
-  let trustInfo = null;
 
   const existingBackup = yield call(getSecureBackup);
-  if (existingBackup?.backupInfo) {
-    trustInfo = {
-      usable: existingBackup.trustInfo.usable,
-      trustedLocally: existingBackup.trustInfo.trusted_locally,
-      isLegacy: existingBackup.isLegacy,
-    };
-  }
-
-  const backupData = yield call(updateTrustInfo, trustInfo);
+  const backupState = yield call(receiveBackupData, existingBackup);
   yield put(setLoaded(true));
 
-  return backupData.trustInfo;
+  return backupState;
 }
 
-export function* updateTrustInfo(trustInfo: MatrixState['trustInfo'] | null) {
-  const data = { trustInfo };
+export function* receiveBackupData(existingBackup) {
+  let backupExists = false;
+  let backupRestored = false;
 
-  yield put(setTrustInfo(trustInfo || null));
-  yield put(setBackupExists(!!trustInfo && !trustInfo.isLegacy));
-  yield put(setBackupRestored(isBackupRestored(trustInfo) && !trustInfo?.isLegacy));
+  if (existingBackup?.isLegacy) {
+    // We used to have historical backups that didn't use cross-signing
+    // If a user happens to have that then we treat them as if they don't have a backup
+    // Otherwise, carry on as normal
+    backupExists = false;
+    backupRestored = false;
+  } else {
+    backupExists = !!existingBackup?.trustInfo;
+    // If the backup is trusted locally or usable, then we consider it restored
+    // There are cases when only one of the two is true but in either case
+    // we've found the backup is sufficient to decrypt everything
+    backupRestored =
+      backupExists && Boolean(existingBackup.trustInfo.usable || existingBackup.trustInfo.trusted_locally);
+  }
 
-  return data;
+  yield put(setBackupExists(backupExists));
+  yield put(setBackupRestored(backupRestored));
+
+  return { backupExists, backupRestored };
 }
 
 export function* generateBackup() {
@@ -201,11 +205,11 @@ export function* closeBackupDialog() {
 }
 
 export function* userInitiatedBackupDialog() {
-  const trustInfo = yield select((state) => state.matrix.trustInfo);
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
 
-  if (!trustInfo) {
+  if (!backupExists) {
     yield put(setBackupStage(BackupStage.UserGeneratePrompt));
-  } else if (!isBackupRestored(trustInfo)) {
+  } else if (!backupRestored) {
     yield put(setBackupStage(BackupStage.UserRestorePrompt));
   } else {
     yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
@@ -218,7 +222,7 @@ function* listenForUserLogout() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogout);
-    yield call(updateTrustInfo, null);
+    yield call(receiveBackupData, null);
   }
 }
 
@@ -236,12 +240,12 @@ export function* handleBackupUserPrompts() {
     return;
   }
 
-  const trustInfo = yield call(getBackup);
-  if (!trustInfo) {
+  const { backupExists, backupRestored } = yield call(getBackup);
+  if (!backupExists) {
     return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
   }
 
-  if (isBackupRestored(trustInfo)) {
+  if (backupRestored) {
     return;
   }
 
@@ -249,11 +253,11 @@ export function* handleBackupUserPrompts() {
 }
 
 export function* systemInitiatedBackupDialog() {
-  const trustInfo = yield select((state) => state.matrix.trustInfo);
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
 
-  if (!trustInfo) {
+  if (!backupExists) {
     yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
-  } else if (!isBackupRestored(trustInfo)) {
+  } else if (!backupRestored) {
     yield put(setBackupStage(BackupStage.SystemRestorePrompt));
   } else {
     // Probably never trigger this stage by the system but keep it as a default case
@@ -261,10 +265,6 @@ export function* systemInitiatedBackupDialog() {
   }
 
   yield put(setIsBackupDialogOpen(true));
-}
-
-function isBackupRestored(trustInfo: any) {
-  return Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
 }
 
 export function* checkBackupOnFirstSentMessage() {

@@ -16,7 +16,7 @@ import {
   checkBackupOnFirstSentMessage,
   systemInitiatedBackupDialog,
   userInitiatedBackupDialog,
-  updateTrustInfo,
+  receiveBackupData,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -43,36 +43,32 @@ describe(getBackup, () => {
   it('fetches the existing backup', async () => {
     const { returnValue } = await subject(getBackup)
       .provide([
-        [
-          call(getSecureBackup),
-          { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
-        ],
+        [call(getSecureBackup), restoredBackupResponse()],
       ])
       .withReducer(rootReducer)
-      .call(updateTrustInfo, { usable: true, trustedLocally: true, isLegacy: true })
+      .call(receiveBackupData, restoredBackupResponse())
       .run();
 
-    expect(returnValue).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
+    expect(returnValue).toEqual({ backupExists: true, backupRestored: true });
   });
 
   it('clears the backup if none found', async () => {
     const { returnValue } = await subject(getBackup)
       .provide([[call(getSecureBackup), undefined]])
       .withReducer(rootReducer)
-      .call(updateTrustInfo, null)
       .run();
 
-    expect(returnValue).toBeNull();
+    expect(returnValue).toEqual({ backupExists: false, backupRestored: false });
   });
 
-  it('clears the backup if backupInfo not found', async () => {
+  it('clears the backup if trustInfo not found', async () => {
     const { returnValue } = await subject(getBackup)
-      .provide([[call(getSecureBackup), { backupInfo: undefined }]])
+      .provide([[call(getSecureBackup), { trustInfo: undefined }]])
       .withReducer(rootReducer)
-      .call(updateTrustInfo, null)
+      .call(receiveBackupData, { trustInfo: undefined })
       .run();
 
-    expect(returnValue).toBeNull();
+    expect(returnValue).toEqual({ backupExists: false, backupRestored: false });
   });
 });
 
@@ -245,12 +241,11 @@ describe(proceedToVerifyKey, () => {
 });
 
 describe(clearBackupState, () => {
-  it('clears the temporary state but keeps the trustInfo and the stage', async () => {
+  it('clears the temporary state but keeps the stage', async () => {
     const initialState = {
       matrix: {
         isLoaded: true,
         generatedRecoveryKey: 'a key',
-        trustInfo: { trustData: 'here' },
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
         backupStage: BackupStage.SystemGeneratePrompt,
@@ -263,7 +258,6 @@ describe(clearBackupState, () => {
     expect(storeState.matrix).toEqual({
       generatedRecoveryKey: null,
       isLoaded: false,
-      trustInfo: { trustData: 'here' },
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.SystemGeneratePrompt,
@@ -418,86 +412,73 @@ describe(userInitiatedBackupDialog, () => {
   });
 });
 
-describe(updateTrustInfo, () => {
-  it('updates the trustInfo', async () => {
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: true,
-      trustedLocally: true,
-      isLegacy: true,
-    })
-      .withReducer(rootReducer, new StoreBuilder().build())
-      .run();
-
-    expect(storeState.matrix.trustInfo).toEqual({ usable: true, trustedLocally: true, isLegacy: true });
-  });
-
+describe(receiveBackupData, () => {
   it('sets metadata if backup exists but is not restored', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: true } });
 
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: false,
-      trustedLocally: false,
-      isLegacy: false,
-    })
+    const { returnValue, storeState } = await subject(receiveBackupData, unrestoredBackupResponse())
       .withReducer(rootReducer, state.build())
       .run();
 
     expect(storeState.matrix.backupExists).toBe(true);
     expect(storeState.matrix.backupRestored).toBe(false);
+    expect(returnValue).toEqual({ backupExists: true, backupRestored: false });
   });
 
   it('sets metadata if backup exists and is usable', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: true,
-      trustedLocally: false,
-      isLegacy: false,
-    })
+    const { returnValue, storeState } = await subject(
+      receiveBackupData,
+      restoredBackupResponse({ usable: true, trusted_locally: false })
+    )
       .withReducer(rootReducer, state.build())
       .run();
 
     expect(storeState.matrix.backupExists).toBe(true);
     expect(storeState.matrix.backupRestored).toBe(true);
+    expect(returnValue).toEqual({ backupExists: true, backupRestored: true });
   });
 
   it('sets metadata if backup exists and is trusted locally', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: false,
-      trustedLocally: true,
-      isLegacy: false,
-    })
+    const { returnValue, storeState } = await subject(
+      receiveBackupData,
+      restoredBackupResponse({ usable: false, trusted_locally: true })
+    )
       .withReducer(rootReducer, state.build())
       .run();
 
     expect(storeState.matrix.backupExists).toBe(true);
     expect(storeState.matrix.backupRestored).toBe(true);
+    expect(returnValue).toEqual({ backupExists: true, backupRestored: true });
   });
 
   it('sets metadata if backup does not exist', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
 
-    const { storeState } = await subject(updateTrustInfo, null).withReducer(rootReducer, state.build()).run();
-
-    expect(storeState.matrix.backupExists).toBe(false);
-    expect(storeState.matrix.backupRestored).toBe(false);
-  });
-
-  it('sets metadata if backup is a legacy backup', async () => {
-    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
-
-    const { storeState } = await subject(updateTrustInfo, {
-      usable: true,
-      trustedLocally: true,
-      isLegacy: true,
-    })
+    const { returnValue, storeState } = await subject(receiveBackupData, { trustedInfo: null })
       .withReducer(rootReducer, state.build())
       .run();
 
     expect(storeState.matrix.backupExists).toBe(false);
     expect(storeState.matrix.backupRestored).toBe(false);
+    expect(returnValue).toEqual({ backupExists: false, backupRestored: false });
+  });
+
+  it('sets metadata if backup is a legacy backup', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
+
+    const backupResponse = unrestoredBackupResponse();
+    backupResponse.isLegacy = true;
+    const { returnValue, storeState } = await subject(receiveBackupData, backupResponse)
+      .withReducer(rootReducer, state.build())
+      .run();
+
+    expect(storeState.matrix.backupExists).toBe(false);
+    expect(storeState.matrix.backupRestored).toBe(false);
+    expect(returnValue).toEqual({ backupExists: false, backupRestored: false });
   });
 });
 
@@ -509,6 +490,6 @@ function unrestoredBackupResponse(): any {
   return { backupInfo: {}, trustInfo: { usable: false, trusted_locally: false }, isLegacy: false };
 }
 
-function restoredBackupResponse(): any {
-  return { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: false };
+function restoredBackupResponse({ usable, trusted_locally } = { usable: true, trusted_locally: true }): any {
+  return { backupInfo: {}, trustInfo: { usable, trusted_locally }, isLegacy: false };
 }

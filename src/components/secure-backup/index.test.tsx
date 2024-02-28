@@ -38,6 +38,12 @@ describe('SecureBackup', () => {
   };
 
   describe(GeneratePrompt, () => {
+    it('renders GeneratePrompt when stage is SystemGeneratePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt });
+
+      expect(wrapper.find(GeneratePrompt)).toHaveProp('isSystemPrompt', true);
+    });
+
     it('renders GeneratePrompt when stage is None, backup does not exists and no recovery key', function () {
       const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
 

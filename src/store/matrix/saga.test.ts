@@ -14,6 +14,7 @@ import {
   saveBackup,
   handleBackupUserPrompts,
   checkBackupOnFirstSentMessage,
+  systemInitiatedBackupDialog,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -365,12 +366,11 @@ describe(handleBackupUserPrompts, () => {
   }
 
   it('opens the backup dialog and sets stage if user has not restored their backup', async () => {
-    const { storeState } = await subject(unrestoredBackupResponse())
+    await subject(unrestoredBackupResponse())
+      .provide([[call(systemInitiatedBackupDialog), undefined]])
       .not.call(performUnlessLogout, call(checkBackupOnFirstSentMessage))
+      .call(systemInitiatedBackupDialog)
       .run();
-
-    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
   });
 
   it('waits for first sent message if user does not have a backup', async () => {
@@ -387,6 +387,24 @@ describe(handleBackupUserPrompts, () => {
       .run();
 
     expect(storeState.matrix.isBackupDialogOpen).toBe(false);
+  });
+});
+
+describe(systemInitiatedBackupDialog, () => {
+  it('opens the backup dialog in GeneratePrompt state if user has no backup', async () => {
+    const state = new StoreBuilder().withoutBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemGeneratePrompt);
+  });
+
+  it('opens the backup dialog and sets stage - deprecated', async () => {
+    const state = new StoreBuilder().withUnverifiedBackup();
+    const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
   });
 });
 

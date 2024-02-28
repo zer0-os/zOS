@@ -223,7 +223,16 @@ export function* handleBackupUserPrompts() {
     return;
   }
 
-  yield put(setBackupStage(BackupStage.SystemPrompt));
+  yield call(systemInitiatedBackupDialog);
+}
+
+export function* systemInitiatedBackupDialog() {
+  const trustInfo = yield select((state) => state.matrix.trustInfo);
+  if (!trustInfo) {
+    yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
+  } else {
+    yield put(setBackupStage(BackupStage.SystemPrompt));
+  }
   yield put(setIsBackupDialogOpen(true));
 }
 

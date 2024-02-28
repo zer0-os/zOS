@@ -96,6 +96,8 @@ export class SecureBackup extends React.PureComponent<Properties> {
     } = this.props;
 
     switch (backupStage) {
+      case BackupStage.SystemGeneratePrompt:
+        return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
       case BackupStage.None:
       case BackupStage.SystemPrompt:
         return (

@@ -19,7 +19,6 @@ export enum SagaActionTypes {
 }
 
 export enum BackupStage {
-  None = 'none',
   UserGeneratePrompt = 'user_generate_prompt',
   UserRestorePrompt = 'user_restore_prompt',
   SystemGeneratePrompt = 'system_generate_prompt',

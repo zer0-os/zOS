@@ -22,7 +22,7 @@ describe('SecureBackup', () => {
       isLegacy: false,
       successMessage: '',
       errorMessage: '',
-      backupStage: BackupStage.None,
+      backupStage: BackupStage.UserGeneratePrompt,
 
       onGenerate: () => null,
       onRestore: () => null,
@@ -126,41 +126,9 @@ describe('SecureBackup', () => {
       expect(wrapper).toHaveElement(RecoveredBackup);
     });
 
-    it('renders RecoveredBackup when stage is None, backup is recovered, backup exists and no recovery key', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-      });
-
-      expect(wrapper).toHaveElement(RecoveredBackup);
-    });
-
     it('publishes onClose', function () {
       const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.RecoveredBackupInfo,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-        onClose,
-      });
-
-      wrapper.find(RecoveredBackup).simulate('close');
-
-      expect(onClose).toHaveBeenCalled();
-    });
-
-    it('publishes onClose (deprecated user)', function () {
-      const onClose = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-        onClose,
-      });
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onClose });
 
       wrapper.find(RecoveredBackup).simulate('close');
 
@@ -170,14 +138,7 @@ describe('SecureBackup', () => {
     // TODO: this goes away!
     it('publishes onGenerate when isLegacy is true', function () {
       const onGenerate = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: true,
-        recoveryKey: '',
-        onGenerate,
-        isLegacy: true,
-      });
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onGenerate, isLegacy: true });
 
       wrapper.find(RecoveredBackup).simulate('generate');
 

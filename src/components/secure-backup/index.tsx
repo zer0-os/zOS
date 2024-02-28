@@ -94,31 +94,18 @@ export class SecureBackup extends React.PureComponent<Properties> {
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
         return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+
       case BackupStage.UserRestorePrompt:
         return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
+
       case BackupStage.SystemGeneratePrompt:
         return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+
       case BackupStage.SystemRestorePrompt:
         return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
+
       case BackupStage.RecoveredBackupInfo:
         return <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />;
-      case BackupStage.None:
-        return (
-          <>
-            {this.noBackupExists && (
-              <GeneratePrompt
-                isSystemPrompt={false}
-                errorMessage={errorMessage}
-                onGenerate={onGenerate}
-                onClose={onClose}
-              />
-            )}
-
-            {this.backupNotRestored && <RestorePrompt isSystemPrompt={false} onNext={onVerifyKey} onClose={onClose} />}
-
-            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />}
-          </>
-        );
 
       case BackupStage.GenerateBackup:
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;

@@ -112,7 +112,7 @@ describe('SecureBackup', () => {
         onVerifyKey,
       });
 
-      wrapper.find(RestorePrompt).simulate('verifyKey');
+      wrapper.find(RestorePrompt).simulate('next');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });

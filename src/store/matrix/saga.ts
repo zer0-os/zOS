@@ -12,7 +12,6 @@ import {
   BackupStage,
   setBackupExists,
   setBackupRestored,
-  MatrixState,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -53,7 +52,7 @@ export function* getBackup() {
   return backupState;
 }
 
-export function* receiveBackupData(existingBackup?) {
+export function* receiveBackupData(existingBackup) {
   let backupExists = false;
   let backupRestored = false;
 

@@ -184,7 +184,7 @@ describe('SecureBackup', () => {
       expect(wrapper).toHaveElement(GenerateBackup);
     });
 
-    it('publishes onSave', function () {
+    it('publishes onVerifyKey', function () {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onVerifyKey });
 

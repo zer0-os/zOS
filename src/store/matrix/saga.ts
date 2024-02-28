@@ -63,10 +63,22 @@ export function* getBackup() {
 }
 
 export function* updateTrustInfo(trustInfo: { usable: boolean; trustedLocally: boolean; isLegacy: boolean } | null) {
-  const backupExists = !!trustInfo && !trustInfo.isLegacy;
+  let backupExists = false;
+  let backupRestored = false;
 
-  const isMatrixRestored = Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
-  const backupRestored = isMatrixRestored && !trustInfo?.isLegacy;
+  if (trustInfo?.isLegacy) {
+    // We used to have historical backups that didn't use cross-signing
+    // If a user happens to have that then we treat them as if they don't have a backup
+    // Otherwise, carry on as normal
+    backupExists = false;
+    backupRestored = false;
+  } else {
+    backupExists = !!trustInfo;
+    // If the backup is trusted locally or usable, then we consider it restored
+    // There are cases when only one of the two is true but in either case
+    // we've found the backup is sufficient to decrypt everything
+    backupRestored = Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
+  }
 
   yield put(setBackupExists(backupExists));
   yield put(setBackupRestored(backupRestored));

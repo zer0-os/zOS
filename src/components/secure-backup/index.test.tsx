@@ -44,10 +44,10 @@ describe('SecureBackup', () => {
       expect(wrapper.find(GeneratePrompt)).toHaveProp('isSystemPrompt', true);
     });
 
-    it('renders GeneratePrompt when stage is None, backup does not exists and no recovery key', function () {
-      const wrapper = subject({ backupStage: BackupStage.None, backupExists: false, recoveryKey: '' });
+    it('renders GeneratePrompt when stage is UserGeneratePrompt', function () {
+      const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt });
 
-      expect(wrapper.find(GeneratePrompt)).toHaveProp('isSystemPrompt', false);
+      expect(wrapper.find(GeneratePrompt).prop('isSystemPrompt')).toBeFalsy();
     });
 
     it('publishes onGenerate for system prompt', function () {
@@ -61,12 +61,7 @@ describe('SecureBackup', () => {
 
     it('publishes onGenerate for user prompt', function () {
       const onGenerate = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: false,
-        recoveryKey: '',
-        onGenerate,
-      });
+      const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt, onGenerate });
 
       wrapper.find(GeneratePrompt).simulate('generate');
 
@@ -90,15 +85,10 @@ describe('SecureBackup', () => {
       expect(wrapper.find(RestorePrompt)).toHaveProp('isSystemPrompt', true);
     });
 
-    it('renders RestorePrompt when stage is None, backup exists, backup not restored and recovery key exists', function () {
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-      });
+    it('renders RestorePrompt when stage is UserRestoreBackup', function () {
+      const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt });
 
-      expect(wrapper.find(RestorePrompt)).toHaveProp('isSystemPrompt', false);
+      expect(wrapper.find(RestorePrompt).prop('isSystemPrompt')).toBeFalsy();
     });
 
     it('publishes onVerifyKey (system)', function () {
@@ -112,13 +102,7 @@ describe('SecureBackup', () => {
 
     it('publishes onVerifyKey (user)', function () {
       const onVerifyKey = jest.fn();
-      const wrapper = subject({
-        backupStage: BackupStage.None,
-        backupExists: true,
-        isBackupRecovered: false,
-        recoveryKey: 'key',
-        onVerifyKey,
-      });
+      const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt, onVerifyKey });
 
       wrapper.find(RestorePrompt).simulate('next');
 

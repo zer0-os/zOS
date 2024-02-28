@@ -92,6 +92,10 @@ export class SecureBackup extends React.PureComponent<Properties> {
     } = this.props;
 
     switch (backupStage) {
+      case BackupStage.UserGeneratePrompt:
+        return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+      case BackupStage.UserRestorePrompt:
+        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
       case BackupStage.SystemGeneratePrompt:
         return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
       case BackupStage.SystemRestorePrompt:
@@ -129,7 +133,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <Success successMessage={successMessage} onClose={onClose} />;
 
       default:
-        return null;
+        assertNeverReached(backupStage);
     }
   };
 
@@ -142,4 +146,9 @@ export class SecureBackup extends React.PureComponent<Properties> {
       </div>
     );
   }
+}
+
+// Ensure all enum values are handled
+function assertNeverReached(x: never): never {
+  throw new Error('Unexpected type: ' + x);
 }

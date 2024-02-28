@@ -15,6 +15,7 @@ import {
   handleBackupUserPrompts,
   checkBackupOnFirstSentMessage,
   systemInitiatedBackupDialog,
+  userInitiatedBackupDialog,
 } from './saga';
 import { performUnlessLogout } from '../utils';
 
@@ -122,10 +123,10 @@ describe(generateBackup, () => {
     const { storeState } = await subject(generateBackup)
       .provide([[call([chatClient, chatClient.generateSecureBackup]), throwError(error)]])
       .withReducer(rootReducer)
+      .call(userInitiatedBackupDialog)
       .run();
 
     expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup key. Please try again.');
-    expect(storeState.matrix.backupStage).toEqual(BackupStage.None);
   });
 
   it('reuses existing backup key if present and does not call generateSecureBackup', async () => {
@@ -267,7 +268,7 @@ describe(proceedToVerifyKey, () => {
 });
 
 describe(clearBackupState, () => {
-  it('clears the temporary state but keeps the trustInfo', async () => {
+  it('clears the temporary state but keeps the trustInfo and the stage', async () => {
     const initialState = {
       matrix: {
         isLoaded: true,
@@ -288,7 +289,7 @@ describe(clearBackupState, () => {
       trustInfo: { trustData: 'here' },
       successMessage: '',
       errorMessage: '',
-      backupStage: BackupStage.None,
+      backupStage: BackupStage.SystemGeneratePrompt,
     });
   });
 });
@@ -408,6 +409,32 @@ describe(systemInitiatedBackupDialog, () => {
   it('opens the backup dialog in RecoveredBackupInfo state if user has a restored backup - default but probably should not happen', async () => {
     const state = new StoreBuilder().withRestoredBackup();
     const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);
+  });
+});
+
+describe(userInitiatedBackupDialog, () => {
+  it('opens the backup dialog in UserGeneratePrompt state if user has no backup', async () => {
+    const state = new StoreBuilder().withoutBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.UserGeneratePrompt);
+  });
+
+  it('opens the backup dialog in UserRestorePrompt state if user has an unrestored backup', async () => {
+    const state = new StoreBuilder().withUnrestoredBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
+
+    expect(storeState.matrix.isBackupDialogOpen).toBe(true);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.UserRestorePrompt);
+  });
+
+  it('opens the backup dialog in RecoveredBackupInfo state if user has a restored backup - default but probably should not happen', async () => {
+    const state = new StoreBuilder().withRestoredBackup();
+    const { storeState } = await subject(userInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
 
     expect(storeState.matrix.isBackupDialogOpen).toBe(true);
     expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);

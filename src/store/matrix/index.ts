@@ -20,6 +20,8 @@ export enum SagaActionTypes {
 
 export enum BackupStage {
   None = 'none',
+  UserGeneratePrompt = 'user_generate_prompt',
+  UserRestorePrompt = 'user_restore_prompt',
   SystemGeneratePrompt = 'system_generate_prompt',
   SystemRestorePrompt = 'system_restore_prompt',
   RecoveredBackupInfo = 'recovered_backup_info',
@@ -48,7 +50,7 @@ export const initialState: MatrixState = {
   errorMessage: '',
   deviceId: '',
   isBackupDialogOpen: false,
-  backupStage: BackupStage.None,
+  backupStage: BackupStage.UserGeneratePrompt, // Assume there is no backup by default
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);

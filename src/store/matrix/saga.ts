@@ -27,7 +27,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
-  yield takeLatest(SagaActionTypes.OpenBackupDialog, openBackupDialog);
+  yield takeLatest(SagaActionTypes.OpenBackupDialog, userInitiatedBackupDialog);
   yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
   yield takeLatest(SagaActionTypes.VerifyKey, proceedToVerifyKey);
 
@@ -76,7 +76,7 @@ export function* generateBackup() {
     yield put(setGeneratedRecoveryKey(key));
   } catch (error) {
     yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
-    yield put(setBackupStage(BackupStage.None));
+    yield call(userInitiatedBackupDialog);
   }
 }
 
@@ -134,7 +134,6 @@ export function* clearBackupState() {
   yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
-  yield put(setBackupStage(BackupStage.None));
 }
 
 export function* debugDeviceList(action) {
@@ -187,7 +186,17 @@ export function* closeBackupDialog() {
   yield put(setIsBackupDialogOpen(false));
 }
 
-export function* openBackupDialog() {
+export function* userInitiatedBackupDialog() {
+  const trustInfo = yield select((state) => state.matrix.trustInfo);
+
+  if (!trustInfo) {
+    yield put(setBackupStage(BackupStage.UserGeneratePrompt));
+  } else if (!isBackupRestored(trustInfo)) {
+    yield put(setBackupStage(BackupStage.UserRestorePrompt));
+  } else {
+    yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
+  }
+
   yield put(setIsBackupDialogOpen(true));
 }
 
@@ -230,7 +239,7 @@ export function* systemInitiatedBackupDialog() {
 
   if (!trustInfo) {
     yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
-  } else if (!trustInfo.usable && !trustInfo.trustedLocally) {
+  } else if (!isBackupRestored(trustInfo)) {
     yield put(setBackupStage(BackupStage.SystemRestorePrompt));
   } else {
     // Probably never trigger this stage by the system but keep it as a default case
@@ -241,7 +250,7 @@ export function* systemInitiatedBackupDialog() {
 }
 
 function isBackupRestored(trustInfo: any) {
-  return trustInfo?.usable && trustInfo?.trustedLocally;
+  return trustInfo?.usable || trustInfo?.trustedLocally;
 }
 
 export function* checkBackupOnFirstSentMessage() {

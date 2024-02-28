@@ -26,7 +26,6 @@ export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
   backupRestored: boolean;
-  isLegacy: boolean;
   successMessage: string;
   errorMessage: string;
   videoAssetsPath: string;
@@ -68,7 +67,6 @@ export class SecureBackup extends React.PureComponent<Properties> {
   renderBackupContent = () => {
     const {
       backupStage,
-      isLegacy,
       onGenerate,
       onRestore,
       onVerifyKey,
@@ -93,7 +91,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
 
       case BackupStage.RecoveredBackupInfo:
-        return <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />;
+        return <RecoveredBackup onClose={onClose} />;
 
       case BackupStage.GenerateBackup:
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;

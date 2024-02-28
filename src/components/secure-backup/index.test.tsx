@@ -18,7 +18,7 @@ describe(SecureBackup, () => {
     const allProps: Properties = {
       recoveryKey: 'stub-key',
       backupExists: false,
-      isBackupRecovered: false,
+      backupRestored: false,
       isLegacy: false,
       successMessage: '',
       errorMessage: '',
@@ -223,13 +223,13 @@ describe(SecureBackup, () => {
 
   describe('header container', () => {
     it('renders title as "Account Backup" if backup does not exist and backup is not restored', function () {
-      const wrapper = subject({ backupExists: false, isBackupRecovered: false });
+      const wrapper = subject({ backupExists: false, backupRestored: false });
 
       expect(wrapper.find(c('title'))).toHaveText('Account Backup');
     });
 
     it('renders title as "Verify Login" if backup exists and backup is not restored', function () {
-      const wrapper = subject({ backupExists: true, isBackupRecovered: false });
+      const wrapper = subject({ backupExists: true, backupRestored: false });
 
       expect(wrapper.find(c('title'))).toHaveText('Verify Login');
     });

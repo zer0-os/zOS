@@ -45,39 +45,31 @@ export function* saga() {
 
 export function* getBackup() {
   yield put(setLoaded(false));
-  let trustInfo = null;
 
   const existingBackup = yield call(getSecureBackup);
-  if (existingBackup?.backupInfo) {
-    trustInfo = {
-      usable: existingBackup.trustInfo.usable,
-      trustedLocally: existingBackup.trustInfo.trusted_locally,
-      isLegacy: existingBackup.isLegacy,
-    };
-  }
-
-  const backupState = yield call(updateTrustInfo, trustInfo);
+  const backupState = yield call(updateTrustInfo, existingBackup);
   yield put(setLoaded(true));
 
   return backupState;
 }
 
-export function* updateTrustInfo(trustInfo: { usable: boolean; trustedLocally: boolean; isLegacy: boolean } | null) {
+export function* updateTrustInfo(existingBackup?) {
   let backupExists = false;
   let backupRestored = false;
 
-  if (trustInfo?.isLegacy) {
+  if (existingBackup?.isLegacy) {
     // We used to have historical backups that didn't use cross-signing
     // If a user happens to have that then we treat them as if they don't have a backup
     // Otherwise, carry on as normal
     backupExists = false;
     backupRestored = false;
   } else {
-    backupExists = !!trustInfo;
+    backupExists = !!existingBackup?.trustInfo;
     // If the backup is trusted locally or usable, then we consider it restored
     // There are cases when only one of the two is true but in either case
     // we've found the backup is sufficient to decrypt everything
-    backupRestored = Boolean(trustInfo?.usable || trustInfo?.trustedLocally);
+    backupRestored =
+      backupExists && Boolean(existingBackup.trustInfo.usable || existingBackup.trustInfo.trusted_locally);
   }
 
   yield put(setBackupExists(backupExists));

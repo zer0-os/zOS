@@ -146,6 +146,12 @@ describe('SecureBackup', () => {
   });
 
   describe(RecoveredBackup, () => {
+    it('renders RecoveredBackup when stage is RecoveredBackupInfo', function () {
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo });
+
+      expect(wrapper).toHaveElement(RecoveredBackup);
+    });
+
     it('renders RecoveredBackup when stage is None, backup is recovered, backup exists and no recovery key', function () {
       const wrapper = subject({
         backupStage: BackupStage.None,

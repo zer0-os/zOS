@@ -100,6 +100,8 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
       case BackupStage.SystemRestorePrompt:
         return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
+      case BackupStage.RecoveredBackupInfo:
+        return <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />;
       case BackupStage.None:
       case BackupStage.SystemPrompt:
         return (

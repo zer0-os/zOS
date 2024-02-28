@@ -234,7 +234,8 @@ export function* systemInitiatedBackupDialog() {
   } else if (!trustInfo.usable && !trustInfo.trustedLocally) {
     yield put(setBackupStage(BackupStage.SystemRestorePrompt));
   } else {
-    yield put(setBackupStage(BackupStage.SystemPrompt));
+    // Probably never trigger this stage by the system but keep it as a default case
+    yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
   }
 
   yield put(setIsBackupDialogOpen(true));

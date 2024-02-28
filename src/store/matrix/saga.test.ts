@@ -407,12 +407,12 @@ describe(systemInitiatedBackupDialog, () => {
     expect(storeState.matrix.backupStage).toBe(BackupStage.SystemRestorePrompt);
   });
 
-  it('opens the backup dialog in Deprecated state if user has a restored backup - default but probably should not happen', async () => {
+  it('opens the backup dialog in RecoveredBackupInfo state if user has a restored backup - default but probably should not happen', async () => {
     const state = new StoreBuilder().withRestoredBackup();
     const { storeState } = await subject(systemInitiatedBackupDialog).withReducer(rootReducer, state.build()).run();
 
     expect(storeState.matrix.isBackupDialogOpen).toBe(true);
-    expect(storeState.matrix.backupStage).toBe(BackupStage.SystemPrompt);
+    expect(storeState.matrix.backupStage).toBe(BackupStage.RecoveredBackupInfo);
   });
 });
 

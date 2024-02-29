@@ -7,9 +7,6 @@ import { Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { SecureBackupContainer } from '../secure-backup/container';
-
-const cn = bemClassName('settings-menu');
 
 export interface Properties {
   userName: string;
@@ -18,12 +15,12 @@ export interface Properties {
   userStatus: 'active' | 'offline';
 
   onLogout: () => void;
+  onSecureBackup: () => void;
 }
 
 interface State {
   isDropdownOpen: boolean;
   editProfileDialogOpen: boolean;
-  backupDialogOpen: boolean;
 }
 
 export class SettingsMenu extends React.Component<Properties, State> {
@@ -32,7 +29,6 @@ export class SettingsMenu extends React.Component<Properties, State> {
     this.state = {
       isDropdownOpen: false,
       editProfileDialogOpen: false,
-      backupDialogOpen: false,
     };
   }
 
@@ -65,25 +61,10 @@ export class SettingsMenu extends React.Component<Properties, State> {
     this.setState({ editProfileDialogOpen: false });
   };
 
-  openBackupDialog = (): void => {
-    this.setState({ backupDialogOpen: true });
-  };
-  closeBackupDialog = (): void => {
-    this.setState({ backupDialogOpen: false });
-  };
-
   renderEditProfileDialog = (): JSX.Element => {
     return (
       <Modal open={this.state.editProfileDialogOpen} onOpenChange={this.closeEditProfileDialog}>
         <EditProfileContainer onClose={this.closeEditProfileDialog} />
-      </Modal>
-    );
-  };
-
-  renderBackupDialog = (): JSX.Element => {
-    return (
-      <Modal open={this.state.backupDialogOpen} onOpenChange={this.closeBackupDialog} {...cn('secure-backup-modal')}>
-        <SecureBackupContainer onClose={this.closeBackupDialog} />
       </Modal>
     );
   };
@@ -110,7 +91,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
       className: 'secure_backup',
       id: 'secure_backup',
       label: this.renderSettingsOption(<IconLock1 />, 'Secure Backup'),
-      onSelect: this.openBackupDialog,
+      onSelect: this.props.onSecureBackup,
     });
 
     return [
@@ -162,7 +143,6 @@ export class SettingsMenu extends React.Component<Properties, State> {
           itemSize='spacious'
         />
         {this.renderEditProfileDialog()}
-        {this.renderBackupDialog()}
       </>
     );
   }

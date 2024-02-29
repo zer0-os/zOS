@@ -73,17 +73,20 @@ export class StoreBuilder {
   }
 
   withoutBackup() {
-    this.matrix.trustInfo = null;
+    this.matrix.backupExists = false;
+    this.matrix.backupRestored = false;
     return this;
   }
 
-  withUnverifiedBackup() {
-    this.matrix.trustInfo = { usable: false, trustedLocally: false, isLegacy: false };
+  withUnrestoredBackup() {
+    this.matrix.backupExists = true;
+    this.matrix.backupRestored = false;
     return this;
   }
 
-  withVerifiedBackup() {
-    this.matrix.trustInfo = { usable: false, trustedLocally: true, isLegacy: false };
+  withRestoredBackup() {
+    this.matrix.backupExists = true;
+    this.matrix.backupRestored = true;
     return this;
   }
 

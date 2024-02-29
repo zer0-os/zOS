@@ -11,7 +11,7 @@ import {
   getBackup,
   restoreBackup,
   saveBackup,
-  onVerifyKey,
+  proceedToVerifyKey,
 } from '../../store/matrix';
 
 import { SecureBackup } from '.';
@@ -25,8 +25,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   isLoaded: boolean;
   backupExists: boolean;
-  isBackupRecovered: boolean;
-  isLegacy: boolean;
+  backupRestored: boolean;
   recoveryKey: string;
   successMessage: string;
   errorMessage: string;
@@ -38,17 +37,18 @@ export interface Properties extends PublicProperties {
   saveBackup: () => void;
   restoreBackup: (recoveryKey: string) => void;
   clearBackup: () => void;
-  onVerifyKey: () => void;
+  proceedToVerifyKey: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { isLoaded, generatedRecoveryKey, trustInfo, successMessage, errorMessage, backupStage } = state.matrix;
+    const { isLoaded, generatedRecoveryKey, backupExists, backupRestored, successMessage, errorMessage, backupStage } =
+      state.matrix;
+
     return {
       isLoaded,
-      backupExists: !!trustInfo,
-      isBackupRecovered: trustInfo?.usable || trustInfo?.trustedLocally,
-      isLegacy: trustInfo?.isLegacy,
+      backupExists,
+      backupRestored,
       recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
@@ -58,7 +58,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, onVerifyKey };
+    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, proceedToVerifyKey };
   }
 
   componentDidMount(): void {
@@ -77,8 +77,7 @@ export class Container extends React.Component<Properties> {
     return (
       <SecureBackup
         backupExists={this.props.backupExists}
-        isBackupRecovered={this.props.isBackupRecovered}
-        isLegacy={this.props.isLegacy}
+        backupRestored={this.props.backupRestored}
         recoveryKey={this.props.recoveryKey}
         successMessage={this.props.successMessage}
         errorMessage={this.props.errorMessage}
@@ -86,7 +85,7 @@ export class Container extends React.Component<Properties> {
         onGenerate={this.props.generateBackup}
         onSave={this.props.saveBackup}
         onRestore={this.props.restoreBackup}
-        onVerifyKey={this.props.onVerifyKey}
+        onVerifyKey={this.props.proceedToVerifyKey}
         videoAssetsPath={this.props.videoAssetsPath}
         backupStage={this.props.backupStage}
       />

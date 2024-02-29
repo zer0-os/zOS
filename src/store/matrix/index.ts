@@ -19,8 +19,12 @@ export enum SagaActionTypes {
 }
 
 export enum BackupStage {
-  None = 'none',
-  SystemPrompt = 'system_prompt',
+  UserGeneratePrompt = 'user_generate_prompt',
+  UserRestorePrompt = 'user_restore_prompt',
+  SystemGeneratePrompt = 'system_generate_prompt',
+  SystemRestorePrompt = 'system_restore_prompt',
+  RecoveredBackupInfo = 'recovered_backup_info',
+  VerifyKeyPhrase = 'verify_key_phrase',
   GenerateBackup = 'generate_backup',
   RestoreBackup = 'restore_backup',
   Success = 'success',
@@ -28,7 +32,8 @@ export enum BackupStage {
 
 export type MatrixState = {
   isLoaded: boolean;
-  trustInfo: { trustedLocally: boolean; usable: boolean; isLegacy: boolean } | null;
+  backupExists: boolean;
+  backupRestored: boolean;
   generatedRecoveryKey: string | null;
   successMessage: string;
   errorMessage: string;
@@ -39,13 +44,14 @@ export type MatrixState = {
 
 export const initialState: MatrixState = {
   isLoaded: false,
-  trustInfo: null,
+  backupExists: false,
+  backupRestored: false,
   generatedRecoveryKey: null,
   successMessage: '',
   errorMessage: '',
   deviceId: '',
   isBackupDialogOpen: false,
-  backupStage: BackupStage.None,
+  backupStage: BackupStage.UserGeneratePrompt, // Assume there is no backup by default
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -62,7 +68,7 @@ export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
 export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
 export const openBackupDialog = createAction(SagaActionTypes.OpenBackupDialog);
 export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
-export const onVerifyKey = createAction(SagaActionTypes.VerifyKey);
+export const proceedToVerifyKey = createAction(SagaActionTypes.VerifyKey);
 
 const slice = createSlice({
   name: 'matrix',
@@ -73,9 +79,6 @@ const slice = createSlice({
     },
     setGeneratedRecoveryKey: (state, action: PayloadAction<MatrixState['generatedRecoveryKey']>) => {
       state.generatedRecoveryKey = action.payload;
-    },
-    setTrustInfo: (state, action: PayloadAction<MatrixState['trustInfo']>) => {
-      state.trustInfo = action.payload;
     },
     setSuccessMessage: (state, action: PayloadAction<MatrixState['successMessage']>) => {
       state.successMessage = action.payload;
@@ -92,6 +95,12 @@ const slice = createSlice({
     setBackupStage: (state, action: PayloadAction<MatrixState['backupStage']>) => {
       state.backupStage = action.payload;
     },
+    setBackupExists: (state, action: PayloadAction<MatrixState['backupExists']>) => {
+      state.backupExists = action.payload;
+    },
+    setBackupRestored: (state, action: PayloadAction<MatrixState['backupRestored']>) => {
+      state.backupRestored = action.payload;
+    },
   },
 });
 
@@ -99,10 +108,11 @@ export const {
   setLoaded,
   setIsBackupDialogOpen,
   setGeneratedRecoveryKey,
-  setTrustInfo,
   setSuccessMessage,
   setErrorMessage,
   setDeviceId,
   setBackupStage,
+  setBackupExists,
+  setBackupRestored,
 } = slice.actions;
 export const { reducer } = slice;

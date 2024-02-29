@@ -165,7 +165,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async getSecureBackup() {
-    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    const crossSigning = await this.doesUserHaveCrossSigning();
     const backupInfo = await this.matrix.checkKeyBackup();
     (backupInfo as any).isLegacy = !crossSigning;
     return backupInfo;
@@ -200,7 +200,7 @@ export class MatrixClient implements IChatClient {
       throw new Error('Backup broken or not there');
     }
 
-    const crossSigning = await this.matrix.getStoredCrossSigningForUser(this.userId);
+    const crossSigning = await this.doesUserHaveCrossSigning();
     if (crossSigning) {
       await this.restoreSecretStorageBackup(recoveryKey, backup);
     } else {
@@ -348,6 +348,7 @@ export class MatrixClient implements IChatClient {
       ...message,
       content: { ...message.content, body: newContent.body },
       updatedAt: timestamp,
+      isHidden: false,
     };
   }
 
@@ -355,8 +356,9 @@ export class MatrixClient implements IChatClient {
     return {
       ...message,
       content: { ...message.content },
-      message: 'Message edit cannot be decrypted.',
+      message: 'Message hidden',
       updatedAt: timestamp,
+      isHidden: true,
     };
   }
 
@@ -1025,6 +1027,10 @@ export class MatrixClient implements IChatClient {
     const key = this.matrix.keyBackupKeyFromRecoveryKey(this.secretStorageKey);
     return [keyId, key];
   };
+
+  private async doesUserHaveCrossSigning() {
+    return await this.matrix.getCrypto()?.userHasCrossSigningKeys(this.userId, true);
+  }
 
   /*
    * DEBUGGING

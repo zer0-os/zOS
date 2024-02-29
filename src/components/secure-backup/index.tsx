@@ -14,55 +14,33 @@ import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
+import { VerifyKeyPhrase } from './verify-key-phrase';
 
 const cn = bemClassName('secure-backup');
-
-export interface Clipboard {
-  write: (text: string) => Promise<void>;
-}
 
 export interface Properties {
   recoveryKey: string;
   backupExists: boolean;
-  isBackupRecovered: boolean;
-  isLegacy: boolean;
+  backupRestored: boolean;
   successMessage: string;
   errorMessage: string;
   videoAssetsPath: string;
   backupStage: BackupStage;
 
-  clipboard?: Clipboard;
-
   onClose: () => void;
   onGenerate: () => void;
-  onSave: () => void;
+  onSave: (recoveryKey) => void;
   onRestore: (recoveryKey) => void;
   onVerifyKey: () => void;
 }
 
 export class SecureBackup extends React.PureComponent<Properties> {
-  get backupStage() {
-    return this.props.backupStage;
-  }
-
-  get isRecovered() {
-    return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
-  }
-
-  get noBackupExists() {
-    return !this.props.backupExists && !this.props.recoveryKey;
-  }
-
-  get backupNotRestored() {
-    return this.props.backupExists && !this.props.isBackupRecovered;
-  }
-
-  get isSystemPrompt() {
-    return this.backupStage === BackupStage.SystemPrompt;
+  get existingBackupNotRestored() {
+    return this.props.backupExists && !this.props.backupRestored;
   }
 
   renderHeader = () => {
-    const title = this.backupNotRestored ? 'Verify Login' : 'Account Backup';
+    const title = this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
 
     return (
       <div {...cn('header')}>
@@ -83,7 +61,6 @@ export class SecureBackup extends React.PureComponent<Properties> {
   renderBackupContent = () => {
     const {
       backupStage,
-      isLegacy,
       onGenerate,
       onRestore,
       onVerifyKey,
@@ -95,38 +72,35 @@ export class SecureBackup extends React.PureComponent<Properties> {
     } = this.props;
 
     switch (backupStage) {
-      case BackupStage.None:
-      case BackupStage.SystemPrompt:
-        return (
-          <>
-            {this.noBackupExists && (
-              <GeneratePrompt
-                isSystemPrompt={this.isSystemPrompt}
-                errorMessage={errorMessage}
-                onGenerate={onGenerate}
-                onClose={onClose}
-              />
-            )}
+      case BackupStage.UserGeneratePrompt:
+        return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
 
-            {this.backupNotRestored && (
-              <RestorePrompt isSystemPrompt={this.isSystemPrompt} onVerifyKey={onVerifyKey} onClose={onClose} />
-            )}
+      case BackupStage.UserRestorePrompt:
+        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
 
-            {this.isRecovered && <RecoveredBackup onClose={onClose} onGenerate={onGenerate} isLegacy={isLegacy} />}
-          </>
-        );
+      case BackupStage.SystemGeneratePrompt:
+        return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+
+      case BackupStage.SystemRestorePrompt:
+        return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
+
+      case BackupStage.RecoveredBackupInfo:
+        return <RecoveredBackup onClose={onClose} />;
 
       case BackupStage.GenerateBackup:
-        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onSave={onSave} />;
+        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
 
       case BackupStage.RestoreBackup:
         return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
+
+      case BackupStage.VerifyKeyPhrase:
+        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
 
       case BackupStage.Success:
         return <Success successMessage={successMessage} onClose={onClose} />;
 
       default:
-        return null;
+        assertNeverReached(backupStage);
     }
   };
 
@@ -139,4 +113,9 @@ export class SecureBackup extends React.PureComponent<Properties> {
       </div>
     );
   }
+}
+
+// Ensure all enum values are handled
+function assertNeverReached(x: never): never {
+  throw new Error('Unexpected type: ' + x);
 }

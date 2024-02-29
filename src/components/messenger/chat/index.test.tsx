@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
-import { Channel, User } from '../../../store/channels';
+import { Channel } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';

@@ -5,69 +5,67 @@ $header-height: 66px;
 $recent-indicator-size: 8px;
 
 .conversation-header {
-  &__header {
-    height: $header-height - (16px * 2);
+  height: $header-height - (16px * 2);
+  display: flex;
+  gap: 8px;
+  border-radius: 16px;
+  padding: 16px;
+
+  @include flat-thick;
+
+  > div:last-child {
+    flex-grow: 1;
     display: flex;
-    gap: 8px;
-    border-radius: 16px;
-    padding: 16px;
+    justify-content: flex-end;
+  }
 
-    @include flat-thick;
+  &__avatar {
+    @include glass-separator-primary;
 
-    > div:last-child {
-      flex-grow: 1;
-      display: flex;
-      justify-content: flex-end;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+
+      @include glass-materials-raised;
     }
 
-    &-avatar {
-      @include glass-separator-primary;
-
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      position: relative;
-      width: 32px;
-      height: 32px;
+    &::after {
+      content: '';
+      width: $recent-indicator-size;
+      height: $recent-indicator-size;
+      border: 2px solid theme.$color-primary-1;
       border-radius: 50%;
+      position: absolute;
+      top: 22px;
+      left: 22px;
+    }
 
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: inherit;
+    &--online::after {
+      background-color: theme.$color-success-9;
+    }
 
-        @include glass-materials-raised;
-      }
+    &--offline::after {
+      background-color: theme.$color-greyscale-9;
+    }
 
-      &::after {
-        content: '';
-        width: $recent-indicator-size;
-        height: $recent-indicator-size;
-        border: 2px solid theme.$color-primary-1;
-        border-radius: 50%;
-        position: absolute;
-        top: 22px;
-        left: 22px;
-      }
-
-      &--online::after {
-        background-color: theme.$color-success-9;
-      }
-
-      &--offline::after {
-        background-color: theme.$color-greyscale-9;
-      }
-
-      & > * {
-        position: absolute;
-        top: calc(50% - 8px);
-        line-height: 0px;
-        left: calc(50% - 8px);
-      }
+    & > * {
+      position: absolute;
+      top: calc(50% - 8px);
+      line-height: 0px;
+      left: calc(50% - 8px);
     }
   }
 

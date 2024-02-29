@@ -106,13 +106,13 @@ export class ConversationHeader extends React.Component<Properties> {
 
   render() {
     return (
-      <div {...cn('header')}>
+      <div {...cn('')}>
         <span>
           <div
             style={{
               backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
             }}
-            {...cn('header-avatar', this.avatarStatus())}
+            {...cn('avatar', this.avatarStatus())}
           >
             {!this.avatarUrl() && this.renderIcon()}
           </div>

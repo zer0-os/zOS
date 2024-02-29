@@ -9,7 +9,7 @@ import { stubUser } from '../../../../store/test/store';
 
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
-const c = bem('.direct-message-chat');
+const c = bem('.conversation-header');
 
 describe(ConversationHeader, () => {
   const subject = (props: Partial<Properties>) => {
@@ -76,13 +76,13 @@ describe(ConversationHeader, () => {
     it('header renders avatar online status', function () {
       const wrapper = subject({ otherMembers: [stubUser({ isOnline: true })] });
 
-      expect(wrapper).toHaveElement(c('header-avatar--online'));
+      expect(wrapper).toHaveElement(c('avatar--online'));
     });
 
     it('header renders offline status', function () {
       const wrapper = subject({ otherMembers: [stubUser({ isOnline: false })] });
 
-      expect(wrapper).toHaveElement(c('header-avatar--offline'));
+      expect(wrapper).toHaveElement(c('avatar--offline'));
     });
 
     it('renders primaryZID in the subtitle', function () {
@@ -100,7 +100,7 @@ describe(ConversationHeader, () => {
     it('header renders users avatar when there is a avatar url', function () {
       const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ profileImage: 'avatar-url' })] });
 
-      const headerAvatar = wrapper.find(c('header-avatar'));
+      const headerAvatar = wrapper.find(c('avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url(avatar-url)' });
       expect(headerAvatar).not.toHaveElement(IconUsers1);
@@ -110,7 +110,7 @@ describe(ConversationHeader, () => {
     it('header renders avatar with eth icon when there is no avatar url', function () {
       const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ profileImage: '' })] });
 
-      const headerAvatar = wrapper.find(c('header-avatar'));
+      const headerAvatar = wrapper.find(c('avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
       expect(headerAvatar).not.toHaveElement(IconUsers1);
@@ -146,7 +146,7 @@ describe(ConversationHeader, () => {
         otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })],
       });
 
-      expect(wrapper).toHaveElement(c('header-avatar--online'));
+      expect(wrapper).toHaveElement(c('avatar--online'));
     });
 
     it('header renders offline status', function () {
@@ -155,13 +155,13 @@ describe(ConversationHeader, () => {
         otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })],
       });
 
-      expect(wrapper).toHaveElement(c('header-avatar--offline'));
+      expect(wrapper).toHaveElement(c('avatar--offline'));
     });
 
     it('header renders default icon when there is no avatar url', function () {
       const wrapper = subject({ isOneOnOne: false });
 
-      const headerAvatar = wrapper.find(c('header-avatar'));
+      const headerAvatar = wrapper.find(c('avatar'));
 
       expect(headerAvatar).toHaveProp('style', { backgroundImage: 'url()' });
       expect(headerAvatar).not.toHaveElement(IconCurrencyEthereum);
@@ -174,7 +174,7 @@ describe(ConversationHeader, () => {
         icon: 'https://res.cloudinary.com/fact0ry-dev/image/upload/v1691505978/mze88aeuxxdobzjd0lt6.jpg',
       });
 
-      const headerAvatar = wrapper.find(c('header-avatar'));
+      const headerAvatar = wrapper.find(c('avatar'));
 
       expect(headerAvatar).toHaveProp('style', {
         backgroundImage:

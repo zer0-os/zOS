@@ -9,7 +9,10 @@ import { GroupManagementMenu } from '../../../group-management-menu';
 
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
-import classNames from 'classnames';
+import { bemClassName } from '../../../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('conversation-header');
 
 export interface Properties {
   isOneOnOne: boolean;
@@ -61,7 +64,7 @@ export class ConversationHeader extends React.Component<Properties> {
 
   renderIcon = () => {
     return this.isOneOnOne() ? (
-      <IconCurrencyEthereum size={16} className='direct-message-chat__header-avatar--isOneOnOne' />
+      <IconCurrencyEthereum size={16} {...cn('avatar-icon', 'isOneOnOne')} />
     ) : (
       <IconUsers1 size={16} />
     );
@@ -94,7 +97,7 @@ export class ConversationHeader extends React.Component<Properties> {
             0,
           ],
         }}
-        className='direct-message-chat__user-tooltip'
+        {...cn('user-tooltip')}
       >
         <div>{name || otherMembersString}</div>
       </Tooltip>
@@ -103,27 +106,24 @@ export class ConversationHeader extends React.Component<Properties> {
 
   render() {
     return (
-      <div className='direct-message-chat__header'>
+      <div {...cn('')}>
         <span>
           <div
             style={{
               backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
             }}
-            className={classNames(
-              'direct-message-chat__header-avatar',
-              `direct-message-chat__header-avatar--${this.avatarStatus()}`
-            )}
+            {...cn('avatar', this.avatarStatus())}
           >
             {!this.avatarUrl() && this.renderIcon()}
           </div>
         </span>
 
-        <span className='direct-message-chat__description'>
-          <div className='direct-message-chat__title'>{this.renderTitle()}</div>
-          <div className='direct-message-chat__subtitle'>{this.renderSubTitle()}</div>
+        <span {...cn('description')}>
+          <div {...cn('title')}>{this.renderTitle()}</div>
+          <div {...cn('subtitle')}>{this.renderSubTitle()}</div>
         </span>
 
-        <div className='direct-message-chat__group-management-menu-container'>
+        <div {...cn('group-management-menu-container')}>
           <GroupManagementMenu
             canAddMembers={this.props.canAddMembers}
             canLeaveRoom={this.props.canLeaveRoom}

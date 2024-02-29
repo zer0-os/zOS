@@ -1,20 +1,15 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../../shared-components/theme-engine/theme' as themeDeprecated;
 @use '../../../modules/animation' as animation;
 @import '../../../variables';
 @import '../../../layout';
 @import '../../../animation';
 @import '../../../glass';
 
-$title-bar-height: 32px;
-$header-height: 66px;
 $window-height: 560px;
 $window-width: 400px;
 
 $title-bar-background-color: theme.$color-primary-3;
 $title-bar-border-radius: 8px 8px 0px 0px;
-
-$recent-indicator-size: 8px;
 
 .direct-message-chat {
   position: fixed;
@@ -68,76 +63,6 @@ $recent-indicator-size: 8px;
     padding: 16px 16px 16px 0px;
     box-sizing: border-box;
     z-index: 3;
-  }
-
-  &__header {
-    height: $header-height - (16px * 2);
-    display: flex;
-    gap: 8px;
-    border-radius: 16px;
-    padding: 16px;
-
-    @include flat-thick;
-
-    > div:last-child {
-      flex-grow: 1;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    &-avatar {
-      @include glass-separator-primary;
-
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      position: relative;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: inherit;
-
-        @include glass-materials-raised;
-      }
-
-      &::after {
-        content: '';
-        width: $recent-indicator-size;
-        height: $recent-indicator-size;
-        border: 2px solid theme.$color-primary-1;
-        border-radius: 50%;
-        position: absolute;
-        top: 22px;
-        left: 22px;
-      }
-
-      &--isOneOnOne {
-        color: theme.$color-secondary-11;
-      }
-
-      &--online::after {
-        background-color: theme.$color-success-9;
-      }
-
-      &--offline::after {
-        background-color: theme.$color-greyscale-9;
-      }
-
-      & > * {
-        position: absolute;
-        top: calc(50% - 8px);
-        line-height: 0px;
-        left: calc(50% - 8px);
-      }
-    }
   }
 
   &__footer-position {

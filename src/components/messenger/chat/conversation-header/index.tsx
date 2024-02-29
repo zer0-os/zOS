@@ -11,6 +11,8 @@ import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 
+import './styles.scss';
+
 export interface Properties {
   isOneOnOne: boolean;
   otherMembers: User[];

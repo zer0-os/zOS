@@ -165,8 +165,9 @@ export function stubUser(attrs: Partial<User> = {}): User {
 }
 
 export function stubConversation(attrs: Partial<Channel> = {}): Partial<Channel> {
+  stubCount++;
   return {
-    id: 'channel-id',
+    id: `conversation-id-${stubCount}`,
     otherMembers: [],
     ...attrs,
   };

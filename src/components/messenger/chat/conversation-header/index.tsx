@@ -10,9 +10,9 @@ import { GroupManagementMenu } from '../../../group-management-menu';
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
-const cn = bemClassName('conversation-header');
-
 import './styles.scss';
+
+const cn = bemClassName('conversation-header');
 
 export interface Properties {
   isOneOnOne: boolean;

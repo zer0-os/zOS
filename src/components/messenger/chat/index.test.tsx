@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as DirectMessageChat, Properties } from '.';
-import { Channel, User } from '../../../store/channels';
+import { Channel } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
@@ -9,7 +9,7 @@ import { Media } from '../../message-input/utils';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 
-import { StoreBuilder, stubAuthenticatedUser } from '../../../store/test/store';
+import { StoreBuilder, stubAuthenticatedUser, stubConversation, stubUser } from '../../../store/test/store';
 import { ConversationHeader } from './conversation-header';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
@@ -270,26 +270,3 @@ describe(DirectMessageChat, () => {
     });
   });
 });
-
-function stubUser(attrs: Partial<User> = {}): User {
-  return {
-    userId: 'user-id',
-    matrixId: 'matrix-id',
-    firstName: 'first-name',
-    lastName: 'first-name',
-    isOnline: false,
-    profileId: 'profile-id',
-    profileImage: 'image-url',
-    lastSeenAt: 'last-seen',
-    primaryZID: 'primary-zid',
-    ...attrs,
-  };
-}
-
-function stubConversation(props: Partial<Channel> = {}): Channel {
-  return {
-    id: 'channel-id',
-    otherMembers: [],
-    ...props,
-  } as Channel;
-}

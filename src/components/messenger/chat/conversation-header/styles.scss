@@ -4,7 +4,7 @@
 $header-height: 66px;
 $recent-indicator-size: 8px;
 
-.direct-message-chat {
+.conversation-header {
   &__header {
     height: $header-height - (16px * 2);
     display: flex;

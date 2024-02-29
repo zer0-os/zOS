@@ -10,7 +10,7 @@ import { GroupManagementMenu } from '../../../group-management-menu';
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
-const cn = bemClassName('direct-message-chat');
+const cn = bemClassName('conversation-header');
 
 import './styles.scss';
 

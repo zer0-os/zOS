@@ -9,7 +9,7 @@ import { bem } from '../../../../lib/bem';
 
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
-const c = bem('.direct-message-chat');
+const c = bem('.conversation-header');
 
 describe(ConversationHeader, () => {
   const subject = (props: Partial<Properties>) => {

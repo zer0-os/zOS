@@ -181,9 +181,7 @@ describe(DirectMessageChat, () => {
   describe('mapState', () => {
     describe('canLeaveRoom', () => {
       it('is false when only when one other member', () => {
-        const state = new StoreBuilder().withActiveConversation(
-          stubConversation({ otherMembers: [stubUser() as User] })
-        );
+        const state = new StoreBuilder().withActiveConversation(stubConversation({ otherMembers: [stubUser()] }));
 
         expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
       });
@@ -191,10 +189,7 @@ describe(DirectMessageChat, () => {
       it('is false when user is admin', () => {
         const state = new StoreBuilder()
           .withActiveConversation(
-            stubConversation({
-              otherMembers: [stubUser() as User, stubUser() as User],
-              adminMatrixIds: ['current-user-matrix-id'],
-            })
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['current-user-matrix-id'] })
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
@@ -204,10 +199,7 @@ describe(DirectMessageChat, () => {
       it('is true when user is not admin and more than one other member', () => {
         const state = new StoreBuilder()
           .withActiveConversation(
-            stubConversation({
-              otherMembers: [stubUser() as User, stubUser() as User],
-              adminMatrixIds: ['other-user-matrix-id'],
-            })
+            stubConversation({ otherMembers: [stubUser(), stubUser()], adminMatrixIds: ['other-user-matrix-id'] })
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 

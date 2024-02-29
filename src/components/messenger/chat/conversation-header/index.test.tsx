@@ -2,10 +2,10 @@ import { shallow } from 'enzyme';
 
 import { ConversationHeader, Properties } from '.';
 import Tooltip from '../../../tooltip';
-import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { bem } from '../../../../lib/bem';
+import { stubUser } from '../../../../store/test/store';
 
 import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
 
@@ -228,18 +228,3 @@ describe(ConversationHeader, () => {
     });
   });
 });
-
-function stubUser(attrs: Partial<User> = {}): User {
-  return {
-    userId: 'user-id',
-    matrixId: 'matrix-id',
-    firstName: 'first-name',
-    lastName: 'first-name',
-    isOnline: false,
-    profileId: 'profile-id',
-    profileImage: 'image-url',
-    lastSeenAt: 'last-seen',
-    primaryZID: 'primary-zid',
-    ...attrs,
-  };
-}

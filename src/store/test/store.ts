@@ -152,11 +152,11 @@ export function stubUser(attrs: Partial<User> = {}): User {
     lastName: 'DefaultStubLastName',
     profileImage: '/default-stub-image.jpg',
     lastSeenAt: 'default-stub-last-seen',
-    primaryZID: `default-stub-primary-zid-${stubCount}`,
-    displaySubHandle: `default-stub-sub-handle-${stubCount}`,
+    primaryZID: `DefaultStubPrimaryZID`,
+    displaySubHandle: `DefaultStubDisplaySubHandle`,
     isOnline: false,
-    wallets: [],
     primaryWallet: null,
+    wallets: [],
     ...attrs,
   };
 }

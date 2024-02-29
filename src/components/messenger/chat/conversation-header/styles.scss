@@ -54,10 +54,6 @@ $recent-indicator-size: 8px;
         left: 22px;
       }
 
-      &--isOneOnOne {
-        color: theme.$color-secondary-11;
-      }
-
       &--online::after {
         background-color: theme.$color-success-9;
       }
@@ -72,6 +68,12 @@ $recent-indicator-size: 8px;
         line-height: 0px;
         left: calc(50% - 8px);
       }
+    }
+  }
+
+  &__avatar-icon {
+    &--isOneOnOne {
+      color: theme.$color-secondary-11;
     }
   }
 

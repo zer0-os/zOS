@@ -4,11 +4,12 @@ import { emailLogin, validateEmailLogin } from './saga';
 
 import { call } from 'redux-saga/effects';
 
-import { EmailLoginErrors, LoginStage, LoginState, initialState as initialRegistrationState } from '.';
+import { EmailLoginErrors, LoginStage, initialState } from '.';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { authenticateByEmail } from '../authentication/saga';
+import { StoreBuilder } from '../test/store';
 
 describe(emailLogin, () => {
   it('logs the user in', async () => {
@@ -20,7 +21,7 @@ describe(emailLogin, () => {
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
-      .withReducer(rootReducer, initialState({}))
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     expect(returnValue).toEqual(true);
@@ -36,7 +37,7 @@ describe(emailLogin, () => {
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(validateEmailLogin, { email, password }), [EmailLoginErrors.EMAIL_REQUIRED]]])
-      .withReducer(rootReducer, initialState({}))
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
@@ -54,7 +55,7 @@ describe(emailLogin, () => {
       .provide([
         [call(authenticateByEmail, email, password), { success: false, response: EmailLoginErrors.UNKNOWN_ERROR }],
       ])
-      .withReducer(rootReducer, initialState({}))
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
@@ -70,7 +71,7 @@ describe(emailLogin, () => {
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), throwError(new Error('Stub api error'))]])
-      .withReducer(rootReducer, initialState({}))
+      .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
@@ -80,12 +81,13 @@ describe(emailLogin, () => {
   it('clears errors on success', async () => {
     const email = 'any email';
     const password = 'any password';
+    const state = new StoreBuilder().withOtherState({ login: { ...initialState, errors: ['existing_error'] } });
 
     const {
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
-      .withReducer(rootReducer, initialState({ errors: ['existing_error'] }))
+      .withReducer(rootReducer, state.build())
       .run();
 
     expect(login.errors).toEqual([]);
@@ -111,12 +113,3 @@ describe(validateEmailLogin, () => {
     expect(errors).toEqual([EmailLoginErrors.PASSWORD_REQUIRED]);
   });
 });
-
-function initialState(attrs: Partial<LoginState> = {}) {
-  return {
-    login: {
-      ...initialRegistrationState,
-      ...attrs,
-    },
-  } as any;
-}

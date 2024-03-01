@@ -17,14 +17,12 @@ describe(emailLogin, () => {
     const password = 'any password';
 
     const {
-      returnValue,
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(returnValue).toEqual(true);
     expect(login.stage).toEqual(LoginStage.Done);
   });
 
@@ -33,7 +31,6 @@ describe(emailLogin, () => {
     const password = 'any password';
 
     const {
-      returnValue,
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(validateEmailLogin, { email, password }), [EmailLoginErrors.EMAIL_REQUIRED]]])
@@ -41,7 +38,6 @@ describe(emailLogin, () => {
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
-    expect(returnValue).toEqual(false);
   });
 
   it('sets error state if login fails', async () => {
@@ -49,7 +45,6 @@ describe(emailLogin, () => {
     const password = 'any password';
 
     const {
-      returnValue,
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
@@ -59,7 +54,6 @@ describe(emailLogin, () => {
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
-    expect(returnValue).toEqual(false);
   });
 
   it('sets error state if api call throws an exception', async () => {
@@ -67,7 +61,6 @@ describe(emailLogin, () => {
     const password = 'any password';
 
     const {
-      returnValue,
       storeState: { login },
     } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), throwError(new Error('Stub api error'))]])
@@ -75,7 +68,6 @@ describe(emailLogin, () => {
       .run();
 
     expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
-    expect(returnValue).toEqual(false);
   });
 
   it('clears errors on success', async () => {

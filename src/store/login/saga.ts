@@ -14,6 +14,7 @@ import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } fr
 import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
+import { getHistory } from '../../lib/browser';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -29,7 +30,7 @@ export function* emailLogin(action) {
 
     const result = yield call(authenticateByEmail, email, password);
     if (result.success) {
-      yield put(setStage(LoginStage.Done));
+      yield call(redirectToRoot);
     } else {
       yield put(setErrors([result.response]));
     }
@@ -155,4 +156,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
   yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
+}
+
+export function* redirectToRoot() {
+  yield getHistory().replace({ pathname: '/' });
 }

@@ -413,26 +413,32 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
       continue;
     }
 
-    let currentMessages = channel?.messages || [];
-    for (let message of byChannelId[channelId]) {
-      const messageList = yield call(mapMessagesAndPreview, [message], channelId);
-      message = messageList[0];
+    const mappedMessages = yield call(mapMessagesAndPreview, byChannelId[channelId], channelId);
+    yield receiveBatchedMessages(channelId, mappedMessages);
 
-      let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
-      if (!newMessages) {
-        newMessages = [
-          ...currentMessages,
-          message,
-        ];
-      }
-      currentMessages = newMessages;
-    }
-
-    yield call(receiveChannel, { id: channelId, messages: uniqNormalizedList(currentMessages, true) });
     if (yield select(_isActive(channelId))) {
       yield spawn(markConversationAsRead, channelId);
     }
   }
+}
+
+function* receiveBatchedMessages(channelId, messages) {
+  // Note: This method must be fully synchronous. There can be no
+  // async calls in here because we fetch the current list of channel
+  // messages and replace things and then set the new list at the end.
+  // If there is an async call in between then the channels list of messages
+  // could have changed and we'll end up missing those changes by the time we
+  // save the batch here.
+  const currentChannel = yield select(rawChannelSelector(channelId));
+  let currentMessages = currentChannel?.messages || [];
+  for (let message of messages) {
+    let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
+    if (!newMessages) {
+      newMessages = [...currentMessages, message];
+    }
+    currentMessages = newMessages;
+  }
+  yield call(receiveChannel, { id: channelId, messages: uniqNormalizedList(currentMessages, true) });
 }
 
 export function* replaceOptimisticMessage(currentMessages, message) {

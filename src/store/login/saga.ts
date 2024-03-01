@@ -1,15 +1,6 @@
 import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
 
-import {
-  EmailLoginErrors,
-  LoginStage,
-  SagaActionTypes,
-  Web3LoginErrors,
-  reset,
-  setErrors,
-  setLoading,
-  setStage,
-} from '.';
+import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';

@@ -7,6 +7,7 @@ import { initialState as initialGroupManagementState } from '../group-management
 import { ChatState } from '../chat/types';
 import { initialState as authenticationInitialState } from '../authentication';
 import { MatrixState, initialState as initialMatrixState } from '../matrix';
+import { initialState as initialLoginState } from '../login';
 
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
@@ -104,6 +105,7 @@ export class StoreBuilder {
     } = normalizeUser(this.users);
 
     return {
+      login: initialLoginState,
       channelsList: { value: channelsList },
       normalized: {
         ...channelEntitities,

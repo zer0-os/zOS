@@ -74,7 +74,7 @@ export function* web3Login(action) {
       // create a new account from the public zOS UI.
       yield put(setErrors([Web3LoginErrors.PROFILE_NOT_FOUND]));
     } else {
-      yield put(setStage(LoginStage.Done));
+      yield redirectToRoot();
     }
   } finally {
     yield put(setLoading(false));
@@ -106,7 +106,7 @@ export function* web3ChangeAccount() {
     // create a new account from the public zOS UI.
     yield put(setErrors([Web3LoginErrors.PROFILE_NOT_FOUND]));
   } else {
-    yield put(setStage(LoginStage.Done));
+    yield redirectToRoot();
   }
 }
 

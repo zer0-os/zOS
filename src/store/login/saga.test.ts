@@ -16,58 +16,50 @@ describe(emailLogin, () => {
     const email = 'any email';
     const password = 'any password';
 
-    const {
-      storeState: { login },
-    } = await expectSaga(emailLogin, { payload: { email, password } })
+    const { storeState } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(login.stage).toEqual(LoginStage.Done);
+    expect(storeState.login.stage).toEqual(LoginStage.Done);
   });
 
   it('sets error state if validation fails', async () => {
     const email = 'any email';
     const password = 'any password';
 
-    const {
-      storeState: { login },
-    } = await expectSaga(emailLogin, { payload: { email, password } })
+    const { storeState } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(validateEmailLogin, { email, password }), [EmailLoginErrors.EMAIL_REQUIRED]]])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(login.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
   });
 
   it('sets error state if login fails', async () => {
     const email = 'any email';
     const password = 'any password';
 
-    const {
-      storeState: { login },
-    } = await expectSaga(emailLogin, { payload: { email, password } })
+    const { storeState } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([
         [call(authenticateByEmail, email, password), { success: false, response: EmailLoginErrors.UNKNOWN_ERROR }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
   });
 
   it('sets error state if api call throws an exception', async () => {
     const email = 'any email';
     const password = 'any password';
 
-    const {
-      storeState: { login },
-    } = await expectSaga(emailLogin, { payload: { email, password } })
+    const { storeState } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), throwError(new Error('Stub api error'))]])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
   });
 
   it('clears errors on success', async () => {
@@ -75,14 +67,12 @@ describe(emailLogin, () => {
     const password = 'any password';
     const state = new StoreBuilder().withOtherState({ login: { ...initialState, errors: ['existing_error'] } });
 
-    const {
-      storeState: { login },
-    } = await expectSaga(emailLogin, { payload: { email, password } })
+    const { storeState } = await expectSaga(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
       .withReducer(rootReducer, state.build())
       .run();
 
-    expect(login.errors).toEqual([]);
+    expect(storeState.login.errors).toEqual([]);
   });
 });
 

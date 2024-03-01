@@ -24,13 +24,12 @@ export function* emailLogin(action) {
     const validationErrors = yield call(validateEmailLogin, { email, password });
     if (validationErrors.length) {
       yield put(setErrors(validationErrors));
-      return false;
+      return;
     }
 
     const result = yield call(authenticateByEmail, email, password);
     if (result.success) {
       yield put(setStage(LoginStage.Done));
-      return true;
     } else {
       yield put(setErrors([result.response]));
     }
@@ -39,7 +38,6 @@ export function* emailLogin(action) {
   } finally {
     yield put(setLoading(false));
   }
-  return false;
 }
 
 export function validateEmailLogin({ email, password }) {

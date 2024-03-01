@@ -65,7 +65,6 @@ export function* terminate(isAccountChange = false) {
   }
 
   yield call(clearUserState);
-  yield put(setStage(LoginStage.Web3Login));
   yield call(redirectUnauthenticatedUser, isAccountChange);
   yield call(publishUserLogout);
 }

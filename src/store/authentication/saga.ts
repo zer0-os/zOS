@@ -17,7 +17,6 @@ import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { completePendingUserProfile } from '../registration/saga';
-import { LoginStage, setStage } from '../login';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -65,7 +64,6 @@ export function* terminate(isAccountChange = false) {
   }
 
   yield call(clearUserState);
-  yield put(setStage(LoginStage.Web3Login));
   yield call(redirectUnauthenticatedUser, isAccountChange);
   yield call(publishUserLogout);
 }

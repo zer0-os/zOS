@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { shallow } from 'enzyme';
 import { LoginStage } from '../../store/login';
@@ -26,21 +26,12 @@ describe('Login Component', () => {
     const wrapper = subject();
     expect(wrapper.find(Web3LoginContainer).exists()).toBeTrue();
     expect(wrapper.find(EmailLoginContainer).exists()).toBeFalse();
-    expect(wrapper.find(Redirect).exists()).toBeFalse();
   });
 
   it('renders EmailLoginContainer when stage is LoginStage.EmailLogin', () => {
     const wrapper = subject({ stage: LoginStage.EmailLogin });
     expect(wrapper.find(Web3LoginContainer).exists()).toBeFalse();
     expect(wrapper.find(EmailLoginContainer).exists()).toBeTrue();
-    expect(wrapper.find(Redirect).exists()).toBeFalse();
-  });
-
-  it('renders Redirect when stage is LoginStage.Done', () => {
-    const wrapper = subject({ stage: LoginStage.Done });
-    expect(wrapper.find(Web3LoginContainer).exists()).toBeFalse();
-    expect(wrapper.find(EmailLoginContainer).exists()).toBeFalse();
-    expect(wrapper.find(Redirect).exists()).toBeTrue();
   });
 
   it('renders ThemeEngine', () => {

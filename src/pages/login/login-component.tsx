@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { LoginStage } from '../../store/login';
 import { Web3LoginContainer } from '../../authentication/web3-login/container';
@@ -13,6 +13,7 @@ import { bemClassName } from '../../lib/bem';
 import './login.scss';
 
 import { FeatureFlag } from '../../components/feature-flag';
+import { assertAllValuesConsumed } from '../../lib/enum';
 
 const cn = bemClassName('login-main');
 
@@ -27,12 +28,10 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     switch (this.props.stage) {
       case LoginStage.Web3Login:
         return <Web3LoginContainer />;
-      case LoginStage.Done:
-        // This case may not be needed any more now that the sagas are redirecting
-        // on login
-        return <Redirect to='/' />;
-      default:
+      case LoginStage.EmailLogin:
         return <EmailLoginContainer />;
+      default:
+        assertAllValuesConsumed(this.props.stage);
     }
   }
 

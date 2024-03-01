@@ -1,19 +1,11 @@
 import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
 
-import {
-  EmailLoginErrors,
-  LoginStage,
-  SagaActionTypes,
-  Web3LoginErrors,
-  reset,
-  setErrors,
-  setLoading,
-  setStage,
-} from '.';
+import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
 import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
+import { getHistory } from '../../lib/browser';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -29,7 +21,7 @@ export function* emailLogin(action) {
 
     const result = yield call(authenticateByEmail, email, password);
     if (result.success) {
-      yield put(setStage(LoginStage.Done));
+      yield call(redirectToRoot);
     } else {
       yield put(setErrors([result.response]));
     }
@@ -73,16 +65,13 @@ export function* web3Login(action) {
       // create a new account from the public zOS UI.
       yield put(setErrors([Web3LoginErrors.PROFILE_NOT_FOUND]));
     } else {
-      yield put(setStage(LoginStage.Done));
+      yield redirectToRoot();
     }
   } finally {
     yield put(setLoading(false));
   }
 }
 
-/**
- * Switches login stage. Used for switching between login options when logging in.
- */
 export function* switchLoginStage(action) {
   yield put(setErrors([]));
   yield put(setStage(action.payload));
@@ -108,7 +97,7 @@ export function* web3ChangeAccount() {
     // create a new account from the public zOS UI.
     yield put(setErrors([Web3LoginErrors.PROFILE_NOT_FOUND]));
   } else {
-    yield put(setStage(LoginStage.Done));
+    yield redirectToRoot();
   }
 }
 
@@ -155,4 +144,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
   yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
+}
+
+export function* redirectToRoot() {
+  yield getHistory().replace({ pathname: '/' });
 }

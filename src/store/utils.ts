@@ -21,7 +21,7 @@ function uniqFavorLast(objectsAndIds: ({ id: string } | string)[]): any {
 
 export function* performUnlessLogout(task) {
   const { complete } = yield race({
-    complete: yield task,
+    complete: task,
     abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
   });
   return !!complete;

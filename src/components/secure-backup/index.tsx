@@ -15,6 +15,7 @@ import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { VerifyKeyPhrase } from './verify-key-phrase';
+import { assertAllValuesConsumed } from '../../lib/enum';
 
 const cn = bemClassName('secure-backup');
 
@@ -100,7 +101,7 @@ export class SecureBackup extends React.PureComponent<Properties> {
         return <Success successMessage={successMessage} onClose={onClose} />;
 
       default:
-        assertNeverReached(backupStage);
+        assertAllValuesConsumed(backupStage);
     }
   };
 
@@ -113,9 +114,4 @@ export class SecureBackup extends React.PureComponent<Properties> {
       </div>
     );
   }
-}
-
-// Ensure all enum values are handled
-function assertNeverReached(x: never): never {
-  throw new Error('Unexpected type: ' + x);
 }

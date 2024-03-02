@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Accordion } from '@zero-tech/zui/components';
+import { Accordion, Image } from '@zero-tech/zui/components';
 import '../styles.scss';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../lib/bem';
+import { config } from '../../../config';
 
 const cn = bemClassName('secure-backup');
 
@@ -24,8 +25,22 @@ export class BackupFAQ extends React.Component<Properties> {
         title: 'Why are some messages hidden ?',
       },
       {
-        content:
-          'To protect your privacy, new logins to ZERO Messenger do not have permission to decrypt and read your message history. To give yourself permission to do so — and allow you to import your account to new devices — Messenger allows you to create an account backup phrase. Logging into your account and entering your backup phrase in Settings allows you to decrypt your conversation history on any new login.You should aways backup your account; once backed up, your backup phrase will not change.',
+        content: (
+          <>
+            <div>
+              To protect your privacy, new logins to ZERO Messenger do not have permission to decrypt and read your
+              message history. To give yourself permission to do so — and allow you to import your account to new
+              devices — Messenger allows you to create an account backup phrase.
+            </div>
+            <br />
+            <div>
+              Logging into your account and entering your backup phrase in Settings allows you to decrypt your
+              conversation history on any new login.You should aways backup your account; once backed up, your backup
+              phrase will not change.
+            </div>
+            <Image {...cn('image')} src={`${config.imageAssetsPath}/Backup-Infographic.png`} alt='Backup Infographic' />
+          </>
+        ),
         title: 'What does a backup do?',
       },
       {

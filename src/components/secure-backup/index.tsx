@@ -37,38 +37,17 @@ export interface Properties {
   onVerifyKey: () => void;
 }
 
-
 interface State {
   faqModalOpen: boolean;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
-  get existingBackupNotRestored() {
-    return this.props.backupExists && !this.props.backupRestored;
-  }
-
   state = {
     faqModalOpen: false,
   };
 
-  get backupStage() {
-    return this.props.backupStage;
-  }
-
-  get isRecovered() {
-    return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
-  }
-
-  get noBackupExists() {
-    return !this.props.backupExists && !this.props.recoveryKey;
-  }
-
-  get backupNotRestored() {
-    return this.props.backupExists && !this.props.isBackupRecovered;
-  }
-
-  get isSystemPrompt() {
-    return this.backupStage === BackupStage.SystemPrompt;
+  get existingBackupNotRestored() {
+    return this.props.backupExists && !this.props.backupRestored;
   }
 
   openFAQModal = (): void => {
@@ -121,28 +100,28 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
 
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
-        return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
-      case BackupStage.None:
-      case BackupStage.SystemPrompt:
         return (
-          <>
-            {this.noBackupExists && (
-              <GeneratePrompt
-                isSystemPrompt={this.isSystemPrompt}
-                errorMessage={errorMessage}
-                onGenerate={onGenerate}
-                onClose={onClose}
-                onLearnMore={this.openFAQModal}
-              />
-            )}
-          </>
-        )
+          <GeneratePrompt
+            errorMessage={errorMessage}
+            onGenerate={onGenerate}
+            onClose={onClose}
+            onLearnMore={this.openFAQModal}
+          />
+        );
 
       case BackupStage.UserRestorePrompt:
         return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
 
       case BackupStage.SystemGeneratePrompt:
-        return <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+        return (
+          <GeneratePrompt
+            isSystemPrompt
+            errorMessage={errorMessage}
+            onGenerate={onGenerate}
+            onClose={onClose}
+            onLearnMore={this.openFAQModal}
+          />
+        );
 
       case BackupStage.SystemRestorePrompt:
         return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;

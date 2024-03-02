@@ -8,6 +8,8 @@ import { GenerateBackup } from './generate-backup';
 import { RestorePrompt } from './restore-prompt';
 import { RestoreBackup } from './restore-backup';
 import { RecoveredBackup } from './recovered-backup';
+import { BackupFAQ } from './backup-faq';
+
 import { Success } from './success';
 
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -35,10 +37,47 @@ export interface Properties {
   onVerifyKey: () => void;
 }
 
-export class SecureBackup extends React.PureComponent<Properties> {
+
+interface State {
+  faqModalOpen: boolean;
+}
+
+export class SecureBackup extends React.PureComponent<Properties, State> {
   get existingBackupNotRestored() {
     return this.props.backupExists && !this.props.backupRestored;
   }
+
+  state = {
+    faqModalOpen: false,
+  };
+
+  get backupStage() {
+    return this.props.backupStage;
+  }
+
+  get isRecovered() {
+    return this.props.backupExists && this.props.isBackupRecovered && !this.props.recoveryKey;
+  }
+
+  get noBackupExists() {
+    return !this.props.backupExists && !this.props.recoveryKey;
+  }
+
+  get backupNotRestored() {
+    return this.props.backupExists && !this.props.isBackupRecovered;
+  }
+
+  get isSystemPrompt() {
+    return this.backupStage === BackupStage.SystemPrompt;
+  }
+
+  openFAQModal = (): void => {
+    this.setState({ faqModalOpen: true });
+  };
+
+  closeFAQModal = (): void => {
+    this.setState({ faqModalOpen: false });
+  };
 
   renderHeader = () => {
     const title = this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
@@ -52,6 +91,10 @@ export class SecureBackup extends React.PureComponent<Properties> {
   };
 
   renderVideoBanner = () => {
+    if (this.state.faqModalOpen) {
+      return null;
+    }
+
     return (
       <div {...cn('video-banner')}>
         <video {...cn('video')} src={`${this.props.videoAssetsPath}/E2EEncryption.mp4`} autoPlay loop muted />
@@ -60,6 +103,10 @@ export class SecureBackup extends React.PureComponent<Properties> {
   };
 
   renderBackupContent = () => {
+    if (this.state.faqModalOpen) {
+      return null;
+    }
+
     const {
       backupStage,
       onGenerate,
@@ -75,6 +122,21 @@ export class SecureBackup extends React.PureComponent<Properties> {
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
         return <GeneratePrompt errorMessage={errorMessage} onGenerate={onGenerate} onClose={onClose} />;
+      case BackupStage.None:
+      case BackupStage.SystemPrompt:
+        return (
+          <>
+            {this.noBackupExists && (
+              <GeneratePrompt
+                isSystemPrompt={this.isSystemPrompt}
+                errorMessage={errorMessage}
+                onGenerate={onGenerate}
+                onClose={onClose}
+                onLearnMore={this.openFAQModal}
+              />
+            )}
+          </>
+        )
 
       case BackupStage.UserRestorePrompt:
         return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
@@ -105,12 +167,21 @@ export class SecureBackup extends React.PureComponent<Properties> {
     }
   };
 
+  renderFAQModal = () => {
+    if (!this.state.faqModalOpen) {
+      return null;
+    }
+
+    return <BackupFAQ onBack={this.closeFAQModal} />;
+  };
+
   render() {
     return (
       <div {...cn()}>
         {this.renderHeader()}
         {this.renderVideoBanner()}
         {this.renderBackupContent()}
+        {this.renderFAQModal()}
       </div>
     );
   }

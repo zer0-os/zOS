@@ -22,7 +22,7 @@ export class BackupFAQ extends React.Component<Properties> {
       {
         content:
           'ZERO Messenger is both end-to-end encrypted and decentralized. We champion privacy and sovereignty. As a result, some messages may be hidden from you. This is usually because you did not receive permission to decrypt them while logged out or inactive. If your entire conversation history is hidden, try restoring your account backup.',
-        title: 'Why are some messages hidden ?',
+        title: 'Why are some messages hidden?',
       },
       {
         content: (

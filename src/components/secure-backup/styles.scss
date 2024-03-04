@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../glass';
+@import '../../animation';
 
 .secure-backup {
   display: flex;
@@ -196,5 +197,13 @@
       border-radius: 8px;
       border: 1px solid theme.$color-failure-11;
     }
+  }
+
+  &__animation-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    animation: fadein 200ms ease-out forwards;
   }
 }

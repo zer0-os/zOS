@@ -18,7 +18,7 @@ export class BackupFAQ extends React.Component<Properties> {
     this.props.onBack();
   };
 
-  get backupFaq() {
+  get backupFAQContent() {
     return [
       {
         content:
@@ -116,7 +116,7 @@ export class BackupFAQ extends React.Component<Properties> {
           <IconArrowLeft size={16} /> Backup
         </div>
 
-        <Accordion contrast='low' items={this.backupFaq} />
+        <Accordion contrast='low' items={this.backupFAQContent} />
       </div>
     );
   }

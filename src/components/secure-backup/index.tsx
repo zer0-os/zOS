@@ -1,23 +1,22 @@
 import * as React from 'react';
 
 import { bemClassName } from '../../lib/bem';
+import { assertAllValuesConsumed } from '../../lib/enum';
 import { BackupStage } from '../../store/matrix';
 
+import { BackupFAQ } from './backup-faq';
 import { GeneratePrompt } from './generate-prompt';
 import { GenerateBackup } from './generate-backup';
 import { RestorePrompt } from './restore-prompt';
 import { RestoreBackup } from './restore-backup';
 import { RecoveredBackup } from './recovered-backup';
-import { BackupFAQ } from './backup-faq';
-
 import { Success } from './success';
+import { VerifyKeyPhrase } from './verify-key-phrase';
 
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { VerifyKeyPhrase } from './verify-key-phrase';
-import { assertAllValuesConsumed } from '../../lib/enum';
 
 const cn = bemClassName('secure-backup');
 
@@ -38,24 +37,24 @@ export interface Properties {
 }
 
 interface State {
-  faqModalOpen: boolean;
+  isFAQContent: boolean;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
   state = {
-    faqModalOpen: false,
+    isFAQContent: false,
   };
 
   get existingBackupNotRestored() {
     return this.props.backupExists && !this.props.backupRestored;
   }
 
-  openFAQModal = (): void => {
-    this.setState({ faqModalOpen: true });
+  openFAQContent = (): void => {
+    this.setState({ isFAQContent: true });
   };
 
-  closeFAQModal = (): void => {
-    this.setState({ faqModalOpen: false });
+  closeFAQContent = (): void => {
+    this.setState({ isFAQContent: false });
   };
 
   renderHeader = () => {
@@ -70,7 +69,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   renderVideoBanner = () => {
-    if (this.state.faqModalOpen) {
+    if (this.state.isFAQContent) {
       return null;
     }
 
@@ -82,8 +81,8 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   renderBackupContent = () => {
-    if (this.state.faqModalOpen) {
-      return null;
+    if (this.state.isFAQContent) {
+      return <BackupFAQ onBack={this.closeFAQContent} />;
     }
 
     const {
@@ -105,7 +104,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
             errorMessage={errorMessage}
             onGenerate={onGenerate}
             onClose={onClose}
-            onLearnMore={this.openFAQModal}
+            onLearnMore={this.openFAQContent}
           />
         );
 
@@ -119,7 +118,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
             errorMessage={errorMessage}
             onGenerate={onGenerate}
             onClose={onClose}
-            onLearnMore={this.openFAQModal}
+            onLearnMore={this.openFAQContent}
           />
         );
 
@@ -146,21 +145,12 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     }
   };
 
-  renderFAQModal = () => {
-    if (!this.state.faqModalOpen) {
-      return null;
-    }
-
-    return <BackupFAQ onBack={this.closeFAQModal} />;
-  };
-
   render() {
     return (
       <div {...cn()}>
         {this.renderHeader()}
         {this.renderVideoBanner()}
         {this.renderBackupContent()}
-        {this.renderFAQModal()}
       </div>
     );
   }

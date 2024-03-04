@@ -38,7 +38,7 @@ export class GeneratePrompt extends React.Component<Properties> {
 
   render() {
     return (
-      <>
+      <div {...cn('animation-container')}>
         <p {...cn('primary-text')}>{this.renderPrimaryText()}</p>
         <div {...cn('learn-more')} onClick={this.props.onLearnMore}>
           Learn More <IconArrowRight size={20} />
@@ -62,7 +62,7 @@ export class GeneratePrompt extends React.Component<Properties> {
             Backup my account
           </Button>
         </div>
-      </>
+      </div>
     );
   }
 }

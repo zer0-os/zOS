@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../glass';
+@import '../../animation';
 
 .secure-backup {
   display: flex;
@@ -16,11 +17,11 @@
     display: flex;
     height: 53px;
 
-    > *:first-child {
+    >*:first-child {
       flex-grow: 1;
     }
 
-    > *:last-child {
+    >*:last-child {
       flex-grow: 0;
     }
   }
@@ -189,5 +190,13 @@
     gap: 8px;
 
     margin-top: 8px;
+  }
+
+  &__animation-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    animation: fadein 200ms ease-out forwards;
   }
 }

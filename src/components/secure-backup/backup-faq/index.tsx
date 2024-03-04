@@ -110,13 +110,13 @@ export class BackupFAQ extends React.Component<Properties> {
 
   render() {
     return (
-      <>
+      <div {...cn('animation-container')}>
         <div {...cn('back')} onClick={this.props.onBack}>
           <IconArrowLeft size={16} /> Backup
         </div>
 
         <Accordion contrast='low' items={this.backupFaq} />
-      </>
+      </div>
     );
   }
 }

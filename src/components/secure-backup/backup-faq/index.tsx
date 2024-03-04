@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import { Accordion, Image } from '@zero-tech/zui/components';
-import '../styles.scss';
+import { Accordion } from '@zero-tech/zui/components';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../lib/bem';
 import { config } from '../../../config';
+
+import '../styles.scss';
 
 const cn = bemClassName('secure-backup');
 
@@ -13,7 +14,7 @@ export interface Properties {
 }
 
 export class BackupFAQ extends React.Component<Properties> {
-  onBack = (): void => {
+  back = (): void => {
     this.props.onBack();
   };
 
@@ -38,7 +39,7 @@ export class BackupFAQ extends React.Component<Properties> {
               conversation history on any new login.You should aways backup your account; once backed up, your backup
               phrase will not change.
             </div>
-            <Image {...cn('image')} src={`${config.imageAssetsPath}/Backup-Infographic.png`} alt='Backup Infographic' />
+            <img {...cn('image')} src={`${config.imageAssetsPath}/Backup-Infographic.png`} alt='Backup Infographic' />
           </>
         ),
         title: 'What does a backup do?',
@@ -78,7 +79,7 @@ export class BackupFAQ extends React.Component<Properties> {
             <br />
             <div>
               There are several reasons you might not receive another user’s public key:
-              <ul style={{ listStyleType: 'disc' }}>
+              <ul>
                 <li>You were inactive for more than a few days on all devices</li>
                 <li>You were logged out on all devices</li>
                 <li>You had not verified your backup on any device before starting a new session</li>
@@ -95,7 +96,7 @@ export class BackupFAQ extends React.Component<Properties> {
             <div>
               There are a couple things you can do in ZERO Messenger to ensure you can read and decrypt messages:
             </div>
-            <ul style={{ listStyleType: 'disc' }}>
+            <ul>
               <li>Every time you log in, on any device, verify with your backup phrase</li>
               <li>Do not log out of all devices simultaneously</li>
               <li>
@@ -111,7 +112,7 @@ export class BackupFAQ extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('animation-container')}>
-        <div {...cn('back')} onClick={this.props.onBack}>
+        <div {...cn('back')} onClick={this.back}>
           <IconArrowLeft size={16} /> Backup
         </div>
 

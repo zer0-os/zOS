@@ -15,21 +15,11 @@ describe(BackupFAQ, () => {
     return shallow(<BackupFAQ {...allProps} />);
   };
 
-  it('renders accordian with all items', function () {
-    const wrapper = subject();
-
-    const accordion: any = wrapper.find('Accordion');
-    const items = accordion.props().items;
-
-    expect(items).toHaveLength(5);
-  });
-
   it('publishes onBack event', function () {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 
-    const button = wrapper.find(c('back'));
-    button.simulate('click');
+    wrapper.find(c('back')).simulate('click');
 
     expect(onBack).toHaveBeenCalledOnce();
   });

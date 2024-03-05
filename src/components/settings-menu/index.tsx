@@ -90,7 +90,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
     options.push({
       className: 'secure_backup',
       id: 'secure_backup',
-      label: this.renderSettingsOption(<IconLock1 />, 'Secure Backup'),
+      label: this.renderSettingsOption(<IconLock1 />, 'Account Backup'),
       onSelect: this.props.onSecureBackup,
     });
 

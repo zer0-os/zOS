@@ -160,11 +160,4 @@
 
     margin-top: 8px;
   }
-
-  &__input {
-    &--error {
-      border-radius: 8px;
-      border: 1px solid theme.$color-failure-11;
-    }
-  }
 }

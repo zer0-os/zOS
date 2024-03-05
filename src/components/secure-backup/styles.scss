@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../glass';
+@import '../../animation';
 
 .secure-backup {
   display: flex;
@@ -59,6 +60,36 @@
 
     margin: 0;
     line-height: 24px;
+  }
+
+  &__learn-more {
+    display: flex;
+    color: theme.$color-secondary-11;
+    gap: 4px;
+    margin-top: -32px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__back {
+    @include glass-text-primary-color;
+    display: flex;
+    gap: 4px;
+    font-weight: 600;
+    font-size: 14px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-top: 16px;
   }
 
   &__secondary-text {
@@ -159,5 +190,13 @@
     gap: 8px;
 
     margin-top: 8px;
+  }
+
+  &__animation-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    animation: fadein 200ms ease-out forwards;
   }
 }

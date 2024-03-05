@@ -13,6 +13,7 @@ describe(GeneratePrompt, () => {
       errorMessage: '',
       onGenerate: () => null,
       onClose: () => null,
+      onLearnMore: () => null,
       ...props,
     };
 
@@ -70,5 +71,14 @@ describe(GeneratePrompt, () => {
     const wrapper = subject({ errorMessage: '' });
 
     expect(wrapper.find(c('error-message'))).not.toExist();
+  });
+
+  it('publishes onLearnMore event', function () {
+    const onLearnMore = jest.fn();
+    const wrapper = subject({ onLearnMore });
+
+    wrapper.find(c('learn-more')).simulate('click');
+
+    expect(onLearnMore).toHaveBeenCalledOnce();
   });
 });

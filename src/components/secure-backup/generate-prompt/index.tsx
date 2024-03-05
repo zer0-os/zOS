@@ -3,7 +3,7 @@ import * as React from 'react';
 import { bemClassName } from '../../../lib/bem';
 
 import { Button } from '@zero-tech/zui/components';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconArrowRight } from '@zero-tech/zui/icons';
 
 import '../styles.scss';
 
@@ -15,6 +15,7 @@ export interface Properties {
 
   onGenerate: () => void;
   onClose: () => void;
+  onLearnMore: () => void;
 }
 
 export class GeneratePrompt extends React.Component<Properties> {
@@ -37,8 +38,11 @@ export class GeneratePrompt extends React.Component<Properties> {
 
   render() {
     return (
-      <>
+      <div {...cn('animation-container')}>
         <p {...cn('primary-text')}>{this.renderPrimaryText()}</p>
+        <div {...cn('learn-more')} onClick={this.props.onLearnMore}>
+          Learn More <IconArrowRight size={20} />
+        </div>
 
         <div {...cn('status-container', 'warning')}>
           <IconAlertCircle size={16} />
@@ -58,7 +62,7 @@ export class GeneratePrompt extends React.Component<Properties> {
             Backup my account
           </Button>
         </div>
-      </>
+      </div>
     );
   }
 }

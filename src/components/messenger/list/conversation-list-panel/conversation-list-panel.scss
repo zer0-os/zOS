@@ -46,7 +46,8 @@ $side-padding: 16px;
     flex-grow: 1;
     // Forcing a height here allows the flex-grow to fill the size without growing too big
     height: 1px;
-    padding: 0px $side-padding;
+    // accounts for 4px scrollbar width on right side of container
+    padding: 0 12px 0 16px;
   }
 
   &__empty {

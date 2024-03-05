@@ -37,12 +37,12 @@ export interface Properties {
 }
 
 interface State {
-  isFAQContent: boolean;
+  showFAQContent: boolean;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
   state = {
-    isFAQContent: false,
+    showFAQContent: false,
   };
 
   get existingBackupNotRestored() {
@@ -50,11 +50,11 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   }
 
   openFAQContent = (): void => {
-    this.setState({ isFAQContent: true });
+    this.setState({ showFAQContent: true });
   };
 
   closeFAQContent = (): void => {
-    this.setState({ isFAQContent: false });
+    this.setState({ showFAQContent: false });
   };
 
   renderHeader = () => {
@@ -69,7 +69,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   renderVideoBanner = () => {
-    if (this.state.isFAQContent) {
+    if (this.state.showFAQContent) {
       return null;
     }
 
@@ -81,7 +81,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   renderBackupContent = () => {
-    if (this.state.isFAQContent) {
+    if (this.state.showFAQContent) {
       return <BackupFAQ onBack={this.closeFAQContent} />;
     }
 

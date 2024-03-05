@@ -65,7 +65,7 @@ export class BackupFAQ extends React.Component<Properties> {
         ),
       },
       {
-        title: 'I restored my backup; why cant I read my messages?',
+        title: "I restored my backup. Why can't I read my messages?",
         content: (
           <>
             <div>

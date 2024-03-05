@@ -17,11 +17,11 @@
     display: flex;
     height: 53px;
 
-    >*:first-child {
+    > *:first-child {
       flex-grow: 1;
     }
 
-    >*:last-child {
+    > *:last-child {
       flex-grow: 0;
     }
   }

@@ -77,8 +77,7 @@ describe(GeneratePrompt, () => {
     const onLearnMore = jest.fn();
     const wrapper = subject({ onLearnMore });
 
-    const button = wrapper.find(c('learn-more'));
-    button.simulate('click');
+    wrapper.find(c('learn-more')).simulate('click');
 
     expect(onLearnMore).toHaveBeenCalledOnce();
   });

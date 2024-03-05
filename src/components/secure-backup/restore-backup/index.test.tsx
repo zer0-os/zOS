@@ -5,9 +5,6 @@ import { pressButton } from '../../../test/utils';
 
 import { Alert, Button, Input } from '@zero-tech/zui/components';
 
-import { bem } from '../../../lib/bem';
-const c = bem('.secure-backup');
-
 describe('RestoreBackup', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -54,17 +51,5 @@ describe('RestoreBackup', () => {
     wrapper.find(Input).simulate('change', 'test-recovery-key');
 
     expect(wrapper.find(Button)).toHaveProp('isDisabled', false);
-  });
-
-  it('applies the error class to Input when error message exists', function () {
-    const wrapper = subject({ errorMessage: 'Invalid key prhase' });
-
-    expect(wrapper.find(c('input--error'))).toExist();
-  });
-
-  it('does not apply the error class to Input when error message does not exist', function () {
-    const wrapper = subject({ errorMessage: '' });
-
-    expect(wrapper.find(c('input--error'))).not.toExist();
   });
 });

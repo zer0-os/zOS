@@ -35,7 +35,9 @@ describe('InviteDialog', () => {
     wrapper.find(Button).simulate('press');
 
     expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
-    expect(clipboard.write).toHaveBeenCalledWith(expect.stringContaining('23817'));
+    expect(clipboard.write).toHaveBeenCalledWith(
+      expect.stringMatching('Use this code to join me on ZERO Messenger: 23817 https://zos.zer0.io/get-access')
+    );
   });
 
   it('sets copy text to copied for a few seconds after copying the text', async function () {

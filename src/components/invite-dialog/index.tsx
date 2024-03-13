@@ -45,7 +45,7 @@ export class InviteDialog extends React.Component<Properties, State> {
   }
 
   get inviteText() {
-    return this.props.inviteCode;
+    return `Use this code to join me on ZERO Messenger: ${this.props.inviteCode} https://zos.zer0.io/get-access`;
   }
 
   writeInviteToClipboard = async () => {

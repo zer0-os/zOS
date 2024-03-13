@@ -12,6 +12,7 @@ describe(RestorePrompt, () => {
       isSystemPrompt: false,
       onNext: () => null,
       onClose: () => null,
+      onLearnMore: () => null,
       ...props,
     };
 
@@ -69,5 +70,14 @@ describe(RestorePrompt, () => {
     const wrapper = subject({ isSystemPrompt: false });
 
     expect(wrapper.find(c('footer--has-secondary-button'))).not.toExist();
+  });
+
+  it('publishes onLearnMore event', function () {
+    const onLearnMore = jest.fn();
+    const wrapper = subject({ onLearnMore });
+
+    wrapper.find(c('learn-more')).simulate('click');
+
+    expect(onLearnMore).toHaveBeenCalledOnce();
   });
 });

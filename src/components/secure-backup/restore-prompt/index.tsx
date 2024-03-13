@@ -3,7 +3,7 @@ import * as React from 'react';
 import { bemClassName } from '../../../lib/bem';
 
 import { Button } from '@zero-tech/zui/components';
-import { IconAlertCircle, IconCheck } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconArrowRight, IconCheck } from '@zero-tech/zui/icons';
 
 import '../styles.scss';
 
@@ -19,6 +19,7 @@ export interface Properties {
 
   onNext: () => void;
   onClose: () => void;
+  onLearnMore: () => void;
 }
 
 export class RestorePrompt extends React.Component<Properties> {
@@ -54,6 +55,9 @@ export class RestorePrompt extends React.Component<Properties> {
     return (
       <>
         <p {...cn('primary-text')}>{this.renderPrimaryText()}</p>
+        <div {...cn('learn-more')} onClick={this.props.onLearnMore}>
+          Learn More <IconArrowRight size={20} />
+        </div>
 
         <div {...cn('status-group')}>
           {this.renderStatus(Status.Success, 'Your account has a backup phrase')}

@@ -109,7 +109,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         );
 
       case BackupStage.UserRestorePrompt:
-        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} />;
+        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />;
 
       case BackupStage.SystemGeneratePrompt:
         return (
@@ -123,10 +123,12 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         );
 
       case BackupStage.SystemRestorePrompt:
-        return <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} />;
+        return (
+          <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />
+        );
 
       case BackupStage.RecoveredBackupInfo:
-        return <RecoveredBackup onClose={onClose} />;
+        return <RecoveredBackup onClose={onClose} onLearnMore={this.openFAQContent} />;
 
       case BackupStage.GenerateBackup:
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;

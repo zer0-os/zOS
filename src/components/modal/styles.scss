@@ -7,6 +7,9 @@
   gap: 40px;
   overflow: hidden;
   padding: calc(40px - 24px); // zUI has 24px padding right now but we want 40 total.
+  box-sizing: border-box;
+  max-height: calc(100vh - 54px); // zUI has 24px padding plus 1px border
+  min-height: 250px;
 
   &__title-bar {
     display: flex;
@@ -41,6 +44,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
+    overflow-y: scroll;
   }
 
   &__footer {

@@ -204,11 +204,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   renderSecureBackupDialog = (): JSX.Element => {
-    return (
-      <Modal open={this.props.isBackupDialogOpen} onOpenChange={this.closeBackupDialog}>
-        <SecureBackupContainer onClose={this.closeBackupDialog} />
-      </Modal>
-    );
+    return <SecureBackupContainer onClose={this.closeBackupDialog} />;
   };
 
   renderUserHeader() {

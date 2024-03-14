@@ -119,7 +119,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         );
 
       case BackupStage.RecoveredBackupInfo:
-        return <RecoveredBackup onClose={onClose} onLearnMore={this.openFAQContent} />;
+        return <RecoveredBackup onLearnMore={this.openFAQContent} />;
 
       case BackupStage.GenerateBackup:
         return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
@@ -141,8 +141,13 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   render() {
     let primaryText = 'Cancel';
     let onPrimary = null;
-    if (this.props.backupStage === BackupStage.Success) {
+    if (this.state.showFAQContent) {
+      onPrimary = null;
+    } else if (this.props.backupStage === BackupStage.Success) {
       primaryText = 'Finish';
+      onPrimary = this.props.onClose;
+    } else if (this.props.backupStage === BackupStage.RecoveredBackupInfo) {
+      primaryText = 'Dismiss';
       onPrimary = this.props.onClose;
     }
 

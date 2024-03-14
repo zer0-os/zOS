@@ -122,11 +122,17 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(RecoveredBackup);
     });
 
+    it('renders the buttons', function () {
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryText', 'Dismiss');
+    });
+
     it('publishes onClose', function () {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onClose });
 
-      wrapper.find(RecoveredBackup).simulate('close');
+      wrapper.find(Modal).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });

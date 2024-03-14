@@ -66,27 +66,49 @@ export class Modal extends React.Component<Properties> {
             {this.props.onSecondary && (
               <Button
                 {...cn('secondary-button', this.props.secondaryColor || Color.Highlight)}
-                variant={this.translateVariant(this.props.secondaryVariant, Variant.Secondary)}
+                variant={this.secondaryVariant}
                 onPress={this.props.onSecondary}
               >
-                <div {...cn('text-button-text')}>{this.props.secondaryText}</div>
+                <div
+                  {...cn(
+                    'text-button-text',
+                    this.secondaryVariant === 'text' && (this.props.secondaryColor || Color.Highlight)
+                  )}
+                >
+                  {this.props.secondaryText}
+                </div>
               </Button>
             )}
 
             {this.props.onPrimary && (
               <Button
-                {...cn('primary-button', this.props.primaryColor || Color.Highlight)}
-                variant={this.translateVariant(this.props.primaryVariant, Variant.Primary)}
+                {...cn('primary-button')}
+                variant={this.primaryVariant}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
               >
-                <div {...cn('text-button-text')}>{this.props.primaryText}</div>
+                <div
+                  {...cn(
+                    'text-button-text',
+                    this.primaryVariant === 'text' && (this.props.primaryColor || Color.Highlight)
+                  )}
+                >
+                  {this.props.primaryText}
+                </div>
               </Button>
             )}
           </div>
         </div>
       </ZuiModal>
     );
+  }
+
+  private get primaryVariant() {
+    return this.translateVariant(this.props.primaryVariant, Variant.Primary);
+  }
+
+  private get secondaryVariant() {
+    return this.translateVariant(this.props.secondaryVariant, Variant.Secondary);
   }
 
   private translateVariant(variant: Variant, defaultVariant: Variant) {

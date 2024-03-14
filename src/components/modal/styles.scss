@@ -72,10 +72,6 @@
     height: 40px;
     max-width: 144px;
 
-    div {
-      color: $glass-highlight-color;
-    }
-
     &:hover {
       background-color: transparent;
       @include glass-glow-highlight-medium;
@@ -86,6 +82,17 @@
     font-weight: 700;
     font-size: 16px;
     line-height: 24px;
-    color: theme.$color-greyscale-12;
+
+    &--red {
+      color: theme.$color-failure-11;
+    }
+
+    &--greyscale {
+      color: theme.$color-greyscale-12;
+    }
+
+    &--highlight {
+      color: $glass-highlight-color;
+    }
   }
 }

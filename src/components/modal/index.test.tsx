@@ -46,14 +46,10 @@ describe(Modal, () => {
   it('renders primary button as configured', function () {
     const wrapper = subject({
       primaryVariant: Variant.Primary,
-      primaryColor: Color.Red,
       primaryText: 'action',
     });
 
-    const button = buttonLabelled(wrapper, 'action');
-
-    expect(button).toHaveProp('variant', Variant.Primary);
-    expect(button).toHaveClassName(c('primary-button') + '--red');
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
   });
 
   it('publishes primary event', function () {
@@ -68,28 +64,30 @@ describe(Modal, () => {
   it('renders secondary button as configured', function () {
     const wrapper = subject({
       secondaryVariant: Variant.Primary,
-      secondaryColor: Color.Red,
       secondaryText: 'action',
     });
 
-    const button = buttonLabelled(wrapper, 'action');
-
-    // For now, our button uses `text` variant for secondary buttons
-    expect(button).toHaveProp('variant', Variant.Primary);
-    expect(button).toHaveClassName(c('secondary-button') + '--red');
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
   });
 
   it('renders button variant `secondary` as `text`', function () {
     const wrapper = subject({
       primaryVariant: Variant.Secondary,
+      primaryColor: Color.Red,
       primaryText: 'primary',
       secondaryVariant: Variant.Secondary,
+      secondaryColor: Color.Red,
       secondaryText: 'secondary',
     });
 
     // For now, our button uses `text` variant for secondary buttons
-    expect(buttonLabelled(wrapper, 'primary')).toHaveProp('variant', 'text');
-    expect(buttonLabelled(wrapper, 'secondary')).toHaveProp('variant', 'text');
+    const primaryButton = buttonLabelled(wrapper, 'primary');
+    expect(primaryButton).toHaveProp('variant', 'text');
+    expect(primaryButton.find(c('text-button-text'))).toHaveClassName(c('text-button-text') + '--red');
+
+    const secondaryButton = buttonLabelled(wrapper, 'secondary');
+    expect(secondaryButton).toHaveProp('variant', 'text');
+    expect(secondaryButton.find(c('text-button-text'))).toHaveClassName(c('text-button-text') + '--red');
   });
 
   it('publishes secondary event', function () {

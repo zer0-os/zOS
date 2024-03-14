@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
 
-import { Alert, Button, Input } from '@zero-tech/zui/components';
+import { Alert, Input } from '@zero-tech/zui/components';
 
 import '../styles.scss';
 

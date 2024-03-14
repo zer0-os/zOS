@@ -71,9 +71,9 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     );
   };
 
-  renderBackupContent = () => {
+  configForStage = () => {
     if (this.state.showFAQContent) {
-      return <BackupFAQ onBack={this.closeFAQContent} />;
+      return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
     const {
@@ -88,9 +88,10 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
       successMessage,
     } = this.props;
 
+    let content = null;
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
-        return (
+        content = (
           <GeneratePrompt
             errorMessage={errorMessage}
             onGenerate={onGenerate}
@@ -98,12 +99,14 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
             onLearnMore={this.openFAQContent}
           />
         );
+        break;
 
       case BackupStage.UserRestorePrompt:
-        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />;
+        content = <RestorePrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />;
+        break;
 
       case BackupStage.SystemGeneratePrompt:
-        return (
+        content = (
           <GeneratePrompt
             isSystemPrompt
             errorMessage={errorMessage}
@@ -112,44 +115,51 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
             onLearnMore={this.openFAQContent}
           />
         );
+        break;
 
       case BackupStage.SystemRestorePrompt:
-        return (
+        content = (
           <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />
         );
+        break;
 
       case BackupStage.RecoveredBackupInfo:
-        return <RecoveredBackup onLearnMore={this.openFAQContent} />;
+        return {
+          primaryText: 'Dismiss',
+          onPrimary: this.props.onClose,
+          content: <RecoveredBackup onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.GenerateBackup:
-        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
+        content = <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
+        break;
 
       case BackupStage.RestoreBackup:
-        return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
+        content = <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
+        break;
 
       case BackupStage.VerifyKeyPhrase:
-        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
+        content = <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
+        break;
 
       case BackupStage.Success:
-        return <Success successMessage={successMessage} />;
+        return {
+          primaryText: 'Finish',
+          onPrimary: this.props.onClose,
+          content: <Success successMessage={successMessage} />,
+        };
 
       default:
         assertAllValuesConsumed(backupStage);
     }
+
+    return {
+      content,
+    };
   };
 
   render() {
-    let primaryText = 'Cancel';
-    let onPrimary = null;
-    if (this.state.showFAQContent) {
-      onPrimary = null;
-    } else if (this.props.backupStage === BackupStage.Success) {
-      primaryText = 'Finish';
-      onPrimary = this.props.onClose;
-    } else if (this.props.backupStage === BackupStage.RecoveredBackupInfo) {
-      primaryText = 'Dismiss';
-      onPrimary = this.props.onClose;
-    }
+    const { primaryText, onPrimary, content } = this.configForStage();
 
     return (
       <Modal
@@ -162,7 +172,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
       >
         <div {...cn()}>
           {this.renderVideoBanner()}
-          {this.renderBackupContent()}
+          {content}
         </div>
       </Modal>
     );

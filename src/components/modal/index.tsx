@@ -8,9 +8,22 @@ import './styles.scss';
 
 const cn = bemClassName('modal');
 
+export enum Variant {
+  Primary = 'primary',
+  Secondary = 'secondary',
+}
+
+export enum Color {
+  Red = 'red',
+  Greyscale = 'greyscale',
+  Highlight = 'highlight',
+}
+
 export interface Properties {
   title: string;
   primaryText?: string;
+  primaryVariant?: Variant;
+  primaryColor?: Color;
   secondaryText?: string;
   isProcessing?: boolean;
 
@@ -56,8 +69,8 @@ export class Modal extends React.Component<Properties> {
 
             {this.props.onPrimary && (
               <Button
-                {...cn('primary-button')}
-                variant='negative'
+                {...cn('primary-button', this.props.primaryColor || Color.Highlight)}
+                variant={this.props.primaryVariant || Variant.Primary}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
               >

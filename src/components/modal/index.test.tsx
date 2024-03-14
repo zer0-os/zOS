@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 
-import { Modal, Properties } from '.';
+import { Color, Modal, Properties, Variant } from '.';
 import { bem } from '../../lib/bem';
 import { buttonLabelled } from '../../test/utils';
 
@@ -10,6 +10,7 @@ describe(Modal, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       title: 'stub title',
+      onPrimary: () => null,
       onClose: () => null,
       ...props,
     };
@@ -39,6 +40,19 @@ describe(Modal, () => {
     wrapper.find('Modal').simulate('openChange', false);
 
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('renders primary button as configured', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.Secondary,
+      primaryColor: Color.Red,
+      primaryText: 'action',
+    });
+
+    const button = buttonLabelled(wrapper, 'action');
+
+    expect(button).toHaveProp('variant', Variant.Secondary);
+    expect(button).toHaveClassName(c('primary-button') + '--red');
   });
 
   it('publishes primary event', function () {

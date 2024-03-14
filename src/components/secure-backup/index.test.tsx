@@ -50,7 +50,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onGenerate });
 
-      wrapper.find(GeneratePrompt).simulate('generate');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -59,7 +59,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt, onGenerate });
 
-      wrapper.find(GeneratePrompt).simulate('generate');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -68,7 +68,7 @@ describe(SecureBackup, () => {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onClose });
 
-      wrapper.find(GeneratePrompt).simulate('close');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onClose).toHaveBeenCalled();
     });

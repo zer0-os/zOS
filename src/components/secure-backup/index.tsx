@@ -91,38 +91,32 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     let content = null;
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
-        content = (
-          <GeneratePrompt
-            errorMessage={errorMessage}
-            onGenerate={onGenerate}
-            onClose={onClose}
-            onLearnMore={this.openFAQContent}
-          />
-        );
-        break;
+        return {
+          primaryText: 'Backup my account',
+          onPrimary: onGenerate,
+          content: <GeneratePrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.UserRestorePrompt:
         return {
-          primaryText: 'Verify With Backup Phrase',
+          primaryText: 'Verify with backup phrase',
           onPrimary: onVerifyKey,
           content: <RestorePrompt onLearnMore={this.openFAQContent} />,
         };
 
       case BackupStage.SystemGeneratePrompt:
-        content = (
-          <GeneratePrompt
-            isSystemPrompt
-            errorMessage={errorMessage}
-            onGenerate={onGenerate}
-            onClose={onClose}
-            onLearnMore={this.openFAQContent}
-          />
-        );
-        break;
+        return {
+          primaryText: 'Backup my account',
+          onPrimary: onGenerate,
+          secondaryText: 'Backup later',
+          secondaryColor: Color.Red,
+          onSecondary: onClose,
+          content: <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.SystemRestorePrompt:
         return {
-          primaryText: 'Verify With Backup Phrase',
+          primaryText: 'Verify with backup phrase',
           onPrimary: onVerifyKey,
           secondaryText: 'Continue Without Verifying',
           secondaryColor: Color.Greyscale,

@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 import { InviteDialog, Properties } from '.';
 import { Button } from '@zero-tech/zui/components';
 import { releaseThread } from '../../test/utils';
+import { config } from '../../config';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -35,7 +36,9 @@ describe('InviteDialog', () => {
     wrapper.find(Button).simulate('press');
 
     expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
-    expect(clipboard.write).toHaveBeenCalledWith(expect.stringContaining('23817'));
+    expect(clipboard.write).toHaveBeenCalledWith(
+      expect.stringMatching(`Use this code to join me on ZERO Messenger: 23817 ${config.zosRootUrl}/get-access`)
+    );
   });
 
   it('sets copy text to copied for a few seconds after copying the text', async function () {

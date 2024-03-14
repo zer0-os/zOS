@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 
-import { Modal, Properties } from '.';
+import { Color, Modal, Properties, Variant } from '.';
 import { bem } from '../../lib/bem';
 import { buttonLabelled } from '../../test/utils';
 
@@ -10,6 +10,8 @@ describe(Modal, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       title: 'stub title',
+      onPrimary: () => null,
+      onSecondary: () => null,
       onClose: () => null,
       ...props,
     };
@@ -41,6 +43,24 @@ describe(Modal, () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('renders primary button as configured', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.Primary,
+      primaryText: 'action',
+    });
+
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
+  });
+
+  it('renders primary button as the legacy secondary button', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.LegacySecondary,
+      primaryText: 'action',
+    });
+
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', 'negative');
+  });
+
   it('publishes primary event', function () {
     const onPrimary = jest.fn();
     const wrapper = subject({ onPrimary, primaryText: 'Primary Action' });
@@ -48,6 +68,35 @@ describe(Modal, () => {
     buttonLabelled(wrapper, 'Primary Action').simulate('press');
 
     expect(onPrimary).toHaveBeenCalled();
+  });
+
+  it('renders secondary button as configured', function () {
+    const wrapper = subject({
+      secondaryVariant: Variant.Primary,
+      secondaryText: 'action',
+    });
+
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
+  });
+
+  it('renders button variant `secondary` as `text`', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.Secondary,
+      primaryColor: Color.Red,
+      primaryText: 'primary',
+      secondaryVariant: Variant.Secondary,
+      secondaryColor: Color.Red,
+      secondaryText: 'secondary',
+    });
+
+    // For now, our button uses `text` variant for secondary buttons
+    const primaryButton = buttonLabelled(wrapper, 'primary');
+    expect(primaryButton).toHaveProp('variant', 'text');
+    expect(primaryButton.find(c('text-button-text'))).toHaveClassName(c('text-button-text') + '--red');
+
+    const secondaryButton = buttonLabelled(wrapper, 'secondary');
+    expect(secondaryButton).toHaveProp('variant', 'text');
+    expect(secondaryButton.find(c('text-button-text'))).toHaveClassName(c('text-button-text') + '--red');
   });
 
   it('publishes secondary event', function () {

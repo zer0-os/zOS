@@ -8,10 +8,26 @@ import './styles.scss';
 
 const cn = bemClassName('modal');
 
+export enum Variant {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  LegacySecondary = 'negative', // Until zUI aligns with the design and we can specify the color
+}
+
+export enum Color {
+  Red = 'red',
+  Greyscale = 'greyscale',
+  Highlight = 'highlight',
+}
+
 export interface Properties {
   title: string;
   primaryText?: string;
+  primaryVariant?: Variant;
+  primaryColor?: Color;
   secondaryText?: string;
+  secondaryVariant?: Variant;
+  secondaryColor?: Color;
   isProcessing?: boolean;
 
   onClose: () => void;
@@ -49,24 +65,58 @@ export class Modal extends React.Component<Properties> {
 
           <div {...cn('footer')}>
             {this.props.onSecondary && (
-              <Button {...cn('secondary-button')} variant='text' onPress={this.props.onSecondary}>
-                <div {...cn('text-button-text')}>{this.props.secondaryText}</div>
+              <Button
+                {...cn('secondary-button', this.props.secondaryColor || Color.Highlight)}
+                variant={this.secondaryVariant}
+                onPress={this.props.onSecondary}
+              >
+                <div
+                  {...cn(
+                    'text-button-text',
+                    this.secondaryVariant === 'text' && (this.props.secondaryColor || Color.Highlight)
+                  )}
+                >
+                  {this.props.secondaryText}
+                </div>
               </Button>
             )}
 
             {this.props.onPrimary && (
               <Button
                 {...cn('primary-button')}
-                variant='negative'
+                variant={this.primaryVariant}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
               >
-                <div {...cn('text-button-text')}>{this.props.primaryText}</div>
+                <div
+                  {...cn(
+                    'text-button-text',
+                    this.primaryVariant === 'text' && (this.props.primaryColor || Color.Highlight)
+                  )}
+                >
+                  {this.props.primaryText}
+                </div>
               </Button>
             )}
           </div>
         </div>
       </ZuiModal>
     );
+  }
+
+  private get primaryVariant() {
+    return this.translateVariant(this.props.primaryVariant, Variant.Primary);
+  }
+
+  private get secondaryVariant() {
+    return this.translateVariant(this.props.secondaryVariant, Variant.Secondary);
+  }
+
+  private translateVariant(variant: Variant, defaultVariant: Variant) {
+    const defaultedVariant = variant || defaultVariant;
+
+    // As the button design has changed the terminology for the variants
+    // has shifted. This is a temporary fix until zUI aligns with the design
+    return defaultedVariant === Variant.Secondary ? 'text' : defaultedVariant;
   }
 }

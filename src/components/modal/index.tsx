@@ -25,6 +25,8 @@ export interface Properties {
   primaryVariant?: Variant;
   primaryColor?: Color;
   secondaryText?: string;
+  secondaryVariant?: Variant;
+  secondaryColor?: Color;
   isProcessing?: boolean;
 
   onClose: () => void;
@@ -62,7 +64,11 @@ export class Modal extends React.Component<Properties> {
 
           <div {...cn('footer')}>
             {this.props.onSecondary && (
-              <Button {...cn('secondary-button')} variant='text' onPress={this.props.onSecondary}>
+              <Button
+                {...cn('secondary-button', this.props.secondaryColor || Color.Highlight)}
+                variant={this.translateVariant(this.props.secondaryVariant, Variant.Secondary)}
+                onPress={this.props.onSecondary}
+              >
                 <div {...cn('text-button-text')}>{this.props.secondaryText}</div>
               </Button>
             )}
@@ -70,7 +76,7 @@ export class Modal extends React.Component<Properties> {
             {this.props.onPrimary && (
               <Button
                 {...cn('primary-button', this.props.primaryColor || Color.Highlight)}
-                variant={this.props.primaryVariant || Variant.Primary}
+                variant={this.translateVariant(this.props.primaryVariant, Variant.Primary)}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
               >
@@ -81,5 +87,13 @@ export class Modal extends React.Component<Properties> {
         </div>
       </ZuiModal>
     );
+  }
+
+  private translateVariant(variant: Variant, defaultVariant: Variant) {
+    const defaultedVariant = variant || defaultVariant;
+
+    // As the button design has changed the terminology for the variants
+    // has shifted. This is a temporary fix until zUI aligns with the design
+    return defaultedVariant === Variant.Secondary ? 'text' : defaultedVariant;
   }
 }

@@ -11,6 +11,7 @@ describe(Modal, () => {
     const allProps: Properties = {
       title: 'stub title',
       onPrimary: () => null,
+      onSecondary: () => null,
       onClose: () => null,
       ...props,
     };
@@ -44,14 +45,14 @@ describe(Modal, () => {
 
   it('renders primary button as configured', function () {
     const wrapper = subject({
-      primaryVariant: Variant.Secondary,
+      primaryVariant: Variant.Primary,
       primaryColor: Color.Red,
       primaryText: 'action',
     });
 
     const button = buttonLabelled(wrapper, 'action');
 
-    expect(button).toHaveProp('variant', Variant.Secondary);
+    expect(button).toHaveProp('variant', Variant.Primary);
     expect(button).toHaveClassName(c('primary-button') + '--red');
   });
 
@@ -62,6 +63,33 @@ describe(Modal, () => {
     buttonLabelled(wrapper, 'Primary Action').simulate('press');
 
     expect(onPrimary).toHaveBeenCalled();
+  });
+
+  it('renders secondary button as configured', function () {
+    const wrapper = subject({
+      secondaryVariant: Variant.Primary,
+      secondaryColor: Color.Red,
+      secondaryText: 'action',
+    });
+
+    const button = buttonLabelled(wrapper, 'action');
+
+    // For now, our button uses `text` variant for secondary buttons
+    expect(button).toHaveProp('variant', Variant.Primary);
+    expect(button).toHaveClassName(c('secondary-button') + '--red');
+  });
+
+  it('renders button variant `secondary` as `text`', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.Secondary,
+      primaryText: 'primary',
+      secondaryVariant: Variant.Secondary,
+      secondaryText: 'secondary',
+    });
+
+    // For now, our button uses `text` variant for secondary buttons
+    expect(buttonLabelled(wrapper, 'primary')).toHaveProp('variant', 'text');
+    expect(buttonLabelled(wrapper, 'secondary')).toHaveProp('variant', 'text');
   });
 
   it('publishes secondary event', function () {

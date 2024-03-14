@@ -14,8 +14,7 @@ export interface State {
 
 export interface Properties {
   errorMessage: string;
-  onBack: () => void;
-  onSave: (keyPhrase: string) => void;
+  onChange: (keyPhrase: string) => void;
 }
 
 export class VerifyKeyPhrase extends React.Component<Properties, State> {
@@ -23,14 +22,7 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
 
   trackKeyPhrase = (value) => {
     this.setState({ userInputKeyPhrase: value });
-  };
-
-  back = () => {
-    this.props.onBack();
-  };
-
-  save = () => {
-    this.props.onSave(this.keyPhrase);
+    this.props.onChange(value);
   };
 
   get keyPhrase() {
@@ -59,16 +51,6 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
               </Alert>
             )}
           </div>
-        </div>
-
-        <div {...cn('footer', 'has-secondary-button')}>
-          <Button {...cn('button')} onPress={this.back} variant='text'>
-            Back to phrase
-          </Button>
-
-          <Button {...cn('button')} onPress={this.save} isDisabled={!this.keyPhrase}>
-            Verify and complete backup
-          </Button>
         </div>
       </>
     );

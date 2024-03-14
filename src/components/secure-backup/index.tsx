@@ -37,12 +37,14 @@ export interface Properties {
 interface State {
   showFAQContent: boolean;
   hasCopiedKey: boolean;
+  userInputKeyPhrase: string;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
   state = {
     showFAQContent: false,
     hasCopiedKey: false,
+    userInputKeyPhrase: '',
   };
 
   get existingBackupNotRestored() {
@@ -82,22 +84,27 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.props.onVerifyKey();
   };
 
+  trackKeyPhrase = (value) => {
+    this.setState({ userInputKeyPhrase: value });
+  };
+
+  returnToGenerate = () => {
+    this.setState({ userInputKeyPhrase: '' });
+    this.props.onGenerate();
+  };
+
+  saveBackup = () => {
+    this.props.onSave(this.state.userInputKeyPhrase);
+    this.setState({ userInputKeyPhrase: '' });
+  };
+
   configForStage = () => {
     if (this.state.showFAQContent) {
       return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
-    const {
-      backupStage,
-      onGenerate,
-      onRestore,
-      onVerifyKey,
-      onClose,
-      onSave,
-      recoveryKey,
-      errorMessage,
-      successMessage,
-    } = this.props;
+    const { backupStage, onGenerate, onRestore, onVerifyKey, onClose, recoveryKey, errorMessage, successMessage } =
+      this.props;
 
     let content = null;
     switch (backupStage) {
@@ -161,8 +168,15 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         break;
 
       case BackupStage.VerifyKeyPhrase:
-        content = <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
-        break;
+        return {
+          primaryText: 'Verify and complete backup',
+          primaryDisabled: !this.state.userInputKeyPhrase,
+          onPrimary: this.saveBackup,
+          secondaryText: 'Back to phrase',
+          secondaryColor: Color.Greyscale,
+          onSecondary: this.returnToGenerate,
+          content: <VerifyKeyPhrase errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
+        };
 
       case BackupStage.Success:
         return {

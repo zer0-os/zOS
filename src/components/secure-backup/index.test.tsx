@@ -214,7 +214,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onGenerate });
 
-      wrapper.find(VerifyKeyPhrase).simulate('back');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -223,9 +223,22 @@ describe(SecureBackup, () => {
       const onSave = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onSave });
 
-      wrapper.find(VerifyKeyPhrase).simulate('save', 'abcd 1234');
+      wrapper.find(VerifyKeyPhrase).simulate('change', 'test-key-phrase');
+      wrapper.find(Modal).simulate('primary');
 
-      expect(onSave).toHaveBeenCalled();
+      expect(onSave).toHaveBeenCalledWith('test-key-phrase');
+    });
+
+    it('disables button if key text is empty and enables when text exists', function () {
+      const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(VerifyKeyPhrase).simulate('change', 't');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+
+      wrapper.find(VerifyKeyPhrase).simulate('change', '');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
     });
   });
 

@@ -98,13 +98,17 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.setState({ userInputKeyPhrase: '' });
   };
 
+  restoreBackup = () => {
+    this.props.onRestore(this.state.userInputKeyPhrase);
+    this.setState({ userInputKeyPhrase: '' });
+  };
+
   configForStage = () => {
     if (this.state.showFAQContent) {
       return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
-    const { backupStage, onGenerate, onRestore, onVerifyKey, onClose, recoveryKey, errorMessage, successMessage } =
-      this.props;
+    const { backupStage, onGenerate, onVerifyKey, onClose, recoveryKey, errorMessage, successMessage } = this.props;
 
     let content = null;
     switch (backupStage) {
@@ -164,8 +168,12 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         };
 
       case BackupStage.RestoreBackup:
-        content = <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
-        break;
+        return {
+          primaryText: 'Verify and complete backup',
+          primaryDisabled: !this.state.userInputKeyPhrase,
+          onPrimary: this.restoreBackup,
+          content: <RestoreBackup errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
+        };
 
       case BackupStage.VerifyKeyPhrase:
         return {

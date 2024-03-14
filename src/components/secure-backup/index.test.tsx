@@ -176,9 +176,22 @@ describe(SecureBackup, () => {
       const onRestore = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.RestoreBackup, onRestore });
 
-      wrapper.find(RestoreBackup).simulate('restore', 'abcd 1234');
+      wrapper.find(RestoreBackup).simulate('change', 'abcd 1234');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onRestore).toHaveBeenCalledWith('abcd 1234');
+    });
+
+    it('disables button if key text is empty and enables when text exists', function () {
+      const wrapper = subject({ backupStage: BackupStage.RestoreBackup });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(RestoreBackup).simulate('change', 't');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+
+      wrapper.find(RestoreBackup).simulate('change', '');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
     });
   });
 

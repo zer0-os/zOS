@@ -1,30 +1,27 @@
 import { shallow } from 'enzyme';
 
 import { RestoreBackup, Properties } from '.';
-import { pressButton } from '../../../test/utils';
 
-import { Alert, Button, Input } from '@zero-tech/zui/components';
+import { Alert, Input } from '@zero-tech/zui/components';
 
 describe('RestoreBackup', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       errorMessage: '',
-      onRestore: () => null,
+      onChange: () => null,
       ...props,
     };
 
     return shallow(<RestoreBackup {...allProps} />);
   };
 
-  it('publishes onRestore event with recovery key', function () {
-    const onRestore = jest.fn();
-    const wrapper = subject({ onRestore });
+  it('publishes onChange with the key phrase', function () {
+    const onChange = jest.fn();
+    const wrapper = subject({ onChange });
 
-    wrapper.find(Input).simulate('change', 'test-recovery-key');
+    wrapper.find(Input).simulate('change', 'test-key-phrase');
 
-    pressButton(wrapper, 'Verify');
-
-    expect(onRestore).toHaveBeenCalledWith('test-recovery-key');
+    expect(onChange).toHaveBeenCalledWith('test-key-phrase');
   });
 
   it('renders Alert when errorMessage is provided', function () {
@@ -37,19 +34,5 @@ describe('RestoreBackup', () => {
     const wrapper = subject({ errorMessage: '' });
 
     expect(wrapper).not.toHaveElement(Alert);
-  });
-
-  it('disables the button when recovery key is empty', function () {
-    const wrapper = subject();
-
-    expect(wrapper.find(Button)).toHaveProp('isDisabled', true);
-  });
-
-  it('enables the button when recovery key is entered', function () {
-    const wrapper = subject();
-
-    wrapper.find(Input).simulate('change', 'test-recovery-key');
-
-    expect(wrapper.find(Button)).toHaveProp('isDisabled', false);
   });
 });

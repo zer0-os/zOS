@@ -11,6 +11,7 @@ const cn = bemClassName('modal');
 export enum Variant {
   Primary = 'primary',
   Secondary = 'secondary',
+  LegacySecondary = 'negative', // Until zUI aligns with the design and we can specify the color
 }
 
 export enum Color {

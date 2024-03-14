@@ -52,6 +52,15 @@ describe(Modal, () => {
     expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
   });
 
+  it('renders primary button as the legacy secondary button', function () {
+    const wrapper = subject({
+      primaryVariant: Variant.LegacySecondary,
+      primaryText: 'action',
+    });
+
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', 'negative');
+  });
+
   it('publishes primary event', function () {
     const onPrimary = jest.fn();
     const wrapper = subject({ onPrimary, primaryText: 'Primary Action' });

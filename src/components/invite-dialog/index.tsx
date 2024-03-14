@@ -5,6 +5,7 @@ import { IconXClose } from '@zero-tech/zui/icons';
 
 import { clipboard } from '../../lib/clipboard';
 import { bemClassName } from '../../lib/bem';
+import { config } from '../../config';
 
 import './styles.scss';
 
@@ -45,7 +46,7 @@ export class InviteDialog extends React.Component<Properties, State> {
   }
 
   get inviteText() {
-    return `Use this code to join me on ZERO Messenger: ${this.props.inviteCode} https://zos.zer0.io/get-access`;
+    return `Use this code to join me on ZERO Messenger: ${this.props.inviteCode} ${config.zosRootUrl}/get-access`;
   }
 
   writeInviteToClipboard = async () => {

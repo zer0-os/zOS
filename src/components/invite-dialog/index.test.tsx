@@ -5,6 +5,7 @@ import { shallow } from 'enzyme';
 import { InviteDialog, Properties } from '.';
 import { Button } from '@zero-tech/zui/components';
 import { releaseThread } from '../../test/utils';
+import { config } from '../../config';
 
 describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
@@ -36,7 +37,7 @@ describe('InviteDialog', () => {
 
     expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
     expect(clipboard.write).toHaveBeenCalledWith(
-      expect.stringMatching('Use this code to join me on ZERO Messenger: 23817 https://zos.zer0.io/get-access')
+      expect.stringMatching(`Use this code to join me on ZERO Messenger: 23817 ${config.zosRootUrl}/get-access`)
     );
   });
 

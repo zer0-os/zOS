@@ -47,9 +47,13 @@ describe(Modal, () => {
     const wrapper = subject({
       primaryVariant: Variant.Primary,
       primaryText: 'action',
+      primaryDisabled: true,
     });
 
-    expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
+    const button = buttonLabelled(wrapper, 'action');
+
+    expect(button).toHaveProp('variant', Variant.Primary);
+    expect(button).toHaveProp('isDisabled', true);
   });
 
   it('renders primary button as the legacy secondary button', function () {
@@ -74,9 +78,11 @@ describe(Modal, () => {
     const wrapper = subject({
       secondaryVariant: Variant.Primary,
       secondaryText: 'action',
+      secondaryDisabled: true,
     });
 
     expect(buttonLabelled(wrapper, 'action')).toHaveProp('variant', Variant.Primary);
+    expect(buttonLabelled(wrapper, 'action')).toHaveProp('isDisabled', true);
   });
 
   it('renders button variant `secondary` as `text`', function () {

@@ -25,9 +25,11 @@ export interface Properties {
   primaryText?: string;
   primaryVariant?: Variant;
   primaryColor?: Color;
+  primaryDisabled?: boolean;
   secondaryText?: string;
   secondaryVariant?: Variant;
   secondaryColor?: Color;
+  secondaryDisabled?: boolean;
   isProcessing?: boolean;
 
   onClose: () => void;
@@ -66,9 +68,10 @@ export class Modal extends React.Component<Properties> {
           <div {...cn('footer')}>
             {this.props.onSecondary && (
               <Button
-                {...cn('secondary-button', this.props.secondaryColor || Color.Highlight)}
+                {...cn('secondary-button')}
                 variant={this.secondaryVariant}
                 onPress={this.props.onSecondary}
+                isDisabled={this.props.secondaryDisabled}
               >
                 <div
                   {...cn(
@@ -87,6 +90,7 @@ export class Modal extends React.Component<Properties> {
                 variant={this.primaryVariant}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
+                isDisabled={this.props.primaryDisabled}
               >
                 <div
                   {...cn(

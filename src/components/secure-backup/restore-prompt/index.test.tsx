@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme';
 
-import { buttonLabelled, pressButton } from '../../../test/utils';
 import { RestorePrompt, Properties } from '.';
 
 import { bem } from '../../../lib/bem';

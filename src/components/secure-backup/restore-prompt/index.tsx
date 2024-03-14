@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
 
-import { Button } from '@zero-tech/zui/components';
 import { IconAlertCircle, IconArrowRight, IconCheck } from '@zero-tech/zui/icons';
 
 import '../styles.scss';

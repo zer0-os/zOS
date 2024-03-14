@@ -37,7 +37,7 @@ describe('InviteDialog', () => {
 
     expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
     expect(clipboard.write).toHaveBeenCalledWith(
-      expect.stringMatching(`Use this code to join me on ZERO Messenger: 23817 ${config.zosRootUrl}/get-access`)
+      expect.stringMatching(`Use this code to join me on ZERO Messenger: 23817 ${config.inviteUrl}`)
     );
   });
 

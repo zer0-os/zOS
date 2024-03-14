@@ -9,9 +9,7 @@ import { GenerateBackup } from './generate-backup';
 import { RestoreBackup } from './restore-backup';
 import { VerifyKeyPhrase } from './verify-key-phrase';
 import { Success } from './success';
-
-import { bem } from '../../lib/bem';
-const c = bem('.secure-backup');
+import { Modal } from '../modal';
 
 describe(SecureBackup, () => {
   const subject = (props: Partial<Properties>) => {
@@ -213,13 +211,13 @@ describe(SecureBackup, () => {
     it('renders title as "Account Backup" if backup does not exist and backup is not restored', function () {
       const wrapper = subject({ backupExists: false, backupRestored: false });
 
-      expect(wrapper.find(c('title'))).toHaveText('Account Backup');
+      expect(wrapper.find(Modal)).toHaveProp('title', 'Account Backup');
     });
 
     it('renders title as "Verify Login" if backup exists and backup is not restored', function () {
       const wrapper = subject({ backupExists: true, backupRestored: false });
 
-      expect(wrapper.find(c('title'))).toHaveText('Verify Login');
+      expect(wrapper.find(Modal)).toHaveProp('title', 'Verify Login');
     });
   });
 });

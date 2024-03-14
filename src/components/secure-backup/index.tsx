@@ -13,10 +13,8 @@ import { RecoveredBackup } from './recovered-backup';
 import { Success } from './success';
 import { VerifyKeyPhrase } from './verify-key-phrase';
 
-import { IconXClose } from '@zero-tech/zui/icons';
-import { IconButton } from '@zero-tech/zui/components';
-
 import './styles.scss';
+import { Modal } from '../modal';
 
 const cn = bemClassName('secure-backup');
 
@@ -57,16 +55,9 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.setState({ showFAQContent: false });
   };
 
-  renderHeader = () => {
-    const title = this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
-
-    return (
-      <div {...cn('header')}>
-        <h3 {...cn('title')}>{title}</h3>
-        <IconButton {...cn('close')} Icon={IconXClose} onClick={this.props.onClose} size={40} />
-      </div>
-    );
-  };
+  get title() {
+    return this.existingBackupNotRestored ? 'Verify Login' : 'Account Backup';
+  }
 
   renderVideoBanner = () => {
     if (this.state.showFAQContent) {
@@ -149,11 +140,19 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
 
   render() {
     return (
-      <div {...cn()}>
-        {this.renderHeader()}
-        {this.renderVideoBanner()}
-        {this.renderBackupContent()}
-      </div>
+      <Modal
+        title={this.title}
+        primaryText='Log Out'
+        secondaryText='Cancel'
+        onPrimary={null}
+        onSecondary={null}
+        onClose={this.props.onClose}
+      >
+        <div {...cn()}>
+          {this.renderVideoBanner()}
+          {this.renderBackupContent()}
+        </div>
+      </Modal>
     );
   }
 }

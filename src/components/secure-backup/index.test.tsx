@@ -172,11 +172,17 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(Success);
     });
 
+    it('renders the success buttons', function () {
+      const wrapper = subject({ backupStage: BackupStage.Success });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryText', 'Finish');
+    });
+
     it('publishes onClose', function () {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.Success, onClose });
 
-      wrapper.find(Success).simulate('close');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onClose).toHaveBeenCalled();
     });

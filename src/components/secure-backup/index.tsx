@@ -131,7 +131,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
 
       case BackupStage.Success:
-        return <Success successMessage={successMessage} onClose={onClose} />;
+        return <Success successMessage={successMessage} />;
 
       default:
         assertAllValuesConsumed(backupStage);
@@ -139,12 +139,19 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   render() {
+    let primaryText = 'Cancel';
+    let onPrimary = null;
+    if (this.props.backupStage === BackupStage.Success) {
+      primaryText = 'Finish';
+      onPrimary = this.props.onClose;
+    }
+
     return (
       <Modal
         title={this.title}
-        primaryText='Log Out'
+        primaryText={primaryText}
         secondaryText='Cancel'
-        onPrimary={null}
+        onPrimary={onPrimary}
         onSecondary={null}
         onClose={this.props.onClose}
       >

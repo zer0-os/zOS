@@ -91,7 +91,7 @@ describe(SecureBackup, () => {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onVerifyKey });
 
-      wrapper.find(RestorePrompt).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -100,7 +100,7 @@ describe(SecureBackup, () => {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt, onVerifyKey });
 
-      wrapper.find(RestorePrompt).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -109,7 +109,7 @@ describe(SecureBackup, () => {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onClose });
 
-      wrapper.find(RestorePrompt).simulate('close');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onClose).toHaveBeenCalled();
     });

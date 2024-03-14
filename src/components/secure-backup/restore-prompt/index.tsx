@@ -17,22 +17,10 @@ enum Status {
 export interface Properties {
   isSystemPrompt?: boolean;
 
-  onNext: () => void;
-  onClose: () => void;
   onLearnMore: () => void;
 }
 
 export class RestorePrompt extends React.Component<Properties> {
-  close = () => {
-    if (this.props.onClose) {
-      this.props.onClose();
-    }
-  };
-
-  next = () => {
-    this.props.onNext();
-  };
-
   renderStatus = (status: Status, text: string) => {
     const icon = status === Status.Success ? <IconCheck size={16} /> : <IconAlertCircle size={16} />;
 
@@ -62,18 +50,6 @@ export class RestorePrompt extends React.Component<Properties> {
         <div {...cn('status-group')}>
           {this.renderStatus(Status.Success, 'Your account has a backup phrase')}
           {this.renderStatus(Status.Warning, 'Your current login is not verified, some messages may be hidden')}
-        </div>
-
-        <div {...cn('footer', `${this.props.isSystemPrompt && 'has-secondary-button'}`)}>
-          {this.props.isSystemPrompt && (
-            <Button {...cn('button')} onPress={this.close} variant='text'>
-              Continue without verifying
-            </Button>
-          )}
-
-          <Button {...cn('button')} onPress={this.next}>
-            Verify with backup phrase
-          </Button>
         </div>
       </>
     );

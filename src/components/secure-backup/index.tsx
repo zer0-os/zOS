@@ -14,7 +14,7 @@ import { Success } from './success';
 import { VerifyKeyPhrase } from './verify-key-phrase';
 
 import './styles.scss';
-import { Modal } from '../modal';
+import { Color, Modal } from '../modal';
 
 const cn = bemClassName('secure-backup');
 
@@ -102,8 +102,11 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         break;
 
       case BackupStage.UserRestorePrompt:
-        content = <RestorePrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />;
-        break;
+        return {
+          primaryText: 'Verify With Backup Phrase',
+          onPrimary: onVerifyKey,
+          content: <RestorePrompt onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.SystemGeneratePrompt:
         content = (
@@ -118,10 +121,14 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         break;
 
       case BackupStage.SystemRestorePrompt:
-        content = (
-          <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />
-        );
-        break;
+        return {
+          primaryText: 'Verify With Backup Phrase',
+          onPrimary: onVerifyKey,
+          secondaryText: 'Continue Without Verifying',
+          secondaryColor: Color.Greyscale,
+          onSecondary: onClose,
+          content: <RestorePrompt isSystemPrompt onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.RecoveredBackupInfo:
         return {
@@ -159,15 +166,16 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   render() {
-    const { primaryText, onPrimary, content } = this.configForStage();
+    const { primaryText, onPrimary, secondaryText, secondaryColor, onSecondary, content } = this.configForStage();
 
     return (
       <Modal
         title={this.title}
         primaryText={primaryText}
-        secondaryText='Cancel'
+        secondaryText={secondaryText}
+        secondaryColor={secondaryColor}
         onPrimary={onPrimary}
-        onSecondary={null}
+        onSecondary={onSecondary}
         onClose={this.props.onClose}
       >
         <div {...cn()}>

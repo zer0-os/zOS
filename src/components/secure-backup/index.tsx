@@ -169,7 +169,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
 
       case BackupStage.RestoreBackup:
         return {
-          primaryText: 'Verify and complete backup',
+          primaryText: 'Verify',
           primaryDisabled: !this.state.userInputKeyPhrase,
           onPrimary: this.restoreBackup,
           content: <RestoreBackup errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,

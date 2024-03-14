@@ -12,7 +12,7 @@ describe(GenerateBackup, () => {
     const allProps: Properties = {
       recoveryKey: 'stub-key',
       errorMessage: '',
-      onNext: () => null,
+      onKeyCopied: () => null,
       clipboard: { write: () => Promise.resolve() },
       ...props,
     };
@@ -46,25 +46,13 @@ describe(GenerateBackup, () => {
     expect(buttonLabelled(wrapper, 'Copied')).toExist();
   });
 
-  it('enables the Save Backup button when code has been copied', function () {
-    const saveButtonLabel = 'I’ve safely stored my backup';
-    const wrapper = subject();
-
-    expect(buttonLabelled(wrapper, saveButtonLabel)).toHaveProp('isDisabled', true);
+  it('announces copy event', function () {
+    const onKeyCopied = jest.fn();
+    const wrapper = subject({ onKeyCopied });
 
     pressButton(wrapper, 'Copy');
 
-    expect(buttonLabelled(wrapper, saveButtonLabel)).toHaveProp('isDisabled', false);
-  });
-
-  it('publishes onNext event', function () {
-    const onNext = jest.fn();
-    const wrapper = subject({ onNext });
-
-    pressButton(wrapper, 'Copy');
-    pressButton(wrapper, 'I’ve safely stored my backup');
-
-    expect(onNext).toHaveBeenCalledOnce();
+    expect(onKeyCopied).toHaveBeenCalledOnce();
   });
 
   it('renders an error message', () => {

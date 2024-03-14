@@ -145,11 +145,21 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(GenerateBackup);
     });
 
+    it('disables button until key copied', function () {
+      const wrapper = subject({ backupStage: BackupStage.GenerateBackup });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(GenerateBackup).simulate('keyCopied');
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+    });
+
     it('publishes onVerifyKey', function () {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onVerifyKey });
 
-      wrapper.find(GenerateBackup).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });

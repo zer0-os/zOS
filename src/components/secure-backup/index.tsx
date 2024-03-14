@@ -36,11 +36,13 @@ export interface Properties {
 
 interface State {
   showFAQContent: boolean;
+  hasCopiedKey: boolean;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
   state = {
     showFAQContent: false,
+    hasCopiedKey: false,
   };
 
   get existingBackupNotRestored() {
@@ -69,6 +71,15 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         <video {...cn('video')} src={`${this.props.videoAssetsPath}/E2EEncryption.mp4`} autoPlay loop muted />
       </div>
     );
+  };
+
+  enableVerifyButton = () => {
+    this.setState({ hasCopiedKey: true });
+  };
+
+  moveToKeyPhraseVerify = () => {
+    this.setState({ hasCopiedKey: false });
+    this.props.onVerifyKey();
   };
 
   configForStage = () => {
@@ -132,8 +143,18 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
         };
 
       case BackupStage.GenerateBackup:
-        content = <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
-        break;
+        return {
+          primaryText: "I've safely stored my backup",
+          primaryDisabled: !this.state.hasCopiedKey,
+          onPrimary: this.moveToKeyPhraseVerify,
+          content: (
+            <GenerateBackup
+              recoveryKey={recoveryKey}
+              errorMessage={errorMessage}
+              onKeyCopied={this.enableVerifyButton}
+            />
+          ),
+        };
 
       case BackupStage.RestoreBackup:
         content = <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
@@ -160,12 +181,14 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   render() {
-    const { primaryText, onPrimary, secondaryText, secondaryColor, onSecondary, content } = this.configForStage();
+    const { primaryText, primaryDisabled, onPrimary, secondaryText, secondaryColor, onSecondary, content } =
+      this.configForStage();
 
     return (
       <Modal
         title={this.title}
         primaryText={primaryText}
+        primaryDisabled={primaryDisabled}
         secondaryText={secondaryText}
         secondaryColor={secondaryColor}
         onPrimary={onPrimary}

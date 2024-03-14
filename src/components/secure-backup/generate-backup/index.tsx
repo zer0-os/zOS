@@ -4,7 +4,6 @@ import { bemClassName } from '../../../lib/bem';
 import { clipboard } from '../../../lib/clipboard';
 
 import { Button } from '@zero-tech/zui/components';
-import { IconArrowRight } from '@zero-tech/zui/icons';
 
 import '../styles.scss';
 
@@ -16,7 +15,7 @@ export interface Properties {
 
   clipboard?: Clipboard;
 
-  onNext: () => void;
+  onKeyCopied: () => void;
 }
 
 export interface State {
@@ -35,10 +34,7 @@ export class GenerateBackup extends React.Component<Properties, State> {
   copyKey = () => {
     this.props.clipboard.write(this.props.recoveryKey);
     this.setState({ hasCopied: true });
-  };
-
-  next = () => {
-    this.props.onNext();
+    this.props.onKeyCopied();
   };
 
   get copyButtonText() {
@@ -61,17 +57,6 @@ export class GenerateBackup extends React.Component<Properties, State> {
           </Button>
 
           {this.props.errorMessage && <p {...cn('error-message')}>{this.props.errorMessage}</p>}
-        </div>
-
-        <div {...cn('footer')}>
-          <Button
-            {...cn('button')}
-            onPress={this.next}
-            isDisabled={!this.state.hasCopied}
-            endEnhancer={<IconArrowRight isFilled size={24} />}
-          >
-            I’ve safely stored my backup
-          </Button>
         </div>
       </>
     );

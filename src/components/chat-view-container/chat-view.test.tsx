@@ -13,6 +13,9 @@ import { User } from '../../store/authentication/types';
 import moment from 'moment';
 import { MessagesFetchState } from '../../store/channels';
 
+import { bem } from '../../lib/bem';
+const c = bem('.chat-view');
+
 describe('ChatView', () => {
   const MESSAGES_TEST = [
     { id: 1111, message: 'what', sender: { userId: '1' }, createdAt: 1658776625730 },
@@ -135,27 +138,6 @@ describe('ChatView', () => {
     expect(ifAuthenticated.find(MessageInput).exists()).toBe(false);
   });
 
-  it('render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User });
-
-    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(true);
-  });
-
-  it('should not render joinButton', () => {
-    const wrapper = subject({ messages: MESSAGES_TEST, hasJoined: true, user: { id: 'userId-test' } as User });
-
-    expect(wrapper.find('.channel-view__join-wrapper').exists()).toBe(false);
-  });
-
-  it('should joinChannel when click joinButton', () => {
-    const joinChannel = jest.fn();
-    const wrapper = subject({ messages: MESSAGES_TEST, user: { id: 'userId-test' } as User, joinChannel });
-
-    wrapper.find('.channel-view__join-wrapper').simulate('click');
-
-    expect(joinChannel).toHaveBeenCalled();
-  });
-
   it('render Waypoint in case we have messages', () => {
     const onFetchMoreSpy = jest.fn();
 
@@ -216,7 +198,7 @@ describe('ChatView', () => {
       messagesFetchStatus: MessagesFetchState.FAILED,
       hasLoadedMessages: true,
     });
-    expect(wrapper.find('.channel-view__failure-message').text()).toContain('Failed to load new messages. Try Reload');
+    expect(wrapper.find(c('failure-message')).text()).toContain('Failed to load new messages. Try Reload');
 
     wrapper = subject({
       messages: MESSAGES_TEST,
@@ -225,7 +207,7 @@ describe('ChatView', () => {
       name: 'channel-name',
     });
 
-    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+    expect(wrapper.find(c('failure-message')).text()).toContain(
       'Failed to load conversation with channel-name. Try Reload'
     );
 
@@ -237,7 +219,7 @@ describe('ChatView', () => {
       otherMembers: [{ firstName: 'ratik', lastName: 'jindal' } as any],
     });
 
-    expect(wrapper.find('.channel-view__failure-message').text()).toContain(
+    expect(wrapper.find(c('failure-message')).text()).toContain(
       'Failed to load your conversation with ratik. Try Reload'
     );
   });
@@ -251,7 +233,7 @@ describe('ChatView', () => {
       id: 'channel-id',
     });
 
-    wrapper.find('.channel-view__try-reload').simulate('click');
+    wrapper.find(c('try-reload')).simulate('click');
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });
   });
 

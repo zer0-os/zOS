@@ -7,7 +7,6 @@ import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
-import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
@@ -230,7 +229,6 @@ export class ChatView extends React.Component<Properties, State> {
 
   render() {
     const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
-    const { hasJoined: isMemberOfChannel } = this.props;
 
     return (
       <div className={classNames('channel-view', this.props.className)}>
@@ -270,31 +268,23 @@ export class ChatView extends React.Component<Properties, State> {
               <ChatSkeleton conversationId={this.props.id} />
             )}
           </div>
-        </InvertedScroll>
 
-        {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
-          <div className='channel-view__failure-message'>
-            {this.failureMessage}&nbsp;
-            <div
-              className='channel-view__try-reload'
-              onClick={() => {
-                this.props.fetchMessages({ channelId: this.props.id });
-              }}
-            >
-              Try Reload
+          {this.props.messagesFetchStatus === MessagesFetchState.FAILED && (
+            <div {...cn('failure-message')}>
+              {this.failureMessage}&nbsp;
+              <span
+                {...cn('try-reload')}
+                onClick={() => {
+                  this.props.fetchMessages({ channelId: this.props.id });
+                }}
+              >
+                Try Reload
+              </span>
             </div>
-          </div>
-        )}
-
-        {/* i think we can remove the entire code below */}
-        <IfAuthenticated showChildren>
-          {isMemberOfChannel && (
-            <>
-              {this.props.conversationErrorMessage && <div {...cn('error')}>{this.props.conversationErrorMessage}</div>}
-            </>
           )}
-          {!isMemberOfChannel && this.renderJoinButton()}
-        </IfAuthenticated>
+
+          {this.props.conversationErrorMessage && <div {...cn('error')}>{this.props.conversationErrorMessage}</div>}
+        </InvertedScroll>
       </div>
     );
   }

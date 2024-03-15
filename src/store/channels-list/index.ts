@@ -11,5 +11,5 @@ export const { receiveNormalized, setStatus, receive } = slice.actions;
 export const { reducer, normalize, denormalize } = slice;
 
 export function denormalizeConversations(state) {
-  return denormalize(state.channelsList.value, state).filter((c) => !c.isChannel);
+  return denormalize(state.channelsList.value, state);
 }

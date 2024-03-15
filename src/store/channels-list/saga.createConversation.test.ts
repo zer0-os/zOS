@@ -135,7 +135,6 @@ describe(createOptimisticConversation, () => {
     expect(denormalizeChannel(newChannelId, storeState)).toEqual(
       expect.objectContaining({
         hasMore: false,
-        isChannel: false,
         unreadCount: 0,
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,

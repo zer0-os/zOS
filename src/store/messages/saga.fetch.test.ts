@@ -109,6 +109,6 @@ describe(fetch, () => {
 
   function initialChannelState(channel) {
     channel.conversationStatus = channel.conversationStatus ?? ConversationStatus.CREATED;
-    return new StoreBuilder().withChannelList(channel).build();
+    return new StoreBuilder().withConversationList(channel).build();
   }
 });

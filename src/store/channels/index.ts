@@ -56,7 +56,6 @@ export interface Channel {
   groupChannelType: GroupChannelType;
   icon?: string;
   isOneOnOne: boolean;
-  isChannel: boolean;
   hasLoadedMessages: boolean;
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
@@ -78,7 +77,6 @@ export const CHANNEL_DEFAULTS = {
   groupChannelType: GroupChannelType.Private,
   icon: '',
   isOneOnOne: true,
-  isChannel: false,
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,

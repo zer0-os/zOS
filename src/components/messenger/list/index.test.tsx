@@ -323,14 +323,13 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} }, isChannel: false },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} }, isChannel: false },
-        { id: 'convo-3', createdAt: moment('2023-03-04').valueOf(), isChannel: false },
+        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} } },
+        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} } },
+        { id: 'convo-3', createdAt: moment('2023-03-04').valueOf() },
         {
           id: 'convo-4',
           createdAt: moment('2023-03-05').valueOf(),
           lastMessage: { createdAt: moment('2023-03-02').valueOf(), sender: {} },
-          isChannel: false,
         },
       ]);
 
@@ -342,31 +341,16 @@ describe('messenger-list', () => {
       ]);
     });
 
-    test('gets only conversations', () => {
-      const state = subject([
-        { id: 'convo-1', isChannel: false },
-        { id: 'convo-2', isChannel: true },
-        { id: 'convo-3', isChannel: false },
-      ]);
-
-      expect(state.conversations.map((c) => c.id)).toEqual([
-        'convo-1',
-        'convo-3',
-      ]);
-    });
-
     describe('messagePreview', () => {
       it('sets the preview for all conversations', () => {
         const state = subject([
           {
             id: 'convo-1',
             lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
-            isChannel: false,
           },
           {
             id: 'convo-2',
             lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
-            isChannel: false,
           },
         ]);
 
@@ -385,13 +369,11 @@ describe('messenger-list', () => {
               { id: '1', message: 'recent message', createdAt: 10005, sender: { firstName: 'Jack' } },
               { id: '2', message: 'old message', createdAt: 10002 },
             ],
-            isChannel: false,
           },
           {
             id: 'convo-2',
             lastMessage: { message: 'lastMessage', createdAt: 20007, sender: { firstName: 'Jack' } },
             messages: [],
-            isChannel: false,
           },
         ]);
 
@@ -408,7 +390,6 @@ describe('messenger-list', () => {
         {
           id: 'convo-1',
           lastMessage: { createdAt: date, message: '', sender: {} },
-          isChannel: false,
         },
       ]);
 

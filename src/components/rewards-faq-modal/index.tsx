@@ -24,7 +24,7 @@ export class RewardsFAQModal extends React.Component<Properties> {
       <div>
         <Modal open={this.props.isRewardsFAQModalOpen} onOpenChange={this.closeRewardsFAQModal} className={c('')}>
           <div className={c('title-bar')}>
-            <h3 className={c('title')}>Zero Rewards</h3>
+            <h3 className={c('title')}>ZERO Rewards</h3>
             <IconButton size='large' Icon={IconXClose} onClick={this.closeRewardsFAQModal} />
           </div>
           <Accordion contrast='low' items={rewardsFaq} />

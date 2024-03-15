@@ -34,7 +34,7 @@ describe('Container', () => {
           }
         );
 
-        expect(props.text).toEqual('You joined Courtney on Zero');
+        expect(props.text).toEqual('You joined Courtney on ZERO');
       });
     });
   });

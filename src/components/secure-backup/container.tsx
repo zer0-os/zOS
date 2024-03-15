@@ -16,14 +16,12 @@ import {
 
 import { SecureBackup } from '.';
 
-import { LoadingIndicator } from '@zero-tech/zui/components';
-
 export interface PublicProperties {
   onClose?: () => void;
 }
 
 export interface Properties extends PublicProperties {
-  isLoaded: boolean;
+  isLoading: boolean;
   backupExists: boolean;
   backupRestored: boolean;
   recoveryKey: string;
@@ -46,7 +44,7 @@ export class Container extends React.Component<Properties> {
       state.matrix;
 
     return {
-      isLoaded,
+      isLoading: !isLoaded,
       backupExists,
       backupRestored,
       recoveryKey: generatedRecoveryKey || '',
@@ -70,12 +68,9 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    if (!this.props.isLoaded) {
-      return <LoadingIndicator />;
-    }
-
     return (
       <SecureBackup
+        isLoading={this.props.isLoading}
         backupExists={this.props.backupExists}
         backupRestored={this.props.backupRestored}
         recoveryKey={this.props.recoveryKey}

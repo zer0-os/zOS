@@ -10,10 +10,12 @@ import { RestoreBackup } from './restore-backup';
 import { VerifyKeyPhrase } from './verify-key-phrase';
 import { Success } from './success';
 import { Modal } from '../modal';
+import { LoadingIndicator } from '@zero-tech/zui/components';
 
 describe(SecureBackup, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      isLoading: false,
       recoveryKey: 'stub-key',
       backupExists: false,
       backupRestored: false,
@@ -32,6 +34,12 @@ describe(SecureBackup, () => {
 
     return shallow(<SecureBackup {...allProps} />);
   };
+
+  it('renders loading state', async () => {
+    const wrapper = subject({ isLoading: true });
+
+    expect(wrapper).toHaveElement(LoadingIndicator);
+  });
 
   describe(GeneratePrompt, () => {
     it('renders GeneratePrompt when stage is SystemGeneratePrompt', function () {

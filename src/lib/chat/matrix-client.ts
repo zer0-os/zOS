@@ -935,7 +935,6 @@ export class MatrixClient implements IChatClient {
       groupChannelType: GroupChannelType.Private,
       category: '',
       unreadCount,
-      hasJoined: true,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: this.getRoomAdmins(room),

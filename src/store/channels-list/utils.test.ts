@@ -9,7 +9,6 @@ describe(toLocalChannel, () => {
       icon: 'channel-icon',
       category: 'channel-category',
       unreadCount: 'unread-count',
-      hasJoined: 'has-joined',
       createdAt: 1000003,
     };
 

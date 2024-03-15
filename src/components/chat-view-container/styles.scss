@@ -5,14 +5,19 @@
 // Note: there are some classes in various other places (src/platform-apps/channels/styles.scss)
 
 .chat-view {
+  &__failure-message,
   &__error {
+    margin-bottom: 96px;
     padding: 8px;
     padding-bottom: 32px;
     color: theme.$color-failure-11;
     text-align: center;
     font-size: 12px;
     font-weight: 400;
-    line-height: normal;
+  }
+
+  &__try-reload {
+    cursor: pointer;
   }
 
   &__message-input-container {

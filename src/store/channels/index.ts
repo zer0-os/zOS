@@ -45,7 +45,6 @@ export interface Channel {
   hasMore: boolean;
   createdAt: number;
   lastMessage: Message;
-  category?: string;
   unreadCount?: number;
   icon?: string;
   isOneOnOne: boolean;

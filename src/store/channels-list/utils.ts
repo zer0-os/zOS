@@ -10,7 +10,6 @@ export const toLocalChannel = (input): Partial<Channel> => {
     id: input.id,
     name: input.name,
     icon: input.icon,
-    category: input.category,
     unreadCount: input.unreadCount,
     createdAt: input.createdAt,
     otherMembers,

@@ -932,7 +932,6 @@ export class MatrixClient implements IChatClient {
       memberHistory: memberHistory,
       lastMessage: null,
       messages,
-      category: '',
       unreadCount,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,

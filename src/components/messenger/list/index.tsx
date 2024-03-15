@@ -214,7 +214,6 @@ export class Container extends React.Component<Properties, State> {
         userName={this.props.userName}
         userHandle={this.props.userHandle}
         userAvatarUrl={this.props.userAvatarUrl}
-        includeUserSettings={true}
         startConversation={this.props.startCreateConversation}
         onLogout={this.props.logout}
         onVerifyId={this.openVerifyIdDialog}

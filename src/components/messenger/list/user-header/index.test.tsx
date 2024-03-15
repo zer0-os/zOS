@@ -3,8 +3,6 @@ import { Properties, UserHeader } from '.';
 import { Button, IconButton } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
-import { SettingsMenuContainer } from '../../../settings-menu/container';
-
 const c = bem('.user-header');
 
 const featureFlags = { allowVerifyId: false };
@@ -19,7 +17,6 @@ describe(UserHeader, () => {
       userHandle: '',
       userAvatarUrl: '',
       userIsOnline: true,
-      includeUserSettings: false,
 
       onLogout: () => null,
       onVerifyId: () => null,
@@ -29,16 +26,6 @@ describe(UserHeader, () => {
 
     return shallow(<UserHeader {...allProps} />);
   };
-
-  it('renders SettingsMenu when includeUserSettings is true', function () {
-    const wrapper = subject({ includeUserSettings: true });
-    expect(wrapper).toHaveElement(SettingsMenuContainer);
-  });
-
-  it('does not render SettingsMenu when includeUserSettings is false', function () {
-    const wrapper = subject({ includeUserSettings: false });
-    expect(wrapper).not.toHaveElement(SettingsMenuContainer);
-  });
 
   it('renders userHandle when user handle is not empty', function () {
     const wrapper = subject({ userHandle: '0://zid.example' });

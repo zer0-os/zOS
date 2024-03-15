@@ -16,7 +16,6 @@ export interface Properties {
   userHandle: string;
   userAvatarUrl: string;
   userIsOnline: boolean;
-  includeUserSettings?: boolean;
 
   onLogout?: () => void;
   onVerifyId: () => void;
@@ -58,15 +57,13 @@ export class UserHeader extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        {this.props.includeUserSettings && (
-          <SettingsMenuContainer
-            onLogout={this.props.onLogout}
-            userName={this.props.userName}
-            userHandle={this.props.userHandle}
-            userAvatarUrl={this.props.userAvatarUrl}
-            userStatus={this.userStatus}
-          />
-        )}
+        <SettingsMenuContainer
+          onLogout={this.props.onLogout}
+          userName={this.props.userName}
+          userHandle={this.props.userHandle}
+          userAvatarUrl={this.props.userAvatarUrl}
+          userStatus={this.userStatus}
+        />
 
         {this.renderUserDetails()}
 

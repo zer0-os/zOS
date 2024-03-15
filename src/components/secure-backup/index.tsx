@@ -12,13 +12,15 @@ import { RestoreBackup } from './restore-backup';
 import { RecoveredBackup } from './recovered-backup';
 import { Success } from './success';
 import { VerifyKeyPhrase } from './verify-key-phrase';
+import { Color, Modal } from '../modal';
+import { LoadingIndicator } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { Color, Modal } from '../modal';
 
 const cn = bemClassName('secure-backup');
 
 export interface Properties {
+  isLoading: boolean;
   recoveryKey: string;
   backupExists: boolean;
   backupRestored: boolean;
@@ -104,6 +106,10 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   configForStage = () => {
+    if (this.props.isLoading) {
+      return { content: <LoadingIndicator /> };
+    }
+
     if (this.state.showFAQContent) {
       return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }

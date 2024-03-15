@@ -7,7 +7,6 @@ describe(toLocalChannel, () => {
       id: 'channel-id',
       name: 'channel-name',
       icon: 'channel-icon',
-      category: 'channel-category',
       unreadCount: 'unread-count',
       createdAt: 1000003,
     };

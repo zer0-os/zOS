@@ -14,7 +14,7 @@ import { Events as AuthEvents, getAuthChannel } from '../authentication/channels
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
-import { ConversationStatus, GroupChannelType, MessagesFetchState, User } from '../channels';
+import { ConversationStatus, MessagesFetchState, User } from '../channels';
 import { AdminMessageType } from '../messages';
 import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga';
 import { getUserByMatrixId } from '../users/saga';
@@ -131,7 +131,6 @@ export function* createOptimisticConversation(userIds: string[], name: string = 
     unreadCount: 0,
     hasLoadedMessages: true,
     messagesFetchStatus: MessagesFetchState.SUCCESS,
-    groupChannelType: GroupChannelType.Private,
   };
 
   const currentUser = yield select(currentUserSelector);

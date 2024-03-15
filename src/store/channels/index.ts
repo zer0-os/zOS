@@ -22,11 +22,6 @@ export interface User {
   displaySubHandle?: string;
 }
 
-export enum GroupChannelType {
-  Public = 'public',
-  Private = 'private',
-}
-
 export enum MessagesFetchState {
   SUCCESS,
   IN_PROGRESS,
@@ -52,7 +47,6 @@ export interface Channel {
   lastMessage: Message;
   category?: string;
   unreadCount?: number;
-  groupChannelType: GroupChannelType;
   icon?: string;
   isOneOnOne: boolean;
   hasLoadedMessages: boolean;
@@ -72,7 +66,6 @@ export const CHANNEL_DEFAULTS = {
   createdAt: 0,
   lastMessage: null,
   unreadCount: 0,
-  groupChannelType: GroupChannelType.Private,
   icon: '',
   isOneOnOne: true,
   hasLoadedMessages: false,

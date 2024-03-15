@@ -10,12 +10,7 @@ import {
 } from './saga';
 
 import { rootReducer } from '../reducer';
-import {
-  ConversationStatus,
-  GroupChannelType,
-  MessagesFetchState,
-  denormalize as denormalizeChannel,
-} from '../channels';
+import { ConversationStatus, MessagesFetchState, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { AdminMessageType } from '../messages';
 import { chat } from '../../lib/chat';
@@ -138,7 +133,6 @@ describe(createOptimisticConversation, () => {
         unreadCount: 0,
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
-        groupChannelType: GroupChannelType.Private,
       })
     );
   });

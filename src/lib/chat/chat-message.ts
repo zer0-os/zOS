@@ -85,11 +85,11 @@ function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, 
   const isCurrentUserInvitee = admin.inviteeId === currentUser.id;
   if (isCurrentUserInvitee) {
     const inviter = denormalizeUser(admin.inviterId, state);
-    return inviter?.firstName ? `You joined ${inviter.firstName} on Zero` : null;
+    return inviter?.firstName ? `You joined ${inviter.firstName} on ZERO` : null;
   }
 
   const invitee = denormalizeUser(admin.inviteeId, state);
-  return invitee?.firstName ? `${invitee.firstName} joined you on Zero` : null;
+  return invitee?.firstName ? `${invitee.firstName} joined you on ZERO` : null;
 }
 
 function translateConversationStarted(admin: { userId?: string }, currentUser, state: RootState) {

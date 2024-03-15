@@ -38,7 +38,7 @@ describe(mapMessageSenders, () => {
     ];
   });
 
-  it('replaces local data with actual Zero user data', async () => {
+  it('replaces local data with actual ZERO user data', async () => {
     const messages = [
       { id: 1, message: 'message-1', sender: { userId: 'matrix-user-1', firstName: '' } },
     ];

@@ -5,7 +5,7 @@ TODO:: Outstanding Topics:
 
 ## Intro
 
-This is a collection of choices/preferences/decisions around how to build within the Zero ecosystem. It is a collection of guidance intended to help keep things maintainable and provide some consistency across the project as well as related projects. It is also a repository of decisions that have been made including reasoning where appropriate, to reduce the need for repeat discussions.
+This is a collection of choices/preferences/decisions around how to build within the ZERO ecosystem. It is a collection of guidance intended to help keep things maintainable and provide some consistency across the project as well as related projects. It is also a repository of decisions that have been made including reasoning where appropriate, to reduce the need for repeat discussions.
 
 ## Components
 

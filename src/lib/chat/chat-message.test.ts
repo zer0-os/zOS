@@ -48,7 +48,7 @@ describe(adminMessageText, () => {
 
       const adminText = adminMessageText(message, state);
 
-      expect(adminText).toEqual('You joined Courtney on Zero');
+      expect(adminText).toEqual('You joined Courtney on ZERO');
     });
 
     it('translates message if current user was inviter', () => {
@@ -61,7 +61,7 @@ describe(adminMessageText, () => {
 
       const adminText = adminMessageText(message, state);
 
-      expect(adminText).toEqual('Julie joined you on Zero');
+      expect(adminText).toEqual('Julie joined you on ZERO');
     });
   });
 

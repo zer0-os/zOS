@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme';
 
-import { buttonLabelled, pressButton } from '../../../test/utils';
 import { GeneratePrompt, Properties } from '.';
 
 import { bem } from '../../../lib/bem';
@@ -11,8 +10,6 @@ describe(GeneratePrompt, () => {
     const allProps: Properties = {
       isSystemPrompt: false,
       errorMessage: '',
-      onGenerate: () => null,
-      onClose: () => null,
       onLearnMore: () => null,
       ...props,
     };
@@ -35,30 +32,6 @@ describe(GeneratePrompt, () => {
     const expectedText = 'Access your encrypted messages between devices and logins with an account backup.';
 
     expect(wrapper.find(c('primary-text'))).toHaveText(expectedText);
-  });
-
-  it('publishes onGenerate event', function () {
-    const onGenerate = jest.fn();
-    const wrapper = subject({ onGenerate });
-
-    pressButton(wrapper, 'Backup my account');
-
-    expect(onGenerate).toHaveBeenCalledOnce();
-  });
-
-  it('publishes onClose event when isSystemPrompt is true', function () {
-    const onClose = jest.fn();
-    const wrapper = subject({ onClose, isSystemPrompt: true });
-
-    pressButton(wrapper, 'Backup later');
-
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('does not render / publish the secondary button when isSystemPrompt is false', function () {
-    const wrapper = subject({ isSystemPrompt: false });
-
-    expect(buttonLabelled(wrapper, 'Backup later')).not.toExist();
   });
 
   it('renders an error message', () => {

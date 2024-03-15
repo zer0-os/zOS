@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
 
-import { Alert, Button, Input } from '@zero-tech/zui/components';
+import { Alert, Input } from '@zero-tech/zui/components';
 
 import '../styles.scss';
 
@@ -14,7 +14,7 @@ export interface State {
 
 export interface Properties {
   errorMessage: string;
-  onRestore: (recoveryKey: string) => void;
+  onChange: (recoveryKey: string) => void;
 }
 
 export class RestoreBackup extends React.Component<Properties, State> {
@@ -22,10 +22,7 @@ export class RestoreBackup extends React.Component<Properties, State> {
 
   trackRecoveryKey = (value) => {
     this.setState({ userInputRecoveryKey: value });
-  };
-
-  restoreKey = () => {
-    this.props.onRestore(this.recoveryKey);
+    this.props.onChange(value);
   };
 
   get recoveryKey() {
@@ -57,12 +54,6 @@ export class RestoreBackup extends React.Component<Properties, State> {
               </Alert>
             )}
           </div>
-        </div>
-
-        <div {...cn('footer')}>
-          <Button {...cn('button')} onPress={this.restoreKey} isDisabled={!this.recoveryKey}>
-            Verify
-          </Button>
         </div>
       </>
     );

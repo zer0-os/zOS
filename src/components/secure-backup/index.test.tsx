@@ -50,7 +50,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onGenerate });
 
-      wrapper.find(GeneratePrompt).simulate('generate');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -59,7 +59,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.UserGeneratePrompt, onGenerate });
 
-      wrapper.find(GeneratePrompt).simulate('generate');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -68,7 +68,7 @@ describe(SecureBackup, () => {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemGeneratePrompt, onClose });
 
-      wrapper.find(GeneratePrompt).simulate('close');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -91,7 +91,7 @@ describe(SecureBackup, () => {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onVerifyKey });
 
-      wrapper.find(RestorePrompt).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -100,7 +100,7 @@ describe(SecureBackup, () => {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.UserRestorePrompt, onVerifyKey });
 
-      wrapper.find(RestorePrompt).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -109,7 +109,7 @@ describe(SecureBackup, () => {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.SystemRestorePrompt, onClose });
 
-      wrapper.find(RestorePrompt).simulate('close');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -122,11 +122,17 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(RecoveredBackup);
     });
 
+    it('renders the buttons', function () {
+      const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryText', 'Dismiss');
+    });
+
     it('publishes onClose', function () {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.RecoveredBackupInfo, onClose });
 
-      wrapper.find(RecoveredBackup).simulate('close');
+      wrapper.find(Modal).simulate('close');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -139,11 +145,21 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(GenerateBackup);
     });
 
+    it('disables button until key copied', function () {
+      const wrapper = subject({ backupStage: BackupStage.GenerateBackup });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(GenerateBackup).simulate('keyCopied');
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+    });
+
     it('publishes onVerifyKey', function () {
       const onVerifyKey = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.GenerateBackup, onVerifyKey });
 
-      wrapper.find(GenerateBackup).simulate('next');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onVerifyKey).toHaveBeenCalled();
     });
@@ -160,9 +176,22 @@ describe(SecureBackup, () => {
       const onRestore = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.RestoreBackup, onRestore });
 
-      wrapper.find(RestoreBackup).simulate('restore', 'abcd 1234');
+      wrapper.find(RestoreBackup).simulate('change', 'abcd 1234');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onRestore).toHaveBeenCalledWith('abcd 1234');
+    });
+
+    it('disables button if key text is empty and enables when text exists', function () {
+      const wrapper = subject({ backupStage: BackupStage.RestoreBackup });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(RestoreBackup).simulate('change', 't');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+
+      wrapper.find(RestoreBackup).simulate('change', '');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
     });
   });
 
@@ -172,11 +201,17 @@ describe(SecureBackup, () => {
       expect(wrapper).toHaveElement(Success);
     });
 
+    it('renders the success buttons', function () {
+      const wrapper = subject({ backupStage: BackupStage.Success });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryText', 'Finish');
+    });
+
     it('publishes onClose', function () {
       const onClose = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.Success, onClose });
 
-      wrapper.find(Success).simulate('close');
+      wrapper.find(Modal).simulate('primary');
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -192,7 +227,7 @@ describe(SecureBackup, () => {
       const onGenerate = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onGenerate });
 
-      wrapper.find(VerifyKeyPhrase).simulate('back');
+      wrapper.find(Modal).simulate('secondary');
 
       expect(onGenerate).toHaveBeenCalled();
     });
@@ -201,9 +236,22 @@ describe(SecureBackup, () => {
       const onSave = jest.fn();
       const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase, onSave });
 
-      wrapper.find(VerifyKeyPhrase).simulate('save', 'abcd 1234');
+      wrapper.find(VerifyKeyPhrase).simulate('change', 'test-key-phrase');
+      wrapper.find(Modal).simulate('primary');
 
-      expect(onSave).toHaveBeenCalled();
+      expect(onSave).toHaveBeenCalledWith('test-key-phrase');
+    });
+
+    it('disables button if key text is empty and enables when text exists', function () {
+      const wrapper = subject({ backupStage: BackupStage.VerifyKeyPhrase });
+
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
+
+      wrapper.find(VerifyKeyPhrase).simulate('change', 't');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', false);
+
+      wrapper.find(VerifyKeyPhrase).simulate('change', '');
+      expect(wrapper.find(Modal)).toHaveProp('primaryDisabled', true);
     });
   });
 

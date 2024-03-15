@@ -14,7 +14,7 @@ import { Success } from './success';
 import { VerifyKeyPhrase } from './verify-key-phrase';
 
 import './styles.scss';
-import { Modal } from '../modal';
+import { Color, Modal } from '../modal';
 
 const cn = bemClassName('secure-backup');
 
@@ -36,11 +36,15 @@ export interface Properties {
 
 interface State {
   showFAQContent: boolean;
+  hasCopiedKey: boolean;
+  userInputKeyPhrase: string;
 }
 
 export class SecureBackup extends React.PureComponent<Properties, State> {
   state = {
     showFAQContent: false,
+    hasCopiedKey: false,
+    userInputKeyPhrase: '',
   };
 
   get existingBackupNotRestored() {
@@ -71,86 +75,151 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     );
   };
 
-  renderBackupContent = () => {
+  enableVerifyButton = () => {
+    this.setState({ hasCopiedKey: true });
+  };
+
+  moveToKeyPhraseVerify = () => {
+    this.setState({ hasCopiedKey: false });
+    this.props.onVerifyKey();
+  };
+
+  trackKeyPhrase = (value) => {
+    this.setState({ userInputKeyPhrase: value });
+  };
+
+  returnToGenerate = () => {
+    this.setState({ userInputKeyPhrase: '' });
+    this.props.onGenerate();
+  };
+
+  saveBackup = () => {
+    this.props.onSave(this.state.userInputKeyPhrase);
+    this.setState({ userInputKeyPhrase: '' });
+  };
+
+  restoreBackup = () => {
+    this.props.onRestore(this.state.userInputKeyPhrase);
+    this.setState({ userInputKeyPhrase: '' });
+  };
+
+  configForStage = () => {
     if (this.state.showFAQContent) {
-      return <BackupFAQ onBack={this.closeFAQContent} />;
+      return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
-    const {
-      backupStage,
-      onGenerate,
-      onRestore,
-      onVerifyKey,
-      onClose,
-      onSave,
-      recoveryKey,
-      errorMessage,
-      successMessage,
-    } = this.props;
+    const { backupStage, onGenerate, onVerifyKey, onClose, recoveryKey, errorMessage, successMessage } = this.props;
 
+    let content = null;
     switch (backupStage) {
       case BackupStage.UserGeneratePrompt:
-        return (
-          <GeneratePrompt
-            errorMessage={errorMessage}
-            onGenerate={onGenerate}
-            onClose={onClose}
-            onLearnMore={this.openFAQContent}
-          />
-        );
+        return {
+          primaryText: 'Backup my account',
+          onPrimary: onGenerate,
+          content: <GeneratePrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.UserRestorePrompt:
-        return <RestorePrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />;
+        return {
+          primaryText: 'Verify with backup phrase',
+          onPrimary: onVerifyKey,
+          content: <RestorePrompt onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.SystemGeneratePrompt:
-        return (
-          <GeneratePrompt
-            isSystemPrompt
-            errorMessage={errorMessage}
-            onGenerate={onGenerate}
-            onClose={onClose}
-            onLearnMore={this.openFAQContent}
-          />
-        );
+        return {
+          primaryText: 'Backup my account',
+          onPrimary: onGenerate,
+          secondaryText: 'Backup later',
+          secondaryColor: Color.Red,
+          onSecondary: onClose,
+          content: <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.SystemRestorePrompt:
-        return (
-          <RestorePrompt isSystemPrompt onNext={onVerifyKey} onClose={onClose} onLearnMore={this.openFAQContent} />
-        );
+        return {
+          primaryText: 'Verify with backup phrase',
+          onPrimary: onVerifyKey,
+          secondaryText: 'Continue Without Verifying',
+          secondaryColor: Color.Greyscale,
+          onSecondary: onClose,
+          content: <RestorePrompt isSystemPrompt onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.RecoveredBackupInfo:
-        return <RecoveredBackup onClose={onClose} onLearnMore={this.openFAQContent} />;
+        return {
+          primaryText: 'Dismiss',
+          onPrimary: this.props.onClose,
+          content: <RecoveredBackup onLearnMore={this.openFAQContent} />,
+        };
 
       case BackupStage.GenerateBackup:
-        return <GenerateBackup recoveryKey={recoveryKey} errorMessage={errorMessage} onNext={onVerifyKey} />;
+        return {
+          primaryText: "I've safely stored my backup",
+          primaryDisabled: !this.state.hasCopiedKey,
+          onPrimary: this.moveToKeyPhraseVerify,
+          content: (
+            <GenerateBackup
+              recoveryKey={recoveryKey}
+              errorMessage={errorMessage}
+              onKeyCopied={this.enableVerifyButton}
+            />
+          ),
+        };
 
       case BackupStage.RestoreBackup:
-        return <RestoreBackup onRestore={onRestore} errorMessage={errorMessage} />;
+        return {
+          primaryText: 'Verify',
+          primaryDisabled: !this.state.userInputKeyPhrase,
+          onPrimary: this.restoreBackup,
+          content: <RestoreBackup errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
+        };
 
       case BackupStage.VerifyKeyPhrase:
-        return <VerifyKeyPhrase errorMessage={errorMessage} onBack={onGenerate} onSave={onSave} />;
+        return {
+          primaryText: 'Verify and complete backup',
+          primaryDisabled: !this.state.userInputKeyPhrase,
+          onPrimary: this.saveBackup,
+          secondaryText: 'Back to phrase',
+          secondaryColor: Color.Greyscale,
+          onSecondary: this.returnToGenerate,
+          content: <VerifyKeyPhrase errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
+        };
 
       case BackupStage.Success:
-        return <Success successMessage={successMessage} onClose={onClose} />;
+        return {
+          primaryText: 'Finish',
+          onPrimary: this.props.onClose,
+          content: <Success successMessage={successMessage} />,
+        };
 
       default:
         assertAllValuesConsumed(backupStage);
     }
+
+    return {
+      content,
+    };
   };
 
   render() {
+    const { primaryText, primaryDisabled, onPrimary, secondaryText, secondaryColor, onSecondary, content } =
+      this.configForStage();
+
     return (
       <Modal
         title={this.title}
-        primaryText='Log Out'
-        secondaryText='Cancel'
-        onPrimary={null}
-        onSecondary={null}
+        primaryText={primaryText}
+        primaryDisabled={primaryDisabled}
+        secondaryText={secondaryText}
+        secondaryColor={secondaryColor}
+        onPrimary={onPrimary}
+        onSecondary={onSecondary}
         onClose={this.props.onClose}
       >
         <div {...cn()}>
           {this.renderVideoBanner()}
-          {this.renderBackupContent()}
+          {content}
         </div>
       </Modal>
     );

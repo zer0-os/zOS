@@ -10,35 +10,6 @@
   padding: 16px;
   width: 528px;
 
-  &__header {
-    @include glass-text-primary-color;
-    @include glass-state-active-stroke;
-
-    display: flex;
-    height: 53px;
-
-    > *:first-child {
-      flex-grow: 1;
-    }
-
-    > *:last-child {
-      flex-grow: 0;
-    }
-  }
-
-  &__title {
-    font-weight: 600;
-    font-size: 24px;
-    line-height: 29px;
-    margin: 0px;
-  }
-
-  &__close {
-    &:focus-visible {
-      outline: none;
-    }
-  }
-
   &__video-banner {
     display: flex;
     flex-direction: column;
@@ -126,16 +97,6 @@
     font-size: 14px;
     line-height: 20px;
     margin: 0;
-  }
-
-  &__footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-
-    &--has-secondary-button {
-      justify-content: space-between;
-    }
   }
 
   &__button {

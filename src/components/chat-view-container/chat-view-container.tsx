@@ -31,7 +31,6 @@ export interface Properties extends PublicProperties {
 interface PublicProperties {
   channelId: string;
   className?: string;
-  isDirectMessage?: boolean;
   showSenderAvatar?: boolean;
   ref?: any;
 }
@@ -217,8 +216,7 @@ export class Container extends React.Component<Properties> {
           deleteMessage={this.handleDeleteMessage}
           editMessage={this.handleEditMessage}
           joinChannel={this.handleJoinChannel}
-          hasJoined={this.channel.hasJoined || this.props.isDirectMessage}
-          isDirectMessage={this.props.isDirectMessage}
+          hasJoined={true}
           showSenderAvatar={this.props.showSenderAvatar}
           isOneOnOne={this.isOneOnOne}
           onReply={this.props.onReply}

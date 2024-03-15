@@ -38,7 +38,6 @@ describe('ChatView', () => {
       onRemove: () => null,
       onReply: () => null,
       onMessageInputRendered: () => null,
-      isDirectMessage: true,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
       otherMembers: [],
@@ -52,14 +51,6 @@ describe('ChatView', () => {
 
     return shallow(<ChatView {...allProps} />);
   };
-
-  it('render channel name', () => {
-    const wrapper = subject({ name: 'first channel', isDirectMessage: false });
-
-    const text = wrapper.find('.channel-view__name h1').text().trim();
-
-    expect(text).toStrictEqual('Welcome to #first channel');
-  });
 
   it('render a message for each message', () => {
     const wrapper = subject({ messages: MESSAGES_TEST });
@@ -268,12 +259,6 @@ describe('ChatView', () => {
 
       expect(wrapper.find(Lightbox).exists()).toBeFalsy();
     });
-  });
-
-  it('does not render channel name in case of a direct message', () => {
-    const wrapper = subject({ messages: [], isDirectMessage: true });
-
-    expect(wrapper.find('.channel-view__name').exists()).toBeFalsy();
   });
 
   describe('formatDayHeader', () => {

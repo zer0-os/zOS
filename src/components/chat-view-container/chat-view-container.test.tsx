@@ -113,18 +113,6 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChatView).prop('hasJoined')).toStrictEqual(true);
   });
 
-  it('passes hasJoined or is direct message to channel view', () => {
-    const wrapper = subject({ channel: { hasJoined: false }, isDirectMessage: true });
-
-    expect(wrapper.find(ChatView).prop('hasJoined')).toStrictEqual(true);
-  });
-
-  it('passes is direct message to channel view', () => {
-    const wrapper = subject({ channel: {}, isDirectMessage: true });
-
-    expect(wrapper.find(ChatView).prop('isDirectMessage')).toStrictEqual(true);
-  });
-
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();
 

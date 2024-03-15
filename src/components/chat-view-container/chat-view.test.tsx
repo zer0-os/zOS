@@ -29,7 +29,6 @@ describe('ChatView', () => {
       id: '',
       name: '',
       messages: [],
-      hasJoined: false,
       user: null,
       joinChannel: () => null,
       onFetchMore: () => null,

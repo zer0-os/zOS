@@ -1,7 +1,3 @@
-export interface Payload {
-  channelId: string;
-}
-
 export interface MarkAsReadPayload {
   channelId: string;
   userId: string;

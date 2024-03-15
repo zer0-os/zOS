@@ -1,8 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { joinChannel as joinChannelAPI } from './api';
-import { joinChannel, markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
+import { markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, GroupChannelType, denormalize as denormalizeChannel } from '../channels';
@@ -16,29 +15,6 @@ const mockChatClient = {
 };
 
 describe('channels list saga', () => {
-  it('join channel and add hasJoined to channel state', async () => {
-    const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasJoined: false }).build();
-
-    const {
-      storeState: {
-        normalized: { channels },
-      },
-    } = await expectSaga(joinChannel, { payload: { channelId } })
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [
-          matchers.call.fn(joinChannelAPI),
-          200,
-        ],
-      ])
-      .call(joinChannelAPI, channelId)
-      .run();
-
-    expect(channels[channelId].hasJoined).toEqual(true);
-  });
-
   it('mark all messages as read', async () => {
     const channelId = '236844224_56299bcd523ac9084181f2422d0d0cfe9df72db4';
     const userId = 'e41dc968-289b-4e92-889b-694bd7f2bc30';

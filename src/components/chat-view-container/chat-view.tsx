@@ -7,7 +7,6 @@ import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
-import { Button as ComponentButton } from '@zer0-os/zos-component-library';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
@@ -37,7 +36,6 @@ export interface Properties {
   onFetchMore: () => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
-  hasJoined: boolean;
   deleteMessage: (messageId: number) => void;
   editMessage: (
     messageId: number,
@@ -47,7 +45,6 @@ export interface Properties {
   ) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
   onHiddenMessageInfoClick: () => void;
-  joinChannel: () => void;
   className?: string;
   showSenderAvatar?: boolean;
   isOneOnOne: boolean;
@@ -197,14 +194,6 @@ export class ChatView extends React.Component<Properties, State> {
           .map((day) => {
             return this.renderDay(day, { [day]: filteredMessagesByDay[day] });
           })}
-      </div>
-    );
-  }
-
-  renderJoinButton() {
-    return (
-      <div onClick={this.props.joinChannel} className={classNames(this.props.className, 'channel-view__join-wrapper')}>
-        <ComponentButton>Join Channel</ComponentButton>
       </div>
     );
   }

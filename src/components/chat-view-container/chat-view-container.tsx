@@ -4,12 +4,11 @@ import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
 import { fetch as fetchMessages, deleteMessage, editMessage, Message, EditMessageOptions } from '../../store/messages';
-import { Channel, ConversationStatus, denormalize, joinChannel, onReply } from '../../store/channels';
+import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import { openBackupDialog } from '../../store/matrix';
-import { Payload as PayloadJoinChannel } from '../../store/channels/types';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
 
@@ -19,7 +18,6 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
-  joinChannel: (payload: PayloadJoinChannel) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
   openBackupDialog: () => void;
   activeConversationId?: string;
@@ -61,7 +59,6 @@ export class Container extends React.Component<Properties> {
     return {
       fetchMessages,
       deleteMessage,
-      joinChannel,
       editMessage,
       onReply,
       openBackupDialog,
@@ -130,13 +127,6 @@ export class Container extends React.Component<Properties> {
     const { channelId } = this.props;
     if (channelId && messageId) {
       this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
-    }
-  };
-
-  handleJoinChannel = (): void => {
-    const { channelId } = this.props;
-    if (channelId) {
-      this.props.joinChannel({ channelId });
     }
   };
 
@@ -215,8 +205,6 @@ export class Container extends React.Component<Properties> {
           user={this.props.user.data}
           deleteMessage={this.handleDeleteMessage}
           editMessage={this.handleEditMessage}
-          joinChannel={this.handleJoinChannel}
-          hasJoined={true}
           showSenderAvatar={this.props.showSenderAvatar}
           isOneOnOne={this.isOneOnOne}
           onReply={this.props.onReply}

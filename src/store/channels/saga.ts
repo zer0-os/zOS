@@ -1,7 +1,6 @@
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
-import { joinChannel as joinChannelAPI } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
@@ -14,14 +13,6 @@ import { rawSetActiveConversationId } from '../chat';
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
 };
-
-export function* joinChannel(action) {
-  const { channelId } = action.payload;
-
-  yield call(joinChannelAPI, channelId);
-
-  yield call(receiveChannel, { id: channelId, hasJoined: true });
-}
 
 export function* markAllMessagesAsRead(channelId, userId) {
   if (!userId) {
@@ -107,7 +98,6 @@ export function* receiveChannel(channel: Partial<Channel>) {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.JoinChannel, joinChannel);
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);

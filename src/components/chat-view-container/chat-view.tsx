@@ -49,7 +49,6 @@ export interface Properties {
   onHiddenMessageInfoClick: () => void;
   joinChannel: () => void;
   className?: string;
-  isDirectMessage: boolean;
   showSenderAvatar?: boolean;
   isOneOnOne: boolean;
   conversationErrorMessage: string;
@@ -247,12 +246,6 @@ export class ChatView extends React.Component<Properties, State> {
         )}
         <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
           <div className='channel-view__main'>
-            {!this.props.isDirectMessage && (
-              <div className='channel-view__name'>
-                <h1>Welcome to #{this.props.name}</h1>
-                <span>This is the start of the channel.</span>
-              </div>
-            )}
             {this.props.hasLoadedMessages && this.props.messagesFetchStatus === MessagesFetchState.MORE_IN_PROGRESS && (
               <div {...cn('scroll-skeleton')}>
                 <ChatSkeleton conversationId={this.props.id} short />

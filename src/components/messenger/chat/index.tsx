@@ -182,7 +182,6 @@ export class Container extends React.Component<Properties> {
               key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
               channelId={this.props.activeConversationId}
               className='direct-message-chat__channel'
-              isDirectMessage
               showSenderAvatar={!this.isOneOnOne()}
               ref={this.chatViewContainerRef}
             />

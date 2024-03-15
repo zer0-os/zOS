@@ -119,7 +119,6 @@ const CHANNEL_DEFAULTS = {
   createdAt: 0,
   lastMessage: null,
   unreadCount: 0,
-  hasJoined: true,
   groupChannelType: GroupChannelType.Private,
   icon: '',
   isOneOnOne: true,

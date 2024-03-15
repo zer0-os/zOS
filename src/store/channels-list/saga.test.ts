@@ -29,7 +29,6 @@ const mockConversation = (id: string) => ({
   id: `conversation_${id}`,
   name: `conversation ${id}`,
   icon: 'conversation-icon',
-  hasJoined: true,
   messages: [
     { isAdmin: true, admin: { userId: 'admin-id-1' } },
     { sender: { userId: 'user-id-1' } },

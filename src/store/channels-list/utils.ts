@@ -15,7 +15,6 @@ export const toLocalChannel = (input): Partial<Channel> => {
     createdAt: input.createdAt,
     otherMembers,
     lastMessage: input.lastMessage || null,
-    groupChannelType: input.groupChannelType || '', // Is this the right default to use?
     conversationStatus: ConversationStatus.CREATED,
     isOneOnOne: input.isOneOnOne,
   };

@@ -20,7 +20,7 @@ import {
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
-import { ConversationStatus, GroupChannelType, Channel, User as UserModel } from '../../store/channels';
+import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, PowerLevels, User } from './types';
@@ -932,7 +932,6 @@ export class MatrixClient implements IChatClient {
       memberHistory: memberHistory,
       lastMessage: null,
       messages,
-      groupChannelType: GroupChannelType.Private,
       category: '',
       unreadCount,
       createdAt,

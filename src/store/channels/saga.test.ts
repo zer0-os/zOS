@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
 
 import { rootReducer } from '../reducer';
-import { ConversationStatus, GroupChannelType, denormalize as denormalizeChannel } from '../channels';
+import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
 
@@ -119,7 +119,6 @@ const CHANNEL_DEFAULTS = {
   createdAt: 0,
   lastMessage: null,
   unreadCount: 0,
-  groupChannelType: GroupChannelType.Private,
   icon: '',
   isOneOnOne: true,
   hasLoadedMessages: false,

@@ -42,22 +42,4 @@ describe(toLocalChannel, () => {
       expect(channel.lastMessage).toEqual(null);
     });
   });
-
-  describe('groupChannelType', () => {
-    it('maps directly if exists from api', async function () {
-      const apiResponse = { groupChannelType: 'private' };
-
-      const channel = toLocalChannel(apiResponse);
-
-      expect(channel.groupChannelType).toEqual('private');
-    });
-
-    it('defaults to empty if it does NOT exist from api', async function () {
-      const apiResponse = {};
-
-      const channel = toLocalChannel(apiResponse);
-
-      expect(channel.groupChannelType).toEqual('');
-    });
-  });
 });

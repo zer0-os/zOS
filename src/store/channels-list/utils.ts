@@ -4,7 +4,6 @@ import { currentUserSelector } from '../authentication/selectors';
 import { getUserSubHandle } from '../../lib/user';
 
 export const toLocalChannel = (input): Partial<Channel> => {
-  const isChannel = (input.isChannel ?? true) || !!input.isChannel;
   const otherMembers = input.otherMembers || [];
 
   return {
@@ -17,10 +16,9 @@ export const toLocalChannel = (input): Partial<Channel> => {
     createdAt: input.createdAt,
     otherMembers,
     lastMessage: input.lastMessage || null,
-    isChannel,
     groupChannelType: input.groupChannelType || '', // Is this the right default to use?
     conversationStatus: ConversationStatus.CREATED,
-    isOneOnOne: !isChannel && input.isDistinct && otherMembers.length === 1,
+    isOneOnOne: input.isOneOnOne,
   };
 };
 

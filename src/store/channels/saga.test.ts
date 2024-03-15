@@ -19,7 +19,7 @@ describe('channels list saga', () => {
   it('join channel and add hasJoined to channel state', async () => {
     const channelId = '248576469_9431f1076aa3e08783b2c2cf3b34df143442bc32';
 
-    const initialState = new StoreBuilder().withChannelList({ id: channelId, hasJoined: false }).build();
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, hasJoined: false }).build();
 
     const {
       storeState: {
@@ -109,7 +109,7 @@ describe(unreadCountUpdated, () => {
 
 describe(receiveChannel, () => {
   it('puts only the provided values if channel already exists', async () => {
-    const initialChannel = { id: 'channel-id', isChannel: false, unreadCount: 5, name: 'channel-name' };
+    const initialChannel = { id: 'channel-id', unreadCount: 5, name: 'channel-name' };
     const initialState = new StoreBuilder().withConversationList(initialChannel);
     const { storeState } = await expectSaga(receiveChannel, { id: 'channel-id', unreadCount: 3 })
       .withReducer(rootReducer, initialState.build())
@@ -147,7 +147,6 @@ const CHANNEL_DEFAULTS = {
   groupChannelType: GroupChannelType.Private,
   icon: '',
   isOneOnOne: true,
-  isChannel: false,
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,

@@ -32,13 +32,8 @@ export class StoreBuilder {
     return this;
   }
 
-  withChannelList(...args: Partial<Channel>[]) {
-    this.channelList.push(...args.map((c) => ({ isChannel: true, ...c })));
-    return this;
-  }
-
   withConversationList(...args: Partial<Channel>[]) {
-    this.conversationList.push(...args.map((c) => ({ isChannel: false, ...c })));
+    this.conversationList.push(...args);
     return this;
   }
 

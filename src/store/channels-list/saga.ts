@@ -128,7 +128,6 @@ export function* handleCreateConversationError(optimisticConversation) {
 export function* createOptimisticConversation(userIds: string[], name: string = null, _image: File = null) {
   const defaultConversationProperties = {
     hasMore: false,
-    isChannel: false,
     unreadCount: 0,
     hasLoadedMessages: true,
     messagesFetchStatus: MessagesFetchState.SUCCESS,

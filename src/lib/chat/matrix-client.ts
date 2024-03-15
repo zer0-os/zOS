@@ -925,7 +925,6 @@ export class MatrixClient implements IChatClient {
       id: room.roomId,
       name,
       icon: avatarUrl,
-      isChannel: false,
       // Even if a member leaves they stay in the member list so this will still be correct
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
       isOneOnOne: room.getMembers().length === 2,

@@ -23,7 +23,7 @@ describe(deleteMessage, () => {
 
     const messageIdToDelete = messages[1].id;
 
-    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: messageIdToDelete } })
       .withReducer(rootReducer, initialState.build())
@@ -47,7 +47,7 @@ describe(deleteMessage, () => {
       { id: 'child-message-2', rootMessageId: 'root-message' },
     ] as any;
 
-    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages });
 
     await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
       .withReducer(rootReducer, initialState.build())
@@ -68,7 +68,7 @@ describe(deleteMessage, () => {
       { id: 'child-message-2', rootMessageId: 'root-message' },
     ] as any;
 
-    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'root-message' } })
       .withReducer(rootReducer, initialState.build())
@@ -91,7 +91,7 @@ describe(deleteMessage, () => {
       { id: 'optimistic-child', rootMessageId: 'optimistic-root', optimisticId: 'optimistic-child' },
     ] as any;
 
-    const initialState = new StoreBuilder().withChannelList({ id: channelId, messages });
+    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages });
 
     const { storeState } = await expectSaga(deleteMessage, { payload: { channelId, messageId: 'optimistic-root' } })
       .withReducer(rootReducer, initialState.build())

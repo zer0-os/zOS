@@ -110,12 +110,15 @@
     linear-gradient(0deg, rgba(167, 163, 163, 0.05), rgba(167, 163, 163, 0.05));
 }
 
+$glass-separator-primary-color: rgba(215, 215, 250, 0.03);
+$glass-separator-secondary-color: rgba(163, 162, 163, 0.15);
+
 // L/Glass/Separator/Primary
 @mixin glass-separator-primary {
+  // Note: not sure where this color came from. It does not match the
+  // separator-primary that is shown on the settings menu
   background: rgba(13, 2, 24, 0.09);
 }
-
-$glass-separator-secondary-color: rgba(163, 162, 163, 0.15);
 
 // D/Glass/Ui/Shadow Low
 @mixin glass-shadow-low {

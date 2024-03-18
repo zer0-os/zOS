@@ -1,0 +1,31 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../glass';
+
+.rewards-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+
+  border: 1px solid $glass-separator-primary-color;
+  border-radius: 16px;
+  padding: 16px;
+
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  letter-spacing: 0em;
+  text-align: left;
+  @include glass-text-secondary-color;
+
+  &__usd {
+    @include glass-text-primary-color;
+    font-family: 'Roboto Mono';
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+}

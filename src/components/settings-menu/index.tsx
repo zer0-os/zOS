@@ -7,6 +7,8 @@ import { Avatar, DropdownMenu, Modal } from '@zero-tech/zui/components';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { RewardsItemContainer } from './rewards-item/container';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Properties {
   userName: string;
@@ -77,6 +79,22 @@ export class SettingsMenu extends React.Component<Properties, State> {
     );
   }
 
+  get rewardsOption() {
+    if (featureFlags.enableRewards) {
+      return {
+        id: 'rewards',
+        label: <RewardsItemContainer />,
+        onSelect: () => {},
+      };
+    }
+    return {
+      className: 'divider',
+      id: 'header-divider',
+      label: <div />,
+      onSelect: () => {},
+    };
+  }
+
   get menuItems() {
     const options = [
       {
@@ -100,12 +118,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
         label: this.renderSettingsHeader(),
         onSelect: () => {},
       },
-      {
-        className: 'divider',
-        id: 'header-divider',
-        label: <div />,
-        onSelect: () => {},
-      },
+      this.rewardsOption,
       ...options,
       {
         className: 'divider',

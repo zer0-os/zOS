@@ -41,6 +41,7 @@ import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 import { SecureBackupContainer } from '../../secure-backup/container';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
+import { RewardsModalContainer } from '../../rewards-modal/container';
 
 const cn = bemClassName('direct-message-members');
 
@@ -61,6 +62,7 @@ export interface Properties extends PublicProperties {
   groupManangemenetStage: GroupManagementSagaStage;
   joinRoomErrorContent: ErrorDialogContent;
   isBackupDialogOpen: boolean;
+  isRewardsDialogOpen: boolean;
   displayLogoutModal: boolean;
 
   startCreateConversation: () => void;
@@ -107,6 +109,7 @@ export class Container extends React.Component<Properties, State> {
       groupManangemenetStage: groupManagement.stage,
       joinRoomErrorContent,
       isBackupDialogOpen,
+      isRewardsDialogOpen: true, // XXX
       displayLogoutModal,
     };
   }
@@ -207,6 +210,10 @@ export class Container extends React.Component<Properties, State> {
     return <SecureBackupContainer onClose={this.closeBackupDialog} />;
   };
 
+  renderRewardsDialog = (): JSX.Element => {
+    return <RewardsModalContainer onClose={() => null} />;
+  };
+
   renderUserHeader() {
     return (
       <UserHeader
@@ -281,6 +288,7 @@ export class Container extends React.Component<Properties, State> {
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
+          {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
       </>
     );

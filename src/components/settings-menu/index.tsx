@@ -18,6 +18,7 @@ export interface Properties {
 
   onLogout: () => void;
   onSecureBackup: () => void;
+  onRewards: () => void;
 }
 
 interface State {
@@ -84,7 +85,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
       return {
         id: 'rewards',
         label: <RewardsItemContainer />,
-        onSelect: () => {},
+        onSelect: this.props.onRewards,
       };
     }
     return {

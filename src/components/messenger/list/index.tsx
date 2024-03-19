@@ -42,6 +42,7 @@ import './styles.scss';
 import { SecureBackupContainer } from '../../secure-backup/container';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../../rewards-modal/container';
+import { closeRewardsDialog } from '../../../store/rewards';
 
 const cn = bemClassName('direct-message-members');
 
@@ -75,6 +76,7 @@ export interface Properties extends PublicProperties {
   receiveSearchResults: (data) => void;
   closeConversationErrorDialog: () => void;
   closeBackupDialog: () => void;
+  closeRewardsDialog: () => void;
 }
 
 interface State {
@@ -90,6 +92,7 @@ export class Container extends React.Component<Properties, State> {
       chat: { activeConversationId, joinRoomErrorContent },
       groupManagement,
       matrix: { isBackupDialogOpen },
+      rewards,
     } = state;
 
     const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
@@ -109,7 +112,7 @@ export class Container extends React.Component<Properties, State> {
       groupManangemenetStage: groupManagement.stage,
       joinRoomErrorContent,
       isBackupDialogOpen,
-      isRewardsDialogOpen: true, // XXX
+      isRewardsDialogOpen: rewards.showRewardsInPopup,
       displayLogoutModal,
     };
   }
@@ -126,6 +129,7 @@ export class Container extends React.Component<Properties, State> {
       receiveSearchResults,
       closeConversationErrorDialog,
       closeBackupDialog,
+      closeRewardsDialog,
     };
   }
 
@@ -211,7 +215,7 @@ export class Container extends React.Component<Properties, State> {
   };
 
   renderRewardsDialog = (): JSX.Element => {
-    return <RewardsModalContainer onClose={() => null} />;
+    return <RewardsModalContainer onClose={this.props.closeRewardsDialog} />;
   };
 
   renderUserHeader() {

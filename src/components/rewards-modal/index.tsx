@@ -1,16 +1,19 @@
 import * as React from 'react';
 
 import { IconButton, Modal } from '@zero-tech/zui/components';
+import { IconXClose } from '@zero-tech/zui/icons';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-import { IconXClose } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('rewards-modal');
 
 export interface Properties {
-  onClose?: () => void; // XXX: require
+  totalUSD: string;
+  totalMeow: string;
+
+  onClose: () => void;
 }
 
 export class RewardsModal extends React.Component<Properties> {
@@ -45,8 +48,8 @@ export class RewardsModal extends React.Component<Properties> {
             <ZeroSymbol height={32} width={32} />
 
             <div {...cn('rewards')}>
-              <div {...cn('usd')}>$123.00</div>
-              <div {...cn('meow')}>1,234 MEOW</div>
+              <div {...cn('usd')}>{this.props.totalUSD}</div>
+              <div {...cn('meow')}>{this.props.totalMeow}</div>
             </div>
           </div>
 

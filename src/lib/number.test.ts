@@ -68,3 +68,33 @@ describe('calculateTotalPriceInUSD', () => {
     expect(calculateTotalPriceInUSD('0', currentTokenPriceInUSD)).toEqual('$0 USD');
   });
 });
+
+describe('formatUSD', () => {
+  it('should commify numbers less than 1 million', () => {
+    expect(formatUSD(1234500)).toEqual('$12,345.00');
+  });
+
+  it('should format numbers greater than or equal to 100,000 with suffix K', () => {
+    expect(formatUSD(9999999)).toEqual('$99,999.99');
+    expect(formatUSD(10000000)).toEqual('$100K');
+    expect(formatUSD(12345699)).toEqual('$123K');
+  });
+
+  it('should format numbers greater than or equal to 1 million with suffix M', () => {
+    expect(formatUSD(99999999)).toEqual('$999K');
+    expect(formatUSD(100000000)).toEqual('$1.00M');
+    expect(formatUSD(123456990)).toEqual('$1.23M');
+  });
+
+  it('should format numbers greater than or equal to 1 billion with suffix B', () => {
+    expect(formatUSD(99999999999)).toEqual('$999.99M');
+    expect(formatUSD(100000000000)).toEqual('$1.00B');
+    expect(formatUSD(123456990000)).toEqual('$1.23B');
+  });
+
+  it('should format numbers greater than or equal to 1 trillion with suffix T', () => {
+    expect(formatUSD(99999999999999)).toEqual('$999.99B');
+    expect(formatUSD(100000000000000)).toEqual('$1.00T');
+    expect(formatUSD(123456990000000)).toEqual('$1.23T');
+  });
+});

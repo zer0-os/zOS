@@ -62,3 +62,21 @@ export function calculateTotalPriceInUSD(num: string, currentTokenPriceInUSD: nu
 
   return `$${totalPriceInUSD} USD`;
 }
+
+export function formatUSD(cents: number) {
+  const dollars = Math.floor(cents / 100);
+  if (dollars >= 1000000000000) {
+    const tensOfBillions = Math.floor(dollars / 10000000000);
+    return `$${(tensOfBillions / 100).toFixed(2)}T`;
+  } else if (dollars >= 1000000000) {
+    const tensOfMillions = Math.floor(dollars / 10000000);
+    return `$${(tensOfMillions / 100).toFixed(2)}B`;
+  } else if (dollars >= 1000000) {
+    const tensOfThousands = Math.floor(dollars / 10000);
+    return `$${(tensOfThousands / 100).toFixed(2)}M`;
+  } else if (dollars >= 100000) {
+    return `$${Math.floor(dollars / 1000)}K`;
+  }
+
+  return `$${(cents / 100).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+}

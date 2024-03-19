@@ -50,9 +50,23 @@ const slice = createSlice({
     setShowRewardsInPopup: (state, action: PayloadAction<RewardsState['showRewardsInPopup']>) => {
       state.showRewardsInPopup = action.payload;
     },
+    openRewardsDialog: (state) => {
+      state.showRewardsInPopup = true;
+    },
+    closeRewardsDialog: (state) => {
+      state.showRewardsInPopup = false;
+    },
   },
 });
 
-export const { setLoading, setMeow, setMeowPreviousDay, setMeowInUSD, setShowRewardsInTooltip, setShowRewardsInPopup } =
-  slice.actions;
+export const {
+  closeRewardsDialog,
+  openRewardsDialog,
+  setLoading,
+  setMeow,
+  setMeowPreviousDay,
+  setMeowInUSD,
+  setShowRewardsInTooltip,
+  setShowRewardsInPopup,
+} = slice.actions;
 export const { reducer } = slice;

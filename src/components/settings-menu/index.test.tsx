@@ -5,6 +5,11 @@ import { DropdownMenu } from '@zero-tech/zui/components';
 import { EditProfileContainer } from '../edit-profile/container';
 import { selectDropdownItem } from '../../test/utils';
 
+const featureFlags = { enableRewards: false };
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe('settings-menu', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -14,6 +19,7 @@ describe('settings-menu', () => {
       userStatus: 'active',
       onLogout: () => {},
       onSecureBackup: () => {},
+      onRewards: () => {},
 
       ...props,
     };
@@ -27,6 +33,16 @@ describe('settings-menu', () => {
     selectDropdownItem(wrapper, DropdownMenu, 'edit_profile');
 
     expect(wrapper.find(EditProfileContainer).parent().prop('open')).toBe(true);
+  });
+
+  it('fires rewards selected event', function () {
+    featureFlags.enableRewards = true;
+    const onRewards = jest.fn();
+    const wrapper = subject({ onRewards });
+
+    selectDropdownItem(wrapper, DropdownMenu, 'rewards');
+
+    expect(onRewards).toHaveBeenCalled();
   });
 
   it('fires secure backup selected event', function () {

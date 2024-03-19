@@ -41,6 +41,7 @@ describe('messenger-list', () => {
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       isBackupDialogOpen: false,
+      isRewardsDialogOpen: false,
       displayLogoutModal: false,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
@@ -50,6 +51,7 @@ describe('messenger-list', () => {
       receiveSearchResults: () => null,
       logout: () => null,
       closeBackupDialog: () => null,
+      closeRewardsDialog: () => null,
 
       ...props,
     };
@@ -318,6 +320,7 @@ describe('messenger-list', () => {
         registration: {},
         groupManagement: {},
         matrix: {},
+        rewards: {},
       } as RootState;
     };
 

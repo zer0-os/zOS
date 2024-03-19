@@ -1,0 +1,87 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
+@import '../../functions';
+
+.rewards-modal {
+  width: 390px;
+  padding: 0px;
+  position: relative;
+
+  &__background {
+    position: absolute;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    overflow: hidden;
+    padding: 32px;
+  }
+
+  &__title-bar {
+    display: flex;
+    height: 53px;
+    @include glass-text-primary-color;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__close {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    align-items: center;
+  }
+
+  &__rewards {
+    background: url(cloudAsset('GreenBlob.svg')) no-repeat center;
+    padding: 150px 0px;
+    width: 100%;
+  }
+
+  &__usd {
+    @include glass-text-primary-color;
+    font-family: 'Roboto Mono';
+    font-size: 38px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 1.52px;
+    text-align: center;
+  }
+
+  &__meow {
+    color: theme.$color-greyscale-11;
+    font-family: 'Roboto Mono';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  &__footer {
+    @include glass-text-primary-color;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+  }
+}

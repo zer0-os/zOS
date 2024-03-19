@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { connectContainer } from '../../store/redux-container';
 import { RewardsPopup } from '.';
 import { RootState } from '../../store/reducer';
-import { calculateTotalPriceInUSD, formatWeiAmount } from '../../lib/number';
+import { calculateTotalPriceInUSDCents, formatUSD, formatWeiAmount } from '../../lib/number';
 
 interface PublicProperties {
   onClose: () => void;
@@ -46,7 +46,7 @@ export class Container extends React.Component<Properties> {
       return '';
     }
 
-    return calculateTotalPriceInUSD(this.props.meow, this.props.meowInUSD);
+    return formatUSD(calculateTotalPriceInUSDCents(this.props.meow, this.props.meowInUSD));
   }
 
   render() {

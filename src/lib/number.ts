@@ -44,21 +44,35 @@ export function formatWeiAmount(num: string): string {
  *
  * @param num - The amount of tokens as a string with 18 decimal precision.
  * @param currentTokenPriceInUSD - The current token price in USD for 1 token.
- * @returns The total price in USD as a formatted string with thousand separators and decimal precision.
- * For example, if the input token amount is "360909800000000000000000" and the current token price is
- * 0.041035425, the function will return "$14,810.09 USD".
+ * @returns The total price in USD in cents
  */
-export function calculateTotalPriceInUSD(num: string, currentTokenPriceInUSD: number): string {
+export function calculateTotalPriceInUSDCents(num: string, currentTokenPriceInUSD: number) {
   const [
     whole,
     decimalString,
   ] = getPartsFromNum(num);
   const asString = whole + decimalString;
   const asNum = Number(asString);
-  const totalPriceInUSD = (asNum * currentTokenPriceInUSD).toLocaleString('en-US', {
-    maximumFractionDigits: 2,
-    useGrouping: true,
-  });
 
-  return `$${totalPriceInUSD} USD`;
+  const totalPriceInUSD = asNum * currentTokenPriceInUSD;
+
+  return Math.round(totalPriceInUSD * 100);
+}
+
+export function formatUSD(cents: number) {
+  const dollars = Math.floor(cents / 100);
+  if (dollars >= 1000000000000) {
+    const tensOfBillions = Math.floor(dollars / 10000000000);
+    return `$${(tensOfBillions / 100).toFixed(2)}T`;
+  } else if (dollars >= 1000000000) {
+    const tensOfMillions = Math.floor(dollars / 10000000);
+    return `$${(tensOfMillions / 100).toFixed(2)}B`;
+  } else if (dollars >= 1000000) {
+    const tensOfThousands = Math.floor(dollars / 10000);
+    return `$${(tensOfThousands / 100).toFixed(2)}M`;
+  } else if (dollars >= 100000) {
+    return `$${Math.floor(dollars / 1000)}K`;
+  }
+
+  return `$${(cents / 100).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
 }

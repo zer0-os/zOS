@@ -120,5 +120,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, syncRewardsAndTokenPrice);
   yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
   yield takeEvery(SagaActionTypes.RewardsTooltipClosed, rewardsTooltipClosed);
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

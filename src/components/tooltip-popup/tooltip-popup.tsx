@@ -32,7 +32,7 @@ export class TooltipPopup extends React.Component<Properties> {
             <TooltipPrimitive.Content side={this.props.side} align={this.props.align} className={c('content')}>
               {this.props.content}
               <TooltipHead className={c('arrow')} />
-              <IconButton className={c('close-icon')} Icon={IconXClose} size='small' onClick={this.props.onClose} />
+              <IconButton className={c('close-icon')} Icon={IconXClose} size='x-small' onClick={this.props.onClose} />
             </TooltipPrimitive.Content>
           </TooltipPrimitive.Root>
         </TooltipPrimitive.Provider>

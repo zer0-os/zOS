@@ -15,23 +15,21 @@
 
   &__content {
     animation: fadein 700ms ease-out forwards;
-    margin-left: 18px;
+    margin-left: 8px;
 
     display: flex;
     align-items: center;
-    padding: 16px;
+    padding: 8px;
     max-width: 32rem;
     height: 24px;
-    border-radius: 16px;
+    border-radius: 8px;
     font-weight: 400;
-    line-height: 24px;
-    font-size: 16px;
+    line-height: 20px;
+    font-size: 14px;
 
     @include glass-shadow-and-blur;
     @include flat-thick;
     backdrop-filter: blur(32px);
-
-    /* Dark/Greyscale/Grey-12 */
     color: $glass-highlight-color;
 
     &[data-side='right'][data-align='end'] {
@@ -53,14 +51,13 @@
 
   &__arrow {
     position: absolute;
-    transform: rotate(+90deg);
-    left: -24px;
+    left: -8px;
 
     margin-top: -1px;
     margin-bottom: 3px;
   }
 
   &__close-icon {
-    margin-left: 8px;
+    margin-left: 4px;
   }
 }

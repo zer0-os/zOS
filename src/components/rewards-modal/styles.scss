@@ -55,6 +55,7 @@
 
   &__rewards {
     background: url(cloudAsset('GreenBlob.svg')) no-repeat center;
+    background-size: contain;
     padding: 150px 0px;
     width: 100%;
   }

@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import { connectContainer } from '../../../../store/redux-container';
 import { RootState } from '../../../../store/reducer';
+import { rewardsTooltipClosed } from '../../../../store/rewards';
+
 import { RewardsTooltip } from '.';
 import { Container as RewardsItemContainer } from '../../../settings-menu/rewards-item/container';
 export interface PublicProperties {}
@@ -9,6 +11,8 @@ export interface PublicProperties {}
 export interface Properties extends PublicProperties {
   meowPreviousDayInUSD: string;
   isLoading: boolean;
+
+  rewardsTooltipClosed: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -21,7 +25,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return { rewardsTooltipClosed };
   }
 
   render() {
@@ -29,7 +33,12 @@ export class Container extends React.Component<Properties> {
       return null;
     }
 
-    return <RewardsTooltip meowPreviousDayInUSD={this.props.meowPreviousDayInUSD} children={this.props.children} />;
+    return (
+      <RewardsTooltip
+        meowPreviousDayInUSD={this.props.meowPreviousDayInUSD}
+        onClose={this.props.rewardsTooltipClosed}
+      />
+    );
   }
 }
 export const RewardsToolTipContainer = connectContainer<PublicProperties>(Container);

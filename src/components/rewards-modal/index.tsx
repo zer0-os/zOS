@@ -69,11 +69,12 @@ export class RewardsModal extends React.Component<Properties, State> {
           </div>
 
           <div {...cn('footer')}>
-            Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
-            {/* // XXX: style this */}
-            <div {...cn('learn-more')} onClick={this.openFAQ}>
-              Learn More <IconArrowRight size={20} />
-            </div>
+            <span>
+              Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
+            </span>
+            <span {...cn('learn-more')} onClick={this.openFAQ}>
+              &nbsp;More <IconArrowRight size={16} />
+            </span>
           </div>
         </div>
       </>

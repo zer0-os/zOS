@@ -85,4 +85,15 @@
     font-style: normal;
     font-weight: 400;
   }
+
+  &__learn-more {
+    display: inline-flex;
+    align-self: start;
+    color: $glass-highlight-color;
+    gap: 4px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }

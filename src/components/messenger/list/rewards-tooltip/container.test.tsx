@@ -7,6 +7,7 @@ describe(Container, () => {
     const allProps = {
       meowPreviousDayInUSD: '',
       isLoading: false,
+      rewardsTooltipClosed: () => {},
       ...props,
     };
 

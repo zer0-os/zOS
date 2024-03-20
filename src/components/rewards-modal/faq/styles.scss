@@ -23,4 +23,8 @@
   &__content {
     overflow-y: scroll;
   }
+
+  & a {
+    color: $glass-highlight-color;
+  }
 }

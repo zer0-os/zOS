@@ -25,7 +25,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    if (this.props.isLoading) {
+    if (this.props.isLoading || this.props.meowPreviousDayInUSD === '$0.00') {
       return null;
     }
 

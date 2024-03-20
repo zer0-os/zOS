@@ -18,6 +18,11 @@ describe(Container, () => {
     expect(wrapper).toBeEmptyRender();
   });
 
+  it('should render null if meowPreviousDayInUSD is $0.00', () => {
+    const wrapper = subject({ isLoading: false, meowPreviousDayInUSD: '$0.00' });
+    expect(wrapper).toBeEmptyRender();
+  });
+
   describe('mapState', () => {
     test('meowPreviousDayInUSD', () => {
       const state = new StoreBuilder().withOtherState({

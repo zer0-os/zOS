@@ -15,6 +15,7 @@
 
   &__content {
     animation: fadein 700ms ease-out forwards;
+    margin-left: 18px;
 
     display: flex;
     align-items: center;
@@ -51,8 +52,9 @@
   }
 
   &__arrow {
-    fill: rgba(10, 10, 10, 0.75);
-    backdrop-filter: blur(32px);
+    position: absolute;
+    transform: rotate(+90deg);
+    left: -24px;
 
     margin-top: -1px;
     margin-bottom: 3px;

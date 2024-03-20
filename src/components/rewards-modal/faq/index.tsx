@@ -54,10 +54,7 @@ export class Faq extends React.Component<Properties> {
                 Refer-a-Mint - Inviting friends who join Messenger and then go on to{' '}
                 {this.link(this.explorerUrl, 'mint a ZERO ID')} will earn YOU rewards too!
               </li>
-              <li>
-                {/* // XXX apostrophe? */}
-                Friends Inviting Friends - Invitees of friends you've invited also help you earn.
-              </li>
+              <li>Friends Inviting Friends - Invitees of friends you've invited also help you earn.</li>
               <li>
                 Refer-a-Friend-of-a-Friend-to-Mint - Friends of friends minting Worlds or Domains in the{' '}
                 {this.link(this.explorerUrl, 'ZERO ID Explorer')} app earns you some trickle-up rewardonomics!
@@ -102,7 +99,6 @@ export class Faq extends React.Component<Properties> {
         title: 'What is ZERO ID?',
         content: (
           <>
-            {/* // XXX: Do we want separate style for code blocks? */}
             <div>
               <p>
                 ZERO ID is the native identity management system powering the ZERO ecosystem. Everything in Messenger is

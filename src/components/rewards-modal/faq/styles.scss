@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+  height: 636px;
 
   &__back {
     @include glass-text-primary-color;
@@ -17,5 +18,9 @@
     &:hover {
       cursor: pointer;
     }
+  }
+
+  &__content {
+    overflow-y: scroll;
   }
 }

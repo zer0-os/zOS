@@ -137,7 +137,9 @@ export class Faq extends React.Component<Properties> {
           <IconArrowLeft size={16} /> FAQ
         </div>
 
-        <Accordion contrast='low' items={this.backupFAQContent} />
+        <div {...cn('content')}>
+          <Accordion contrast='low' items={this.backupFAQContent} />
+        </div>
       </div>
     );
   }

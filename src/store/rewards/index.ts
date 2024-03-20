@@ -1,7 +1,6 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  Fetch = 'rewards/fetch',
   RewardsPopupClosed = 'registration/rewardsPopupClosed',
   RewardsTooltipClosed = 'registration/rewardsTooltipClosed',
 }
@@ -24,7 +23,6 @@ export const initialState: RewardsState = {
   showRewardsInPopup: false,
 };
 
-export const fetch = createAction<{}>(SagaActionTypes.Fetch);
 export const rewardsPopupClosed = createAction(SagaActionTypes.RewardsPopupClosed);
 export const rewardsTooltipClosed = createAction(SagaActionTypes.RewardsTooltipClosed);
 

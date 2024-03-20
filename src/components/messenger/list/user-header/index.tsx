@@ -8,6 +8,7 @@ import { featureFlags } from '../../../../lib/feature-flags';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
+import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 const cn = bemClassName('user-header');
 
@@ -16,6 +17,7 @@ export interface Properties {
   userHandle: string;
   userAvatarUrl: string;
   userIsOnline: boolean;
+  showRewardsTooltip: boolean;
 
   onLogout?: () => void;
   onVerifyId: () => void;
@@ -64,6 +66,7 @@ export class UserHeader extends React.Component<Properties> {
           userAvatarUrl={this.props.userAvatarUrl}
           userStatus={this.userStatus}
         />
+        {this.props.showRewardsTooltip && <RewardsToolTipContainer />}
 
         {this.renderUserDetails()}
 

@@ -1,10 +1,12 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @use '~@zero-tech/zui/styles/colors' as colors;
+@import '../../glass';
 
 .tooltip-popup {
-  display: block;
+  position: fixed;
   z-index: 1000;
-  position: relative;
+  top: 18px;
+  left: 32px;
 
   &__trigger {
     position: relative;
@@ -19,35 +21,48 @@
     padding: 16px;
     max-width: 32rem;
     height: 24px;
-    background-color: theme.$color-primary-3;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 16px;
+    font-weight: 400;
     line-height: 24px;
+    font-size: 16px;
+
+    @include glass-shadow-and-blur;
+    @include flat-thick;
+    backdrop-filter: blur(32px);
 
     /* Dark/Greyscale/Grey-12 */
-    color: theme.$color-greyscale-12;
+    color: $glass-highlight-color;
 
     &[data-side='right'][data-align='end'] {
       border-bottom-left-radius: unset;
     }
+
     &[data-side='right'][data-align='start'] {
       border-top-left-radius: unset;
     }
+
     &[data-side='left'][data-align='end'] {
       border-bottom-right-radius: unset;
     }
+
     &[data-side='left'][data-align='start'] {
       border-top-right-radius: unset;
     }
   }
 
   &__arrow {
-    fill: theme.$color-primary-3;
+    fill: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(32px);
+
     margin-top: -1px;
     margin-bottom: 3px;
   }
 
-  &__close {
+  &__close-icon {
     margin-left: 8px;
+  }
+
+  &__on-close {
+    animation: fadeout 1500ms ease-out;
   }
 }

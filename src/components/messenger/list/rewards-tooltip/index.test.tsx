@@ -7,6 +7,7 @@ describe(RewardsTooltip, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       meowPreviousDayInUSD: '$3.14',
+      onClose: () => {},
       ...props,
     };
 
@@ -20,8 +21,10 @@ describe(RewardsTooltip, () => {
   });
 
   it('closes the tooltip after 3 seconds', function () {
+    const onClose = jest.fn();
+
     jest.useFakeTimers();
-    const wrapper = subject({ meowPreviousDayInUSD: '$3.14' });
+    const wrapper = subject({ meowPreviousDayInUSD: '$3.14', onClose });
 
     expect(wrapper.find(TooltipPopup).prop('open')).toEqual(true);
 
@@ -32,5 +35,6 @@ describe(RewardsTooltip, () => {
     // closed after 1s + 2s
     jest.advanceTimersByTime(2000);
     expect(wrapper.find(TooltipPopup).prop('open')).toEqual(false);
+    expect(onClose).toHaveBeenCalled();
   });
 });

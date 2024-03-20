@@ -4,6 +4,8 @@ import { TooltipPopup } from '../../../tooltip-popup/tooltip-popup';
 
 export interface Properties {
   meowPreviousDayInUSD: string;
+
+  onClose: () => void;
 }
 
 interface State {
@@ -23,6 +25,7 @@ export class RewardsTooltip extends React.Component<Properties, State> {
 
   closeTooltip = () => {
     this.setState({ isTooltipOpen: false });
+    this.props.onClose();
   };
 
   render() {

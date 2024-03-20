@@ -16,9 +16,9 @@ export class RewardsTooltip extends React.Component<Properties, State> {
   };
 
   componentDidMount(): void {
-    // setTimeout(() => {
-    //   this.setState({ isTooltipOpen: false });
-    // }, 5000);
+    setTimeout(() => {
+      this.closeTooltip();
+    }, 3000);
   }
 
   closeTooltip = () => {

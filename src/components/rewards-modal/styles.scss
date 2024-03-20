@@ -6,6 +6,8 @@
   width: 390px;
   padding: 0px;
   position: relative;
+  height: 610px;
+  overflow: hidden;
 
   &__background {
     position: absolute;
@@ -95,5 +97,27 @@
     &:hover {
       cursor: pointer;
     }
+  }
+
+  &__slide-container {
+    display: flex;
+    gap: 0;
+    transition: transform 150ms ease-out;
+
+    &--faq {
+      transform: translateX(-390px);
+    }
+  }
+
+  &__main-content {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 390px;
+  }
+
+  &__faq-content {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 390px;
   }
 }

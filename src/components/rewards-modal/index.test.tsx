@@ -37,14 +37,12 @@ describe(RewardsModal, () => {
   it('toggles the FAQ', function () {
     const wrapper = subject({});
 
-    wrapper.find(c('learn-more')).simulate('click');
+    expect(wrapper.find(c('slide-container'))).not.toHaveClassName(c('slide-container--faq'));
 
-    expect(wrapper).not.toHaveElement(c('usd'));
-    expect(wrapper).toHaveElement(Faq);
+    wrapper.find(c('learn-more')).simulate('click');
+    expect(wrapper.find(c('slide-container'))).toHaveClassName(c('slide-container--faq'));
 
     wrapper.find(Faq).simulate('back');
-
-    expect(wrapper).toHaveElement(c('usd'));
-    expect(wrapper).not.toHaveElement(Faq);
+    expect(wrapper.find(c('slide-container'))).not.toHaveClassName(c('slide-container--faq'));
   });
 });

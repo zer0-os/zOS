@@ -36,12 +36,16 @@ export class RewardsModal extends React.Component<Properties, State> {
   closeFAQ = () => this.setState({ showFAQ: false });
 
   renderFAQ() {
-    return <Faq onBack={this.closeFAQ} />;
+    return (
+      <div {...cn('faq-content')}>
+        <Faq onBack={this.closeFAQ} />
+      </div>
+    );
   }
 
   renderModalContent() {
     return (
-      <>
+      <div {...cn('main-content')}>
         <div {...cn('background')}>
           <svg xmlns='http://www.w3.org/2000/svg' width='390' height='208' viewBox='0 0 390 208' fill='none'>
             <path
@@ -77,14 +81,17 @@ export class RewardsModal extends React.Component<Properties, State> {
             </span>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   render() {
     return (
       <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
-        {this.state.showFAQ ? this.renderFAQ() : this.renderModalContent()}
+        <div {...cn('slide-container', this.state.showFAQ && 'faq')}>
+          {this.renderModalContent()}
+          {this.renderFAQ()}
+        </div>
       </Modal>
     );
   }

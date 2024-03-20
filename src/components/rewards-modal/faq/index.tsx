@@ -111,7 +111,7 @@ export class Faq extends React.Component<Properties> {
                 and Domains. Worlds are the top-level domain in the system (0://hello) and are ideally suited for
                 communities and organizations. Domains are second-level-and-beyond subdomains in the system, existing
                 under Worlds (0://hello.goodbye), but also having the ability to mint domains under themselves
-                (0://hello.goodbye.bonjour, 0://hello.goodbye.bounjour.adieu, and so on)!
+                (0://hello.goodbye.bonjour, 0://hello.goodbye.bonjour.adieu, and so on)!
               </p>
             </div>
           </>

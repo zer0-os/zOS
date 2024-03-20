@@ -1,4 +1,4 @@
-import { call, delay, put, select, spawn, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, takeEvery } from 'redux-saga/effects';
 import getDeepProperty from 'lodash.get';
 
 import {
@@ -74,17 +74,11 @@ export function* syncRewardsAndTokenPrice() {
 
 export function* checkNewRewardsLoaded() {
   const meowPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.meowPreviousDay'));
-  const meowTotal = yield select((state) => getDeepProperty(state, 'rewards.meow'));
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
-  const isMessengerFullScreen = yield select((state) => getDeepProperty(state, 'layout.value.isMessengerFullScreen'));
 
-  if (isMessengerFullScreen && !isFirstTimeLogin && meowPreviousDay !== '0') {
+  if (!isFirstTimeLogin && meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
-    }
-
-    if (localStorage.getItem(totalRewardsKey) !== meowTotal) {
-      yield put(setShowRewardsInPopup(true));
     }
   }
 }
@@ -117,7 +111,6 @@ function* clearOnLogout() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Fetch, syncRewardsAndTokenPrice);
   yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
   yield takeEvery(SagaActionTypes.RewardsTooltipClosed, rewardsTooltipClosed);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);

@@ -1,0 +1,21 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../glass';
+
+.rewards-modal-faq {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  &__back {
+    @include glass-text-primary-color;
+    display: flex;
+    gap: 4px;
+    font-weight: 600;
+    font-size: 14px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

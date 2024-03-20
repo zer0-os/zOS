@@ -6,6 +6,7 @@ import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
+import { Faq } from './faq';
 
 const cn = bemClassName('rewards-modal');
 
@@ -23,9 +24,16 @@ export class RewardsModal extends React.Component<Properties> {
     }
   };
 
-  render() {
+  renderFAQ() {
+    // XXX on back
+    return <Faq onBack={this.props.onClose} />;
+  }
+
+  // XXX: max height scrollbar
+  // XXX: Width
+  renderModalContent() {
     return (
-      <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
+      <>
         <div {...cn('background')}>
           <svg xmlns='http://www.w3.org/2000/svg' width='390' height='208' viewBox='0 0 390 208' fill='none'>
             <path
@@ -37,7 +45,6 @@ export class RewardsModal extends React.Component<Properties> {
           </svg>
           <div {...cn('blob')} />
         </div>
-
         <div {...cn('content')}>
           <div {...cn('title-bar')}>
             <h3 {...cn('title')}>Income</h3>
@@ -57,6 +64,15 @@ export class RewardsModal extends React.Component<Properties> {
             Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
           </div>
         </div>
+      </>
+    );
+  }
+
+  render() {
+    return (
+      <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
+        {this.renderFAQ()}
+        {/* {this.renderModalContent()} */}
       </Modal>
     );
   }

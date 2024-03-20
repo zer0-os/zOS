@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { RewardsModal, Properties } from '.';
 
 import { bem } from '../../lib/bem';
+import { Faq } from './faq';
 const c = bem('.rewards-modal');
 
 describe(RewardsModal, () => {
@@ -31,5 +32,19 @@ describe(RewardsModal, () => {
     wrapper.find('Modal').simulate('openChange', false);
 
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('toggles the FAQ', function () {
+    const wrapper = subject({});
+
+    wrapper.find(c('learn-more')).simulate('click');
+
+    expect(wrapper).not.toHaveElement(c('usd'));
+    expect(wrapper).toHaveElement(Faq);
+
+    wrapper.find(Faq).simulate('back');
+
+    expect(wrapper).toHaveElement(c('usd'));
+    expect(wrapper).not.toHaveElement(Faq);
   });
 });

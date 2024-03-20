@@ -1,11 +1,12 @@
 import * as React from 'react';
 
 import { IconButton, Modal } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconArrowRight, IconXClose } from '@zero-tech/zui/icons';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
+import { Faq } from './faq';
 
 const cn = bemClassName('rewards-modal');
 
@@ -16,16 +17,31 @@ export interface Properties {
   onClose: () => void;
 }
 
-export class RewardsModal extends React.Component<Properties> {
+interface State {
+  showFAQ: boolean;
+}
+
+export class RewardsModal extends React.Component<Properties, State> {
+  state = {
+    showFAQ: false,
+  };
+
   publishIfClosing = (open: boolean) => {
     if (!open) {
       this.props.onClose();
     }
   };
 
-  render() {
+  openFAQ = () => this.setState({ showFAQ: true });
+  closeFAQ = () => this.setState({ showFAQ: false });
+
+  renderFAQ() {
+    return <Faq onBack={this.closeFAQ} />;
+  }
+
+  renderModalContent() {
     return (
-      <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
+      <>
         <div {...cn('background')}>
           <svg xmlns='http://www.w3.org/2000/svg' width='390' height='208' viewBox='0 0 390 208' fill='none'>
             <path
@@ -37,7 +53,6 @@ export class RewardsModal extends React.Component<Properties> {
           </svg>
           <div {...cn('blob')} />
         </div>
-
         <div {...cn('content')}>
           <div {...cn('title-bar')}>
             <h3 {...cn('title')}>Income</h3>
@@ -54,9 +69,22 @@ export class RewardsModal extends React.Component<Properties> {
           </div>
 
           <div {...cn('footer')}>
-            Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
+            <span>
+              Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
+            </span>
+            <span {...cn('learn-more')} onClick={this.openFAQ}>
+              &nbsp;More <IconArrowRight size={16} />
+            </span>
           </div>
         </div>
+      </>
+    );
+  }
+
+  render() {
+    return (
+      <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
+        {this.state.showFAQ ? this.renderFAQ() : this.renderModalContent()}
       </Modal>
     );
   }

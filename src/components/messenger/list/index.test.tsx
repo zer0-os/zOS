@@ -43,6 +43,7 @@ describe('messenger-list', () => {
       isBackupDialogOpen: false,
       isRewardsDialogOpen: false,
       displayLogoutModal: false,
+      showRewardsTooltip: false,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,

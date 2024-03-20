@@ -3,6 +3,7 @@ import { Properties, UserHeader } from '.';
 import { Button, IconButton } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
+import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 const c = bem('.user-header');
 
 const featureFlags = { allowVerifyId: false };
@@ -17,6 +18,7 @@ describe(UserHeader, () => {
       userHandle: '',
       userAvatarUrl: '',
       userIsOnline: true,
+      showRewardsTooltip: false,
 
       onLogout: () => null,
       onVerifyId: () => null,
@@ -71,5 +73,10 @@ describe(UserHeader, () => {
     subject({ userHandle: '0x1234567890abcdef', onVerifyId: onVerifyIdMock }).find(Button).simulate('press');
 
     expect(onVerifyIdMock).toHaveBeenCalled();
+  });
+
+  it('renders rewards tooltip when showRewardsTooltip is true', function () {
+    const wrapper = subject({ showRewardsTooltip: true });
+    expect(wrapper).toHaveElement(RewardsToolTipContainer);
   });
 });

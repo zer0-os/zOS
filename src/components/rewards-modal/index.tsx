@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { IconButton, Modal } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconArrowRight, IconXClose } from '@zero-tech/zui/icons';
 import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
 
 import { bemClassName } from '../../lib/bem';
@@ -17,20 +17,28 @@ export interface Properties {
   onClose: () => void;
 }
 
-export class RewardsModal extends React.Component<Properties> {
+interface State {
+  showFAQ: boolean;
+}
+
+export class RewardsModal extends React.Component<Properties, State> {
+  state = {
+    showFAQ: false,
+  };
+
   publishIfClosing = (open: boolean) => {
     if (!open) {
       this.props.onClose();
     }
   };
 
+  openFAQ = () => this.setState({ showFAQ: true });
+  closeFAQ = () => this.setState({ showFAQ: false });
+
   renderFAQ() {
-    // XXX on back
-    return <Faq onBack={this.props.onClose} />;
+    return <Faq onBack={this.closeFAQ} />;
   }
 
-  // XXX: max height scrollbar
-  // XXX: Width
   renderModalContent() {
     return (
       <>
@@ -62,6 +70,10 @@ export class RewardsModal extends React.Component<Properties> {
 
           <div {...cn('footer')}>
             Earn by messaging, inviting friends, and when those you invited mint a Domain or invite their friends.
+            {/* // XXX: style this */}
+            <div {...cn('learn-more')} onClick={this.openFAQ}>
+              Learn More <IconArrowRight size={20} />
+            </div>
           </div>
         </div>
       </>
@@ -71,8 +83,7 @@ export class RewardsModal extends React.Component<Properties> {
   render() {
     return (
       <Modal {...cn('')} open={true} onOpenChange={this.publishIfClosing}>
-        {this.renderFAQ()}
-        {/* {this.renderModalContent()} */}
+        {this.state.showFAQ ? this.renderFAQ() : this.renderModalContent()}
       </Modal>
     );
   }

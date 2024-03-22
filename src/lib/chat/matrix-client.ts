@@ -455,7 +455,8 @@ export class MatrixClient implements IChatClient {
           event_id: parentMessage.messageId,
         },
       };
-      (content['format'] = 'org.matrix.custom.html'), (content['formatted_body'] = message);
+      content['format'] = 'org.matrix.custom.html';
+      content['formatted_body'] = message;
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);

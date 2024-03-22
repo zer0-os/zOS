@@ -1,5 +1,6 @@
 import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { User as ChannelMember } from '../../../store/channels';
+import DOMPurify from 'dompurify';
 
 // Copied from the matrix-react-sdk
 export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: string): Promise<void> {
@@ -57,4 +58,11 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
   }
 
   return filteredResults;
+}
+
+export function parseFormattedReply(formattedBody) {
+  const replyBlockRegex = /<mx-reply>[\s\S]*?<\/mx-reply>/;
+  const cleanBody = formattedBody.replace(replyBlockRegex, '').trim();
+  const sanitizedBody = DOMPurify.sanitize(cleanBody);
+  return sanitizedBody;
 }

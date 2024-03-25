@@ -2,6 +2,7 @@ import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventT
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
+import { parsePlainBody } from './utils';
 
 async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
@@ -35,9 +36,11 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
   const parent = matrixMessage.content['m.relates_to'];
   const senderData = sdkMatrixClient.getUser(senderId);
 
+  const parsedContentBody = parsePlainBody(content.body);
+
   return {
     id: event_id,
-    message: content.body,
+    message: parsedContentBody,
     createdAt: origin_server_ts,
     updatedAt: updatedAt,
     sender: {

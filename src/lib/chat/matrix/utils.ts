@@ -69,3 +69,15 @@ export function constructFallbackForParentMessage(parentMessage) {
 
   return fallback;
 }
+
+export function parsePlainBody(body) {
+  if (!body) return '';
+
+  const parsedBody = body
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => !line.startsWith('> ') && line !== '')
+    .join('\n');
+
+  return parsedBody;
+}

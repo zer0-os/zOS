@@ -1,5 +1,5 @@
 // Import your function and any necessary dependencies
-import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete } from './utils';
+import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, parsePlainBody } from './utils';
 
 // Example room members data
 const roomMembers: any[] = [
@@ -105,5 +105,19 @@ describe(constructFallbackForParentMessage, () => {
     const fallback = constructFallbackForParentMessage(parentMessage);
 
     expect(fallback).toEqual('');
+  });
+});
+
+describe(parsePlainBody, () => {
+  it("filters out lines starting with '> '", () => {
+    const body = '> <@user:example.org> This is the first line\n> This is the second line\n\nThis is the reply message';
+    const expected = 'This is the reply message';
+
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
+
+  it('returns an empty string if all lines are whitespace or quoted', () => {
+    const body = '> Quoted line\n    \n> Another quoted line';
+    expect(parsePlainBody(body)).toEqual('');
   });
 });

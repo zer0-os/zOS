@@ -53,6 +53,7 @@ export interface Channel {
   messagesFetchStatus: MessagesFetchState;
   adminMatrixIds: string[];
   reply?: ParentMessage;
+  isFavorite: boolean;
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -71,6 +72,7 @@ export const CHANNEL_DEFAULTS = {
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,
   adminMatrixIds: [],
+  isFavorite: false,
 };
 
 export enum SagaActionTypes {

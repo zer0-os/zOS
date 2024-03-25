@@ -125,4 +125,5 @@ const CHANNEL_DEFAULTS = {
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,
   adminMatrixIds: [],
+  isFavorite: false,
 };

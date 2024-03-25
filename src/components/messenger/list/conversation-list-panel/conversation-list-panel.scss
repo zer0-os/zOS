@@ -1,6 +1,7 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../variables';
 @import '../../../../layout';
+@import '../../../../glass';
 
 @keyframes conversation-slide-in {
   0% {
@@ -15,12 +16,42 @@
 $side-padding: 16px;
 
 .messages-list {
+  &__tab-list {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  &__tab {
+    box-sizing: border-box;
+    padding: 8px 16px;
+
+    @include glass-text-secondary-color;
+    font-size: 12px;
+    font-weight: 400;
+
+    &:hover {
+      @include glass-text-primary-color;
+      cursor: pointer;
+    }
+
+    &--active {
+      @include glass-text-primary-color;
+      border-radius: 9999px;
+      border: 1px solid $glass-separator-secondary-color;
+
+      &:hover {
+        cursor: auto;
+      }
+    }
+  }
+
   &__items {
     flex-grow: 1;
     display: flex;
-    gap: 24px;
+    gap: 16px;
     flex-direction: column;
-    padding: 24px 0 16px;
+    padding: 16px 0 16px;
 
     animation: conversation-slide-in 600ms ease-in forwards;
 

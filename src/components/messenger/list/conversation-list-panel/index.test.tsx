@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { ConversationListPanel, Properties } from '.';
 import { Channel } from '../../../../store/channels';
+import { stubConversation } from '../../../../store/test/store';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -59,6 +60,21 @@ describe('ConversationListPanel', () => {
       'convo-1',
       'convo-3',
     ]);
+  });
+
+  it('renders conversations based on selected tab', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1' }),
+      stubConversation({ name: 'convo-2', isFavorite: true }),
+      stubConversation({ name: 'convo-3', isFavorite: true }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    selectTab(wrapper, 'Favorites');
+    expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-2', 'convo-3']);
+
+    selectTab(wrapper, 'All');
+    expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-1', 'convo-2', 'convo-3']);
   });
 
   it('renders conversation group names as well in the filtered conversation list', function () {
@@ -303,6 +319,13 @@ describe('ConversationListPanel', () => {
   });
 });
 
+function selectTab(wrapper, tabName: string) {
+  wrapper
+    .find('.messages-list__tab')
+    .filterWhere((n) => n.text().trim() === tabName)
+    .simulate('click');
+}
+
 function renderedUserSearchResults(wrapper) {
   return wrapper.find('UserSearchResults').prop('results');
 }
@@ -315,4 +338,8 @@ async function searchFor(wrapper, searchString) {
 
 function renderedConversations(wrapper) {
   return wrapper.find('ConversationItem').map((node) => node.prop('conversation')) as Channel[];
+}
+
+function renderedConversationNames(wrapper) {
+  return renderedConversations(wrapper).map((c) => c.name);
 }

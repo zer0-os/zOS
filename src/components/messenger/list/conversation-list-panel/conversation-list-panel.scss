@@ -25,6 +25,7 @@ $side-padding: 16px;
   &__tab {
     box-sizing: border-box;
     padding: 8px 16px;
+    border: 1px solid transparent;
 
     @include glass-text-secondary-color;
     font-size: 12px;

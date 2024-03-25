@@ -80,7 +80,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       if (this.state.selectedTab === Tab.All) {
         return this.props.conversations;
       } else {
-        return this.props.conversations.filter((c) => c.isFavorite);
+        return this.favoriteConversations;
       }
     }
 
@@ -125,6 +125,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ selectedTab: Tab.Favorites });
   };
 
+  get favoriteConversations() {
+    return this.props.conversations.filter((c) => c.isFavorite);
+  }
+
+  get allUnreadCount() {
+    const count = this.props.conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    return count < 99 ? count : '99+';
+  }
+
+  get favoritesUnreadCount() {
+    const count = this.favoriteConversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    return count < 99 ? count : '99+';
+  }
+
   renderEmptyConversationList = () => {
     if (this.state.selectedTab === Tab.Favorites) {
       return (
@@ -159,9 +173,15 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             <div {...cn('tab-list')}>
               <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
                 All
+                <div {...cn('tab-badge')}>
+                  <span>{this.allUnreadCount}</span>
+                </div>
               </div>
               <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
                 Favorites
+                <div {...cn('tab-badge')}>
+                  <span>{this.favoritesUnreadCount}</span>
+                </div>
               </div>
             </div>
           </FeatureFlag>

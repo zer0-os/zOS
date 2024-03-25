@@ -24,6 +24,7 @@ $side-padding: 16px;
   }
 
   &__tab {
+    position: relative;
     box-sizing: border-box;
     padding: 8px 16px;
     border: 1px solid transparent;
@@ -45,7 +46,37 @@ $side-padding: 16px;
       &:hover {
         cursor: auto;
       }
+
+      .messages-list__tab-badge {
+        display: none;
+      }
     }
+  }
+
+  &__tab-badge {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    height: 16px;
+    min-width: 16px;
+    padding: 2px 4px;
+
+    border-radius: 9999px;
+    @include glass-materials-raised;
+    color: $glass-highlight-color;
+    @include glass-glow-highlight-small;
+
+    font-family: 'Roboto Mono';
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.32px;
   }
 
   &__items {

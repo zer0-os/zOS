@@ -86,6 +86,22 @@ describe('ConversationListPanel', () => {
     expect(wrapper).toHaveElement('.messages-list__favorites-preview');
   });
 
+  it('renders tab unread counts', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', unreadCount: 3 }),
+      stubConversation({ name: 'convo-2', unreadCount: 11, isFavorite: true }),
+      stubConversation({ name: 'convo-3', unreadCount: 17, isFavorite: true }),
+      stubConversation({ name: 'convo-4', unreadCount: 7 }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const allTab = tabNamed(wrapper, 'All');
+    expect(allTab.find('.messages-list__tab-badge')).toHaveText('38');
+
+    const favoritesTab = tabNamed(wrapper, 'Favorites');
+    expect(favoritesTab.find('.messages-list__tab-badge')).toHaveText('28');
+  });
+
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
       { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },
@@ -328,11 +344,12 @@ describe('ConversationListPanel', () => {
   });
 });
 
+function tabNamed(wrapper, tabName: string) {
+  return wrapper.find('.messages-list__tab').filterWhere((n) => n.childAt(0).text().trim() === tabName);
+}
+
 function selectTab(wrapper, tabName: string) {
-  wrapper
-    .find('.messages-list__tab')
-    .filterWhere((n) => n.text().trim() === tabName)
-    .simulate('click');
+  tabNamed(wrapper, tabName).simulate('click');
 }
 
 function renderedUserSearchResults(wrapper) {

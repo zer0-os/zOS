@@ -2,6 +2,7 @@
 @import '../../../../variables';
 @import '../../../../layout';
 @import '../../../../glass';
+@import '../../../../functions';
 
 @keyframes conversation-slide-in {
   0% {
@@ -93,6 +94,30 @@ $side-padding: 16px;
     &-top-padding {
       padding-top: 32px;
     }
+  }
+
+  &__favorites-preview {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    gap: 16px;
+
+    color: theme.$color-greyscale-11;
+
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+
+    align-items: center;
+    text-align: center;
+  }
+
+  &__favorites-preview-image {
+    width: 200px;
+    height: 89px;
+    background: url(cloudAsset('FavoritePreview'));
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 }
 

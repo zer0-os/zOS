@@ -49,9 +49,9 @@ $side-padding: 16px;
   &__items {
     flex-grow: 1;
     display: flex;
-    gap: 24px;
+    gap: 16px;
     flex-direction: column;
-    padding: 24px 0 16px;
+    padding: 16px 0 16px;
 
     animation: conversation-slide-in 600ms ease-in forwards;
 

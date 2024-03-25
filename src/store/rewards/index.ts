@@ -1,7 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
-  RewardsPopupClosed = 'registration/rewardsPopupClosed',
+  TotalRewardsViewed = 'rewards/totalRewardsViewed',
   RewardsTooltipClosed = 'registration/rewardsTooltipClosed',
 }
 
@@ -12,6 +12,7 @@ export type RewardsState = {
   meowPreviousDay: string;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
+  showNewRewardsIndicator: boolean;
 };
 
 export const initialState: RewardsState = {
@@ -21,9 +22,10 @@ export const initialState: RewardsState = {
   meowPreviousDay: '0',
   showRewardsInTooltip: false,
   showRewardsInPopup: false,
+  showNewRewardsIndicator: false,
 };
 
-export const rewardsPopupClosed = createAction(SagaActionTypes.RewardsPopupClosed);
+export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
 export const rewardsTooltipClosed = createAction(SagaActionTypes.RewardsTooltipClosed);
 
 const slice = createSlice({
@@ -54,6 +56,9 @@ const slice = createSlice({
     closeRewardsDialog: (state) => {
       state.showRewardsInPopup = false;
     },
+    setShowNewRewardsIndicator: (state, action: PayloadAction<RewardsState['showNewRewardsIndicator']>) => {
+      state.showNewRewardsIndicator = action.payload;
+    },
   },
 });
 
@@ -66,5 +71,6 @@ export const {
   setMeowInUSD,
   setShowRewardsInTooltip,
   setShowRewardsInPopup,
+  setShowNewRewardsIndicator,
 } = slice.actions;
 export const { reducer } = slice;

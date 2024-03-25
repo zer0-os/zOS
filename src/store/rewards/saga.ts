@@ -9,6 +9,7 @@ import {
   setMeowInUSD,
   setMeowPreviousDay,
   setShowRewardsInPopup,
+  setShowNewRewardsIndicator,
 } from '.';
 import { RewardsResp, fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI, fetchRewards } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -73,23 +74,23 @@ export function* syncRewardsAndTokenPrice() {
 }
 
 export function* checkNewRewardsLoaded() {
-  const meowPreviousDay = yield select((state) => getDeepProperty(state, 'rewards.meowPreviousDay'));
+  const { meowPreviousDay, meow } = yield select((state) => state.rewards);
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
 
   if (!isFirstTimeLogin && meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
     }
+    if (localStorage.getItem(totalRewardsKey) !== meow) {
+      yield put(setShowNewRewardsIndicator(true));
+    }
   }
 }
 
-export function* rewardsPopupClosed() {
-  // set last viewed "total" rewards to the current rewards when the popup is closed
-  const { meow, showRewardsInPopup } = yield select((state) => state.rewards);
-  if (showRewardsInPopup) {
-    localStorage.setItem(totalRewardsKey, meow);
-    yield put(setShowRewardsInPopup(false));
-  }
+export function* totalRewardsViewed() {
+  const { meow } = yield select((state) => state.rewards);
+  localStorage.setItem(totalRewardsKey, meow);
+  yield put(setShowNewRewardsIndicator(false));
 }
 
 export function* rewardsTooltipClosed() {
@@ -108,10 +109,11 @@ function* clearOnLogout() {
   yield put(setMeowInUSD(0.0));
   yield put(setShowRewardsInTooltip(false));
   yield put(setShowRewardsInPopup(false));
+  yield put(setShowNewRewardsIndicator(false));
 }
 
 export function* saga() {
-  yield takeEvery(SagaActionTypes.RewardsPopupClosed, rewardsPopupClosed);
+  yield takeEvery(SagaActionTypes.TotalRewardsViewed, totalRewardsViewed);
   yield takeEvery(SagaActionTypes.RewardsTooltipClosed, rewardsTooltipClosed);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);

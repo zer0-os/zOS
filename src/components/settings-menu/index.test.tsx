@@ -17,6 +17,8 @@ describe('settings-menu', () => {
       userHandle: '',
       userAvatarUrl: '',
       userStatus: 'active',
+      hasUnviewedRewards: false,
+      onOpen: () => null,
       onLogout: () => {},
       onSecureBackup: () => {},
       onRewards: () => {},
@@ -61,5 +63,30 @@ describe('settings-menu', () => {
     selectDropdownItem(wrapper, DropdownMenu, 'logout');
 
     expect(mockOnLogout).toHaveBeenCalled();
+  });
+
+  it('sets the avatar active when the dropdown is open', function () {
+    const wrapper = subject({ hasUnviewedRewards: false });
+
+    wrapper.find(DropdownMenu).simulate('openChange', true);
+
+    const dropdown = wrapper.find(DropdownMenu);
+    expect((dropdown.prop('trigger') as any).props.isActive).toEqual(true);
+  });
+
+  it('sets the avatar active if the user has unviewed rewards', function () {
+    const wrapper = subject({ hasUnviewedRewards: true });
+
+    const dropdown = wrapper.find(DropdownMenu);
+    expect((dropdown.prop('trigger') as any).props.isActive).toEqual(true);
+  });
+
+  it('calls onOpen prop when the menu is opened', function () {
+    const onOpen = jest.fn();
+    const wrapper = subject({ onOpen });
+
+    wrapper.find(DropdownMenu).simulate('openChange', true);
+
+    expect(onOpen).toHaveBeenCalled();
   });
 });

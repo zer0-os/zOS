@@ -58,3 +58,14 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
 
   return filteredResults;
 }
+
+export function constructFallbackForParentMessage(parentMessage) {
+  if (!parentMessage.message) return '';
+
+  const fallback = parentMessage.message
+    .split('\n')
+    .map((line, index) => (index === 0 ? `> <${parentMessage.sender.matrixId}> ${line}` : `> ${line}`))
+    .join('\n');
+
+  return fallback;
+}

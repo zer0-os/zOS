@@ -1,5 +1,5 @@
 // Import your function and any necessary dependencies
-import { getFilteredMembersForAutoComplete } from './utils';
+import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete } from './utils';
 
 // Example room members data
 const roomMembers: any[] = [
@@ -83,5 +83,27 @@ describe('getFilteredMembersForAutoComplete', () => {
         profileImage: '',
       },
     ]);
+  });
+});
+
+describe(constructFallbackForParentMessage, () => {
+  it('constructs fallback content correctly for a valid parent message', () => {
+    const parentMessage = {
+      messageId: 123,
+      sender: { matrixId: '@user:example.org' },
+      message: 'This is the first line\nThis is the second line',
+    };
+
+    const fallback = constructFallbackForParentMessage(parentMessage);
+
+    expect(fallback).toEqual('> <@user:example.org> This is the first line\n> This is the second line');
+  });
+
+  it('returns an empty string if parent message is empty', () => {
+    const parentMessage = { messageId: 123, sender: { matrixId: '@user:example.org' }, message: '' };
+
+    const fallback = constructFallbackForParentMessage(parentMessage);
+
+    expect(fallback).toEqual('');
   });
 });

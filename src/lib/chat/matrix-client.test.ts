@@ -493,28 +493,6 @@ describe('matrix client', () => {
 
       expect(result).toMatchObject({ id: '$cz6gG4_AGHTZGiPiPDCxaOZAGqGhANGPnB058ZSrE9c' });
     });
-
-    it('sends a reply message with correct properties', async () => {
-      const sendMessage = jest.fn().mockResolvedValue({ event_id: 'reply_event_id' });
-      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendMessage })) });
-      const parentMessage = { messageId: 'parent_event_id' } as any;
-
-      await client.connect(null, 'token');
-      await client.sendMessagesByChannelId('channel-id', 'message', [], parentMessage);
-
-      expect(sendMessage).toHaveBeenCalledWith(
-        'channel-id',
-        expect.objectContaining({
-          'm.relates_to': {
-            'm.in_reply_to': {
-              event_id: parentMessage.messageId,
-            },
-          },
-          format: 'org.matrix.custom.html',
-          formatted_body: 'message',
-        })
-      );
-    });
   });
 
   describe('deleteMessageByRoomId', () => {

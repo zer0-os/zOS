@@ -35,7 +35,7 @@ import {
   MatrixConstants,
   MembershipStateType,
 } from './matrix/types';
-import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
+import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
 import { encryptFile } from './matrix/media';
@@ -450,13 +450,15 @@ export class MatrixClient implements IChatClient {
     };
 
     if (parentMessage) {
+      const fallback = constructFallbackForParentMessage(parentMessage);
+
+      content.body = `${fallback}\n\n${message}`;
+
       content['m.relates_to'] = {
         'm.in_reply_to': {
           event_id: parentMessage.messageId,
         },
       };
-      content['format'] = 'org.matrix.custom.html';
-      content['formatted_body'] = message;
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);

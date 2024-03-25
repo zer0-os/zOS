@@ -540,7 +540,6 @@ describe('matrix client', () => {
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
 
       expect(fetchedMessages).toHaveLength(1);
-      console.log('FESTCHED', fetchedMessages);
       expect(fetchedMessages[0].message).toEqual('message 2');
     });
 
@@ -575,7 +574,6 @@ describe('matrix client', () => {
 
       await client.connect(null, 'token');
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
-      console.log('FESTCHED', fetchedMessages);
 
       expect(fetchedMessages).toHaveLength(3);
     });

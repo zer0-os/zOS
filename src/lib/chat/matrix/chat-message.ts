@@ -36,7 +36,10 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
   const parent = matrixMessage.content['m.relates_to'];
   const senderData = sdkMatrixClient.getUser(senderId);
 
-  const parsedContentBody = parsePlainBody(content.body);
+  let parsedContentBody = content.body;
+  if (parent && parent['m.in_reply_to']) {
+    parsedContentBody = await parsePlainBody(content.body);
+  }
 
   return {
     id: event_id,

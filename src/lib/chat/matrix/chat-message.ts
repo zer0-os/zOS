@@ -38,7 +38,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 
   let messageContent = content.body;
   if (parent && parent['m.in_reply_to']) {
-    messageContent = await parsePlainBody(content.body);
+    messageContent = parsePlainBody(content.body);
   }
 
   return {

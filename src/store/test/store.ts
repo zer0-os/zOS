@@ -9,6 +9,10 @@ import { initialState as authenticationInitialState } from '../authentication';
 import { MatrixState, initialState as initialMatrixState } from '../matrix';
 import { initialState as initialLoginState } from '../login';
 
+type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+};
+
 export class StoreBuilder {
   channelList: Partial<Channel>[] = [];
   conversationList: Partial<Channel>[] = [];
@@ -58,7 +62,7 @@ export class StoreBuilder {
     return this;
   }
 
-  withOtherState(data: any) {
+  withOtherState(data: RecursivePartial<RootState>) {
     this.otherState = data;
     return this;
   }

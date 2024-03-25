@@ -3,10 +3,10 @@ import { Container } from './container';
 
 describe(Container, () => {
   describe('mapState', () => {
-    test('returns empty props', () => {
-      const state = new StoreBuilder();
+    test('hasUnviewedRewards', () => {
+      const state = new StoreBuilder().withOtherState({ rewards: { showNewRewardsIndicator: true } });
 
-      expect(Container.mapState(state.build())).toEqual({});
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ hasUnviewedRewards: true }));
     });
   });
 });

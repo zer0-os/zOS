@@ -15,7 +15,9 @@ export interface Properties {
   userHandle: string;
   userAvatarUrl: string;
   userStatus: 'active' | 'offline';
+  hasUnviewedRewards: boolean;
 
+  onOpen: () => void;
   onLogout: () => void;
   onSecureBackup: () => void;
   onRewards: () => void;
@@ -41,6 +43,9 @@ export class SettingsMenu extends React.Component<Properties, State> {
 
   handleOpenChange = (isOpen) => {
     this.setState({ isDropdownOpen: isOpen });
+    if (isOpen) {
+      this.props.onOpen();
+    }
   };
 
   renderSettingsHeader() {
@@ -136,6 +141,10 @@ export class SettingsMenu extends React.Component<Properties, State> {
     ];
   }
 
+  get shouldAvatarHaveHighlight() {
+    return this.props.hasUnviewedRewards || this.state.isDropdownOpen;
+  }
+
   render() {
     return (
       <>
@@ -147,7 +156,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
           onOpenChange={this.handleOpenChange}
           trigger={
             <Avatar
-              isActive={this.state.isDropdownOpen}
+              isActive={this.shouldAvatarHaveHighlight}
               size={'medium'}
               type={'circle'}
               imageURL={this.props.userAvatarUrl}

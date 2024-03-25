@@ -6,7 +6,7 @@ import { when } from 'jest-when';
 import { config } from '../../config';
 import { PowerLevels } from './types';
 
-jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined), parsePlainBody: jest.fn() }));
+jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
 const mockUploadImage = jest.fn();
 jest.mock('../../store/channels-list/api', () => {

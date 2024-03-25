@@ -130,11 +130,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   }
 
   get allUnreadCount() {
-    return this.props.conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    const count = this.props.conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    return count < 99 ? count : '99+';
   }
 
   get favoritesUnreadCount() {
-    return this.favoriteConversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    const count = this.favoriteConversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    return count < 99 ? count : '99+';
   }
 
   renderEmptyConversationList = () => {

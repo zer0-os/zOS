@@ -125,6 +125,22 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ selectedTab: Tab.Favorites });
   };
 
+  renderEmptyConversationList = () => {
+    if (this.state.selectedTab === Tab.Favorites) {
+      return (
+        <div {...cn('favorites-preview')}>
+          <span>
+            Conversations you 'Favorite'
+            <br />
+            will appear here...
+          </span>
+          <div {...cn('favorites-preview-image')}></div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   render() {
     return (
       <>
@@ -152,16 +168,18 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
-              {this.filteredConversations.map((c) => (
-                <ConversationItem
-                  key={c.id}
-                  conversation={c}
-                  filter={this.state.filter}
-                  onClick={this.openExistingConversation}
-                  myUserId={this.props.myUserId}
-                  activeConversationId={this.props.activeConversationId}
-                />
-              ))}
+              {this.filteredConversations.length > 0 &&
+                this.filteredConversations.map((c) => (
+                  <ConversationItem
+                    key={c.id}
+                    conversation={c}
+                    filter={this.state.filter}
+                    onClick={this.openExistingConversation}
+                    myUserId={this.props.myUserId}
+                    activeConversationId={this.props.activeConversationId}
+                  />
+                ))}
+              {this.filteredConversations.length === 0 && !this.state.filter && this.renderEmptyConversationList()}
 
               {this.filteredConversations?.length === 0 &&
                 this.state.userSearchResults?.length === 0 &&

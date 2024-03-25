@@ -77,6 +77,15 @@ describe('ConversationListPanel', () => {
     expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-1', 'convo-2', 'convo-3']);
   });
 
+  it('renders default state when favorites is empty', function () {
+    const conversations = [stubConversation({ name: 'convo-1' })];
+    const wrapper = subject({ conversations: conversations as any });
+
+    selectTab(wrapper, 'Favorites');
+
+    expect(wrapper).toHaveElement('.messages-list__favorites-preview');
+  });
+
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
       { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },

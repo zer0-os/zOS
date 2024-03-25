@@ -27,15 +27,21 @@ export interface Properties {
   onConversationClick: (payload: { conversationId: string }) => void;
 }
 
+enum Tab {
+  All = 'all',
+  Favorites = 'favorites',
+}
+
 interface State {
   filter: string;
   inviteDialogOpen: boolean;
   userSearchResults: Option[];
+  selectedTab: Tab;
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<ScrollbarContainer>;
-  state = { filter: '', inviteDialogOpen: false, userSearchResults: [] };
+  state = { filter: '', inviteDialogOpen: false, userSearchResults: [], selectedTab: Tab.All };
 
   constructor(props) {
     super(props);
@@ -70,7 +76,11 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   get filteredConversations() {
     if (!this.state.filter) {
-      return this.props.conversations;
+      if (this.state.selectedTab === Tab.All) {
+        return this.props.conversations;
+      } else {
+        return this.props.conversations.filter((c) => c.isFavorite);
+      }
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
@@ -106,6 +116,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ filter: '' });
   };
 
+  selectAll = () => {
+    this.setState({ selectedTab: Tab.All });
+  };
+
+  selectFavorites = () => {
+    this.setState({ selectedTab: Tab.Favorites });
+  };
+
   render() {
     return (
       <>
@@ -120,6 +138,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
+          <div>
+            <div {...cn('tab')} onClick={this.selectAll}>
+              All
+            </div>
+            <div {...cn('tab')} onClick={this.selectFavorites}>
+              Favorites
+            </div>
+          </div>
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
               {this.filteredConversations.map((c) => (

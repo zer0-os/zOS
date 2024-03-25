@@ -14,6 +14,7 @@ import { getDirectMatches, getIndirectMatches } from './utils';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
+import { FeatureFlag } from '../../../feature-flag';
 
 const cn = bemClassName('messages-list');
 
@@ -138,14 +139,17 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          <div>
-            <div {...cn('tab')} onClick={this.selectAll}>
-              All
+          <FeatureFlag featureFlag='enableFavorites'>
+            <div {...cn('tab-list')}>
+              <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
+                All
+              </div>
+              <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
+                Favorites
+              </div>
             </div>
-            <div {...cn('tab')} onClick={this.selectFavorites}>
-              Favorites
-            </div>
-          </div>
+          </FeatureFlag>
+
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
               {this.filteredConversations.map((c) => (

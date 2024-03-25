@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import { ConversationListPanel, Properties } from '.';
 import { Channel } from '../../../../store/channels';
 import { stubConversation } from '../../../../store/test/store';
-import { buttonLabelled } from '../../../../test/utils';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {

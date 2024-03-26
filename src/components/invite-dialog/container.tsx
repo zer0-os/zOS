@@ -30,8 +30,8 @@ export class Container extends React.Component<Properties> {
       inviteUrl: createInvitation.url,
       assetPath: config.imageAssetsPath,
       invitesUsed: createInvitation.invitesUsed,
-      isLoading: createInvitation.isLoading,
       inviteCount: createInvitation.inviteCount,
+      isLoading: createInvitation.isLoading,
     };
   }
 

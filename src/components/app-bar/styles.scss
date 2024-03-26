@@ -1,0 +1,11 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+@import '../../glass';
+
+.app-bar {
+  width: 88px;
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  @include main-background;
+}

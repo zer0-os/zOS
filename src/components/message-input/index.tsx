@@ -328,7 +328,7 @@ export class MessageInput extends React.Component<Properties, State> {
           )}
         </div>
         <div
-          className={classNames(c('input-row'), this.props.className, {
+          className={classNames(c('input-row'), {
             'message-input__container--editing': this.props.isEditing,
           })}
         >
@@ -467,7 +467,7 @@ export class MessageInput extends React.Component<Properties, State> {
   render() {
     return (
       <div
-        className={classNames('message-input', this.props.className, {
+        className={classNames('message-input', {
           'message-input--editing': this.props.isEditing,
         })}
       >

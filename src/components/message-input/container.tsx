@@ -9,7 +9,6 @@ import { ParentMessage } from '../../lib/chat/types';
 import { currentUserSelector } from '../../store/authentication/saga';
 
 export interface PublicProperties {
-  className?: string;
   onSubmit: (message: string, mentionedUserIds: User['userId'][], media: Media[]) => void;
   initialValue?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
@@ -61,7 +60,6 @@ export class Container extends React.Component<Properties> {
 
     return (
       <MessageInputComponent
-        className={this.props.className}
         id={this.props.id}
         initialValue={this.props.initialValue}
         onSubmit={this.props.onSubmit}

@@ -14,7 +14,6 @@ import { IconSend3 } from '@zero-tech/zui/icons';
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
-      className: '',
       placeholder: '',
       reply: null,
       onSubmit: () => undefined,
@@ -34,12 +33,6 @@ describe('MessageInput', () => {
     return shallow(<MessageInput {...allProps}>{child}</MessageInput>);
   };
 
-  it('adds className', () => {
-    const wrapper = subject({ className: 'message-input' });
-
-    expect(wrapper.hasClass('message-input')).toBeTrue();
-  });
-
   it('adds placeholder', () => {
     const wrapper = subject({ placeholder: 'Speak' });
     const dropzone = wrapper.find(Dropzone).shallow();
@@ -47,15 +40,9 @@ describe('MessageInput', () => {
     expect(dropzone.find(MentionsInput).prop('placeholder')).toEqual('Speak');
   });
 
-  it('it renders the messageInput', function () {
-    const wrapper = subject({ className: 'chat' });
-
-    expect(wrapper.find('.message-input').exists()).toBe(true);
-  });
-
   it('should call editActions', function () {
     const renderAfterInput = jest.fn();
-    const wrapper = subject({ renderAfterInput, className: 'chat' });
+    const wrapper = subject({ renderAfterInput });
     const _dropzone = wrapper.find(Dropzone).shallow();
 
     expect(renderAfterInput).toHaveBeenCalled();

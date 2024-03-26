@@ -13,7 +13,7 @@
     padding: 8px;
 
     @include glass-text-secondary-color;
-    background-color: $l-glass-state-default-color;
+    background-color: $glass-state-default-color;
   }
 
   &--active,

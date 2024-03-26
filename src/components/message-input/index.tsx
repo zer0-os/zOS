@@ -11,14 +11,13 @@ import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboar
 import Menu from './menu/menu';
 import { EmojiPicker } from './emoji-picker/emoji-picker';
 import ReplyCard from '../reply-card/reply-card';
-import MessageAudioRecorder from '../message-audio-recorder';
 import { Giphy, Properties as GiphyProperties } from './giphy/giphy';
 import { ViewModes } from '../../shared-components/theme-engine';
 import AudioCards from '../../platform-apps/channels/audio-cards';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
-import { IconFaceSmile, IconSend3, IconMicrophone2, IconStickerCircle } from '@zero-tech/zui/icons';
+import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
 import { Avatar, IconButton, Tooltip } from '@zero-tech/zui/components';
 
 import classNames from 'classnames';
@@ -48,7 +47,6 @@ interface State {
   attachments: Media[];
   isEmojisActive: boolean;
   isGiphyActive: boolean;
-  isMicActive: boolean;
   isSendTooltipOpen: boolean;
 }
 
@@ -58,7 +56,6 @@ export class MessageInput extends React.Component<Properties, State> {
     mentionedUserIds: [],
     media: [],
     attachments: [],
-    isMicActive: false,
     isEmojisActive: false,
     isGiphyActive: false,
     isSendTooltipOpen: false,
@@ -166,28 +163,6 @@ export class MessageInput extends React.Component<Properties, State> {
       event.preventDefault();
       this.onSend();
     }
-  };
-
-  startMic = (): void => {
-    if (this.state.isMicActive) {
-      return this.cancelRecording();
-    }
-    this.setState({ isMicActive: true });
-  };
-
-  cancelRecording = (): void => {
-    this.setState({ isMicActive: false });
-    this.props.onMessageInputRendered(this.textareaRef);
-  };
-
-  createAudioClip = (recordedBlob: Media) => {
-    if (!this.state.isMicActive) {
-      return;
-    }
-
-    this.mediaSelected([recordedBlob]);
-    this.setState({ isMicActive: false });
-    this.props.onMessageInputRendered(this.textareaRef);
   };
 
   contentChanged = (event): void => {
@@ -360,11 +335,6 @@ export class MessageInput extends React.Component<Properties, State> {
     return this.allowGiphy || this.allowFileAttachment;
   }
 
-  get allowVoiceMessage() {
-    // Feature not implemented in Matrix yet
-    return false && !this.hasInputValue;
-  }
-
   get hasInputValue() {
     return this.state.value?.length > 0;
   }
@@ -447,11 +417,6 @@ export class MessageInput extends React.Component<Properties, State> {
                         />
                       </div>
                       {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
-                      {this.state.isMicActive && (
-                        <div>
-                          <MessageAudioRecorder onClose={this.cancelRecording} onMediaSelected={this.createAudioClip} />
-                        </div>
-                      )}
 
                       <MentionsInput
                         inputRef={this.textareaRef}
@@ -499,14 +464,6 @@ export class MessageInput extends React.Component<Properties, State> {
                     isFilled={this.sendHighlighted()}
                     label='send'
                   />
-                  {this.allowVoiceMessage && (
-                    <IconButton
-                      className={classNames('message-input__icon', 'message-input__icon--end-action')}
-                      onClick={this.startMic}
-                      Icon={IconMicrophone2}
-                      size='small'
-                    />
-                  )}
                 </Tooltip>
               </div>
             </div>

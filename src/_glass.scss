@@ -77,9 +77,11 @@
     rgba(10, 10, 10, 0.5);
 }
 
+$flat-thick-color: rgb(10, 10, 10, 0.75);
+
 // "flat" style mixin
 @mixin flat-thick {
-  background: rgba(10, 10, 10, 0.75);
+  background: $flat-thick-color;
   backdrop-filter: blur(64px);
 }
 

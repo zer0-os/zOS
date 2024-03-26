@@ -15,8 +15,8 @@ export class AppBar extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('', !featureFlags.enableAppBar && 'disabled')}>
-        <WorldPanelItem Icon={IconMessageSquare2} isActive />
-        <WorldPanelItem Icon={IconDotsGrid} isActive={false} />
+        <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
+        <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} />
       </div>
     );
   }

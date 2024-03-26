@@ -8,12 +8,13 @@ const cn = bemClassName('world-panel-item');
 
 export interface Properties {
   Icon: React.JSXElementConstructor<IconProps>;
+  isActive: boolean;
 }
 
 export class WorldPanelItem extends React.Component<Properties> {
   render() {
     return (
-      <div {...cn('')}>
+      <div {...cn('', this.props.isActive && 'active')}>
         <this.props.Icon size={'24px'} />
       </div>
     );

@@ -17,7 +17,6 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
-  invitesUsed: number;
   inviteUrl: string;
   assetsPath: string;
   isLoading: boolean;

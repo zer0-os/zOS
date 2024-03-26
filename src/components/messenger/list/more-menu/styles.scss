@@ -1,0 +1,17 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.more-menu-trigger {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+  background-color: theme.$color-greyscale-transparency-3;
+}
+
+.menu-item {
+  display: flex;
+  gap: 8px;
+}

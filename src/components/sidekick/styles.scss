@@ -17,7 +17,7 @@
   display: flex;
 
   flex-shrink: 0;
-  padding: 16px;
+  padding: 16px 16px 16px 0px;
 
   .scroll-container__gradient {
     background: linear-gradient(to bottom, transparent, theme.$background-color-tertiary-hover 100%);

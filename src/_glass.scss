@@ -131,6 +131,7 @@ $glass-separator-secondary-color: rgba(163, 162, 163, 0.15);
 }
 
 $glass-highlight-color: rgba(1, 244, 203, 1);
+$l-glass-state-default-color: rgba(10, 10, 10, 0.05);
 
 // Because the messages in the conversation have to go under the gradient we
 // can't apply this to just the main background. Provide a mixin so all components

@@ -1,6 +1,8 @@
 import { shallow } from 'enzyme';
 
 import { AppBar, Properties } from '.';
+import { WorldPanelItem } from './world-panel-item';
+import { IconMessageSquare2 } from '@zero-tech/zui/icons';
 
 describe(AppBar, () => {
   const subject = (props: Partial<Properties>) => {
@@ -11,9 +13,9 @@ describe(AppBar, () => {
     return shallow(<AppBar {...allProps} />);
   };
 
-  it('TODO renders', function () {
+  it('renders the Messenger item', function () {
     const wrapper = subject({});
 
-    expect(wrapper.exists()).toBeTrue();
+    expect(wrapper.find(WorldPanelItem)).toHaveProp('Icon', IconMessageSquare2);
   });
 });

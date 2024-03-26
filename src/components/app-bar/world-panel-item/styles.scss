@@ -1,0 +1,13 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+@import '../../../glass';
+
+.world-panel-item {
+  border-radius: 9999px;
+  padding: 8px;
+
+  color: $glass-highlight-color;
+  @include glass-state-hover-color;
+  @include glass-materials-raised;
+  @include glass-shadow-low;
+}

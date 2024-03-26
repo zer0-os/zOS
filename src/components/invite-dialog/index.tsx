@@ -40,6 +40,10 @@ export class InviteDialog extends React.Component<Properties, State> {
     clearTimeout(this.buttonTimeout);
   }
 
+  getInvitesRemaining() {
+    return 5;
+  }
+
   get inviteText() {
     return `Use this code to join me on ZERO Messenger: ${this.props.inviteCode} ${config.inviteUrl}`;
   }
@@ -70,6 +74,15 @@ export class InviteDialog extends React.Component<Properties, State> {
           <Button onPress={this.writeInviteToClipboard} isDisabled={!this.props.inviteCode}>
             {this.state.copyText}
           </Button>
+
+          <div {...cn('remaining-invite-container')}>
+            {!this.props.isLoading && (
+              <>
+                <div {...cn('remaining-invite')}>{this.getInvitesRemaining()}</div>
+                <>Remaining</>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );

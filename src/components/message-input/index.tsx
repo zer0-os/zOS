@@ -232,12 +232,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   mediaSelected = (newMedia: Media[]): void => {
-    this.setState({
-      media: [
-        ...this.state.media,
-        ...newMedia,
-      ],
-    });
+    this.setState({ media: [...this.state.media, ...newMedia] });
     this.props.onMessageInputRendered(this.textareaRef);
   };
 
@@ -267,17 +262,8 @@ export class MessageInput extends React.Component<Properties, State> {
     }
   };
 
-  openGiphy = async () => {
-    this.setState({
-      isGiphyActive: true,
-    });
-  };
-
-  closeGiphy = () => {
-    this.setState({
-      isGiphyActive: false,
-    });
-  };
+  openGiphy = () => this.setState({ isGiphyActive: true });
+  closeGiphy = () => this.setState({ isGiphyActive: false });
 
   onInsertGiphy: GiphyProperties['onClickGif'] = (giphy) => {
     this.mediaSelected([
@@ -293,30 +279,16 @@ export class MessageInput extends React.Component<Properties, State> {
     this.closeGiphy();
   };
 
-  openEmojis = async () => {
-    this.setState({
-      isEmojisActive: true,
-    });
-  };
-
-  closeEmojis = () => {
-    this.setState({
-      isEmojisActive: false,
-    });
-  };
+  openEmojis = () => this.setState({ isEmojisActive: true });
+  closeEmojis = () => this.setState({ isEmojisActive: false });
 
   onInsertEmoji = (value: string) => {
-    this.setState({
-      value,
-    });
-
+    this.setState({ value });
     this.closeEmojis();
     this.focusInput();
   };
 
-  sendHighlighted = () => {
-    return this.state.value?.length > 0 && this.isSendingEnabled;
-  };
+  sendHighlighted = () => this.state.value?.length > 0 && this.isSendingEnabled;
 
   get sendDisabledTooltipContent() {
     return <div {...cn('disabled-tooltip')}>{this.props.sendDisabledMessage}</div>;

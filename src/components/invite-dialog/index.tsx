@@ -17,6 +17,7 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
+  inviteCount: string;
   invitesUsed: number;
   inviteUrl: string;
   assetsPath: string;
@@ -41,7 +42,7 @@ export class InviteDialog extends React.Component<Properties, State> {
   }
 
   getInvitesRemaining() {
-    return 5;
+    return this.props.inviteCount;
   }
 
   get inviteText() {

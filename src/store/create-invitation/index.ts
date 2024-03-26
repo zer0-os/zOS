@@ -12,6 +12,7 @@ export type CreateInvitationState = {
   code: string;
   url: string;
   invitesUsed: number;
+  inviteCount: string;
   isLoading: boolean;
 };
 
@@ -19,6 +20,7 @@ const initialState: CreateInvitationState = {
   code: '',
   url: '',
   invitesUsed: 0,
+  inviteCount: '',
   isLoading: false,
 };
 
@@ -30,6 +32,7 @@ const slice = createSlice({
       state.code = action.payload.code;
       state.url = action.payload.url;
       state.invitesUsed = action.payload.invitesUsed;
+      state.inviteCount = action.payload.inviteCount;
     },
     setLoading: (state, action: PayloadAction<CreateInvitationState['isLoading']>) => {
       state.isLoading = action.payload;
@@ -38,6 +41,7 @@ const slice = createSlice({
       state.code = initialState.code;
       state.url = initialState.url;
       state.invitesUsed = initialState.invitesUsed;
+      state.inviteCount = initialState.inviteCount;
     },
   },
 });

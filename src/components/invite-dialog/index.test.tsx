@@ -11,6 +11,7 @@ describe('InviteDialog', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       inviteCode: '',
+      inviteCount: '',
       inviteUrl: '',
       assetsPath: '',
       invitesUsed: 0,

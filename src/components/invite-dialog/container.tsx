@@ -12,7 +12,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   inviteCode: string;
   invitesUsed: number;
-  inviteCount: string;
+  inviteCount: number;
   inviteUrl: string;
   assetPath: string;
   isLoading: boolean;

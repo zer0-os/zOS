@@ -12,7 +12,7 @@ export type CreateInvitationState = {
   code: string;
   url: string;
   invitesUsed: number;
-  inviteCount: string;
+  inviteCount: number;
   isLoading: boolean;
 };
 
@@ -20,7 +20,7 @@ const initialState: CreateInvitationState = {
   code: '',
   url: '',
   invitesUsed: 0,
-  inviteCount: '',
+  inviteCount: 0,
   isLoading: false,
 };
 

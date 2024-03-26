@@ -24,7 +24,7 @@ describe('InviteDialog', () => {
   };
 
   it('renders the code remaining number of invites', function () {
-    const wrapper = subject({ inviteCode: '23817', inviteCount: '5' });
+    const wrapper = subject({ inviteCode: '23817', inviteCount: '2' });
 
     expect(wrapper.find('.invite-dialog__remaining-invite').text()).toEqual('2');
   });

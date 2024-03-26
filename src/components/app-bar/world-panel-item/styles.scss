@@ -3,11 +3,52 @@
 @import '../../../glass';
 
 .world-panel-item {
-  border-radius: 9999px;
-  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 
-  color: $glass-highlight-color;
-  @include glass-state-hover-color;
-  @include glass-materials-raised;
-  @include glass-shadow-low;
+  &__icon {
+    border-radius: 9999px;
+    padding: 8px;
+
+    @include glass-text-secondary-color;
+    background-color: $glass-state-default-color;
+  }
+
+  &--active,
+  &:hover {
+    .world-panel-item__icon {
+      color: $glass-highlight-color;
+      @include glass-state-hover-color;
+      @include glass-materials-raised;
+      @include glass-shadow-low;
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .world-panel-item__label {
+      visibility: visible;
+    }
+  }
+
+  &--active:hover {
+    cursor: auto;
+  }
+
+  &__label {
+    visibility: hidden;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 9.68px;
+    text-align: center;
+
+    padding: 3px 8px;
+    border-radius: 9999px;
+    background-color: $flat-thick-color;
+
+    @include glass-text-primary-color;
+  }
 }

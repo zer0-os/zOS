@@ -16,6 +16,6 @@ describe(AppBar, () => {
   it('renders the Messenger item', function () {
     const wrapper = subject({});
 
-    expect(wrapper.find(WorldPanelItem)).toHaveProp('Icon', IconMessageSquare2);
+    expect(wrapper.find(WorldPanelItem).at(0)).toHaveProp('Icon', IconMessageSquare2);
   });
 });

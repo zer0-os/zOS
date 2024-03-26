@@ -77,9 +77,11 @@
     rgba(10, 10, 10, 0.5);
 }
 
+$flat-thick-color: rgb(10, 10, 10, 0.75);
+
 // "flat" style mixin
 @mixin flat-thick {
-  background: rgba(10, 10, 10, 0.75);
+  background: $flat-thick-color;
   backdrop-filter: blur(64px);
 }
 
@@ -131,6 +133,7 @@ $glass-separator-secondary-color: rgba(163, 162, 163, 0.15);
 }
 
 $glass-highlight-color: rgba(1, 244, 203, 1);
+$glass-state-default-color: rgba(167, 163, 163, 0.05);
 
 // Because the messages in the conversation have to go under the gradient we
 // can't apply this to just the main background. Provide a mixin so all components

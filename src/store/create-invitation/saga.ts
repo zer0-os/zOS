@@ -20,7 +20,6 @@ export function* fetchInvite() {
         code: invitation.slug,
         url: config.inviteUrl,
         invitesUsed: invitation.invitesUsed,
-        maxUses: invitation.maxInvitesPerUser,
       })
     );
     return;

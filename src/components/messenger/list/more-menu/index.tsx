@@ -28,8 +28,9 @@ export class MoreMenu extends React.Component<Properties> {
       {
         id: 'favorite',
         label: this.props.isFavorite
-          ? this.renderMenuOption(<IconBookmark size={20} />, 'Favorite')
-          : this.renderMenuOption(<IconBookmarkX size={20} />, 'Unfavorite'),
+          ? this.renderMenuOption(<IconBookmarkX size={20} />, 'Unfavorite')
+          : this.renderMenuOption(<IconBookmark size={20} />, 'Favorite'),
+
         onSelect: this.props.onFavorite,
       },
     ];

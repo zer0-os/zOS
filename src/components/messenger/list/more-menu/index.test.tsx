@@ -14,13 +14,29 @@ describe(MoreMenu, () => {
     return shallow(<MoreMenu {...allProps} />);
   };
 
-  describe('Favorite', () => {
-    it('calls onFavorite when the favorite menu item is selected', function () {
+  describe('Favorite menu item', () => {
+    it('fires onFavorite event when selected', function () {
       const onFavorite = jest.fn();
-      const wrapper = subject({ onFavorite });
-      selectItem(wrapper, 'favorite');
+
+      selectItem(subject({ onFavorite }), 'favorite');
 
       expect(onFavorite).toHaveBeenCalled();
+    });
+
+    it('should display "Unfavorite" label when isFavorite is true', () => {
+      const wrapper = subject({ isFavorite: true });
+
+      const favoriteItem = menuItem(wrapper, 'favorite');
+
+      expectLabelToContainText(favoriteItem, 'Unfavorite');
+    });
+
+    it('should display "Favorite" label when isFavorite is false', () => {
+      const wrapper = subject({ isFavorite: false });
+
+      const favoriteItem = menuItem(wrapper, 'favorite');
+
+      expectLabelToContainText(favoriteItem, 'Favorite');
     });
   });
 });
@@ -32,4 +48,9 @@ function selectItem(wrapper, id) {
 function menuItem(menu, id) {
   const dropdownMenu = menu.find(DropdownMenu);
   return dropdownMenu.prop('items').find((i) => i.id === id);
+}
+
+function expectLabelToContainText(item, expectedText) {
+  const label = shallow(item.label);
+  expect(label.text()).toContain(expectedText);
 }

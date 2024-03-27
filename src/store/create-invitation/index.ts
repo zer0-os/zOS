@@ -11,7 +11,6 @@ export const clearInvite = createAction(SagaActionTypes.Cancel);
 export type CreateInvitationState = {
   code: string;
   url: string;
-  invitesUsed: number;
   inviteCount: number;
   isLoading: boolean;
 };
@@ -19,7 +18,6 @@ export type CreateInvitationState = {
 const initialState: CreateInvitationState = {
   code: '',
   url: '',
-  invitesUsed: 0,
   inviteCount: 0,
   isLoading: false,
 };
@@ -31,7 +29,6 @@ const slice = createSlice({
     setInviteDetails: (state, action: PayloadAction<Omit<CreateInvitationState, 'isLoading'>>) => {
       state.code = action.payload.code;
       state.url = action.payload.url;
-      state.invitesUsed = action.payload.invitesUsed;
       state.inviteCount = action.payload.inviteCount;
     },
     setLoading: (state, action: PayloadAction<CreateInvitationState['isLoading']>) => {
@@ -40,7 +37,6 @@ const slice = createSlice({
     reset: (state, _action: PayloadAction) => {
       state.code = initialState.code;
       state.url = initialState.url;
-      state.invitesUsed = initialState.invitesUsed;
       state.inviteCount = initialState.inviteCount;
     },
   },

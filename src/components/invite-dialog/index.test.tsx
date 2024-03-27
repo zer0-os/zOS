@@ -13,7 +13,6 @@ describe('InviteDialog', () => {
       inviteCode: '',
       inviteUrl: '',
       assetsPath: '',
-      invitesUsed: 0,
       inviteCount: 0,
       clipboard: { write: () => null },
       isLoading: false,

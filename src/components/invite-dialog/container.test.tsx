@@ -13,7 +13,6 @@ describe('Container', () => {
       inviteUrl: '',
       assetPath: '',
       inviteCount: 0,
-      invitesUsed: 0,
       isLoading: false,
       fetchInvite: () => null,
       clearInvite: () => null,

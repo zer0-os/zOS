@@ -8,12 +8,14 @@ import {
   receiveChannel,
   onFavoriteRoom,
   unreadCountUpdated,
+  onUnfavoriteRoom,
+  roomUnfavoriteUpdated,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addRoomToFavorites, chat } from '../../lib/chat';
+import { addRoomToFavorites, chat, removeRoomFromFavorites } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -138,6 +140,34 @@ describe(onFavoriteRoom, () => {
       .withReducer(rootReducer, initialState)
       .provide([
         [matchers.call.fn(addRoomToFavorites), undefined],
+      ])
+      .call(addRoomToFavorites, 'channel-id')
+      .run();
+  });
+});
+
+describe(roomUnfavoriteUpdated, () => {
+  it('updates unfavorite for room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isFavorite: true }).build();
+    const { storeState } = await expectSaga(roomUnfavoriteUpdated, {
+      payload: { roomId: 'room-id' },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isFavorite).toEqual(false);
+  });
+});
+
+describe(onUnfavoriteRoom, () => {
+  it('calls removeRoomFromFavorites when channel is already favorite', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: true }).build();
+
+    await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(removeRoomFromFavorites), undefined],
       ])
       .call(addRoomToFavorites, 'channel-id')
       .run();

@@ -16,7 +16,7 @@ describe('fetchInvite', () => {
         .provide([
           [
             call(getInvite),
-            { slug: '98762', invitesUsed: 3, inviteCount: 0 },
+            { slug: '98762', inviteCount: 0 },
           ],
         ])
         .withReducer(rootReducer, {

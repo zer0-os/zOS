@@ -558,6 +558,8 @@ export class MatrixClient implements IChatClient {
     for (const user of users) {
       await this.matrix.invite(roomId, user.matrixId);
     }
+
+    await this.addRoomToFavorites(roomId);
   }
 
   async editRoomNameAndIcon(roomId: string, name: string, iconUrl: string): Promise<void> {
@@ -599,6 +601,7 @@ export class MatrixClient implements IChatClient {
   async removeUser(roomId, user): Promise<void> {
     await this.waitForConnection();
     await this.matrix.kick(roomId, user.matrixId);
+    await this.removeRoomFromFavorites(roomId);
   }
 
   private async onMessageUpdated(event): Promise<void> {
@@ -664,6 +667,13 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
+  }
+
+  async isRoomFavorited(roomId: string): Promise<boolean> {
+    await this.waitForConnection();
+
+    const result = await this.matrix.getRoomTags(roomId);
+    return !!result.tags?.[MatrixConstants.FAVORITE];
   }
 
   arraysMatch(a, b) {
@@ -954,6 +964,7 @@ export class MatrixClient implements IChatClient {
     const createdAt = this.getRoomCreatedAt(room);
     const messages = await this.getAllMessagesFromRoom(room);
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
+    const isFavorite = await this.isRoomFavorited(room.roomId);
 
     return {
       id: room.roomId,
@@ -970,6 +981,7 @@ export class MatrixClient implements IChatClient {
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: this.getRoomAdmins(room),
+      isFavorite,
     };
   };
 

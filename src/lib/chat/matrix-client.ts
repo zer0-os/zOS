@@ -558,8 +558,6 @@ export class MatrixClient implements IChatClient {
     for (const user of users) {
       await this.matrix.invite(roomId, user.matrixId);
     }
-
-    await this.addRoomToFavorites(roomId);
   }
 
   async editRoomNameAndIcon(roomId: string, name: string, iconUrl: string): Promise<void> {
@@ -601,7 +599,6 @@ export class MatrixClient implements IChatClient {
   async removeUser(roomId, user): Promise<void> {
     await this.waitForConnection();
     await this.matrix.kick(roomId, user.matrixId);
-    await this.removeRoomFromFavorites(roomId);
   }
 
   private async onMessageUpdated(event): Promise<void> {

@@ -17,6 +17,7 @@ export interface Clipboard {
 
 export interface Properties {
   inviteCode: string;
+  inviteCount: number;
   inviteUrl: string;
   assetsPath: string;
   isLoading: boolean;
@@ -37,6 +38,10 @@ export class InviteDialog extends React.Component<Properties, State> {
 
   componentWillUnmount() {
     clearTimeout(this.buttonTimeout);
+  }
+
+  getInvitesRemaining() {
+    return this.props.inviteCount;
   }
 
   get inviteText() {
@@ -69,6 +74,15 @@ export class InviteDialog extends React.Component<Properties, State> {
           <Button onPress={this.writeInviteToClipboard} isDisabled={!this.props.inviteCode}>
             {this.state.copyText}
           </Button>
+
+          <div {...cn('remaining-invite-container')}>
+            {!this.props.isLoading && (
+              <>
+                <div {...cn('remaining-invite')}>{this.getInvitesRemaining()}</div>
+                <>Remaining</>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );

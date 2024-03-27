@@ -19,6 +19,7 @@ export function* fetchInvite() {
       setInviteDetails({
         code: invitation.slug,
         url: config.inviteUrl,
+        inviteCount: invitation.inviteCount,
       })
     );
     return;

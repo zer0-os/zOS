@@ -10,6 +10,7 @@ import { withContext as withAuthenticationContext } from './components/authentic
 import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
+import { AppBar } from './components/app-bar';
 
 export interface Properties {
   context: {
@@ -35,6 +36,7 @@ export class Container extends React.Component<Properties> {
       <div className={mainClassName}>
         {this.props.context.isAuthenticated && (
           <>
+            <AppBar />
             <Sidekick />
             <MessengerChat />
             <FeatureFlag featureFlag='enableDevPanel'>

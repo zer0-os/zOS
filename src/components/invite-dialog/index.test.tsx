@@ -13,6 +13,7 @@ describe('InviteDialog', () => {
       inviteCode: '',
       inviteUrl: '',
       assetsPath: '',
+      inviteCount: 0,
       clipboard: { write: () => null },
       isLoading: false,
       ...props,
@@ -20,6 +21,12 @@ describe('InviteDialog', () => {
 
     return shallow(<InviteDialog {...allProps} />);
   };
+
+  it('renders the code remaining number of invites', function () {
+    const wrapper = subject({ inviteCode: '23817', inviteCount: 2 });
+
+    expect(wrapper.find('.invite-dialog__remaining-invite').text()).toEqual('2');
+  });
 
   it('copies the invitation to the clipboard', function () {
     const clipboard = { write: jest.fn() };

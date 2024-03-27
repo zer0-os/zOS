@@ -47,4 +47,24 @@
     line-height: 29px;
     width: 171px;
   }
+
+  &__remaining-invite-container {
+    @include glass-text-secondary-color;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $font-size-medium;
+    line-height: 17px;
+    gap: 4px;
+    height: 20px;
+
+    margin-top: 16px;
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  &__remaining-invite {
+    font-weight: 600;
+    line-height: 20px;
+  }
 }

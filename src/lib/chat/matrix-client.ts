@@ -54,6 +54,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private roomTagHandlers = [];
   private initializationTimestamp: number;
   private secretStorageKey: string;
 
@@ -656,11 +657,7 @@ export class MatrixClient implements IChatClient {
   async addRoomToFavorites(roomId: string): Promise<void> {
     await this.waitForConnection();
 
-    try {
-      await this.matrix.setRoomTag(roomId, MatrixConstants.FAVORITE);
-    } catch (error) {
-      console.error(`Error adding favorite tag for room ${roomId}:`, error);
-    }
+    await this.matrix.setRoomTag(roomId, MatrixConstants.FAVORITE);
   }
 
   arraysMatch(a, b) {
@@ -719,9 +716,16 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
+    if (this.roomTagHandlers[room.roomId]) {
+      return;
+    }
+
     this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
       this.handleUnreadNotifications(room.roomId, unreadNotification);
     room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
+
+    this.roomTagHandlers[room.roomId] = (event) => this.publishRoomTagChange(event, room.roomId);
+    room.on(RoomEvent.Tags, this.roomTagHandlers[room.roomId]);
   }
 
   private handleUnreadNotifications = (roomId, unreadNotifications) => {
@@ -746,10 +750,6 @@ export class MatrixClient implements IChatClient {
       }
       if (event.type === EventType.RoomRedaction) {
         this.receiveDeleteMessage(event);
-      }
-
-      if (event.type === EventType.Tag) {
-        this.publishRoomTagUpdate(event);
       }
 
       this.processMessageEvent(event);
@@ -930,13 +930,13 @@ export class MatrixClient implements IChatClient {
     }
   };
 
-  private publishRoomTagUpdate(event) {
-    const roomId = event.room_id;
-
-    const isFavoriteTagAdded = !!event.content?.tags?.[MatrixConstants.FAVORITE];
+  private publishRoomTagChange(event, roomId) {
+    const isFavoriteTagAdded = !!event.getContent().tags?.[MatrixConstants.FAVORITE];
 
     if (isFavoriteTagAdded) {
       this.events.roomFavorited(roomId);
+    } else {
+      console.log('room unfavorited');
     }
   }
 

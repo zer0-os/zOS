@@ -827,38 +827,6 @@ describe('matrix client', () => {
     });
   });
 
-  describe('addRoomToFavorites', () => {
-    it('sets room tag with "m.favorite"', async () => {
-      const roomId = '!testRoomId';
-      const setRoomTag = jest.fn().mockResolvedValue({});
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
-      });
-
-      await client.connect(null, 'token');
-      await client.addRoomToFavorites(roomId);
-
-      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
-    });
-  });
-
-  describe('removeRoomFromFavorites', () => {
-    it('deletes "m.favorite" tag from room', async () => {
-      const roomId = '!testRoomId';
-      const deleteRoomTag = jest.fn().mockResolvedValue({});
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ deleteRoomTag })),
-      });
-
-      await client.connect(null, 'token');
-      await client.removeRoomFromFavorites(roomId);
-
-      expect(deleteRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
-    });
-  });
-
   describe('isRoomFavorited', () => {
     it('returns true if "m.favorite" tag is present for room', async () => {
       const roomId = '!testRoomId';

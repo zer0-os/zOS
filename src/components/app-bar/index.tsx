@@ -6,6 +6,7 @@ import { featureFlags } from '../../lib/feature-flags';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { MoreAppsModal } from './more-apps-modal';
 
 const cn = bemClassName('app-bar');
 
@@ -14,10 +15,13 @@ export interface Properties {}
 export class AppBar extends React.Component<Properties> {
   render() {
     return (
-      <div {...cn('', !featureFlags.enableAppBar && 'disabled')}>
-        <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
-        <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} />
-      </div>
+      <>
+        <div {...cn('', !featureFlags.enableAppBar && 'disabled')}>
+          <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
+          <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} />
+        </div>
+        <MoreAppsModal />
+      </>
     );
   }
 }

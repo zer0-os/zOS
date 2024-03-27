@@ -1,20 +1,19 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { call, delay } from 'redux-saga/effects';
 
 import {
-  favouriteTagUpdated,
+  roomFavoriteUpdated,
   markAllMessagesAsRead,
   markConversationAsRead,
   receiveChannel,
-  toggleFavoriteRoomTag,
+  onFavoriteRoom,
   unreadCountUpdated,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addFavoriteRoomTag, chat } from '../../lib/chat';
+import { addRoomToFavorites, chat } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -117,30 +116,30 @@ describe(receiveChannel, () => {
   });
 });
 
-describe(favouriteTagUpdated, () => {
-  it('updates favorite tag for channel', async () => {
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
-    const { storeState } = await expectSaga(favouriteTagUpdated, {
-      payload: { roomId: 'channel-id', isFavorite: true },
+describe(roomFavoriteUpdated, () => {
+  it('updates favorites for room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isFavorite: false }).build();
+    const { storeState } = await expectSaga(roomFavoriteUpdated, {
+      payload: { roomId: 'room-id' },
     })
       .withReducer(rootReducer, initialState)
       .run();
 
-    const channel = denormalizeChannel('channel-id', storeState);
+    const channel = denormalizeChannel('room-id', storeState);
     expect(channel.isFavorite).toEqual(true);
   });
 });
 
-describe(toggleFavoriteRoomTag, () => {
+describe(onFavoriteRoom, () => {
   it('calls addFavoriteRoomTag when channel is not already favorite', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
 
-    await expectSaga(toggleFavoriteRoomTag, { payload: { roomId: 'channel-id' } })
+    await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
       .withReducer(rootReducer, initialState)
       .provide([
-        [matchers.call.fn(addFavoriteRoomTag), undefined],
+        [matchers.call.fn(addRoomToFavorites), undefined],
       ])
-      .call(addFavoriteRoomTag, 'channel-id')
+      .call(addRoomToFavorites, 'channel-id')
       .run();
   });
 });

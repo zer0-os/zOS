@@ -69,6 +69,7 @@ const getSdkClient = (sdkClient = {}) => ({
   paginateEventTimeline: () => true,
   isRoomEncrypted: () => true,
   invite: jest.fn().mockResolvedValue({}),
+  setRoomTag: jest.fn().mockResolvedValue({}),
   ...sdkClient,
 });
 
@@ -792,8 +793,8 @@ describe('matrix client', () => {
     });
   });
 
-  describe('addFavoriteRoomTag', () => {
-    it('sets "favorite" tag on room', async () => {
+  describe('addRoomToFavorites', () => {
+    it('sets room tag with "m.favorite"', async () => {
       const roomId = '!testRoomId';
       const setRoomTag = jest.fn().mockResolvedValue({});
 
@@ -802,7 +803,7 @@ describe('matrix client', () => {
       });
 
       await client.connect(null, 'token');
-      await client.addFavoriteRoomTag(roomId);
+      await client.addRoomToFavorites(roomId);
 
       expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
     });

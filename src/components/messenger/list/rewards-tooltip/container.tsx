@@ -5,12 +5,14 @@ import { RootState } from '../../../../store/reducer';
 import { rewardsTooltipClosed } from '../../../../store/rewards';
 
 import { RewardsTooltip } from '.';
-import { Container as RewardsItemContainer } from '../../../settings-menu/rewards-item/container';
+import { formatUSD, calculateTotalPriceInUSDCents } from '../../../../lib/number';
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
+  isOpen: boolean;
   meowPreviousDayInUSD: string;
   isLoading: boolean;
+  meowTokenPriceInUSD: number;
 
   rewardsTooltipClosed: () => void;
 }
@@ -18,9 +20,12 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const { rewards } = state;
+
     return {
-      meowPreviousDayInUSD: RewardsItemContainer.totalPriceInUSD(rewards.meowPreviousDay, rewards.meowInUSD),
+      meowPreviousDayInUSD: Container.totalPriceInUSD(rewards.meowPreviousDay, rewards.meowInUSD),
       isLoading: rewards.loading,
+      meowTokenPriceInUSD: rewards.meowInUSD,
+      isOpen: rewards.showRewardsInTooltip,
     };
   }
 
@@ -28,8 +33,12 @@ export class Container extends React.Component<Properties> {
     return { rewardsTooltipClosed };
   }
 
+  static totalPriceInUSD(meow: string, meowInUSD: number) {
+    return formatUSD(calculateTotalPriceInUSDCents(meow, meowInUSD ?? 0));
+  }
+
   render() {
-    if (this.props.isLoading || this.props.meowPreviousDayInUSD === '$0.00') {
+    if (this.props.isLoading || this.props.meowTokenPriceInUSD === 0) {
       return null;
     }
 
@@ -37,6 +46,7 @@ export class Container extends React.Component<Properties> {
       <RewardsTooltip
         meowPreviousDayInUSD={this.props.meowPreviousDayInUSD}
         onClose={this.props.rewardsTooltipClosed}
+        open={this.props.isOpen}
       />
     );
   }

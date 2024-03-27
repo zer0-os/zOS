@@ -14,7 +14,7 @@ describe('InviteDialog', () => {
       inviteUrl: '',
       assetsPath: '',
       invitesUsed: 0,
-      maxUses: 0,
+      inviteCount: 0,
       clipboard: { write: () => null },
       isLoading: false,
       ...props,
@@ -24,7 +24,7 @@ describe('InviteDialog', () => {
   };
 
   it('renders the code remaining number of invites', function () {
-    const wrapper = subject({ inviteCode: '23817', maxUses: 5, invitesUsed: 3 });
+    const wrapper = subject({ inviteCode: '23817', inviteCount: 2 });
 
     expect(wrapper.find('.invite-dialog__remaining-invite').text()).toEqual('2');
   });

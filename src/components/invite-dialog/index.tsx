@@ -18,7 +18,7 @@ export interface Clipboard {
 export interface Properties {
   inviteCode: string;
   invitesUsed: number;
-  maxUses: number;
+  inviteCount: number;
   inviteUrl: string;
   assetsPath: string;
   isLoading: boolean;
@@ -42,7 +42,7 @@ export class InviteDialog extends React.Component<Properties, State> {
   }
 
   getInvitesRemaining() {
-    return Math.max(this.props.maxUses - this.props.invitesUsed, 0);
+    return this.props.inviteCount;
   }
 
   get inviteText() {

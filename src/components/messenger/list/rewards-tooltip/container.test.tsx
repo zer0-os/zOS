@@ -7,6 +7,8 @@ describe(Container, () => {
     const allProps = {
       meowPreviousDayInUSD: '',
       isLoading: false,
+      meowTokenPriceInUSD: 0,
+      isOpen: false,
       rewardsTooltipClosed: () => {},
       ...props,
     };
@@ -19,8 +21,8 @@ describe(Container, () => {
     expect(wrapper).toBeEmptyRender();
   });
 
-  it('should render null if meowPreviousDayInUSD is $0.00', () => {
-    const wrapper = subject({ isLoading: false, meowPreviousDayInUSD: '$0.00' });
+  it('should render null if meowTokenPriceInUSD is 0', () => {
+    const wrapper = subject({ isLoading: false, meowTokenPriceInUSD: 0 });
     expect(wrapper).toBeEmptyRender();
   });
 
@@ -45,6 +47,17 @@ describe(Container, () => {
       });
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ isLoading: true }));
+    });
+
+    test('isOpen', () => {
+      const state = new StoreBuilder().withOtherState({
+        rewards: {
+          showRewardsInTooltip: true,
+          meowPreviousDay: '0',
+        },
+      });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ isOpen: true }));
     });
   });
 });

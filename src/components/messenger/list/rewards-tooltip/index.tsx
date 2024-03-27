@@ -4,38 +4,26 @@ import { TooltipPopup } from '../../../tooltip-popup/tooltip-popup';
 
 export interface Properties {
   meowPreviousDayInUSD: string;
+  open: boolean;
 
   onClose: () => void;
 }
 
-interface State {
-  isTooltipOpen: boolean;
-}
-
-export class RewardsTooltip extends React.Component<Properties, State> {
-  state = {
-    isTooltipOpen: true,
-  };
-
+export class RewardsTooltip extends React.Component<Properties> {
   componentDidMount(): void {
     setTimeout(() => {
-      this.closeTooltip();
+      this.props.onClose();
     }, 3000);
   }
-
-  closeTooltip = () => {
-    this.setState({ isTooltipOpen: false });
-    this.props.onClose();
-  };
 
   render() {
     return (
       <TooltipPopup
-        open={this.state.isTooltipOpen}
+        open={this.props.open}
         align='center'
         side='right'
         content={`You earned ${this.props.meowPreviousDayInUSD}`}
-        onClose={this.closeTooltip}
+        onClose={this.props.onClose}
       />
     );
   }

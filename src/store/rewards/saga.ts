@@ -68,9 +68,8 @@ export function* syncRewardsAndTokenPrice() {
   if (!featureFlags.enableRewards) {
     return;
   }
-
-  yield spawn(syncFetchRewards);
   yield spawn(syncMEOWPrice);
+  yield spawn(syncFetchRewards);
 }
 
 export function* checkNewRewardsLoaded() {

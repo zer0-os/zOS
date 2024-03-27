@@ -663,6 +663,16 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async removeRoomFromFavorites(roomId: string): Promise<void> {
+    await this.waitForConnection();
+
+    try {
+      await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
+    } catch (error) {
+      console.error(`Error removing favorite tag for room ${roomId}:`, error);
+    }
+  }
+
   arraysMatch(a, b) {
     if (a.length !== b.length) {
       return false;
@@ -937,6 +947,8 @@ export class MatrixClient implements IChatClient {
 
     if (isFavoriteTagAdded) {
       this.events.roomFavorited(roomId);
+    } else {
+      this.events.roomUnfavorited(roomId);
     }
   }
 

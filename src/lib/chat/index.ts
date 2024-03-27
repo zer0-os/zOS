@@ -19,6 +19,7 @@ export interface RealtimeChatEvents {
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
   receiveLiveRoomEvent: (eventData) => void;
+  onFavoriteTagChange: (roomId: string, isFavorite: boolean) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -280,4 +281,8 @@ export async function isRoomMember(userId: string, roomId: string) {
 
 export async function getSecureBackup() {
   return await chat.get().matrix.getSecureBackup();
+}
+
+export async function addFavoriteRoomTag(roomId: string) {
+  return await chat.get().matrix.addFavoriteRoomTag(roomId);
 }

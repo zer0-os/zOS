@@ -1,12 +1,20 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { call, delay } from 'redux-saga/effects';
 
-import { markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
+import {
+  favouriteTagUpdated,
+  markAllMessagesAsRead,
+  markConversationAsRead,
+  receiveChannel,
+  toggleFavoriteRoomTag,
+  unreadCountUpdated,
+} from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { chat } from '../../lib/chat';
+import { addFavoriteRoomTag, chat } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -106,6 +114,34 @@ describe(receiveChannel, () => {
     // Clean up because full comparison is important here
     delete channel.__denormalized;
     expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: 3 });
+  });
+});
+
+describe(favouriteTagUpdated, () => {
+  it('updates favorite tag for channel', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
+    const { storeState } = await expectSaga(favouriteTagUpdated, {
+      payload: { roomId: 'channel-id', isFavorite: true },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('channel-id', storeState);
+    expect(channel.isFavorite).toEqual(true);
+  });
+});
+
+describe(toggleFavoriteRoomTag, () => {
+  it('calls addFavoriteRoomTag when channel is not already favorite', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
+
+    await expectSaga(toggleFavoriteRoomTag, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addFavoriteRoomTag), undefined],
+      ])
+      .call(addFavoriteRoomTag, 'channel-id')
+      .run();
   });
 });
 

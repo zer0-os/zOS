@@ -557,6 +557,8 @@ export class MatrixClient implements IChatClient {
     for (const user of users) {
       await this.matrix.invite(roomId, user.matrixId);
     }
+
+    this.addFavoriteRoomTag(roomId);
   }
 
   async editRoomNameAndIcon(roomId: string, name: string, iconUrl: string): Promise<void> {
@@ -769,6 +771,8 @@ export class MatrixClient implements IChatClient {
     //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
 
+    this.matrix.on(RoomEvent.Tags, this.publishRoomTagChange);
+
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
       this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
@@ -925,6 +929,14 @@ export class MatrixClient implements IChatClient {
       this.events.receiveNewMessage(roomId, message);
     }
   };
+
+  private publishRoomTagChange(event, room) {
+    console.log('EVENT', event);
+    console.log('ROOM', room);
+    // need to wrap this in if statement to check favorite
+    const isFavorite = !!room.tags[MatrixConstants.FAVORITE];
+    this.events.onFavoriteTagChange(room.roomId, isFavorite);
+  }
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));

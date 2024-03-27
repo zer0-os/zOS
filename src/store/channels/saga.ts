@@ -4,7 +4,7 @@ import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAUL
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { chat } from '../../lib/chat';
+import { addFavoriteRoomTag, chat } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
@@ -94,13 +94,43 @@ export function* receiveChannel(channel: Partial<Channel>) {
   if (!existing) {
     data = { ...CHANNEL_DEFAULTS, ...data };
   }
+
   yield put(rawReceive(data));
+}
+
+export function* toggleFavoriteRoomTag(action) {
+  const { roomId } = action.payload;
+
+  const channel = yield select(rawChannelSelector(roomId));
+
+  if (!channel) {
+    return;
+  }
+
+  if (channel.isFavorite) {
+    console.log('removeFavoriteRoomTag', roomId);
+  } else {
+    yield call(addFavoriteRoomTag, roomId);
+  }
+}
+
+export function* favouriteTagUpdated(action) {
+  const { roomId, isFavorite } = action.payload;
+
+  const channel = yield select(rawChannelSelector(roomId));
+
+  if (!channel) {
+    return;
+  }
+  yield call(receiveChannel, { id: roomId, isFavorite: isFavorite });
 }
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
+  yield takeLatest(SagaActionTypes.OnToggleFavoriteTag, toggleFavoriteRoomTag);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.FavoriteTagChanged, favouriteTagUpdated);
 }

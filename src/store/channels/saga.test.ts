@@ -131,7 +131,7 @@ describe(roomFavoriteUpdated, () => {
 });
 
 describe(onFavoriteRoom, () => {
-  it('calls addFavoriteRoomTag when channel is not already favorite', async () => {
+  it('calls addRoomToFavorites when channel is not already favorite', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
 
     await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })

@@ -653,6 +653,16 @@ export class MatrixClient implements IChatClient {
     return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
+  async addFavoriteRoomTag(roomId: string): Promise<void> {
+    await this.waitForConnection();
+
+    try {
+      await this.matrix.setRoomTag(roomId, MatrixConstants.FAVORITE);
+    } catch (error) {
+      console.error(`Error adding favorite tag for room ${roomId}:`, error);
+    }
+  }
+
   arraysMatch(a, b) {
     if (a.length !== b.length) {
       return false;

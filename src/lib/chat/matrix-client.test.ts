@@ -791,4 +791,20 @@ describe('matrix client', () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe('addFavoriteRoomTag', () => {
+    it('sets "favorite" tag on room', async () => {
+      const roomId = '!testRoomId';
+      const setRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.addFavoriteRoomTag(roomId);
+
+      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
+    });
+  });
 });

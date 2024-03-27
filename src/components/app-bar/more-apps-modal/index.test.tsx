@@ -5,6 +5,7 @@ import { MoreAppsModal, Properties } from '.';
 describe(MoreAppsModal, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      onClose: () => null,
       ...props,
     };
 

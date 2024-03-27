@@ -17,10 +17,14 @@ import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 
 const cn = bemClassName('more-apps-modal');
 
-export interface Properties {}
+export interface Properties {
+  onClose: () => void;
+}
 
 export class MoreAppsModal extends React.Component<Properties> {
-  close = () => {};
+  close = () => {
+    this.props.onClose();
+  };
 
   link(url: string, text: string) {
     return (

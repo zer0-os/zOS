@@ -663,11 +663,7 @@ export class MatrixClient implements IChatClient {
   async removeRoomFromFavorites(roomId: string): Promise<void> {
     await this.waitForConnection();
 
-    try {
-      await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
-    } catch (error) {
-      console.error(`Error removing favorite tag for room ${roomId}:`, error);
-    }
+    await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
   }
 
   arraysMatch(a, b) {

@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import './styles.scss';
-import { bem } from '../../lib/bem';
-const c = bem('admin-message');
+import { bemClassName } from '../../lib/bem';
+
+const cn = bemClassName('admin-message');
 
 export interface Properties {
   message: string;
@@ -10,6 +11,10 @@ export interface Properties {
 
 export class AdminMessage extends React.PureComponent<Properties> {
   render() {
-    return <div className={c('')}>{this.props.message}</div>;
+    return (
+      <div {...cn('')}>
+        <div {...cn('message')}>{this.props.message}</div>
+      </div>
+    );
   }
 }

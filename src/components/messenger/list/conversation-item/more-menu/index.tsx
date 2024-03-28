@@ -7,12 +7,18 @@ import './styles.scss';
 
 export interface Properties {
   isFavorite: boolean;
+
   onFavorite: () => void;
+  onUnfavorite: () => void;
 }
 
 export class MoreMenu extends React.Component<Properties> {
   favorite = () => {
     this.props.onFavorite();
+  };
+
+  unfavorite = () => {
+    this.props.onUnfavorite();
   };
 
   renderMenuOption(icon, label) {
@@ -24,16 +30,24 @@ export class MoreMenu extends React.Component<Properties> {
   }
 
   get menuItems() {
-    return [
-      {
-        id: 'favorite',
-        label: this.props.isFavorite
-          ? this.renderMenuOption(<IconBookmarkX size={20} />, 'Unfavorite')
-          : this.renderMenuOption(<IconBookmark size={20} />, 'Favorite'),
+    const menuItems = [];
 
-        onSelect: this.props.onFavorite,
-      },
-    ];
+    if (!this.props.isFavorite) {
+      menuItems.push({
+        id: 'favorite',
+        label: this.renderMenuOption(<IconBookmark size={20} />, 'Favorite'),
+
+        onSelect: this.favorite,
+      });
+    } else {
+      menuItems.push({
+        id: 'unfavorite',
+        label: this.renderMenuOption(<IconBookmarkX size={20} />, 'Unfavorite'),
+        onSelect: this.unfavorite,
+      });
+    }
+
+    return menuItems;
   }
 
   render() {

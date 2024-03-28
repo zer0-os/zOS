@@ -2,7 +2,7 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel } from '../../../store/channels';
-import { openConversation } from '../../../store/channels';
+import { openConversation, onFavoriteRoom, onUnfavoriteRoom } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -77,6 +77,8 @@ export interface Properties extends PublicProperties {
   closeConversationErrorDialog: () => void;
   closeBackupDialog: () => void;
   closeRewardsDialog: () => void;
+  onFavoriteRoom: (payload: { roomId: string }) => void;
+  onUnfavoriteRoom: (payload: { roomId: string }) => void;
 }
 
 interface State {
@@ -130,6 +132,8 @@ export class Container extends React.Component<Properties, State> {
       closeConversationErrorDialog,
       closeBackupDialog,
       closeRewardsDialog,
+      onFavoriteRoom,
+      onUnfavoriteRoom,
     };
   }
 
@@ -247,6 +251,8 @@ export class Container extends React.Component<Properties, State> {
             onConversationClick={this.props.onConversationClick}
             myUserId={this.props.myUserId}
             activeConversationId={this.props.activeConversationId}
+            onFavoriteRoom={this.props.onFavoriteRoom}
+            onUnfavoriteRoom={this.props.onUnfavoriteRoom}
           />
         )}
         {this.props.stage === SagaStage.CreateOneOnOne && (

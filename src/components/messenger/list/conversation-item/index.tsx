@@ -24,6 +24,8 @@ export interface Properties {
   activeConversationId: string;
 
   onClick: (conversationId: string) => void;
+  onFavoriteRoom: (roomId: string) => void;
+  onUnfavoriteRoom: (roomId: string) => void;
 }
 
 export class ConversationItem extends React.Component<Properties> {

@@ -13,6 +13,8 @@ describe('ConversationItem', () => {
       myUserId: '',
       activeConversationId: '',
       onClick: () => null,
+      onFavoriteRoom: () => null,
+      onUnfavoriteRoom: () => null,
       ...props,
     };
 

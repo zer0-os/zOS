@@ -63,14 +63,14 @@
 
   &__block-body {
     font-weight: 400;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 23px;
     display: flex;
     flex-direction: column;
     gap: 4px;
 
-    margin: 16px 0px 0px 0px;
-    padding: 0px 16px 16px 16px;
+    margin: 8px 0px 0px 0px;
+    padding: 0px 8px 8px 8px;
 
     @include glass-text-primary-color;
 

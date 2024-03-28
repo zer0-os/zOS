@@ -1,12 +1,19 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { markAllMessagesAsRead, markConversationAsRead, receiveChannel, unreadCountUpdated } from './saga';
+import {
+  roomFavoriteUpdated,
+  markAllMessagesAsRead,
+  markConversationAsRead,
+  receiveChannel,
+  onFavoriteRoom,
+  unreadCountUpdated,
+} from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { chat } from '../../lib/chat';
+import { addRoomToFavorites, chat } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -106,6 +113,34 @@ describe(receiveChannel, () => {
     // Clean up because full comparison is important here
     delete channel.__denormalized;
     expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: 3 });
+  });
+});
+
+describe(roomFavoriteUpdated, () => {
+  it('updates favorites for room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isFavorite: false }).build();
+    const { storeState } = await expectSaga(roomFavoriteUpdated, {
+      payload: { roomId: 'room-id' },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isFavorite).toEqual(true);
+  });
+});
+
+describe(onFavoriteRoom, () => {
+  it('calls addRoomToFavorites when channel is not already favorite', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
+
+    await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addRoomToFavorites), undefined],
+      ])
+      .call(addRoomToFavorites, 'channel-id')
+      .run();
   });
 });
 

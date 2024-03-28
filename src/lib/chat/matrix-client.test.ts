@@ -69,6 +69,7 @@ const getSdkClient = (sdkClient = {}) => ({
   paginateEventTimeline: () => true,
   isRoomEncrypted: () => true,
   invite: jest.fn().mockResolvedValue({}),
+  setRoomTag: jest.fn().mockResolvedValue({}),
   ...sdkClient,
 });
 
@@ -789,6 +790,22 @@ describe('matrix client', () => {
       const result = await client.getRoomIdForAlias('#test-room:zos-dev.zero.io');
 
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('addRoomToFavorites', () => {
+    it('sets room tag with "m.favorite"', async () => {
+      const roomId = '!testRoomId';
+      const setRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.addRoomToFavorites(roomId);
+
+      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
     });
   });
 });

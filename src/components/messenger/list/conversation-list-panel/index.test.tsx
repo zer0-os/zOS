@@ -14,6 +14,8 @@ describe('ConversationListPanel', () => {
       search: () => undefined,
       onConversationClick: () => null,
       onCreateConversation: () => null,
+      onFavoriteRoom: () => null,
+      onUnfavoriteRoom: () => null,
       ...props,
     };
 

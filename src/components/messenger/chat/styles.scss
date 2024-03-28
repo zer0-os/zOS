@@ -76,7 +76,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
 
   // message-input
   &__footer {
-    border-radius: 16px;
+    border-radius: 32px;
     flex-shrink: 0;
 
     @include flat-thick;

@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import { ConversationItem, Properties } from '.';
 import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
+import { MoreMenu } from './more-menu';
 
 describe('ConversationItem', () => {
   const subject = (props: Partial<Properties>) => {
@@ -135,6 +136,32 @@ describe('ConversationItem', () => {
     const wrapper = subject({ conversation: { previewDisplayDate, otherMembers: [] } as any });
 
     expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(previewDisplayDate);
+  });
+
+  it('renders MoreMenu when mouse enters', () => {
+    const wrapper = subject({ conversation: convoWith() });
+
+    wrapper.find('.conversation-item').simulate('mouseEnter');
+
+    expect(wrapper).toHaveElement(MoreMenu);
+  });
+
+  it('does not render MoreMenu when mouse leaves', () => {
+    const wrapper = subject({ conversation: convoWith() });
+
+    wrapper.find('.conversation-item').simulate('mouseLeave');
+
+    expect(wrapper).not.toHaveElement(MoreMenu);
+  });
+
+  it('prevents click event propagation from MoreMenu to ConversationItem', () => {
+    const onClick = jest.fn();
+    const wrapper = subject({ conversation: convoWith(), onClick });
+
+    wrapper.find('.conversation-item').simulate('mouseEnter');
+    wrapper.find(MoreMenu).simulate('click');
+
+    expect(onClick).not.toHaveBeenCalled();
   });
 
   describe('status', () => {

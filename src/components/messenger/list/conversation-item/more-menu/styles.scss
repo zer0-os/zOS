@@ -8,7 +8,8 @@
   align-items: center;
 
   border-radius: 50%;
-  background-color: theme.$color-greyscale-transparency-3;
+  border: 1px solid theme.$color-greyscale-3;
+  background-color: theme.$color-greyscale-3;
 }
 
 .menu-item {

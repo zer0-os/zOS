@@ -5,6 +5,7 @@ import { isCustomIcon, lastSeenText } from '../utils/utils';
 import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
+import { MoreMenu } from './more-menu';
 import Tooltip from '../../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
@@ -28,7 +29,19 @@ export interface Properties {
   onUnfavoriteRoom: (roomId: string) => void;
 }
 
-export class ConversationItem extends React.Component<Properties> {
+interface State {
+  isHovered: boolean;
+}
+
+export class ConversationItem extends React.Component<Properties, State> {
+  state = {
+    isHovered: false,
+  };
+
+  toggleHover = (isHovered) => () => {
+    this.setState({ isHovered });
+  };
+
   handleMemberClick = () => {
     this.props.onClick(this.props.conversation.id);
   };
@@ -37,6 +50,14 @@ export class ConversationItem extends React.Component<Properties> {
     if (event.key === 'Enter') {
       this.props.onClick(this.props.conversation.id);
     }
+  };
+
+  onFavorite = () => {
+    this.props.onFavoriteRoom(this.props.conversation.id);
+  };
+
+  onUnfavorite = () => {
+    this.props.onUnfavoriteRoom(this.props.conversation.id);
   };
 
   tooltipContent(conversation: Channel) {
@@ -85,6 +106,21 @@ export class ConversationItem extends React.Component<Properties> {
       />
     );
   }
+  renderMoreMenu() {
+    const stopPropagation = (e) => {
+      e.stopPropagation();
+    };
+
+    return (
+      <div {...cn('more-menu-container')} onClick={stopPropagation}>
+        <MoreMenu
+          isFavorite={this.props.conversation.isFavorite}
+          onFavorite={this.onFavorite}
+          onUnfavorite={this.onUnfavorite}
+        />
+      </div>
+    );
+  }
 
   render() {
     const { conversation, activeConversationId } = this.props;
@@ -111,8 +147,14 @@ export class ConversationItem extends React.Component<Properties> {
           tabIndex={0}
           role='button'
           is-active={isActive}
+          onMouseEnter={this.toggleHover(true)}
+          onMouseLeave={this.toggleHover(false)}
         >
-          {this.renderAvatar()}
+          <div {...cn('avatar-with-menu-container')}>
+            {this.renderAvatar()}
+            {this.state.isHovered && this.renderMoreMenu()}
+          </div>
+
           <div {...cn('summary')}>
             <div {...cn('header')}>
               <div {...cn('name')} is-unread={isUnread}>

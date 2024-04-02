@@ -19,13 +19,11 @@ import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
 import { Avatar, IconButton, Tooltip } from '@zero-tech/zui/components';
-
-import classNames from 'classnames';
-import './styles.scss';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
-import { bem, bemClassName } from '../../lib/bem';
+import { bemClassName } from '../../lib/bem';
 
-const c = bem('message-input');
+import './styles.scss';
+
 const cn = bemClassName('message-input');
 
 export interface Properties extends PublicPropertiesContainer {
@@ -326,11 +324,7 @@ export class MessageInput extends React.Component<Properties, State> {
           )}
         </div>
 
-        <div
-          className={classNames(c('input-row'), {
-            [c('container', 'editing')]: this.props.isEditing,
-          })}
-        >
+        <div {...cn('input-row')}>
           {this.allowLeftIcons && (
             <div {...cn('icon-outer')}>
               <div {...cn('icon-wrapper')}>

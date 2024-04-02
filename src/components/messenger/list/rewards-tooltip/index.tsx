@@ -10,12 +10,6 @@ export interface Properties {
 }
 
 export class RewardsTooltip extends React.Component<Properties> {
-  componentDidMount(): void {
-    setTimeout(() => {
-      this.props.onClose();
-    }, 3000);
-  }
-
   render() {
     return (
       <TooltipPopup

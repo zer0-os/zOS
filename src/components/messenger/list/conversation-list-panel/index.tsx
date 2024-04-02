@@ -153,11 +153,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     if (this.state.selectedTab === Tab.Favorites) {
       return (
         <div {...cn('favorites-preview')}>
-          <span>
-            Conversations you 'Favorite'
-            <br />
-            will appear here...
-          </span>
+          <span>Right click a conversation to add it to your favourites.</span>
           <div {...cn('favorites-preview-image')}></div>
         </div>
       );

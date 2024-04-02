@@ -20,6 +20,7 @@ export enum MatrixConstants {
   NEW_CONTENT = 'm.new_content',
   REPLACE = 'm.replace',
   BAD_ENCRYPTED_MSGTYPE = 'm.bad.encrypted',
+  FAVORITE = 'm.favorite',
 }
 
 export enum CustomEventType {

@@ -54,6 +54,7 @@ export class MatrixClient implements IChatClient {
   private connectionResolver: () => void;
   private connectionAwaiter: Promise<void>;
   private unreadNotificationHandlers = [];
+  private roomTagHandlers = [];
   private initializationTimestamp: number;
   private secretStorageKey: string;
 
@@ -653,6 +654,12 @@ export class MatrixClient implements IChatClient {
     return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
+  async addRoomToFavorites(roomId: string): Promise<void> {
+    await this.waitForConnection();
+
+    await this.matrix.setRoomTag(roomId, MatrixConstants.FAVORITE);
+  }
+
   arraysMatch(a, b) {
     if (a.length !== b.length) {
       return false;
@@ -709,9 +716,16 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
+    if (this.roomTagHandlers[room.roomId]) {
+      return;
+    }
+
     this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
       this.handleUnreadNotifications(room.roomId, unreadNotification);
     room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);
+
+    this.roomTagHandlers[room.roomId] = (event) => this.publishRoomTagChange(event, room.roomId);
+    room.on(RoomEvent.Tags, this.roomTagHandlers[room.roomId]);
   }
 
   private handleUnreadNotifications = (roomId, unreadNotifications) => {
@@ -915,6 +929,16 @@ export class MatrixClient implements IChatClient {
       this.events.receiveNewMessage(roomId, message);
     }
   };
+
+  private publishRoomTagChange(event, roomId) {
+    const isFavoriteTagAdded = !!event.getContent().tags?.[MatrixConstants.FAVORITE];
+
+    if (isFavoriteTagAdded) {
+      this.events.roomFavorited(roomId);
+    } else {
+      console.log('room unfavorited');
+    }
+  }
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));

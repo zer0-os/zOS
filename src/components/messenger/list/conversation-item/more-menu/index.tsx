@@ -69,7 +69,6 @@ export class MoreMenu extends React.Component<Properties> {
         items={items}
         side='bottom'
         alignMenu='start'
-        className={'more-menu-trigger'}
         trigger={<></>}
         open={this.props.isOpen}
         onOpenChange={this.onOpenChange}

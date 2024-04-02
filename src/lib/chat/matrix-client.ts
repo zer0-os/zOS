@@ -729,10 +729,6 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
-    if (this.roomTagHandlers[room.roomId]) {
-      return;
-    }
-
     this.unreadNotificationHandlers[room.roomId] = (unreadNotification) =>
       this.handleUnreadNotifications(room.roomId, unreadNotification);
     room.on(RoomEvent.UnreadNotifications, this.unreadNotificationHandlers[room.roomId]);

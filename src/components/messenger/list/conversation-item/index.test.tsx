@@ -138,22 +138,6 @@ describe('ConversationItem', () => {
     expect(wrapper.find('.conversation-item__timestamp').text()).toEqual(previewDisplayDate);
   });
 
-  it('renders MoreMenu when mouse enters', () => {
-    const wrapper = subject({ conversation: convoWith() });
-
-    wrapper.find('.conversation-item').simulate('mouseEnter');
-
-    expect(wrapper).toHaveElement(MoreMenu);
-  });
-
-  it('does not render MoreMenu when mouse leaves', () => {
-    const wrapper = subject({ conversation: convoWith() });
-
-    wrapper.find('.conversation-item').simulate('mouseLeave');
-
-    expect(wrapper).not.toHaveElement(MoreMenu);
-  });
-
   it('prevents click event propagation from MoreMenu to ConversationItem', () => {
     const onClick = jest.fn();
     const wrapper = subject({ conversation: convoWith(), onClick });

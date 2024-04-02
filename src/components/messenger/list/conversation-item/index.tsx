@@ -29,19 +29,7 @@ export interface Properties {
   onUnfavoriteRoom: (roomId: string) => void;
 }
 
-interface State {
-  isHovered: boolean;
-}
-
-export class ConversationItem extends React.Component<Properties, State> {
-  state = {
-    isHovered: false,
-  };
-
-  toggleHover = (isHovered) => () => {
-    this.setState({ isHovered });
-  };
-
+export class ConversationItem extends React.Component<Properties> {
   handleMemberClick = () => {
     this.props.onClick(this.props.conversation.id);
   };
@@ -147,12 +135,10 @@ export class ConversationItem extends React.Component<Properties, State> {
           tabIndex={0}
           role='button'
           is-active={isActive}
-          onMouseEnter={this.toggleHover(true)}
-          onMouseLeave={this.toggleHover(false)}
         >
           <div {...cn('avatar-with-menu-container')}>
             {this.renderAvatar()}
-            {this.state.isHovered && this.renderMoreMenu()}
+            {this.renderMoreMenu()}
           </div>
 
           <div {...cn('summary')}>

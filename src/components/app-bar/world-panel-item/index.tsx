@@ -10,12 +10,16 @@ export interface Properties {
   Icon: React.JSXElementConstructor<IconProps>;
   isActive: boolean;
   label: string;
+
+  onClick?: () => void;
 }
 
 export class WorldPanelItem extends React.Component<Properties> {
+  publishClick = () => this.props.onClick && this.props.onClick();
+
   render() {
     return (
-      <div {...cn('', this.props.isActive && 'active')}>
+      <div {...cn('', this.props.isActive && 'active')} onClick={this.publishClick}>
         <div {...cn('icon')}>
           <this.props.Icon size={'24px'} />
         </div>

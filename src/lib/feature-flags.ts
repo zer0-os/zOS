@@ -59,7 +59,7 @@ export class FeatureFlags {
   }
 
   get enableAppBar() {
-    return this._getBoolean('enableAppBar', false);
+    return this._getBoolean('enableAppBar', true);
   }
 
   set enableAppBar(value: boolean) {

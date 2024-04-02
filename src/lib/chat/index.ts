@@ -20,6 +20,7 @@ export interface RealtimeChatEvents {
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
   receiveLiveRoomEvent: (eventData) => void;
   roomFavorited: (roomId: string) => void;
+  roomUnfavorited: (roomId: string) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -285,4 +286,8 @@ export async function getSecureBackup() {
 
 export async function addRoomToFavorites(roomId: string) {
   return await chat.get().matrix.addRoomToFavorites(roomId);
+}
+
+export async function removeRoomFromFavorites(roomId: string) {
+  return await chat.get().matrix.removeRoomFromFavorites(roomId);
 }

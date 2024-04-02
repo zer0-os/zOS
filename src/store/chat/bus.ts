@@ -19,6 +19,7 @@ export enum Events {
   LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
   ChatConnectionComplete = 'chat/connection/complete',
   RoomFavorited = 'chat/channel/roomFavorited',
+  RoomUnfavorited = 'chat/channel/roomUnfavorited',
 }
 
 let theBus;
@@ -86,6 +87,7 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       emit({ type: Events.OtherUserLeftChannel, payload: { channelId, user } });
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
     const roomFavorited = (roomId) => emit({ type: Events.RoomFavorited, payload: { roomId } });
+    const roomUnfavorited = (roomId) => emit({ type: Events.RoomUnfavorited, payload: { roomId } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -102,6 +104,7 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       onOtherUserLeftChannel,
       receiveLiveRoomEvent,
       roomFavorited,
+      roomUnfavorited,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

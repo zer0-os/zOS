@@ -70,6 +70,7 @@ const getSdkClient = (sdkClient = {}) => ({
   isRoomEncrypted: () => true,
   invite: jest.fn().mockResolvedValue({}),
   setRoomTag: jest.fn().mockResolvedValue({}),
+  deleteRoomTag: jest.fn().mockResolvedValue({}),
   ...sdkClient,
 });
 
@@ -806,6 +807,22 @@ describe('matrix client', () => {
       await client.addRoomToFavorites(roomId);
 
       expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
+    });
+  });
+
+  describe('removeRoomFromFavorites', () => {
+    it('deletes "m.favorite" tag from room', async () => {
+      const roomId = '!testRoomId';
+      const deleteRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ deleteRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.removeRoomFromFavorites(roomId);
+
+      expect(deleteRoomTag).toHaveBeenCalledWith(roomId, 'm.favorite');
     });
   });
 });

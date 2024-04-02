@@ -166,4 +166,24 @@
     top: 32px;
     left: 32px;
   }
+
+  &__avatar-with-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__more-menu-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  &:hover &__more-menu-container {
+    opacity: 1;
+    visibility: visible;
+  }
 }

@@ -67,7 +67,7 @@ describe(checkNewRewardsLoaded, () => {
     mockLocalStorage.getItem = jest.fn();
 
     await expectSaga(checkNewRewardsLoaded)
-      .withReducer(rootReducer, initialState({ meowPreviousDay: '599', meowInUSD: 0 }))
+      .withReducer(rootReducer, initialState({ meowPreviousDay: '0' }))
       .run();
 
     expect(localStorage.getItem).not.toHaveBeenCalled();

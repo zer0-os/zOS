@@ -32,7 +32,7 @@
 
 .message-input {
   display: flex;
-  padding: 16px 24px;
+  padding: 8px 16px;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
@@ -58,7 +58,7 @@
   &__input-row {
     display: flex;
     align-items: flex-end;
-    gap: 24px;
+    gap: 16px;
     width: 100%;
 
     &--editing {

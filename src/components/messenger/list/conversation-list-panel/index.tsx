@@ -183,15 +183,19 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             <div {...cn('tab-list')}>
               <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
                 All
-                <div {...cn('tab-badge')}>
-                  <span>{this.allUnreadCount}</span>
-                </div>
+                {!!this.allUnreadCount && (
+                  <div {...cn('tab-badge')}>
+                    <span>{this.allUnreadCount}</span>
+                  </div>
+                )}
               </div>
               <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
                 Favorites
-                <div {...cn('tab-badge')}>
-                  <span>{this.favoritesUnreadCount}</span>
-                </div>
+                {!!this.favoritesUnreadCount && (
+                  <div {...cn('tab-badge')}>
+                    <span>{this.favoritesUnreadCount}</span>
+                  </div>
+                )}
               </div>
             </div>
           </FeatureFlag>

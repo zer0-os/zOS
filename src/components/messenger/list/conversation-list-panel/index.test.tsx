@@ -104,6 +104,17 @@ describe('ConversationListPanel', () => {
     expect(favoritesTab.find('.messages-list__tab-badge')).toHaveText('28');
   });
 
+  it('does not render unread count if count is zero', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', unreadCount: 0 }),
+      stubConversation({ name: 'convo-2', unreadCount: 0, isFavorite: true }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    expect(tabNamed(wrapper, 'All')).not.toHaveElement('.messages-list__tab-badge');
+    expect(tabNamed(wrapper, 'Favorites')).not.toHaveElement('.messages-list__tab-badge');
+  });
+
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
       { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },

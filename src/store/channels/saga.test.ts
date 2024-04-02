@@ -2,14 +2,14 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
-  roomFavoriteUpdated,
+  roomFavorited,
   markAllMessagesAsRead,
   markConversationAsRead,
   receiveChannel,
   onFavoriteRoom,
   unreadCountUpdated,
   onUnfavoriteRoom,
-  roomUnfavoriteUpdated,
+  roomUnfavorited,
 } from './saga';
 
 import { rootReducer } from '../reducer';
@@ -118,10 +118,10 @@ describe(receiveChannel, () => {
   });
 });
 
-describe(roomFavoriteUpdated, () => {
+describe(roomFavorited, () => {
   it('updates favorites for room', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isFavorite: false }).build();
-    const { storeState } = await expectSaga(roomFavoriteUpdated, {
+    const { storeState } = await expectSaga(roomFavorited, {
       payload: { roomId: 'room-id' },
     })
       .withReducer(rootReducer, initialState)
@@ -146,10 +146,10 @@ describe(onFavoriteRoom, () => {
   });
 });
 
-describe(roomUnfavoriteUpdated, () => {
+describe(roomUnfavorited, () => {
   it('updates unfavorite for room', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isFavorite: true }).build();
-    const { storeState } = await expectSaga(roomUnfavoriteUpdated, {
+    const { storeState } = await expectSaga(roomUnfavorited, {
       payload: { roomId: 'room-id' },
     })
       .withReducer(rootReducer, initialState)
@@ -164,12 +164,12 @@ describe(onUnfavoriteRoom, () => {
   it('calls removeRoomFromFavorites when channel is already favorite', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: true }).build();
 
-    await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
+    await expectSaga(onUnfavoriteRoom, { payload: { roomId: 'channel-id' } })
       .withReducer(rootReducer, initialState)
       .provide([
         [matchers.call.fn(removeRoomFromFavorites), undefined],
       ])
-      .call(addRoomToFavorites, 'channel-id')
+      .call(removeRoomFromFavorites, 'channel-id')
       .run();
   });
 });

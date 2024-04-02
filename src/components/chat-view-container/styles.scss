@@ -117,23 +117,35 @@
 }
 
 .messages__container {
-  animation: fadein 200ms ease-out forwards;
   padding-right: 16px;
   padding-top: 100px;
 
+  // Use transition because nested elements can't background blur
+  // if a parent element has an animation attribute
+  // Note: background blur does not work during the `transition`
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  &--rendered {
+    opacity: 1;
+  }
+
   .message__header {
     display: flex;
-    align-items: center;
+    justify-content: center;
     position: relative;
     margin: 8px 16px;
     font-weight: 400;
     font-size: 12px;
-    line-height: 15px;
+    line-height: normal;
 
     &-date {
-      width: 100%;
+      display: inline;
       text-align: center;
+      border-radius: 16px;
+      padding: 8px 24px;
       @include glass-text-primary-color;
+      @include flat-thin;
+      backdrop-filter: blur(32px);
     }
   }
 

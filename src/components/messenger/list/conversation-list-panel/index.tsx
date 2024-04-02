@@ -26,6 +26,8 @@ export interface Properties {
   search: (input: string) => any;
   onCreateConversation: (userId: string) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
+  onFavoriteRoom: (payload: { roomId: string }) => void;
+  onUnfavoriteRoom: (payload: { roomId: string }) => void;
 }
 
 enum Tab {
@@ -125,6 +127,14 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ selectedTab: Tab.Favorites });
   };
 
+  onFavoriteRoom = (roomId: string) => {
+    this.props.onFavoriteRoom({ roomId });
+  };
+
+  onUnfavoriteRoom = (roomId: string) => {
+    this.props.onUnfavoriteRoom({ roomId });
+  };
+
   get favoriteConversations() {
     return this.props.conversations.filter((c) => c.isFavorite);
   }
@@ -201,6 +211,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                     onClick={this.openExistingConversation}
                     myUserId={this.props.myUserId}
                     activeConversationId={this.props.activeConversationId}
+                    onFavoriteRoom={this.onFavoriteRoom}
+                    onUnfavoriteRoom={this.onUnfavoriteRoom}
                   />
                 ))}
               {this.filteredConversations.length === 0 && !this.state.filter && this.renderEmptyConversationList()}

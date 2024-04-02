@@ -117,7 +117,7 @@ export class ConversationItem extends React.Component<Properties, State> {
     };
 
     return (
-      <div {...cn('more-menu-container')} onClick={stopPropagation}>
+      <div onClick={stopPropagation}>
         <MoreMenu
           isFavorite={this.props.conversation.isFavorite}
           onFavorite={this.onFavorite}

@@ -8,36 +8,43 @@ describe(MoreMenu, () => {
     const allProps: Properties = {
       isFavorite: false,
       onFavorite: () => {},
+      onUnfavorite: () => {},
       ...props,
     };
 
     return shallow(<MoreMenu {...allProps} />);
   };
 
-  describe('Favorite menu item', () => {
-    it('fires onFavorite event when selected', function () {
-      const onFavorite = jest.fn();
+  it('fires onFavorite event', function () {
+    const onFavorite = jest.fn();
 
-      selectItem(subject({ onFavorite }), 'favorite');
+    selectItem(subject({ onFavorite, isFavorite: false }), 'favorite');
 
-      expect(onFavorite).toHaveBeenCalled();
-    });
+    expect(onFavorite).toHaveBeenCalled();
+  });
 
-    it('should display "Unfavorite" label when isFavorite is true', () => {
-      const wrapper = subject({ isFavorite: true });
+  it('fires onUnfavorite event', function () {
+    const onUnfavorite = jest.fn();
 
-      const favoriteItem = menuItem(wrapper, 'favorite');
+    selectItem(subject({ onUnfavorite, isFavorite: true }), 'unfavorite');
 
-      expectLabelToContainText(favoriteItem, 'Unfavorite');
-    });
+    expect(onUnfavorite).toHaveBeenCalled();
+  });
 
-    it('should display "Favorite" label when isFavorite is false', () => {
-      const wrapper = subject({ isFavorite: false });
+  it('should display "Unfavorite" label when isFavorite is true', () => {
+    const wrapper = subject({ isFavorite: true });
 
-      const favoriteItem = menuItem(wrapper, 'favorite');
+    const favoriteItem = menuItem(wrapper, 'unfavorite');
 
-      expectLabelToContainText(favoriteItem, 'Favorite');
-    });
+    expectLabelToContainText(favoriteItem, 'Unfavorite');
+  });
+
+  it('should display "Favorite" label when isFavorite is false', () => {
+    const wrapper = subject({ isFavorite: false });
+
+    const favoriteItem = menuItem(wrapper, 'favorite');
+
+    expectLabelToContainText(favoriteItem, 'Favorite');
   });
 });
 

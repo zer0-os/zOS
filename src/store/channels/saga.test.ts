@@ -164,12 +164,12 @@ describe(onUnfavoriteRoom, () => {
   it('calls removeRoomFromFavorites when channel is already favorite', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: true }).build();
 
-    await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
+    await expectSaga(onUnfavoriteRoom, { payload: { roomId: 'channel-id' } })
       .withReducer(rootReducer, initialState)
       .provide([
         [matchers.call.fn(removeRoomFromFavorites), undefined],
       ])
-      .call(addRoomToFavorites, 'channel-id')
+      .call(removeRoomFromFavorites, 'channel-id')
       .run();
   });
 });

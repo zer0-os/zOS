@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { connectContainer } from '../../../../store/redux-container';
 import { RootState } from '../../../../store/reducer';
-import { rewardsTooltipClosed } from '../../../../store/rewards';
+import { closeRewardsTooltip } from '../../../../store/rewards';
 
 import { RewardsTooltip } from '.';
 import { formatUSD, calculateTotalPriceInUSDCents } from '../../../../lib/number';
@@ -14,7 +14,7 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   meowTokenPriceInUSD: number;
 
-  rewardsTooltipClosed: () => void;
+  closeRewardsTooltip: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -30,7 +30,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { rewardsTooltipClosed };
+    return { closeRewardsTooltip };
   }
 
   static totalPriceInUSD(meow: string, meowInUSD: number) {
@@ -45,7 +45,7 @@ export class Container extends React.Component<Properties> {
     return (
       <RewardsTooltip
         meowPreviousDayInUSD={this.props.meowPreviousDayInUSD}
-        onClose={this.props.rewardsTooltipClosed}
+        onClose={this.props.closeRewardsTooltip}
         open={this.props.isOpen}
       />
     );

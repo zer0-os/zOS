@@ -9,7 +9,7 @@ describe(Container, () => {
       isLoading: false,
       meowTokenPriceInUSD: 0,
       isOpen: false,
-      rewardsTooltipClosed: () => {},
+      closeRewardsTooltip: () => {},
       ...props,
     };
 

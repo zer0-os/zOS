@@ -111,6 +111,7 @@ export class ConversationItem extends React.Component<Properties, State> {
       />
     );
   }
+
   renderMoreMenu() {
     const stopPropagation = (e) => {
       e.stopPropagation();

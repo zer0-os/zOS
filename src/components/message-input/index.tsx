@@ -207,10 +207,8 @@ export class MessageInput extends React.Component<Properties, State> {
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             <div>
-              <div className='message-input__mentions-text-area-wrap__suggestions__item-name'>{suggestion.display}</div>
-              <div className='message-input__mentions-text-area-wrap__suggestions__item-zid'>
-                {suggestion.displayHandle}
-              </div>
+              <div {...cn('mentions-text-area-wrap__suggestions__item-name')}>{suggestion.display}</div>
+              <div {...cn('mentions-text-area-wrap__suggestions__item-zid')}>{suggestion.displayHandle}</div>
             </div>
           </>
         )}
@@ -327,21 +325,17 @@ export class MessageInput extends React.Component<Properties, State> {
             />
           )}
         </div>
+
         <div
           className={classNames(c('input-row'), {
-            'message-input__container--editing': this.props.isEditing,
+            [c('container', 'editing')]: this.props.isEditing,
           })}
         >
           {this.allowLeftIcons && (
-            <div className='message-input__icon-outer'>
-              <div className='message-input__icon-wrapper'>
+            <div {...cn('icon-outer')}>
+              <div {...cn('icon-wrapper')}>
                 {this.allowGiphy && (
-                  <IconButton
-                    className={classNames('message-input__icon', 'message-input__icon--giphy')}
-                    onClick={this.openGiphy}
-                    Icon={IconStickerCircle}
-                    size='small'
-                  />
+                  <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size='small' />
                 )}
 
                 {this.allowFileAttachment && (
@@ -355,9 +349,9 @@ export class MessageInput extends React.Component<Properties, State> {
             </div>
           )}
 
-          <div className='message-input__chat-container'>
-            <div className='message-input__scroll-container'>
-              <div className='message-input__text-and-emoji-wrapper'>
+          <div {...cn('chat-container')}>
+            <div {...cn('scroll-container')}>
+              <div {...cn('text-and-emoji-wrapper')}>
                 <Dropzone
                   onDrop={this.imagesSelected}
                   noClick
@@ -366,18 +360,13 @@ export class MessageInput extends React.Component<Properties, State> {
                   disabled={!this.allowFileAttachment}
                 >
                   {({ getRootProps }) => (
-                    <div {...getRootProps({ className: 'message-input__mentions-text-area' })}>
+                    <div {...getRootProps({ ...cn('mentions-text-area') })}>
                       <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
                       <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
 
-                      <div
-                        className={classNames(
-                          'message-input__emoji-picker-container',
-                          'message-input__emoji-picker-container--fullscreen'
-                        )}
-                      >
+                      <div {...cn('emoji-picker-container', 'fullscreen')}>
                         <EmojiPicker
                           textareaRef={this.textareaRef}
                           isOpen={this.state.isEmojisActive}
@@ -392,7 +381,7 @@ export class MessageInput extends React.Component<Properties, State> {
 
                       <MentionsInput
                         inputRef={this.textareaRef}
-                        className='message-input__mentions-text-area-wrap'
+                        {...cn('mentions-text-area-wrap')}
                         id={this.props.id}
                         placeholder={this.props.placeholder}
                         onKeyDown={this.onKeyDown}
@@ -408,11 +397,11 @@ export class MessageInput extends React.Component<Properties, State> {
                   )}
                 </Dropzone>
 
-                <div className='message-input__emoji-icon-outer'>
-                  <div className='message-input__icon-wrapper'>
+                <div {...cn('emoji-icon-outer')}>
+                  <div {...cn('icon-wrapper')}>
                     {!this.props.isEditing && (
                       <IconButton
-                        className={classNames('message-input__icon', ' message-input__icon--emoji')}
+                        {...cn('icon', 'emoji')}
                         onClick={this.openEmojis}
                         Icon={IconFaceSmile}
                         size='small'
@@ -425,11 +414,11 @@ export class MessageInput extends React.Component<Properties, State> {
           </div>
 
           {!this.props.isEditing && (
-            <div className='message-input__icon-outer'>
-              <div className='message-input__icon-wrapper'>
+            <div {...cn('icon-outer')}>
+              <div {...cn('icon-wrapper')}>
                 <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
                   <IconButton
-                    className={classNames('message-input__icon', 'message-input__icon--end-action')}
+                    {...cn('icon', 'end-action')}
                     onClick={this.onSend}
                     Icon={IconSend3}
                     size='small'
@@ -465,14 +454,6 @@ export class MessageInput extends React.Component<Properties, State> {
   };
 
   render() {
-    return (
-      <div
-        className={classNames('message-input', {
-          'message-input--editing': this.props.isEditing,
-        })}
-      >
-        {this.renderInput()}
-      </div>
-    );
+    return <div {...cn('', this.props.isEditing && 'editing')}>{this.renderInput()}</div>;
   }
 }

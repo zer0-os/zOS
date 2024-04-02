@@ -5,7 +5,8 @@
 
   padding: 16px;
   border-radius: 8px;
-  background: rgba(163, 162, 163, 0.1);
+  @include flat-thin;
+  backdrop-filter: blur(32px);
 
   width: fit-content;
 

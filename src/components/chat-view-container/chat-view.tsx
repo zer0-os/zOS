@@ -55,15 +55,20 @@ export interface State {
   lightboxMedia: any[];
   lightboxStartIndex: number;
   isLightboxOpen: boolean;
+  rendered: boolean;
 }
 
 export class ChatView extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<InvertedScroll>;
-  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false };
+  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false, rendered: false };
 
   constructor(props) {
     super(props);
     this.scrollContainerRef = React.createRef();
+  }
+
+  componentDidMount(): void {
+    this.setState({ rendered: true });
   }
 
   scrollToBottom = () => {
@@ -186,9 +191,10 @@ export class ChatView extends React.Component<Properties, State> {
   renderMessages() {
     const messagesByDay = this.getMessagesByDay();
     const filteredMessagesByDay = filterAdminMessages(messagesByDay);
+    const cn = bemClassName('messages');
 
     return (
-      <div className='messages__container'>
+      <div {...cn('container', this.state.rendered && 'rendered')}>
         {Object.keys(filteredMessagesByDay)
           .sort((a, b) => (a > b ? 1 : -1))
           .map((day) => {

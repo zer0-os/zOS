@@ -7,8 +7,10 @@ describe(MoreMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       isFavorite: false,
+      isOpen: false,
       onFavorite: () => {},
       onUnfavorite: () => {},
+      onClose: () => {},
       ...props,
     };
 

@@ -29,7 +29,15 @@ export interface Properties {
   onUnfavoriteRoom: (roomId: string) => void;
 }
 
-export class ConversationItem extends React.Component<Properties> {
+export interface State {
+  isContextMenuOpen: boolean;
+}
+
+export class ConversationItem extends React.Component<Properties, State> {
+  state = {
+    isContextMenuOpen: false,
+  };
+
   handleMemberClick = () => {
     this.props.onClick(this.props.conversation.id);
   };
@@ -46,6 +54,15 @@ export class ConversationItem extends React.Component<Properties> {
 
   onUnfavorite = () => {
     this.props.onUnfavoriteRoom(this.props.conversation.id);
+  };
+
+  openContextMenu = (e) => {
+    e.preventDefault();
+    this.setState({ isContextMenuOpen: true });
+  };
+
+  closeContextMenu = () => {
+    this.setState({ isContextMenuOpen: false });
   };
 
   tooltipContent(conversation: Channel) {
@@ -105,6 +122,8 @@ export class ConversationItem extends React.Component<Properties> {
           isFavorite={this.props.conversation.isFavorite}
           onFavorite={this.onFavorite}
           onUnfavorite={this.onUnfavorite}
+          isOpen={this.state.isContextMenuOpen}
+          onClose={this.closeContextMenu}
         />
       </div>
     );
@@ -135,6 +154,7 @@ export class ConversationItem extends React.Component<Properties> {
           tabIndex={0}
           role='button'
           is-active={isActive}
+          onContextMenu={this.openContextMenu}
         >
           <div {...cn('avatar-with-menu-container')}>
             {this.renderAvatar()}

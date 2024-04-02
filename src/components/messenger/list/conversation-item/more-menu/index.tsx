@@ -1,15 +1,17 @@
 import React from 'react';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
-import { IconBookmark, IconBookmarkX, IconDotsHorizontal } from '@zero-tech/zui/icons';
+import { IconBookmark, IconBookmarkX } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 
 export interface Properties {
   isFavorite: boolean;
+  isOpen: boolean;
 
   onFavorite: () => void;
   onUnfavorite: () => void;
+  onClose: (isOpen: boolean) => void;
 }
 
 export class MoreMenu extends React.Component<Properties> {
@@ -28,6 +30,12 @@ export class MoreMenu extends React.Component<Properties> {
       </div>
     );
   }
+
+  onOpenChange = (isOpening) => {
+    if (!isOpening) {
+      this.props.onClose(isOpening);
+    }
+  };
 
   get menuItems() {
     const menuItems = [];
@@ -62,7 +70,9 @@ export class MoreMenu extends React.Component<Properties> {
         side='bottom'
         alignMenu='start'
         className={'more-menu-trigger'}
-        trigger={<IconDotsHorizontal size={16} isFilled />}
+        trigger={<></>}
+        open={this.props.isOpen}
+        onOpenChange={this.onOpenChange}
       />
     );
   }

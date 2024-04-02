@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 
-import { checkNewRewardsLoaded, closeRewardsTooltipAfterDelay, fetch } from './saga';
+import { checkNewRewardsLoaded, closeRewardsTooltipAfterDelay, fetch, fetchCurrentMeowPriceInUSD } from './saga';
 import { fetchRewards } from './api';
 import { RewardsState, initialState as initialRewardsState } from '.';
 
@@ -67,10 +67,19 @@ describe(checkNewRewardsLoaded, () => {
     mockLocalStorage.getItem = jest.fn();
 
     await expectSaga(checkNewRewardsLoaded)
-      .withReducer(rootReducer, initialState({ meowPreviousDay: '0' }))
+      .withReducer(rootReducer, initialState({ meowPreviousDay: '599', meowInUSD: 0 }))
       .run();
 
     expect(localStorage.getItem).not.toHaveBeenCalled();
+  });
+
+  it('fetches the current meow price if it is 0', async () => {
+    mockLocalStorage.getItem = jest.fn();
+
+    await expectSaga(checkNewRewardsLoaded)
+      .withReducer(rootReducer, initialState({ meowInUSD: 0 }))
+      .call(fetchCurrentMeowPriceInUSD)
+      .run();
   });
 
   it('sets the new rewards indicator if total rewards are not viewed', async () => {
@@ -99,6 +108,7 @@ function initialState(attrs: Partial<RewardsState> = {}, otherAttrs: any = {}) {
   return {
     rewards: {
       ...initialRewardsState,
+      meowInUSD: 0.03,
       ...attrs,
     },
     registration: {

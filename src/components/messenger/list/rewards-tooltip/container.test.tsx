@@ -1,31 +1,7 @@
 import { StoreBuilder } from '../../../../store/test/store';
 import { Container } from './container';
-import { shallow } from 'enzyme';
 
 describe(Container, () => {
-  const subject = (props: any = {}) => {
-    const allProps = {
-      meowPreviousDayInUSD: '',
-      isLoading: false,
-      meowTokenPriceInUSD: 0,
-      isOpen: false,
-      closeRewardsTooltip: () => {},
-      ...props,
-    };
-
-    return shallow(<Container {...allProps} />);
-  };
-
-  it('should render null if loading', () => {
-    const wrapper = subject({ isLoading: true });
-    expect(wrapper).toBeEmptyRender();
-  });
-
-  it('should render null if meowTokenPriceInUSD is 0', () => {
-    const wrapper = subject({ isLoading: false, meowTokenPriceInUSD: 0 });
-    expect(wrapper).toBeEmptyRender();
-  });
-
   describe('mapState', () => {
     test('meowPreviousDayInUSD', () => {
       const state = new StoreBuilder().withOtherState({

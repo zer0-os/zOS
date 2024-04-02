@@ -38,13 +38,13 @@ export function* fetch(_action) {
     if (result.success) {
       yield put(setMeow(result.response.meow.toString()));
       yield put(setMeowPreviousDay(result.response.meowPreviousDay.toString()));
-
-      yield call(checkNewRewardsLoaded);
     } else {
     }
   } catch (e) {
   } finally {
     yield put(setLoading(false));
+
+    yield call(checkNewRewardsLoaded);
   }
 }
 
@@ -80,6 +80,10 @@ export function* closeRewardsTooltipAfterDelay() {
 export function* checkNewRewardsLoaded() {
   const { meowPreviousDay, meow } = yield select((state) => state.rewards);
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
+  const meowTokenPrice = yield select((state) => state.rewards.meowInUSD);
+  if (meowTokenPrice === 0) {
+    yield call(fetchCurrentMeowPriceInUSD);
+  }
 
   if (!isFirstTimeLogin && meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {

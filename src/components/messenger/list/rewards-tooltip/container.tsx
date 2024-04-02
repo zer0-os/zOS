@@ -38,10 +38,6 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    if (this.props.isLoading || this.props.meowTokenPriceInUSD === 0) {
-      return null;
-    }
-
     return (
       <RewardsTooltip
         meowPreviousDayInUSD={this.props.meowPreviousDayInUSD}

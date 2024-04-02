@@ -100,50 +100,38 @@ export function* receiveChannel(channel: Partial<Channel>) {
 
 export function* onFavoriteRoom(action) {
   const { roomId } = action.payload;
-
-  const channel = yield select(rawChannelSelector(roomId));
-
-  if (!channel) {
-    return;
+  try {
+    yield call(addRoomToFavorites, roomId);
+  } catch (error) {
+    console.error(`Failed to add room ${roomId} to favorites:`, error);
   }
-
-  yield call(addRoomToFavorites, roomId);
 }
 
 export function* onUnfavoriteRoom(action) {
   const { roomId } = action.payload;
-
-  const channel = yield select(rawChannelSelector(roomId));
-
-  if (!channel) {
-    return;
+  try {
+    yield call(removeRoomFromFavorites, roomId);
+  } catch (error) {
+    console.error(`Failed to remove room ${roomId} from favorites:`, error);
   }
-
-  yield call(removeRoomFromFavorites, roomId);
 }
 
-export function* roomFavoriteUpdated(action) {
+export function* roomFavorited(action) {
   const { roomId } = action.payload;
-
-  const channel = yield select(rawChannelSelector(roomId));
-
-  if (!channel) {
-    return;
+  try {
+    yield call(receiveChannel, { id: roomId, isFavorite: true });
+  } catch (error) {
+    console.error(`Failed to update favorite status for room ${roomId}:`, error);
   }
-
-  yield call(receiveChannel, { id: roomId, isFavorite: true });
 }
 
-export function* roomUnfavoriteUpdated(action) {
+export function* roomUnfavorited(action) {
   const { roomId } = action.payload;
-
-  const channel = yield select(rawChannelSelector(roomId));
-
-  if (!channel) {
-    return;
+  try {
+    yield call(receiveChannel, { id: roomId, isFavorite: false });
+  } catch (error) {
+    console.error(`Failed to update unfavorite status for room ${roomId}:`, error);
   }
-
-  yield call(receiveChannel, { id: roomId, isFavorite: false });
 }
 
 export function* saga() {
@@ -154,6 +142,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OnUnfavoriteRoom, onUnfavoriteRoom);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavoriteUpdated);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavoriteUpdated);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavorited);
 }

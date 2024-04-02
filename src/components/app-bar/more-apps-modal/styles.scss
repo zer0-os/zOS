@@ -1,0 +1,111 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../glass';
+
+.more-apps-modal {
+  box-sizing: border-box;
+  width: 710px;
+
+  &__header {
+    padding-bottom: 40px;
+    @include glass-text-primary-color;
+  }
+
+  &__app-list {
+    display: flex;
+    padding-bottom: 24px;
+
+    & > * {
+      width: 1px;
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+  }
+
+  &__app-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__app-actions {
+    display: flex;
+    padding-top: 24px;
+    border-top: 1px solid $glass-separator-secondary-color;
+
+    & > * {
+      width: 1px;
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+  }
+
+  &__app-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 72px;
+  }
+
+  &__icon {
+    box-sizing: border-box;
+    width: 56px;
+    height: 56px;
+    border-radius: 9999px;
+    padding: 16px;
+
+    color: $glass-highlight-color;
+    @include glass-state-hover-color;
+    @include glass-materials-raised;
+    @include glass-shadow-low;
+
+    transition: background-color 100ms ease-out;
+  }
+
+  &__app-card--secondary {
+    .more-apps-modal__icon {
+      @include glass-text-secondary-color;
+    }
+  }
+
+  &__app-name {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24.2px;
+    text-align: left;
+  }
+
+  &__app-description {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+    @include glass-text-secondary-color;
+  }
+
+  &__app-footer {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    @include glass-text-secondary-color;
+
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 100ms ease-out, opacity 100ms ease-out;
+
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  &__app-card:hover {
+    .more-apps-modal__icon {
+      @include glass-state-hover-color;
+    }
+
+    .more-apps-modal__app-footer {
+      max-height: 50px;
+      opacity: 1;
+    }
+  }
+}

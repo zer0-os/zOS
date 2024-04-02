@@ -72,6 +72,11 @@ export function* syncRewardsAndTokenPrice() {
   yield spawn(syncFetchRewards);
 }
 
+export function* closeRewardsTooltipAfterDelay() {
+  yield delay(3000);
+  yield call(closeRewardsTooltip);
+}
+
 export function* checkNewRewardsLoaded() {
   const { meowPreviousDay, meow } = yield select((state) => state.rewards);
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
@@ -79,7 +84,10 @@ export function* checkNewRewardsLoaded() {
   if (!isFirstTimeLogin && meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
+
+      yield spawn(closeRewardsTooltipAfterDelay);
     }
+
     if (localStorage.getItem(totalRewardsKey) !== meow) {
       yield put(setShowNewRewardsIndicator(true));
     }

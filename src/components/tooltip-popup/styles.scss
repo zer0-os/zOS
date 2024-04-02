@@ -15,7 +15,7 @@
 
   &__content {
     animation: fadein 700ms ease-out forwards;
-    margin-left: 8px;
+    margin-left: -60px;
 
     display: flex;
     align-items: center;
@@ -50,11 +50,12 @@
   }
 
   &__arrow {
-    position: absolute;
-    left: -8px;
+    transform: rotate(270deg);
+    height: 8px;
+    width: 16px;
 
-    margin-top: -1px;
-    margin-bottom: 3px;
+    position: absolute;
+    left: -10px;
   }
 
   &__close-icon {

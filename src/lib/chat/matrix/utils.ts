@@ -75,9 +75,9 @@ export function parsePlainBody(body) {
 
   const parsedBody = body
     .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => !line.startsWith('> ') && line !== '')
-    .join('\n');
+    .filter((line) => !line.startsWith('> '))
+    .join('\n')
+    .trim();
 
   return parsedBody;
 }

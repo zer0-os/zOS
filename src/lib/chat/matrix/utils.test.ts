@@ -120,4 +120,34 @@ describe(parsePlainBody, () => {
     const body = '> Quoted line\n    \n> Another quoted line';
     expect(parsePlainBody(body)).toEqual('');
   });
+
+  it('preserves intentional formatting within the message', () => {
+    const body = '> Quoted line\n\nIntentionally formatted message\nWith multiple lines';
+    const expected = 'Intentionally formatted message\nWith multiple lines';
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
+
+  it('removes leading and trailing whitespace around the message', () => {
+    const body = '\n\n> Quoted line\n\nMessage with leading and trailing whitespace\n\n';
+    const expected = 'Message with leading and trailing whitespace';
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
+
+  it('preserves URLs that follow a quoted line', () => {
+    const body = '> Quoted text\nhttps://example.com';
+    const expected = 'https://example.com';
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
+
+  it('handles messages with URLs surrounded by whitespace', () => {
+    const body = '\n\n https://example.com \n\n';
+    const expected = 'https://example.com';
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
+
+  it('keeps URLs intact within complex messages', () => {
+    const body = '> Quoted line\n\nBefore URL text\nhttps://example.com\nAfter URL text';
+    const expected = 'Before URL text\nhttps://example.com\nAfter URL text';
+    expect(parsePlainBody(body)).toEqual(expected);
+  });
 });

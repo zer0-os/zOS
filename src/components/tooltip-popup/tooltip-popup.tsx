@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { ReactComponent as TooltipHead } from '../../tooltip-head.svg';
 
 const c = bem('tooltip-popup');
 
@@ -30,8 +31,8 @@ export class TooltipPopup extends React.Component<Properties> {
             </TooltipPrimitive.Trigger>
             <TooltipPrimitive.Content side={this.props.side} align={this.props.align} className={c('content')}>
               {this.props.content}
-              <TooltipPrimitive.Arrow className={c('arrow')} width={32} height={16} />
-              <IconButton className={c('close')} Icon={IconXClose} size='x-small' onClick={this.props.onClose} />
+              <TooltipHead className={c('arrow')} />
+              <IconButton className={c('close-icon')} Icon={IconXClose} size='x-small' onClick={this.props.onClose} />
             </TooltipPrimitive.Content>
           </TooltipPrimitive.Root>
         </TooltipPrimitive.Provider>

@@ -2,7 +2,7 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   TotalRewardsViewed = 'rewards/totalRewardsViewed',
-  RewardsTooltipClosed = 'registration/rewardsTooltipClosed',
+  CloseRewardsTooltip = 'registration/closeRewardsTooltip',
 }
 
 export type RewardsState = {
@@ -26,7 +26,7 @@ export const initialState: RewardsState = {
 };
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
-export const rewardsTooltipClosed = createAction(SagaActionTypes.RewardsTooltipClosed);
+export const closeRewardsTooltip = createAction(SagaActionTypes.CloseRewardsTooltip);
 
 const slice = createSlice({
   name: 'rewards',

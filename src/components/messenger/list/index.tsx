@@ -66,6 +66,7 @@ export interface Properties extends PublicProperties {
   isRewardsDialogOpen: boolean;
   displayLogoutModal: boolean;
   isFavoritesError: boolean;
+  showRewardsTooltip: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -117,6 +118,7 @@ export class Container extends React.Component<Properties, State> {
       joinRoomErrorContent,
       isBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
+      showRewardsTooltip: rewards.showRewardsInTooltip,
       displayLogoutModal,
       isFavoritesError,
     };
@@ -236,6 +238,7 @@ export class Container extends React.Component<Properties, State> {
         startConversation={this.props.startCreateConversation}
         onLogout={this.props.logout}
         onVerifyId={this.openVerifyIdDialog}
+        showRewardsTooltip={this.props.showRewardsTooltip}
       />
     );
   }

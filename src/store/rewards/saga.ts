@@ -74,7 +74,7 @@ export function* syncRewardsAndTokenPrice() {
 
 export function* closeRewardsTooltipAfterDelay() {
   yield delay(3000);
-  //yield call(closeRewardsTooltip);
+  yield call(closeRewardsTooltip);
 }
 
 export function* checkNewRewardsLoaded() {

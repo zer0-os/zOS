@@ -54,7 +54,7 @@ $recent-indicator-size: 8px;
     }
 
     &--online::after {
-      background-color: theme.$color-success-9;
+      background-color: theme.$color-secondary-11;
     }
 
     &--offline::after {

@@ -103,11 +103,9 @@ export function* onFavoriteRoom(action) {
 
   const { roomId } = action.payload;
   try {
-    throw new Error('Mock error for addRoomToFavorites');
     yield call(addRoomToFavorites, roomId);
   } catch (error) {
     yield put(setIsFavoritesError(true));
-    console.error(`Failed to add room ${roomId} to favorites:`, error);
   }
 }
 
@@ -119,7 +117,6 @@ export function* onUnfavoriteRoom(action) {
     yield call(removeRoomFromFavorites, roomId);
   } catch (error) {
     yield put(setIsFavoritesError(true));
-    console.error(`Failed to remove room ${roomId} from favorites:`, error);
   }
 }
 

@@ -4,6 +4,8 @@ import { shallow } from 'enzyme';
 import { ConversationListPanel, Properties } from '.';
 import { Channel } from '../../../../store/channels';
 import { stubConversation } from '../../../../store/test/store';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -17,6 +19,7 @@ describe('ConversationListPanel', () => {
       onCreateConversation: () => null,
       onFavoriteRoom: () => null,
       onUnfavoriteRoom: () => null,
+      closeFavoritesError: () => null,
       ...props,
     };
 
@@ -355,6 +358,21 @@ describe('ConversationListPanel', () => {
     // Simulate a search query change (from 'bob' to '')
     await searchFor(wrapper, '');
     expect(scrollContainerRef.current.scrollToTop).toHaveBeenCalled();
+  });
+
+  it('renders favorites error elements when isFavoritesError', function () {
+    const wrapper = subject({ isFavoritesError: true });
+
+    expect(wrapper).toHaveElement(IconAlertCircle);
+  });
+
+  it('fires closeFavoritesError', function () {
+    const closeFavoritesError = jest.fn();
+    const wrapper = subject({ closeFavoritesError, isFavoritesError: true });
+
+    wrapper.find(IconButton).simulate('click');
+
+    expect(closeFavoritesError).toHaveBeenCalled();
   });
 });
 

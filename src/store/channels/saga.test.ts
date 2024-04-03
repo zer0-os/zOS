@@ -16,6 +16,7 @@ import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { addRoomToFavorites, chat, removeRoomFromFavorites } from '../../lib/chat';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 const userId = 'user-id';
 
@@ -144,6 +145,19 @@ describe(onFavoriteRoom, () => {
       .call(addRoomToFavorites, 'channel-id')
       .run();
   });
+
+  it('should set error state to true when adding to favorites fails', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: false }).build();
+    const { storeState } = await expectSaga(onFavoriteRoom, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addRoomToFavorites), throwError(new Error('Failed to add room to favorites'))],
+      ])
+      .call(addRoomToFavorites, 'channel-id')
+      .run();
+
+    expect(storeState.chat.isFavoritesError).toEqual(true);
+  });
 });
 
 describe(roomUnfavorited, () => {
@@ -171,6 +185,19 @@ describe(onUnfavoriteRoom, () => {
       ])
       .call(removeRoomFromFavorites, 'channel-id')
       .run();
+  });
+
+  it('should set error state to true when removing from favorites fails', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isFavorite: true }).build();
+    const { storeState } = await expectSaga(onUnfavoriteRoom, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(removeRoomFromFavorites), throwError(new Error('Failed to remove room from favorites'))],
+      ])
+      .call(removeRoomFromFavorites, 'channel-id')
+      .run();
+
+    expect(storeState.chat.isFavoritesError).toEqual(true);
   });
 });
 

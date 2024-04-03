@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import { Channel } from '../../../../store/channels';
-import { IconUserPlus1 } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconUserPlus1, IconXClose } from '@zero-tech/zui/icons';
 import { ConversationItem } from '../conversation-item';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { Alert, Button, Input, Modal } from '@zero-tech/zui/components';
+import { Button, IconButton, Input, Modal } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
@@ -29,6 +29,7 @@ export interface Properties {
   onConversationClick: (payload: { conversationId: string }) => void;
   onFavoriteRoom: (payload: { roomId: string }) => void;
   onUnfavoriteRoom: (payload: { roomId: string }) => void;
+  closeFavoritesError: () => void;
 }
 
 enum Tab {
@@ -162,10 +163,17 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     return null;
   };
 
-  renderFavoritesAlert() {
+  renderFavoritesError() {
     return (
-      <div {...cn('favorites-error')}>
-        <Alert variant='error'>Error updating favorites. Please try again.</Alert>
+      <div {...cn('favorites-error-container')}>
+        <IconAlertCircle size={16} />
+        Failed to update favorites.
+        <IconButton
+          {...cn('favorites-error-close-icon')}
+          Icon={IconXClose}
+          size={24}
+          onClick={this.props.closeFavoritesError}
+        />
       </div>
     );
   }
@@ -237,7 +245,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </ScrollbarContainer>
         </div>
 
-        {this.props.isFavoritesError && this.renderFavoritesAlert()}
+        {this.props.isFavoritesError && this.renderFavoritesError()}
 
         <Button
           {...cn('invite-button')}

@@ -8,6 +8,7 @@ import {
   clearJoinRoomErrorContent,
   setIsJoiningConversation,
   setIsChatConnectionComplete,
+  setIsFavoritesError,
 } from '.';
 import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -194,6 +195,10 @@ export function* closeErrorDialog() {
   yield call(openFirstConversation);
 }
 
+export function* closeFavoritesError() {
+  yield put(setIsFavoritesError(false));
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
@@ -205,4 +210,5 @@ export function* saga() {
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
 
   yield takeLatest(SagaActionTypes.CloseConversationErrorDialog, closeErrorDialog);
+  yield takeLatest(SagaActionTypes.CloseFavoritesError, closeFavoritesError);
 }

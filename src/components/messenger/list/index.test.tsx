@@ -55,7 +55,7 @@ describe('messenger-list', () => {
       closeRewardsDialog: () => null,
       onFavoriteRoom: () => null,
       onUnfavoriteRoom: () => null,
-
+      closeFavoritesError: () => null,
       ...props,
     };
 

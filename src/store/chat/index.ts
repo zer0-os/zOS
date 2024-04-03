@@ -17,10 +17,12 @@ export enum SagaActionTypes {
   CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
   setActiveConversationId = 'chat/saga/setActiveConversationId',
   SetIsJoiningConversation = 'chat/saga/setIsJoiningConversation',
+  CloseFavoritesError = 'chat/saga/closeFavoritesError',
 }
 
 const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
 export const setActiveConversationId = createAction<{ id: string }>(SagaActionTypes.setActiveConversationId);
+const closeFavoritesError = createAction(SagaActionTypes.CloseFavoritesError);
 
 const slice = createSlice({
   name: 'chat',
@@ -60,4 +62,4 @@ export const {
   setIsFavoritesError,
 } = slice.actions;
 export const { reducer } = slice;
-export { closeConversationErrorDialog };
+export { closeConversationErrorDialog, closeFavoritesError };

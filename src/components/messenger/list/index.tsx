@@ -17,7 +17,7 @@ import {
 } from '../../../store/create-conversation';
 import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
-import { closeConversationErrorDialog } from '../../../store/chat';
+import { closeConversationErrorDialog, closeFavoritesError } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
@@ -80,6 +80,7 @@ export interface Properties extends PublicProperties {
   closeRewardsDialog: () => void;
   onFavoriteRoom: (payload: { roomId: string }) => void;
   onUnfavoriteRoom: (payload: { roomId: string }) => void;
+  closeFavoritesError: () => void;
 }
 
 interface State {
@@ -136,6 +137,7 @@ export class Container extends React.Component<Properties, State> {
       closeRewardsDialog,
       onFavoriteRoom,
       onUnfavoriteRoom,
+      closeFavoritesError,
     };
   }
 
@@ -256,6 +258,7 @@ export class Container extends React.Component<Properties, State> {
             onFavoriteRoom={this.props.onFavoriteRoom}
             onUnfavoriteRoom={this.props.onUnfavoriteRoom}
             isFavoritesError={this.props.isFavoritesError}
+            closeFavoritesError={this.props.closeFavoritesError}
           />
         )}
         {this.props.stage === SagaStage.CreateOneOnOne && (

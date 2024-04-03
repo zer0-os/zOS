@@ -16,6 +16,8 @@ import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
 import '../styles.scss';
 
+import { FeatureFlag } from '../../../feature-flag';
+
 const cn = bemClassName('conversation-item');
 
 export interface Properties {
@@ -159,7 +161,7 @@ export class ConversationItem extends React.Component<Properties, State> {
         >
           <div {...cn('avatar-with-menu-container')}>
             {this.renderAvatar()}
-            {this.renderMoreMenu()}
+            <FeatureFlag featureFlag='enableFavorites'>{this.renderMoreMenu()}</FeatureFlag>
           </div>
 
           <div {...cn('summary')}>

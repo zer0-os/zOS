@@ -38,14 +38,14 @@ export function* fetch(_action) {
     if (result.success) {
       yield put(setMeow(result.response.meow.toString()));
       yield put(setMeowPreviousDay(result.response.meowPreviousDay.toString()));
-
-      yield call(checkNewRewardsLoaded);
     } else {
     }
   } catch (e) {
   } finally {
     yield put(setLoading(false));
   }
+
+  yield call(checkNewRewardsLoaded);
 }
 
 export function* syncFetchRewards() {
@@ -68,19 +68,33 @@ export function* syncRewardsAndTokenPrice() {
   if (!featureFlags.enableRewards) {
     return;
   }
-
-  yield spawn(syncFetchRewards);
   yield spawn(syncMEOWPrice);
+  yield spawn(syncFetchRewards);
+}
+
+export function* closeRewardsTooltipAfterDelay() {
+  yield delay(3000);
+  //yield call(closeRewardsTooltip);
 }
 
 export function* checkNewRewardsLoaded() {
-  const { meowPreviousDay, meow } = yield select((state) => state.rewards);
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
+  if (isFirstTimeLogin) {
+    return;
+  }
 
-  if (!isFirstTimeLogin && meowPreviousDay !== '0') {
+  const { meowPreviousDay, meow, meowInUSD: meowTokenPrice } = yield select((state) => state.rewards);
+  if (meowTokenPrice === 0) {
+    yield call(fetchCurrentMeowPriceInUSD);
+  }
+
+  if (meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
+
+      yield spawn(closeRewardsTooltipAfterDelay);
     }
+
     if (localStorage.getItem(totalRewardsKey) !== meow) {
       yield put(setShowNewRewardsIndicator(true));
     }
@@ -93,7 +107,7 @@ export function* totalRewardsViewed() {
   yield put(setShowNewRewardsIndicator(false));
 }
 
-export function* rewardsTooltipClosed() {
+export function* closeRewardsTooltip() {
   // set last viewed "daily" rewards to the current rewards when the popup is closed
   const { meowPreviousDay, showRewardsInTooltip } = yield select((state) => state.rewards);
   if (showRewardsInTooltip) {
@@ -114,7 +128,7 @@ function* clearOnLogout() {
 
 export function* saga() {
   yield takeEvery(SagaActionTypes.TotalRewardsViewed, totalRewardsViewed);
-  yield takeEvery(SagaActionTypes.RewardsTooltipClosed, rewardsTooltipClosed);
+  yield takeEvery(SagaActionTypes.CloseRewardsTooltip, closeRewardsTooltip);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

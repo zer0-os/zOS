@@ -43,9 +43,9 @@ export function* fetch(_action) {
   } catch (e) {
   } finally {
     yield put(setLoading(false));
-
-    yield call(checkNewRewardsLoaded);
   }
+
+  yield call(checkNewRewardsLoaded);
 }
 
 export function* syncFetchRewards() {
@@ -74,18 +74,21 @@ export function* syncRewardsAndTokenPrice() {
 
 export function* closeRewardsTooltipAfterDelay() {
   yield delay(3000);
-  yield call(closeRewardsTooltip);
+  //yield call(closeRewardsTooltip);
 }
 
 export function* checkNewRewardsLoaded() {
-  const { meowPreviousDay, meow } = yield select((state) => state.rewards);
   const isFirstTimeLogin = yield select((state) => getDeepProperty(state, 'registration.isFirstTimeLogin'));
-  const meowTokenPrice = yield select((state) => state.rewards.meowInUSD);
+  if (isFirstTimeLogin) {
+    return;
+  }
+
+  const { meowPreviousDay, meow, meowInUSD: meowTokenPrice } = yield select((state) => state.rewards);
   if (meowTokenPrice === 0) {
     yield call(fetchCurrentMeowPriceInUSD);
   }
 
-  if (!isFirstTimeLogin && meowPreviousDay !== '0') {
+  if (meowPreviousDay !== '0') {
     if (localStorage.getItem(lastDayRewardsKey) !== meowPreviousDay) {
       yield put(setShowRewardsInTooltip(true));
 

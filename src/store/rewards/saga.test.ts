@@ -58,6 +58,7 @@ describe(checkNewRewardsLoaded, () => {
 
     await expectSaga(checkNewRewardsLoaded)
       .withReducer(rootReducer, initialState({ meowPreviousDay: '599' }, { registration: { isFirstTimeLogin: true } }))
+      .not.call(fetchCurrentMeowPriceInUSD)
       .run();
 
     expect(localStorage.getItem).not.toHaveBeenCalled();

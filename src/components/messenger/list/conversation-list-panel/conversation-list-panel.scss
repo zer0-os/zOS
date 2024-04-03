@@ -150,6 +150,11 @@ $side-padding: 16px;
     background-size: cover;
     background-repeat: no-repeat;
   }
+
+  &__favorites-error {
+    padding: 24px 16px;
+    font-size: 10px;
+  }
 }
 
 .messages-list__invite-button {

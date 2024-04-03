@@ -8,7 +8,7 @@ import { addRoomToFavorites, removeRoomFromFavorites, chat } from '../../lib/cha
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
-import { rawSetActiveConversationId } from '../chat';
+import { rawSetActiveConversationId, setIsFavoritesError } from '../chat';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -99,19 +99,26 @@ export function* receiveChannel(channel: Partial<Channel>) {
 }
 
 export function* onFavoriteRoom(action) {
+  yield put(setIsFavoritesError(false));
+
   const { roomId } = action.payload;
   try {
+    throw new Error('Mock error for addRoomToFavorites');
     yield call(addRoomToFavorites, roomId);
   } catch (error) {
+    yield put(setIsFavoritesError(true));
     console.error(`Failed to add room ${roomId} to favorites:`, error);
   }
 }
 
 export function* onUnfavoriteRoom(action) {
+  yield put(setIsFavoritesError(false));
+
   const { roomId } = action.payload;
   try {
     yield call(removeRoomFromFavorites, roomId);
   } catch (error) {
+    yield put(setIsFavoritesError(true));
     console.error(`Failed to remove room ${roomId} from favorites:`, error);
   }
 }

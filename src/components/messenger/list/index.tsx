@@ -65,6 +65,7 @@ export interface Properties extends PublicProperties {
   isBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
   displayLogoutModal: boolean;
+  isFavoritesError: boolean;
 
   startCreateConversation: () => void;
   startGroup: () => void;
@@ -91,7 +92,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user, displayLogoutModal },
-      chat: { activeConversationId, joinRoomErrorContent },
+      chat: { activeConversationId, joinRoomErrorContent, isFavoritesError },
       groupManagement,
       matrix: { isBackupDialogOpen },
       rewards,
@@ -116,6 +117,7 @@ export class Container extends React.Component<Properties, State> {
       isBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       displayLogoutModal,
+      isFavoritesError,
     };
   }
 
@@ -253,6 +255,7 @@ export class Container extends React.Component<Properties, State> {
             activeConversationId={this.props.activeConversationId}
             onFavoriteRoom={this.props.onFavoriteRoom}
             onUnfavoriteRoom={this.props.onUnfavoriteRoom}
+            isFavoritesError={this.props.isFavoritesError}
           />
         )}
         {this.props.stage === SagaStage.CreateOneOnOne && (

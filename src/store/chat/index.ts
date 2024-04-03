@@ -10,6 +10,7 @@ const initialState: ChatState = {
   joinRoomErrorContent: null,
   isJoiningConversation: false,
   isChatConnectionComplete: false,
+  isFavoritesError: false,
 };
 
 export enum SagaActionTypes {
@@ -43,6 +44,9 @@ const slice = createSlice({
     setIsChatConnectionComplete: (state, action: PayloadAction<ChatState['isChatConnectionComplete']>) => {
       state.isChatConnectionComplete = action.payload;
     },
+    setIsFavoritesError: (state, action: PayloadAction<ChatState['isFavoritesError']>) => {
+      state.isFavoritesError = action.payload;
+    },
   },
 });
 
@@ -53,6 +57,7 @@ export const {
   clearJoinRoomErrorContent,
   setIsJoiningConversation,
   setIsChatConnectionComplete,
+  setIsFavoritesError,
 } = slice.actions;
 export const { reducer } = slice;
 export { closeConversationErrorDialog };

@@ -11,6 +11,7 @@ describe('ConversationListPanel', () => {
       conversations: [],
       myUserId: '',
       activeConversationId: '',
+      isFavoritesError: false,
       search: () => undefined,
       onConversationClick: () => null,
       onCreateConversation: () => null,

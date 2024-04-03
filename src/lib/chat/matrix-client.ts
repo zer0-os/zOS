@@ -749,8 +749,6 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomEncryption) {
         this.debug('encryped message: ', event);
       }
-      if (event.type === EventType.RoomCreate) {
-      }
       if (event.type === EventType.RoomMember) {
         await this.publishMembershipChange(event);
       }

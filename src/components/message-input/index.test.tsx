@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { MentionsInput } from 'react-mentions';
 import { shallow } from 'enzyme';
 
 import { MessageInput, Properties } from '.';
@@ -10,6 +9,7 @@ import { config } from '../../config';
 import ReplyCard from '../reply-card/reply-card';
 import { ViewModes } from '../../shared-components/theme-engine';
 import { IconSend3 } from '@zero-tech/zui/icons';
+import { Mentions } from './mentions';
 
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
@@ -37,7 +37,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ placeholder: 'Speak' });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    expect(dropzone.find(MentionsInput).prop('placeholder')).toEqual('Speak');
+    expect(dropzone.find(Mentions).prop('placeholder')).toEqual('Speak');
   });
 
   it('should call editActions', function () {
@@ -53,7 +53,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    const input = dropzone.find(MentionsInput);
+    const input = dropzone.find(Mentions);
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, ctrlKey: true });
 
     expect(onSubmit).not.toHaveBeenCalled();
@@ -64,7 +64,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    const input = dropzone.find(MentionsInput);
+    const input = dropzone.find(Mentions);
     input.simulate('change', { target: { value: 'Hello' } });
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
@@ -78,7 +78,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, dropzoneToMedia });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    const input = dropzone.find(MentionsInput);
+    const input = dropzone.find(Mentions);
     wrapper.find(Dropzone).simulate('drop', [{ name: 'file1' }]);
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
@@ -132,7 +132,7 @@ describe('MessageInput', () => {
     const wrapper = subject({ onSubmit, placeholder: 'Speak' });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    const input = dropzone.find(MentionsInput);
+    const input = dropzone.find(Mentions);
     input.simulate('change', { target: { value: 'Hello' } });
     input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
@@ -256,7 +256,7 @@ describe('MessageInput', () => {
       const dropzone = wrapper.find(Dropzone).shallow();
 
       const message = 'Message with :smile:';
-      dropzone.find(MentionsInput).simulate('change', { target: { value: message } });
+      dropzone.find(Mentions).simulate('change', { target: { value: message } });
       wrapper.find('.message-input__icon--end-action').simulate('click');
 
       expect(onSubmit).toHaveBeenCalledWith('Message with 😄', [], []);
@@ -267,7 +267,7 @@ describe('MessageInput', () => {
     const userMentionHandler = wrapper
       .find(Dropzone)
       .shallow()
-      .find(MentionsInput)
+      .find(Mentions)
       .shallow()
       .find('Mention')
       .findWhere((n) => n.prop('trigger') === '@');
@@ -282,5 +282,5 @@ describe('MessageInput', () => {
 
 function setInput(wrapper, input) {
   const dropzone = wrapper.find(Dropzone).shallow();
-  dropzone.find(MentionsInput).simulate('change', { target: { value: input } });
+  dropzone.find(Mentions).simulate('change', { target: { value: input } });
 }

@@ -84,6 +84,10 @@
     padding: 0px;
   }
 
+  &__suggestions-user-details {
+    overflow: hidden;
+  }
+
   &__suggestions-name {
     white-space: nowrap;
     overflow: hidden;

@@ -46,7 +46,7 @@ export class Mentions extends React.Component<Properties> {
         renderSuggestion={(suggestion) => (
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
-            <div>
+            <div {...cn('suggestions-user-details')}>
               <div {...cn('suggestions-name')}>{suggestion.display}</div>
               <div {...cn('suggestions-handle')}>{suggestion.displayHandle}</div>
             </div>

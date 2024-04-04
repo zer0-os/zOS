@@ -4,7 +4,7 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../config';
 import { Key } from '../../lib/keyboard-search';
 import { MediaType } from '../../store/messages';
-import { userMentionsConfig } from './mentions-config';
+import { userMentionsConfig } from './mentions/mentions-config';
 import { Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 
 import Menu from './menu/menu';
@@ -314,7 +314,7 @@ export class MessageInput extends React.Component<Properties, State> {
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
 
-                      <div {...cn('emoji-picker-container', 'fullscreen')}>
+                      <div {...cn('emoji-picker-container')}>
                         <EmojiPicker
                           textareaRef={this.textareaRef}
                           isOpen={this.state.isEmojisActive}

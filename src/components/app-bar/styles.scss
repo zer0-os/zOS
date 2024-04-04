@@ -15,14 +15,4 @@
   pointer-events: all;
 
   @include main-background;
-
-  // Allow the sidekick to render properly until
-  // feature is enabled
-  &--disabled {
-    width: 16px;
-
-    > * {
-      display: none;
-    }
-  }
 }

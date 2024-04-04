@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
 import { IconDotsGrid, IconMessageSquare2 } from '@zero-tech/zui/icons';
-import { featureFlags } from '../../lib/feature-flags';
 import { MoreAppsModal } from './more-apps-modal';
 
 import { bemClassName } from '../../lib/bem';
@@ -26,7 +25,7 @@ export class AppBar extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        <div {...cn('', !featureFlags.enableAppBar && 'disabled')}>
+        <div {...cn('')}>
           <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
           <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
         </div>

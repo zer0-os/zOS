@@ -28,18 +28,6 @@
 }
 
 .mentions {
-  &__mentions-text-area {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 0;
-
-    &__wrap {
-      &__suggestions {
-        top: unset !important;
-        bottom: 100%;
-      }
-    }
-  }
   &__text-area-wrap {
     position: relative;
     overflow-y: visible;

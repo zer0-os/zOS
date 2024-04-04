@@ -94,17 +94,10 @@
     gap: 8px;
   }
 
-  &__mentions-text-area {
+  &__drop-zone-text-area {
     display: flex;
     flex-direction: column;
     flex: 1 0 0;
-
-    &__wrap {
-      &__suggestions {
-        top: unset !important;
-        bottom: 100%;
-      }
-    }
   }
 
   &__emoji-picker-container {

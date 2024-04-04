@@ -30,7 +30,6 @@ export interface Properties extends PublicPropertiesContainer {
   replyIsCurrentUser: boolean;
   sendDisabledMessage?: string;
   viewMode: ViewModes;
-  placeholder?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -334,7 +333,6 @@ export class MessageInput extends React.Component<Properties, State> {
                         onBlur={this._handleBlur}
                         onChange={this.contentChanged}
                         onKeyDown={this.onKeyDown}
-                        placeholder={this.props.placeholder}
                         textareaRef={this.textareaRef}
                         getUsersForMentions={this.props.getUsersForMentions}
                       />

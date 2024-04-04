@@ -7,21 +7,15 @@
 
   &__user-mention {
     display: inline-block;
-    padding: 2px 4px;
-
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 14px;
 
-    border-radius: 4px;
-    background-color: theme.$color-primary-7;
-    color: theme.$color-greyscale-12;
+    color: theme.$color-secondary-11;
 
     &[data-variant='negative'] {
-      padding: 0;
-      margin: 0;
-      border-radius: unset;
-      border: unset;
-      background-color: unset;
+      font-size: 12px;
+      font-weight: 400;
       color: theme.$color-greyscale-11;
     }
   }

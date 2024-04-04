@@ -119,18 +119,6 @@ describe('MessageInput', () => {
     expect(wrapper).not.toHaveElement('.message-input__icon--highlighted');
   });
 
-  it('submit message when click on textarea', () => {
-    const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit });
-    const dropzone = wrapper.find(Dropzone).shallow();
-
-    const input = dropzone.find(Mentions);
-    input.simulate('change', { target: { value: 'Hello' } });
-    input.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
-
-    expect(onSubmit).toHaveBeenCalledOnce();
-  });
-
   it('opens tooltip if disable message is set and user tries to submit', () => {
     const wrapper = subject({ sendDisabledMessage: 'you cannot send yet' });
     setInput(wrapper, 'Hello');

@@ -1,12 +1,11 @@
 import React, { RefObject } from 'react';
-import { MentionsInput, Mention } from 'react-mentions';
 import Dropzone from 'react-dropzone';
 
 import { config } from '../../config';
 import { Key } from '../../lib/keyboard-search';
 import { MediaType } from '../../store/messages';
-import { emojiMentionsConfig, userMentionsConfig } from './mentions-config';
-import { UserForMention, Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
+import { userMentionsConfig } from './mentions-config';
+import { Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
 
 import Menu from './menu/menu';
 import { EmojiPicker } from './emoji-picker/emoji-picker';
@@ -18,9 +17,10 @@ import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
-import { Avatar, IconButton, Tooltip } from '@zero-tech/zui/components';
+import { IconButton, Tooltip } from '@zero-tech/zui/components';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 import { bemClassName } from '../../lib/bem';
+import { Mentions } from './mentions';
 
 import './styles.scss';
 
@@ -182,51 +182,6 @@ export class MessageInput extends React.Component<Properties, State> {
     this.props.onMessageInputRendered(this.textareaRef);
   };
 
-  searchMentionable = async (search: string, callback) => {
-    const fetchedUsers = await this.props.getUsersForMentions(search);
-    callback(fetchedUsers.sort(this.byIndexOf(search)));
-  };
-
-  byIndexOf(search: string): (a: UserForMention, b: UserForMention) => number {
-    const getIndex = (user) => user.display.toLowerCase().indexOf(search.toLowerCase());
-    return (a, b) => getIndex(a) - getIndex(b);
-  }
-
-  renderMentionTypes() {
-    const mentions = [
-      <Mention
-        trigger='@'
-        data={this.searchMentionable}
-        key='user'
-        appendSpaceOnAdd
-        markup={userMentionsConfig.markup}
-        displayTransform={userMentionsConfig.displayTransform}
-        renderSuggestion={(suggestion) => (
-          <>
-            <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
-            <div>
-              <div {...cn('mentions-text-area-wrap__suggestions__item-name')}>{suggestion.display}</div>
-              <div {...cn('mentions-text-area-wrap__suggestions__item-zid')}>{suggestion.displayHandle}</div>
-            </div>
-          </>
-        )}
-      />,
-      <Mention
-        trigger=':'
-        data={[]}
-        key='emoji'
-        markup={emojiMentionsConfig.markup}
-        regex={emojiMentionsConfig.regex}
-        displayTransform={emojiMentionsConfig.displayTransform}
-        style={{
-          visibility: 'hidden',
-        }}
-      />,
-    ];
-
-    return mentions;
-  }
-
   mediaSelected = (newMedia: Media[]): void => {
     this.setState({ media: [...this.state.media, ...newMedia] });
     this.props.onMessageInputRendered(this.textareaRef);
@@ -373,20 +328,16 @@ export class MessageInput extends React.Component<Properties, State> {
                       </div>
                       {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
 
-                      <MentionsInput
-                        inputRef={this.textareaRef}
-                        {...cn('mentions-text-area-wrap')}
+                      <Mentions
                         id={this.props.id}
-                        placeholder={this.props.placeholder}
-                        onKeyDown={this.onKeyDown}
-                        onChange={this.contentChanged}
-                        onBlur={this._handleBlur}
                         value={this.state.value}
-                        allowSuggestionsAboveCursor
-                        suggestionsPortalHost={document.body}
-                      >
-                        {this.renderMentionTypes()}
-                      </MentionsInput>
+                        onBlur={this._handleBlur}
+                        onChange={this.contentChanged}
+                        onKeyDown={this.onKeyDown}
+                        placeholder={this.props.placeholder}
+                        textareaRef={this.textareaRef}
+                        getUsersForMentions={this.props.getUsersForMentions}
+                      />
                     </div>
                   )}
                 </Dropzone>

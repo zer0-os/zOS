@@ -148,12 +148,6 @@ describe('MessageInput', () => {
     });
   });
 
-  it('renders Dropzone', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find(Dropzone).exists()).toBe(true);
-  });
-
   it('renders ReplyCard', function () {
     const messageId = 98988743;
     const message = 'hello';

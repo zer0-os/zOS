@@ -2,7 +2,7 @@ import React from 'react';
 
 import { UserForMention } from '../utils';
 import { bemClassName } from '../../../lib/bem';
-import { emojiMentionsConfig, userMentionsConfig } from '../mentions-config';
+import { userMentionsConfig } from './mentions-config';
 
 import { Mention, MentionsInput } from 'react-mentions';
 import { Avatar } from '@zero-tech/zui/components';

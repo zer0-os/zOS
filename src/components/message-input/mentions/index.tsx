@@ -11,7 +11,7 @@ import './styles.scss';
 
 const cn = bemClassName('mentions');
 
-interface Properties {
+export interface Properties {
   id: string;
   value: string;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
@@ -51,17 +51,6 @@ export class Mentions extends React.Component<Properties> {
             </div>
           </>
         )}
-      />,
-      <Mention
-        trigger=':'
-        data={[]}
-        key='emoji'
-        markup={emojiMentionsConfig.markup}
-        regex={emojiMentionsConfig.regex}
-        displayTransform={emojiMentionsConfig.displayTransform}
-        style={{
-          visibility: 'hidden',
-        }}
       />,
     ];
 

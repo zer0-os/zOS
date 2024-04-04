@@ -58,14 +58,6 @@ export class FeatureFlags {
     this._setBoolean('enableFavorites', value);
   }
 
-  get enableAppBar() {
-    return this._getBoolean('enableAppBar', true);
-  }
-
-  set enableAppBar(value: boolean) {
-    this._setBoolean('enableAppBar', value);
-  }
-
   get enableMatrix() {
     return this._getBoolean('enableMatrix', true);
   }

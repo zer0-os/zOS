@@ -7,9 +7,9 @@ import { emojiMentionsConfig, userMentionsConfig } from '../mentions-config';
 import { Mention, MentionsInput } from 'react-mentions';
 import { Avatar } from '@zero-tech/zui/components';
 
-import '../styles.scss';
+import './styles.scss';
 
-const cn = bemClassName('message-input');
+const cn = bemClassName('mentions');
 
 interface Properties {
   id: string;
@@ -47,8 +47,8 @@ export class Mentions extends React.Component<Properties> {
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             <div>
-              <div {...cn('mentions-text-area-wrap__suggestions__item-name')}>{suggestion.display}</div>
-              <div {...cn('mentions-text-area-wrap__suggestions__item-zid')}>{suggestion.displayHandle}</div>
+              <div {...cn('text-area-wrap__suggestions__item-name')}>{suggestion.display}</div>
+              <div {...cn('text-area-wrap__suggestions__item-zid')}>{suggestion.displayHandle}</div>
             </div>
           </>
         )}
@@ -72,7 +72,7 @@ export class Mentions extends React.Component<Properties> {
   render() {
     return (
       <MentionsInput
-        {...cn('mentions-text-area-wrap')}
+        {...cn('text-area-wrap')}
         id={this.props.id}
         inputRef={this.props.textareaRef}
         placeholder={this.props.placeholder}

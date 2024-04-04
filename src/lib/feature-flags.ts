@@ -51,7 +51,7 @@ export class FeatureFlags {
   }
 
   get enableFavorites() {
-    return this._getBoolean('enableFavorites', false);
+    return this._getBoolean('enableFavorites', true);
   }
 
   set enableFavorites(value: boolean) {

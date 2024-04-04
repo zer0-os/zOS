@@ -309,7 +309,7 @@ export class MessageInput extends React.Component<Properties, State> {
                   disabled={!this.allowFileAttachment}
                 >
                   {({ getRootProps }) => (
-                    <div {...getRootProps({ ...cn('mentions-text-area') })}>
+                    <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
                       <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
                       <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
                       <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />

@@ -6,11 +6,6 @@ import { bem } from '../../../../lib/bem';
 import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 const c = bem('.user-header');
 
-const featureFlags = { allowVerifyId: false };
-jest.mock('../../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe(UserHeader, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -53,21 +48,16 @@ describe(UserHeader, () => {
   });
 
   it('renders verify id button when user handle is a wallet address', function () {
-    featureFlags.allowVerifyId = true;
-
     const wrapper = subject({ userHandle: '0x1234567890abcdef' });
     expect(wrapper).toHaveElement(Button);
   });
 
   it('does not verify id button when user handle is not a wallet address', function () {
-    featureFlags.allowVerifyId = true;
-
     const wrapper = subject({ userHandle: 'user123' });
     expect(wrapper).not.toHaveElement(Button);
   });
 
   it('onVerifyId', function () {
-    featureFlags.allowVerifyId = true;
     const onVerifyIdMock = jest.fn();
 
     subject({ userHandle: '0x1234567890abcdef', onVerifyId: onVerifyIdMock }).find(Button).simulate('press');

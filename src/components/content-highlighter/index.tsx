@@ -10,7 +10,7 @@ import { bemClassName } from '../../lib/bem';
 
 export interface Properties {
   message: string;
-  variant?: 'negative';
+  variant?: 'negative' | 'tertiary';
   tabIndex?: number;
   isHidden?: boolean;
   onHiddenMessageInfoClick?: () => void;
@@ -37,7 +37,7 @@ export class ContentHighlighter extends React.Component<Properties> {
 
         return (
           <span data-variant={this.props.variant} {...props}>
-            {this.props.variant && '@'}
+            {this.props.variant === 'negative' && '@'}
             {mention}
           </span>
         );

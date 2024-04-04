@@ -17,6 +17,10 @@
       font-weight: 400;
       color: theme.$color-greyscale-11;
     }
+
+    &[data-variant='tertiary'] {
+      font-size: 12px;
+    }
   }
 
   &__hidden-message-block {

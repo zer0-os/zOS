@@ -41,7 +41,7 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
         <div {...cn('content')}>
           <div {...cn('header')}>{this.name}</div>
           <div {...cn('message')}>
-            <ContentHighlighter message={message} />
+            <ContentHighlighter variant='tertiary' message={message} />
           </div>
         </div>
         <IconButton Icon={IconXClose} size={24} onClick={this.itemRemoved} />

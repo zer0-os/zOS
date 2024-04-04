@@ -14,7 +14,6 @@ const cn = bemClassName('mentions');
 interface Properties {
   id: string;
   value: string;
-  placeholder?: string;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
 
   onBlur: (event: any, clickedSuggestion: any) => void;
@@ -75,7 +74,6 @@ export class Mentions extends React.Component<Properties> {
         {...cn('')}
         id={this.props.id}
         inputRef={this.props.textareaRef}
-        placeholder={this.props.placeholder}
         onKeyDown={this.props.onKeyDown}
         onChange={this.props.onChange}
         onBlur={this.props.onBlur}

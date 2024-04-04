@@ -14,7 +14,6 @@ import { Mentions } from './mentions';
 describe('MessageInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
-      placeholder: '',
       reply: null,
       onSubmit: () => undefined,
       onRemoveReply: () => undefined,
@@ -33,13 +32,6 @@ describe('MessageInput', () => {
     return shallow(<MessageInput {...allProps}>{child}</MessageInput>);
   };
 
-  it('adds placeholder', () => {
-    const wrapper = subject({ placeholder: 'Speak' });
-    const dropzone = wrapper.find(Dropzone).shallow();
-
-    expect(dropzone.find(Mentions).prop('placeholder')).toEqual('Speak');
-  });
-
   it('should call editActions', function () {
     const renderAfterInput = jest.fn();
     const wrapper = subject({ renderAfterInput });
@@ -50,7 +42,7 @@ describe('MessageInput', () => {
 
   it('does not submit message when message state is empty', () => {
     const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const wrapper = subject({ onSubmit });
     const dropzone = wrapper.find(Dropzone).shallow();
 
     const input = dropzone.find(Mentions);
@@ -61,7 +53,7 @@ describe('MessageInput', () => {
 
   it('submits message when Enter is pressed', () => {
     const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const wrapper = subject({ onSubmit });
     const dropzone = wrapper.find(Dropzone).shallow();
 
     const input = dropzone.find(Mentions);
@@ -129,7 +121,7 @@ describe('MessageInput', () => {
 
   it('submit message when click on textarea', () => {
     const onSubmit = jest.fn();
-    const wrapper = subject({ onSubmit, placeholder: 'Speak' });
+    const wrapper = subject({ onSubmit });
     const dropzone = wrapper.find(Dropzone).shallow();
 
     const input = dropzone.find(Mentions);

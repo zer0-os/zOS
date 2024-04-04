@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { Mentions, Properties } from '.';
 
 describe(Mentions, () => {
-  const subject = (props: Partial<Properties>, child: any = <div />) => {
+  const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       id: 'mention-id',
       value: '',

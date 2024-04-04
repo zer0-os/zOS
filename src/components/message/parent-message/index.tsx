@@ -35,7 +35,7 @@ export class ParentMessage extends React.PureComponent<Properties> {
         <div {...cn('content')}>
           <div {...cn('header')}>{this.name}</div>
           <span>
-            <ContentHighlighter message={this.props.message} />
+            <ContentHighlighter variant='tertiary' message={this.props.message} />
           </span>
         </div>
       </div>

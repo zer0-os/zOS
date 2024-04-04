@@ -7,9 +7,9 @@ import { emojiMentionsConfig, userMentionsConfig } from '../mentions-config';
 import { Mention, MentionsInput } from 'react-mentions';
 import { Avatar } from '@zero-tech/zui/components';
 
-const cn = bemClassName('message-input');
-
 import '../styles.scss';
+
+const cn = bemClassName('message-input');
 
 interface Properties {
   id: string;

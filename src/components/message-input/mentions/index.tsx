@@ -47,8 +47,8 @@ export class Mentions extends React.Component<Properties> {
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             <div>
-              <div {...cn('text-area-wrap__suggestions__item-name')}>{suggestion.display}</div>
-              <div {...cn('text-area-wrap__suggestions__item-zid')}>{suggestion.displayHandle}</div>
+              <div {...cn('suggestions-name')}>{suggestion.display}</div>
+              <div {...cn('suggestions-handle')}>{suggestion.displayHandle}</div>
             </div>
           </>
         )}
@@ -72,7 +72,7 @@ export class Mentions extends React.Component<Properties> {
   render() {
     return (
       <MentionsInput
-        {...cn('text-area-wrap')}
+        {...cn('')}
         id={this.props.id}
         inputRef={this.props.textareaRef}
         placeholder={this.props.placeholder}

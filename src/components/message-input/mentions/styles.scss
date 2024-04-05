@@ -93,16 +93,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 14px;
-    font-weight: 400;
     line-height: 20px;
 
     @include glass-text-primary-color;
   }
 
   &__suggestions-handle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 10px;
-    font-weight: 400;
-    display: flex;
+    line-height: 13px;
 
     @include glass-text-tertiary-color;
   }

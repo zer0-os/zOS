@@ -108,19 +108,19 @@
   }
 
   &__suggestions {
+    @include glass-shadow-and-blur;
+
     z-index: 1000 !important;
-    background-color: theme.$color-primary-2 !important;
-
+    background-color: rgb(10, 10, 10, 0.75) !important;
     animation: fadein animation.$animation-duration-double ease-in-out;
-
     border-radius: 8px;
-    box-shadow: 4px 4px 10px 0px #040304;
-    padding: 4px;
+    padding: 2px;
 
     &__list {
-      padding: 4px !important;
-      max-height: 200px;
-      max-width: 350px;
+      padding: 6px !important;
+      max-height: 240px;
+      min-width: 128px;
+      max-width: 256px;
       overflow-y: auto;
     }
 
@@ -128,16 +128,16 @@
       display: flex;
       padding: 8px;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      height: 24px;
       border-radius: 8px;
-      line-height: 14px;
 
       &--focused {
-        background-color: theme.$color-primary-4;
+        @include glass-state-hover-color;
       }
 
       &:hover {
-        background-color: theme.$color-primary-4;
+        @include glass-state-hover-color;
       }
     }
   }

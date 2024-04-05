@@ -5,7 +5,7 @@
 
 @keyframes fade-background-in {
   from {
-    background-color: rgba(253, 252, 253, 0.2);
+    background-color: rgba(0, 0, 0, 0);
   }
 
   to {
@@ -16,7 +16,6 @@
 @mixin tag-highlight() {
   mark,
   strong {
-    @include glass-state-hover-color;
     background-color: rgba(253, 252, 253, 0.2) !important;
     animation: fade-background-in 200ms ease-in forwards;
     border-radius: 4px;

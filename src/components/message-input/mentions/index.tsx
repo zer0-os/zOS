@@ -2,6 +2,7 @@ import React from 'react';
 
 import { UserForMention } from '../utils';
 import { bemClassName } from '../../../lib/bem';
+import { highlightFilter } from '../../messenger/lib/utils';
 import { userMentionsConfig } from './mentions-config';
 
 import { Mention, MentionsInput } from 'react-mentions';
@@ -33,6 +34,11 @@ export class Mentions extends React.Component<Properties> {
     return (a, b) => getIndex(a) - getIndex(b);
   }
 
+  highlightedText(text, filter) {
+    const processedFilter = filter.slice(1);
+    return highlightFilter(text, processedFilter);
+  }
+
   renderMentionTypes() {
     const mentions = [
       <Mention
@@ -46,7 +52,7 @@ export class Mentions extends React.Component<Properties> {
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             <div {...cn('suggestions-user-details')}>
-              <div {...cn('suggestions-name')}>{suggestion.display}</div>
+              <div {...cn('suggestions-name')}>{this.highlightedText(suggestion.display, this.props.value)}</div>
               <div {...cn('suggestions-handle')}>{suggestion.displayHandle}</div>
             </div>
           </>

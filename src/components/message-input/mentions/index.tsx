@@ -34,9 +34,15 @@ export class Mentions extends React.Component<Properties> {
     return (a, b) => getIndex(a) - getIndex(b);
   }
 
-  highlightedText(text, filter) {
-    const processedFilter = filter.slice(1);
-    return highlightFilter(text, processedFilter);
+  getCurrentMentionText() {
+    const regex = /@([^)]+)$/;
+    const matches = this.props.value.match(regex);
+    return matches ? matches[1] : '';
+  }
+
+  highlightedText(text: string) {
+    const currentMentionsText = this.getCurrentMentionText();
+    return highlightFilter(text, currentMentionsText);
   }
 
   renderMentionTypes() {
@@ -52,7 +58,7 @@ export class Mentions extends React.Component<Properties> {
           <>
             <Avatar size={'small'} type={'circle'} imageURL={suggestion.profileImage} />
             <div {...cn('suggestions-user-details')}>
-              <div {...cn('suggestions-name')}>{this.highlightedText(suggestion.display, this.props.value)}</div>
+              <div {...cn('suggestions-name')}>{this.highlightedText(suggestion.display)}</div>
               <div {...cn('suggestions-handle')}>{suggestion.displayHandle}</div>
             </div>
           </>

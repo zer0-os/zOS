@@ -118,8 +118,12 @@
     padding: 2px;
 
     &__list {
+      display: flex;
+      flex-direction: column;
+
+      gap: 4px;
       padding: 6px !important;
-      max-height: 240px;
+      max-height: 262px;
       min-width: 128px;
       max-width: 256px;
       overflow-y: auto;

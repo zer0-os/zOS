@@ -16,7 +16,7 @@
 @mixin tag-highlight() {
   mark,
   strong {
-    background-color: theme.$color-primary-7 !important;
+    background-color: rgba(253, 252, 253, 0.2) !important;
     animation: fade-background-in 200ms ease-in forwards;
     border-radius: 4px;
   }
@@ -62,6 +62,7 @@
     word-break: break-word;
     outline: none;
     border: none;
+    line-height: inherit;
   }
 
   &__input {

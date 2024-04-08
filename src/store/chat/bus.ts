@@ -74,7 +74,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       emit({ type: Events.MessageDeleted, payload: { channelId, messageId } });
     const receiveUnreadCount = (channelId, unreadCount) =>
       emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
-    const invalidChatAccessToken = () => emit({ type: Events.InvalidToken, payload: {} });
     const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
     const onUserJoinedChannel = (channel) => emit({ type: Events.UserJoinedChannel, payload: { channel } });
     const onUserPresenceChanged = (matrixId, isOnline, lastSeenAt) =>
@@ -94,7 +93,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       onMessageUpdated,
       receiveDeleteMessage,
       receiveUnreadCount,
-      invalidChatAccessToken,
       onUserLeft,
       onUserJoinedChannel,
       onUserPresenceChanged,

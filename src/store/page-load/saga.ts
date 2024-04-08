@@ -1,7 +1,7 @@
 import { call, put, select, spawn, take } from 'redux-saga/effects';
 import { setEntryPath, setIsComplete, setShowAndroidDownload } from '.';
 import { getHistory, getNavigator } from '../../lib/browser';
-import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
+import { getCurrentUser } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 
 const anonymousPaths = [
@@ -13,7 +13,7 @@ const anonymousPaths = [
 export function* saga() {
   const history = yield call(getHistory);
 
-  const success = yield call(getCurrentUserWithChatAccessToken);
+  const success = yield call(getCurrentUser);
   if (success) {
     yield handleAuthenticatedUser(history);
   } else {

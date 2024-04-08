@@ -5,7 +5,6 @@ import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
   clearSession as clearSessionApi,
-  fetchChatAccessToken,
   emailLogin as apiEmailLogin,
 } from './api';
 import { setChatAccessToken } from '../chat';
@@ -68,15 +67,13 @@ export function* terminate(isAccountChange = false) {
   yield call(publishUserLogout);
 }
 
-export function* getCurrentUserWithChatAccessToken() {
+export function* getCurrentUser() {
   try {
     const user = yield call(fetchCurrentUser);
     if (!user) {
       return false;
     }
 
-    const { chatAccessToken } = yield call(fetchChatAccessToken);
-    yield setAuthentication({ chatAccessToken });
     yield completeUserLogin(user);
     return true;
   } catch (e) {

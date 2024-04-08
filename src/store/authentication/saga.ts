@@ -27,11 +27,10 @@ export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
-  const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
+  const { nonceToken: nonce = undefined } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
   if (nonce) {
     yield put(setUser({ nonce, data: null }));
   } else {
-    yield setAuthentication({ chatAccessToken });
     yield call(completeUserLogin);
   }
 
@@ -86,7 +85,6 @@ export function* authenticateByEmail(email, password) {
   if (!result.success) {
     return result;
   }
-  yield call(setAuthentication, { chatAccessToken: result.response.chatAccessToken });
   yield call(completeUserLogin);
   return result;
 }

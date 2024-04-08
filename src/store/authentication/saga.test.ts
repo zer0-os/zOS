@@ -14,7 +14,6 @@ import {
   publishUserLogin,
   publishUserLogout,
   authenticateByEmail,
-  setAuthentication,
   logoutRequest,
 } from './saga';
 import {
@@ -24,7 +23,6 @@ import {
   emailLogin,
 } from './api';
 import { reducer } from '.';
-import { setChatAccessToken } from '../chat';
 import { receive } from '../channels-list';
 import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
@@ -40,7 +38,6 @@ describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
   const authorizationResponse = {
     accessToken: 'eyJh-access-token',
-    chatAccessToken: 'chat-access-token',
   };
 
   const nonceResponse = {
@@ -59,7 +56,6 @@ describe(nonceOrAuthorize, () => {
           null,
         ],
       ])
-      .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
       .call(completeUserLogin)
       .run();
   });
@@ -267,13 +263,11 @@ describe(authenticateByEmail, () => {
   it('completes the whole auth process', async () => {
     const email = 'valid email';
     const password = 'valid password';
-    const chatAccessToken = 'token';
     const { returnValue } = await expectSaga(authenticateByEmail, email, password)
       .provide([
-        stubResponse(call(emailLogin, { email, password }), { success: true, response: { chatAccessToken } }),
+        stubResponse(call(emailLogin, { email, password }), { success: true, response: {} }),
         ...successResponses(),
       ])
-      .call(setAuthentication, { chatAccessToken })
       .call(completeUserLogin)
       .run();
 
@@ -295,10 +289,6 @@ describe(authenticateByEmail, () => {
       [
         matchers.call.fn(emailLogin),
         { success: true },
-      ],
-      [
-        matchers.call.fn(setAuthentication),
-        null,
       ],
       [
         matchers.call.fn(completeUserLogin),

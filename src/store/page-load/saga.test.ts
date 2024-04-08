@@ -1,7 +1,7 @@
 import { redirectOnUserLogin, redirectToEntryPath, saga } from './saga';
 import { getHistory, getNavigator } from '../../lib/browser';
 import { rootReducer } from '../reducer';
-import { getCurrentUserWithChatAccessToken } from '../authentication/saga';
+import { getCurrentUser } from '../authentication/saga';
 import { call, spawn } from 'redux-saga/effects';
 
 import { expectSaga } from '../../test/saga';
@@ -24,7 +24,7 @@ describe('page-load saga', () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [call(getHistory), history],
-      [call(getCurrentUserWithChatAccessToken), true],
+      [call(getCurrentUser), true],
       [call(getNavigator), stubNavigator()],
       [spawn(redirectOnUserLogin), null],
     ]);
@@ -62,7 +62,7 @@ describe('page-load saga', () => {
       storeState: { pageload },
     } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide([[call(getCurrentUserWithChatAccessToken), false]])
+      .provide([[call(getCurrentUser), false]])
       .run();
 
     expect(pageload.isComplete).toBe(true);
@@ -74,7 +74,7 @@ describe('page-load saga', () => {
 
     history = new StubHistory('/');
     const { storeState } = await subject(saga)
-      .provide([[call(getCurrentUserWithChatAccessToken), false]])
+      .provide([[call(getCurrentUser), false]])
       .withReducer(rootReducer, initialState as any)
       .run();
 
@@ -85,7 +85,7 @@ describe('page-load saga', () => {
   it('saves the entry path when redirecting to the login page', async () => {
     history = new StubHistory('/some/path');
     const { storeState } = await subject(saga)
-      .provide([[call(getCurrentUserWithChatAccessToken), false]])
+      .provide([[call(getCurrentUser), false]])
       .withReducer(rootReducer)
       .run();
 
@@ -110,7 +110,7 @@ describe('page-load saga', () => {
     history = new StubHistory('/reset-password');
     const { storeState: resetPasswordStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide([[call(getCurrentUserWithChatAccessToken), false]])
+      .provide([[call(getCurrentUser), false]])
       .run();
 
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);
@@ -123,7 +123,7 @@ describe('page-load saga', () => {
       return expectSaga(saga)
         .provide([
           [call(getHistory), new StubHistory(path)],
-          [call(getCurrentUserWithChatAccessToken), false],
+          [call(getCurrentUser), false],
           [call(getNavigator), stubNavigator(userAgent)],
           [spawn(redirectOnUserLogin), null],
         ])

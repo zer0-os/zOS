@@ -42,12 +42,6 @@ export async function getSSOToken(): Promise<{ token: string }> {
   return body;
 }
 
-export async function fetchChatAccessToken(): Promise<{ chatAccessToken: string }> {
-  const { body } = await get('/accounts/chatAccessToken');
-
-  return body;
-}
-
 export async function emailLogin({ email, password }: { email: string; password: string }) {
   try {
     const response = await post('/api/v2/accounts/login').send({ email, password });

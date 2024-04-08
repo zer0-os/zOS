@@ -6,7 +6,7 @@ import { setUser } from '.';
 import {
   nonceOrAuthorize,
   terminate,
-  getCurrentUserWithChatAccessToken,
+  getCurrentUser,
   clearUserState,
   forceLogout,
   redirectUnauthenticatedUser,
@@ -14,18 +14,15 @@ import {
   publishUserLogin,
   publishUserLogout,
   authenticateByEmail,
-  setAuthentication,
   logoutRequest,
 } from './saga';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
   clearSession as clearSessionApi,
-  fetchChatAccessToken,
   emailLogin,
 } from './api';
 import { reducer } from '.';
-import { setChatAccessToken } from '../chat';
 import { receive } from '../channels-list';
 import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
@@ -35,12 +32,12 @@ import { updateConnector } from '../web3/saga';
 import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
   const authorizationResponse = {
     accessToken: 'eyJh-access-token',
-    chatAccessToken: 'chat-access-token',
   };
 
   const nonceResponse = {
@@ -59,7 +56,6 @@ describe(nonceOrAuthorize, () => {
           null,
         ],
       ])
-      .put(setChatAccessToken({ value: authorizationResponse.chatAccessToken, isLoading: false }))
       .call(completeUserLogin)
       .run();
   });
@@ -180,9 +176,9 @@ describe('terminate', () => {
   }
 });
 
-describe(getCurrentUserWithChatAccessToken, () => {
+describe(getCurrentUser, () => {
   it('sets the user state', async () => {
-    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
+    const { storeState } = await expectSaga(getCurrentUser)
       .provide([
         stubResponse(call(fetchCurrentUser), { stub: 'user-data' }),
         ...successResponses(),
@@ -195,25 +191,9 @@ describe(getCurrentUserWithChatAccessToken, () => {
     });
   });
 
-  it('sets the authentication state', async () => {
-    const { storeState } = await expectSaga(getCurrentUserWithChatAccessToken)
-      .provide([
-        stubResponse(call(fetchChatAccessToken), { chatAccessToken: 'token' }),
-        ...successResponses(),
-      ])
-      .withReducer(rootReducer)
-      .run();
-
-    // Maybe we should just test that we called it since we don't own this state?
-    expect(storeState.chat.chatAccessToken.value).toEqual('token');
-  });
-
   it('returns false if fetching the user fails. I.E., the user is not logged in.', async () => {
-    const { returnValue } = await expectSaga(getCurrentUserWithChatAccessToken)
-      .provide([
-        stubResponse(call(fetchChatAccessToken), null),
-        ...successResponses(),
-      ])
+    const { returnValue } = await expectSaga(getCurrentUser)
+      .provide([[matchers.call.fn(fetchCurrentUser), throwError(new Error('fetch user error'))]])
       .run();
 
     expect(returnValue).toEqual(false);
@@ -224,10 +204,6 @@ describe(getCurrentUserWithChatAccessToken, () => {
       [
         matchers.call.fn(fetchCurrentUser),
         { userId: 'id-1', id: 'id-1' },
-      ],
-      [
-        matchers.call.fn(fetchChatAccessToken),
-        { chatAccessToken: 'abc-a123' },
       ],
     ] as any;
   }
@@ -287,13 +263,11 @@ describe(authenticateByEmail, () => {
   it('completes the whole auth process', async () => {
     const email = 'valid email';
     const password = 'valid password';
-    const chatAccessToken = 'token';
     const { returnValue } = await expectSaga(authenticateByEmail, email, password)
       .provide([
-        stubResponse(call(emailLogin, { email, password }), { success: true, response: { chatAccessToken } }),
+        stubResponse(call(emailLogin, { email, password }), { success: true, response: {} }),
         ...successResponses(),
       ])
-      .call(setAuthentication, { chatAccessToken })
       .call(completeUserLogin)
       .run();
 
@@ -315,10 +289,6 @@ describe(authenticateByEmail, () => {
       [
         matchers.call.fn(emailLogin),
         { success: true },
-      ],
-      [
-        matchers.call.fn(setAuthentication),
-        null,
       ],
       [
         matchers.call.fn(completeUserLogin),

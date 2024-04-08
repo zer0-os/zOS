@@ -5,10 +5,8 @@ import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
   clearSession as clearSessionApi,
-  fetchChatAccessToken,
   emailLogin as apiEmailLogin,
 } from './api';
-import { setChatAccessToken } from '../chat';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
@@ -22,17 +20,12 @@ export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
 
-export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }) {
-  yield put(setChatAccessToken({ value: chatAccessToken, isLoading: false }));
-}
-
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
-  const { nonceToken: nonce = undefined, chatAccessToken } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
+  const { nonceToken: nonce = undefined } = yield call(nonceOrAuthorizeApi, signedWeb3Token);
   if (nonce) {
     yield put(setUser({ nonce, data: null }));
   } else {
-    yield setAuthentication({ chatAccessToken });
     yield call(completeUserLogin);
   }
 
@@ -55,7 +48,6 @@ export function* completeUserLogin(user = null) {
 
 export function* terminate(isAccountChange = false) {
   yield put(setUser({ data: null, nonce: null }));
-  yield put(setChatAccessToken({ value: null, isLoading: false }));
 
   try {
     yield call(clearSessionApi);
@@ -68,15 +60,13 @@ export function* terminate(isAccountChange = false) {
   yield call(publishUserLogout);
 }
 
-export function* getCurrentUserWithChatAccessToken() {
+export function* getCurrentUser() {
   try {
     const user = yield call(fetchCurrentUser);
     if (!user) {
       return false;
     }
 
-    const { chatAccessToken } = yield call(fetchChatAccessToken);
-    yield setAuthentication({ chatAccessToken });
     yield completeUserLogin(user);
     return true;
   } catch (e) {
@@ -89,7 +79,6 @@ export function* authenticateByEmail(email, password) {
   if (!result.success) {
     return result;
   }
-  yield call(setAuthentication, { chatAccessToken: result.response.chatAccessToken });
   yield call(completeUserLogin);
   return result;
 }

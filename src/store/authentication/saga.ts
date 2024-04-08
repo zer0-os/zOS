@@ -21,10 +21,6 @@ export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
 };
 
-export function* setAuthentication({ chatAccessToken } = { chatAccessToken: '' }) {
-  yield put(setChatAccessToken({ value: chatAccessToken, isLoading: false }));
-}
-
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
   const { nonceToken: nonce = undefined } = yield call(nonceOrAuthorizeApi, signedWeb3Token);

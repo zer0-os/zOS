@@ -25,7 +25,7 @@ import { nonce as nonceApi } from '../authentication/api';
 import { isPasswordValid } from '../../lib/password';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
-import { completeUserLogin, setAuthentication } from '../authentication/saga';
+import { completeUserLogin } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
@@ -74,7 +74,6 @@ export function* createAccount(action) {
     });
 
     if (result.success) {
-      yield setAuthentication({ chatAccessToken: result.response.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));
@@ -108,7 +107,6 @@ export function* authorizeAndCreateWeb3Account(action) {
     const inviteCode = yield select((state) => state.registration.inviteCode);
     result = yield call(apiCreateWeb3Account, { inviteCode, web3Token: result.token });
     if (result.success) {
-      yield setAuthentication({ chatAccessToken: result.response.chatAccessToken });
       const userFetch = yield call(fetchCurrentUser);
       if (userFetch) {
         yield put(setUserId(userFetch.id));

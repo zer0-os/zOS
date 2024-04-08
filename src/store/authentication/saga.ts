@@ -7,7 +7,6 @@ import {
   clearSession as clearSessionApi,
   emailLogin as apiEmailLogin,
 } from './api';
-import { setChatAccessToken } from '../chat';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
@@ -49,7 +48,6 @@ export function* completeUserLogin(user = null) {
 
 export function* terminate(isAccountChange = false) {
   yield put(setUser({ data: null, nonce: null }));
-  yield put(setChatAccessToken({ value: null, isLoading: false }));
 
   try {
     yield call(clearSessionApi);

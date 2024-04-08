@@ -32,7 +32,13 @@ function* initChat(userId, chatAccessToken) {
   yield takeEvery(chatConnection, convertToBusEvents);
 
   yield spawn(closeConnectionOnLogout, chatConnection);
-  yield spawn(activateWhenConversationsLoaded, activate);
+
+  const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
+  if (isFirstTimeLogin) {
+    activate();
+  } else {
+    yield spawn(activateWhenConversationsLoaded, activate);
+  }
 }
 
 // This will wait until all the initial batch of "snapshot state" rooms

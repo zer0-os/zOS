@@ -2,8 +2,6 @@
 @import '../../../../variables';
 @import '../../../../layout';
 
-$side-padding: 16px;
-
 .start-group-panel {
   &__selected-count {
     font-style: normal;
@@ -32,6 +30,7 @@ $side-padding: 16px;
   }
 
   &__continue {
-    margin: 16px $side-padding;
+    align-self: center;
+    margin: 16px 0;
   }
 }

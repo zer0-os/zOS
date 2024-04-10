@@ -32,7 +32,8 @@ $side-padding: 16px;
   }
 
   &__submit-button {
-    margin: 12px $side-padding;
+    align-self: center;
+    margin: 12px 0;
   }
 
   &__error {

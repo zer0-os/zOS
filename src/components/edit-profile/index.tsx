@@ -238,13 +238,7 @@ export class EditProfile extends React.Component<Properties, State> {
             </>
           )}
 
-          <Button
-            className={c('zui-button-large')}
-            isLoading={this.isLoading}
-            isSubmit
-            isDisabled={this.isDisabled}
-            onPress={this.handleEdit}
-          >
+          <Button isLoading={this.isLoading} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
             Save Changes
           </Button>
         </div>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IconButton, Button } from '@zero-tech/zui/components';
+import { IconButton, Button, Variant as ButtonVariant } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
@@ -34,7 +34,7 @@ export class ErrorDialog extends React.Component<Properties> {
         </div>
         <div {...cn('body')}>{body}</div>
         <div {...cn('footer', classNames({ 'is-single-button': !hasLink }))}>
-          <Button {...cn('button')} onPress={onClose} variant={hasLink ? 'text' : 'primary'}>
+          <Button onPress={onClose} variant={hasLink ? ButtonVariant.Secondary : ButtonVariant.Primary}>
             Back to my conversations
           </Button>
           {hasLink && (

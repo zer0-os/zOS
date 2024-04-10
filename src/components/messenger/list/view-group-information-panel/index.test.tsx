@@ -3,7 +3,9 @@ import { shallow } from 'enzyme';
 import { ViewGroupInformationPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
-import { Button, Image } from '@zero-tech/zui/components';
+import { Image } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
+
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
 

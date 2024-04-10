@@ -3,7 +3,7 @@ import * as React from 'react';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 
 const cn = bemClassName('android-download');
 

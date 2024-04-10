@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Button, Variant as ButtonVariant, Color as ButtonColor, IconButton, Image } from '@zero-tech/zui/components';
+import { IconButton, Image } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconArrowNarrowLeft, IconPlus, IconUserRight1, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { User } from '../../../../store/channels';

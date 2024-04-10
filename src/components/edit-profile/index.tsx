@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
+import { IconButton, Alert, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';

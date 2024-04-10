@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { IconButton, Button, Variant as ButtonVariant } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';

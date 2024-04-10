@@ -5,7 +5,7 @@ import { wallets, WalletType } from './wallets';
 
 import './styles.scss';
 import { bemClassName } from '../../lib/bem';
-import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconLinkExternal1 } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('zos-wallet-select');

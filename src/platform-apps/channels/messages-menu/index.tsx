@@ -1,14 +1,8 @@
 import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import {
-  DropdownMenu,
-  Modal,
-  IconButton,
-  Button,
-  Variant as ButtonVariant,
-  Color as ButtonColor,
-} from '@zero-tech/zui/components';
+import { DropdownMenu, Modal, IconButton } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';

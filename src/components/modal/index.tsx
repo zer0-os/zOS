@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Button, IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
+import { IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 import { IconXClose } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../lib/bem';

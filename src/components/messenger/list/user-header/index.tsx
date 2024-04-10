@@ -1,7 +1,8 @@
 import * as React from 'react';
 
 import { SettingsMenuContainer } from '../../../settings-menu/container';
-import { Button, IconButton, Variant as ButtonVariant } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';

@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme';
 import { Properties, UserHeader } from '.';
-import { Button, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 
 import { bem } from '../../../../lib/bem';
 import { RewardsToolTipContainer } from '../rewards-tooltip/container';

@@ -8,6 +8,7 @@ import {
   clearJoinRoomErrorContent,
   setIsJoiningConversation,
   setIsChatConnectionComplete,
+  setIsConversationsLoaded,
 } from '.';
 import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -78,6 +79,12 @@ function* closeConnectionOnLogout(chatConnection) {
 }
 
 function* activateWhenConversationsLoaded(activate) {
+  const isConversationsLoaded = yield select((state) => state.chat.isConversationsLoaded);
+  if (isConversationsLoaded) {
+    activate();
+    return;
+  }
+
   const { conversationsLoaded } = yield race({
     conversationsLoaded: take(yield call(getConversationsBus), ConversationEvents.ConversationsLoaded),
     abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
@@ -91,6 +98,7 @@ function* activateWhenConversationsLoaded(activate) {
 function* clearOnLogout() {
   yield put(rawSetActiveConversationId(null));
   yield put(setIsChatConnectionComplete(false));
+  yield put(setIsConversationsLoaded(false));
 }
 
 function* addAdminUser() {

@@ -10,4 +10,5 @@ export interface ChatState {
   joinRoomErrorContent: ErrorDialogContent;
   isJoiningConversation: boolean;
   isChatConnectionComplete: boolean;
+  isConversationsLoaded: boolean;
 }

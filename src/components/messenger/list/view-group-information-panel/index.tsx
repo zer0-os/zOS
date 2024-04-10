@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, IconButton, Image } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant, Size as ButtonSize, IconButton, Image } from '@zero-tech/zui/components';
 import { IconArrowNarrowLeft, IconPlus, IconUserRight1, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { User } from '../../../../store/channels';
@@ -67,7 +67,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         {this.props.name && <div {...cn('group-name')}>{this.props.name}</div>}
 
         {this.props.canEditGroup && (
-          <Button {...cn('edit-group-button')} onPress={this.editGroup} variant='text'>
+          <Button {...cn('edit-group-button')} onPress={this.editGroup} variant={ButtonVariant.Secondary}>
             Edit
           </Button>
         )}
@@ -125,7 +125,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     return (
       <Button
         {...cn('leave-group-button')}
-        variant={'text'}
+        variant={ButtonVariant.Secondary}
         onPress={this.openLeaveGroup}
         startEnhancer={<IconUserRight1 />}
       >

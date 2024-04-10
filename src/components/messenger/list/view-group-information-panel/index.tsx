@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Button, Variant as ButtonVariant, Size as ButtonSize, IconButton, Image } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant, Color as ButtonColor, IconButton, Image } from '@zero-tech/zui/components';
 import { IconArrowNarrowLeft, IconPlus, IconUserRight1, IconUsers1 } from '@zero-tech/zui/icons';
 
 import { User } from '../../../../store/channels';
@@ -127,7 +127,8 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
         {...cn('leave-group-button')}
         variant={ButtonVariant.Secondary}
         onPress={this.openLeaveGroup}
-        startEnhancer={<IconUserRight1 />}
+        startEnhancer={<IconUserRight1 size={18} />}
+        color={ButtonColor.Red}
       >
         Leave Group
       </Button>

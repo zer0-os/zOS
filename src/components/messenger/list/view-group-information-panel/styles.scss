@@ -78,10 +78,8 @@
   }
 
   &__leave-group-button {
-    display: flex;
-    width: fit-content;
     align-self: center;
-    padding: 0 8px;
+    stroke-width: 2px;
   }
 
   &__members {

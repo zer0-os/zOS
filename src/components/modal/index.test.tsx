@@ -56,9 +56,9 @@ describe(Modal, () => {
     expect(button).toHaveProp('isDisabled', true);
   });
 
-  it('renders primary button as the legacy secondary button', function () {
+  it('renders primary button as primary variant', function () {
     const wrapper = subject({
-      primaryVariant: Variant.LegacySecondary,
+      primaryVariant: Variant.Primary,
       primaryText: 'action',
     });
 

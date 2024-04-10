@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Button, IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
+import { IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 import { IconXClose } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../lib/bem';
@@ -11,7 +12,6 @@ const cn = bemClassName('modal');
 export enum Variant {
   Primary = 'primary',
   Secondary = 'secondary',
-  LegacySecondary = 'negative', // Until zUI aligns with the design and we can specify the color
 }
 
 export enum Color {
@@ -68,38 +68,24 @@ export class Modal extends React.Component<Properties> {
           <div {...cn('footer')}>
             {this.props.onSecondary && (
               <Button
-                {...cn('secondary-button')}
-                variant={this.secondaryVariant}
+                color={this.props.secondaryColor}
+                variant={this.props.secondaryVariant}
                 onPress={this.props.onSecondary}
                 isDisabled={this.props.secondaryDisabled}
               >
-                <div
-                  {...cn(
-                    'text-button-text',
-                    this.secondaryVariant === 'text' && (this.props.secondaryColor || Color.Highlight)
-                  )}
-                >
-                  {this.props.secondaryText}
-                </div>
+                {this.props.secondaryText}
               </Button>
             )}
 
             {this.props.onPrimary && (
               <Button
-                {...cn('primary-button')}
-                variant={this.primaryVariant}
+                color={this.props.primaryColor}
+                variant={this.props.primaryVariant}
                 onPress={this.props.onPrimary}
                 isLoading={this.props.isProcessing}
                 isDisabled={this.props.primaryDisabled}
               >
-                <div
-                  {...cn(
-                    'text-button-text',
-                    this.primaryVariant === 'text' && (this.props.primaryColor || Color.Highlight)
-                  )}
-                >
-                  {this.props.primaryText}
-                </div>
+                {this.props.primaryText}
               </Button>
             )}
           </div>

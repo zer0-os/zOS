@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Button, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
+import { IconButton, Alert, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 
 import './styles.scss';
 import { bem } from '../../lib/bem';
@@ -238,13 +239,7 @@ export class EditProfile extends React.Component<Properties, State> {
             </>
           )}
 
-          <Button
-            className={c('zui-button-large')}
-            isLoading={this.isLoading}
-            isSubmit
-            isDisabled={this.isDisabled}
-            onPress={this.handleEdit}
-          >
+          <Button isLoading={this.isLoading} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
             Save Changes
           </Button>
         </div>

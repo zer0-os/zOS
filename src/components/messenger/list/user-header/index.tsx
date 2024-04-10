@@ -1,7 +1,8 @@
 import * as React from 'react';
 
 import { SettingsMenuContainer } from '../../../settings-menu/container';
-import { Button, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
@@ -33,7 +34,7 @@ export class UserHeader extends React.Component<Properties> {
 
   renderVerifyIdButton() {
     return (
-      <Button {...cn('verify-id-button')} variant='text' isSubmit onPress={this.props.onVerifyId}>
+      <Button {...cn('verify-id-button')} variant={ButtonVariant.Secondary} isSubmit onPress={this.props.onVerifyId}>
         <div {...cn('verify-id-button-text')}>Verify ID</div>
       </Button>
     );

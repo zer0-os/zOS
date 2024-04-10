@@ -60,37 +60,4 @@
       display: none;
     }
   }
-
-  // TODO: add button sizes (eg. "small", "medium", "large") in zUI instead
-  // of setting the height here
-  &__primary-button {
-    height: 40px;
-  }
-
-  &__secondary-button {
-    height: 40px;
-
-    &:hover {
-      background-color: transparent;
-      @include glass-glow-highlight-medium;
-    }
-  }
-
-  &__text-button-text {
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 24px;
-
-    &--red {
-      color: theme.$color-failure-11;
-    }
-
-    &--greyscale {
-      color: theme.$color-greyscale-12;
-    }
-
-    &--highlight {
-      color: $glass-highlight-color;
-    }
-  }
 }

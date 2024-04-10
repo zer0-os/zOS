@@ -3,7 +3,7 @@ import * as React from 'react';
 import { bemClassName } from '../../../lib/bem';
 import { clipboard } from '../../../lib/clipboard';
 
-import { Button } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 
 import '../styles.scss';
 
@@ -52,7 +52,7 @@ export class GenerateBackup extends React.Component<Properties, State> {
 
           <div {...cn('recovery-key')}>{this.props.recoveryKey}</div>
 
-          <Button {...cn('button')} onPress={this.copyKey} variant='text'>
+          <Button onPress={this.copyKey} variant={ButtonVariant.Secondary}>
             {this.copyButtonText}
           </Button>
 

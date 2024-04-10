@@ -64,14 +64,4 @@
     display: flex;
     justify-content: space-between;
   }
-
-  &__text-button {
-    div {
-      color: theme.$color-greyscale-12;
-    }
-
-    &:hover {
-      color: theme.$color-secondary-1;
-    }
-  }
 }

@@ -102,10 +102,4 @@ $left-padding: 12px;
     justify-content: center;
     flex: 1 0 0;
   }
-
-  &__connecting-wallet-button-spinner {
-    &::after {
-      border: none;
-    }
-  }
 }

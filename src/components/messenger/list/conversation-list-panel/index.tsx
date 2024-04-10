@@ -4,7 +4,8 @@ import { Channel } from '../../../../store/channels';
 import { IconUserPlus1 } from '@zero-tech/zui/icons';
 import { ConversationItem } from '../conversation-item';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { Button, Input, Modal } from '@zero-tech/zui/components';
+import { Input, Modal } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { Item, Option } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
@@ -229,9 +230,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         </div>
         <Button
           {...cn('invite-button')}
-          variant={'text'}
+          variant={ButtonVariant.Secondary}
           onPress={this.openInviteDialog}
-          startEnhancer={<IconUserPlus1 />}
+          startEnhancer={<IconUserPlus1 size={18} />}
         >
           Invite Friends
         </Button>

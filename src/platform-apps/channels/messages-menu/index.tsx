@@ -1,7 +1,8 @@
 import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { DropdownMenu, Modal, IconButton, Button } from '@zero-tech/zui/components';
+import { DropdownMenu, Modal, IconButton } from '@zero-tech/zui/components';
+import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
@@ -101,11 +102,11 @@ export class MessageMenu extends React.Component<Properties, State> {
           Are you sure you want to delete this message? This cannot be undone.
         </div>
         <div className='delete-message-modal__footer'>
-          <Button className='delete-message-modal__text-button' variant='text' onPress={this.toggleDeleteDialog}>
+          <Button variant={ButtonVariant.Secondary} color={ButtonColor.Greyscale} onPress={this.toggleDeleteDialog}>
             Cancel
           </Button>
 
-          <Button variant='negative' onPress={this.handleDeleteMessage}>
+          <Button color={ButtonColor.Red} onPress={this.handleDeleteMessage}>
             Delete message
           </Button>
         </div>

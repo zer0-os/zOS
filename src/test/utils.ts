@@ -1,4 +1,4 @@
-import { Button } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 
 export function inputEvent(attrs = {}) {
   return {

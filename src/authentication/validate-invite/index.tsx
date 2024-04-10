@@ -93,8 +93,6 @@ export class Invite extends React.Component<Properties, State> {
           </div>
 
           <Button
-            className={c('submit-button')}
-            variant='primary'
             isDisabled={
               !this.state.inviteCode.length ||
               this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||

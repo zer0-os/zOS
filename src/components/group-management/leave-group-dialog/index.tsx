@@ -4,7 +4,7 @@ import './styles.scss';
 
 import { bemClassName } from '../../../lib/bem';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
-import { Modal, Variant } from '../../modal';
+import { Color, Modal, Variant } from '../../modal';
 
 const cn = bemClassName('leave-group-dialog');
 
@@ -24,8 +24,11 @@ export class LeaveGroupDialog extends React.Component<Properties, State> {
       <Modal
         title='Leave Group?'
         primaryText='Leave Group'
-        primaryVariant={Variant.LegacySecondary}
+        primaryVariant={Variant.Primary}
+        primaryColor={Color.Red}
         secondaryText='Cancel'
+        secondaryVariant={Variant.Secondary}
+        secondaryColor={Color.Greyscale}
         onPrimary={this.props.onLeave}
         onSecondary={this.props.onClose}
         onClose={this.props.onClose}

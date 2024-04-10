@@ -2,7 +2,8 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import { ErrorDialog, Properties } from '.';
-import { Button, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 
 import { bem } from '../../lib/bem';
 
@@ -76,6 +77,6 @@ describe('ErrorDialog', () => {
   it('renders the text button variant when linkPath and linkText is provided', function () {
     const wrapper = subject({ linkPath: 'https://example.com', linkText: 'External Link' });
 
-    expect(wrapper.find(Button)).toHaveProp('variant', 'text');
+    expect(wrapper.find(Button)).toHaveProp('variant', 'secondary');
   });
 });

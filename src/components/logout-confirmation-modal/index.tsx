@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Modal, Variant } from '../modal';
+import { Color, Modal, Variant } from '../modal';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
@@ -53,8 +53,11 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
       <Modal
         title='Are you sure?'
         primaryText='Log Out'
-        primaryVariant={Variant.LegacySecondary}
+        primaryVariant={Variant.Primary}
+        primaryColor={Color.Red}
         secondaryText='Cancel'
+        secondaryVariant={Variant.Secondary}
+        secondaryColor={Color.Greyscale}
         onPrimary={this.props.onLogout}
         onSecondary={this.props.onClose}
         onClose={this.props.onClose}

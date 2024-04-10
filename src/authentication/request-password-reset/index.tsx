@@ -85,7 +85,6 @@ export class RequestPasswordReset extends React.Component<Properties, State> {
 
         <Button
           {...cn('submit-button', !this.generalError && 'no-error')}
-          variant='primary'
           isDisabled={this.isSubmitDisabled}
           isLoading={this.props.isLoading}
           isSubmit

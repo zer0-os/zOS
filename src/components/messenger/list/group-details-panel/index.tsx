@@ -80,12 +80,13 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             </div>
           </div>
 
-          <div>
-            <Button onPress={this.createGroup} {...cn('create')}>
-              <IconMessagePlusSquare isFilled size={18} />
-              Create Group
-            </Button>
-          </div>
+          <Button
+            {...cn('create')}
+            onPress={this.createGroup}
+            startEnhancer={<IconMessagePlusSquare isFilled size={18} />}
+          >
+            Create Group
+          </Button>
         </div>
       </div>
     );

@@ -2,7 +2,7 @@ import { call } from 'redux-saga/effects';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { getLinkPreviews, sendMessagesByChannelId } from './api';
+import { getLinkPreviews } from './api';
 import {
   createOptimisticMessage,
   createOptimisticMessages,
@@ -241,7 +241,6 @@ describe(performSend, () => {
       .provide([
         stubResponse(matchers.call.fn(chat.get), chatClient),
         stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {}),
-        ...successResponses(),
       ])
       .call.like({
         fn: chatClient.sendMessagesByChannelId,
@@ -287,7 +286,6 @@ describe(performSend, () => {
           id: 'new-id',
           optimisticId: 'optimistic-id',
         }),
-        ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
@@ -335,9 +333,3 @@ describe(messageSendFailed, () => {
     expect(channel.messages[1].sendStatus).toEqual(MessageSendStatus.FAILED);
   });
 });
-
-function successResponses() {
-  return [
-    stubResponse(matchers.call.fn(sendMessagesByChannelId), { id: 'message 1', message: {} }),
-  ];
-}

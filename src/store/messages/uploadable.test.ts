@@ -1,12 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { call } from 'redux-saga/effects';
-import { FileUploadResult } from './saga';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { chat } from '../../lib/chat';
 
-import { sendFileMessage, uploadAttachment } from './api';
-import { stubResponse } from '../../test/saga';
-import { UploadableAttachment, UploadableGiphy, UploadableMedia } from './uploadable';
+import { UploadableMedia } from './uploadable';
 
 const chatClient = {
   uploadFileMessage: () => {},
@@ -23,52 +19,6 @@ describe(UploadableMedia, () => {
       .provide([
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.uploadFileMessage), { id: 'new-id' }],
-      ])
-      .run();
-
-    expect(returnValue).toEqual({ id: 'new-id' });
-  });
-});
-
-describe(UploadableAttachment, () => {
-  it('uploads an attachment', async () => {
-    const channelId = 'channel-id';
-    const pdfFile = { nativeFile: { type: 'application/pdf' } } as any;
-    const fileUploadResult = {
-      name: 'filename',
-      key: 'file-key',
-      url: 'file-url',
-      type: 'file',
-    } as FileUploadResult;
-    const messageSendResponse = { id: 'new-id' };
-    const uploadable = new UploadableAttachment(pdfFile);
-    uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
-
-    const { returnValue } = await expectSaga(() => uploadable.upload(channelId, ''))
-      .provide([
-        stubResponse(call(uploadAttachment, pdfFile.nativeFile), fileUploadResult),
-        stubResponse(call(sendFileMessage, channelId, fileUploadResult, 'optimistic-id'), messageSendResponse),
-      ])
-      .run();
-
-    expect(returnValue).toEqual({ id: 'new-id' });
-  });
-});
-
-describe(UploadableGiphy, () => {
-  it('creates a giphy message', async () => {
-    const channelId = 'channel-id';
-    const giphy = {
-      name: 'giphy-file',
-      giphy: { images: { original: { url: 'url_giphy' } }, type: 'gif' },
-    };
-    const expectedFileToSend = { url: 'url_giphy', name: 'giphy-file', type: 'gif' };
-    const uploadable = new UploadableGiphy(giphy);
-    uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
-
-    const { returnValue } = await expectSaga(() => uploadable.upload(channelId, ''))
-      .provide([
-        stubResponse(call(sendFileMessage, channelId, expectedFileToSend as any, 'optimistic-id'), { id: 'new-id' }),
       ])
       .run();
 

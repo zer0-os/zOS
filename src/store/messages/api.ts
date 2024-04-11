@@ -1,48 +1,9 @@
 import { AttachmentResponse } from '../../lib/api/attachment';
-import { get, post } from '../../lib/api/rest';
-import { ParentMessage } from '../../lib/chat/types';
+import { get } from '../../lib/api/rest';
 import { LinkPreview } from '../../lib/link-preview';
 import { AttachmentUploadResult } from './index';
-import { FileUploadResult, SendPayload } from './saga';
 
 import axios from 'axios';
-
-export async function sendFileMessage(channelId: string, file: FileUploadResult, optimisticId?: string): Promise<any> {
-  return sendMessagesByChannelId(channelId, null, null, null, file, optimisticId);
-}
-
-export async function sendMessagesByChannelId(
-  channelId: string,
-  message: string,
-  mentionedUserIds: string[],
-  parentMessage?: ParentMessage,
-  file?: FileUploadResult,
-  optimisticId?: string
-): Promise<any> {
-  const data: SendPayload = { message, mentionedUserIds, optimisticId };
-
-  if (parentMessage) {
-    data.parentMessageId = parentMessage.messageId;
-    data.parentMessageUserId = parentMessage.userId;
-  }
-
-  if (file) {
-    data.file = file;
-  }
-
-  const response = await post<any>(`/chatChannels/${channelId}/message`).send(data);
-
-  return response.body;
-}
-
-export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
-  const response = await post<any>(`/upload/chatChannels/${channelId}/message`)
-    .field('rootMessageId', rootMessageId)
-    .field('optimisticId', optimisticId)
-    .attach('file', media);
-
-  return response.body;
-}
 
 export async function uploadAttachment(file: File): Promise<AttachmentUploadResult> {
   const response = await get<any>('/api/feedItems/getAttachmentUploadInfo', undefined, {

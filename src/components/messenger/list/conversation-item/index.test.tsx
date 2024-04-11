@@ -47,7 +47,6 @@ describe('ConversationItem', () => {
   it('renders default group icon if group conversation has no image', function () {
     const wrapper = subject({
       conversation: {
-        icon: 'https://static.sendbird.com/sample/cover/cover_11.jpg',
         ...convoWith({ firstName: 'one' }, { firstName: 'two' }),
       },
     });

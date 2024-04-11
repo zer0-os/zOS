@@ -3,15 +3,6 @@ import { get } from '../../lib/api/rest';
 import { User } from '../channels';
 import { rawUserToDomainUser } from './utils';
 
-export async function fetchChannels(id: string) {
-  try {
-    const channels = await get<any>(`/api/networks/${id}/chatChannels`);
-    return await channels.body;
-  } catch (error: any) {
-    console.log('Error occured while fetching chatChannels ', error?.response ?? error); // eg. error.code = ENOTFOUND
-  }
-}
-
 interface ImageApiUploadResponse {
   apiUrl: string;
   query: string;

@@ -3,7 +3,6 @@ import * as React from 'react';
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import Tooltip from '../../../tooltip';
-import { isCustomIcon } from '../../list/utils/utils';
 import { getProvider } from '../../../../lib/cloudinary/provider';
 import { GroupManagementMenu } from '../../../group-management-menu';
 
@@ -39,7 +38,7 @@ export class ConversationHeader extends React.Component<Properties> {
       return '';
     }
 
-    if (isCustomIcon(this.props.icon)) {
+    if (this.props.icon) {
       return this.props.icon;
     }
 

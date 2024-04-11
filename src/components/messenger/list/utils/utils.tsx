@@ -13,13 +13,6 @@ export function lastSeenText(user): string {
   return 'Last Seen: ' + (user.lastSeenAt ? fromNow(user.lastSeenAt) : 'Never');
 }
 
-export function isCustomIcon(url?: string) {
-  if (!url) return false;
-
-  // Sendbird sets a custom icon by default. 🤞 that it's a good enough filter for now.
-  return !url.startsWith('https://static.sendbird.com/sample');
-}
-
 export function isUserAdmin(user: User, adminIds: string[]) {
   return adminIds.includes(user.matrixId);
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import { isCustomIcon, lastSeenText } from '../utils/utils';
+import { lastSeenText } from '../utils/utils';
 import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
@@ -89,7 +89,7 @@ export class ConversationItem extends React.Component<Properties, State> {
 
   renderAvatar() {
     let imageUrl;
-    if (isCustomIcon(this.props.conversation.icon)) {
+    if (this.props.conversation.icon) {
       imageUrl = this.props.conversation.icon;
     } else if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
       imageUrl = this.props.conversation.otherMembers[0].profileImage;

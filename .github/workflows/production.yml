@@ -45,3 +45,42 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: netlify deploy --dir=build --prod
+
+  deploy_new:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
+      REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
+      REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
+      REACT_APP_VERSION: ${{secrets.APP_VERSION}}
+      REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL_NEW}}
+      REACT_APP_SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+      REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
+      REACT_APP_GIPHY_SDK_KEY: ${{secrets.GIPHY_SDK_KEY}}
+      REACT_APP_MESSENGER_INVITE_PATH: ${{vars.MESSENGER_INVITE_PATH_NEW}}
+      REACT_APP_VIDEO_ASSETS_PATH: ${{vars.VIDEO_ASSETS_PATH}}
+      REACT_APP_IMAGE_ASSETS_PATH: ${{vars.IMAGE_ASSETS_PATH}}
+      REACT_APP_ANDROID_STORE_PATH: ${{vars.ANDROID_STORE_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_URL: ${{vars.MATRIX_HOME_SERVER_URL}}
+      REACT_APP_ZNS_EXPLORER_URL: ${{vars.ZNS_EXPLORER_URL}}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Common Setup
+        uses: ./.github/actions/common
+
+      - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
+
+      - run: npm install
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Build project
+        run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
+      - run: npm install -g netlify-cli
+      - name: Deploy to netlify
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_NEW }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_NEW }}
+        run: netlify deploy --dir=build --prod

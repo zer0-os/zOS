@@ -50,14 +50,6 @@ export class FeatureFlags {
     this._setBoolean('enableRewards', value);
   }
 
-  get enableFavorites() {
-    return this._getBoolean('enableFavorites', true);
-  }
-
-  set enableFavorites(value: boolean) {
-    this._setBoolean('enableFavorites', value);
-  }
-
   get enableMatrix() {
     return this._getBoolean('enableMatrix', true);
   }

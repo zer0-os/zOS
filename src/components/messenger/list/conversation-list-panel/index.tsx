@@ -12,7 +12,6 @@ import { getDirectMatches, getIndirectMatches } from './utils';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
-import { FeatureFlag } from '../../../feature-flag';
 
 const cn = bemClassName('messages-list');
 
@@ -156,26 +155,24 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          <FeatureFlag featureFlag='enableFavorites'>
-            <div {...cn('tab-list')}>
-              <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
-                All
-                {!!this.allUnreadCount && (
-                  <div {...cn('tab-badge')}>
-                    <span>{this.allUnreadCount}</span>
-                  </div>
-                )}
-              </div>
-              <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
-                Favorites
-                {!!this.favoritesUnreadCount && (
-                  <div {...cn('tab-badge')}>
-                    <span>{this.favoritesUnreadCount}</span>
-                  </div>
-                )}
-              </div>
+          <div {...cn('tab-list')}>
+            <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
+              All
+              {!!this.allUnreadCount && (
+                <div {...cn('tab-badge')}>
+                  <span>{this.allUnreadCount}</span>
+                </div>
+              )}
             </div>
-          </FeatureFlag>
+            <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
+              Favorites
+              {!!this.favoritesUnreadCount && (
+                <div {...cn('tab-badge')}>
+                  <span>{this.favoritesUnreadCount}</span>
+                </div>
+              )}
+            </div>
+          </div>
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>

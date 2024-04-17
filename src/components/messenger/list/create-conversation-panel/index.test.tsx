@@ -20,6 +20,7 @@ describe(CreateConversationPanel, () => {
       search: () => {},
       onCreateOneOnOne: () => {},
       onStartGroup: () => {},
+      onOpenInviteDialog: () => {},
       ...props,
     };
 

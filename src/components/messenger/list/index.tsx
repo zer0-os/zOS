@@ -38,6 +38,7 @@ import { SecureBackupContainer } from '../../secure-backup/container';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
+import { InviteDialogContainer } from '../../invite-dialog/container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -81,6 +82,7 @@ export interface Properties extends PublicProperties {
 
 interface State {
   isVerifyIdDialogOpen: boolean;
+  isInviteDialogOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -137,6 +139,7 @@ export class Container extends React.Component<Properties, State> {
 
   state = {
     isVerifyIdDialogOpen: false,
+    isInviteDialogOpen: false,
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -174,6 +177,14 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isVerifyIdDialogOpen: false });
   };
 
+  openInviteDialog = () => {
+    this.setState({ isInviteDialogOpen: true });
+  };
+
+  closeInviteDialog = () => {
+    this.setState({ isInviteDialogOpen: false });
+  };
+
   closeErrorDialog = () => {
     this.props.closeConversationErrorDialog();
   };
@@ -208,6 +219,14 @@ export class Container extends React.Component<Properties, State> {
           linkPath={this.props.joinRoomErrorContent?.linkPath}
           onClose={this.closeErrorDialog}
         />
+      </Modal>
+    );
+  };
+
+  renderInviteDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
+        <InviteDialogContainer onClose={this.closeInviteDialog} />
       </Modal>
     );
   };
@@ -262,6 +281,7 @@ export class Container extends React.Component<Properties, State> {
             search={this.usersInMyNetworks}
             onCreateOneOnOne={this.createOneOnOneConversation}
             onStartGroup={this.groupMembersSelected}
+            onOpenInviteDialog={this.openInviteDialog}
           />
         )}
         {this.props.stage === SagaStage.GroupDetails && (
@@ -292,6 +312,7 @@ export class Container extends React.Component<Properties, State> {
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
+        {this.renderInviteDialog()}
       </>
     );
   }

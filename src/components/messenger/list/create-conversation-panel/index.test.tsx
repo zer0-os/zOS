@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import CreateConversationPanel, { Properties } from '.';
 import { PanelHeader } from '../panel-header';
 import { AutocompleteMembers } from '../../autocomplete-members';
-import { Button } from '@zero-tech/zui/components/Button';
 import { SelectedUserTag } from '../selected-user-tag';
 import { bem } from '../../../../lib/bem';
 

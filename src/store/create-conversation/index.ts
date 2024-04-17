@@ -6,21 +6,18 @@ export enum SagaActionTypes {
   Start = 'create-conversation/start',
   Back = 'create-conversation/back',
   Cancel = 'create-conversation/cancel',
-  StartGroup = 'create-conversation/start-group',
   MembersSelected = 'create-conversation/members-selected',
   CreateConversation = 'create-conversation/create',
 }
 
 export const startCreateConversation = createAction(SagaActionTypes.Start);
-export const startGroup = createAction(SagaActionTypes.StartGroup);
 export const back = createAction(SagaActionTypes.Back);
 export const membersSelected = createAction<MembersSelectedPayload>(SagaActionTypes.MembersSelected);
 export const createConversation = createAction<CreateMessengerConversation>(SagaActionTypes.CreateConversation);
 
 export enum Stage {
   None = 'none',
-  CreateOneOnOne = 'one_on_one',
-  StartGroupChat = 'start_group',
+  InitiateConversation = 'initiate_conversation',
   GroupDetails = 'group_details',
 }
 

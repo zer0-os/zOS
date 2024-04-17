@@ -11,7 +11,6 @@ import {
   Stage as SagaStage,
   back,
   createConversation,
-  startGroup,
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
@@ -21,7 +20,6 @@ import { closeConversationErrorDialog } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
-import { StartGroupPanel } from './start-group-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
@@ -36,13 +34,13 @@ import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { closeBackupDialog } from '../../../store/matrix';
-
-import { bemClassName } from '../../../lib/bem';
-import './styles.scss';
 import { SecureBackupContainer } from '../../secure-backup/container';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
+
+import { bemClassName } from '../../../lib/bem';
+import './styles.scss';
 
 const cn = bemClassName('direct-message-members');
 
@@ -68,7 +66,6 @@ export interface Properties extends PublicProperties {
   showRewardsTooltip: boolean;
 
   startCreateConversation: () => void;
-  startGroup: () => void;
   back: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
@@ -127,7 +124,6 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       startCreateConversation,
       back,
-      startGroup,
       membersSelected,
       logout,
       receiveSearchResults,
@@ -258,21 +254,14 @@ export class Container extends React.Component<Properties, State> {
             onUnfavoriteRoom={this.props.onUnfavoriteRoom}
           />
         )}
-        {this.props.stage === SagaStage.CreateOneOnOne && (
+        {this.props.stage === SagaStage.InitiateConversation && (
           <CreateConversationPanel
+            initialSelections={this.props.groupUsers}
+            isSubmitting={this.props.isFetchingExistingConversations}
             onBack={this.props.back}
             search={this.usersInMyNetworks}
-            onCreate={this.createOneOnOneConversation}
-            onStartGroupChat={this.props.startGroup}
-          />
-        )}
-        {this.props.stage === SagaStage.StartGroupChat && (
-          <StartGroupPanel
-            initialSelections={this.props.groupUsers}
-            isContinuing={this.props.isFetchingExistingConversations}
-            onBack={this.props.back}
-            onContinue={this.groupMembersSelected}
-            searchUsers={this.usersInMyNetworks}
+            onCreateOneOnOne={this.createOneOnOneConversation}
+            onStartGroup={this.groupMembersSelected}
           />
         )}
         {this.props.stage === SagaStage.GroupDetails && (

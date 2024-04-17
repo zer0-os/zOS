@@ -77,9 +77,9 @@ export function* saga() {
 export function* startConversation() {
   try {
     yield call(reset);
-    yield put(setStage(Stage.CreateOneOnOne));
+    yield put(setStage(Stage.InitiateConversation));
 
-    let currentStage = Stage.CreateOneOnOne;
+    let currentStage = Stage.InitiateConversation;
     while (currentStage !== Stage.None) {
       const { back, cancel, handlerResult } = yield race({
         back: take(SagaActionTypes.Back),
@@ -103,25 +103,23 @@ export function* startConversation() {
 }
 
 const STAGE_HANDLERS = {
-  [Stage.CreateOneOnOne]: handleOneOnOne,
-  [Stage.StartGroupChat]: handleStartGroup,
+  [Stage.InitiateConversation]: handleInitiation,
   [Stage.GroupDetails]: handleGroupDetails,
 };
 
 const PREVIOUS_STAGES = {
-  [Stage.CreateOneOnOne]: Stage.None,
-  [Stage.StartGroupChat]: Stage.CreateOneOnOne,
-  [Stage.GroupDetails]: Stage.StartGroupChat,
+  [Stage.InitiateConversation]: Stage.None,
+  [Stage.GroupDetails]: Stage.InitiateConversation,
 };
 
-function* handleOneOnOne() {
+function* handleInitiation() {
   const action = yield take([
-    SagaActionTypes.StartGroup,
+    SagaActionTypes.MembersSelected,
     SagaActionTypes.CreateConversation,
   ]);
-  if (action.type === SagaActionTypes.StartGroup) {
-    yield put(setGroupUsers([]));
-    return Stage.StartGroupChat;
+
+  if (action.type === SagaActionTypes.MembersSelected) {
+    return yield call(groupMembersSelected, action);
   }
 
   const { userIds } = action.payload;
@@ -135,11 +133,6 @@ function* handleOneOnOne() {
   }
 
   return Stage.None;
-}
-
-function* handleStartGroup() {
-  const action = yield take(SagaActionTypes.MembersSelected);
-  return yield call(groupMembersSelected, action);
 }
 
 function* handleGroupDetails() {

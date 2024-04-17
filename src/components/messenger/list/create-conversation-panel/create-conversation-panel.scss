@@ -1,42 +1,40 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../variables';
 
 .create-conversation {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow: initial;
+  &__selected-users {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    padding-top: 18px;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__selected-number {
+    color: theme.$color-greyscale-12;
+  }
+
+  &__content {
+    flex-grow: 99;
+
+    display: flex;
+    flex-direction: column;
+  }
 
   &__search {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    text-align: center;
   }
 
-  &__group-button {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-    gap: 8px;
-    cursor: pointer;
-  }
-
-  &__group-icon {
-    width: 40px;
-    height: 40px;
+  &__button-container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin: 16px 16px 0;
+  }
 
-    background: linear-gradient(223deg, #421349 14.62%, #0d0416 36.73%, #0b060e 59.58%, #2b0659 85.38%);
-    border-radius: 9999px;
-
-    & > * {
-      margin: auto;
-    }
+  &__submit-button {
+    width: 100%;
   }
 }

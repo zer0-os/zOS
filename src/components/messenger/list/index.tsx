@@ -43,9 +43,6 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 
-import { bemClassName } from '../../../lib/bem';
-import './styles.scss';
-
 const cn = bemClassName('direct-message-members');
 
 export interface PublicProperties {}

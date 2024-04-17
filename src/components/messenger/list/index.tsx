@@ -299,6 +299,14 @@ export class Container extends React.Component<Properties, State> {
     return this.isGroupManagementActive ? this.renderGroupManagement() : this.renderCreateConversation();
   }
 
+  renderFooterMask() {
+    return (
+      <div {...cn('footer-mask')}>
+        <div {...cn('footer-text')}>ZERO Homeserver</div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <>
@@ -312,6 +320,7 @@ export class Container extends React.Component<Properties, State> {
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
+        {this.props.stage === SagaStage.None && this.renderFooterMask()}
         {this.renderInviteDialog()}
       </>
     );

@@ -16,6 +16,9 @@ import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { ErrorDialog } from '../../error-dialog';
 import { SecureBackupContainer } from '../../secure-backup/container';
+import { bem } from '../../../lib/bem';
+
+const c = bem('.direct-message-members');
 
 const mockSearchMyNetworksByName = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -215,6 +218,18 @@ describe('messenger-list', () => {
     wrapper.find(ErrorDialog).prop('onClose')();
 
     expect(closeConversationErrorDialog).toHaveBeenCalledOnce();
+  });
+
+  it('renders footer mask when stage is None', function () {
+    const wrapper = subject({ stage: Stage.None });
+
+    expect(wrapper.find(c('footer-mask'))).toExist();
+  });
+
+  it('does not render footer mask when stage is not None', function () {
+    const wrapper = subject({ stage: Stage.InitiateConversation });
+
+    expect(wrapper.find(c('footer-mask'))).not.toExist();
   });
 
   describe('usersInMyNetworks', () => {

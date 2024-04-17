@@ -152,6 +152,10 @@ export class Container extends React.Component<Properties, State> {
     return filteredUsers?.map((user) => ({ ...user, image: user.profileImage }));
   };
 
+  startCreateConversation = () => {
+    this.props.startCreateConversation();
+  };
+
   createOneOnOneConversation = (id: string) => {
     this.props.createConversation({ userIds: [id] });
   };
@@ -246,7 +250,7 @@ export class Container extends React.Component<Properties, State> {
         userName={this.props.userName}
         userHandle={this.props.userHandle}
         userAvatarUrl={this.props.userAvatarUrl}
-        startConversation={this.props.startCreateConversation}
+        startConversation={this.startCreateConversation}
         onLogout={this.props.logout}
         onVerifyId={this.openVerifyIdDialog}
         showRewardsTooltip={this.props.showRewardsTooltip}

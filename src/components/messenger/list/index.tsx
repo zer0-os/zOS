@@ -320,7 +320,7 @@ export class Container extends React.Component<Properties, State> {
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
-        {this.props.stage === SagaStage.None && this.renderFooterMask()}
+        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderFooterMask()}
         {this.renderInviteDialog()}
       </>
     );

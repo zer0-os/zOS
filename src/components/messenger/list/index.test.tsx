@@ -221,7 +221,7 @@ describe('messenger-list', () => {
   });
 
   it('renders footer mask when stage is None', function () {
-    const wrapper = subject({ stage: Stage.None });
+    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
 
     expect(wrapper.find(c('footer-mask'))).toExist();
   });

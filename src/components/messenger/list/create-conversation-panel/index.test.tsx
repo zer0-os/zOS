@@ -40,7 +40,7 @@ describe(CreateConversationPanel, () => {
     const wrapper = subject({ onCreateOneOnOne, onStartGroup });
 
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-one' });
-    wrapper.find(Button).simulate('press');
+    wrapper.find(c('submit-button')).simulate('press');
 
     expect(onCreateOneOnOne).toHaveBeenCalledWith('user-one');
     expect(onStartGroup).not.toHaveBeenCalled();
@@ -53,7 +53,7 @@ describe(CreateConversationPanel, () => {
 
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-one' });
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-two' });
-    wrapper.find(Button).simulate('press');
+    wrapper.find(c('submit-button')).simulate('press');
 
     expect(onStartGroup).toHaveBeenCalledWith([{ value: 'user-one' }, { value: 'user-two' }]);
     expect(onCreateOneOnOne).not.toHaveBeenCalled();
@@ -61,11 +61,20 @@ describe(CreateConversationPanel, () => {
 
   it('fires onBack when back icon clicked', function () {
     const onBack = jest.fn();
-    const wrapper = subject({ onBack: onBack });
+    const wrapper = subject({ onBack });
 
     wrapper.find(PanelHeader).simulate('back');
 
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('fires onOpenInviteDialog when invite button is clicked', function () {
+    const onOpenInviteDialog = jest.fn();
+    const wrapper = subject({ onOpenInviteDialog });
+
+    wrapper.find(c('invite-button')).simulate('press');
+
+    expect(onOpenInviteDialog).toHaveBeenCalledOnce();
   });
 
   it('initializes with provided initial selections', () => {
@@ -86,7 +95,7 @@ describe(CreateConversationPanel, () => {
 
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-one' });
 
-    expect(wrapper).toHaveElement(Button);
+    expect(wrapper).toHaveElement(c('submit-button'));
   });
 
   it('does not render the submit button if no users are selected', () => {
@@ -94,7 +103,7 @@ describe(CreateConversationPanel, () => {
 
     wrapper.find(SelectedUserTag).simulate('remove', 'user-one');
 
-    expect(wrapper).not.toHaveElement(Button);
+    expect(wrapper).not.toHaveElement(c('submit-button'));
   });
 
   it('sets isLoading on button when isSubmitting is true', () => {
@@ -103,7 +112,7 @@ describe(CreateConversationPanel, () => {
 
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-one' });
 
-    expect(wrapper.find(Button)).toHaveProp('isLoading', true);
+    expect(wrapper.find(c('submit-button'))).toHaveProp('isLoading', true);
   });
 
   it('renders selected users if users are selected', () => {

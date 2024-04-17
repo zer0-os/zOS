@@ -34,6 +34,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     this.props.onEdit();
   };
 
+  viewGroupInformation = () => {
+    this.props.onViewGroupInformation();
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -57,7 +61,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
       menuItems.push({
         id: 'group_information',
         label: this.renderMenuItem(<IconInfoCircle size={20} />, 'Group Info'),
-        onSelect: this.props.onViewGroupInformation,
+        onSelect: this.viewGroupInformation,
       });
     }
 

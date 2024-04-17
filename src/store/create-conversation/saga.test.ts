@@ -24,10 +24,7 @@ describe('create conversation saga', () => {
         .next()
         .call(reset)
         .next()
-        .put(setStage(Stage.CreateOneOnOne))
-        .next()
-        .next({ handlerResult: Stage.StartGroupChat })
-        .put(setStage(Stage.StartGroupChat))
+        .put(setStage(Stage.InitiateConversation))
         .next()
         .next({ handlerResult: Stage.GroupDetails })
         .put(setStage(Stage.GroupDetails));
@@ -36,10 +33,8 @@ describe('create conversation saga', () => {
     it('finishes when the next stage is None', async () => {
       testSaga(startConversation)
         .next()
-        .next()
-        .next()
-        .next({ handlerResult: Stage.StartGroupChat })
-        .put(setStage(Stage.StartGroupChat))
+        .next({ handlerResult: Stage.InitiateConversation })
+        .put(setStage(Stage.InitiateConversation))
         .next()
         .next({ handlerResult: Stage.None })
         .put(setStage(Stage.None))
@@ -56,7 +51,7 @@ describe('create conversation saga', () => {
         .next()
         .next()
         .next()
-        .next({ handlerResult: Stage.StartGroupChat })
+        .next({ handlerResult: Stage.InitiateConversation })
         .throw(new Error('Stub error'))
         .call(reset);
     });
@@ -117,7 +112,7 @@ describe('create conversation saga', () => {
     });
 
     it('returns to initial state when existing conversation selected', async () => {
-      const initialState = defaultState({ stage: Stage.StartGroupChat });
+      const initialState = defaultState({ stage: Stage.InitiateConversation });
 
       const { returnValue } = await subject(performGroupMembersSelected, [])
         .provide([[matchers.call.fn(fetchConversationsWithUsers), [{ id: 'convo-1' }]]])
@@ -129,7 +124,7 @@ describe('create conversation saga', () => {
 
     it('moves to group details stage if no existing conversations found', async () => {
       const users = [{ value: 'user-1' }, { value: 'user-2' }];
-      const initialState = defaultState({ stage: Stage.StartGroupChat });
+      const initialState = defaultState({ stage: Stage.InitiateConversation });
 
       const { returnValue, storeState } = await subject(performGroupMembersSelected, users)
         .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])

@@ -14,7 +14,7 @@ const cn = bemClassName('create-conversation');
 
 export interface Properties {
   initialSelections: Option[];
-  isContinuing: boolean;
+  isSubmitting: boolean;
 
   search: (input: string) => any;
   onBack: () => void;
@@ -54,7 +54,7 @@ export default class CreateConversationPanel extends React.Component<Properties,
       : this.props.onStartGroup(selectedOptions);
   };
 
-  get isContinueDisabled() {
+  get isSubmitDisabled() {
     return this.state.selectedOptions.length === 0;
   }
 
@@ -84,8 +84,8 @@ export default class CreateConversationPanel extends React.Component<Properties,
         <Button
           {...cn('submit-button')}
           onPress={this.submitSelectedOptions}
-          isDisabled={this.isContinueDisabled}
-          isLoading={this.props.isContinuing}
+          isDisabled={this.isSubmitDisabled}
+          isLoading={this.props.isSubmitting}
         >
           {this.submitButtonText}
         </Button>

@@ -257,7 +257,7 @@ export class Container extends React.Component<Properties, State> {
         {this.props.stage === SagaStage.InitiateConversation && (
           <CreateConversationPanel
             initialSelections={this.props.groupUsers}
-            isContinuing={this.props.isFetchingExistingConversations}
+            isSubmitting={this.props.isFetchingExistingConversations}
             onBack={this.props.back}
             search={this.usersInMyNetworks}
             onCreateOneOnOne={this.createOneOnOneConversation}

@@ -150,10 +150,10 @@ describe('messenger-list', () => {
     expect(back).toHaveBeenCalledOnce();
   });
 
-  it('sets CreateConversationPanel to Continuing while data is loading', async function () {
+  it('sets CreateConversationPanel to submitting while data is loading', async function () {
     const wrapper = subject({ stage: Stage.InitiateConversation, isFetchingExistingConversations: true });
 
-    expect(wrapper.find(CreateConversationPanel).prop('isContinuing')).toBeTrue();
+    expect(wrapper.find(CreateConversationPanel).prop('isSubmitting')).toBeTrue();
   });
 
   it('creates a group conversation when details submitted', async function () {

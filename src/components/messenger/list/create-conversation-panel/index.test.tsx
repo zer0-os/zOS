@@ -14,7 +14,7 @@ describe(CreateConversationPanel, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       initialSelections: [],
-      isContinuing: false,
+      isSubmitting: false,
 
       onBack: () => {},
       search: () => {},
@@ -96,9 +96,9 @@ describe(CreateConversationPanel, () => {
     expect(wrapper).not.toHaveElement(Button);
   });
 
-  it('sets isLoading on button when isContinuing is true', () => {
+  it('sets isLoading on button when isSubmitting is true', () => {
     const onCreateOneOnOne = jest.fn();
-    const wrapper = subject({ isContinuing: true, onCreateOneOnOne });
+    const wrapper = subject({ isSubmitting: true, onCreateOneOnOne });
 
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'user-one' });
 

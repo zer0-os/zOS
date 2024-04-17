@@ -3,7 +3,8 @@ import * as React from 'react';
 import { AutocompleteMembers } from '../../autocomplete-members';
 import { PanelHeader } from '../panel-header';
 import { SelectedUserTag } from '../selected-user-tag';
-import { Button } from '@zero-tech/zui/components/Button';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { IconPlus } from '@zero-tech/zui/icons';
 
 import { Option } from '../../lib/types';
 import { bemClassName } from '../../../../lib/bem';
@@ -20,18 +21,20 @@ export interface Properties {
   onBack: () => void;
   onCreateOneOnOne: (id: string) => void;
   onStartGroup: (options: Option[]) => void;
+  onOpenInviteDialog: () => void;
 }
 
 interface State {
   selectedOptions: Option[];
+  isInviteDialogOpen: boolean;
 }
 
 export default class CreateConversationPanel extends React.Component<Properties, State> {
-  state = { selectedOptions: [] };
+  state = { selectedOptions: [], isInviteDialogOpen: false };
 
   constructor(props) {
     super(props);
-    this.state = { selectedOptions: [...props.initialSelections] };
+    this.state = { selectedOptions: [...props.initialSelections], isInviteDialogOpen: false };
   }
 
   selectOption = (selectedOption) => {
@@ -52,6 +55,10 @@ export default class CreateConversationPanel extends React.Component<Properties,
     selectedOptions.length === 1
       ? this.props.onCreateOneOnOne(selectedOptions[0].value)
       : this.props.onStartGroup(selectedOptions);
+  };
+
+  openInviteDialog = () => {
+    this.props.onOpenInviteDialog();
   };
 
   get isSubmitDisabled() {
@@ -78,9 +85,22 @@ export default class CreateConversationPanel extends React.Component<Properties,
     );
   }
 
-  renderButton() {
+  renderInviteButton() {
     return (
-      <div {...cn('button-container')}>
+      <Button
+        {...cn('invite-button')}
+        variant={ButtonVariant.Secondary}
+        onPress={this.openInviteDialog}
+        startEnhancer={<IconPlus size={25} isFilled />}
+      >
+        Invite Friend
+      </Button>
+    );
+  }
+
+  renderSubmitButton() {
+    return (
+      <div {...cn('submit-button-container')}>
         <Button
           {...cn('submit-button')}
           onPress={this.submitSelectedOptions}
@@ -107,10 +127,11 @@ export default class CreateConversationPanel extends React.Component<Properties,
             selectedOptions={selectedOptions}
           >
             {hasSelectedOptions && this.renderSelectedUserTags(selectedOptions)}
+            {!hasSelectedOptions && this.renderInviteButton()}
           </AutocompleteMembers>
         </div>
 
-        {hasSelectedOptions && this.renderButton()}
+        {hasSelectedOptions && this.renderSubmitButton()}
       </>
     );
   }

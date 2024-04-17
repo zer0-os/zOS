@@ -28,7 +28,7 @@
     flex-direction: column;
   }
 
-  &__button-container {
+  &__submit-button-container {
     display: flex;
     justify-content: center;
     margin: 16px 16px 0;
@@ -36,5 +36,14 @@
 
   &__submit-button {
     width: 100%;
+  }
+
+  &__invite-button {
+    margin: 16px 16px 0;
+    font-weight: 600;
+
+    > *:first-child {
+      gap: 16px;
+    }
   }
 }

@@ -1,12 +1,10 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import { lastSeenText } from '../utils/utils';
 import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
-import Tooltip from '../../../tooltip';
 import { Avatar, Status } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 
@@ -64,14 +62,6 @@ export class ConversationItem extends React.Component<Properties, State> {
   closeContextMenu = () => {
     this.setState({ isContextMenuOpen: false });
   };
-
-  tooltipContent(conversation: Channel) {
-    if (conversation.otherMembers && conversation.otherMembers.length === 1) {
-      return lastSeenText(conversation.otherMembers[0]);
-    }
-
-    return otherMembersToString(conversation.otherMembers);
-  }
 
   get conversationStatus() {
     const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);
@@ -138,46 +128,35 @@ export class ConversationItem extends React.Component<Properties, State> {
     const isActive = conversation.id === activeConversationId ? 'true' : 'false';
 
     return (
-      <Tooltip
-        placement='left'
-        overlay={this.tooltipContent(conversation)}
-        align={{
-          offset: [
-            10,
-            0,
-          ],
-        }}
+      <div
+        {...cn('')}
+        onClick={this.handleMemberClick}
+        onKeyDown={this.handleKeyDown}
+        tabIndex={0}
+        role='button'
+        is-active={isActive}
+        onContextMenu={this.openContextMenu}
       >
-        <div
-          {...cn('')}
-          onClick={this.handleMemberClick}
-          onKeyDown={this.handleKeyDown}
-          tabIndex={0}
-          role='button'
-          is-active={isActive}
-          onContextMenu={this.openContextMenu}
-        >
-          <div {...cn('avatar-with-menu-container')}>
-            {this.renderAvatar()}
-            {this.renderMoreMenu()}
-          </div>
+        <div {...cn('avatar-with-menu-container')}>
+          {this.renderAvatar()}
+          {this.renderMoreMenu()}
+        </div>
 
-          <div {...cn('summary')}>
-            <div {...cn('header')}>
-              <div {...cn('name')} is-unread={isUnread}>
-                {this.highlightedName()}
-              </div>
-              <div {...cn('timestamp')}>{previewDisplayDate}</div>
+        <div {...cn('summary')}>
+          <div {...cn('header')}>
+            <div {...cn('name')} is-unread={isUnread}>
+              {this.highlightedName()}
             </div>
-            <div {...cn('content')}>
-              <div {...cn('message')} is-unread={isUnread}>
-                <ContentHighlighter message={messagePreview} variant='negative' tabIndex={-1} />
-              </div>
-              {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
+            <div {...cn('timestamp')}>{previewDisplayDate}</div>
+          </div>
+          <div {...cn('content')}>
+            <div {...cn('message')} is-unread={isUnread}>
+              <ContentHighlighter message={messagePreview} variant='negative' tabIndex={-1} />
             </div>
+            {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
           </div>
         </div>
-      </Tooltip>
+      </div>
     );
   }
 }

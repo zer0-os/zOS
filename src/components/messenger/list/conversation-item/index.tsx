@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import { lastSeenText } from '../utils/utils';
 import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
@@ -63,14 +62,6 @@ export class ConversationItem extends React.Component<Properties, State> {
   closeContextMenu = () => {
     this.setState({ isContextMenuOpen: false });
   };
-
-  tooltipContent(conversation: Channel) {
-    if (conversation.otherMembers && conversation.otherMembers.length === 1) {
-      return lastSeenText(conversation.otherMembers[0]);
-    }
-
-    return otherMembersToString(conversation.otherMembers);
-  }
 
   get conversationStatus() {
     const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);

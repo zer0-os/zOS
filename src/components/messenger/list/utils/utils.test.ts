@@ -1,4 +1,4 @@
-import { isUserAdmin, sortMembers } from './utils';
+import { isUserAdmin, lastSeenText, sortMembers } from './utils';
 import { User } from '../../../../store/channels';
 
 describe('sortMembers', () => {
@@ -42,5 +42,31 @@ describe('isUserAdmin', () => {
     const adminIds: string[] = [];
 
     expect(isUserAdmin(user, adminIds)).toBe(false);
+  });
+});
+
+describe('lastSeenText', () => {
+  it('returns "Online" if the user is currently online', () => {
+    const user = { isOnline: true };
+    expect(lastSeenText(user)).toEqual('Online');
+  });
+
+  it('returns an empty string if lastSeenAt is more than 6 months ago', () => {
+    const user = { isOnline: false, lastSeenAt: new Date('2020-01-01') };
+    expect(lastSeenText(user)).toEqual('');
+  });
+
+  it('returns an empty string if lastSeenAt is null', () => {
+    const user = { isOnline: false, lastSeenAt: null };
+    expect(lastSeenText(user)).toEqual('');
+  });
+
+  it('returns formatted last seen text', () => {
+    // date for 26 hours ago
+    const lastSeenAt = new Date().setHours(new Date().getHours() - 26);
+
+    const user = { isOnline: false, lastSeenAt };
+
+    expect(lastSeenText(user)).toEqual('a day ago');
   });
 });

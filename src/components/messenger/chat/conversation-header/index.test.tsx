@@ -85,13 +85,16 @@ describe(ConversationHeader, () => {
       expect(wrapper).toHaveElement(c('avatar--offline'));
     });
 
-    it('renders primaryZID in the subtitle', function () {
-      const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ displaySubHandle: '0://arc:vet' })] });
+    it('renders a formatted subtitle', function () {
+      const wrapper = subject({
+        isOneOnOne: true,
+        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', isOnline: true, lastSeenAt: null })],
+      });
 
-      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet');
+      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet | Online');
     });
 
-    it('renders empty subtitle if no primaryZID', function () {
+    it('renders empty subtitle if no primaryZID, no wallet and no lastSeenAt', function () {
       const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ displaySubHandle: '' })] });
 
       expect(wrapper.find(c('subtitle'))).toHaveText('');

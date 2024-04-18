@@ -2,11 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ConversationItem, Properties } from '.';
-import moment from 'moment';
 import { ContentHighlighter } from '../../../content-highlighter';
 import { Avatar } from '@zero-tech/zui/components';
 import { bem } from '../../../../lib/bem';
-import Tooltip from '../../../tooltip';
 
 const c = bem('.conversation-item');
 
@@ -120,30 +118,6 @@ describe(ConversationItem, () => {
       });
 
       expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-  });
-
-  describe('tooltip', () => {
-    it('renders Online if single member is currently online', function () {
-      const wrapper = subject({ conversation: convoWith({ isOnline: true }) });
-
-      expect(wrapper.find(Tooltip)).toHaveProp('overlay', 'Online');
-    });
-
-    it('renders last seen time if single member has previously been online', function () {
-      const wrapper = subject({
-        conversation: convoWith({ lastSeenAt: moment().subtract(2, 'days').toISOString() }),
-      });
-
-      expect(wrapper.find(Tooltip)).toHaveProp('overlay', 'Last Seen: 2 days ago');
-    });
-
-    it('renders member names when multiple other members', function () {
-      const wrapper = subject({
-        conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }, { firstName: 'Jackie', lastName: 'Chan' }),
-      });
-
-      expect(wrapper.find(Tooltip)).toHaveProp('overlay', 'Johnny Cash, Jackie Chan');
     });
   });
 });

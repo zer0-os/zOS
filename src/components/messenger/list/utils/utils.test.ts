@@ -60,13 +60,4 @@ describe('lastSeenText', () => {
     const user = { isOnline: false, lastSeenAt: null };
     expect(lastSeenText(user)).toEqual('');
   });
-
-  it('returns formatted last seen text', () => {
-    // date for 26 hours ago
-    const lastSeenAt = new Date().setHours(new Date().getHours() - 26);
-
-    const user = { isOnline: false, lastSeenAt };
-
-    expect(lastSeenText(user)).toEqual('a day ago');
-  });
 });

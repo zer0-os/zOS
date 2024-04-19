@@ -181,6 +181,48 @@ describe('autocomplete-members', () => {
 
     expect(wrapper.state('results')).toEqual(null);
   });
+
+  it('calls onSearchChange with true when search begins', async () => {
+    const onSearchChange = jest.fn();
+    const search = jest.fn().mockResolvedValue([]);
+    const wrapper = subject({ search, onSearchChange });
+
+    await searchFor(wrapper, 'name');
+
+    expect(onSearchChange).toHaveBeenCalledWith(true);
+  });
+
+  it('calls onSearchChange with false when search is cleared', async () => {
+    const onSearchChange = jest.fn();
+    const search = jest.fn().mockResolvedValue([]);
+    const wrapper = subject({ search, onSearchChange });
+
+    await searchFor(wrapper, 'name');
+    await searchFor(wrapper, '');
+
+    expect(onSearchChange).toHaveBeenCalledWith(false);
+  });
+
+  it('calls onSearchChange with false when an item is selected', async () => {
+    const onSearchChange = jest.fn();
+    const search = jest.fn();
+    when(search).mockResolvedValue([
+      { name: 'Member 1', id: 'member-1' },
+      { name: 'Member 2', id: 'member-2' },
+    ]);
+    const onSelect = jest.fn();
+    const wrapper = subject({ search, onSelect, onSearchChange });
+
+    await searchFor(wrapper, 'Member 1');
+    wrapper
+      .find('.autocomplete-members__search-results > div')
+      .first()
+      .simulate('click', {
+        currentTarget: { dataset: { id: 'member-1' } },
+      });
+
+    expect(onSearchChange).toHaveBeenLastCalledWith(false);
+  });
 });
 
 async function searchFor(wrapper, searchString) {

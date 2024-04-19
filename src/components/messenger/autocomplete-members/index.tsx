@@ -12,6 +12,7 @@ export interface Properties {
   search: (query: string) => Promise<Item[]>;
   selectedOptions?: Option[];
   onSelect: (selected: Option) => void;
+  onSearchChange?: (isSearching: boolean) => void;
 }
 
 interface State {
@@ -24,6 +25,8 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
   searchChanged = async (searchString: string) => {
     this.setState({ searchString });
+
+    this.props.onSearchChange && this.props.onSearchChange?.(!!searchString);
 
     if (!searchString) {
       return this.setState({ results: null });
@@ -43,6 +46,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     if (selectedUser) {
       this.props.onSelect(selectedUser);
       this.setState({ results: null, searchString: '' });
+      this.props.onSearchChange && this.props.onSearchChange(false);
     }
   };
 

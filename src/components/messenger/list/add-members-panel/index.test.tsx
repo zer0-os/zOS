@@ -52,28 +52,21 @@ describe(AddMembersPanel, () => {
     ]);
   });
 
+  it('renders button when members are selected', function () {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement(Button);
+
+    wrapper.find(AutocompleteMembers).simulate('select', { value: 'id-1' });
+    expect(wrapper).toHaveElement(Button);
+  });
+
   it('sets button to loading state if submitting', function () {
     const wrapper = subject({ isSubmitting: true });
 
-    expect(wrapper.find(Button).prop('isLoading')).toBeTrue();
-  });
-
-  it('disables submit button when no users are selected', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find(Button).prop('isDisabled')).toBe(true);
-  });
-
-  it('enables submit button based on number of users', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find(Button).prop('isDisabled')).toBeTrue();
-
     wrapper.find(AutocompleteMembers).simulate('select', { value: 'id-1' });
-    expect(wrapper.find(Button).prop('isDisabled')).toBeFalse();
 
-    wrapper.find(SelectedUserTag).first().simulate('remove', 'id-1');
-    expect(wrapper.find(Button).prop('isDisabled')).toBeTrue();
+    expect(wrapper.find(Button).prop('isLoading')).toBeTrue();
   });
 
   it('shows selected member count', function () {

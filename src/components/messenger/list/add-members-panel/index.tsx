@@ -25,14 +25,15 @@ export interface Properties {
 
 interface State {
   selectedOptions: Option[];
+  isSearching: boolean;
 }
 
 export class AddMembersPanel extends React.Component<Properties, State> {
-  state = { selectedOptions: [] };
+  state = { selectedOptions: [], isSearching: false };
 
   constructor(props) {
     super(props);
-    this.state = { selectedOptions: [] };
+    this.state = { selectedOptions: [], isSearching: false };
   }
 
   submitSelectedOptions = () => {
@@ -49,6 +50,7 @@ export class AddMembersPanel extends React.Component<Properties, State> {
         ...this.state.selectedOptions,
         selectedOption,
       ],
+      isSearching: false,
     });
   };
 
@@ -56,6 +58,10 @@ export class AddMembersPanel extends React.Component<Properties, State> {
     this.setState({
       selectedOptions: this.state.selectedOptions.filter((o) => o.value !== value),
     });
+  };
+
+  onSearchChange = (isSearching: boolean) => {
+    this.setState({ isSearching });
   };
 
   get hasSelectedOptions() {
@@ -81,9 +87,9 @@ export class AddMembersPanel extends React.Component<Properties, State> {
 
   renderSelectedUserTags() {
     return (
-      <div>
+      <div {...cn('selected-tags')}>
         {this.state.selectedOptions.map((option) => (
-          <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
+          <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} tagSize='spacious' />
         ))}
       </div>
     );
@@ -100,18 +106,18 @@ export class AddMembersPanel extends React.Component<Properties, State> {
 
   renderSubmitButton() {
     return (
-      <Button
-        {...cn('submit-button')}
-        onPress={this.submitSelectedOptions}
-        isDisabled={!this.hasSelectedOptions}
-        isLoading={this.props.isSubmitting}
-      >
-        {`Add Member${this.memberCountSuffix}`}
-      </Button>
+      <div {...cn('submit-button-container')}>
+        <Button {...cn('submit-button')} onPress={this.submitSelectedOptions} isLoading={this.props.isSubmitting}>
+          {`Add Member${this.memberCountSuffix}`}
+        </Button>
+      </div>
     );
   }
 
   render() {
+    const { isSearching, selectedOptions } = this.state;
+    const hasSelectedOptions = selectedOptions.length > 0;
+
     return (
       <>
         <PanelHeader title={'Add Members'} onBack={this.props.onBack} />
@@ -120,13 +126,18 @@ export class AddMembersPanel extends React.Component<Properties, State> {
             search={this.props.searchUsers}
             onSelect={this.selectOption}
             selectedOptions={this.state.selectedOptions}
+            onSearchChange={this.onSearchChange}
           >
-            {this.hasSelectedOptions && this.renderSelectCount()}
-            {this.renderSelectedUserTags()}
+            {!isSearching && hasSelectedOptions && (
+              <>
+                {this.renderSelectCount()}
+                {this.renderSelectedUserTags()}
+              </>
+            )}
           </AutocompleteMembers>
         </div>
         {this.hasError && this.renderErrorMessage()}
-        {this.renderSubmitButton()}
+        {!isSearching && hasSelectedOptions && this.renderSubmitButton()}
       </>
     );
   }

@@ -27,20 +27,19 @@ export interface Properties {
 interface State {
   selectedOptions: Option[];
   isInviteDialogOpen: boolean;
+  isSearching: boolean;
 }
 
 export default class CreateConversationPanel extends React.Component<Properties, State> {
-  state = { selectedOptions: [], isInviteDialogOpen: false };
-
   constructor(props) {
     super(props);
-    this.state = { selectedOptions: [...props.initialSelections], isInviteDialogOpen: false };
+    this.state = { selectedOptions: [...props.initialSelections], isInviteDialogOpen: false, isSearching: false };
   }
 
   selectOption = (selectedOption) => {
     const { selectedOptions } = this.state;
     if (!selectedOptions.some((option) => option.value === selectedOption.value)) {
-      this.setState({ selectedOptions: [...selectedOptions, selectedOption] });
+      this.setState({ selectedOptions: [...selectedOptions, selectedOption], isSearching: false });
     }
   };
 
@@ -61,6 +60,10 @@ export default class CreateConversationPanel extends React.Component<Properties,
     this.props.onOpenInviteDialog();
   };
 
+  onSearchChange = (isSearching: boolean) => {
+    this.setState({ isSearching });
+  };
+
   get isSubmitDisabled() {
     return this.state.selectedOptions.length === 0;
   }
@@ -76,9 +79,9 @@ export default class CreateConversationPanel extends React.Component<Properties,
           <span {...cn('selected-number')}>{selectedOptions.length}</span> member
           {selectedOptions.length === 1 ? '' : 's'} selected
         </div>
-        <div>
+        <div {...cn('selected-tags')}>
           {selectedOptions.map((option) => (
-            <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} />
+            <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} tagSize='spacious' />
           ))}
         </div>
       </>
@@ -114,7 +117,7 @@ export default class CreateConversationPanel extends React.Component<Properties,
   }
 
   render() {
-    const { selectedOptions } = this.state;
+    const { selectedOptions, isSearching } = this.state;
     const hasSelectedOptions = selectedOptions.length > 0;
 
     return (
@@ -125,13 +128,14 @@ export default class CreateConversationPanel extends React.Component<Properties,
             search={this.props.search}
             onSelect={this.selectOption}
             selectedOptions={selectedOptions}
+            onSearchChange={this.onSearchChange}
           >
-            {hasSelectedOptions && this.renderSelectedUserTags(selectedOptions)}
-            {!hasSelectedOptions && this.renderInviteButton()}
+            {!isSearching && hasSelectedOptions && this.renderSelectedUserTags(selectedOptions)}
+            {!isSearching && !hasSelectedOptions && this.renderInviteButton()}
           </AutocompleteMembers>
         </div>
 
-        {hasSelectedOptions && this.renderSubmitButton()}
+        {!isSearching && hasSelectedOptions && this.renderSubmitButton()}
       </>
     );
   }

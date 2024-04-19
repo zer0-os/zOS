@@ -68,12 +68,12 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          <div>
+          <div {...cn('selected-container')}>
             <div {...cn('selected-count')}>
               <span {...cn('selected-number')}>{this.props.users.length}</span> member
               {this.props.users.length === 1 ? '' : 's'} selected
             </div>
-            <div>
+            <div {...cn('selected-tags')}>
               {this.props.users.map((u) => (
                 <SelectedUserTag userOption={u} key={u.value}></SelectedUserTag>
               ))}

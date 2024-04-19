@@ -5,6 +5,8 @@
 $side-padding: 16px;
 
 .group-details-panel {
+  height: 100vh;
+
   & > * {
     padding-right: $side-padding;
     padding-left: $side-padding;
@@ -15,6 +17,18 @@ $side-padding: 16px;
     flex-direction: column;
     gap: 24px;
     margin-top: 8px; // 8px + PanelHeader padding-bottom: 16px for 24px gap.
+    height: 100%;
+  }
+
+  &__selected-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  &__selected-tags {
+    flex-grow: 1;
+    overflow-y: auto;
   }
 
   &__selected-count {

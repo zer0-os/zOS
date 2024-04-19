@@ -2,14 +2,18 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { SelectedUserTag, Properties } from '.';
+import { bem } from '../../../../lib/bem';
 
-jest.mock('@zero-tech/zui/components', () => ({ Avatar: () => <></> }));
+jest.mock('@zero-tech/zui/components', () => ({ Avatar: () => <></>, IconButton: () => <></> }));
 jest.mock('@zero-tech/zui/icons', () => ({ IconXClose: () => <></> }));
+
+const c = bem('.selected-user-tag');
 
 describe('SelectedUserTag', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       userOption: { value: '', label: '', image: '' },
+      tagSize: 'compact',
       onRemove: () => null,
       ...props,
     };
@@ -32,7 +36,7 @@ describe('SelectedUserTag', () => {
 
     const wrapper = subject({ userOption, onRemove });
 
-    wrapper.find('button').simulate('click');
+    wrapper.find(c('user-remove')).simulate('click');
 
     expect(onRemove).toHaveBeenCalledWith('id-1');
   });
@@ -42,6 +46,22 @@ describe('SelectedUserTag', () => {
 
     const wrapper = subject({ userOption, onRemove: null });
 
-    expect(wrapper).not.toHaveElement('button');
+    expect(wrapper).not.toHaveElement(c('user-remove'));
+  });
+
+  it('renders with default size as compact', () => {
+    const userOption = { value: 'id-1', label: 'User 1', image: 'url-1' };
+    const wrapper = subject({ userOption });
+
+    expect(wrapper.find('.selected-user-tag--compact')).toExist();
+    expect(wrapper.find('Avatar')).toHaveProp('size', 'small');
+  });
+
+  it('renders with size as spacious when specified', () => {
+    const userOption = { value: 'id-1', label: 'User 1', image: 'url-1' };
+    const wrapper = subject({ userOption, tagSize: 'spacious' });
+
+    expect(wrapper.find('.selected-user-tag--spacious')).toExist();
+    expect(wrapper.find('Avatar')).toHaveProp('size', 'regular');
   });
 });

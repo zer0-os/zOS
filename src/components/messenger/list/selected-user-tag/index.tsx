@@ -2,16 +2,20 @@ import * as React from 'react';
 
 import { Option } from '../../lib/types';
 
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 
+import classNames from 'classnames';
 import { bemClassName } from '../../../../lib/bem';
 import './selected-user-tag.scss';
 
 const cn = bemClassName('selected-user-tag');
 
+type TagSizeType = 'compact' | 'spacious';
+
 export interface Properties {
   userOption: Option;
+  tagSize?: TagSizeType;
 
   onRemove?: (id: string) => void;
 }
@@ -22,19 +26,29 @@ export class SelectedUserTag extends React.Component<Properties> {
   };
 
   render() {
-    const { userOption: option } = this.props;
+    const { userOption: option, tagSize = 'compact' } = this.props;
+    const avatarSize = tagSize === 'compact' ? 'small' : 'regular';
 
     return (
-      <div {...cn('selected-option')}>
-        <div {...cn('selected-tag')}>
-          <Avatar size={'extra small'} type={'circle'} imageURL={option.image} />
-          <span {...cn('user-label')}>{option.label}</span>
-          {this.props.onRemove && (
-            <button {...cn('user-remove')} onClick={this.publishRemove} data-value={option.value}>
-              <IconXClose size={16} />
-            </button>
-          )}
+      <div {...cn('', classNames({ [tagSize]: tagSize }))}>
+        <div {...cn('avatar')}>
+          <Avatar size={avatarSize} type='circle' imageURL={option.image} />
         </div>
+
+        <div {...cn('user-details')}>
+          <span {...cn('user-label')}>{option.label}</span>
+          {option.subLabel && <span {...cn('user-sublabel')}>{option.subLabel}</span>}
+        </div>
+
+        {this.props.onRemove && (
+          <IconButton
+            {...cn('user-remove')}
+            Icon={IconXClose}
+            size={24}
+            onClick={this.publishRemove}
+            data-value={option.value}
+          />
+        )}
       </div>
     );
   }

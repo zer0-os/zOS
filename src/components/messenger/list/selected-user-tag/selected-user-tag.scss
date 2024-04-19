@@ -1,37 +1,55 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../../variables';
+@import '../../../../glass';
 
 .selected-user-tag {
-  &__selected-option {
-    display: inline-block;
-    vertical-align: top;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  padding: 8px;
+  height: 40px;
+  margin: 4px 0px;
+  border-radius: 8px;
+
+  &--spacious {
+    gap: 16px;
   }
 
-  &__selected-tag {
-    color: theme.$color-greyscale-11;
+  &--compact {
+    gap: 8px;
+  }
+
+  &__avatar {
+    pointer-events: none;
+  }
+
+  &__user-details {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 4px 8px;
-    gap: 4px;
-    background-color: theme.$color-greyscale-3;
-    border-radius: 8px;
-    border: 1px solid theme.$color-greyscale-5;
-    margin-top: 10px;
-    margin-right: 10px;
-
-    font-weight: 400;
-    font-size: $font-size-small;
-    line-height: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1 0 0;
+    overflow: hidden;
   }
 
-  &__user-remove {
-    cursor: pointer;
-    background: none;
-    border: none;
-    display: inline-block;
-    padding: 0px;
-    margin: 0px;
+  &__user-label {
+    @include glass-text-primary-color;
+
+    font-size: 14px;
+    line-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  &__user-sublabel {
+    @include glass-text-tertiary-color;
+
+    font-size: 10px;
+    line-height: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
   }
 }

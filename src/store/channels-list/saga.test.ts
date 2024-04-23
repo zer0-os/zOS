@@ -13,6 +13,10 @@ import {
   otherUserLeftChannel,
   mapToZeroUsers,
   fetchUserPresence,
+  fetchRoomName,
+  roomNameChanged,
+  fetchRoomAvatar,
+  roomAvatarChanged,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -40,6 +44,8 @@ const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
 const chatClient = {
   getConversations: () => MOCK_CONVERSATIONS,
   getUserPresence: () => {},
+  getRoomNameById: () => {},
+  getRoomAvatarById: () => {},
 };
 
 describe('channels list saga', () => {
@@ -561,6 +567,66 @@ describe('channels list saga', () => {
             isOnline: mockPresenceData1.isOnline,
           })
         )
+        .next()
+        .isDone();
+    });
+  });
+
+  describe(fetchRoomName, () => {
+    function subject(roomId: string, provide = []) {
+      return expectSaga(fetchRoomName, roomId).provide([
+        [matchers.call.fn(chat.get), chatClient],
+        ...provide,
+      ]);
+    }
+
+    const mockRoomName = 'some-room-name';
+
+    it('fetches and updates room name data', async () => {
+      await subject('room-id', [[matchers.call([chatClient, chatClient.getRoomNameById], 'room-id'), mockRoomName]])
+        .call(chat.get)
+        .call([chatClient, chatClient.getRoomNameById], 'room-id')
+        .run();
+    });
+
+    it('calls roomNameChanged when name is fetched', () => {
+      testSaga(fetchRoomName, 'room-id')
+        .next()
+        .call(chat.get)
+        .next(chatClient)
+        .call([chatClient, chatClient.getRoomNameById], 'room-id')
+        .next(mockRoomName)
+        .call(roomNameChanged, 'room-id', mockRoomName)
+        .next()
+        .isDone();
+    });
+  });
+
+  describe(fetchRoomAvatar, () => {
+    function subject(roomId: string, provide = []) {
+      return expectSaga(fetchRoomAvatar, roomId).provide([
+        [matchers.call.fn(chat.get), chatClient],
+        ...provide,
+      ]);
+    }
+
+    const mockRoomAvatar = 'some-room-avatar';
+
+    it('fetches and updates room avatar data', async () => {
+      await subject('room-id', [[matchers.call([chatClient, chatClient.getRoomAvatarById], 'room-id'), mockRoomAvatar]])
+        .call(chat.get)
+        .call([chatClient, chatClient.getRoomAvatarById], 'room-id')
+        .run();
+    });
+
+    it('calls roomAvatarChanged when avatar is fetched', () => {
+      testSaga(fetchRoomAvatar, 'room-id')
+        .next()
+        .call(chat.get)
+        .next(chatClient)
+        .call([chatClient, chatClient.getRoomAvatarById], 'room-id')
+        .next(mockRoomAvatar)
+        .call(roomAvatarChanged, 'room-id', mockRoomAvatar)
         .next()
         .isDone();
     });

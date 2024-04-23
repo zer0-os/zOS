@@ -117,6 +117,20 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async getRoomNameById(roomId: string) {
+    await this.waitForConnection();
+
+    const room = this.matrix.getRoom(roomId);
+    return this.getRoomName(room);
+  }
+
+  async getRoomAvatarById(roomId: string) {
+    await this.waitForConnection();
+
+    const room = this.matrix.getRoom(roomId);
+    return this.getRoomAvatar(room);
+  }
+
   async getChannels(_id: string) {
     return [];
   }

@@ -38,6 +38,8 @@ export interface IChatClient {
   reconnect: () => void;
   supportsOptimisticCreateConversation: () => boolean;
   getUserPresence: (userId: string) => Promise<any>;
+  getRoomNameById: (id: string) => Promise<string>;
+  getRoomAvatarById: (id: string) => Promise<string>;
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
@@ -102,6 +104,14 @@ export class Chat {
 
   async getUserPresence(userId: string) {
     return this.client.getUserPresence(userId);
+  }
+
+  async getRoomNameById(roomId: string) {
+    return this.client.getRoomNameById(roomId);
+  }
+
+  async getRoomAvatarById(roomId: string) {
+    return this.client.getRoomAvatarById(roomId);
   }
 
   async getConversations() {

@@ -5,25 +5,49 @@
 $side-padding: 16px;
 
 .group-details-panel {
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   & > * {
     padding-right: $side-padding;
     padding-left: $side-padding;
   }
 
-  &__details-content {
+  &__body {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 24px;
-    margin-top: 8px; // 8px + PanelHeader padding-bottom: 16px for 24px gap.
-    height: 100%;
+    align-items: center;
+    gap: 40px;
+    margin-top: 24px;
+    overflow: hidden;
+    max-height: calc(100vh - 180px);
+  }
+
+  &__name-input {
+    width: 100%;
   }
 
   &__selected-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
     overflow-y: auto;
+  }
+
+  &__selected-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__selected-count {
+    font-style: normal;
+    font-weight: 400;
+    font-size: $font-size-small;
+    line-height: 14px;
+    color: theme.$color-greyscale-11;
   }
 
   &__selected-tags {
@@ -31,56 +55,11 @@ $side-padding: 16px;
     overflow-y: auto;
   }
 
-  &__selected-count {
-    font-style: normal;
-    font-weight: 400;
-    font-size: $font-size-large;
-    line-height: 24px;
-    padding-top: 10px;
-    color: theme.$color-greyscale-11;
+  &__footer {
+    padding: 16px 16px 0 16px;
   }
 
-  &__selected-number {
-    color: theme.$color-greyscale-12;
-  }
-
-  &__create {
-    align-self: center;
-  }
-
-  &__field-info-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  &__field-info {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+  &__create-button {
     width: 100%;
-    line-height: 24px;
-    margin-bottom: 12px;
-    margin-top: 12px;
-
-    &:first-child {
-      margin-top: 0px;
-    }
-  }
-
-  &__label {
-    color: theme.$color-greyscale-12;
-    font-weight: 400;
-    font-size: 16px;
-  }
-
-  &__optional {
-    color: theme.$color-greyscale-11;
-    font-family: 'SF Pro Text';
-    font-size: $font-size-small;
-  }
-
-  .group-details-panel__image-upload {
-    font-size: $font-size-medium;
   }
 }

@@ -59,6 +59,14 @@
 
     &__edit-button {
       position: absolute;
+      border: none;
+      color: theme.$color-secondary-11;
+
+      background-color: theme.$color-greyscale-4;
+
+      &:hover {
+        background-color: theme.$color-greyscale-7;
+      }
     }
 
     &__error-message {

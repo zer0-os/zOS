@@ -64,7 +64,6 @@ export class ImageUpload extends Component<Properties, State> {
           className={'image-upload__edit-button'}
           size='small'
           type='button'
-          color='primary'
           variant='primary'
           Icon={IconEdit5}
           onClick={this.onSimulateClick}

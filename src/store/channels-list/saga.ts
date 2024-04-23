@@ -56,6 +56,18 @@ export function* fetchUserPresence(users) {
   }
 }
 
+export function* fetchRoomName(roomId) {
+  const chatClient = yield call(chat.get);
+  const roomName = yield call([chatClient, chatClient.getRoomNameById], roomId);
+  yield call(roomNameChanged, roomId, roomName);
+}
+
+export function* fetchRoomAvatar(roomId) {
+  const chatClient = yield call(chat.get);
+  const roomAvatar = yield call([chatClient, chatClient.getRoomAvatarById], roomId);
+  yield call(roomAvatarChanged, roomId, roomAvatar);
+}
+
 export function* fetchConversations() {
   yield put(setStatus(AsyncListStatus.Fetching));
   const chatClient = yield call(chat.get);
@@ -304,6 +316,8 @@ export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
   yield fork(fetchUserPresence, channel.otherMembers);
+  yield fork(fetchRoomName, channel.id);
+  yield fork(fetchRoomAvatar, channel.id);
 
   yield put(receive(uniqNormalizedList([...conversationsList, channel])));
 }

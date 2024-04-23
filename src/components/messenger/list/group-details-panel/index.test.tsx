@@ -27,13 +27,23 @@ describe('GroupDetailsPanel', () => {
     expect(onBack).toHaveBeenCalledOnce();
   });
 
+  it('fires onBack when plus icon clicked', function () {
+    const onBack = jest.fn();
+
+    const wrapper = subject({ onBack });
+
+    wrapper.find('IconButton').simulate('click');
+
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
   it('shows selected member count', function () {
     let wrapper = subject({ users: [] });
 
-    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('0 members selected');
+    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('0 members:');
 
     wrapper = subject({ users: [stubUser()] });
-    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('1 member selected');
+    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('1 member:');
 
     wrapper = subject({
       users: [
@@ -41,7 +51,7 @@ describe('GroupDetailsPanel', () => {
         stubUser(),
       ],
     });
-    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('2 members selected');
+    expect(wrapper.find('.group-details-panel__selected-count').text()).toEqual('2 members:');
   });
 
   it('shows selected users', function () {

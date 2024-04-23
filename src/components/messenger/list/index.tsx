@@ -306,7 +306,7 @@ export class Container extends React.Component<Properties, State> {
   renderFooterMask() {
     return (
       <div {...cn('footer-mask')}>
-        <div {...cn('footer-text')}>ZERO Homeserver</div>
+        <div {...cn('footer-text')}>ZODE ZERO</div>
       </div>
     );
   }

@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 
 import { GroupDetailsPanel, Properties } from '.';
 import { SelectedUserTag } from '../selected-user-tag';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
 
 describe('GroupDetailsPanel', () => {
   const subject = (props: Partial<Properties>) => {

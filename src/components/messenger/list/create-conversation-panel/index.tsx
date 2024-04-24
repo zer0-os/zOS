@@ -83,7 +83,13 @@ export default class CreateConversationPanel extends React.Component<Properties,
         </div>
         <div {...cn('selected-tags')}>
           {selectedOptions.map((option) => (
-            <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} tagSize='spacious' />
+            <SelectedUserTag
+              key={option.value}
+              userOption={option}
+              onRemove={this.unselectOption}
+              tagSize='spacious'
+              inputRef={this.inputRef}
+            />
           ))}
         </div>
       </>

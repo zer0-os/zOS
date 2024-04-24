@@ -9,6 +9,7 @@ import '../list/styles.scss';
 import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
 export interface Properties {
+  inputRef?: React.RefObject<HTMLInputElement>;
   search: (query: string) => Promise<Item[]>;
   selectedOptions?: Option[];
   onSelect: (selected: Option) => void;
@@ -47,6 +48,9 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
       this.props.onSelect(selectedUser);
       this.setState({ results: null, searchString: '' });
       this.props.onSearchChange && this.props.onSearchChange(false);
+      if (this.props.inputRef?.current) {
+        this.props.inputRef.current.focus();
+      }
     }
   };
 
@@ -64,6 +68,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     return (
       <div className='autocomplete-members'>
         <Input
+          ref={this.props.inputRef}
           autoFocus
           type='search'
           size={'small'}

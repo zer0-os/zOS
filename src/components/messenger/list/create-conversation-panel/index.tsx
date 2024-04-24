@@ -31,6 +31,8 @@ interface State {
 }
 
 export default class CreateConversationPanel extends React.Component<Properties, State> {
+  inputRef = React.createRef<HTMLInputElement>();
+
   constructor(props) {
     super(props);
     this.state = { selectedOptions: [...props.initialSelections], isInviteDialogOpen: false, isSearching: false };
@@ -125,6 +127,7 @@ export default class CreateConversationPanel extends React.Component<Properties,
         <PanelHeader title='New Conversation' onBack={this.props.onBack} />
         <div {...cn('search')}>
           <AutocompleteMembers
+            inputRef={this.inputRef}
             search={this.props.search}
             onSelect={this.selectOption}
             selectedOptions={selectedOptions}

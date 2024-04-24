@@ -29,6 +29,8 @@ interface State {
 }
 
 export class AddMembersPanel extends React.Component<Properties, State> {
+  inputRef = React.createRef<HTMLInputElement>();
+
   state = { selectedOptions: [], isSearching: false };
 
   constructor(props) {
@@ -89,7 +91,13 @@ export class AddMembersPanel extends React.Component<Properties, State> {
     return (
       <div {...cn('selected-tags')}>
         {this.state.selectedOptions.map((option) => (
-          <SelectedUserTag key={option.value} userOption={option} onRemove={this.unselectOption} tagSize='spacious' />
+          <SelectedUserTag
+            key={option.value}
+            userOption={option}
+            onRemove={this.unselectOption}
+            tagSize='spacious'
+            inputRef={this.inputRef}
+          />
         ))}
       </div>
     );
@@ -123,6 +131,7 @@ export class AddMembersPanel extends React.Component<Properties, State> {
         <PanelHeader title={'Add Members'} onBack={this.props.onBack} />
         <div {...cn('search')}>
           <AutocompleteMembers
+            inputRef={this.inputRef}
             search={this.props.searchUsers}
             onSelect={this.selectOption}
             selectedOptions={this.state.selectedOptions}

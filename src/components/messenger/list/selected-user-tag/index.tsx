@@ -16,6 +16,7 @@ type TagSizeType = 'compact' | 'spacious';
 export interface Properties {
   userOption: Option;
   tagSize?: TagSizeType;
+  inputRef?: React.RefObject<HTMLInputElement>;
 
   onRemove?: (id: string) => void;
 }
@@ -23,6 +24,10 @@ export interface Properties {
 export class SelectedUserTag extends React.Component<Properties> {
   publishRemove = () => {
     this.props.onRemove(this.props.userOption.value);
+
+    if (this.props.inputRef?.current) {
+      this.props.inputRef.current.focus();
+    }
   };
 
   render() {

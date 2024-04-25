@@ -7,7 +7,7 @@ import { ImageUpload } from '../../components/image-upload';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { buttonLabelled } from '../../test/utils';
 
-const featureFlags = { internalUsage: false, allowEditPrimaryZID: false };
+const featureFlags = { allowEditPrimaryZID: false };
 jest.mock('../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
@@ -24,8 +24,6 @@ describe('EditProfile', () => {
       loadingZIDs: false,
       onEdit: () => null,
       onClose: () => null,
-      onLeaveGlobal: () => null,
-      onJoinGlobal: () => null,
       ...props,
     };
 
@@ -204,45 +202,8 @@ describe('EditProfile', () => {
 
     expect(wrapper.find(Alert).exists()).toBe(false);
   });
-
-  describe('internal features', () => {
-    it('calls onLeaveGlobal when Leave Global pressed', () => {
-      featureFlags.internalUsage = true;
-      const onLeaveGlobal = jest.fn();
-      const wrapper = subject({ onLeaveGlobal });
-
-      leaveGlobalButton(wrapper).simulate('press');
-      expect(onLeaveGlobal).toHaveBeenCalledWith();
-    });
-
-    it('calls onJoinGlobal when Join Global pressed', () => {
-      featureFlags.internalUsage = true;
-      const onJoinGlobal = jest.fn();
-      const wrapper = subject({ onJoinGlobal });
-
-      joinGlobalButton(wrapper).simulate('press');
-      expect(onJoinGlobal).toHaveBeenCalledWith();
-    });
-
-    it('hides Global buttons if feature flag is disabled', () => {
-      featureFlags.internalUsage = false;
-      const onLeaveGlobal = jest.fn();
-      const wrapper = subject({ onLeaveGlobal });
-
-      expect(leaveGlobalButton(wrapper).exists()).toBe(false);
-      expect(joinGlobalButton(wrapper).exists()).toBe(false);
-    });
-  });
 });
 
 function saveButton(wrapper) {
   return buttonLabelled(wrapper, 'Save Changes');
-}
-
-function leaveGlobalButton(wrapper) {
-  return buttonLabelled(wrapper, 'Leave Global');
-}
-
-function joinGlobalButton(wrapper) {
-  return buttonLabelled(wrapper, 'Join Global');
 }

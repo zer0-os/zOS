@@ -17,8 +17,6 @@ describe('Container', () => {
       loadingZIDs: false,
       editProfile: () => null,
       startProfileEdit: () => null,
-      leaveGlobalNetwork: () => null,
-      joinGlobalNetwork: () => null,
       fetchOwnedZIDs: () => null,
       ...props,
     };

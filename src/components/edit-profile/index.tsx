@@ -26,9 +26,6 @@ export interface Properties {
   loadingZIDs: boolean;
   onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
   onClose?: () => void;
-
-  onLeaveGlobal: () => void;
-  onJoinGlobal: () => void;
 }
 
 interface State {
@@ -228,17 +225,6 @@ export class EditProfile extends React.Component<Properties, State> {
         )}
 
         <div className={c('footer')}>
-          {featureFlags.internalUsage && (
-            <>
-              <Button className={c('zui-button-large')} onPress={this.props.onLeaveGlobal}>
-                Leave Global
-              </Button>
-              <Button className={c('zui-button-large')} onPress={this.props.onJoinGlobal}>
-                Join Global
-              </Button>
-            </>
-          )}
-
           <Button isLoading={this.isLoading} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
             Save Changes
           </Button>

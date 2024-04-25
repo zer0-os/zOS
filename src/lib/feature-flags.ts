@@ -74,14 +74,6 @@ export class FeatureFlags {
     this._setBoolean('verboseLogging', value);
   }
 
-  get internalUsage() {
-    return this._getBoolean('internalUsage', false);
-  }
-
-  set internalUsage(value: boolean) {
-    this._setBoolean('internalUsage', value);
-  }
-
   get allowEditPrimaryZID() {
     return this._getBoolean('allowEditPrimaryZID', true);
   }

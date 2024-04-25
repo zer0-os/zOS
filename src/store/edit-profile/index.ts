@@ -2,8 +2,6 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum SagaActionTypes {
   EditProfile = 'profile/edit',
-  LeaveGlobal = 'profile/edit/leaveGlobal',
-  JoinGlobal = 'profile/edit/joinGlobal',
   FetchOwnedZIDs = 'profile/edit/fetchOwnedZIDs',
 }
 
@@ -34,8 +32,6 @@ export const editProfile = createAction<{
   primaryZID: string;
 }>(SagaActionTypes.EditProfile);
 
-export const leaveGlobalNetwork = createAction(SagaActionTypes.LeaveGlobal);
-export const joinGlobalNetwork = createAction(SagaActionTypes.JoinGlobal);
 export const fetchOwnedZIDs = createAction(SagaActionTypes.FetchOwnedZIDs);
 
 const slice = createSlice({

@@ -3,8 +3,6 @@ import { SagaActionTypes, State, setErrors, setLoadingZIDs, setOwnedZIDs, setSta
 import {
   editUserProfile as apiEditUserProfile,
   saveUserMatrixCredentials as apiSaveUserMatrixCredentials,
-  joinGlobalNetwork as joinGlobalNetworkApi,
-  leaveGlobalNetwork as leaveGlobalNetworkApi,
   fetchOwnedZIDs as fetchOwnedZIDsApi,
 } from './api';
 import { ProfileDetailsErrors } from '../registration';
@@ -72,14 +70,6 @@ export function* updateUserProfile(payload) {
   yield put(setUser({ data: currentUser }));
 }
 
-export function* leaveGlobalNetwork() {
-  yield leaveGlobalNetworkApi();
-}
-
-export function* joinGlobalNetwork() {
-  yield joinGlobalNetworkApi();
-}
-
 export function* fetchOwnedZIDs() {
   yield put(setLoadingZIDs(true));
 
@@ -95,7 +85,5 @@ export function* fetchOwnedZIDs() {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.EditProfile, editProfile);
-  yield takeLatest(SagaActionTypes.LeaveGlobal, leaveGlobalNetwork);
-  yield takeLatest(SagaActionTypes.JoinGlobal, joinGlobalNetwork);
   yield takeLatest(SagaActionTypes.FetchOwnedZIDs, fetchOwnedZIDs);
 }

@@ -33,14 +33,6 @@ export async function saveUserMatrixCredentials({
   };
 }
 
-export async function leaveGlobalNetwork() {
-  await post('/networks/global/leave').send();
-}
-
-export async function joinGlobalNetwork() {
-  await post('/networks/global/join').send();
-}
-
 export async function fetchOwnedZIDs() {
   const response = await get('/api/v2/users/zids');
   return response.body;

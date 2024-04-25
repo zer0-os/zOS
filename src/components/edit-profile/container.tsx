@@ -2,14 +2,7 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { EditProfile } from '.';
-import {
-  State,
-  editProfile,
-  joinGlobalNetwork,
-  leaveGlobalNetwork,
-  startProfileEdit,
-  fetchOwnedZIDs,
-} from '../../store/edit-profile';
+import { State, editProfile, startProfileEdit, fetchOwnedZIDs } from '../../store/edit-profile';
 import { Container as RegistrationContainer } from '../../authentication/create-account-details/container';
 export interface PublicProperties {
   onClose?: () => void;
@@ -29,8 +22,6 @@ export interface Properties extends PublicProperties {
   loadingZIDs: boolean;
   editProfile: (data: { name: string; image: File; primaryZID: string }) => void;
   startProfileEdit: () => void;
-  leaveGlobalNetwork: () => void;
-  joinGlobalNetwork: () => void;
   fetchOwnedZIDs: () => void;
 }
 
@@ -52,7 +43,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { editProfile, startProfileEdit, joinGlobalNetwork, leaveGlobalNetwork, fetchOwnedZIDs };
+    return { editProfile, startProfileEdit, fetchOwnedZIDs };
   }
 
   componentDidMount(): void {
@@ -72,8 +63,6 @@ export class Container extends React.Component<Properties> {
         currentPrimaryZID={this.props.currentPrimaryZID}
         ownedZIDs={this.props.ownedZIDs}
         loadingZIDs={this.props.loadingZIDs}
-        onLeaveGlobal={this.props.leaveGlobalNetwork}
-        onJoinGlobal={this.props.joinGlobalNetwork}
       />
     );
   }

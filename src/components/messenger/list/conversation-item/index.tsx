@@ -5,8 +5,7 @@ import { highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
-import { Avatar, Status } from '@zero-tech/zui/components';
-import { IconUsers1 } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 
 import { ContentHighlighter } from '../../../content-highlighter';
 

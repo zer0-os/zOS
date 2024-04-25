@@ -40,12 +40,6 @@ describe(ConversationItem, () => {
     expect(wrapper.find(Avatar)).toHaveProp('imageURL', 'custom-image-url');
   });
 
-  it('renders default group icon if group conversation has no image', function () {
-    const wrapper = subject({ conversation: { ...convoWith({ firstName: 'one' }, { firstName: 'two' }) } });
-
-    expect(wrapper).toHaveElement(c('group-icon'));
-  });
-
   it('renders conversation title for one on one', function () {
     const wrapper = subject({ conversation: convoWith({ firstName: 'Johnny', lastName: 'Cash' }) });
 

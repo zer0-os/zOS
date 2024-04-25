@@ -81,13 +81,6 @@ export class ConversationItem extends React.Component<Properties, State> {
       imageUrl = this.props.conversation.icon;
     } else if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
       imageUrl = this.props.conversation.otherMembers[0].profileImage;
-    } else if (!this.props.conversation.isOneOnOne) {
-      return (
-        <div {...cn('group-icon')}>
-          <IconUsers1 size={25} />
-          <Status {...cn('group-status')} type={this.conversationStatus} />
-        </div>
-      );
     }
 
     return (
@@ -98,6 +91,7 @@ export class ConversationItem extends React.Component<Properties, State> {
         statusType={this.conversationStatus}
         tabIndex={-1}
         isRaised
+        isGroup={!this.props.conversation.isOneOnOne}
       />
     );
   }

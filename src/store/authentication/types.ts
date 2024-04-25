@@ -27,8 +27,6 @@ export interface User {
   id: string;
   createdAt: string;
   handle: string;
-  isANetworkAdmin: boolean;
-  isAMemberOfWorlds: boolean;
   isOnline: boolean;
   lastActiveAt: string;
   profileId: string;

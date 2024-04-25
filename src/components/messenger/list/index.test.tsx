@@ -269,7 +269,7 @@ describe('messenger-list', () => {
     const subject = (
       channels,
       createConversationState = {},
-      currentUser = [{ userId: '', firstName: '', isAMemberOfWorlds: true }],
+      currentUser = [{ userId: '', firstName: '' }],
       chat = { activeConversationId: '', joinRoomErrorContent: null }
     ) => {
       return DirectMessageChat.mapState(getState(channels, createConversationState, currentUser, chat));
@@ -278,7 +278,7 @@ describe('messenger-list', () => {
     const getState = (
       channels,
       createConversationState = {},
-      users = [{ userId: '', isAMemberOfWorlds: true }],
+      users = [{ userId: '' }],
       chat = { activeConversationId: '' }
     ) => {
       const channelData = normalize(channels);
@@ -288,7 +288,6 @@ describe('messenger-list', () => {
           user: {
             data: {
               id: users[0].userId,
-              isAMemberOfWorlds: users[0].isAMemberOfWorlds,
             },
           },
         },

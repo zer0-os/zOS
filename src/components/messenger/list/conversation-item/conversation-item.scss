@@ -123,50 +123,6 @@
     width: 100%;
   }
 
-  &__group-icon {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 9999px;
-
-    @include glass-separator-primary;
-    @include glass-shadow-low;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: inherit;
-      z-index: -1;
-
-      // custom raised background for group icon
-      background: linear-gradient(
-        153.33deg,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0) 24.43%,
-        rgba(255, 255, 255, 0.01) 79.12%,
-        rgba(255, 255, 255, 0.75) 100%
-      );
-    }
-
-    & > * {
-      margin: auto;
-      position: relative;
-    }
-  }
-
-  &__group-status {
-    position: absolute;
-    top: 32px;
-    left: 32px;
-  }
-
   &__avatar-with-menu-container {
     position: relative;
     display: flex;

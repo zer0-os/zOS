@@ -77,7 +77,7 @@ export class RequestPasswordReset extends React.Component<Properties, State> {
 
         {this.generalError && (
           <div {...cn('error-container')}>
-            <Alert {...cn('error')} variant='error'>
+            <Alert {...cn('error')} variant='error' isFilled>
               {this.generalError}
             </Alert>
           </div>

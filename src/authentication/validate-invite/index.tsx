@@ -64,7 +64,7 @@ export class Invite extends React.Component<Properties, State> {
     }
 
     return (
-      <Alert className={c('alert')} variant='error'>
+      <Alert className={c('alert')} variant='error' isFilled>
         {errorMessage}
       </Alert>
     );

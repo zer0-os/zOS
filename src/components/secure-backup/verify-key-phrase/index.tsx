@@ -46,7 +46,7 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
             />
 
             {this.props.errorMessage && (
-              <Alert {...cn('alert')} variant='error'>
+              <Alert {...cn('alert')} variant='error' isFilled>
                 {this.props.errorMessage}
               </Alert>
             )}

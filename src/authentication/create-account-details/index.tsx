@@ -73,7 +73,11 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
               errorMessage={this.props.errors.image}
             />
           </div>
-          {this.imageError && <Alert variant='error'>{this.imageError}</Alert>}
+          {this.imageError && (
+            <Alert isFilled variant='error'>
+              {this.imageError}
+            </Alert>
+          )}
           <Input
             {...cn('input')}
             label='Display Name'
@@ -87,7 +91,11 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             error={!!this.nameError}
             alert={this.nameError}
           />
-          {this.generalError && <Alert variant='error'>{this.generalError}</Alert>}
+          {this.generalError && (
+            <Alert isFilled variant='error'>
+              {this.generalError}
+            </Alert>
+          )}
           <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>

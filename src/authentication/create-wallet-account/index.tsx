@@ -28,7 +28,7 @@ export class CreateWalletAccount extends React.Component<Properties> {
           </div>
           {this.showError && (
             <div {...cn('error-container')}>
-              <Alert {...cn('error')} variant='error'>
+              <Alert {...cn('error')} variant='error' isFilled>
                 {this.props.error}
               </Alert>
             </div>

@@ -132,7 +132,7 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
         </div>
         {this.generalError && (
           <div {...cn('error-container')}>
-            <Alert {...cn('error')} variant='error'>
+            <Alert isFilled {...cn('error')} variant='error'>
               {this.generalError}
             </Alert>
           </div>

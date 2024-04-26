@@ -34,7 +34,7 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
           </div>
           {error && (
             <div {...cn('error-container')}>
-              <Alert {...cn('error')} variant='error'>
+              <Alert {...cn('error')} variant='error' isFilled>
                 {errorText}
               </Alert>
             </div>

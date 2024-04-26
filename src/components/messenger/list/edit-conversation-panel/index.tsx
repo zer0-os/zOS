@@ -98,12 +98,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         />
 
         {this.generalError && (
-          <Alert {...cn('alert')} variant='error'>
+          <Alert {...cn('alert')} variant='error' isFilled>
             {this.generalError}
           </Alert>
         )}
         {this.changesSaved && (
-          <Alert {...cn('alert')} variant='success'>
+          <Alert {...cn('alert')} variant='success' isFilled>
             Changes saved
           </Alert>
         )}

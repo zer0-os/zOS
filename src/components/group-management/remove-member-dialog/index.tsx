@@ -49,7 +49,11 @@ export class RemoveMemberDialog extends React.Component<Properties> {
       >
         <div {...cn()}>
           <div>{this.props.inProgress ? this.progressMessage : this.message}</div>
-          {this.props.error && <Alert variant='error'>{this.props.error}</Alert>}
+          {this.props.error && (
+            <Alert variant='error' isFilled>
+              {this.props.error}
+            </Alert>
+          )}
         </div>
       </ModalConfirmation>
     );

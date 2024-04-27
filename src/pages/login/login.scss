@@ -1,19 +1,37 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-
 // XXX: Merge this with the invite page styles...there's some kind of root authentication page that needs to be created?
 
+// Constants for login dimensions and spacing
 $login-gap: 32px;
 $login-width: 280px;
-$login-padding-top: 24px;
-$login-padding-bottom: 24px;
+$login-padding-vertical: 24px;
 
-@mixin flex($gap-size) {
+// Mixin for flexbox layout
+@mixin flex-center($gap-size) {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: $gap-size;
 }
 
+// Keyframes for animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// Root styles
+body {
+  transition: background 0.5s ease-out, opacity 0.5s ease-in-out;
+}
+
+// Main login component styles
 .login-main {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
     radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%),
@@ -29,12 +47,13 @@ $login-padding-bottom: 24px;
   top: 0;
   left: 0;
   z-index: 10;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
 
   &__content {
-    @include flex($login-gap);
-
+    @include flex-center($login-gap);
     width: $login-width;
-    padding: $login-padding-top 0 $login-padding-bottom 0;
+    padding: $login-padding-vertical 0;
     box-sizing: border-box;
     margin: 0 auto;
     height: 100%;
@@ -46,7 +65,7 @@ $login-padding-bottom: 24px;
     font-weight: 700;
     font-size: 18px;
     line-height: 22px;
-    margin: 0 0 32px 0;
+    margin-bottom: $login-gap;
   }
 
   &__logo-container {
@@ -64,8 +83,8 @@ $login-padding-bottom: 24px;
   &__toggle-group {
     height: 40px;
     background: theme.$color-primary-transparency-1;
-    width: 280px;
-    margin-bottom: 32px;
+    width: $login-width;
+    margin-bottom: $login-gap;
 
     > * {
       border-left: none !important;
@@ -83,10 +102,8 @@ $login-padding-bottom: 24px;
   }
 
   &__other {
-    gap: 16px;
-    margin: auto 0 0 0;
-
-    @include flex(16px);
+    @include flex-center(16px);
+    margin-top: auto;
 
     > span {
       color: theme.$color-greyscale-11;

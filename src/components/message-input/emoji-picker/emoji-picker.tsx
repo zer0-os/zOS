@@ -4,7 +4,7 @@ import { Picker } from 'emoji-mart';
 import { ViewModes } from '../../../shared-components/theme-engine';
 import { mapPlainTextIndex } from '../react-mentions-utils';
 
-import 'emoji-mart/css/emoji-mart.css';
+import './styles.scss';
 
 export interface Properties {
   textareaRef: RefObject<HTMLTextAreaElement>;
@@ -17,6 +17,8 @@ export interface Properties {
 }
 
 export class EmojiPicker extends React.Component<Properties> {
+  pickerRef: RefObject<HTMLDivElement> = React.createRef();
+
   componentDidMount() {
     document.addEventListener('mousedown', this.clickOutsideEmojiCheck);
   }
@@ -26,45 +28,31 @@ export class EmojiPicker extends React.Component<Properties> {
   }
 
   clickOutsideEmojiCheck = (event: MouseEvent) => {
-    if (!this.props.isOpen) {
+    if (!this.props.isOpen || !this.pickerRef.current) {
       return;
     }
-
-    const [emojiMart] = document.getElementsByClassName('emoji-mart');
-
-    if (emojiMart && event && event.target) {
-      if (!emojiMart.contains(event.target as Node)) {
-        this.props.onClose();
-      }
+    if (!this.pickerRef.current.contains(event.target as Node)) {
+      this.props.onClose();
     }
   };
 
   insertEmoji = (emoji: any) => {
-    const emojiToInsert = (emoji.native || emoji.colons) + ' ';
+    const emojiToInsert = `${emoji.native || emoji.colons} `;
+    const updatedValue = this.getUpdatedValue(emojiToInsert);
+    this.props.onSelect(updatedValue);
+  };
 
-    const selectionStart = this.props.textareaRef && this.props.textareaRef.current.selectionStart;
+  getUpdatedValue = (emojiToInsert: string): string => {
+    const selectionStart = this.props.textareaRef.current?.selectionStart;
     const position =
       selectionStart != null ? mapPlainTextIndex(this.props.value, mentionsConfigs, selectionStart, 'START') : null;
-
-    const value = this.props.value;
-    const newValue =
-      position == null
-        ? value + emojiToInsert
-        : [
-            value.slice(0, position),
-            emojiToInsert,
-            value.slice(position),
-          ].join('');
-
-    this.props.onSelect(newValue);
+    return position == null
+      ? this.props.value + emojiToInsert
+      : this.props.value.slice(0, position) + emojiToInsert + this.props.value.slice(position);
   };
 
   get pickerViewMode() {
-    if (this.props.viewMode === ViewModes.Dark) {
-      return 'dark';
-    } else {
-      return 'light';
-    }
+    return this.props.viewMode === ViewModes.Dark ? 'dark' : 'light';
   }
 
   render() {
@@ -72,6 +60,10 @@ export class EmojiPicker extends React.Component<Properties> {
       return null;
     }
 
-    return <Picker theme={this.pickerViewMode} emoji='mechanical_arm' title='ZOS' onSelect={this.insertEmoji} />;
+    return (
+      <div ref={this.pickerRef} style={{ opacity: 0, animation: 'fadeIn 0.3s forwards' }}>
+        <Picker theme={this.pickerViewMode} emoji='mechanical_arm' title='ZOS' onSelect={this.insertEmoji} />
+      </div>
+    );
   }
 }

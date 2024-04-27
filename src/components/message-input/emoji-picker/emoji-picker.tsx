@@ -3,8 +3,11 @@ import { mentionsConfigs } from '../mentions/mentions-config';
 import { Picker } from 'emoji-mart';
 import { ViewModes } from '../../../shared-components/theme-engine';
 import { mapPlainTextIndex } from '../react-mentions-utils';
+import { bemClassName } from '../../../lib/bem';
 
 import './styles.scss';
+
+const cn = bemClassName('emoji-picker');
 
 export interface Properties {
   textareaRef: RefObject<HTMLTextAreaElement>;
@@ -61,8 +64,10 @@ export class EmojiPicker extends React.Component<Properties> {
     }
 
     return (
-      <div ref={this.pickerRef} style={{ opacity: 0, animation: 'fadeIn 0.3s forwards' }}>
-        <Picker theme={this.pickerViewMode} emoji='mechanical_arm' title='ZOS' onSelect={this.insertEmoji} />
+      <div {...cn('border-outer')}>
+        <div {...cn('border-inner')} ref={this.pickerRef}>
+          <Picker theme={this.pickerViewMode} emoji='mechanical_arm' title='ZOS' onSelect={this.insertEmoji} />
+        </div>
       </div>
     );
   }

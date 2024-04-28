@@ -25,12 +25,22 @@ export interface Properties {
 
 export interface State {
   deleteDialogIsOpen: boolean;
+  contextMenuPosition: { x: number; y: number };
 }
 
 export class MessageMenu extends React.Component<Properties, State> {
   ref = createRef();
 
-  state = { deleteDialogIsOpen: false };
+  state = { deleteDialogIsOpen: false, contextMenuPosition: { x: 0, y: 0 } };
+
+  handleContextMenu = (event) => {
+    event.preventDefault();
+    const { clientX: x, clientY: y } = event;
+
+    this.setState({ contextMenuPosition: { x, y } }, () => {
+      this.props.onOpenChange && this.props.onOpenChange(true);
+    });
+  };
 
   renderMenuOption(icon, label) {
     return (
@@ -48,30 +58,39 @@ export class MessageMenu extends React.Component<Properties, State> {
   onReply = () => this.delayEvent(this.props.onReply);
 
   renderItems = () => {
-    const menuItems = [];
-    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
-      menuItems.push({
-        id: 'edit',
-        label: this.renderMenuOption(<IconEdit5 size={20} />, 'Edit'),
-        onSelect: this.onEdit,
-      });
-    }
-    if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
-      menuItems.push({
-        id: 'reply',
-        label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),
-        onSelect: this.onReply,
-      });
-    }
-    if (this.props.onDelete && this.props.canDelete) {
-      menuItems.push({
-        id: 'delete',
-        label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
-        onSelect: this.toggleDeleteDialog,
-      });
-    }
+    const { onEdit, canEdit, onReply, canReply, onDelete, canDelete, isMediaMessage } = this.props;
 
-    return menuItems;
+    const itemConfig = [
+      {
+        id: 'edit',
+        condition: onEdit && canEdit && !isMediaMessage,
+        icon: <IconEdit5 size={20} />,
+        label: 'Edit',
+        onSelect: this.onEdit,
+      },
+      {
+        id: 'reply',
+        condition: onReply && canReply && !isMediaMessage,
+        icon: <IconFlipBackward size={20} />,
+        label: 'Reply',
+        onSelect: this.onReply,
+      },
+      {
+        id: 'delete',
+        condition: onDelete && canDelete,
+        icon: <IconTrash4 size={20} />,
+        label: 'Delete',
+        onSelect: this.toggleDeleteDialog,
+      },
+    ];
+
+    return itemConfig
+      .filter((item) => item.condition)
+      .map((item) => ({
+        id: item.id,
+        label: this.renderMenuOption(item.icon, item.label),
+        onSelect: item.onSelect,
+      }));
   };
 
   handleDeleteMessage = () => {
@@ -90,6 +109,22 @@ export class MessageMenu extends React.Component<Properties, State> {
   get showDeleteModal(): boolean {
     return this.state.deleteDialogIsOpen;
   }
+
+  renderTrigger = () => {
+    const { isMenuOpen } = this.props;
+    const { x, y } = this.state.contextMenuPosition;
+    return (
+      <div
+        className={classNames('dropdown-menu-trigger', { 'dropdown-menu-trigger--open': isMenuOpen })}
+        style={{ position: 'fixed', left: `${x}px`, top: `${y}px` }}
+      >
+        <IconDotsHorizontal size={24} isFilled />
+      </div>
+    );
+  };
+
+  renderUnderlay = () =>
+    createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body);
 
   renderDeleteModal() {
     return (
@@ -122,10 +157,8 @@ export class MessageMenu extends React.Component<Properties, State> {
     }
 
     return (
-      <div className={this.props.className}>
-        {this.props.isMenuOpen &&
-          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body)}
-
+      <div className={this.props.className} onContextMenu={this.handleContextMenu}>
+        {this.props.isMenuOpen && this.renderUnderlay()}
         <DropdownMenu
           menuClassName={'dropdown-menu'}
           items={menuItems}
@@ -133,15 +166,7 @@ export class MessageMenu extends React.Component<Properties, State> {
           alignMenu='center'
           onOpenChange={this.props.onOpenChange}
           showArrow
-          trigger={
-            <div
-              className={classNames('dropdown-menu-trigger', {
-                'dropdown-menu-trigger--open': this.props.isMenuOpen,
-              })}
-            >
-              <IconDotsHorizontal size={24} isFilled />
-            </div>
-          }
+          trigger={this.renderTrigger()}
         />
         {this.renderDeleteModal()}
       </div>

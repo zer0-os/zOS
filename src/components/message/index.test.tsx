@@ -134,18 +134,21 @@ describe('message', () => {
   });
 
   it('renders message menu of items', () => {
-    const wrapper = subject({ message: 'the message' });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
+    const wrapper = subject({
+      message: 'the message',
+    });
 
     expect(wrapper.find('.message__menu-item').exists()).toBe(true);
   });
 
-  it('should not renders message input', () => {
-    const wrapper = subject({ message: 'the message' });
+  it('renders message input', () => {
+    const wrapper = subject({
+      message: 'the message',
+    });
 
-    expect(wrapper.find(MessageInput).exists()).toBe(false);
+    wrapper.find(MessageMenu).first().prop('onEdit')();
+
+    expect(wrapper.find(MessageInput).exists()).toBe(true);
   });
 
   it('disables all menu abilities when in progress', () => {
@@ -155,15 +158,11 @@ describe('message', () => {
       sendStatus: MessageSendStatus.IN_PROGRESS,
     });
 
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
+    const props = wrapper.find(MessageMenu).props();
 
-    expect(wrapper.find(MessageMenu).exists()).toBe(true);
-
-    const messageMenuProps = wrapper.find(MessageMenu).props();
-    expect(messageMenuProps.canEdit).toBe(false);
-    expect(messageMenuProps.canReply).toBe(false);
-    expect(messageMenuProps.canDelete).toBe(false);
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(false);
   });
 
   it('allows only delete when message send failed', () => {
@@ -173,15 +172,11 @@ describe('message', () => {
       sendStatus: MessageSendStatus.FAILED,
     });
 
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.find('.message').simulate('contextmenu', mockEvent);
+    const props = wrapper.find(MessageMenu).props();
 
-    expect(wrapper.find(MessageMenu).exists()).toBe(true);
-
-    const messageMenuProps = wrapper.find(MessageMenu).first().props();
-    expect(messageMenuProps.canEdit).toBe(false);
-    expect(messageMenuProps.canReply).toBe(false);
-    expect(messageMenuProps.canDelete).toBe(true);
+    expect(props.canEdit).toBe(false);
+    expect(props.canReply).toBe(false);
+    expect(props.canDelete).toBe(true);
   });
 
   it('displays the menu when message send failed', () => {
@@ -191,10 +186,7 @@ describe('message', () => {
       sendStatus: MessageSendStatus.FAILED,
     });
 
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.find('.message').simulate('contextmenu', mockEvent);
-
-    expect(wrapper.find('.menu--force-visible').exists()).toBe(true);
+    expect(wrapper).toHaveElement('.menu--force-visible');
   });
 
   it('renders edited indicator', () => {
@@ -246,9 +238,6 @@ describe('message', () => {
       onReply,
     });
 
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
     wrapper.find(MessageMenu).simulate('reply');
 
     expect(onReply).toHaveBeenCalledWith({ reply: replyMessage });
@@ -263,16 +252,13 @@ describe('message', () => {
     expect(wrapper.find('.message__block-edited').exists()).toBe(false);
   });
 
-  it('should not render the edited indicator when onEdit is clicked', () => {
+  it('should not renders edited indicator when onEdit clicked', () => {
     const wrapper = subject({
       message: 'the message',
       updatedAt: 86276372,
     });
 
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    wrapper.find(MessageMenu).props().onEdit();
+    wrapper.find(MessageMenu).first().prop('onEdit')();
 
     expect(wrapper.find('.message__block-edited').exists()).toBe(false);
   });

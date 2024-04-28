@@ -52,6 +52,7 @@ export interface State {
   isEditing: boolean;
   isFullWidth: boolean;
   isMessageMenuOpen: boolean;
+  menuPosition?: { x: number; y: number };
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -60,6 +61,26 @@ export class Message extends React.Component<Properties, State> {
     isFullWidth: false,
     isMessageMenuOpen: false,
   } as State;
+
+  handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    this.setState({
+      isMessageMenuOpen: true,
+      menuPosition: { x: event.clientX, y: event.clientY },
+    });
+  };
+
+  componentDidMount() {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', this.handleCloseMenu);
+    }
+  }
+
+  componentWillUnmount() {
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('click', this.handleCloseMenu);
+    }
+  }
 
   openAttachment = async (attachment): Promise<void> => {
     download(attachment.url);
@@ -226,7 +247,9 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleCloseMenu = () => {
-    this.setState({ isMessageMenuOpen: false });
+    if (this.state.isMessageMenuOpen) {
+      this.setState({ isMessageMenuOpen: false });
+    }
   };
 
   canReply = () => {
@@ -242,6 +265,10 @@ export class Message extends React.Component<Properties, State> {
   };
 
   renderMenu(): React.ReactElement {
+    if (!this.state.isMessageMenuOpen) return null;
+
+    const { x, y } = this.state.menuPosition || { x: 0, y: 0 };
+
     return (
       <div
         {...cn(
@@ -251,19 +278,21 @@ export class Message extends React.Component<Properties, State> {
           })
         )}
       >
-        <MessageMenu
-          {...cn('menu-item')}
-          canEdit={this.canEditMessage()}
-          canDelete={this.canDeleteMessage()}
-          canReply={this.canReply()}
-          onDelete={this.deleteMessage}
-          onEdit={this.toggleEdit}
-          onReply={this.onReply}
-          isMediaMessage={this.isMediaMessage()}
-          isMenuOpen={this.state.isMessageMenuOpen}
-          onOpenChange={this.handleOpenMenu}
-          onCloseMenu={this.handleCloseMenu}
-        />
+        <div style={{ position: 'fixed', left: `${x}px`, top: `${y}px` }}>
+          <MessageMenu
+            {...cn('menu-item')}
+            canEdit={this.canEditMessage()}
+            canDelete={this.canDeleteMessage()}
+            canReply={this.canReply()}
+            onDelete={this.deleteMessage}
+            onEdit={this.toggleEdit}
+            onReply={this.onReply}
+            isMediaMessage={this.isMediaMessage()}
+            isMenuOpen={this.state.isMessageMenuOpen}
+            onOpenChange={this.handleOpenMenu}
+            onCloseMenu={this.handleCloseMenu}
+          />
+        </div>
       </div>
     );
   }
@@ -312,6 +341,7 @@ export class Message extends React.Component<Properties, State> {
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
         })}
+        onContextMenu={this.handleContextMenu}
       >
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>

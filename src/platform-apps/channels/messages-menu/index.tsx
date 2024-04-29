@@ -132,6 +132,7 @@ export class MessageMenu extends React.Component<Properties, State> {
           side='bottom'
           alignMenu='center'
           onOpenChange={this.props.onOpenChange}
+          open={this.props.isMenuOpen}
           showArrow
           trigger={
             <div

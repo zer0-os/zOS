@@ -52,6 +52,9 @@ export interface State {
   isEditing: boolean;
   isFullWidth: boolean;
   isMessageMenuOpen: boolean;
+  isDropdownMenuOpen: boolean;
+  menuX: number;
+  menuY: number;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -59,7 +62,25 @@ export class Message extends React.Component<Properties, State> {
     isEditing: false,
     isFullWidth: false,
     isMessageMenuOpen: false,
+    isDropdownMenuOpen: false,
+    menuX: 0,
+    menuY: 0,
   } as State;
+
+  wrapperRef = React.createRef<HTMLDivElement>();
+
+  handleContextMenu = (event) => {
+    if (event.button === 2) {
+      event.preventDefault();
+      event.stopPropagation();
+      const { pageX, pageY } = event;
+      this.setState({
+        isDropdownMenuOpen: true,
+        menuX: pageX,
+        menuY: pageY,
+      });
+    }
+  };
 
   openAttachment = async (attachment): Promise<void> => {
     download(attachment.url);
@@ -226,7 +247,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleCloseMenu = () => {
-    this.setState({ isMessageMenuOpen: false });
+    this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false });
   };
 
   canReply = () => {
@@ -242,28 +263,43 @@ export class Message extends React.Component<Properties, State> {
   };
 
   renderMenu(): React.ReactElement {
+    const { menuX, menuY, isDropdownMenuOpen, isMessageMenuOpen } = this.state;
+
+    const menuProps = {
+      canEdit: this.canEditMessage(),
+      canDelete: this.canDeleteMessage(),
+      canReply: this.canReply(),
+      onDelete: this.deleteMessage,
+      onEdit: this.toggleEdit,
+      onReply: this.onReply,
+      isMediaMessage: this.isMediaMessage(),
+      isMenuOpen: isDropdownMenuOpen || isMessageMenuOpen,
+      onOpenChange: this.handleOpenMenu,
+      onCloseMenu: this.handleCloseMenu,
+      isMenuFlying: isDropdownMenuOpen,
+    };
+
+    const style: React.CSSProperties = isDropdownMenuOpen
+      ? {
+          position: 'fixed',
+          left: `${menuX}px`,
+          top: `${menuY}px`,
+          display: isDropdownMenuOpen ? 'block' : 'none',
+          zIndex: 1000,
+        }
+      : {};
+
     return (
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMessageMenuOpen,
+            'menu--open': this.state.isMessageMenuOpen || this.state.isDropdownMenuOpen,
             'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
           })
         )}
+        style={style}
       >
-        <MessageMenu
-          {...cn('menu-item')}
-          canEdit={this.canEditMessage()}
-          canDelete={this.canDeleteMessage()}
-          canReply={this.canReply()}
-          onDelete={this.deleteMessage}
-          onEdit={this.toggleEdit}
-          onReply={this.onReply}
-          isMediaMessage={this.isMediaMessage()}
-          isMenuOpen={this.state.isMessageMenuOpen}
-          onOpenChange={this.handleOpenMenu}
-          onCloseMenu={this.handleCloseMenu}
-        />
+        <MessageMenu {...cn('menu-item')} {...menuProps} />
       </div>
     );
   }
@@ -312,16 +348,13 @@ export class Message extends React.Component<Properties, State> {
         className={classNames('message', this.props.className, {
           'message--owner': isOwner,
         })}
+        onContextMenu={this.handleContextMenu}
+        ref={this.wrapperRef}
       >
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
-              <Avatar
-                size='medium'
-                type='circle'
-                imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`}
-                tabIndex={-1}
-              />
+              <Avatar size='medium' imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`} tabIndex={-1} />
             </div>
           </div>
         )}

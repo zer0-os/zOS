@@ -98,7 +98,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
                   onKeyDown={this.handleKeyDown}
                   onClick={this.itemClicked}
                 >
-                  <Avatar size='regular' type='circle' imageURL={r.image} tabIndex={-1} />
+                  <Avatar size='regular' imageURL={r.image} tabIndex={-1} />
 
                   <div className='autocomplete-members__user-details'>
                     <div className='autocomplete-members__label'>

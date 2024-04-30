@@ -8,7 +8,7 @@ import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
-import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
+import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 import BodyClassManager from './components/body-class-manager';
 
@@ -19,6 +19,7 @@ import { ResetPassword } from './reset-password';
 import { LoginPage } from './pages';
 import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
+import { ElectronTitlebar } from './components/electron-titlebar';
 
 runSagas();
 
@@ -38,6 +39,7 @@ ReactDOM.render(
           <Router history={history}>
             <Web3ReactContextProvider>
               <Web3Connect>
+                {isElectron() && <ElectronTitlebar />}
                 <BodyClassManager />
                 <Switch>
                   <Route path='/get-access' exact component={Invite} />

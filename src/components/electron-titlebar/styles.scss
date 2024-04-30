@@ -1,0 +1,10 @@
+.electron-titlebar {
+  -webkit-app-region: drag;
+  height: 22px;
+  width: 100%;
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}

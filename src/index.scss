@@ -21,12 +21,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
+  background-color: #0a0a0a;
+  background-image: transparent;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center top;
 
-  transition: color animation.$animation-duration-double ease-out;
+  transition: background-color animation.$animation-duration-double ease-out,
+    background-image animation.$animation-duration-double ease-out;
 
   --box-radius: 16px;
   // ToDo: consolidate to -duration-half variant (below) this is used in component library
@@ -40,6 +42,10 @@ body {
   --animation-duration-quadruple: #{animation.$animation-duration-quadruple};
 }
 
+body.logged-in {
+  background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
@@ -48,13 +54,9 @@ A {
   text-decoration: none;
 }
 
-A,
-BUTTON {
+a,
+button {
   color: inherit;
-}
-
-#root {
-  transition: background animation.$animation-duration-double ease-out;
 }
 
 .border-primary {

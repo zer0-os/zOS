@@ -52,7 +52,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
     const cn = bemClassName('header');
     return (
       <div {...cn('')}>
-        <Avatar size={'regular'} type={'circle'} imageURL={this.props.userAvatarUrl} />
+        <Avatar size={'regular'} imageURL={this.props.userAvatarUrl} />
         <div {...cn('user-details')}>
           <div {...cn('name')}>{this.props.userName}</div>
           <div {...cn('handle')}>{this.props.userHandle}</div>
@@ -158,7 +158,6 @@ export class SettingsMenu extends React.Component<Properties, State> {
             <Avatar
               isActive={this.shouldAvatarHaveHighlight}
               size={'medium'}
-              type={'circle'}
               imageURL={this.props.userAvatarUrl}
               statusType={this.props.userStatus}
             />

@@ -354,12 +354,7 @@ export class Message extends React.Component<Properties, State> {
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
-              <Avatar
-                size='medium'
-                type='circle'
-                imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`}
-                tabIndex={-1}
-              />
+              <Avatar size='medium' imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`} tabIndex={-1} />
             </div>
           </div>
         )}

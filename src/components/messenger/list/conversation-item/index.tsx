@@ -85,7 +85,6 @@ export class ConversationItem extends React.Component<Properties, State> {
     return (
       <Avatar
         size={'regular'}
-        type={'circle'}
         imageURL={imageUrl}
         statusType={this.conversationStatus}
         tabIndex={-1}

@@ -37,7 +37,7 @@ export class SelectedUserTag extends React.Component<Properties> {
     return (
       <div {...cn('', classNames({ [tagSize]: tagSize }))}>
         <div {...cn('avatar')}>
-          <Avatar size={avatarSize} type='circle' imageURL={option.image} />
+          <Avatar size={avatarSize} imageURL={option.image} />
         </div>
 
         <div {...cn('user-details')}>

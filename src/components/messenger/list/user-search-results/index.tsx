@@ -43,7 +43,7 @@ export class UserSearchResults extends React.Component<Properties> {
             onClick={() => this.handleUserClick(userResult.value)}
             key={userResult.value}
           >
-            <Avatar size='regular' type='circle' imageURL={userResult.image} tabIndex={-1} />
+            <Avatar size='regular' imageURL={userResult.image} tabIndex={-1} />
 
             <div {...cn('user-details')}>
               <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>

@@ -285,7 +285,6 @@ export class Message extends React.Component<Properties, State> {
           left: `${menuX}px`,
           top: `${menuY}px`,
           display: isDropdownMenuOpen ? 'block' : 'none',
-          zIndex: 1000,
         }
       : {};
 
@@ -298,6 +297,7 @@ export class Message extends React.Component<Properties, State> {
           })
         )}
         style={style}
+        onClick={menuProps.onCloseMenu}
       >
         <MessageMenu {...cn('menu-item')} {...menuProps} />
       </div>

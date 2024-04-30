@@ -144,7 +144,9 @@ export class MessageMenu extends React.Component<Properties, State> {
               >
                 <IconDotsHorizontal size={24} isFilled />
               </div>
-            ) : null
+            ) : (
+              <></>
+            )
           }
         />
         {this.renderDeleteModal()}

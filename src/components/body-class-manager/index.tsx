@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/reducer';
 
@@ -6,7 +6,6 @@ const BodyClassManager = () => {
   const isActiveConversationId = useSelector((state: RootState) => state.chat.activeConversationId);
   const isJoining = useSelector((state: RootState) => state.chat.isJoiningConversation);
   const isChatReady = useSelector((state: RootState) => state.chat.isChatConnectionComplete);
-  const isPageLoadComplete = useSelector((state: RootState) => state.pageload.isComplete);
 
   useEffect(() => {
     const className = 'logged-in';

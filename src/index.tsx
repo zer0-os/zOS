@@ -10,6 +10,7 @@ import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { showReleaseVersionInConsole, initializeErrorBoundary } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
+import BodyClassManager from './components/body-class-manager';
 
 import '@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
@@ -37,6 +38,7 @@ ReactDOM.render(
           <Router history={history}>
             <Web3ReactContextProvider>
               <Web3Connect>
+                <BodyClassManager />
                 <Switch>
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />

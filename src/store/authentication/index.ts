@@ -13,6 +13,7 @@ export const closeLogoutModal = createAction(SagaActionTypes.CloseLogoutModal);
 
 export const initialState: AuthenticationState = {
   user: { data: null },
+  isLoggedIn: false,
   displayLogoutModal: false,
 };
 
@@ -22,6 +23,7 @@ const slice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<AuthenticationState['user']>) => {
       state.user = action.payload;
+      state.isLoggedIn = action.payload.data !== null;
     },
     setDisplayLogoutModal: (state, action: PayloadAction<boolean>) => {
       state.displayLogoutModal = action.payload;

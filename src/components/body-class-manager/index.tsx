@@ -6,11 +6,12 @@ const BodyClassManager = () => {
   const isActiveConversationId = useSelector((state: RootState) => state.chat.activeConversationId);
   const isJoining = useSelector((state: RootState) => state.chat.isJoiningConversation);
   const isChatReady = useSelector((state: RootState) => state.chat.isChatConnectionComplete);
+  const isLoggedIn = useSelector((state: RootState) => state.authentication.isLoggedIn);
 
   useEffect(() => {
     const className = 'logged-in';
 
-    const shouldAddClass = isJoining || (isActiveConversationId && isChatReady);
+    const shouldAddClass = isLoggedIn && (isJoining || (isActiveConversationId && isChatReady));
 
     if (shouldAddClass) {
       document.body.classList.add(className);
@@ -19,11 +20,14 @@ const BodyClassManager = () => {
     }
 
     return () => {
-      if (!shouldAddClass) {
-        document.body.classList.remove(className);
-      }
+      document.body.classList.remove(className);
     };
-  }, [isActiveConversationId, isJoining, isChatReady]);
+  }, [
+    isActiveConversationId,
+    isJoining,
+    isChatReady,
+    isLoggedIn,
+  ]);
 
   return null;
 };

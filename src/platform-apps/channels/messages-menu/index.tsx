@@ -15,6 +15,7 @@ export interface Properties {
   canReply?: boolean;
   isMediaMessage?: boolean;
   isMenuOpen?: boolean;
+  isMenuFlying?: boolean;
 
   onOpenChange?: (isOpen: boolean) => void;
   onCloseMenu?: () => void;
@@ -135,13 +136,15 @@ export class MessageMenu extends React.Component<Properties, State> {
           open={this.props.isMenuOpen}
           showArrow
           trigger={
-            <div
-              className={classNames('dropdown-menu-trigger', {
-                'dropdown-menu-trigger--open': this.props.isMenuOpen,
-              })}
-            >
-              <IconDotsHorizontal size={24} isFilled />
-            </div>
+            !this.props.isMenuFlying ? (
+              <div
+                className={classNames('dropdown-menu-trigger', {
+                  'dropdown-menu-trigger--open': this.props.isMenuOpen,
+                })}
+              >
+                <IconDotsHorizontal size={24} isFilled />
+              </div>
+            ) : null
           }
         />
         {this.renderDeleteModal()}

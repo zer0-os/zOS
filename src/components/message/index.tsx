@@ -69,35 +69,16 @@ export class Message extends React.Component<Properties, State> {
 
   wrapperRef = React.createRef<HTMLDivElement>();
 
-  componentDidMount() {
-    document.addEventListener('mousedown', this.handleClickOutside);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-  }
-
-  handleClickOutside = (event: MouseEvent) => {
-    if (this.wrapperRef.current && !this.wrapperRef.current.contains(event.target as Node)) {
-      this.handleCloseMenu();
-    }
-  };
-
   handleContextMenu = (event) => {
     if (event.button === 2) {
       event.preventDefault();
       event.stopPropagation();
       const { pageX, pageY } = event;
-      this.setState(
-        {
-          isDropdownMenuOpen: true,
-          menuX: pageX,
-          menuY: pageY,
-        },
-        () => {
-          document.addEventListener('mousedown', this.handleClickOutside);
-        }
-      );
+      this.setState({
+        isDropdownMenuOpen: true,
+        menuX: pageX,
+        menuY: pageY,
+      });
     }
   };
 
@@ -266,9 +247,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleCloseMenu = () => {
-    this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false }, () => {
-      document.removeEventListener('mousedown', this.handleClickOutside);
-    });
+    this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false });
   };
 
   canReply = () => {
@@ -285,7 +264,6 @@ export class Message extends React.Component<Properties, State> {
 
   renderMenu(): React.ReactElement {
     const { menuX, menuY, isDropdownMenuOpen, isMessageMenuOpen } = this.state;
-    // if (!isDropdownMenuOpen) return null;
 
     const menuProps = {
       canEdit: this.canEditMessage(),
@@ -298,6 +276,7 @@ export class Message extends React.Component<Properties, State> {
       isMenuOpen: isDropdownMenuOpen || isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
       onCloseMenu: this.handleCloseMenu,
+      isMenuFlying: isDropdownMenuOpen,
     };
 
     const style: React.CSSProperties = isDropdownMenuOpen

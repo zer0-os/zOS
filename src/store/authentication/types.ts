@@ -42,7 +42,6 @@ export interface User {
 
 export interface AuthenticationState {
   user: UserPayload;
-  isLoggedIn: boolean;
   nonce?: string;
   displayLogoutModal: boolean;
 }

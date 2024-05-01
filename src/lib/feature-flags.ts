@@ -67,7 +67,7 @@ export class FeatureFlags {
   }
 
   get allowEmailRegistration() {
-    return this._getBoolean('allowEmailRegistration', false);
+    return this._getBoolean('allowEmailRegistration', true);
   }
 
   set allowEmailRegistration(value: boolean) {

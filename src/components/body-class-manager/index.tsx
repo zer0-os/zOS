@@ -5,12 +5,11 @@ import { RootState } from '../../store/reducer';
 const BodyClassManager = () => {
   const isJoining = useSelector((state: RootState) => state.chat.isJoiningConversation);
   const isChatReady = useSelector((state: RootState) => state.chat.isChatConnectionComplete);
-  const isLoggedIn = useSelector((state: RootState) => state.authentication.isLoggedIn);
 
   useEffect(() => {
     const className = 'logged-in';
 
-    const shouldAddClass = isLoggedIn && (isJoining || isChatReady);
+    const shouldAddClass = isJoining || isChatReady;
 
     if (shouldAddClass) {
       document.body.classList.add(className);
@@ -19,13 +18,11 @@ const BodyClassManager = () => {
     }
 
     return () => {
-      document.body.classList.remove(className);
+      if (!shouldAddClass) {
+        document.body.classList.remove(className);
+      }
     };
-  }, [
-    isJoining,
-    isChatReady,
-    isLoggedIn,
-  ]);
+  }, [isJoining, isChatReady]);
 
   return null;
 };

@@ -11,7 +11,7 @@ import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-rea
 import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 import BodyClassManager from './components/body-class-manager';
-import { ProtectedRoute } from './components/protected-route';
+
 import '@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
@@ -45,8 +45,8 @@ ReactDOM.render(
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />
                   <Route path='/reset-password' exact component={ResetPassword} />
-                  <ProtectedRoute path='/conversation/:conversationId' exact component={MessengerMain} />
-                  <ProtectedRoute path='/' exact component={MessengerMain} />
+                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                  <Route path='/' exact component={MessengerMain} />
                   <Route component={redirectToRoot} />
                 </Switch>
               </Web3Connect>

@@ -3,11 +3,9 @@ import * as React from 'react';
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import Tooltip from '../../../tooltip';
-import { getProvider } from '../../../../lib/cloudinary/provider';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { lastSeenText } from '../../list/utils/utils';
-
-import { IconCurrencyEthereum, IconUsers1 } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
@@ -52,23 +50,28 @@ export class ConversationHeader extends React.Component<Properties> {
 
   avatarStatus() {
     if (!this.props.otherMembers) {
-      return 'unknown';
+      return 'offline';
     }
 
-    return this.anyOthersOnline() ? 'online' : 'offline';
+    return this.anyOthersOnline() ? 'active' : 'offline';
   }
 
   anyOthersOnline() {
     return this.props.otherMembers.some((m) => m.isOnline);
   }
 
-  renderIcon = () => {
-    return this.isOneOnOne() ? (
-      <IconCurrencyEthereum size={16} {...cn('avatar-icon', 'isOneOnOne')} />
-    ) : (
-      <IconUsers1 size={16} />
+  renderAvatar() {
+    return (
+      <Avatar
+        size={'medium'}
+        imageURL={this.avatarUrl()}
+        statusType={this.avatarStatus()}
+        tabIndex={-1}
+        isRaised
+        isGroup={!this.isOneOnOne()}
+      />
     );
-  };
+  }
 
   renderSubTitle() {
     if (!this.props.otherMembers || this.props.otherMembers.length === 0) {
@@ -113,16 +116,7 @@ export class ConversationHeader extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <span>
-          <div
-            style={{
-              backgroundImage: `url(${getProvider().getSourceUrl(this.avatarUrl())})`,
-            }}
-            {...cn('avatar', this.avatarStatus())}
-          >
-            {!this.avatarUrl() && this.renderIcon()}
-          </div>
-        </span>
+        <div {...cn('avatar')}>{this.renderAvatar()}</div>
 
         <span {...cn('description')}>
           <div {...cn('title')}>{this.renderTitle()}</div>

@@ -20,59 +20,7 @@ $recent-indicator-size: 8px;
   }
 
   &__avatar {
-    @include glass-separator-primary;
-
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: inherit;
-
-      @include glass-materials-raised;
-    }
-
-    &::after {
-      content: '';
-      width: $recent-indicator-size;
-      height: $recent-indicator-size;
-      border: 2px solid theme.$color-primary-1;
-      border-radius: 50%;
-      position: absolute;
-      top: 22px;
-      left: 22px;
-    }
-
-    &--online::after {
-      background-color: theme.$color-secondary-11;
-    }
-
-    &--offline::after {
-      background-color: theme.$color-greyscale-9;
-    }
-
-    & > * {
-      position: absolute;
-      top: calc(50% - 8px);
-      line-height: 0px;
-      left: calc(50% - 8px);
-    }
-  }
-
-  &__avatar-icon {
-    &--isOneOnOne {
-      color: theme.$color-secondary-11;
-    }
+    pointer-events: none;
   }
 
   &__description {

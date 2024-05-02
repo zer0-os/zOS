@@ -39,6 +39,8 @@ export class Container extends React.Component<Properties> {
             <AppBar />
             <Sidekick />
             <MessengerChat />
+            <Sidekick variant='secondary' />
+
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />
             </FeatureFlag>

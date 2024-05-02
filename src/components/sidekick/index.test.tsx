@@ -1,14 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Container, Properties } from '.';
+import { Container, Properties, SidekickVariant } from '.';
 import { MessengerList } from '../messenger/list';
+import { Stage as GroupManagementStage } from '../../store/group-management';
 
 describe('Sidekick', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
       className: '',
-      isOpen: false,
+      variant: SidekickVariant.Primary,
+      groupManagementStage: GroupManagementStage.None,
+      isSecondarySidekickOpen: false,
       ...props,
     };
 

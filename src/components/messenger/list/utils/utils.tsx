@@ -14,7 +14,7 @@ export function lastSeenText(user): string {
 }
 
 export function isUserAdmin(user: User, adminIds: string[]) {
-  return adminIds.includes(user.matrixId);
+  return adminIds?.includes(user.matrixId);
 }
 
 export function sortMembers(members: User[], adminIds: string[]) {

@@ -22,10 +22,12 @@ describe(ConversationHeader, () => {
       canLeaveRoom: false,
       canEdit: false,
       canViewDetails: false,
+      isSecondarySidekickOpen: false,
       onAddMember: () => null,
       onEdit: () => null,
       onLeaveRoom: () => null,
       onViewDetails: () => null,
+      toggleSecondarySidekick: () => null,
 
       ...props,
     };
@@ -148,6 +150,20 @@ describe(ConversationHeader, () => {
       });
 
       expect(wrapper.find(c('subtitle'))).toHaveText('Offline');
+    });
+
+    it('renders group button', function () {
+      const wrapper = subject({ isOneOnOne: false });
+
+      expect(wrapper).toHaveElement(c('group-button'));
+    });
+
+    it('fires toggleSecondarySidekick', function () {
+      const toggleSecondarySidekick = jest.fn();
+
+      subject({ isOneOnOne: false, toggleSecondarySidekick }).find(c('group-button')).simulate('click');
+
+      expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
     });
   });
 

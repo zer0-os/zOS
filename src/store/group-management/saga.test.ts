@@ -1,5 +1,11 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { removeMember, editConversationNameAndIcon, reset, roomMembersSelected } from './saga';
+import {
+  removeMember,
+  editConversationNameAndIcon,
+  reset,
+  roomMembersSelected,
+  toggleIsSecondarySidekick,
+} from './saga';
 import { StoreBuilder } from '../test/store';
 import {
   Stage,
@@ -9,6 +15,7 @@ import {
   setEditConversationGeneralError,
   setEditConversationImageError,
   RemoveMemberDialogStage,
+  setSecondarySidekickOpen,
 } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
@@ -241,6 +248,30 @@ describe('Group Management Saga', () => {
         .put(setEditConversationGeneralError('An unknown error has occurred'))
         .put(setEditConversationState(EditConversationState.LOADED))
         .run();
+    });
+  });
+
+  describe('toggleSecondarySidekick', () => {
+    it('toggles the isSecondarySidekickOpen state to true', async () => {
+      const initialState = defaultState({ isSecondarySidekickOpen: false });
+
+      const { storeState } = await expectSaga(toggleIsSecondarySidekick)
+        .withReducer(rootReducer, initialState)
+        .put(setSecondarySidekickOpen(true))
+        .run();
+
+      expect(storeState.groupManagement.isSecondarySidekickOpen).toBe(true);
+    });
+
+    it('toggles the isSecondarySidekickOpen state to false', async () => {
+      const initialState = defaultState({ isSecondarySidekickOpen: true });
+
+      const { storeState } = await expectSaga(toggleIsSecondarySidekick)
+        .withReducer(rootReducer, initialState)
+        .put(setSecondarySidekickOpen(false))
+        .run();
+
+      expect(storeState.groupManagement.isSecondarySidekickOpen).toBe(false);
     });
   });
 });

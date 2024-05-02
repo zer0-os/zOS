@@ -5,9 +5,10 @@ import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import Tooltip from '../../../tooltip';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { lastSeenText } from '../../list/utils/utils';
-import { Avatar } from '@zero-tech/zui/components';
-
+import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
+
 import './styles.scss';
 
 const cn = bemClassName('conversation-header');
@@ -21,13 +22,19 @@ export interface Properties {
   canLeaveRoom: boolean;
   canEdit: boolean;
   canViewDetails: boolean;
+  isSecondarySidekickOpen: boolean;
   onAddMember: () => void;
   onEdit: () => void;
   onLeaveRoom: () => void;
   onViewDetails: () => void;
+  toggleSecondarySidekick: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
+  toggleSidekick = () => {
+    this.props.toggleSecondarySidekick();
+  };
+
   isOneOnOne() {
     return this.props.isOneOnOne;
   }
@@ -124,6 +131,15 @@ export class ConversationHeader extends React.Component<Properties> {
         </span>
 
         <div {...cn('group-management-menu-container')}>
+          {!this.isOneOnOne() && (
+            <IconButton
+              {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
+              Icon={IconUsers1}
+              size={32}
+              onClick={this.toggleSidekick}
+            />
+          )}
+
           <GroupManagementMenu
             canAddMembers={this.props.canAddMembers}
             canLeaveRoom={this.props.canLeaveRoom}

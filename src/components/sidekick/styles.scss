@@ -19,6 +19,27 @@
   flex-shrink: 0;
   padding: 16px 16px 16px 0px;
 
+  &--secondary {
+    justify-content: flex-end;
+    overflow-y: auto;
+    max-width: 0;
+    width: fit-content;
+
+    &.open {
+      transform: translateX(0);
+      max-width: 302px;
+      padding: 16px 16px 16px 0;
+    }
+
+    &.close {
+      transform: translateX(100%);
+      max-width: 0;
+      padding: 16px 0;
+    }
+
+    transition: transform 0.1s ease-out, max-width 0.1s ease-out, padding 0.1s ease-out;
+  }
+
   .scroll-container__gradient {
     background: linear-gradient(to bottom, transparent, theme.$background-color-tertiary-hover 100%);
   }
@@ -33,6 +54,10 @@
     flex-shrink: 0;
     pointer-events: auto;
     width: $width-sidekick;
+
+    &--secondary {
+      width: 220px;
+    }
 
     @include glass-outer;
   }

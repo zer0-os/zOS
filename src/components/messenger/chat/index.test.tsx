@@ -31,6 +31,7 @@ describe(DirectMessageChat, () => {
       canEdit: false,
       canAddMembers: false,
       canViewDetails: false,
+      isSecondarySidekickOpen: false,
       sendMessage: () => null,
       onRemoveReply: () => null,
       isCurrentUserRoomAdmin: false,
@@ -39,6 +40,7 @@ describe(DirectMessageChat, () => {
       startEditConversation: () => null,
       setLeaveGroupStatus: () => null,
       viewGroupInformation: () => null,
+      toggleSecondarySidekick: () => null,
       ...props,
     };
 

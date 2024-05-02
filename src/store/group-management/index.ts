@@ -24,6 +24,7 @@ export enum SagaActionTypes {
   RemoveMember = 'group-management/remove-member',
   EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
   OpenViewGroupInformation = 'group-management/open-view-group-information',
+  ToggleSecondarySidekick = 'group-management/toggle-secondary-sidekick',
 }
 
 export enum Stage {
@@ -57,6 +58,7 @@ export const viewGroupInformation = createAction(SagaActionTypes.OpenViewGroupIn
 export const editConversationNameAndIcon = createAction<EditConversationPayload>(
   SagaActionTypes.EditConversationNameAndIcon
 );
+export const toggleSecondarySidekick = createAction(SagaActionTypes.ToggleSecondarySidekick);
 
 export type GroupManagementState = {
   stage: Stage;
@@ -71,6 +73,7 @@ export type GroupManagementState = {
   };
   errors: GroupManagementErrors;
   editConversationState: EditConversationState;
+  isSecondarySidekickOpen: boolean;
 };
 
 export const initialState: GroupManagementState = {
@@ -86,6 +89,7 @@ export const initialState: GroupManagementState = {
     stage: RemoveMemberDialogStage.CLOSED,
     error: '',
   },
+  isSecondarySidekickOpen: false,
 };
 
 const slice = createSlice({
@@ -128,6 +132,9 @@ const slice = createSlice({
     setRemoveMemberError: (state, action: PayloadAction<GroupManagementState['removeMember']['error']>) => {
       state.removeMember.error = action.payload;
     },
+    setSecondarySidekickOpen: (state, action: PayloadAction<GroupManagementState['isSecondarySidekickOpen']>) => {
+      state.isSecondarySidekickOpen = action.payload;
+    },
   },
 });
 
@@ -142,5 +149,6 @@ export const {
   setRemoveMember,
   setRemoveMemberStage,
   setRemoveMemberError,
+  setSecondarySidekickOpen,
 } = slice.actions;
 export const { reducer } = slice;

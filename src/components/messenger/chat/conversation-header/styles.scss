@@ -54,5 +54,12 @@ $recent-indicator-size: 8px;
 
   &__group-management-menu-container {
     display: flex;
+    gap: 8px;
+  }
+
+  &__group-button {
+    &--is-active {
+      background-color: theme.$color-greyscale-transparency-3;
+    }
   }
 }

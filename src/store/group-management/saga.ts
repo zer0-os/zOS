@@ -18,9 +18,11 @@ import {
   RemoveMemberDialogStage,
   setRemoveMemberStage,
   setRemoveMemberError,
+  setSecondarySidekickOpen,
 } from './index';
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
+import { isSecondarySidekickOpenSelector } from './selectors';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -44,6 +46,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.CancelRemoveMember, cancelRemoveMember);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
   yield takeLatest(SagaActionTypes.OpenViewGroupInformation, openViewGroupInformation);
+  yield takeLatest(SagaActionTypes.ToggleSecondarySidekick, toggleIsSecondarySidekick);
 }
 
 export function* resetConversationManagement() {
@@ -175,4 +178,9 @@ export function* editConversationNameAndIcon(action) {
 
 export function* openViewGroupInformation() {
   yield put(setStage(Stage.ViewGroupInformation));
+}
+
+export function* toggleIsSecondarySidekick() {
+  const isOpen = yield select(isSecondarySidekickOpenSelector);
+  yield put(setSecondarySidekickOpen(!isOpen));
 }

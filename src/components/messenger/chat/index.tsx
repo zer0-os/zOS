@@ -13,6 +13,7 @@ import {
   setLeaveGroupStatus,
   startEditConversation,
   viewGroupInformation,
+  toggleSecondarySidekick,
 } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { JoiningConversationDialog } from '../../joining-conversation-dialog';
@@ -34,6 +35,7 @@ export interface Properties extends PublicProperties {
   canEdit: boolean;
   canAddMembers: boolean;
   canViewDetails: boolean;
+  isSecondarySidekickOpen: boolean;
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -41,6 +43,7 @@ export interface Properties extends PublicProperties {
   sendMessage: (payload: PayloadSendMessage) => void;
   onRemoveReply: () => void;
   viewGroupInformation: () => void;
+  toggleSecondarySidekick: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -75,6 +78,7 @@ export class Container extends React.Component<Properties> {
       canEdit,
       canAddMembers,
       canViewDetails,
+      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
 
@@ -86,6 +90,7 @@ export class Container extends React.Component<Properties> {
       onRemoveReply,
       sendMessage,
       viewGroupInformation,
+      toggleSecondarySidekick,
     };
   }
 
@@ -173,6 +178,8 @@ export class Container extends React.Component<Properties> {
                 onViewDetails={this.props.viewGroupInformation}
                 onAddMember={this.props.startAddGroupMember}
                 onEdit={this.props.startEditConversation}
+                toggleSecondarySidekick={this.props.toggleSecondarySidekick}
+                isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
               />
             )}
           </div>

@@ -20,15 +20,14 @@
   padding: 16px 16px 16px 0px;
 
   &--secondary {
-    justify-content: flex-end;
     overflow-y: auto;
     max-width: 0;
-    width: fit-content;
+    overflow: hidden;
 
     &.open {
       transform: translateX(0);
-      max-width: 302px;
-      padding: 16px 16px 16px 0;
+      max-width: 286px;
+      padding: 16px 0;
     }
 
     &.close {
@@ -54,10 +53,6 @@
     flex-shrink: 0;
     pointer-events: auto;
     width: $width-sidekick;
-
-    &--secondary {
-      width: 220px;
-    }
 
     @include glass-outer;
   }

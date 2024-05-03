@@ -56,12 +56,23 @@ export function* resetConversationManagement() {
 }
 
 export function* startAddGroupMember() {
-  yield call(reset);
+  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+
+  if (!isSidekickOpen) {
+    yield call(reset);
+    yield put(setSecondarySidekickOpen(true));
+  }
+
   yield put(setStage(Stage.StartAddMemberToRoom));
 }
 
 export function* startEditConversation() {
-  yield call(reset);
+  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+
+  if (!isSidekickOpen) {
+    yield call(reset);
+    yield put(setSecondarySidekickOpen(true));
+  }
   yield put(setStage(Stage.EditConversation));
 }
 
@@ -177,14 +188,21 @@ export function* editConversationNameAndIcon(action) {
 }
 
 export function* openViewGroupInformation() {
+  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+
+  if (!isSidekickOpen) {
+    yield call(reset);
+    yield put(setSecondarySidekickOpen(true));
+  }
+
   yield put(setStage(Stage.ViewGroupInformation));
 }
 
 export function* toggleIsSecondarySidekick() {
   const isOpen = yield select(isSecondarySidekickOpenSelector);
 
-  if (isOpen) {
-    yield call(reset);
+  if (!isOpen) {
+    yield put(setStage(Stage.None));
   }
 
   yield put(setSecondarySidekickOpen(!isOpen));

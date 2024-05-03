@@ -1,7 +1,7 @@
 import { Container } from './container';
-import { StoreBuilder } from '../../../../store/test/store';
-import { Stage } from '../../../../store/group-management';
-import { EditConversationState } from '../../../../store/group-management/types';
+import { StoreBuilder } from '../../../store/test/store';
+import { Stage } from '../../../store/group-management';
+import { EditConversationState } from '../../../store/group-management/types';
 
 describe(Container, () => {
   describe('mapState', () => {

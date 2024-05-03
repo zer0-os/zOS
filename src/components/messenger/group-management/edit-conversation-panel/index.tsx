@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { PanelHeader } from '../panel-header';
+import { PanelHeader } from '../../list/panel-header';
 import { bemClassName } from '../../../../lib/bem';
 import { Input, Alert } from '@zero-tech/zui/components';
 import { Button } from '@zero-tech/zui/components/Button';
@@ -10,7 +10,7 @@ import { User } from '../../../../store/channels';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { EditConversationErrors, EditConversationState } from '../../../../store/group-management/types';
-import { sortMembers } from '../utils/utils';
+import { sortMembers } from '../../list/utils/utils';
 
 import './styles.scss';
 

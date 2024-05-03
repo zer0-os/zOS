@@ -131,15 +131,6 @@ export class ConversationHeader extends React.Component<Properties> {
         </span>
 
         <div {...cn('group-management-menu-container')}>
-          {!this.isOneOnOne() && (
-            <IconButton
-              {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-              Icon={IconUsers1}
-              size={32}
-              onClick={this.toggleSidekick}
-            />
-          )}
-
           <GroupManagementMenu
             canAddMembers={this.props.canAddMembers}
             canLeaveRoom={this.props.canLeaveRoom}
@@ -150,6 +141,15 @@ export class ConversationHeader extends React.Component<Properties> {
             onEdit={this.props.onEdit}
             onViewGroupInformation={this.props.onViewDetails}
           />
+
+          {!this.isOneOnOne() && (
+            <IconButton
+              {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
+              Icon={IconUsers1}
+              size={32}
+              onClick={this.toggleSidekick}
+            />
+          )}
         </div>
       </div>
     );

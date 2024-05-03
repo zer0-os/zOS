@@ -42,10 +42,6 @@ body {
   --animation-duration-quadruple: #{animation.$animation-duration-quadruple};
 }
 
-body.logged-in {
-  background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

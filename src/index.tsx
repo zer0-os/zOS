@@ -10,7 +10,6 @@ import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
-import BodyClassManager from './components/body-class-manager';
 
 import '@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
@@ -40,7 +39,6 @@ ReactDOM.render(
             <Web3ReactContextProvider>
               <Web3Connect>
                 {isElectron() && <ElectronTitlebar />}
-                <BodyClassManager />
                 <Switch>
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />

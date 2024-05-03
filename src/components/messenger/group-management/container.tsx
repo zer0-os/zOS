@@ -87,7 +87,7 @@ export class Container extends React.Component<Properties> {
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
-      canAddMembers: isCurrentUserRoomAdmin,
+      canAddMembers: isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       canEditGroup: isCurrentUserRoomAdmin,
       canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,

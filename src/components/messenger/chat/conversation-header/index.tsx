@@ -158,14 +158,12 @@ export class ConversationHeader extends React.Component<Properties> {
             onViewGroupInformation={this.viewGroupInformation}
           />
 
-          {!this.isOneOnOne() && (
-            <IconButton
-              {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-              Icon={IconUsers1}
-              size={32}
-              onClick={this.toggleSidekick}
-            />
-          )}
+          <IconButton
+            {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
+            Icon={IconUsers1}
+            size={32}
+            onClick={this.toggleSidekick}
+          />
         </div>
       </div>
     );

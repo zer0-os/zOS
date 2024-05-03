@@ -70,15 +70,22 @@ export class Message extends React.Component<Properties, State> {
   wrapperRef = React.createRef<HTMLDivElement>();
 
   handleContextMenu = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (event.button === 2) {
-      event.preventDefault();
-      event.stopPropagation();
       const { pageX, pageY } = event;
-      this.setState({
-        isDropdownMenuOpen: true,
-        menuX: pageX,
-        menuY: pageY,
-      });
+      this.setState(
+        {
+          isDropdownMenuOpen: false,
+        },
+        () => {
+          this.setState({
+            isDropdownMenuOpen: true,
+            menuX: pageX,
+            menuY: pageY,
+          });
+        }
+      );
     }
   };
 
@@ -94,7 +101,12 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  onImageClick = (media) => (_event) => {
+  onImageClick = (media: MediaType) => (event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+    if (event.button !== 0) {
+      event.preventDefault();
+      return;
+    }
+
     this.props.onImageClick(media);
   };
 
@@ -104,8 +116,10 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleImageLoad = (event) => {
-    const { naturalWidth: width, naturalHeight: height } = event.target;
-    this.handleMediaAspectRatio(width, height);
+    if (event.button !== 2) {
+      const { naturalWidth: width, naturalHeight: height } = event.target;
+      this.handleMediaAspectRatio(width, height);
+    }
   };
 
   renderMedia(media) {

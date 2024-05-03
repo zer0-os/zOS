@@ -139,12 +139,14 @@ export class ConversationHeader extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <div {...cn('avatar')}>{this.renderAvatar()}</div>
+        <div {...cn('details-container')} onClick={this.toggleSidekick}>
+          <div {...cn('avatar')}>{this.renderAvatar()}</div>
 
-        <span {...cn('description')}>
-          <div {...cn('title')}>{this.renderTitle()}</div>
-          <div {...cn('subtitle')}>{this.renderSubTitle()}</div>
-        </span>
+          <span {...cn('description')}>
+            <div {...cn('title')}>{this.renderTitle()}</div>
+            <div {...cn('subtitle')}>{this.renderSubTitle()}</div>
+          </span>
+        </div>
 
         <div {...cn('group-management-menu-container')}>
           <GroupManagementMenu

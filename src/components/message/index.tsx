@@ -96,7 +96,7 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  onImageClick = (media) => (event) => {
+  onImageClick = (media) => () => {
     this.props.onImageClick(media);
   };
 
@@ -106,7 +106,6 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleImageLoad = (event) => {
-    event.stopPropagation();
     const { naturalWidth: width, naturalHeight: height } = event.target;
     this.handleMediaAspectRatio(width, height);
   };
@@ -334,7 +333,9 @@ export class Message extends React.Component<Properties, State> {
       </div>
     );
 
-    return isDropdownMenuOpen && this.isMediaMessage ? createPortal(menuContent, document.body) : null;
+    return isDropdownMenuOpen && this.isMediaMessage
+      ? createPortal(menuContent, document.getElementById('platform'))
+      : null;
   }
 
   renderLinkPreview() {

@@ -19,6 +19,7 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import { ParentMessage } from './parent-message';
+import { createPortal } from 'react-dom';
 
 const cn = bemClassName('message');
 
@@ -76,6 +77,7 @@ export class Message extends React.Component<Properties, State> {
       const { pageX, pageY } = event;
       this.setState({
         isDropdownMenuOpen: true,
+        isMessageMenuOpen: false,
         menuX: pageX,
         menuY: pageY,
       });
@@ -94,7 +96,7 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  onImageClick = (media) => (_event) => {
+  onImageClick = (media) => (event) => {
     this.props.onImageClick(media);
   };
 
@@ -104,6 +106,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleImageLoad = (event) => {
+    event.stopPropagation();
     const { naturalWidth: width, naturalHeight: height } = event.target;
     this.handleMediaAspectRatio(width, height);
   };
@@ -263,7 +266,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   renderMenu(): React.ReactElement {
-    const { menuX, menuY, isDropdownMenuOpen, isMessageMenuOpen } = this.state;
+    const { isMessageMenuOpen } = this.state;
 
     const menuProps = {
       canEdit: this.canEditMessage(),
@@ -273,35 +276,65 @@ export class Message extends React.Component<Properties, State> {
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       isMediaMessage: this.isMediaMessage(),
-      isMenuOpen: isDropdownMenuOpen || isMessageMenuOpen,
+      isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
       onCloseMenu: this.handleCloseMenu,
-      isMenuFlying: isDropdownMenuOpen,
     };
-
-    const style: React.CSSProperties = isDropdownMenuOpen
-      ? {
-          position: 'fixed',
-          left: `${menuX}px`,
-          top: `${menuY}px`,
-          display: isDropdownMenuOpen ? 'block' : 'none',
-        }
-      : {};
 
     return (
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMessageMenuOpen || this.state.isDropdownMenuOpen,
+            'menu--open': this.state.isMessageMenuOpen,
             'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
           })
         )}
-        style={style}
         onClick={menuProps.onCloseMenu}
       >
         <MessageMenu {...cn('menu-item')} {...menuProps} />
       </div>
     );
+  }
+
+  renderFloatMenu() {
+    const { menuX, menuY, isDropdownMenuOpen } = this.state;
+    if (!isDropdownMenuOpen) return null;
+
+    const menuProps = {
+      canEdit: this.canEditMessage(),
+      canDelete: this.canDeleteMessage(),
+      canReply: this.canReply(),
+      onDelete: this.deleteMessage,
+      onEdit: this.toggleEdit,
+      onReply: this.onReply,
+      isMediaMessage: this.isMediaMessage(),
+      isMenuOpen: isDropdownMenuOpen,
+      onOpenChange: this.handleOpenMenu,
+      onCloseMenu: this.handleCloseMenu,
+      isMenuFlying: isDropdownMenuOpen,
+    };
+
+    const menuContent = (
+      <div
+        {...cn(
+          classNames('menu', {
+            'menu--open': this.state.isDropdownMenuOpen,
+            'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
+          })
+        )}
+        style={{
+          position: 'fixed',
+          left: `${menuX}px`,
+          top: `${menuY}px`,
+          display: isDropdownMenuOpen ? 'block' : 'none',
+        }}
+        onClick={menuProps.onCloseMenu}
+      >
+        <MessageMenu {...cn('menu-item')} {...menuProps} />
+      </div>
+    );
+
+    return isDropdownMenuOpen && this.isMediaMessage ? createPortal(menuContent, document.body) : null;
   }
 
   renderLinkPreview() {
@@ -388,6 +421,7 @@ export class Message extends React.Component<Properties, State> {
           )}
         </div>
         {this.renderMenu()}
+        {this.renderFloatMenu()}
       </div>
     );
   }

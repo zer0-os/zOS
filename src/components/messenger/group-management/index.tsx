@@ -16,6 +16,7 @@ export interface Properties {
   errors: GroupManagementErrors;
   name: string;
   icon: string;
+  isOneOnOne: boolean;
   currentUser: User;
   otherMembers: User[];
   editConversationState: EditConversationState;
@@ -79,6 +80,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
         )}
         {this.props.stage === Stage.None && (
           <ViewMembersPanel
+            isOneOnOne={this.props.isOneOnOne}
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
             canAddMembers={this.props.canAddMembers}

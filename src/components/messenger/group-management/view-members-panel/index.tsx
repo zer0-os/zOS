@@ -13,6 +13,7 @@ import './styles.scss';
 const cn = bemClassName('view-members-panel');
 
 export interface Properties {
+  isOneOnOne: boolean;
   currentUser: User;
   otherMembers: User[];
   canAddMembers: boolean;
@@ -23,7 +24,7 @@ export interface Properties {
 
 export class ViewMembersPanel extends React.Component<Properties> {
   getTagForUser(user: User) {
-    if (this.props.otherMembers.length <= 1) return null;
+    if (this.props.isOneOnOne) return null;
     return isUserAdmin(user, this.props.conversationAdminIds) ? 'Admin' : null;
   }
 

@@ -3,7 +3,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
-import { GroupManagementContainer } from '../messenger/list/group-management/container';
+import { GroupManagementContainer } from '../messenger/group-management/container';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';

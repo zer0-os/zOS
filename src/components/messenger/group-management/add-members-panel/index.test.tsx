@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { PanelHeader } from '../panel-header';
+import { PanelHeader } from '../../list/panel-header';
 import { AddMembersPanel, Properties } from '.';
-import { SelectedUserTag } from '../selected-user-tag';
+import { SelectedUserTag } from '../../list/selected-user-tag';
 import { AutocompleteMembers } from '../../autocomplete-members';
 import { Button } from '@zero-tech/zui/components';
 import { IconAlertCircle } from '@zero-tech/zui/icons';

@@ -5,8 +5,8 @@ import { Button } from '@zero-tech/zui/components';
 import { Option } from '../../lib/types';
 
 import { AutocompleteMembers } from '../../autocomplete-members';
-import { PanelHeader } from '../panel-header';
-import { SelectedUserTag } from '../selected-user-tag';
+import { PanelHeader } from '../../list/panel-header';
+import { SelectedUserTag } from '../../list/selected-user-tag';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';

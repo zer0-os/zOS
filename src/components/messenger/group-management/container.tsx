@@ -1,5 +1,5 @@
 import React from 'react';
-import { connectContainer } from '../../../../store/redux-container';
+import { connectContainer } from '../../../store/redux-container';
 
 import {
   Stage,
@@ -13,19 +13,19 @@ import {
   startAddGroupMember,
   LeaveGroupDialogStatus,
   setLeaveGroupStatus,
-} from '../../../../store/group-management';
-import { Option } from '../../lib/types';
+} from '../../../store/group-management';
+import { Option } from '../lib/types';
 
 import { GroupManagement } from '.';
-import { RootState } from '../../../../store/reducer';
-import { GroupManagementErrors, EditConversationState } from '../../../../store/group-management/types';
-import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
-import { currentUserSelector } from '../../../../store/authentication/selectors';
-import { RemoveMemberDialogContainer } from '../../../group-management/remove-member-dialog/container';
-import { getUserSubHandle } from '../../../../lib/user';
-import { MemberNetworks } from '../../../../store/users/types';
-import { searchMyNetworksByName } from '../../../../platform-apps/channels/util/api';
-import { receiveSearchResults } from '../../../../store/users';
+import { RootState } from '../../../store/reducer';
+import { GroupManagementErrors, EditConversationState } from '../../../store/group-management/types';
+import { User, denormalize as denormalizeChannel } from '../../../store/channels';
+import { currentUserSelector } from '../../../store/authentication/selectors';
+import { RemoveMemberDialogContainer } from '../../group-management/remove-member-dialog/container';
+import { getUserSubHandle } from '../../../lib/user';
+import { MemberNetworks } from '../../../store/users/types';
+import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
+import { receiveSearchResults } from '../../../store/users';
 
 export interface PublicProperties {}
 

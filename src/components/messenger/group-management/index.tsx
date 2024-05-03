@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { LeaveGroupDialogStatus, Stage } from '../../../../store/group-management';
-import { AddMembersPanel } from '../add-members-panel';
-import { Option } from '../../lib/types';
-import { EditConversationPanel } from '../edit-conversation-panel';
-import { ViewGroupInformationPanel } from '../view-group-information-panel';
-import { ViewMembersPanel } from '../../secondary-sidekick-content/view-members-panel';
-import { User } from '../../../../store/channels';
-import { EditConversationState, GroupManagementErrors } from '../../../../store/group-management/types';
+import { LeaveGroupDialogStatus, Stage } from '../../../store/group-management';
+import { AddMembersPanel } from './add-members-panel';
+import { Option } from '../lib/types';
+import { EditConversationPanel } from './edit-conversation-panel';
+import { ViewGroupInformationPanel } from './view-group-information-panel';
+import { ViewMembersPanel } from './view-members-panel';
+import { User } from '../../../store/channels';
+import { EditConversationState, GroupManagementErrors } from '../../../store/group-management/types';
 
 export interface Properties {
   stage: Stage;

@@ -9,7 +9,7 @@ import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { LeaveGroupDialogStatus } from '../../../../store/group-management';
-import { isUserAdmin, sortMembers } from '../utils/utils';
+import { isUserAdmin, sortMembers } from '../../list/utils/utils';
 
 import './styles.scss';
 

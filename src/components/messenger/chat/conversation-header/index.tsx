@@ -31,33 +31,24 @@ export interface Properties {
 }
 
 export class ConversationHeader extends React.Component<Properties> {
-  toggleSidekick = () => {
-    this.props.toggleSecondarySidekick();
-  };
-
-  handleAction = (action) => {
-    if (!this.props.isSecondarySidekickOpen) {
-      action();
-      this.toggleSidekick();
-    } else {
-      action();
-    }
-  };
-
   editGroup = () => {
-    this.handleAction(this.props.onEdit);
+    this.props.onEdit();
   };
 
   addMember = () => {
-    this.handleAction(this.props.onAddMember);
+    this.props.onAddMember();
   };
 
   leaveGroup = () => {
-    this.handleAction(this.props.onLeaveRoom);
+    this.props.onLeaveRoom();
   };
 
   viewGroupInformation = () => {
-    this.handleAction(this.props.onViewDetails);
+    this.props.onViewDetails();
+  };
+
+  toggleSidekick = () => {
+    this.props.toggleSecondarySidekick();
   };
 
   isOneOnOne() {

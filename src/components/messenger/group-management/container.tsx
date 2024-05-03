@@ -44,6 +44,7 @@ export interface Properties extends PublicProperties {
   canEditGroup: boolean;
   canLeaveGroup: boolean;
   conversationAdminIds: string[];
+  isOneOnOne: boolean;
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -87,10 +88,11 @@ export class Container extends React.Component<Properties> {
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
-      canAddMembers: isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
+      canAddMembers: isCurrentUserRoomAdmin && !conversation?.isOneOnOne,
       canEditGroup: isCurrentUserRoomAdmin,
       canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,
+      isOneOnOne: conversation?.isOneOnOne,
     };
   }
   static mapActions(_props: Properties): Partial<Properties> {
@@ -143,6 +145,7 @@ export class Container extends React.Component<Properties> {
           errors={this.props.errors}
           name={this.props.name}
           icon={this.props.conversationIcon}
+          isOneOnOne={this.props.isOneOnOne}
           onEditConversation={this.onEditConversation}
           editConversationState={this.props.editConversationState}
           onRemoveMember={this.openRemoveMember}

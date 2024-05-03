@@ -11,6 +11,7 @@ const c = bem('.view-members-panel');
 describe(ViewMembersPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
+      isOneOnOne: false,
       currentUser: { userId: 'current-user' } as User,
       otherMembers: [],
       conversationAdminIds: [],
@@ -92,6 +93,7 @@ describe(ViewMembersPanel, () => {
       currentUser: { userId: 'currentUser', matrixId: 'matrix-id-current' } as User,
       otherMembers: [{ userId: 'otherUser1', matrixId: 'matrix-id-1' }] as User[],
       conversationAdminIds: ['matrix-id-1'],
+      isOneOnOne: true,
     });
 
     expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null);

@@ -17,6 +17,7 @@ describe(GroupManagement, () => {
       addMemberError: '',
       name: '',
       icon: '',
+      isOneOnOne: false,
       errors: {},
       editConversationState: EditConversationState.NONE,
       conversationAdminIds: [],

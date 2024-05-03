@@ -53,6 +53,30 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.scrollContainerRef = React.createRef();
   }
 
+  componentDidMount() {
+    this.openMostRecentConversation();
+  }
+
+  openMostRecentConversation = () => {
+    const urlSegments = window.location.pathname.split('/');
+    const conversationIndex = urlSegments.indexOf('conversation');
+
+    if (conversationIndex !== -1 && urlSegments.length > conversationIndex + 1) {
+      const conversationId = urlSegments[conversationIndex + 1];
+      if (conversationId) {
+        this.props.onConversationClick({ conversationId });
+        return;
+      }
+    }
+
+    if (this.props.conversations.length > 0) {
+      const recentConversation = this.props.conversations[0];
+      this.props.onConversationClick({ conversationId: recentConversation.id });
+    } else {
+      console.log('No conversations available.');
+    }
+  };
+
   scrollToTop = () => {
     if (this.scrollContainerRef.current) {
       this.scrollContainerRef.current.scrollToTop();
@@ -111,7 +135,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   selectFavorites = () => {
     this.setState({ selectedTab: Tab.Favorites });
-    this.triggerFadeIn();
   };
 
   onFavoriteRoom = (roomId: string) => {
@@ -165,20 +188,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           <div {...cn('tab-list')}>
             <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
               All
-              {!!this.allUnreadCount && (
-                <div {...cn('tab-badge')}>
-                  <span>{this.allUnreadCount}</span>
-                </div>
-              )}
             </div>
+            {!!this.allUnreadCount && (
+              <div {...cn('tab-badge')}>
+                <span>{this.allUnreadCount}</span>
+              </div>
+            )}
             <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
               Favorites
-              {!!this.favoritesUnreadCount && (
-                <div {...cn('tab-badge')}>
-                  <span>{this.favoritesUnreadCount}</span>
-                </div>
-              )}
             </div>
+            {!!this.favoritesUnreadCount && (
+              <div {...cn('tab-badge')}>
+                <span>{this.favoritesUnreadCount}</span>
+              </div>
+            )}
           </div>
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>

@@ -165,6 +165,38 @@ describe(ConversationHeader, () => {
 
       expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
     });
+
+    it('fires toggleSecondarySidekick when an action is triggered and isSecondarySidekickOpen is false', () => {
+      const toggleSecondarySidekick = jest.fn();
+      const onAddMember = jest.fn();
+
+      const wrapper = subject({
+        isOneOnOne: false,
+        toggleSecondarySidekick,
+        onAddMember,
+        isSecondarySidekickOpen: false,
+      });
+
+      wrapper.find(GroupManagementMenu).simulate('startAddMember');
+
+      expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
+    });
+
+    it('does not fire toggleSecondarySidekick when an action is triggered and isSecondarySidekickOpen is true', () => {
+      const toggleSecondarySidekick = jest.fn();
+      const onAddMember = jest.fn();
+
+      const wrapper = subject({
+        isOneOnOne: false,
+        toggleSecondarySidekick,
+        onAddMember,
+        isSecondarySidekickOpen: true,
+      });
+
+      wrapper.find(GroupManagementMenu).simulate('startAddMember');
+
+      expect(toggleSecondarySidekick).not.toHaveBeenCalled();
+    });
   });
 
   describe('group management', function () {

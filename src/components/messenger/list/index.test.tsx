@@ -9,10 +9,8 @@ import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
-import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { RegistrationState } from '../../../store/registration';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { ErrorDialog } from '../../error-dialog';
 import { SecureBackupContainer } from '../../secure-backup/container';
@@ -29,7 +27,6 @@ describe('messenger-list', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       stage: Stage.None,
-      groupManangemenetStage: GroupManagementStage.None,
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
@@ -182,18 +179,6 @@ describe('messenger-list', () => {
     expect(wrapper.find(CreateConversationPanel).prop('initialSelections')).toEqual([{ value: 'user-id' }]);
   });
 
-  it('renders GroupManagement if group management stage is NOT none', function () {
-    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.StartAddMemberToRoom });
-
-    expect(wrapper).toHaveElement(GroupManagementContainer);
-  });
-
-  it('does not render GroupManagement if group management stage is none', function () {
-    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
-
-    expect(wrapper).not.toHaveElement(GroupManagementContainer);
-  });
-
   it('renders Error Dialog Container if joinRoomErrorContent is set and not null', function () {
     const wrapper = subject({
       joinRoomErrorContent: { header: 'header', body: 'body' },
@@ -221,7 +206,7 @@ describe('messenger-list', () => {
   });
 
   it('renders footer mask when stage is None', function () {
-    const wrapper = subject({ stage: Stage.None, groupManangemenetStage: GroupManagementStage.None });
+    const wrapper = subject({ stage: Stage.None });
 
     expect(wrapper.find(c('footer-mask'))).toExist();
   });

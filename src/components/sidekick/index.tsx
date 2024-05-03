@@ -3,7 +3,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
-import { SecondarySidekickContent } from '../messenger/secondary-sidekick-content';
+import { GroupManagementContainer } from '../messenger/list/group-management/container';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';
@@ -44,7 +44,7 @@ export class Container extends React.Component<Properties> {
 
   renderContent() {
     if (this.isSecondary) {
-      return <SecondarySidekickContent />;
+      return <GroupManagementContainer />;
     } else {
       return <MessengerList />;
     }

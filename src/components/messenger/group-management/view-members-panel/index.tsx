@@ -49,7 +49,7 @@ export class ViewMembersPanel extends React.Component<Properties> {
           <ScrollbarContainer>
             <CitizenListItem
               user={this.props.currentUser}
-              tag={this.getTagForUser(this.props.currentUser)}
+              tag={otherMembers.length > 1 ? this.getTagForUser(this.props.currentUser) : null}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>

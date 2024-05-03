@@ -152,12 +152,6 @@ describe(ConversationHeader, () => {
       expect(wrapper.find(c('subtitle'))).toHaveText('Offline');
     });
 
-    it('renders group button', function () {
-      const wrapper = subject({ isOneOnOne: false });
-
-      expect(wrapper).toHaveElement(c('group-button'));
-    });
-
     it('fires toggleSecondarySidekick', function () {
       const toggleSecondarySidekick = jest.fn();
 

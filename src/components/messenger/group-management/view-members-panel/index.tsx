@@ -23,6 +23,7 @@ export interface Properties {
 
 export class ViewMembersPanel extends React.Component<Properties> {
   getTagForUser(user: User) {
+    if (this.props.otherMembers.length <= 1) return null;
     return isUserAdmin(user, this.props.conversationAdminIds) ? 'Admin' : null;
   }
 
@@ -49,7 +50,7 @@ export class ViewMembersPanel extends React.Component<Properties> {
           <ScrollbarContainer>
             <CitizenListItem
               user={this.props.currentUser}
-              tag={otherMembers.length > 1 ? this.getTagForUser(this.props.currentUser) : null}
+              tag={this.getTagForUser(this.props.currentUser)}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>

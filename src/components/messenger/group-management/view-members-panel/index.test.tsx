@@ -86,4 +86,15 @@ describe(ViewMembersPanel, () => {
     expect(wrapper.find(CitizenListItem).at(1)).toHaveProp('tag', 'Admin');
     expect(wrapper.find(CitizenListItem).at(2)).toHaveProp('tag', null);
   });
+
+  it('does not assign admin tags if conversation is one on one', () => {
+    const wrapper = subject({
+      currentUser: { userId: 'currentUser', matrixId: 'matrix-id-current' } as User,
+      otherMembers: [{ userId: 'otherUser1', matrixId: 'matrix-id-1' }] as User[],
+      conversationAdminIds: ['matrix-id-1'],
+    });
+
+    expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null);
+    expect(wrapper.find(CitizenListItem).at(1)).toHaveProp('tag', null);
+  });
 });

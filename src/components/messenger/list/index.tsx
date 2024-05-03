@@ -28,8 +28,6 @@ import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { Stage as GroupManagementSagaStage } from '../../../store/group-management';
-import { GroupManagementContainer } from './group-management/container';
 import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
@@ -59,7 +57,6 @@ export interface Properties extends PublicProperties {
   userIsOnline: boolean;
   myUserId: string;
   activeConversationId?: string;
-  groupManangemenetStage: GroupManagementSagaStage;
   joinRoomErrorContent: ErrorDialogContent;
   isBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
@@ -92,7 +89,6 @@ export class Container extends React.Component<Properties, State> {
       registration,
       authentication: { user, displayLogoutModal },
       chat: { activeConversationId, joinRoomErrorContent },
-      groupManagement,
       matrix: { isBackupDialogOpen },
       rewards,
     } = state;
@@ -111,7 +107,6 @@ export class Container extends React.Component<Properties, State> {
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
       userIsOnline: !!user?.data?.isOnline,
       myUserId: user?.data?.id,
-      groupManangemenetStage: groupManagement.stage,
       joinRoomErrorContent,
       isBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
@@ -258,10 +253,6 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  renderGroupManagement() {
-    return <GroupManagementContainer searchUsers={this.usersInMyNetworks} />;
-  }
-
   renderCreateConversation() {
     return (
       <>
@@ -295,14 +286,6 @@ export class Container extends React.Component<Properties, State> {
     );
   }
 
-  get isGroupManagementActive() {
-    return this.props.groupManangemenetStage !== GroupManagementSagaStage.None;
-  }
-
-  renderPanel() {
-    return this.isGroupManagementActive ? this.renderGroupManagement() : this.renderCreateConversation();
-  }
-
   renderFooterMask() {
     return (
       <div {...cn('footer-mask')}>
@@ -314,17 +297,17 @@ export class Container extends React.Component<Properties, State> {
   render() {
     return (
       <>
-        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderUserHeader()}
+        {this.props.stage === SagaStage.None && this.renderUserHeader()}
 
         <div {...cn('')}>
-          {this.renderPanel()}
+          {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
-        {this.props.stage === SagaStage.None && !this.isGroupManagementActive && this.renderFooterMask()}
+        {this.props.stage === SagaStage.None && this.renderFooterMask()}
         {this.renderInviteDialog()}
       </>
     );

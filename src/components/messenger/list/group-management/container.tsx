@@ -23,10 +23,11 @@ import { User, denormalize as denormalizeChannel } from '../../../../store/chann
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { RemoveMemberDialogContainer } from '../../../group-management/remove-member-dialog/container';
 import { getUserSubHandle } from '../../../../lib/user';
+import { MemberNetworks } from '../../../../store/users/types';
+import { searchMyNetworksByName } from '../../../../platform-apps/channels/util/api';
+import { receiveSearchResults } from '../../../../store/users';
 
-export interface PublicProperties {
-  searchUsers: (search: string) => Promise<any>;
-}
+export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   stage: Stage;
@@ -51,6 +52,7 @@ export interface Properties extends PublicProperties {
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
+  receiveSearchResults: (data) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -74,6 +76,7 @@ export class Container extends React.Component<Properties> {
       name: conversation?.name || '',
       conversationIcon: conversation?.icon || '',
       currentUser: {
+        userId: currentUser?.id,
         firstName: currentUser?.profileSummary.firstName,
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
@@ -90,7 +93,6 @@ export class Container extends React.Component<Properties> {
       conversationAdminIds,
     };
   }
-
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       back,
@@ -100,8 +102,19 @@ export class Container extends React.Component<Properties> {
       startEditConversation,
       startAddGroupMember,
       setLeaveGroupStatus,
+      receiveSearchResults,
     };
   }
+
+  usersInMyNetworks = async (search: string) => {
+    const users: MemberNetworks[] = await searchMyNetworksByName(search);
+
+    const filteredUsers = users?.filter((user) => user.id !== this.props.currentUser.userId);
+
+    this.props.receiveSearchResults(filteredUsers);
+
+    return filteredUsers?.map((user) => ({ ...user, image: user.profileImage }));
+  };
 
   onAddMembers = async (selectedOptions: Option[]) => {
     this.props.addSelectedMembers({ roomId: this.props.activeConversationId, users: selectedOptions });
@@ -123,7 +136,7 @@ export class Container extends React.Component<Properties> {
           currentUser={this.props.currentUser}
           otherMembers={this.props.otherMembers}
           onBack={this.props.back}
-          searchUsers={this.props.searchUsers}
+          searchUsers={this.usersInMyNetworks}
           onAddMembers={this.onAddMembers}
           isAddingMembers={this.props.isAddingMembers}
           addMemberError={this.props.addMemberError}

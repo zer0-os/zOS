@@ -182,5 +182,10 @@ export function* openViewGroupInformation() {
 
 export function* toggleIsSecondarySidekick() {
   const isOpen = yield select(isSecondarySidekickOpenSelector);
+
+  if (isOpen) {
+    yield call(reset);
+  }
+
   yield put(setSecondarySidekickOpen(!isOpen));
 }

@@ -35,6 +35,31 @@ export class ConversationHeader extends React.Component<Properties> {
     this.props.toggleSecondarySidekick();
   };
 
+  handleAction = (action) => {
+    if (!this.props.isSecondarySidekickOpen) {
+      action();
+      this.toggleSidekick();
+    } else {
+      action();
+    }
+  };
+
+  editGroup = () => {
+    this.handleAction(this.props.onEdit);
+  };
+
+  addMember = () => {
+    this.handleAction(this.props.onAddMember);
+  };
+
+  leaveGroup = () => {
+    this.handleAction(this.props.onLeaveRoom);
+  };
+
+  viewGroupInformation = () => {
+    this.handleAction(this.props.onViewDetails);
+  };
+
   isOneOnOne() {
     return this.props.isOneOnOne;
   }
@@ -136,10 +161,10 @@ export class ConversationHeader extends React.Component<Properties> {
             canLeaveRoom={this.props.canLeaveRoom}
             canEdit={this.props.canEdit}
             canViewGroupInformation={this.props.canViewDetails}
-            onStartAddMember={this.props.onAddMember}
-            onLeave={this.props.onLeaveRoom}
-            onEdit={this.props.onEdit}
-            onViewGroupInformation={this.props.onViewDetails}
+            onStartAddMember={this.addMember}
+            onLeave={this.leaveGroup}
+            onEdit={this.editGroup}
+            onViewGroupInformation={this.viewGroupInformation}
           />
 
           {!this.isOneOnOne() && (

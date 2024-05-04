@@ -234,7 +234,7 @@ export class MatrixClient implements IChatClient {
       await this.matrix.getCrypto().bootstrapSecretStorage({});
       await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
     } catch (e) {
-      console.log('error restoring backup', e);
+      // console.warn('error restoring backup', e);
       throw new Error('Error while restoring backup');
     } finally {
       this.secretStorageKey = null;
@@ -253,7 +253,7 @@ export class MatrixClient implements IChatClient {
       // Matrix does not provide a way to know if a room has become invalid
       // so we'll just ignore the error and assume it's because the room is invalid
       // A room can become invalid if all the members have left before one member has joined
-      console.warn(`Could not auto join room ${roomId}`);
+      // console.warn(`Could not auto join room ${roomId}`);
       return false;
     }
   }
@@ -290,7 +290,7 @@ export class MatrixClient implements IChatClient {
   private getNewContent(event): any {
     const result = event.content[MatrixConstants.NEW_CONTENT];
     if (!result) {
-      console.log('got an edit event that did not have new content', event);
+      throw new Error(`Edit event missing new content: ${JSON.stringify(event)}`);
     }
     return result;
   }
@@ -488,7 +488,7 @@ export class MatrixClient implements IChatClient {
 
   async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
     if (!this.matrix.isRoomEncrypted(roomId)) {
-      console.warn('uploadFileMessage called for non-encrypted room', roomId);
+      // console.warn('uploadFileMessage called for non-encrypted room', roomId);
       return;
     }
 
@@ -814,7 +814,7 @@ export class MatrixClient implements IChatClient {
 
   private debug(...args) {
     if (featureFlags.verboseLogging) {
-      console.log(...args);
+      // console.log(...args);
     }
   }
 

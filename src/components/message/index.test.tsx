@@ -166,6 +166,21 @@ describe('message', () => {
     expect(messageMenuProps.canDelete).toBe(false);
   });
 
+  it('allows reply when parent message is set', () => {
+    const wrapper = subject({
+      message: 'the message',
+      parentMessageText: 'quoted message',
+    });
+
+    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+    wrapper.simulate('contextmenu', mockEvent);
+
+    expect(wrapper.find(MessageMenu).exists()).toBe(true);
+
+    const messageMenuProps = wrapper.find(MessageMenu).first().props();
+    expect(messageMenuProps.canReply).toBe(true);
+  });
+
   it('allows only delete when message send failed', () => {
     const wrapper = subject({
       message: 'the message',

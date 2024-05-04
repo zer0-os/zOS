@@ -254,9 +254,7 @@ export class Message extends React.Component<Properties, State> {
 
   canReply = () => {
     return (
-      !this.props.parentMessageText &&
-      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
-      this.props.sendStatus !== MessageSendStatus.FAILED
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
     );
   };
 

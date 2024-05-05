@@ -38,11 +38,16 @@ export function* markConversationAsRead(conversationId) {
 }
 
 export function* openFirstConversation() {
-  const conversation = yield select(mostRecentConversation);
-  if (conversation) {
-    yield call(openConversation, conversation.id);
+  const lastActiveConversationId = yield select((state) => state.chat.activeConversationId);
+  if (lastActiveConversationId) {
+    yield call(openConversation, lastActiveConversationId);
   } else {
-    yield call(rawSetActiveConversationId, null);
+    const conversation = yield select(mostRecentConversation);
+    if (conversation) {
+      yield call(openConversation, conversation.id);
+    } else {
+      yield call(rawSetActiveConversationId, null);
+    }
   }
 }
 

@@ -53,30 +53,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.scrollContainerRef = React.createRef();
   }
 
-  componentDidMount() {
-    this.openMostRecentConversation();
-  }
-
-  openMostRecentConversation = () => {
-    const urlSegments = window.location.pathname.split('/');
-    const conversationIndex = urlSegments.indexOf('conversation');
-
-    if (conversationIndex !== -1 && urlSegments.length > conversationIndex + 1) {
-      const conversationId = urlSegments[conversationIndex + 1];
-      if (conversationId) {
-        this.props.onConversationClick({ conversationId });
-        return;
-      }
-    }
-
-    if (this.props.conversations.length > 0) {
-      const recentConversation = this.props.conversations[0];
-      this.props.onConversationClick({ conversationId: recentConversation.id });
-    } else {
-      console.log('No conversations available.');
-    }
-  };
-
   scrollToTop = () => {
     if (this.scrollContainerRef.current) {
       this.scrollContainerRef.current.scrollToTop();

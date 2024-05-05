@@ -42,7 +42,6 @@ export function* openFirstConversation() {
   if (conversation) {
     yield call(openConversation, conversation.id);
   } else {
-    // Not sure this is the right choice. Maybe there's a redirectToRoot at some point.
     yield call(rawSetActiveConversationId, null);
   }
 }
@@ -142,6 +141,7 @@ export function* roomUnfavorited(action) {
 }
 
 export function* saga() {
+  yield call(openFirstConversation);
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);

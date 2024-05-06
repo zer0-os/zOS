@@ -4,6 +4,7 @@
 
 @import 'variables';
 @import 'layout';
+@import 'functions';
 
 $platform-padding: 8px;
 
@@ -42,6 +43,22 @@ $border-color-hover: theme-zui.$color-primary-7;
     .icon-button__icon {
       vertical-align: middle;
     }
+  }
+
+  &.display-app-background {
+    background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
+    background-color: #0a0a0a;
+    background-image: transparent;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+
+    transition: background-color animation.$animation-duration-double ease-out,
+      background-image animation.$animation-duration-double ease-out;
+
+    --box-radius: 16px;
+
+    --animation-duration-double: #{animation.$animation-duration-double};
   }
 }
 

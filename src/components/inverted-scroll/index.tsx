@@ -8,6 +8,7 @@ const cn = bemClassName('inverted-scroll');
 
 export interface Properties {
   className?: string;
+  isScrollbarHidden?: boolean;
 }
 
 interface State {
@@ -47,7 +48,11 @@ export class InvertedScroll extends React.Component<Properties, State> {
     return (
       <div
         id='invert-scroll'
-        className={classNames('scroll-container', this.props.className)}
+        className={classNames(
+          'scroll-container',
+          this.props.className,
+          this.props.isScrollbarHidden && 'scrollbar-hidden'
+        )}
         ref={this.setScrollWrapper}
       >
         <Waypoint onEnter={this.preventHigherScroll} />

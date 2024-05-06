@@ -49,6 +49,7 @@ export interface Properties {
   showSenderAvatar?: boolean;
   isOneOnOne: boolean;
   conversationErrorMessage: string;
+  isSecondarySidekickOpen: boolean;
 }
 
 export interface State {
@@ -239,7 +240,11 @@ export class ChatView extends React.Component<Properties, State> {
             onClose={this.closeLightBox}
           />
         )}
-        <InvertedScroll className='channel-view__inverted-scroll' ref={this.scrollContainerRef}>
+        <InvertedScroll
+          className='channel-view__inverted-scroll'
+          isScrollbarHidden={this.props.isSecondarySidekickOpen}
+          ref={this.scrollContainerRef}
+        >
           <div className='channel-view__main'>
             {this.props.hasLoadedMessages && this.props.messagesFetchStatus === MessagesFetchState.MORE_IN_PROGRESS && (
               <div {...cn('scroll-skeleton')}>

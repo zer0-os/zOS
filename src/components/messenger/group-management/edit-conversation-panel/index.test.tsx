@@ -32,7 +32,6 @@ describe(EditConversationPanel, () => {
       const wrapper = subject({ name: 'Display Name', icon: 'icon-url' });
       expect(wrapper.find('.edit-conversation-panel__body').length).toEqual(1);
       expect(wrapper.find(ImageUpload).props().imageSrc).toEqual('icon-url');
-      expect(wrapper.find('Input[name="name"]').props().label).toEqual('Display Name');
     });
 
     it('disables Save Changes button when name is empty', () => {

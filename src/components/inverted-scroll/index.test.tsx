@@ -24,4 +24,16 @@ describe('inverted-scroll', () => {
 
     expect(wrapper.hasClass('coffee-list')).toBe(true);
   });
+
+  it('applies scrollbar-hidden class if isScrollbarHidden', function () {
+    const wrapper = subject({ isScrollbarHidden: true });
+
+    expect(wrapper.hasClass('scrollbar-hidden')).toBe(true);
+  });
+
+  it('does not apply scrollbar-hidden class if isScrollbarHidden is false', function () {
+    const wrapper = subject({ isScrollbarHidden: false });
+
+    expect(wrapper.hasClass('scrollbar-hidden')).toBe(false);
+  });
 });

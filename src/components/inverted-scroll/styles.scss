@@ -1,6 +1,16 @@
 .scroll-container {
   overflow-y: scroll;
   overflow-x: hidden;
+
+  &.scrollbar-hidden {
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: none;
+    }
+  }
 }
 
 .inverted-scroll {

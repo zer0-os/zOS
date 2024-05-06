@@ -45,6 +45,8 @@ describe('ChatView', () => {
       sendDisabledMessage: '',
       conversationErrorMessage: '',
       onHiddenMessageInfoClick: () => null,
+      isSecondarySidekickOpen: false,
+
       ...props,
     };
 

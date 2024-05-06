@@ -273,6 +273,9 @@ describe('ChannelViewContainer', () => {
         chat: {
           activeConversationId: '1',
         },
+        groupManagement: {
+          isSecondarySidekickOpen: false,
+        },
       } as RootState);
 
     test('channel', () => {

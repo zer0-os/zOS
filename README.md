@@ -14,7 +14,7 @@
 
 ### Create an app
 
-The [zOS Feed app](https://github.com/zer0-os/zOS-feed) is the first core app, and provides a template to follow. Get in touch with the zOS core team to discuss having your app integrated.
+The [ZERO Feed app](https://github.com/zer0-os/zOS-feed) is the first core app, and provides a template to follow. Get in touch with the zOS core team to discuss having your app integrated.
 
 1. fork the zOS repo, as new apps still require some changes to the platform at this stage.
 1. follow the getting started steps above and make sure you have a running zOS instance.

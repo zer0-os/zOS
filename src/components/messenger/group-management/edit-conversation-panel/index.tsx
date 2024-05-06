@@ -90,10 +90,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
 
         <Input
-          label='Display Name'
           name='name'
           value={this.state.name}
           onChange={this.trackName}
+          placeholder='Group name...'
           {...cn('body-input')}
         />
 

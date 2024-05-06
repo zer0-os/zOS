@@ -9,8 +9,7 @@ import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
-import { isSecondarySidekickOpenSelector } from '../group-management/selectors';
-import { toggleIsSecondarySidekick } from '../group-management/saga';
+import { resetConversationManagement } from '../group-management/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -54,11 +53,7 @@ export function* openConversation(conversationId) {
 
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
-
-  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
-  if (isSidekickOpen) {
-    yield spawn(toggleIsSecondarySidekick);
-  }
+  yield call(resetConversationManagement);
 }
 
 export function* unreadCountUpdated(action) {

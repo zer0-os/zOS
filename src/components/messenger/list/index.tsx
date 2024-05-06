@@ -105,7 +105,7 @@ export class Container extends React.Component<Properties, State> {
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
-      userIsOnline: !!user?.data?.isOnline,
+      userIsOnline: true,
       myUserId: user?.data?.id,
       joinRoomErrorContent,
       isBackupDialogOpen,

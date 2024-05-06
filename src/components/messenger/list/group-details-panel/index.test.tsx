@@ -75,6 +75,7 @@ describe('GroupDetailsPanel', () => {
     ];
     const wrapper = subject({ onCreate, users });
 
+    wrapper.find('Input').simulate('change', { target: { value: 'New Group' } });
     wrapper.find('Button').simulate('press');
 
     expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ users: users }));
@@ -96,6 +97,7 @@ describe('GroupDetailsPanel', () => {
     const wrapper = subject({ onCreate });
 
     wrapper.find('ImageUpload').simulate('change', image);
+    wrapper.find('Input').simulate('change', { target: { value: 'New Group' } });
     wrapper.find('Button').simulate('press');
 
     expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ image }));

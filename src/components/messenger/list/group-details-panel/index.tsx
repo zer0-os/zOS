@@ -22,17 +22,24 @@ export interface Properties {
 interface State {
   name: string;
   image: File | null;
+  isNameValid: boolean;
 }
 
 export class GroupDetailsPanel extends React.Component<Properties, State> {
-  state = { name: '', image: null };
+  state = { name: '', image: null, isNameValid: true };
 
   createGroup = () => {
+    if (!this.state.name) {
+      this.setState({ isNameValid: false });
+      return;
+    }
+
     this.props.onCreate({ name: this.state.name, users: this.props.users, image: this.state.image });
+    this.setState({ isNameValid: true });
   };
 
   nameChanged = (value) => {
-    this.setState({ name: value });
+    this.setState({ name: value, isNameValid: true });
   };
 
   onImageChange = (image) => {
@@ -58,7 +65,12 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             onChange={this.nameChanged}
             {...cn('name-input')}
             placeholder='Group name...'
+            isRequired={true}
+            aria-invalid={!this.state.isNameValid}
           />
+          {!this.state.isNameValid && (
+            <div style={{ color: 'rgba(221, 50, 50, 0.75)' }}>Please enter a group name.</div>
+          )}
 
           <div {...cn('selected-container')}>
             <div {...cn('selected-header')}>

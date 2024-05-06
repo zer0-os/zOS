@@ -159,7 +159,7 @@ export class SettingsMenu extends React.Component<Properties, State> {
               isActive={this.shouldAvatarHaveHighlight}
               size={'medium'}
               imageURL={this.props.userAvatarUrl}
-              statusType={this.props.userStatus}
+              statusType='active'
             />
           }
           itemSize='spacious'

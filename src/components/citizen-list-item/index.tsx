@@ -3,10 +3,11 @@ import * as React from 'react';
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
-
-import './styles.scss';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { displayName } from '../../lib/user';
+
+import './styles.scss';
+
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {

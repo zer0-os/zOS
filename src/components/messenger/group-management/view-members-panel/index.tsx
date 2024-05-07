@@ -20,6 +20,7 @@ export interface Properties {
   conversationAdminIds: string[];
 
   onAdd: () => void;
+  onMemberSelected: (userId: string) => void;
 }
 
 export class ViewMembersPanel extends React.Component<Properties> {
@@ -30,6 +31,10 @@ export class ViewMembersPanel extends React.Component<Properties> {
 
   addMember = () => {
     this.props.onAdd();
+  };
+
+  memberSelected = (userId: string) => {
+    this.props.onMemberSelected(userId);
   };
 
   renderMembers = () => {
@@ -54,7 +59,12 @@ export class ViewMembersPanel extends React.Component<Properties> {
               tag={this.getTagForUser(this.props.currentUser)}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>
+              <CitizenListItem
+                key={u.userId}
+                user={u}
+                tag={this.getTagForUser(u)}
+                onMemberSelected={this.memberSelected}
+              ></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

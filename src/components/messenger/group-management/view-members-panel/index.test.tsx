@@ -18,6 +18,7 @@ describe(ViewMembersPanel, () => {
       canAddMembers: false,
 
       onAdd: () => null,
+      onMemberSelected: () => null,
       ...props,
     };
 

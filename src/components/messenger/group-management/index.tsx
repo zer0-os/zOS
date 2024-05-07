@@ -33,6 +33,7 @@ export interface Properties {
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
+  onMemberClick: (userId: string) => void;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
@@ -86,6 +87,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             canAddMembers={this.props.canAddMembers}
             conversationAdminIds={this.props.conversationAdminIds}
             onAdd={this.props.startAddGroupMember}
+            onMemberSelected={this.props.onMemberClick}
           />
         )}
       </>

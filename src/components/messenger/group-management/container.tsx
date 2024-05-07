@@ -19,13 +19,16 @@ import { Option } from '../lib/types';
 import { GroupManagement } from '.';
 import { RootState } from '../../../store/reducer';
 import { GroupManagementErrors, EditConversationState } from '../../../store/group-management/types';
-import { User, denormalize as denormalizeChannel } from '../../../store/channels';
+import { User, denormalize as denormalizeChannel, openConversation, Channel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { RemoveMemberDialogContainer } from '../../group-management/remove-member-dialog/container';
 import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { receiveSearchResults } from '../../../store/users';
+import { denormalizeConversations } from '../../../store/channels-list';
+import { CreateMessengerConversation } from '../../../store/channels-list/types';
+import { createConversation } from '../../../store/create-conversation';
 
 export interface PublicProperties {}
 
@@ -45,6 +48,7 @@ export interface Properties extends PublicProperties {
   canLeaveGroup: boolean;
   conversationAdminIds: string[];
   isOneOnOne: boolean;
+  existingConversations: Channel[];
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -54,6 +58,8 @@ export interface Properties extends PublicProperties {
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   receiveSearchResults: (data) => void;
+  openConversation: (payload: { conversationId: string }) => void;
+  createConversation: (payload: CreateMessengerConversation) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -67,6 +73,7 @@ export class Container extends React.Component<Properties> {
     const currentUser = currentUserSelector(state);
     const conversationAdminIds = conversation?.adminMatrixIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
+    const existingConversations = denormalizeConversations(state);
 
     return {
       activeConversationId,
@@ -82,7 +89,7 @@ export class Container extends React.Component<Properties> {
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
         matrixId: currentUser?.matrixId,
-        isOnline: currentUser?.isOnline,
+        isOnline: currentUser?.isOnline || true,
         primaryZID: currentUser?.primaryZID,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,
@@ -93,6 +100,7 @@ export class Container extends React.Component<Properties> {
       canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,
       isOneOnOne: conversation?.isOneOnOne,
+      existingConversations,
     };
   }
   static mapActions(_props: Properties): Partial<Properties> {
@@ -105,6 +113,8 @@ export class Container extends React.Component<Properties> {
       startAddGroupMember,
       setLeaveGroupStatus,
       receiveSearchResults,
+      openConversation,
+      createConversation,
     };
   }
 
@@ -128,6 +138,23 @@ export class Container extends React.Component<Properties> {
 
   onEditConversation = async (name: string, image: File | null) => {
     this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
+  };
+
+  processMemberConversation = (userId) => {
+    const { existingConversations, createConversation, openConversation } = this.props;
+
+    const existingConversation = existingConversations?.find(
+      (conversation) =>
+        conversation.isOneOnOne &&
+        conversation.otherMembers?.length === 1 &&
+        conversation.otherMembers[0]?.userId === userId
+    );
+
+    if (existingConversation) {
+      openConversation({ conversationId: existingConversation.id });
+    } else {
+      createConversation({ userIds: [userId] });
+    }
   };
 
   render() {
@@ -156,6 +183,7 @@ export class Container extends React.Component<Properties> {
           conversationAdminIds={this.props.conversationAdminIds}
           startAddGroupMember={this.props.startAddGroupMember}
           setLeaveGroupStatus={this.props.setLeaveGroupStatus}
+          onMemberClick={this.processMemberConversation}
         />
         <RemoveMemberDialogContainer />
       </>

@@ -28,6 +28,7 @@ export interface Properties {
   onBack: () => void;
   onRemoveMember: (userId: string) => void;
   onEdit: (name: string, image: File | null) => void;
+  onMemberSelected: (userId: string) => void;
 }
 
 interface State {
@@ -73,6 +74,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   publishRemove = (userId: string) => {
     this.props.onRemoveMember(userId);
+  };
+
+  memberSelected = (userId: string) => {
+    this.props.onMemberSelected(userId);
   };
 
   renderEditImageAndIcon = () => {
@@ -134,7 +139,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
           <ScrollbarContainer>
             <CitizenListItem user={this.props.currentUser} tag='Admin'></CitizenListItem>
             {sortedOtherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
+              <CitizenListItem
+                key={u.userId}
+                user={u}
+                onRemove={this.removeMember}
+                onSelected={this.memberSelected}
+              ></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

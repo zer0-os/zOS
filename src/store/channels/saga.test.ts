@@ -10,12 +10,14 @@ import {
   unreadCountUpdated,
   onUnfavoriteRoom,
   roomUnfavorited,
+  onUserTypingInRoom,
+  publishUserTypingEvent,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addRoomToFavorites, chat, removeRoomFromFavorites } from '../../lib/chat';
+import { addRoomToFavorites, chat, removeRoomFromFavorites, sendTypingEvent } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -174,6 +176,59 @@ describe(onUnfavoriteRoom, () => {
   });
 });
 
+describe(onUserTypingInRoom, () => {
+  it('calls publishUserTypingEvent', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', currentUserLastTypingEventPublishedAt: null })
+      .build();
+
+    await expectSaga(onUserTypingInRoom, { payload: { roomId: 'room-id' } })
+      .withReducer(rootReducer, initialState)
+      .call.fn(publishUserTypingEvent)
+      .run();
+  });
+});
+
+describe(publishUserTypingEvent, () => {
+  it('does nothing if channel does not exist', async () => {
+    const initialState = new StoreBuilder().build();
+
+    await expectSaga(publishUserTypingEvent, 'room-id')
+      .withReducer(rootReducer, initialState)
+      .not.call(sendTypingEvent)
+      .run();
+  });
+
+  it('does nothing if not enough time has passed since last typing event', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', currentUserLastTypingEventPublishedAt: Date.now() })
+      .build();
+
+    await expectSaga(publishUserTypingEvent, 'room-id')
+      .withReducer(rootReducer, initialState)
+      .not.call(sendTypingEvent)
+      .run();
+  });
+
+  it('sends typing event and updates currentUserLastTypingEventPublishedAt', async () => {
+    const backTenSeconds = Date.now() - 10000;
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', currentUserLastTypingEventPublishedAt: backTenSeconds })
+      .build();
+
+    const { storeState } = await expectSaga(publishUserTypingEvent, 'room-id')
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(sendTypingEvent), undefined],
+      ])
+      .call(sendTypingEvent, 'room-id', true)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.currentUserLastTypingEventPublishedAt).not.toEqual(backTenSeconds);
+  });
+});
+
 const CHANNEL_DEFAULTS = {
   optimisticId: '',
   name: '',
@@ -191,4 +246,5 @@ const CHANNEL_DEFAULTS = {
   messagesFetchStatus: null,
   adminMatrixIds: [],
   isFavorite: false,
+  currentUserLastTypingEventPublishedAt: null,
 };

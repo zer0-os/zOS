@@ -21,6 +21,7 @@ describe(EditConversationPanel, () => {
       icon: '',
       onRemoveMember: () => null,
       conversationAdminIds: [],
+      onMemberSelected: () => null,
       ...props,
     };
 

@@ -3,10 +3,11 @@ import * as React from 'react';
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
-
-import './styles.scss';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { displayName } from '../../lib/user';
+
+import './styles.scss';
+
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
@@ -14,6 +15,7 @@ export interface Properties {
   tag?: string;
 
   onRemove?: (userId: string) => void;
+  onMemberSelected?: (userId: string) => void;
 }
 
 export class CitizenListItem extends React.Component<Properties> {
@@ -25,9 +27,26 @@ export class CitizenListItem extends React.Component<Properties> {
     this.props.onRemove(this.props.user.userId);
   };
 
+  publishMemberClick = () => {
+    if (this.props.onMemberSelected) {
+      this.props.onMemberSelected(this.props.user.userId);
+    }
+  };
+
+  publishMemberKeyDown = (event) => {
+    if (event.key === 'Enter' && this.props.onMemberSelected) {
+      this.props.onMemberSelected(this.props.user.userId);
+    }
+  };
+
   render() {
     return (
-      <div {...cn()}>
+      <div
+        {...cn('', this.props.onMemberSelected && 'clickable')}
+        onClick={this.publishMemberClick}
+        onKeyDown={this.publishMemberKeyDown}
+        tabIndex={0}
+      >
         <div {...cn('details')}>
           <Avatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} statusType={this.statusType} />
           <div {...cn('text-container')}>

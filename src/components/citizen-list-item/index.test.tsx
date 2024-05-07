@@ -10,6 +10,8 @@ describe(CitizenListItem, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       user: { userId: 'stub' } as any,
+
+      onMemberSelected: () => null,
       ...props,
     };
 
@@ -65,5 +67,23 @@ describe(CitizenListItem, () => {
     const wrapper = subject({});
 
     expect(wrapper).not.toHaveElement(c('tag'));
+  });
+
+  it('publishes member click event when clicked', function () {
+    const onMemberSelected = jest.fn();
+    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
+
+    wrapper.find(c('')).simulate('click');
+
+    expect(onMemberSelected).toHaveBeenCalledWith('user-id');
+  });
+
+  it('publishes member click event on "Enter" key press', function () {
+    const onMemberSelected = jest.fn();
+    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
+
+    wrapper.find(c('')).simulate('keydown', { key: 'Enter' });
+
+    expect(onMemberSelected).toHaveBeenCalledWith('user-id');
   });
 });

@@ -11,7 +11,7 @@ describe(CitizenListItem, () => {
     const allProps: Properties = {
       user: { userId: 'stub' } as any,
 
-      onMemberSelected: () => null,
+      onSelected: () => null,
       ...props,
     };
 
@@ -71,7 +71,7 @@ describe(CitizenListItem, () => {
 
   it('publishes member click event when clicked', function () {
     const onMemberSelected = jest.fn();
-    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
+    const wrapper = subject({ onSelected: onMemberSelected, user: { userId: 'user-id' } as any });
 
     wrapper.find(c('')).simulate('click');
 
@@ -80,7 +80,7 @@ describe(CitizenListItem, () => {
 
   it('publishes member click event on "Enter" key press', function () {
     const onMemberSelected = jest.fn();
-    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
+    const wrapper = subject({ onSelected: onMemberSelected, user: { userId: 'user-id' } as any });
 
     wrapper.find(c('')).simulate('keydown', { key: 'Enter' });
 

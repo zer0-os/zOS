@@ -107,7 +107,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
                 key={u.userId}
                 user={u}
                 tag={this.getTagForUser(u)}
-                onMemberSelected={this.memberSelected}
+                onSelected={this.memberSelected}
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>

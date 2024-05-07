@@ -300,3 +300,7 @@ export async function addRoomToFavorites(roomId: string) {
 export async function removeRoomFromFavorites(roomId: string) {
   return await chat.get().matrix.removeRoomFromFavorites(roomId);
 }
+
+export async function sendTypingEvent(roomId: string, isTyping: boolean) {
+  return await chat.get().matrix.sendTypingEvent(roomId, isTyping);
+}

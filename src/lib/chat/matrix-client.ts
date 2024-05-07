@@ -42,6 +42,7 @@ import { encryptFile } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
+import { USER_TYPING_TIMEOUT } from '../../store/channels/saga';
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -685,6 +686,12 @@ export class MatrixClient implements IChatClient {
 
     const result = await this.matrix.getRoomTags(roomId);
     return !!result.tags?.[MatrixConstants.FAVORITE];
+  }
+
+  async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
+    await this.waitForConnection();
+
+    this.matrix.sendTyping(roomId, isTyping, USER_TYPING_TIMEOUT);
   }
 
   arraysMatch(a, b) {

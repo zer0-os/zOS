@@ -36,17 +36,11 @@ interface State {
   filter: string;
   userSearchResults: Option[];
   selectedTab: Tab;
-  fadeIn: boolean;
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<ScrollbarContainer>;
-  state = { filter: '', userSearchResults: [], selectedTab: Tab.All, fadeIn: false };
-
-  triggerFadeIn = () => {
-    this.setState({ fadeIn: true });
-    setTimeout(() => this.setState({ fadeIn: false }), 500);
-  };
+  state = { filter: '', userSearchResults: [], selectedTab: Tab.All };
 
   constructor(props) {
     super(props);
@@ -111,7 +105,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   selectFavorites = () => {
     this.setState({ selectedTab: Tab.Favorites });
-    this.triggerFadeIn();
   };
 
   onFavoriteRoom = (roomId: string) => {
@@ -182,7 +175,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
           </div>
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
-            <div {...cn('item-list', this.state.fadeIn ? 'fade-in' : '')}>
+            <div {...cn('item-list')}>
               {this.filteredConversations.length > 0 &&
                 this.filteredConversations.map((c) => (
                   <ConversationItem

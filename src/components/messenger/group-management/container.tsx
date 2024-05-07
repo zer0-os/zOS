@@ -89,7 +89,7 @@ export class Container extends React.Component<Properties> {
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
         matrixId: currentUser?.matrixId,
-        isOnline: currentUser?.isOnline,
+        isOnline: currentUser?.isOnline || true,
         primaryZID: currentUser?.primaryZID,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,

@@ -15,7 +15,7 @@ export interface Properties {
   tag?: string;
 
   onRemove?: (userId: string) => void;
-  onMemberSelected?: (userId: string) => void;
+  onSelected?: (userId: string) => void;
 }
 
 export class CitizenListItem extends React.Component<Properties> {
@@ -28,21 +28,21 @@ export class CitizenListItem extends React.Component<Properties> {
   };
 
   publishMemberClick = () => {
-    if (this.props.onMemberSelected) {
-      this.props.onMemberSelected(this.props.user.userId);
+    if (this.props.onSelected) {
+      this.props.onSelected(this.props.user.userId);
     }
   };
 
   publishMemberKeyDown = (event) => {
-    if (event.key === 'Enter' && this.props.onMemberSelected) {
-      this.props.onMemberSelected(this.props.user.userId);
+    if (event.key === 'Enter' && this.props.onSelected) {
+      this.props.onSelected(this.props.user.userId);
     }
   };
 
   render() {
     return (
       <div
-        {...cn('', this.props.onMemberSelected && 'clickable')}
+        {...cn('', this.props.onSelected && 'clickable')}
         onClick={this.publishMemberClick}
         onKeyDown={this.publishMemberKeyDown}
         tabIndex={0}

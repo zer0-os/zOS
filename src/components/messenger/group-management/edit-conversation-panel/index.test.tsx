@@ -153,7 +153,7 @@ describe(EditConversationPanel, () => {
 
       const wrapper = subject({ onMemberSelected, otherMembers });
 
-      wrapper.find(CitizenListItem).at(1).simulate('memberSelected', 'otherMember1');
+      wrapper.find(CitizenListItem).at(1).simulate('selected', 'otherMember1');
 
       expect(onMemberSelected).toHaveBeenCalled();
     });

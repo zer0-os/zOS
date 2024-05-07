@@ -143,7 +143,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
                 key={u.userId}
                 user={u}
                 onRemove={this.removeMember}
-                onMemberSelected={this.memberSelected}
+                onSelected={this.memberSelected}
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>

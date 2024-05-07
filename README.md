@@ -1,4 +1,4 @@
-# Zero
+# ZERO
 
 #### Flexible application platform for interacting with the Zer0 ecosystem
 

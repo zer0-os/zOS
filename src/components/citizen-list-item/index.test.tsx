@@ -11,7 +11,7 @@ describe(CitizenListItem, () => {
     const allProps: Properties = {
       user: { userId: 'stub' } as any,
 
-      onMemberClick: () => null,
+      onMemberSelected: () => null,
       ...props,
     };
 
@@ -70,20 +70,20 @@ describe(CitizenListItem, () => {
   });
 
   it('publishes member click event when clicked', function () {
-    const onMemberClick = jest.fn();
-    const wrapper = subject({ onMemberClick, user: { userId: 'user-id' } as any });
+    const onMemberSelected = jest.fn();
+    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
 
     wrapper.find(c('')).simulate('click');
 
-    expect(onMemberClick).toHaveBeenCalledWith('user-id');
+    expect(onMemberSelected).toHaveBeenCalledWith('user-id');
   });
 
   it('publishes member click event on "Enter" key press', function () {
-    const onMemberClick = jest.fn();
-    const wrapper = subject({ onMemberClick, user: { userId: 'user-id' } as any });
+    const onMemberSelected = jest.fn();
+    const wrapper = subject({ onMemberSelected, user: { userId: 'user-id' } as any });
 
     wrapper.find(c('')).simulate('keydown', { key: 'Enter' });
 
-    expect(onMemberClick).toHaveBeenCalledWith('user-id');
+    expect(onMemberSelected).toHaveBeenCalledWith('user-id');
   });
 });

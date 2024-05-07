@@ -14,7 +14,6 @@ const cn = bemClassName('group-details-panel');
 
 export interface Properties {
   users: Option[];
-
   onBack: () => void;
   onCreate: (data: { name: string; users: Option[]; image: File }) => void;
 }
@@ -22,33 +21,36 @@ export interface Properties {
 interface State {
   name: string;
   image: File | null;
-  isNameValid: boolean;
+  errors: {
+    name?: string;
+  };
 }
 
 export class GroupDetailsPanel extends React.Component<Properties, State> {
-  state = { name: '', image: null, isNameValid: true };
+  state = { name: '', image: null, errors: {} };
 
   createGroup = () => {
-    if (!this.state.name) {
-      this.setState({ isNameValid: false });
-      return;
-    }
-
     this.props.onCreate({ name: this.state.name, users: this.props.users, image: this.state.image });
-    this.setState({ isNameValid: true });
   };
 
-  nameChanged = (value) => {
-    this.setState({ name: value, isNameValid: true });
-  };
+  nameChanged = (value) => this.setState({ name: value });
+  onImageChange = (image) => this.setState({ image });
+  back = () => this.props.onBack();
 
-  onImageChange = (image) => {
-    this.setState({ image });
-  };
+  get isValid() {
+    return typeof this.state.name === 'string' && this.state.name.trim().length > 0;
+  }
 
-  back = () => {
-    this.props.onBack();
-  };
+  get nameError() {
+    if (!this.isValid) {
+      return { variant: 'error', text: 'Please enter a group name.' } as any;
+    }
+    return null;
+  }
+
+  get isDisabled() {
+    return !!this.nameError || this.state.name === '';
+  }
 
   renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
@@ -63,14 +65,12 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
           <Input
             value={this.state.name}
             onChange={this.nameChanged}
-            {...cn('name-input')}
             placeholder='Group name...'
             isRequired={true}
-            aria-invalid={!this.state.isNameValid}
+            error={!!this.nameError}
+            alert={this.nameError}
+            {...cn('name-input')}
           />
-          {!this.state.isNameValid && (
-            <div style={{ color: 'rgba(221, 50, 50, 0.75)' }}>Please enter a group name.</div>
-          )}
 
           <div {...cn('selected-container')}>
             <div {...cn('selected-header')}>
@@ -90,7 +90,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('footer')}>
-          <Button {...cn('create-button')} onPress={this.createGroup}>
+          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={this.isDisabled}>
             Create Group
           </Button>
         </div>

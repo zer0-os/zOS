@@ -58,7 +58,7 @@ $side-padding: 16px;
       }
 
       .messages-list__tab-badge {
-        display: block;
+        display: none;
       }
     }
   }
@@ -74,8 +74,8 @@ $side-padding: 16px;
     align-items: center;
     text-align: center;
 
-    height: 16px;
-    min-width: 16px;
+    height: 12px;
+    min-width: 12px;
     padding: 2px 4px;
 
     border-radius: 9999px;
@@ -122,10 +122,6 @@ $side-padding: 16px;
     height: 1px;
     // accounts for 4px scrollbar width on right side of container
     padding: 0 12px 0 16px;
-
-    &.fade-in {
-      animation: fadeInEffect 0.5s ease-in-out;
-    }
   }
 
   &__empty {
@@ -155,6 +151,8 @@ $side-padding: 16px;
 
     align-items: center;
     text-align: center;
+
+    animation: fadeInEffect 0.3s ease-in-out;
   }
 
   &__favorites-preview-image {

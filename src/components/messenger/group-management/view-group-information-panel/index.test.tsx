@@ -27,6 +27,7 @@ describe(ViewGroupInformationPanel, () => {
       onLeave: () => null,
       onEdit: () => null,
       onBack: () => null,
+      onMemberSelected: () => null,
       ...props,
     };
 

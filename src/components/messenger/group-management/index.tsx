@@ -61,6 +61,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onRemoveMember={this.props.onRemoveMember}
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
+            onMemberSelected={this.props.onMemberClick}
           />
         )}
         {this.props.stage === Stage.ViewGroupInformation && (
@@ -77,6 +78,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onLeave={this.props.setLeaveGroupStatus}
             onEdit={this.props.startEditConversation}
             onBack={this.props.onBack}
+            onMemberSelected={this.props.onMemberClick}
           />
         )}
         {this.props.stage === Stage.None && (

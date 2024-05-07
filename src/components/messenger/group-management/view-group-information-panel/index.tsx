@@ -29,6 +29,7 @@ export interface Properties {
   onLeave: (status: LeaveGroupDialogStatus) => void;
   onEdit: () => void;
   onBack: () => void;
+  onMemberSelected: (userId: string) => void;
 }
 
 export class ViewGroupInformationPanel extends React.Component<Properties> {
@@ -50,6 +51,10 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
 
   openLeaveGroup = () => {
     this.props.onLeave(LeaveGroupDialogStatus.OPEN);
+  };
+
+  memberSelected = (userId: string) => {
+    this.props.onMemberSelected(userId);
   };
 
   renderDetails = () => {
@@ -98,7 +103,12 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
               tag={this.getTagForUser(this.props.currentUser)}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u} tag={this.getTagForUser(u)}></CitizenListItem>
+              <CitizenListItem
+                key={u.userId}
+                user={u}
+                tag={this.getTagForUser(u)}
+                onMemberSelected={this.memberSelected}
+              ></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

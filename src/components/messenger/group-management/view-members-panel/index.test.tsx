@@ -34,6 +34,19 @@ describe(ViewMembersPanel, () => {
     expect(onAdd).toHaveBeenCalled();
   });
 
+  it('publishes onMemberSelected event', () => {
+    const onMemberSelected = jest.fn();
+    const otherMembers = [
+      { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+    ] as User[];
+
+    const wrapper = subject({ onMemberSelected, otherMembers });
+
+    wrapper.find(CitizenListItem).at(1).simulate('memberSelected', 'otherMember1');
+
+    expect(onMemberSelected).toHaveBeenCalled();
+  });
+
   it('renders add icon button when current user can add members', () => {
     const wrapper = subject({ canAddMembers: true });
     expect(wrapper).toHaveElement(c('add-icon'));

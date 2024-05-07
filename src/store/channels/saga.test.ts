@@ -206,4 +206,5 @@ const CHANNEL_DEFAULTS = {
   messagesFetchStatus: null,
   adminMatrixIds: [],
   isFavorite: false,
+  currentUserLastTypingEventPublishedAt: null,
 };

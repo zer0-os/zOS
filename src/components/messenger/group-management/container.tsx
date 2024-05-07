@@ -143,11 +143,11 @@ export class Container extends React.Component<Properties> {
   processMemberConversation = (userId) => {
     const { existingConversations, createConversation, openConversation } = this.props;
 
-    const existingConversation = existingConversations.find(
+    const existingConversation = existingConversations?.find(
       (conversation) =>
         conversation.isOneOnOne &&
-        conversation.otherMembers.length === 1 &&
-        conversation.otherMembers[0].userId === userId
+        conversation.otherMembers?.length === 1 &&
+        conversation.otherMembers[0]?.userId === userId
     );
 
     if (existingConversation) {

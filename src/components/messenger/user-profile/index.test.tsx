@@ -16,8 +16,10 @@ describe(UserProfile, () => {
       name: '',
       image: '',
       subHandle: '',
+      isLogoutOpen: false,
 
       onBack: () => null,
+      onOpenLogoutDialog: () => null,
       ...props,
     };
 
@@ -31,6 +33,23 @@ describe(UserProfile, () => {
     wrapper.find(PanelHeader).simulate('back');
 
     expect(onBack).toHaveBeenCalled();
+  });
+
+  it('publishes onLogout event', () => {
+    const onOpenLogoutDialog = jest.fn();
+    const wrapper = subject({ onOpenLogoutDialog, isLogoutOpen: false });
+
+    wrapper.find(c('footer-button')).simulate('press');
+
+    expect(onOpenLogoutDialog).toHaveBeenCalled();
+  });
+
+  it('opens the invite dialog', () => {
+    const wrapper = subject({});
+
+    wrapper.find(c('action-button')).simulate('press');
+
+    expect(wrapper).toHaveState('isInviteDialogOpen', true);
   });
 
   it('renders subhandle when subhandle prop is provided', () => {

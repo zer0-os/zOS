@@ -44,16 +44,14 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <>
-        <UserProfile
-          name={this.props.currentUser.firstName}
-          image={this.props.currentUser.profileImage}
-          subHandle={this.props.currentUser.displaySubHandle}
-          isLogoutOpen={this.props.displayLogoutModal}
-          onBack={this.props.closeUserProfile}
-          onOpenLogoutDialog={this.props.logout}
-        />
-      </>
+      <UserProfile
+        name={this.props.currentUser.firstName}
+        image={this.props.currentUser.profileImage}
+        subHandle={this.props.currentUser.displaySubHandle}
+        isLogoutOpen={this.props.displayLogoutModal}
+        onBack={this.props.closeUserProfile}
+        onOpenLogoutDialog={this.props.logout}
+      />
     );
   }
 }

@@ -30,6 +30,7 @@ export interface Properties {
   onEdit: () => void;
   onBack: () => void;
   onMemberSelected: (userId: string) => void;
+  openUserProfile: () => void;
 }
 
 export class ViewGroupInformationPanel extends React.Component<Properties> {
@@ -55,6 +56,10 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
 
   memberSelected = (userId: string) => {
     this.props.onMemberSelected(userId);
+  };
+
+  openProfile = () => {
+    this.props.openUserProfile();
   };
 
   renderDetails = () => {
@@ -101,6 +106,7 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
             <CitizenListItem
               user={this.props.currentUser}
               tag={this.getTagForUser(this.props.currentUser)}
+              onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem

@@ -2,6 +2,15 @@
 @import '../../../variables';
 @import '../../../glass';
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .user-profile {
   flex-grow: 1;
   display: flex;
@@ -29,6 +38,8 @@
 
   &__image-conatiner {
     align-self: center;
+
+    animation: fadeIn 0.5s;
   }
 
   &__image {

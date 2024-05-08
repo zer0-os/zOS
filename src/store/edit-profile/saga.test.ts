@@ -1,9 +1,21 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
+import {
+  editProfile as editProfileSaga,
+  updateUserProfile,
+  fetchOwnedZIDs,
+  openUserProfile,
+  closeUserProfile,
+} from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
-import { EditProfileState, State, initialState as initialEditProfileState, setLoadingZIDs } from '.';
+import {
+  EditProfileState,
+  State,
+  initialState as initialEditProfileState,
+  setIsUserProfileOpen,
+  setLoadingZIDs,
+} from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
@@ -153,6 +165,36 @@ describe('fetchOwnedZIDs', () => {
 
     expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
     expect(editProfile.loadingZIDs).toEqual(false);
+  });
+});
+
+describe('openUserProfile', () => {
+  it('should set isUserProfileOpen to true', async () => {
+    const { storeState } = await expectSaga(openUserProfile)
+      .withReducer(rootReducer, initialState())
+      .put(setIsUserProfileOpen(true))
+      .run();
+
+    expect(storeState.editProfile.isUserProfileOpen).toEqual(true);
+  });
+});
+
+describe('closeUserProfile', () => {
+  it('should set isUserProfileOpen to false', async () => {
+    const initialStateWithOpenProfile = {
+      ...initialState(),
+      editProfile: {
+        ...initialState().editProfile,
+        isUserProfileOpen: true,
+      },
+    };
+
+    const { storeState } = await expectSaga(closeUserProfile)
+      .withReducer(rootReducer, initialStateWithOpenProfile)
+      .put(setIsUserProfileOpen(false))
+      .run();
+
+    expect(storeState.editProfile.isUserProfileOpen).toEqual(false);
   });
 });
 

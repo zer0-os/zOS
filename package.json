@@ -1,5 +1,5 @@
 {
-  "name": "zOS",
+  "name": "ZERO",
   "version": "1.61.0",
   "private": true,
   "main": "./public/electron.js",

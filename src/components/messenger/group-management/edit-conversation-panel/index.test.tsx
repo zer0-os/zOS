@@ -22,6 +22,7 @@ describe(EditConversationPanel, () => {
       onRemoveMember: () => null,
       conversationAdminIds: [],
       onMemberSelected: () => null,
+      openUserProfile: () => null,
       ...props,
     };
 
@@ -156,6 +157,19 @@ describe(EditConversationPanel, () => {
       wrapper.find(CitizenListItem).at(1).simulate('selected', 'otherMember1');
 
       expect(onMemberSelected).toHaveBeenCalled();
+    });
+
+    it('publishes openUserProfile event', () => {
+      const openUserProfile = jest.fn();
+
+      const wrapper = subject({
+        openUserProfile,
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+      });
+
+      wrapper.find(CitizenListItem).at(0).simulate('selected', 'currentUser');
+
+      expect(openUserProfile).toHaveBeenCalled();
     });
 
     it('does not allow remove if there are only 2 people in the room', function () {

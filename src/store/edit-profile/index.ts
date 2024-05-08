@@ -3,6 +3,8 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 export enum SagaActionTypes {
   EditProfile = 'profile/edit',
   FetchOwnedZIDs = 'profile/edit/fetchOwnedZIDs',
+  OpenUserProfile = 'profile/edit/openUserProfile',
+  CloseUserProfile = 'profile/edit/closeUserProfile',
 }
 
 export enum State {
@@ -17,6 +19,7 @@ export type EditProfileState = {
   state: State;
   ownedZIDs: string[];
   loadingZIDs: boolean;
+  isUserProfileOpen: boolean;
 };
 
 export const initialState: EditProfileState = {
@@ -24,6 +27,7 @@ export const initialState: EditProfileState = {
   state: State.NONE,
   ownedZIDs: [],
   loadingZIDs: false,
+  isUserProfileOpen: false,
 };
 
 export const editProfile = createAction<{
@@ -33,6 +37,8 @@ export const editProfile = createAction<{
 }>(SagaActionTypes.EditProfile);
 
 export const fetchOwnedZIDs = createAction(SagaActionTypes.FetchOwnedZIDs);
+export const openUserProfile = createAction(SagaActionTypes.OpenUserProfile);
+export const closeUserProfile = createAction(SagaActionTypes.CloseUserProfile);
 
 const slice = createSlice({
   name: 'edit-profile',
@@ -55,8 +61,12 @@ const slice = createSlice({
     setLoadingZIDs: (state, action: PayloadAction<EditProfileState['loadingZIDs']>) => {
       state.loadingZIDs = action.payload;
     },
+    setIsUserProfileOpen: (state, action: PayloadAction<EditProfileState['isUserProfileOpen']>) => {
+      state.isUserProfileOpen = action.payload;
+    },
   },
 });
 
-export const { setErrors, startProfileEdit, setState, setOwnedZIDs, setLoadingZIDs } = slice.actions;
+export const { setErrors, startProfileEdit, setState, setOwnedZIDs, setLoadingZIDs, setIsUserProfileOpen } =
+  slice.actions;
 export const { reducer } = slice;

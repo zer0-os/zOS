@@ -29,6 +29,7 @@ import { receiveSearchResults } from '../../../store/users';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
+import { openUserProfile } from '../../../store/edit-profile';
 
 export interface PublicProperties {}
 
@@ -60,6 +61,7 @@ export interface Properties extends PublicProperties {
   receiveSearchResults: (data) => void;
   openConversation: (payload: { conversationId: string }) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  openUserProfile: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -115,6 +117,7 @@ export class Container extends React.Component<Properties> {
       receiveSearchResults,
       openConversation,
       createConversation,
+      openUserProfile,
     };
   }
 
@@ -184,6 +187,7 @@ export class Container extends React.Component<Properties> {
           startAddGroupMember={this.props.startAddGroupMember}
           setLeaveGroupStatus={this.props.setLeaveGroupStatus}
           onMemberClick={this.processMemberConversation}
+          openUserProfile={this.props.openUserProfile}
         />
         <RemoveMemberDialogContainer />
       </>

@@ -29,6 +29,7 @@ export interface Properties {
   onRemoveMember: (userId: string) => void;
   onEdit: (name: string, image: File | null) => void;
   onMemberSelected: (userId: string) => void;
+  openUserProfile: () => void;
 }
 
 interface State {
@@ -78,6 +79,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   memberSelected = (userId: string) => {
     this.props.onMemberSelected(userId);
+  };
+
+  openProfile = () => {
+    this.props.openUserProfile();
   };
 
   renderEditImageAndIcon = () => {
@@ -137,7 +142,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser} tag='Admin'></CitizenListItem>
+            <CitizenListItem user={this.props.currentUser} tag='Admin' onSelected={this.openProfile}></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}

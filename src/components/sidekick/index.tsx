@@ -8,6 +8,7 @@ import { GroupManagementContainer } from '../messenger/group-management/containe
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
+import { UserProfileContainer } from '../messenger/user-profile/container';
 
 const cn = bemClassName('sidekick');
 
@@ -23,13 +24,15 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isSecondarySidekickOpen: boolean;
+  isUserProfileOpen: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { groupManagement } = state;
+    const { groupManagement, editProfile } = state;
 
     return {
+      isUserProfileOpen: editProfile.isUserProfileOpen,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
@@ -46,7 +49,7 @@ export class Container extends React.Component<Properties> {
     if (this.isSecondary) {
       return <GroupManagementContainer />;
     } else {
-      return <MessengerList />;
+      return this.props.isUserProfileOpen ? <UserProfileContainer /> : <MessengerList />;
     }
   }
 

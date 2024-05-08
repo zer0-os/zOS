@@ -34,6 +34,7 @@ export interface Properties {
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   onMemberClick: (userId: string) => void;
+  openUserProfile: () => void;
 }
 
 export class GroupManagement extends React.PureComponent<Properties> {
@@ -62,6 +63,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
             onMemberSelected={this.props.onMemberClick}
+            openUserProfile={this.props.openUserProfile}
           />
         )}
         {this.props.stage === Stage.ViewGroupInformation && (
@@ -79,6 +81,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onEdit={this.props.startEditConversation}
             onBack={this.props.onBack}
             onMemberSelected={this.props.onMemberClick}
+            openUserProfile={this.props.openUserProfile}
           />
         )}
         {this.props.stage === Stage.None && (
@@ -90,6 +93,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             conversationAdminIds={this.props.conversationAdminIds}
             onAdd={this.props.startAddGroupMember}
             onMemberSelected={this.props.onMemberClick}
+            openUserProfile={this.props.openUserProfile}
           />
         )}
       </>

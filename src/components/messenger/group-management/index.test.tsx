@@ -33,6 +33,7 @@ describe(GroupManagement, () => {
       startAddGroupMember: () => null,
       setLeaveGroupStatus: () => null,
       onMemberClick: () => null,
+      openUserProfile: () => null,
 
       ...props,
     };

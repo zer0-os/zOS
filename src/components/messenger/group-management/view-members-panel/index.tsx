@@ -21,6 +21,7 @@ export interface Properties {
 
   onAdd: () => void;
   onMemberSelected: (userId: string) => void;
+  openUserProfile: () => void;
 }
 
 export class ViewMembersPanel extends React.Component<Properties> {
@@ -35,6 +36,10 @@ export class ViewMembersPanel extends React.Component<Properties> {
 
   memberSelected = (userId: string) => {
     this.props.onMemberSelected(userId);
+  };
+
+  openProfile = () => {
+    this.props.openUserProfile();
   };
 
   renderMembers = () => {
@@ -57,6 +62,7 @@ export class ViewMembersPanel extends React.Component<Properties> {
             <CitizenListItem
               user={this.props.currentUser}
               tag={this.getTagForUser(this.props.currentUser)}
+              onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem

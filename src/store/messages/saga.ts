@@ -253,13 +253,7 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
-  let messageSentSuccessfully = false;
-
   try {
-    if (messageSentSuccessfully) {
-      return;
-    }
-
     const chatClient = yield call(chat.get);
     const messageCall = call(
       [chatClient, chatClient.sendMessagesByChannelId],
@@ -271,7 +265,6 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
       optimisticId
     );
     const createdMessage = yield messageCall;
-    messageSentSuccessfully = true;
 
     return createdMessage;
   } catch (e) {
@@ -281,13 +274,7 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
 }
 
 export function* sendMessage(apiCall, channelId, optimisticId) {
-  let messageSentSuccessfully = false;
-
   try {
-    if (messageSentSuccessfully) {
-      return;
-    }
-
     const createdMessage = yield apiCall;
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
@@ -295,8 +282,6 @@ export function* sendMessage(apiCall, channelId, optimisticId) {
     if (messages) {
       yield call(receiveChannel, { id: channelId, messages: messages });
     }
-    messageSentSuccessfully = true;
-
     return createdMessage;
   } catch (e) {
     yield call(messageSendFailed, optimisticId);

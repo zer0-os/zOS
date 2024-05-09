@@ -20,6 +20,7 @@ describe('MessageInput', () => {
       getUsersForMentions: () => undefined,
       onMessageInputRendered: () => undefined,
       renderAfterInput: () => undefined,
+      onUserTyping: () => undefined,
       clipboard: {
         addPasteListener: (_) => {},
         removePasteListener: (_) => {},
@@ -38,6 +39,17 @@ describe('MessageInput', () => {
     const _dropzone = wrapper.find(Dropzone).shallow();
 
     expect(renderAfterInput).toHaveBeenCalled();
+  });
+
+  it('publishs onUserTyping when input value changes', () => {
+    const onUserTyping = jest.fn();
+    const wrapper = subject({ onUserTyping });
+    const dropzone = wrapper.find(Dropzone).shallow();
+
+    const input = dropzone.find(Mentions);
+    input.simulate('change', { target: { value: 'Hello' } });
+
+    expect(onUserTyping).toHaveBeenCalledTimes(1);
   });
 
   it('does not submit message when message state is empty', () => {

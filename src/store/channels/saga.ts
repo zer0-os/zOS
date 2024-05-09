@@ -4,12 +4,18 @@ import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAUL
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { addRoomToFavorites, removeRoomFromFavorites, chat } from '../../lib/chat';
+import {
+  addRoomToFavorites,
+  removeRoomFromFavorites,
+  chat,
+  sendTypingEvent as matrixSendUserTypingEvent,
+} from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
+import { leadingDebounce } from '../utils';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -136,7 +142,27 @@ export function* roomUnfavorited(action) {
   }
 }
 
+export function* publishUserTypingEvent(action) {
+  const { roomId } = action.payload;
+
+  try {
+    yield call(matrixSendUserTypingEvent, roomId, true);
+  } catch (error) {
+    console.error(`Failed to publish user is typing event in room ${roomId}:`, error);
+  }
+}
+
+export function* publishUserStoppedTypingEvent(roomId) {
+  try {
+    yield call(matrixSendUserTypingEvent, roomId, false);
+  } catch (error) {
+    console.error(`Failed to publish user stopped typing event in room ${roomId}:`, error);
+  }
+}
+
 export function* saga() {
+  yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
+
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);

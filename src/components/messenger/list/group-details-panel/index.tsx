@@ -21,40 +21,31 @@ export interface Properties {
 interface State {
   name: string;
   image: File | null;
-  errors: {
-    name?: string;
-  };
 }
 
 export class GroupDetailsPanel extends React.Component<Properties, State> {
-  state = { name: '', image: null, errors: {} };
+  state = { name: '', image: null };
 
   createGroup = () => {
-    this.props.onCreate({ name: this.state.name, users: this.props.users, image: this.state.image });
+    if (this.isNameValid) {
+      this.props.onCreate({ name: this.state.name, users: this.props.users, image: this.state.image });
+    }
   };
 
   nameChanged = (value) => this.setState({ name: value });
   onImageChange = (image) => this.setState({ image });
   back = () => this.props.onBack();
 
-  get isValid() {
-    return typeof this.state.name === 'string' && this.state.name.trim().length > 0;
-  }
-
-  get nameError() {
-    if (!this.isValid) {
-      return { variant: 'error', text: 'Please enter a group name.' } as any;
-    }
-    return null;
-  }
-
-  get isDisabled() {
-    return !!this.nameError || this.state.name === '';
+  get isNameValid() {
+    const { name } = this.state;
+    return typeof name === 'string' && name.trim().length > 0;
   }
 
   renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
   render() {
+    const { name } = this.state;
+
     return (
       <div {...cn('')}>
         <PanelHeader title='Group Details' onBack={this.back} />
@@ -63,12 +54,12 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
           <ImageUpload onChange={this.onImageChange} icon={this.renderImageUploadIcon()} />
 
           <Input
-            value={this.state.name}
+            value={name}
             onChange={this.nameChanged}
             placeholder='Group name...'
             isRequired={true}
-            error={!!this.nameError}
-            alert={this.nameError}
+            error={!this.isNameValid}
+            alert={!this.isNameValid ? { variant: 'error', text: 'Please enter a group name.' } : undefined}
             {...cn('name-input')}
           />
 
@@ -90,7 +81,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('footer')}>
-          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={this.isDisabled}>
+          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={!this.isNameValid}>
             Create Group
           </Button>
         </div>

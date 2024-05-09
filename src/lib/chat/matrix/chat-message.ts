@@ -10,17 +10,10 @@ async function parseMediaData(matrixMessage) {
   let media = null;
   try {
     if (content?.msgtype === MsgType.Image) {
-      const { file, info } = content;
-      const blob = await decryptFile(file, info);
-      media = {
-        url: URL.createObjectURL(blob),
-        type: 'image',
-        ...info,
-      };
+      media = await buildMediaObject(content);
     }
   } catch (e) {
-    // ingore for now
-    console.log('error ocurred while parsing media data: ', e);
+    console.error('error ocurred while parsing media data: ', e);
   }
 
   return {
@@ -28,6 +21,24 @@ async function parseMediaData(matrixMessage) {
     image: content?.msgtype === MsgType.Image ? media : undefined,
     rootMessageId: media?.rootMessageId || '',
   };
+}
+
+async function buildMediaObject(content) {
+  if (content.file && content.info) {
+    const blob = await decryptFile(content.file, content.info);
+    return {
+      url: URL.createObjectURL(blob),
+      type: 'image',
+      ...content.info,
+    };
+  } else if (content.url) {
+    return {
+      url: content.url,
+      type: 'image',
+      ...content.info,
+    };
+  }
+  return null;
 }
 
 export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {

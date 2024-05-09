@@ -245,8 +245,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowGiphy() {
-    // Feature not implemented in Matrix yet
-    return false && !this.props.isEditing;
+    return !this.props.isEditing;
   }
 
   get allowFileAttachment() {

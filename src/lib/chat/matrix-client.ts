@@ -525,6 +525,44 @@ export class MatrixClient implements IChatClient {
     } as unknown as Message;
   }
 
+  async uploadImageUrl(
+    roomId: string,
+    url: string,
+    width: number,
+    height: number,
+    size: number,
+    rootMessageId: string = '',
+    optimisticId = ''
+  ) {
+    if (!this.matrix.isRoomEncrypted(roomId)) {
+      console.warn('uploadGiphyMessage called for non-encrypted room', roomId);
+      return;
+    }
+
+    const content = {
+      body: null,
+      msgtype: MsgType.Image,
+      url: url,
+      info: {
+        mimetype: 'image/gif',
+        w: width,
+        h: height,
+        size: size,
+        optimisticId,
+        rootMessageId,
+      },
+      optimisticId,
+    };
+
+    const messageResult = await this.matrix.sendMessage(roomId, content);
+    this.recordMessageSent(roomId);
+
+    return {
+      id: messageResult.event_id,
+      optimisticId,
+    } as unknown as Message;
+  }
+
   async recordMessageSent(roomId: string): Promise<void> {
     const data = { roomId, sentAt: new Date().valueOf() };
 

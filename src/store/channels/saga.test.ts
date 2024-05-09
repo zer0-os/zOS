@@ -207,4 +207,5 @@ const CHANNEL_DEFAULTS = {
   adminMatrixIds: [],
   isFavorite: false,
   currentUserLastTypingEventPublishedAt: null,
+  otherMembersTyping: [],
 };

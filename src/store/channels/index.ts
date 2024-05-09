@@ -55,6 +55,7 @@ export interface Channel {
   reply?: ParentMessage;
   isFavorite: boolean;
   currentUserLastTypingEventPublishedAt?: number;
+  otherMembersTyping: string[];
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -75,6 +76,7 @@ export const CHANNEL_DEFAULTS = {
   adminMatrixIds: [],
   isFavorite: false,
   currentUserLastTypingEventPublishedAt: null,
+  otherMembersTyping: [],
 };
 
 export enum SagaActionTypes {

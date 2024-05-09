@@ -9,6 +9,7 @@
   gap: 8px;
   overflow: hidden;
   width: 100%;
+  position: relative;
 
   &--owner {
     flex-direction: row-reverse;
@@ -144,6 +145,14 @@
     opacity: 0;
     // Sometimes we render an empty menu. This ensures consistency of width of the message bubble.
     min-width: 32px;
+
+    &--hidden {
+      display: none !important;
+
+      .zui-dropdown-menu {
+        display: none !important;
+      }
+    }
   }
 
   .menu--open {

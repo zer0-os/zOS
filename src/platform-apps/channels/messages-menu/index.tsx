@@ -41,12 +41,20 @@ export class MessageMenu extends React.Component<Properties, State> {
     );
   }
 
+  handleDelayedAction = (action) => {
+    setTimeout(() => {
+      if (action) {
+        action();
+        this.props.onCloseMenu();
+      }
+    }, 1);
+  };
+
   // Our zUI DropdownMenu component actively steals focus.
   // In order to allow actions to change focus without the dropdown menu stealing it back,
   // we delay publishing the event by releasing the thread for a single tick.
-  delayEvent = (handler) => setTimeout(handler, 1);
-  onEdit = () => this.delayEvent(this.props.onEdit);
-  onReply = () => this.delayEvent(this.props.onReply);
+  onEdit = () => this.handleDelayedAction(this.props.onEdit);
+  onReply = () => this.handleDelayedAction(this.props.onReply);
 
   renderItems = () => {
     const menuItems = [];
@@ -76,16 +84,17 @@ export class MessageMenu extends React.Component<Properties, State> {
   };
 
   handleDeleteMessage = () => {
-    this.setState({
-      deleteDialogIsOpen: false,
+    this.setState({ deleteDialogIsOpen: false }, () => {
+      this.props.onDelete();
     });
-    this.props.onDelete();
   };
-
   toggleDeleteDialog = () => {
-    this.setState({
-      deleteDialogIsOpen: !this.state.deleteDialogIsOpen,
-    });
+    const willOpen = !this.state.deleteDialogIsOpen;
+    this.setState({ deleteDialogIsOpen: willOpen });
+
+    if (willOpen && this.props.isMenuOpen) {
+      this.props.onOpenChange(false);
+    }
   };
 
   get showDeleteModal(): boolean {
@@ -126,29 +135,27 @@ export class MessageMenu extends React.Component<Properties, State> {
       <div className={this.props.className}>
         {this.props.isMenuOpen &&
           createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body)}
-
-        <DropdownMenu
-          menuClassName={'dropdown-menu'}
-          items={menuItems}
-          side='bottom'
-          alignMenu='center'
-          onOpenChange={this.props.onOpenChange}
-          open={this.props.isMenuOpen}
-          showArrow
-          trigger={
-            !this.props.isMenuFlying ? (
+        {!this.state.deleteDialogIsOpen && (
+          <DropdownMenu
+            menuClassName={'dropdown-menu'}
+            items={menuItems}
+            side='bottom'
+            alignMenu='center'
+            onOpenChange={this.props.onOpenChange}
+            open={this.props.isMenuOpen}
+            showArrow
+            trigger={
               <div
                 className={classNames('dropdown-menu-trigger', {
                   'dropdown-menu-trigger--open': this.props.isMenuOpen,
+                  'dropdown-menu-trigger--flying': this.props.isMenuFlying,
                 })}
               >
                 <IconDotsHorizontal size={24} isFilled />
               </div>
-            ) : (
-              <></>
-            )
-          }
-        />
+            }
+          />
+        )}
         {this.renderDeleteModal()}
       </div>
     );

@@ -47,6 +47,7 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
+  onCloseMenu: () => void;
 }
 
 export interface State {
@@ -71,6 +72,10 @@ export class Message extends React.Component<Properties, State> {
   wrapperRef = React.createRef<HTMLDivElement>();
 
   handleContextMenu = (event) => {
+    if (event.target?.tagName === 'IMG') {
+      return;
+    }
+
     if (event.button === 2) {
       event.preventDefault();
       event.stopPropagation();
@@ -204,11 +209,15 @@ export class Message extends React.Component<Properties, State> {
     return !!this.props.media;
   };
 
-  deleteMessage = (): void => this.props.onDelete(this.props.messageId);
+  deleteMessage = () => {
+    this.props.onDelete(this.props.messageId);
+    this.handleCloseMenu();
+  };
   toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
   editMessage = (content: string, mentionedUserIds: string[], data?: Partial<EditMessageOptions> | any) => {
     this.props.onEdit(this.props.messageId, content, mentionedUserIds, data);
     this.toggleEdit();
+    this.handleCloseMenu();
   };
 
   onRemovePreview = (): void => {
@@ -317,6 +326,7 @@ export class Message extends React.Component<Properties, State> {
           classNames('menu', {
             'menu--open': this.state.isDropdownMenuOpen,
             'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
+            'menu--hidden': !this.state.isDropdownMenuOpen,
           })
         )}
         style={{
@@ -327,7 +337,9 @@ export class Message extends React.Component<Properties, State> {
         }}
         onClick={menuProps.onCloseMenu}
       >
-        <MessageMenu {...cn('menu-item')} {...menuProps} />
+        <div onClick={(e) => e.stopPropagation()}>
+          <MessageMenu {...cn('menu-item')} {...menuProps} />
+        </div>
       </div>
     );
 

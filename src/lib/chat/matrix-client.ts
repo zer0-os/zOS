@@ -43,7 +43,6 @@ import { encryptFile } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
-import { USER_TYPING_TIMEOUT } from '../../store/channels/saga';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 

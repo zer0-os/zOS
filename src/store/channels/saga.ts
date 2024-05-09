@@ -164,7 +164,9 @@ export function* receivedRoomMembersTyping(action) {
   yield call(receiveChannel, { id: roomId, otherMembersTyping });
 }
 
-export function* publishUserTypingEvent(roomId) {
+export function* publishUserTypingEvent(action) {
+  const { roomId } = action.payload;
+
   try {
     yield call(matrixSendUserTypingEvent, roomId, true);
   } catch (error) {

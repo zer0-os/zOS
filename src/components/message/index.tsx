@@ -34,6 +34,7 @@ interface Properties extends MessageModel {
     data?: Partial<EditMessageOptions>
   ) => void;
   onReply: ({ reply }: { reply: ParentMessageType }) => void;
+  onCloseMenu?: () => void;
   isOwner?: boolean;
   messageId?: number;
   updatedAt: number;
@@ -47,7 +48,6 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  onCloseMenu: () => void;
 }
 
 export interface State {
@@ -297,7 +297,7 @@ export class Message extends React.Component<Properties, State> {
         )}
         onClick={menuProps.onCloseMenu}
       >
-        <MessageMenu {...cn('menu-item')} {...menuProps} />
+        <MessageMenu {...cn('menu-item')} {...menuProps} onCloseMenu={this.handleCloseMenu} />
       </div>
     );
   }
@@ -338,7 +338,7 @@ export class Message extends React.Component<Properties, State> {
         onClick={menuProps.onCloseMenu}
       >
         <div onClick={(e) => e.stopPropagation()}>
-          <MessageMenu {...cn('menu-item')} {...menuProps} />
+          <MessageMenu {...cn('menu-item')} {...menuProps} onCloseMenu={this.handleCloseMenu} />
         </div>
       </div>
     );

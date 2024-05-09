@@ -45,7 +45,6 @@ export class MessageMenu extends React.Component<Properties, State> {
     setTimeout(() => {
       if (action) {
         action();
-        this.props.onCloseMenu();
       }
     }, 1);
   };
@@ -53,8 +52,12 @@ export class MessageMenu extends React.Component<Properties, State> {
   // Our zUI DropdownMenu component actively steals focus.
   // In order to allow actions to change focus without the dropdown menu stealing it back,
   // we delay publishing the event by releasing the thread for a single tick.
-  onEdit = () => this.handleDelayedAction(this.props.onEdit);
-  onReply = () => this.handleDelayedAction(this.props.onReply);
+  onEdit = () => {
+    this.handleDelayedAction(this.props.onEdit);
+  };
+  onReply = () => {
+    this.handleDelayedAction(this.props.onReply);
+  };
 
   renderItems = () => {
     const menuItems = [];

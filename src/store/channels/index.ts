@@ -82,6 +82,7 @@ export enum SagaActionTypes {
   OnRemoveReply = 'channels/saga/onRemoveReply',
   OnFavoriteRoom = 'channels/saga/onFavoriteRoom',
   OnUnfavoriteRoom = 'channels/saga/onUnfavoriteRoom',
+  UserTypingInRoom = 'channels/saga/userTypingInRoom',
 }
 
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
@@ -90,6 +91,7 @@ const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
 const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
 const onFavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnFavoriteRoom);
 const onUnfavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnfavoriteRoom);
+const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -102,4 +104,13 @@ const slice = createNormalizedSlice({
 
 export const { receive: rawReceive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { unreadCountUpdated, removeAll, openConversation, onReply, onRemoveReply, onFavoriteRoom, onUnfavoriteRoom };
+export {
+  unreadCountUpdated,
+  removeAll,
+  openConversation,
+  onReply,
+  onRemoveReply,
+  onFavoriteRoom,
+  onUnfavoriteRoom,
+  userTypingInRoom,
+};

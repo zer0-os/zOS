@@ -312,3 +312,7 @@ export async function uploadImageUrl(
 ) {
   return await chat.get().matrix.uploadImageUrl(channelId, url, width, height, size, rootMessageId, optimisticId);
 }
+
+export async function sendTypingEvent(roomId: string, isTyping: boolean) {
+  return await chat.get().matrix.sendTypingEvent(roomId, isTyping);
+}

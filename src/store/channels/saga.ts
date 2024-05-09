@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, spawn, delay, takeLeading, race, take } from 'redux-saga/effects';
+import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
@@ -15,10 +15,7 @@ import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
-import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
-import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
-
-export const USER_TYPING_TIMEOUT = 5000; // 5s
+import { leadingDebounce } from '../utils';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -145,22 +142,11 @@ export function* roomUnfavorited(action) {
   }
 }
 
-export function* publishUserTypingEvent(roomId) {
+export function* publishUserTypingEvent(action) {
+  const { roomId } = action.payload;
+
   try {
-    const channel = yield select(rawChannelSelector(roomId));
-    if (!channel) {
-      return;
-    }
-
-    const currentUserLastTypingEventPublishedAt = channel.currentUserLastTypingEventPublishedAt;
-    const now = Date.now();
-    if (currentUserLastTypingEventPublishedAt && now - currentUserLastTypingEventPublishedAt <= USER_TYPING_TIMEOUT) {
-      // not enough time has passed since last typing event
-      return;
-    }
-
     yield call(matrixSendUserTypingEvent, roomId, true);
-    yield call(receiveChannel, { id: roomId, currentUserLastTypingEventPublishedAt: now });
   } catch (error) {
     console.error(`Failed to publish user is typing event in room ${roomId}:`, error);
   }
@@ -169,38 +155,13 @@ export function* publishUserTypingEvent(roomId) {
 export function* publishUserStoppedTypingEvent(roomId) {
   try {
     yield call(matrixSendUserTypingEvent, roomId, false);
-    yield call(receiveChannel, { id: roomId, currentUserLastTypingEventPublishedAt: null });
   } catch (error) {
     console.error(`Failed to publish user stopped typing event in room ${roomId}:`, error);
   }
 }
 
-export function* onUserTypingInRoom(action) {
-  const { roomId } = action.payload;
-
-  yield call(publishUserTypingEvent, roomId);
-
-  // Start a race between the next typing event, timeout, room change, user logout, and message sending
-  const { nextAction, timeout, roomChanged, onLogout, messageSent } = yield race({
-    nextAction: take(SagaActionTypes.UserTypingInRoom),
-    timeout: delay(USER_TYPING_TIMEOUT),
-    roomChanged: take(SagaActionTypes.OpenConversation),
-    onLogout: take(yield call(getAuthChannel), AuthEvents.UserLogout),
-    messageSent: take(yield call(getChatMessageBus), ChatMessageEvents.Sent),
-  });
-
-  // Check if the timeout occurred or other events happened
-  if (timeout || roomChanged || onLogout || messageSent) {
-    yield call(publishUserStoppedTypingEvent, roomId);
-    return;
-  }
-
-  // Recursively call the saga to process the next typing event
-  yield call(onUserTypingInRoom, nextAction);
-}
-
 export function* saga() {
-  yield takeLeading(SagaActionTypes.UserTypingInRoom, onUserTypingInRoom);
+  yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
 
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));

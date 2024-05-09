@@ -4,7 +4,12 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
-import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
+import {
+  markConversationAsRead,
+  publishUserStoppedTypingEvent,
+  rawChannelSelector,
+  receiveChannel,
+} from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { getLinkPreviews } from './api';
@@ -196,6 +201,7 @@ export function* send(action) {
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
   yield call(publishMessageSent);
+  yield call(publishUserStoppedTypingEvent, channelId);
 }
 
 export function* publishMessageSent() {

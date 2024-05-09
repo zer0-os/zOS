@@ -23,6 +23,7 @@ import { Media } from '../../message-input/utils';
 import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
+import { rawChannelSelector } from '../../../store/channels/saga';
 
 export interface PublicProperties {}
 
@@ -36,6 +37,7 @@ export interface Properties extends PublicProperties {
   canAddMembers: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
+  otherMembersTypingInRoom: string[];
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -67,6 +69,7 @@ export class Container extends React.Component<Properties> {
     const canEdit = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canViewDetails = !directMessage?.isOneOnOne;
+    const channel = rawChannelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
@@ -79,6 +82,7 @@ export class Container extends React.Component<Properties> {
       canAddMembers,
       canViewDetails,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
+      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
   }
 
@@ -154,6 +158,26 @@ export class Container extends React.Component<Properties> {
     }
   };
 
+  renderTypingIndicators = () => {
+    const { otherMembersTypingInRoom } = this.props;
+    let text = null;
+
+    switch (otherMembersTypingInRoom.length) {
+      case 0:
+        break;
+      case 1:
+        text = `${otherMembersTypingInRoom[0]} is typing...`;
+        break;
+      case 2:
+        text = `${otherMembersTypingInRoom[0]} and ${otherMembersTypingInRoom[1]} are typing...`;
+        break;
+      default:
+        text = `${otherMembersTypingInRoom[0]} and ${otherMembersTypingInRoom.length - 1} others are typing...`;
+    }
+
+    return <div className='direct-message-chat__typing-indicator'>{text}</div>;
+  };
+
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -196,6 +220,7 @@ export class Container extends React.Component<Properties> {
 
           <div className='direct-message-chat__footer-position'>
             <div className='direct-message-chat__footer'>
+              {this.renderTypingIndicators()}
               <MessageInput
                 id={this.props.activeConversationId}
                 onSubmit={this.handleSendMessage}

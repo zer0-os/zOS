@@ -41,6 +41,7 @@ describe(DirectMessageChat, () => {
       setLeaveGroupStatus: () => null,
       viewGroupInformation: () => null,
       toggleSecondarySidekick: () => null,
+      otherMembersTypingInRoom: [],
       ...props,
     };
 
@@ -120,6 +121,39 @@ describe(DirectMessageChat, () => {
 
       expect(leaveGroupDialog).toHaveProp('roomId', 'room-id');
       expect(leaveGroupDialog).toHaveProp('groupName', 'group-name');
+    });
+  });
+
+  describe('users typing', () => {
+    it('renders empty text when no users are typing', () => {
+      const wrapper = subject({ otherMembersTypingInRoom: [] });
+
+      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toBe('');
+    });
+
+    it('displays single user typing', () => {
+      const wrapper = subject({ otherMembersTypingInRoom: ['Ratik'] });
+
+      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Ratik is typing...');
+    });
+
+    it('displays two users typing', () => {
+      const wrapper = subject({ otherMembersTypingInRoom: ['Ratik', 'Dale'] });
+
+      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Ratik and Dale are typing...');
+    });
+
+    it('displays multiple users typing', () => {
+      const wrapper = subject({
+        otherMembersTypingInRoom: [
+          'Dom',
+          'Ratik',
+          'Dale',
+          'John',
+        ],
+      });
+
+      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Dom and 3 others are typing...');
     });
   });
 

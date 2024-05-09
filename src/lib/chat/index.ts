@@ -301,6 +301,18 @@ export async function removeRoomFromFavorites(roomId: string) {
   return await chat.get().matrix.removeRoomFromFavorites(roomId);
 }
 
+export async function uploadImageUrl(
+  channelId: string,
+  url: string,
+  width: number,
+  height: number,
+  size: number,
+  rootMessageId: string,
+  optimisticId: string
+) {
+  return await chat.get().matrix.uploadImageUrl(channelId, url, width, height, size, rootMessageId, optimisticId);
+}
+
 export async function sendTypingEvent(roomId: string, isTyping: boolean) {
   return await chat.get().matrix.sendTypingEvent(roomId, isTyping);
 }

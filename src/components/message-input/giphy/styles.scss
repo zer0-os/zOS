@@ -4,16 +4,12 @@
   width: 500px;
   position: absolute;
   bottom: 64px;
-  left: 169px;
+  left: 0;
   background-color: themeDeprecated.$background-color-tertiary;
   padding: 5px;
   border-radius: 5px;
   border: 1px solid themeDeprecated.$input-arrow-color;
   z-index: 12;
-
-  &--fullscreen {
-    left: 374px;
-  }
 
   &-grid {
     height: 440px;

@@ -2,7 +2,7 @@ import { CallEffect, call } from 'redux-saga/effects';
 
 import { FileType, getFileType } from './utils';
 import { Message } from '.';
-import { chat } from '../../lib/chat';
+import { chat, uploadImageUrl } from '../../lib/chat';
 
 export const createUploadableFile = (file): Uploadable => {
   if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
@@ -42,10 +42,21 @@ export class UploadableMedia implements Uploadable {
 
 export class UploadableGiphy implements Uploadable {
   public optimisticMessage: Message;
+
   constructor(public file) {}
-  *upload(_channelId, _rootMessageId) {
-    yield;
-    throw new Error('Giphy upload is not supported yet.');
+  *upload(channelId, rootMessageId) {
+    const giphyData = this.file.giphy.images.downsized;
+
+    return yield call(
+      uploadImageUrl,
+      channelId,
+      giphyData.url,
+      parseInt(giphyData.width),
+      parseInt(giphyData.height),
+      parseInt(giphyData.size),
+      rootMessageId,
+      this.optimisticMessage?.id?.toString()
+    );
   }
 }
 

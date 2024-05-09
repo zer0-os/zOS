@@ -282,19 +282,16 @@ describe(performSend, () => {
     const { storeState } = await expectSaga(performSend, channelId, message, [], null, 'optimistic-id')
       .provide([
         stubResponse(matchers.call.fn(chat.get), chatClient),
-        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {
+        stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), ({ optimisticId }) => ({
           id: 'new-id',
-          optimisticId: 'optimistic-id',
-        }),
+          optimisticId: optimisticId,
+        })),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages).toEqual([
-      { id: 'message-1' },
-      { id: 'new-id', optimisticId: 'optimistic-id', sendStatus: MessageSendStatus.SUCCESS },
-    ]);
+    expect(channel.messages).toEqual([{ id: 'message-1' }, { id: 'optimistic-id' }]);
   });
 
   it('handles send failure', async () => {

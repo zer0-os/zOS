@@ -253,31 +253,50 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
 }
 
 export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
-  const chatClient = yield call(chat.get);
+  let messageSentSuccessfully = false;
 
-  const messageCall = call(
-    [
-      chatClient,
-      chatClient.sendMessagesByChannelId,
-    ],
-    channelId,
-    message,
-    mentionedUserIds,
-    parentMessage,
-    null,
-    optimisticId
-  );
-  return yield sendMessage(messageCall, channelId, optimisticId);
+  try {
+    if (messageSentSuccessfully) {
+      return;
+    }
+
+    const chatClient = yield call(chat.get);
+    const messageCall = call(
+      [chatClient, chatClient.sendMessagesByChannelId],
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      null,
+      optimisticId
+    );
+    const createdMessage = yield messageCall;
+    messageSentSuccessfully = true;
+
+    return createdMessage;
+  } catch (e) {
+    yield call(messageSendFailed, optimisticId);
+    return null;
+  }
 }
 
 export function* sendMessage(apiCall, channelId, optimisticId) {
+  let messageSentSuccessfully = false;
+
   try {
+    if (messageSentSuccessfully) {
+      return;
+    }
+
     const createdMessage = yield apiCall;
     const existingMessageIds = yield select(rawMessagesSelector(channelId));
     const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
+
     if (messages) {
       yield call(receiveChannel, { id: channelId, messages: messages });
     }
+    messageSentSuccessfully = true;
+
     return createdMessage;
   } catch (e) {
     yield call(messageSendFailed, optimisticId);

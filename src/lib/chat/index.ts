@@ -20,6 +20,7 @@ export interface RealtimeChatEvents {
   receiveLiveRoomEvent: (eventData) => void;
   roomFavorited: (roomId: string) => void;
   roomUnfavorited: (roomId: string) => void;
+  roomMemberTyping: (roomId: string, userIds: string[]) => void;
 }
 
 export interface MatrixKeyBackupInfo {

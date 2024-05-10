@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import { highlightFilter } from '../../lib/utils';
+import { getOtherMembersTypingDisplayText, highlightFilter } from '../../lib/utils';
 import { Channel } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
@@ -112,13 +112,24 @@ export class ConversationItem extends React.Component<Properties, State> {
     );
   }
 
+  getMessagePreview() {
+    const { conversation } = this.props;
+    const { messagePreview, otherMembersTyping } = conversation;
+
+    if ((otherMembersTyping || []).length === 0) {
+      return messagePreview;
+    } else {
+      return getOtherMembersTypingDisplayText(otherMembersTyping);
+    }
+  }
+
   render() {
     const { conversation, activeConversationId } = this.props;
-    const { messagePreview, previewDisplayDate } = conversation;
+    const { previewDisplayDate, otherMembersTyping } = conversation;
     const hasUnreadMessages = conversation.unreadCount !== 0;
     const isUnread = hasUnreadMessages ? 'true' : 'false';
     const isActive = conversation.id === activeConversationId ? 'true' : 'false';
-
+    const isTyping = (otherMembersTyping || []).length > 0 ? 'true' : 'false';
     return (
       <div
         {...cn('')}
@@ -142,8 +153,8 @@ export class ConversationItem extends React.Component<Properties, State> {
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>
           <div {...cn('content')}>
-            <div {...cn('message')} is-unread={isUnread}>
-              <ContentHighlighter message={messagePreview} variant='negative' tabIndex={-1} />
+            <div {...cn('message')} is-unread={isUnread} is-typing={isTyping}>
+              <ContentHighlighter message={this.getMessagePreview()} variant='negative' tabIndex={-1} />
             </div>
             {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
           </div>

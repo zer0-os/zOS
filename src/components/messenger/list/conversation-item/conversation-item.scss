@@ -82,6 +82,10 @@
       }
     }
 
+    &[is-typing='true'] {
+      font-style: italic;
+    }
+
     div {
       overflow: hidden;
       white-space: nowrap;

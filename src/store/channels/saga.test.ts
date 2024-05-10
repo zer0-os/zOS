@@ -11,6 +11,7 @@ import {
   onUnfavoriteRoom,
   roomUnfavorited,
   publishUserTypingEvent,
+  receivedRoomMembersTyping,
 } from './saga';
 
 import { rootReducer } from '../reducer';
@@ -189,6 +190,48 @@ describe(publishUserTypingEvent, () => {
   });
 });
 
+describe(receivedRoomMembersTyping, () => {
+  it('updates otherMembersTyping for room', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id' })
+      .withUsers(
+        { matrixId: 'matrix-id-1', firstName: 'Ashneer' },
+        { matrixId: 'matrix-id-2', firstName: 'Aman' },
+        { matrixId: 'matrix-id-3', firstName: 'Anupam' }
+      )
+      .build();
+
+    const { storeState } = await expectSaga(receivedRoomMembersTyping, {
+      payload: { roomId: 'room-id', userIds: ['matrix-id-1', 'matrix-id-2'] },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.otherMembersTyping).toEqual(['Ashneer', 'Aman']);
+  });
+
+  it('does not add current user to otherMembersTyping', async () => {
+    const initialState = new StoreBuilder()
+      .withCurrentUser({
+        id: 'currentUser-id',
+        matrixId: 'current-user-matrix-id',
+        profileSummary: { firstName: 'CurrentUser' },
+      } as any)
+      .withConversationList({ id: 'room-id' })
+      .build();
+
+    const { storeState } = await expectSaga(receivedRoomMembersTyping, {
+      payload: { roomId: 'room-id', userIds: ['current-user-matrix-id'] },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.otherMembersTyping).toEqual([]);
+  });
+});
+
 const CHANNEL_DEFAULTS = {
   optimisticId: '',
   name: '',
@@ -206,4 +249,5 @@ const CHANNEL_DEFAULTS = {
   messagesFetchStatus: null,
   adminMatrixIds: [],
   isFavorite: false,
+  otherMembersTyping: [],
 };

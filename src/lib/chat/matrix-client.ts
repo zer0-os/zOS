@@ -17,6 +17,7 @@ import {
   EventTimeline,
   NotificationCountType,
   IRoomTimelineData,
+  RoomMember,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
@@ -837,9 +838,10 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
+    this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
+
     //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
-
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
       this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
@@ -964,6 +966,11 @@ export class MatrixClient implements IChatClient {
 
   private publishRoomAvatarChange = (event) => {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
+  };
+
+  private publishRoomMemberTyping = (event: MatrixEvent, member: RoomMember) => {
+    const content = event.getContent();
+    this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
 
   private publishMembershipChange = async (event) => {

@@ -17,6 +17,7 @@ import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
+import { getLocalZeroUsersMap } from '../messages/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -143,6 +144,26 @@ export function* roomUnfavorited(action) {
   }
 }
 
+export function* receivedRoomMembersTyping(action) {
+  const { roomId, userIds: matrixIds } = action.payload;
+
+  const currentUser = yield select(currentUserSelector());
+  const zeroUsersByMatrixIds = yield call(getLocalZeroUsersMap);
+  const otherMembersTyping = [];
+  for (const matrixId of matrixIds) {
+    if (matrixId === currentUser.matrixId) {
+      continue;
+    }
+
+    const zeroUser = zeroUsersByMatrixIds[matrixId];
+    if (zeroUser) {
+      otherMembersTyping.push(zeroUser.firstName);
+    }
+  }
+
+  yield call(receiveChannel, { id: roomId, otherMembersTyping });
+}
+
 export function* publishUserTypingEvent(action) {
   const { roomId } = action.payload;
 
@@ -183,4 +204,5 @@ export function* saga() {
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavorited);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
 }

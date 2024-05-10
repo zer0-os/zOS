@@ -78,7 +78,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('footer')}>
-          <Button {...cn('create-button')} onPress={this.createGroup}>
+          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={!this.state.name}>
             Create Group
           </Button>
         </div>

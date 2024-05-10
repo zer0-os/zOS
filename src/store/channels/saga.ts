@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, spawn, take } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
@@ -16,6 +16,7 @@ import { ParentMessage } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
+import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -160,7 +161,17 @@ export function* publishUserStoppedTypingEvent(roomId) {
   }
 }
 
+// publishes a user stopped typing event when a message is sent
+function* listenForMessageSent() {
+  const chatBus = yield call(getChatMessageBus);
+  while (true) {
+    const { channelId } = yield take(chatBus, ChatMessageEvents.Sent);
+    yield call(publishUserStoppedTypingEvent, channelId);
+  }
+}
+
 export function* saga() {
+  yield spawn(listenForMessageSent);
   yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
 
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));

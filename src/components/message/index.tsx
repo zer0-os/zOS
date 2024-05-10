@@ -227,6 +227,7 @@ export class Message extends React.Component<Properties, State> {
       admin: this.props.admin,
       optimisticId: this.props.optimisticId,
       rootMessageId: this.props.rootMessageId,
+      imageUrl: this.props.media.url,
     };
 
     this.props.onReply({ reply });
@@ -346,12 +347,13 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderBody() {
-    const { message, isHidden } = this.props;
+    const { message, isHidden, media } = this.props;
 
     return (
       <div {...cn('block-body')}>
         {message && (
           <ContentHighlighter
+            imageUrl={media && media.url}
             message={message}
             isHidden={isHidden}
             onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
@@ -363,39 +365,46 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderParentMessage() {
+    const { parentMessageText, parentSenderIsCurrentUser, parentSenderFirstName, parentSenderLastName } = this.props;
+
+    if (!parentMessageText) {
+      return null;
+    }
+
     return (
       <ParentMessage
-        message={this.props.parentMessageText}
-        senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
-        senderFirstName={this.props.parentSenderFirstName}
-        senderLastName={this.props.parentSenderLastName}
+        message={parentMessageText}
+        senderIsCurrentUser={parentSenderIsCurrentUser}
+        senderFirstName={parentSenderFirstName}
+        senderLastName={parentSenderLastName}
       />
     );
   }
 
   render() {
-    const { message, media, preview, sender, isOwner } = this.props;
+    const { message, media, preview, sender, isOwner, showSenderAvatar, showAuthorName, className } = this.props;
+    const { isEditing } = this.state;
     return (
       <div
-        className={classNames('message', this.props.className, {
+        className={classNames('message', className, {
           'message--owner': isOwner,
         })}
         onContextMenu={this.handleContextMenu}
         ref={this.wrapperRef}
       >
-        {this.props.showSenderAvatar && (
+        {showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
               <Avatar size='medium' imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`} tabIndex={-1} />
             </div>
           </div>
         )}
-        <div {...cn('block', this.state.isEditing && 'edit')}>
+        <div {...cn('block', isEditing && 'edit')}>
           {(message || media || preview) && (
             <>
-              {!this.state.isEditing && (
+              {!isEditing && (
                 <>
-                  {this.props.showAuthorName && this.renderAuthorName()}
+                  {showAuthorName && this.renderAuthorName()}
                   {media && this.renderMedia(media)}
                   {this.renderLinkPreview()}
                   {this.renderParentMessage()}
@@ -403,11 +412,11 @@ export class Message extends React.Component<Properties, State> {
                 </>
               )}
 
-              {this.state.isEditing && this.props.message && (
+              {isEditing && message && (
                 <>
                   <div {...cn('block-edit')}>
                     <MessageInput
-                      initialValue={this.props.message}
+                      initialValue={message}
                       onSubmit={this.editMessage}
                       getUsersForMentions={this.props.getUsersForMentions}
                       isEditing={this.state.isEditing}

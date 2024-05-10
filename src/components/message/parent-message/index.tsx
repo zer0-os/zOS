@@ -25,17 +25,18 @@ export class ParentMessage extends React.PureComponent<Properties> {
   }
 
   render() {
-    if (!this.props.message) {
+    const { message } = this.props;
+
+    if (!message) {
       return null;
     }
-
     return (
       <div {...cn('')}>
         <IconCornerDownRight size={16} />
         <div {...cn('content')}>
           <div {...cn('header')}>{this.name}</div>
           <span>
-            <ContentHighlighter variant='tertiary' message={this.props.message} />
+            <ContentHighlighter variant='tertiary' message={message} />
           </span>
         </div>
       </div>

@@ -123,8 +123,8 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   isUserOwnerOfMessage(message: MessageModel) {
-    // eslint-disable-next-line eqeqeq
-    return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
+    const { user } = this.props;
+    return user && message?.sender && user.id == message.sender.userId;
   }
 
   renderMessageGroup(groupMessages) {

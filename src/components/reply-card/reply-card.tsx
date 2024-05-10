@@ -13,6 +13,7 @@ export interface Properties {
   senderIsCurrentUser: boolean;
   senderFirstName: string;
   senderLastName: string;
+  imageUrl?: string;
 
   onRemove?: () => void;
 }
@@ -33,7 +34,7 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
   };
 
   render() {
-    const { message } = this.props;
+    const { message, imageUrl } = this.props;
 
     return (
       <div {...cn()}>
@@ -41,7 +42,12 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
         <div {...cn('content')}>
           <div {...cn('header')}>{this.name}</div>
           <div {...cn('message')}>
-            <ContentHighlighter variant='tertiary' message={message} />
+            <ContentHighlighter variant='tertiary' message={message} imageUrl={imageUrl} />
+            {imageUrl && (
+              <div {...cn('image')}>
+                <img src={imageUrl} alt={''} />
+              </div>
+            )}
           </div>
         </div>
         <IconButton Icon={IconXClose} size={24} onClick={this.itemRemoved} />

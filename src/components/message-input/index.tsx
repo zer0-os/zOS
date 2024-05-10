@@ -265,12 +265,12 @@ export class MessageInput extends React.Component<Properties, State> {
 
   renderInput() {
     const reply = this.props.reply;
-
     return (
       <div {...cn('container')}>
         <div {...cn('addon-row')}>
           {reply && (
             <ReplyCard
+              imageUrl={reply.imageUrl}
               message={reply.message}
               senderIsCurrentUser={this.props.replyIsCurrentUser}
               senderFirstName={reply?.sender?.firstName}

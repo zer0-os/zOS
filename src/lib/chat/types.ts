@@ -20,6 +20,7 @@ export interface ParentMessage {
   admin?: any;
   optimisticId?: string;
   rootMessageId?: string;
+  imageUrl?: string;
 }
 
 export interface User {

@@ -26,4 +26,12 @@
   &__header {
     margin-bottom: 4px;
   }
+
+  &__reply-image {
+    img {
+      width: 48px;
+      height: 48px;
+      margin-left: 10px;
+    }
+  }
 }

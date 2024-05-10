@@ -1,0 +1,117 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../variables';
+@import '../../../glass';
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.user-profile {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+
+  &__header-container {
+    display: flex;
+    width: 235px;
+  }
+
+  &__body {
+    margin: 16px 16px 0 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    z-index: 1;
+  }
+
+  &__image-conatiner {
+    align-self: center;
+
+    animation: fadeIn 0.5s;
+  }
+
+  &__image {
+    @include flat-thick;
+
+    width: 120px;
+    height: 120px;
+    border-radius: 9999px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: theme.$color-secondary-11;
+  }
+
+  &__name-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 16px;
+
+    text-align: center;
+  }
+
+  &__name {
+    @include glass-text-primary-color;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 21px;
+  }
+
+  &__sub-handle {
+    @include glass-text-tertiary-color;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  &__action-button {
+    margin: 8px 0;
+
+    > *:first-child {
+      gap: 4px;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    margin: 0 16px;
+    padding: 8px 0;
+    border-radius: 0px 0px 16px 16px;
+    border-top: 1px solid rgba(163, 162, 163, 0.1);
+  }
+
+  &__footer-button {
+    > *:first-child {
+      gap: 4px;
+    }
+
+    > *:last-child {
+      font-weight: 400;
+    }
+  }
+}

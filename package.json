@@ -1,6 +1,6 @@
 {
-  "name": "zOS",
-  "version": "1.55.0",
+  "name": "ZERO",
+  "version": "1.65.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {

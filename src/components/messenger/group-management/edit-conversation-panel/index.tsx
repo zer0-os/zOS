@@ -28,6 +28,8 @@ export interface Properties {
   onBack: () => void;
   onRemoveMember: (userId: string) => void;
   onEdit: (name: string, image: File | null) => void;
+  onMemberSelected: (userId: string) => void;
+  openUserProfile: () => void;
 }
 
 interface State {
@@ -75,6 +77,14 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     this.props.onRemoveMember(userId);
   };
 
+  memberSelected = (userId: string) => {
+    this.props.onMemberSelected(userId);
+  };
+
+  openProfile = () => {
+    this.props.openUserProfile();
+  };
+
   renderEditImageAndIcon = () => {
     return (
       <div {...cn('details')}>
@@ -90,10 +100,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
 
         <Input
-          label='Display Name'
           name='name'
           value={this.state.name}
           onChange={this.trackName}
+          placeholder='Group name...'
           {...cn('body-input')}
         />
 
@@ -132,9 +142,14 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser} tag='Admin'></CitizenListItem>
+            <CitizenListItem user={this.props.currentUser} tag='Admin' onSelected={this.openProfile}></CitizenListItem>
             {sortedOtherMembers.map((u) => (
-              <CitizenListItem key={u.userId} user={u} onRemove={this.removeMember}></CitizenListItem>
+              <CitizenListItem
+                key={u.userId}
+                user={u}
+                onRemove={this.removeMember}
+                onSelected={this.memberSelected}
+              ></CitizenListItem>
             ))}
           </ScrollbarContainer>
         </div>

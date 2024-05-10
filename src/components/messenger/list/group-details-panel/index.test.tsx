@@ -67,6 +67,20 @@ describe('GroupDetailsPanel', () => {
     expect(wrapper.find(SelectedUserTag).at(1).prop('userOption').value).toEqual('user-2');
   });
 
+  it('disables create button when no name', function () {
+    const wrapper = subject({});
+
+    expect(wrapper.find('Button')).toHaveProp('isDisabled', true);
+  });
+
+  it('enables create button when name is present', function () {
+    const wrapper = subject({});
+
+    wrapper.find('Input').simulate('change', 'group name');
+
+    expect(wrapper.find('Button')).toHaveProp('isDisabled', false);
+  });
+
   it('fires onCreate when create group is clicked', function () {
     const onCreate = jest.fn();
     const users = [

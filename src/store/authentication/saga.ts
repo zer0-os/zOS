@@ -15,6 +15,7 @@ import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { completePendingUserProfile } from '../registration/saga';
+import { closeUserProfile } from '../edit-profile/saga';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -89,6 +90,7 @@ export function* clearUserState() {
     call(clearChannelsAndConversations),
     call(clearMessages),
     call(clearUsers),
+    call(closeUserProfile),
   ]);
 }
 

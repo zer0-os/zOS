@@ -10,12 +10,13 @@ import {
   unreadCountUpdated,
   onUnfavoriteRoom,
   roomUnfavorited,
+  publishUserTypingEvent,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addRoomToFavorites, chat, removeRoomFromFavorites } from '../../lib/chat';
+import { addRoomToFavorites, chat, removeRoomFromFavorites, sendTypingEvent } from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -170,6 +171,20 @@ describe(onUnfavoriteRoom, () => {
         [matchers.call.fn(removeRoomFromFavorites), undefined],
       ])
       .call(removeRoomFromFavorites, 'channel-id')
+      .run();
+  });
+});
+
+describe(publishUserTypingEvent, () => {
+  it('sends typing event', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id' }).build();
+
+    await expectSaga(publishUserTypingEvent, { payload: { roomId: 'room-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(sendTypingEvent), undefined],
+      ])
+      .call(sendTypingEvent, 'room-id', true)
       .run();
   });
 });

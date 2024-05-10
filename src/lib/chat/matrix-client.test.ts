@@ -738,6 +738,72 @@ describe('matrix client', () => {
     });
   });
 
+  describe('uploadImageUrl', () => {
+    it('logs warning if room is not encrypted and returns ', async () => {
+      const roomId = '!testRoomId';
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+
+      const isRoomEncrypted = jest.fn(() => false);
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted })),
+      });
+
+      await client.connect(null, 'token');
+      await client.uploadImageUrl(roomId, 'http://example.com/image.gif', 500, 300, 1500, rootMessageId, optimisticId);
+
+      expect(mockEncryptFile).not.toHaveBeenCalled();
+    });
+
+    it('sends an image URL message successfully in an encrypted room', async () => {
+      const roomId = '!testRoomId';
+      const url = 'http://example.com/image.gif';
+      const width = 500;
+      const height = 300;
+      const size = 1500;
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'new-message-id',
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendMessage })),
+      });
+
+      await client.connect(null, 'token');
+
+      const result = await client.uploadImageUrl(roomId, url, width, height, size, rootMessageId, optimisticId);
+
+      expect(sendMessage).toBeCalledWith(
+        roomId,
+        expect.objectContaining({
+          body: null,
+          msgtype: 'm.image',
+          url: url,
+          info: {
+            mimetype: 'image/gif',
+            w: width,
+            h: height,
+            size: size,
+            optimisticId,
+            rootMessageId,
+          },
+          optimisticId,
+        })
+      );
+
+      expect(result).toMatchObject({
+        id: 'new-message-id',
+        optimisticId,
+      });
+    });
+  });
+
   describe('markRoomAsRead', () => {
     it('marks room as read successfully', async () => {
       const roomId = '!testRoomId';

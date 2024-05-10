@@ -30,6 +30,7 @@ export class Container extends React.Component<Properties> {
   render() {
     const mainClassName = classNames('main', 'messenger-full-screen', {
       'sidekick-panel-open': this.props.context.isAuthenticated,
+      'display-app-background': this.props.context.isAuthenticated,
     });
 
     return (
@@ -40,13 +41,11 @@ export class Container extends React.Component<Properties> {
             <Sidekick />
             <MessengerChat />
             <Sidekick variant='secondary' />
-
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />
             </FeatureFlag>
           </>
         )}
-
         <ThemeEngine />
       </div>
     );

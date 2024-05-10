@@ -32,6 +32,8 @@ describe(GroupManagement, () => {
       startEditConversation: () => null,
       startAddGroupMember: () => null,
       setLeaveGroupStatus: () => null,
+      onMemberClick: () => null,
+      openUserProfile: () => null,
 
       ...props,
     };

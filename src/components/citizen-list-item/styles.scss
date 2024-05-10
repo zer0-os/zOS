@@ -11,6 +11,15 @@
   align-items: center;
   border-radius: 8px;
   overflow: hidden;
+  outline: none;
+
+  &--clickable {
+    cursor: pointer;
+
+    &:focus {
+      @include glass-state-hover-color;
+    }
+  }
 
   &:hover {
     @include glass-state-hover-color;

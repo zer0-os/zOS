@@ -21,6 +21,8 @@ describe(EditConversationPanel, () => {
       icon: '',
       onRemoveMember: () => null,
       conversationAdminIds: [],
+      onMemberSelected: () => null,
+      openUserProfile: () => null,
       ...props,
     };
 
@@ -32,7 +34,6 @@ describe(EditConversationPanel, () => {
       const wrapper = subject({ name: 'Display Name', icon: 'icon-url' });
       expect(wrapper.find('.edit-conversation-panel__body').length).toEqual(1);
       expect(wrapper.find(ImageUpload).props().imageSrc).toEqual('icon-url');
-      expect(wrapper.find('Input[name="name"]').props().label).toEqual('Display Name');
     });
 
     it('disables Save Changes button when name is empty', () => {
@@ -143,6 +144,32 @@ describe(EditConversationPanel, () => {
       item.simulate('remove', 'otherMember1');
 
       expect(onRemoveMember).toHaveBeenCalledWith('otherMember1');
+    });
+
+    it('publishes onMemberSelected event', () => {
+      const onMemberSelected = jest.fn();
+      const otherMembers = [
+        { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+      ] as User[];
+
+      const wrapper = subject({ onMemberSelected, otherMembers });
+
+      wrapper.find(CitizenListItem).at(1).simulate('selected', 'otherMember1');
+
+      expect(onMemberSelected).toHaveBeenCalled();
+    });
+
+    it('publishes openUserProfile event', () => {
+      const openUserProfile = jest.fn();
+
+      const wrapper = subject({
+        openUserProfile,
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+      });
+
+      wrapper.find(CitizenListItem).at(0).simulate('selected', 'currentUser');
+
+      expect(openUserProfile).toHaveBeenCalled();
     });
 
     it('does not allow remove if there are only 2 people in the room', function () {

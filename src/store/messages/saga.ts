@@ -195,11 +195,11 @@ export function* send(action) {
   }
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
-  yield call(publishMessageSent);
+  yield call(publishMessageSent, channelId);
 }
 
-export function* publishMessageSent() {
-  yield put(yield call(getChatMessageBus), { type: ChatMessageEvents.Sent });
+export function* publishMessageSent(channelId: string) {
+  yield put(yield call(getChatMessageBus), { type: ChatMessageEvents.Sent, channelId });
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {

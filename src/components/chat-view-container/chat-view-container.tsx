@@ -24,6 +24,7 @@ export interface Properties extends PublicProperties {
   context: {
     isAuthenticated: boolean;
   };
+  isSecondarySidekickOpen: boolean;
 }
 
 interface PublicProperties {
@@ -46,12 +47,14 @@ export class Container extends React.Component<Properties> {
     const {
       authentication: { user },
       chat: { activeConversationId },
+      groupManagement: { isSecondarySidekickOpen },
     } = state;
 
     return {
       channel,
       user,
       activeConversationId,
+      isSecondarySidekickOpen,
     };
   }
 
@@ -211,6 +214,7 @@ export class Container extends React.Component<Properties> {
           conversationErrorMessage={this.conversationErrorMessage}
           onHiddenMessageInfoClick={this.props.openBackupDialog}
           ref={this.chatViewRef}
+          isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
         />
       </>
     );

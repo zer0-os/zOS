@@ -7,6 +7,7 @@ import { ViewModes } from '../../shared-components/theme-engine';
 import { MessageInput as MessageInputComponent } from './index';
 import { ParentMessage } from '../../lib/chat/types';
 import { currentUserSelector } from '../../store/authentication/saga';
+import { userTypingInRoom } from '../../store/channels';
 
 export interface PublicProperties {
   onSubmit: (message: string, mentionedUserIds: User['userId'][], media: Media[]) => void;
@@ -24,6 +25,8 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   viewMode: ViewModes;
+
+  userTypingInRoom: ({ roomId }: { roomId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -42,7 +45,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return {};
+    return { userTypingInRoom };
   }
 
   onMessageInputRendered = (textareaRef: RefObject<HTMLTextAreaElement>) => {
@@ -72,6 +75,7 @@ export class Container extends React.Component<Properties> {
         replyIsCurrentUser={replyIsCurrentUser}
         isEditing={this.props.isEditing}
         sendDisabledMessage={this.props.sendDisabledMessage}
+        onUserTyping={this.props.userTypingInRoom}
       />
     );
   }

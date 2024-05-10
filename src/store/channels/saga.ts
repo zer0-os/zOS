@@ -1,16 +1,22 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, spawn, take } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
-import { addRoomToFavorites, removeRoomFromFavorites, chat } from '../../lib/chat';
+import {
+  addRoomToFavorites,
+  removeRoomFromFavorites,
+  chat,
+  sendTypingEvent as matrixSendUserTypingEvent,
+} from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
-import { isSecondarySidekickOpenSelector } from '../group-management/selectors';
-import { toggleIsSecondarySidekick } from '../group-management/saga';
+import { resetConversationManagement } from '../group-management/saga';
+import { leadingDebounce } from '../utils';
+import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -58,11 +64,7 @@ export function* openConversation(conversationId) {
 
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
-
-  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
-  if (isSidekickOpen) {
-    yield spawn(toggleIsSecondarySidekick);
-  }
+  yield call(resetConversationManagement);
 }
 
 export function* unreadCountUpdated(action) {
@@ -145,8 +147,37 @@ export function* roomUnfavorited(action) {
   }
 }
 
+export function* publishUserTypingEvent(action) {
+  const { roomId } = action.payload;
+
+  try {
+    yield call(matrixSendUserTypingEvent, roomId, true);
+  } catch (error) {
+    console.error(`Failed to publish user is typing event in room ${roomId}:`, error);
+  }
+}
+
+export function* publishUserStoppedTypingEvent(roomId) {
+  try {
+    yield call(matrixSendUserTypingEvent, roomId, false);
+  } catch (error) {
+    console.error(`Failed to publish user stopped typing event in room ${roomId}:`, error);
+  }
+}
+
+// publishes a user stopped typing event when a message is sent
+function* listenForMessageSent() {
+  const chatBus = yield call(getChatMessageBus);
+  while (true) {
+    const { channelId } = yield take(chatBus, ChatMessageEvents.Sent);
+    yield call(publishUserStoppedTypingEvent, channelId);
+  }
+}
+
 export function* saga() {
-  yield call(openFirstConversation);
+  yield spawn(listenForMessageSent);
+  yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
+
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);

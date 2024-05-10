@@ -24,6 +24,7 @@ import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
+import { getOtherMembersTypingDisplayText } from '../lib/utils';
 
 export interface PublicProperties {}
 
@@ -160,21 +161,7 @@ export class Container extends React.Component<Properties> {
 
   renderTypingIndicators = () => {
     const { otherMembersTypingInRoom } = this.props;
-    let text = null;
-
-    switch (otherMembersTypingInRoom.length) {
-      case 0:
-        break;
-      case 1:
-        text = `${otherMembersTypingInRoom[0]} is typing...`;
-        break;
-      case 2:
-        text = `${otherMembersTypingInRoom[0]} and ${otherMembersTypingInRoom[1]} are typing...`;
-        break;
-      default:
-        text = `${otherMembersTypingInRoom[0]} and ${otherMembersTypingInRoom.length - 1} others are typing...`;
-    }
-
+    const text = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 

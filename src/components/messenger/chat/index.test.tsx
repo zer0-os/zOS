@@ -124,37 +124,10 @@ describe(DirectMessageChat, () => {
     });
   });
 
-  describe('users typing', () => {
-    it('renders empty text when no users are typing', () => {
-      const wrapper = subject({ otherMembersTypingInRoom: [] });
+  it('renders users typing', function () {
+    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'] });
 
-      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toBe('');
-    });
-
-    it('displays single user typing', () => {
-      const wrapper = subject({ otherMembersTypingInRoom: ['Ratik'] });
-
-      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Ratik is typing...');
-    });
-
-    it('displays two users typing', () => {
-      const wrapper = subject({ otherMembersTypingInRoom: ['Ratik', 'Dale'] });
-
-      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Ratik and Dale are typing...');
-    });
-
-    it('displays multiple users typing', () => {
-      const wrapper = subject({
-        otherMembersTypingInRoom: [
-          'Dom',
-          'Ratik',
-          'Dale',
-          'John',
-        ],
-      });
-
-      expect(wrapper.find('.direct-message-chat__typing-indicator').text()).toContain('Dom and 3 others are typing...');
-    });
+    expect(wrapper.find('.direct-message-chat__typing-indicator')).toHaveText('Johnny and Dale are typing...');
   });
 
   describe('message input', () => {

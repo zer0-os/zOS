@@ -116,8 +116,7 @@ describe(send, () => {
       .next()
       .next({ id: 'message-id' })
       .next()
-      .call(publishMessageSent)
-      .next()
+      .call(publishMessageSent, 'channel-id')
       .next()
       .isDone();
   });

@@ -4,12 +4,7 @@ import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects'
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
-import {
-  markConversationAsRead,
-  publishUserStoppedTypingEvent,
-  rawChannelSelector,
-  receiveChannel,
-} from '../channels/saga';
+import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { getLinkPreviews } from './api';
@@ -200,12 +195,11 @@ export function* send(action) {
   }
 
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles);
-  yield call(publishMessageSent);
-  yield call(publishUserStoppedTypingEvent, channelId);
+  yield call(publishMessageSent, channelId);
 }
 
-export function* publishMessageSent() {
-  yield put(yield call(getChatMessageBus), { type: ChatMessageEvents.Sent });
+export function* publishMessageSent(channelId: string) {
+  yield put(yield call(getChatMessageBus), { type: ChatMessageEvents.Sent, channelId });
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {

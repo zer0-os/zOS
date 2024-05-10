@@ -13,7 +13,7 @@ export interface ComponentProperties {
 export const GiphyComponents = ({ onClickGif }: Properties) => {
   const { fetchGifs, searchKey } = useContext(SearchContext);
   return (
-    <div className={classNames('giphy__container', 'giphy__container--fullscreen')}>
+    <div className={classNames('giphy__container')}>
       <SearchBar className='giphy__container-search' autoFocus />
       <div className='giphy__container-grid'>
         <Grid

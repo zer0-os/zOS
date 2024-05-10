@@ -46,6 +46,8 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
   renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
   render() {
+    const isDisabled = !this.state.name || this.state.name.trim().length === 0;
+
     return (
       <div {...cn('')}>
         <PanelHeader title='Group Details' onBack={this.back} />
@@ -78,7 +80,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('footer')}>
-          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={!this.state.name}>
+          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={isDisabled}>
             Create Group
           </Button>
         </div>

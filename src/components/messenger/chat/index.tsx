@@ -24,7 +24,7 @@ import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
-import { getOtherMembersTypingDisplayText } from '../lib/utils';
+import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 
 export interface PublicProperties {}
 
@@ -161,7 +161,7 @@ export class Container extends React.Component<Properties> {
 
   renderTypingIndicators = () => {
     const { otherMembersTypingInRoom } = this.props;
-    const text = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
+    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom) || `${(<b>n3o</b>)} is typing...`;
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
@@ -207,7 +207,6 @@ export class Container extends React.Component<Properties> {
 
           <div className='direct-message-chat__footer-position'>
             <div className='direct-message-chat__footer'>
-              {this.renderTypingIndicators()}
               <MessageInput
                 id={this.props.activeConversationId}
                 onSubmit={this.handleSendMessage}
@@ -215,6 +214,7 @@ export class Container extends React.Component<Properties> {
                 reply={this.props.directMessage?.reply}
                 onRemoveReply={this.props.onRemoveReply}
               />
+              {this.renderTypingIndicators()}
             </div>
           </div>
           <div className='direct-message-chat__footer-gradient'></div>

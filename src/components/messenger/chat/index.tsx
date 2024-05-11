@@ -161,7 +161,7 @@ export class Container extends React.Component<Properties> {
 
   renderTypingIndicators = () => {
     const { otherMembersTypingInRoom } = this.props;
-    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom) || `${(<b>n3o</b>)} is typing...`;
+    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom);
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 

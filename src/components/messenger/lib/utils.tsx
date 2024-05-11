@@ -37,6 +37,37 @@ export const highlightFilter = (text, filter) => {
   return text;
 };
 
+export const getOtherMembersTypingDisplayJSX = (otherMembersTypingInRoom: string[]) => {
+  let text = <></>;
+
+  switch (otherMembersTypingInRoom.length) {
+    case 0:
+      break;
+    case 1:
+      text = (
+        <>
+          <b>{otherMembersTypingInRoom[0]}</b> is typing...
+        </>
+      );
+      break;
+    case 2:
+      text = (
+        <>
+          <b>{otherMembersTypingInRoom[0]}</b> and <b>{otherMembersTypingInRoom[1]}</b> are typing...
+        </>
+      );
+      break;
+    default:
+      text = (
+        <>
+          <b>{otherMembersTypingInRoom[0]}</b> and <b>{otherMembersTypingInRoom.length - 1}</b> others are typing...
+        </>
+      );
+  }
+
+  return text;
+};
+
 export const getOtherMembersTypingDisplayText = (otherMembersTypingInRoom: string[]) => {
   let text = null;
 

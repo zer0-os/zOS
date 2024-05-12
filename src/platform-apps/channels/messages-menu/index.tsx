@@ -49,22 +49,23 @@ export class MessageMenu extends React.Component<Properties, State> {
   onReply = () => this.delayEvent(this.props.onReply);
 
   renderItems = () => {
+    const { canEdit, onEdit, isMediaMessage, canReply, onReply, canDelete, onDelete } = this.props;
     const menuItems = [];
-    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
+    if (onEdit && canEdit && !isMediaMessage) {
       menuItems.push({
         id: 'edit',
         label: this.renderMenuOption(<IconEdit5 size={20} />, 'Edit'),
         onSelect: this.onEdit,
       });
     }
-    if (this.props.onReply && this.props.canReply && this.props.isMediaMessage) {
+    if (onReply && canReply && isMediaMessage) {
       menuItems.push({
         id: 'reply',
         label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),
         onSelect: this.onReply,
       });
     }
-    if (this.props.onDelete && this.props.canDelete) {
+    if (onDelete && canDelete) {
       menuItems.push({
         id: 'delete',
         label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
@@ -117,29 +118,30 @@ export class MessageMenu extends React.Component<Properties, State> {
 
   render() {
     const menuItems = this.renderItems();
+    const { className, onCloseMenu, onOpenChange, isMenuOpen, isMenuFlying } = this.props;
 
     if (!menuItems.length) {
       return null;
     }
 
     return (
-      <div className={this.props.className}>
+      <div className={className}>
         {this.props.isMenuOpen &&
-          createPortal(<div className='dropdown-menu__underlay' onClick={this.props.onCloseMenu} />, document.body)}
+          createPortal(<div className='dropdown-menu__underlay' onClick={onCloseMenu} />, document.body)}
 
         <DropdownMenu
           menuClassName={'dropdown-menu'}
           items={menuItems}
           side='bottom'
           alignMenu='center'
-          onOpenChange={this.props.onOpenChange}
-          open={this.props.isMenuOpen}
+          onOpenChange={onOpenChange}
+          open={isMenuOpen}
           showArrow
           trigger={
-            !this.props.isMenuFlying ? (
+            !isMenuFlying ? (
               <div
                 className={classNames('dropdown-menu-trigger', {
-                  'dropdown-menu-trigger--open': this.props.isMenuOpen,
+                  'dropdown-menu-trigger--open': isMenuOpen,
                 })}
               >
                 <IconDotsHorizontal size={24} isFilled />

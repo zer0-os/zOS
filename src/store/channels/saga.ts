@@ -165,7 +165,7 @@ export function* receivedRoomMembersTyping(action) {
 }
 
 export function* publishUserTypingEvent(action) {
-  const { roomId } = action.payload;
+  const roomId = action.payload.roomId || (yield select((state) => state.chat.activeConversationId));
 
   try {
     yield call(matrixSendUserTypingEvent, roomId, true);

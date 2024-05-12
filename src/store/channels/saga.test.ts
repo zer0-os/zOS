@@ -188,6 +188,18 @@ describe(publishUserTypingEvent, () => {
       .call(sendTypingEvent, 'room-id', true)
       .run();
   });
+
+  it('uses activeConversationId if roomId is not provided', async () => {
+    const initialState = new StoreBuilder().withActiveConversation({ id: 'room-id' }).build();
+
+    await expectSaga(publishUserTypingEvent, { payload: {} })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(sendTypingEvent), undefined],
+      ])
+      .call(sendTypingEvent, 'room-id', true)
+      .run();
+  });
 });
 
 describe(receivedRoomMembersTyping, () => {

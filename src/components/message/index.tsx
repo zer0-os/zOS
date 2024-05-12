@@ -227,7 +227,7 @@ export class Message extends React.Component<Properties, State> {
       admin: this.props.admin,
       optimisticId: this.props.optimisticId,
       rootMessageId: this.props.rootMessageId,
-      imageUrl: this.props.media.url,
+      imageUrl: this.isMediaMessage ? this.props.media?.url : '',
     };
 
     this.props.onReply({ reply });
@@ -353,7 +353,7 @@ export class Message extends React.Component<Properties, State> {
       <div {...cn('block-body')}>
         {message && (
           <ContentHighlighter
-            imageUrl={media && media.url}
+            imageUrl={media && media?.url}
             message={message}
             isHidden={isHidden}
             onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}

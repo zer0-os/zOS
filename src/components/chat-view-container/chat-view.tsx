@@ -124,7 +124,7 @@ export class ChatView extends React.Component<Properties, State> {
 
   isUserOwnerOfMessage(message: MessageModel) {
     const { user } = this.props;
-    return user && message?.sender && user.id == message.sender.userId;
+    return user && message?.sender && user.id === message.sender.userId;
   }
 
   renderMessageGroup(groupMessages) {

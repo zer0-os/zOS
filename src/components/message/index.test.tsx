@@ -236,6 +236,7 @@ describe('message', () => {
     const messageId = '989887';
     const message = 'hello';
     const sender = { userId: '78676X67767' };
+    const image = { media: { url: 'https://image.com/image.png' } };
     const replyMessage = {
       messageId,
       message,
@@ -247,6 +248,7 @@ describe('message', () => {
       admin: {},
       optimisticId: '',
       rootMessageId: '',
+      imageUrl: image.media.url,
     };
     const wrapper = subject({
       message,
@@ -258,6 +260,7 @@ describe('message', () => {
       admin: {},
       optimisticId: '',
       rootMessageId: '',
+      image,
       onReply,
     });
 
@@ -266,7 +269,10 @@ describe('message', () => {
 
     wrapper.find(MessageMenu).simulate('reply');
 
-    expect(onReply).toHaveBeenCalledWith({ reply: replyMessage });
+    expect(onReply).toHaveBeenCalledWith({
+      ...replyMessage,
+      imageUrl: image.media.url,
+    });
   });
 
   it('should not renders edited indicator', () => {

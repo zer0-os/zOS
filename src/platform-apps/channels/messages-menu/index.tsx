@@ -58,7 +58,7 @@ export class MessageMenu extends React.Component<Properties, State> {
         onSelect: this.onEdit,
       });
     }
-    if (onReply && canReply && isMediaMessage) {
+    if (onReply && canReply) {
       menuItems.push({
         id: 'reply',
         label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),

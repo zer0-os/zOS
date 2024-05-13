@@ -11,6 +11,7 @@ import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 import { AppBar } from './components/app-bar';
+import { DialogManager } from './components/dialog-manager/container';
 
 export interface Properties {
   context: {
@@ -37,6 +38,7 @@ export class Container extends React.Component<Properties> {
       <div className={mainClassName}>
         {this.props.context.isAuthenticated && (
           <>
+            <DialogManager />
             <AppBar />
             <Sidekick />
             <MessengerChat />

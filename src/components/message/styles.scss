@@ -147,10 +147,10 @@
     min-width: 32px;
 
     &--hidden {
-      display: none !important;
+      display: none;
 
       .zui-dropdown-menu {
-        display: none !important;
+        display: none;
       }
     }
   }

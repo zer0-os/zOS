@@ -31,8 +31,6 @@ import { receiveSearchResults } from '../../../store/users';
 import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
-import { closeBackupDialog } from '../../../store/matrix';
-import { SecureBackupContainer } from '../../secure-backup/container';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
@@ -58,7 +56,6 @@ export interface Properties extends PublicProperties {
   myUserId: string;
   activeConversationId?: string;
   joinRoomErrorContent: ErrorDialogContent;
-  isBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
   displayLogoutModal: boolean;
   showRewardsTooltip: boolean;
@@ -71,7 +68,6 @@ export interface Properties extends PublicProperties {
   logout: () => void;
   receiveSearchResults: (data) => void;
   closeConversationErrorDialog: () => void;
-  closeBackupDialog: () => void;
   closeRewardsDialog: () => void;
   onFavoriteRoom: (payload: { roomId: string }) => void;
   onUnfavoriteRoom: (payload: { roomId: string }) => void;
@@ -89,7 +85,6 @@ export class Container extends React.Component<Properties, State> {
       registration,
       authentication: { user, displayLogoutModal },
       chat: { activeConversationId, joinRoomErrorContent },
-      matrix: { isBackupDialogOpen },
       rewards,
     } = state;
 
@@ -108,7 +103,6 @@ export class Container extends React.Component<Properties, State> {
       userIsOnline: true,
       myUserId: user?.data?.id,
       joinRoomErrorContent,
-      isBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       showRewardsTooltip: rewards.showRewardsInTooltip,
       displayLogoutModal,
@@ -125,7 +119,6 @@ export class Container extends React.Component<Properties, State> {
       logout,
       receiveSearchResults,
       closeConversationErrorDialog,
-      closeBackupDialog,
       closeRewardsDialog,
       onFavoriteRoom,
       onUnfavoriteRoom,
@@ -188,10 +181,6 @@ export class Container extends React.Component<Properties, State> {
     this.props.closeConversationErrorDialog();
   };
 
-  closeBackupDialog = () => {
-    this.props.closeBackupDialog();
-  };
-
   get userStatus(): 'active' | 'offline' {
     return this.props.userIsOnline ? 'active' : 'offline';
   }
@@ -228,10 +217,6 @@ export class Container extends React.Component<Properties, State> {
         <InviteDialogContainer onClose={this.closeInviteDialog} />
       </Modal>
     );
-  };
-
-  renderSecureBackupDialog = (): JSX.Element => {
-    return <SecureBackupContainer onClose={this.closeBackupDialog} />;
   };
 
   renderRewardsDialog = (): JSX.Element => {
@@ -303,7 +288,6 @@ export class Container extends React.Component<Properties, State> {
           {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
-          {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
           {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>

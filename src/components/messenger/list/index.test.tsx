@@ -13,7 +13,6 @@ import { RegistrationState } from '../../../store/registration';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { UserHeader } from './user-header';
 import { ErrorDialog } from '../../error-dialog';
-import { SecureBackupContainer } from '../../secure-backup/container';
 import { bem } from '../../../lib/bem';
 
 const c = bem('.direct-message-members');
@@ -39,7 +38,6 @@ describe('messenger-list', () => {
       joinRoomErrorContent: null,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
-      isBackupDialogOpen: false,
       isRewardsDialogOpen: false,
       displayLogoutModal: false,
       showRewardsTooltip: false,
@@ -49,7 +47,6 @@ describe('messenger-list', () => {
       back: () => null,
       receiveSearchResults: () => null,
       logout: () => null,
-      closeBackupDialog: () => null,
       closeRewardsDialog: () => null,
       onFavoriteRoom: () => null,
       onUnfavoriteRoom: () => null,
@@ -185,12 +182,6 @@ describe('messenger-list', () => {
     });
 
     expect(wrapper).toHaveElement(ErrorDialog);
-  });
-
-  it('renders Secure Backup Dialog if isBackupDialogOpen', function () {
-    const wrapper = subject({ isBackupDialogOpen: true });
-
-    expect(wrapper).toHaveElement(SecureBackupContainer);
   });
 
   it('calls closeConversationErrorDialog when error dialog is closed', function () {

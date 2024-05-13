@@ -93,6 +93,21 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     z-index: 2;
   }
 
+  &__typing-indicator {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+    margin-left: 100px;
+    margin-top: -6px;
+    padding-bottom: 2px;
+
+    @include glass-text-secondary-color;
+
+    &:empty {
+      display: none;
+    }
+  }
+
   &__description {
     overflow: hidden;
   }

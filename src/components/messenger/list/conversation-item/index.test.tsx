@@ -91,6 +91,26 @@ describe(ConversationItem, () => {
     expect(wrapper.find(ContentHighlighter)).toHaveProp('message', 'I said something here');
   });
 
+  it('renders the otherMembersTyping', function () {
+    const wrapper = subject({
+      conversation: { otherMembersTyping: ['Johnny'], otherMembers: [] } as any,
+    });
+
+    expect(wrapper.find(ContentHighlighter)).toHaveProp('message', 'Johnny is typing...');
+  });
+
+  it('renders the otherMembersTyping instead of message preview if users are typing', function () {
+    const wrapper = subject({
+      conversation: {
+        messagePreview: 'I said something here',
+        otherMembersTyping: ['Dale', 'Dom'],
+        otherMembers: [],
+      } as any,
+    });
+
+    expect(wrapper.find(ContentHighlighter)).toHaveProp('message', 'Dale and Dom are typing...');
+  });
+
   it('renders the previewDisplayDate', function () {
     const wrapper = subject({ conversation: { previewDisplayDate: 'Aug 1, 2021', otherMembers: [] } as any });
 

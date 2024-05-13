@@ -41,6 +41,7 @@ describe(DirectMessageChat, () => {
       setLeaveGroupStatus: () => null,
       viewGroupInformation: () => null,
       toggleSecondarySidekick: () => null,
+      otherMembersTypingInRoom: [],
       ...props,
     };
 
@@ -121,6 +122,12 @@ describe(DirectMessageChat, () => {
       expect(leaveGroupDialog).toHaveProp('roomId', 'room-id');
       expect(leaveGroupDialog).toHaveProp('groupName', 'group-name');
     });
+  });
+
+  it('renders users typing', function () {
+    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'] });
+
+    expect(wrapper.find('.direct-message-chat__typing-indicator')).toHaveText('Johnny and Dale are typing...');
   });
 
   describe('message input', () => {

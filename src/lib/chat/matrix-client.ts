@@ -17,6 +17,7 @@ import {
   EventTimeline,
   NotificationCountType,
   IRoomTimelineData,
+  RoomMember,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
@@ -42,6 +43,8 @@ import { encryptFile } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
+
+export const USER_TYPING_TIMEOUT = 5000; // 5s
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -525,6 +528,44 @@ export class MatrixClient implements IChatClient {
     } as unknown as Message;
   }
 
+  async uploadImageUrl(
+    roomId: string,
+    url: string,
+    width: number,
+    height: number,
+    size: number,
+    rootMessageId: string = '',
+    optimisticId = ''
+  ) {
+    if (!this.matrix.isRoomEncrypted(roomId)) {
+      console.warn('uploadGiphyMessage called for non-encrypted room', roomId);
+      return;
+    }
+
+    const content = {
+      body: null,
+      msgtype: MsgType.Image,
+      url: url,
+      info: {
+        mimetype: 'image/gif',
+        w: width,
+        h: height,
+        size: size,
+        optimisticId,
+        rootMessageId,
+      },
+      optimisticId,
+    };
+
+    const messageResult = await this.matrix.sendMessage(roomId, content);
+    this.recordMessageSent(roomId);
+
+    return {
+      id: messageResult.event_id,
+      optimisticId,
+    } as unknown as Message;
+  }
+
   async recordMessageSent(roomId: string): Promise<void> {
     const data = { roomId, sentAt: new Date().valueOf() };
 
@@ -687,6 +728,12 @@ export class MatrixClient implements IChatClient {
     return !!result.tags?.[MatrixConstants.FAVORITE];
   }
 
+  async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
+    await this.waitForConnection();
+
+    this.matrix.sendTyping(roomId, isTyping, USER_TYPING_TIMEOUT);
+  }
+
   arraysMatch(a, b) {
     if (a.length !== b.length) {
       return false;
@@ -791,9 +838,10 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
+    this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
+
     //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
-
     // Log events during development to help with understanding which events are happening
     Object.keys(ClientEvent).forEach((key) => {
       this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
@@ -918,6 +966,11 @@ export class MatrixClient implements IChatClient {
 
   private publishRoomAvatarChange = (event) => {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
+  };
+
+  private publishRoomMemberTyping = (event: MatrixEvent, member: RoomMember) => {
+    const content = event.getContent();
+    this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
 
   private publishMembershipChange = async (event) => {

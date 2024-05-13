@@ -46,6 +46,7 @@ describe(send, () => {
       .next({ id: 'message-id' })
       .next()
       .next()
+      .next()
       .isDone();
   });
 
@@ -63,6 +64,7 @@ describe(send, () => {
       .call(uploadFileMessages, channelId, '', [uploadableFile])
       .next()
       .next()
+      .next()
       .isDone();
   });
 
@@ -77,6 +79,7 @@ describe(send, () => {
       .next()
       .next({ id: 'root-id' })
       .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
+      .next()
       .next()
       .next()
       .isDone();
@@ -102,6 +105,7 @@ describe(send, () => {
       .call(uploadFileMessages, channelId, '', [uploadableFile2])
       .next()
       .next()
+      .next()
       .isDone();
   });
 
@@ -112,7 +116,7 @@ describe(send, () => {
       .next()
       .next({ id: 'message-id' })
       .next()
-      .call(publishMessageSent)
+      .call(publishMessageSent, 'channel-id')
       .next()
       .isDone();
   });

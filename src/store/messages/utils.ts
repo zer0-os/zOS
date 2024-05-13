@@ -18,7 +18,7 @@ export function createOptimisticMessageObject(
   messageText: string,
   user: User,
   parentMessage: ParentMessage = null,
-  file?: { name: string; url: string; mediaType: MediaType },
+  file?: { name: string; url: string; mediaType: MediaType; giphy: any },
   rootMessageId?: string
 ): Message {
   const id = uuidv4();
@@ -26,7 +26,7 @@ export function createOptimisticMessageObject(
   if (file) {
     media = {
       type: file.mediaType,
-      url: file.url,
+      url: file.giphy ? file.giphy.images.downsized.url : file.url,
       name: file.name,
       // Not sure why these are in our types as I don't think we use them at all
       // I'm guessing this is for rendering a loaded message when the image hasn't downloaded yet

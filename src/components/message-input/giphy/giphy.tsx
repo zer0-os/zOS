@@ -2,9 +2,11 @@ import React, { useContext } from 'react';
 import { Grid, SearchBar, SearchContext, SearchContextManager } from '@giphy/react-components';
 import { config } from '../../../config';
 
-import classNames from 'classnames';
+import { bemClassName } from '../../../lib/bem';
 
 import './styles.scss';
+
+const cn = bemClassName('giphy');
 
 export interface ComponentProperties {
   onClickGif: Grid['props']['onGifClick'];
@@ -12,18 +14,22 @@ export interface ComponentProperties {
 
 export const GiphyComponents = ({ onClickGif }: Properties) => {
   const { fetchGifs, searchKey } = useContext(SearchContext);
+
+  const renderNoResults = <div {...cn('no-results')}>No results found</div>;
+
   return (
-    <div className={classNames('giphy__container', 'giphy__container--fullscreen')}>
-      <SearchBar className='giphy__container-search' autoFocus />
-      <div className='giphy__container-grid'>
+    <div {...cn('')}>
+      <SearchBar {...cn('search')} autoFocus />
+      <div {...cn('grid')}>
         <Grid
           key={searchKey}
           initialGifs={[]}
           columns={2}
-          width={500}
+          width={510}
           fetchGifs={fetchGifs}
           noLink
           onGifClick={onClickGif}
+          noResultsMessage={renderNoResults}
         />
       </div>
     </div>
@@ -44,7 +50,7 @@ export class Giphy extends React.Component<Properties> {
   };
 
   clickOutsideGiphyCheck = (event: MouseEvent) => {
-    const [giphy] = document.getElementsByClassName('giphy__container');
+    const [giphy] = document.getElementsByClassName('giphy');
 
     if (giphy && event && event.target) {
       if (!giphy.contains(event.target as Node)) {

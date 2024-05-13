@@ -46,6 +46,8 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
   renderImageUploadIcon = (): JSX.Element => <IconImagePlus />;
 
   render() {
+    const isDisabled = !this.state.name || this.state.name.trim().length === 0;
+
     return (
       <div {...cn('')}>
         <PanelHeader title='Group Details' onBack={this.back} />
@@ -57,7 +59,8 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             value={this.state.name}
             onChange={this.nameChanged}
             {...cn('name-input')}
-            placeholder='Group name...'
+            placeholder='Group Name (Required)'
+            autoFocus
           />
 
           <div {...cn('selected-container')}>
@@ -78,7 +81,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('footer')}>
-          <Button {...cn('create-button')} onPress={this.createGroup}>
+          <Button {...cn('create-button')} onPress={this.createGroup} isDisabled={isDisabled}>
             Create Group
           </Button>
         </div>

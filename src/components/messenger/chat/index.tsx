@@ -23,6 +23,8 @@ import { Media } from '../../message-input/utils';
 import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
+import { rawChannelSelector } from '../../../store/channels/saga';
+import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 
 export interface PublicProperties {}
 
@@ -36,6 +38,7 @@ export interface Properties extends PublicProperties {
   canAddMembers: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
+  otherMembersTypingInRoom: string[];
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -67,6 +70,7 @@ export class Container extends React.Component<Properties> {
     const canEdit = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canViewDetails = !directMessage?.isOneOnOne;
+    const channel = rawChannelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
@@ -79,6 +83,7 @@ export class Container extends React.Component<Properties> {
       canAddMembers,
       canViewDetails,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
+      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
   }
 
@@ -154,6 +159,12 @@ export class Container extends React.Component<Properties> {
     }
   };
 
+  renderTypingIndicators = () => {
+    const { otherMembersTypingInRoom } = this.props;
+    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom);
+    return <div className='direct-message-chat__typing-indicator'>{text}</div>;
+  };
+
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -203,6 +214,7 @@ export class Container extends React.Component<Properties> {
                 reply={this.props.directMessage?.reply}
                 onRemoveReply={this.props.onRemoveReply}
               />
+              {this.renderTypingIndicators()}
             </div>
           </div>
           <div className='direct-message-chat__footer-gradient'></div>

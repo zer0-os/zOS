@@ -1,4 +1,4 @@
-import { highlightFilter } from './utils';
+import { getOtherMembersTypingDisplayText, highlightFilter } from './utils';
 
 describe('highlightFilter', () => {
   it('returns unmodified text when filter is an empty string', () => {
@@ -56,5 +56,44 @@ describe('highlightFilter', () => {
     expect(result[1].type).toEqual('span');
     expect(result[1].props.children).toEqual('lo');
     expect(result[2]).toEqual(' World');
+  });
+});
+
+describe(getOtherMembersTypingDisplayText, () => {
+  it('returns null when no members are typing', () => {
+    const otherMembersTypingInRoom = [];
+
+    const result = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
+
+    expect(result).toBeNull();
+  });
+
+  it('returns text when one member is typing', () => {
+    const otherMembersTypingInRoom = ['Ashneer'];
+
+    const result = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
+
+    expect(result).toEqual('Ashneer is typing...');
+  });
+
+  it('returns text when two members are typing', () => {
+    const otherMembersTypingInRoom = ['Ashneer', 'Aman'];
+
+    const result = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
+
+    expect(result).toEqual('Ashneer and Aman are typing...');
+  });
+
+  it('returns text when more than two members are typing', () => {
+    const otherMembersTypingInRoom = [
+      'Ashneer',
+      'Aman',
+      'Anupam',
+      'Ankit',
+    ];
+
+    const result = getOtherMembersTypingDisplayText(otherMembersTypingInRoom);
+
+    expect(result).toEqual('Ashneer and 3 others are typing...');
   });
 });

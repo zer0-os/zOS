@@ -35,6 +35,7 @@ export interface Properties extends PublicPropertiesContainer {
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
   dropzoneToMedia?: (files: any[]) => Media[];
+  onUserTyping: ({ roomId }: { roomId: string }) => void;
 }
 
 interface State {
@@ -167,6 +168,8 @@ export class MessageInput extends React.Component<Properties, State> {
       target: { value },
     } = event;
 
+    this.props.onUserTyping({ roomId: this.props.id });
+
     value = textToPlainEmojis(value);
     const mentionedUserIds = this.extractUserIds(value);
     this.setState({ value, mentionedUserIds });
@@ -245,8 +248,7 @@ export class MessageInput extends React.Component<Properties, State> {
   }
 
   get allowGiphy() {
-    // Feature not implemented in Matrix yet
-    return false && !this.props.isEditing;
+    return !this.props.isEditing;
   }
 
   get allowFileAttachment() {

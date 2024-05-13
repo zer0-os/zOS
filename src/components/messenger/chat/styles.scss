@@ -94,13 +94,18 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   }
 
   &__typing-indicator {
-    font-size: 14px;
+    font-size: 13px;
     font-style: italic;
     font-weight: 400;
     margin-left: 100px;
-    padding-bottom: 8px;
+    margin-top: -6px;
+    padding-bottom: 2px;
 
     @include glass-text-secondary-color;
+
+    &:empty {
+      display: none;
+    }
   }
 
   &__description {

@@ -40,4 +40,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const DialogContainer = connectContainer<PublicProperties>(Container);
+export const DialogManager = connectContainer<PublicProperties>(Container);

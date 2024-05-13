@@ -5,7 +5,7 @@ import { RootState } from '../../store/reducer';
 import { SecureBackupContainer } from '../secure-backup/container';
 import { closeBackupDialog } from '../../store/matrix';
 
-describe('DialogContainer', () => {
+describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       isBackupDialogOpen: false,

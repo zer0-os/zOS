@@ -59,7 +59,8 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
             value={this.state.name}
             onChange={this.nameChanged}
             {...cn('name-input')}
-            placeholder='Group name...'
+            placeholder='Group Name (Required)'
+            autoFocus
           />
 
           <div {...cn('selected-container')}>

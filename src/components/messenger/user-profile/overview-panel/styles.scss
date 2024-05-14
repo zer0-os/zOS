@@ -30,6 +30,12 @@
     justify-content: space-between;
   }
 
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
   &__details {
     display: flex;
     flex-direction: column;
@@ -87,6 +93,24 @@
 
     font-size: 14px;
     line-height: 14px;
+  }
+
+  &__rewards {
+    display: flex;
+    cursor: pointer;
+    border-radius: 16px;
+    margin-bottom: 24px;
+
+    @include glass-input-inset-default;
+
+    &:hover,
+    &:focus {
+      @include glass-state-hover-color;
+    }
+
+    &:active {
+      @include glass-input-inset-active;
+    }
   }
 
   &__action-button {

@@ -462,9 +462,9 @@ export class MatrixClient implements IChatClient {
         users: {
           [this.userId]: PowerLevels.Owner,
         },
-        invite: PowerLevels.Owner, // default is PL0
+        invite: PowerLevels.Moderator, // default is PL0
         // all below except users_default, default to PL50
-        kick: PowerLevels.Owner,
+        kick: PowerLevels.Moderator,
         redact: PowerLevels.Owner,
         ban: PowerLevels.Owner,
         users_default: PowerLevels.Viewer,

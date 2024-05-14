@@ -168,30 +168,34 @@ export class MatrixClient implements IChatClient {
    */
   async lowerMinimumInviteAndKickLevels(rooms: Room[]) {
     for (const room of rooms) {
-      const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
-      if (!powerLevels || this.userId !== room.getCreator() || room.getMembers().length <= 2) {
-        continue;
-      }
+      try {
+        const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
+        if (!powerLevels || this.userId !== room.getCreator() || room.getMembers().length <= 2) {
+          continue;
+        }
 
-      const powerLevelsContent = powerLevels.getContent();
-      if (powerLevelsContent.invite === PowerLevels.Moderator && powerLevelsContent.kick === PowerLevels.Moderator) {
-        continue;
-      }
+        const powerLevelsContent = powerLevels.getContent();
+        if (powerLevelsContent.invite === PowerLevels.Moderator && powerLevelsContent.kick === PowerLevels.Moderator) {
+          continue;
+        }
 
-      // just to be safe, above we check if the user is the creator of the room
-      // but also check if this users has a power level of 100,
-      // otherwise sendStateEvent will fail
-      const users = powerLevelsContent.users || {};
-      if (users[this.userId] !== PowerLevels.Owner) {
-        continue;
-      }
+        // just to be safe, above we check if the user is the creator of the room
+        // but also check if this users has a power level of 100,
+        // otherwise sendStateEvent will fail
+        const users = powerLevelsContent.users || {};
+        if (users[this.userId] !== PowerLevels.Owner) {
+          continue;
+        }
 
-      const updatedRoomPowerLevels = {
-        ...powerLevelsContent,
-        invite: PowerLevels.Moderator,
-        kick: PowerLevels.Moderator,
-      };
-      await this.matrix.sendStateEvent(room.roomId, EventType.RoomPowerLevels, updatedRoomPowerLevels);
+        const updatedRoomPowerLevels = {
+          ...powerLevelsContent,
+          invite: PowerLevels.Moderator,
+          kick: PowerLevels.Moderator,
+        };
+        await this.matrix.sendStateEvent(room.roomId, EventType.RoomPowerLevels, updatedRoomPowerLevels);
+      } catch (error) {
+        console.error(`Error lowering minimum invite and kick levels for room ${room.roomId} `, error);
+      }
     }
   }
 

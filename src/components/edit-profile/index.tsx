@@ -1,14 +1,15 @@
 import * as React from 'react';
 
-import { IconButton, Alert, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
-import { Button } from '@zero-tech/zui/components/Button';
-
-import './styles.scss';
-import { bem } from '../../lib/bem';
+import { Alert, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../components/image-upload';
-import { IconUpload2, IconXClose, IconHelpCircle, IconCheck } from '@zero-tech/zui/icons';
+import { IconUpload2, IconHelpCircle, IconCheck } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { featureFlags } from '../../lib/feature-flags';
+import { PanelHeader } from '../messenger/list/panel-header';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+
+import { bem } from '../../lib/bem';
+import './styles.scss';
 
 const c = bem('edit-profile');
 
@@ -168,21 +169,20 @@ export class EditProfile extends React.Component<Properties, State> {
   render() {
     return (
       <div className={c('')}>
-        <div className={c('header')}>
-          <h3 className={c('title')}>Edit Profile</h3>
-          <IconButton className={c('close')} Icon={IconXClose} onClick={this.props.onClose} size={32} />
+        <div className={c('header-container')}>
+          <PanelHeader title='Edit Profile' onBack={this.props.onClose} />
         </div>
+
         <div className={c('body')}>
-          <div className={c('image-upload')}>
-            <ImageUpload
-              onChange={this.trackImage}
-              icon={this.renderImageUploadIcon()}
-              uploadText='Select or drag and drop'
-              isError={Boolean(this.props.errors.image)}
-              errorMessage={this.props.errors.image}
-              imageSrc={this.props.currentProfileImage} // to show the existing image
-            />
-          </div>
+          <ImageUpload
+            className={c('image-upload')}
+            onChange={this.trackImage}
+            icon={this.renderImageUploadIcon()}
+            uploadText='Select or drag and drop'
+            isError={Boolean(this.props.errors.image)}
+            errorMessage={this.props.errors.image}
+            imageSrc={this.props.currentProfileImage} // to show the existing image
+          />
           <Input
             label='Display Name'
             name='name'
@@ -193,14 +193,13 @@ export class EditProfile extends React.Component<Properties, State> {
             className={c('body-input')}
           />
           {featureFlags.allowEditPrimaryZID && (
-            <div className={c('body-input')}>
+            <div className={c('select-input')}>
               {this.renderZeroIDLabel()}
               <SelectInput
                 items={this.menuItems}
                 label=''
                 placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
                 value={this.state.primaryZID}
-                className={c('select-input')}
                 itemSize='spacious'
                 menuClassName={c('zid-select-menu')}
               />
@@ -225,7 +224,13 @@ export class EditProfile extends React.Component<Properties, State> {
         )}
 
         <div className={c('footer')}>
-          <Button isLoading={this.isLoading} isSubmit isDisabled={this.isDisabled} onPress={this.handleEdit}>
+          <Button
+            isLoading={this.isLoading}
+            isSubmit
+            isDisabled={this.isDisabled}
+            onPress={this.handleEdit}
+            variant={ButtonVariant.Secondary}
+          >
             Save Changes
           </Button>
         </div>

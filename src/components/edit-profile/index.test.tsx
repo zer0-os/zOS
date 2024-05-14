@@ -1,8 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { EditProfile, Properties } from './index';
-import { IconButton, Alert } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { Alert } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../components/image-upload';
 import { State as EditProfileState } from '../../store/edit-profile';
 import { buttonLabelled } from '../../test/utils';
@@ -29,21 +28,6 @@ describe('EditProfile', () => {
 
     return shallow(<EditProfile {...allProps} />);
   };
-
-  it('renders header with title and close button', () => {
-    const wrapper = subject({});
-    expect(wrapper.find('.edit-profile__header').length).toEqual(1);
-    expect(wrapper.find('.edit-profile__title').text()).toEqual('Edit Profile');
-    expect(wrapper.find(IconButton).props().Icon).toEqual(IconXClose);
-  });
-
-  it('calls onClose when close button is clicked', () => {
-    const onCloseMock = jest.fn();
-    const wrapper = subject({ onClose: onCloseMock });
-
-    wrapper.find(IconButton).simulate('click');
-    expect(onCloseMock).toHaveBeenCalled();
-  });
 
   it('renders body with ImageUpload and Input', () => {
     const wrapper = subject({});

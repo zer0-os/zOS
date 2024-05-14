@@ -15,7 +15,6 @@ export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   currentUser: User;
-  displayLogoutModal: boolean;
 
   logout: () => void;
   openBackupDialog: () => void;
@@ -24,7 +23,6 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { authentication } = state;
     const currentUser = currentUserSelector(state);
 
     return {
@@ -33,7 +31,6 @@ export class Container extends React.Component<Properties> {
         profileImage: currentUser?.profileSummary.profileImage,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,
-      displayLogoutModal: authentication.displayLogoutModal,
     };
   }
 
@@ -51,7 +48,6 @@ export class Container extends React.Component<Properties> {
         name={this.props.currentUser.firstName}
         image={this.props.currentUser.profileImage}
         subHandle={this.props.currentUser.displaySubHandle}
-        isLogoutOpen={this.props.displayLogoutModal}
         onBack={this.props.closeUserProfile}
         onOpenLogoutDialog={this.props.logout}
         onOpenBackupDialog={this.props.openBackupDialog}

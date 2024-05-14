@@ -17,7 +17,6 @@ describe(UserProfile, () => {
       name: '',
       image: '',
       subHandle: '',
-      isLogoutOpen: false,
 
       onBack: () => null,
       onOpenLogoutDialog: () => null,
@@ -39,7 +38,7 @@ describe(UserProfile, () => {
 
   it('publishes onLogout event', () => {
     const onOpenLogoutDialog = jest.fn();
-    const wrapper = subject({ onOpenLogoutDialog, isLogoutOpen: false });
+    const wrapper = subject({ onOpenLogoutDialog });
 
     wrapper.find(c('footer-button')).simulate('press');
 

@@ -4,11 +4,12 @@ import { connectContainer } from '../../store/redux-container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
 import { GroupManagementContainer } from '../messenger/group-management/container';
+import { UserProfileContainer } from '../messenger/user-profile/container';
+import { Stage as ProfileStage } from '../../store/edit-profile';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-import { UserProfileContainer } from '../messenger/user-profile/container';
 
 const cn = bemClassName('sidekick');
 
@@ -24,7 +25,7 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isSecondarySidekickOpen: boolean;
-  isUserProfileOpen: boolean;
+  profileStage: ProfileStage;
 }
 
 export class Container extends React.Component<Properties> {
@@ -32,7 +33,7 @@ export class Container extends React.Component<Properties> {
     const { groupManagement, editProfile } = state;
 
     return {
-      isUserProfileOpen: editProfile.isUserProfileOpen,
+      profileStage: editProfile.stage,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
@@ -49,7 +50,7 @@ export class Container extends React.Component<Properties> {
     if (this.isSecondary) {
       return <GroupManagementContainer />;
     } else {
-      return this.props.isUserProfileOpen ? <UserProfileContainer /> : <MessengerList />;
+      return this.props.profileStage !== ProfileStage.None ? <UserProfileContainer /> : <MessengerList />;
     }
   }
 

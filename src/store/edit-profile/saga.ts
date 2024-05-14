@@ -1,5 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
-import { SagaActionTypes, State, setErrors, setIsUserProfileOpen, setLoadingZIDs, setOwnedZIDs, setState } from '.';
+import { SagaActionTypes, Stage, State, setErrors, setLoadingZIDs, setOwnedZIDs, setStage, setState } from '.';
 import {
   editUserProfile as apiEditUserProfile,
   saveUserMatrixCredentials as apiSaveUserMatrixCredentials,
@@ -84,11 +84,15 @@ export function* fetchOwnedZIDs() {
 }
 
 export function* openUserProfile() {
-  yield put(setIsUserProfileOpen(true));
+  yield put(setStage(Stage.Overview));
 }
 
 export function* closeUserProfile() {
-  yield put(setIsUserProfileOpen(false));
+  yield put(setStage(Stage.None));
+}
+
+export function* openEditProfile() {
+  yield put(setStage(Stage.EditProfile));
 }
 
 export function* saga() {
@@ -96,4 +100,5 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.FetchOwnedZIDs, fetchOwnedZIDs);
   yield takeLatest(SagaActionTypes.OpenUserProfile, openUserProfile);
   yield takeLatest(SagaActionTypes.CloseUserProfile, closeUserProfile);
+  yield takeLatest(SagaActionTypes.OpenEditProfile, openEditProfile);
 }

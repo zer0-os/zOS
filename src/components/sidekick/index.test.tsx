@@ -6,6 +6,7 @@ import { MessengerList } from '../messenger/list';
 import { Stage as GroupManagementStage } from '../../store/group-management';
 import { UserProfileContainer } from '../messenger/user-profile/container';
 import { GroupManagementContainer } from '../messenger/group-management/container';
+import { Stage as ProfileStage } from '../../store/edit-profile';
 
 describe('Sidekick', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -14,7 +15,8 @@ describe('Sidekick', () => {
       variant: SidekickVariant.Primary,
       groupManagementStage: GroupManagementStage.None,
       isSecondarySidekickOpen: false,
-      isUserProfileOpen: false,
+      profileStage: ProfileStage.None,
+
       ...props,
     };
 
@@ -36,8 +38,8 @@ describe('Sidekick', () => {
     expect(wrapper.find('.sidekick__tab-content--messages').exists()).toBe(true);
   });
 
-  it('renders UserProfileContainer when isUserProfileOpen is true', () => {
-    const wrapper = subject({ isUserProfileOpen: true });
+  it('renders UserProfileContainer when profile stage is not None', () => {
+    const wrapper = subject({ profileStage: ProfileStage.Overview });
 
     expect(wrapper.find(UserProfileContainer)).toExist();
     expect(wrapper.find(MessengerList)).not.toExist();

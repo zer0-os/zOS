@@ -100,11 +100,17 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     margin-left: 100px;
     margin-top: -6px;
     padding-bottom: 2px;
+    box-sizing: border-box;
 
     @include glass-text-secondary-color;
 
+    height: 16px;
+    transition: all 0.25s ease-out;
+
     &:empty {
-      display: none;
+      height: 0px;
+      padding-bottom: 0px;
+      margin-top: 0px;
     }
   }
 

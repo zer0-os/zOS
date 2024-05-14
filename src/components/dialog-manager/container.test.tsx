@@ -4,10 +4,12 @@ import { Container, Properties } from './container';
 import { RootState } from '../../store/reducer';
 import { SecureBackupContainer } from '../secure-backup/container';
 import { closeBackupDialog } from '../../store/matrix';
+import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      displayLogoutModal: false,
       isBackupDialogOpen: false,
 
       closeBackupDialog: () => null,
@@ -38,8 +40,23 @@ describe('DialogManager', () => {
     expect(closeBackupDialogMock).toHaveBeenCalled();
   });
 
+  it('renders Logout Confirmation when displayLogoutModal is true', () => {
+    const wrapper = subject({ displayLogoutModal: true });
+
+    expect(wrapper).toHaveElement(LogoutConfirmationModalContainer);
+  });
+
+  it('does not render Logout Confirmation when displayLogoutModal is false', () => {
+    const wrapper = subject({ displayLogoutModal: false });
+
+    expect(wrapper).not.toHaveElement(LogoutConfirmationModalContainer);
+  });
+
   describe('mapState', () => {
     const stateMock: RootState = {
+      authentication: {
+        displayLogoutModal: true,
+      },
       matrix: {
         isBackupDialogOpen: true,
       },
@@ -49,6 +66,12 @@ describe('DialogManager', () => {
       const props = Container.mapState(stateMock);
 
       expect(props.isBackupDialogOpen).toBe(true);
+    });
+
+    it('returns displayLogoutModal', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.displayLogoutModal).toBe(true);
     });
   });
 

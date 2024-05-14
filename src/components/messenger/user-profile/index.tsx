@@ -6,7 +6,6 @@ import { PanelHeader } from '../list/panel-header';
 import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus } from '@zero-tech/zui/icons';
-import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 
 import './styles.scss';
@@ -17,7 +16,6 @@ export interface Properties {
   name: string;
   image: string;
   subHandle?: string;
-  isLogoutOpen: boolean;
 
   onBack: () => void;
   onOpenLogoutDialog: () => void;
@@ -137,7 +135,6 @@ export class UserProfile extends React.Component<Properties, State> {
 
         {this.renderFooter()}
         {this.renderInviteDialog()}
-        {this.props.isLogoutOpen && <LogoutConfirmationModalContainer />}
       </div>
     );
   }

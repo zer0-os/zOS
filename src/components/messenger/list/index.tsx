@@ -31,7 +31,6 @@ import { receiveSearchResults } from '../../../store/users';
 import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
-import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -57,7 +56,6 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   joinRoomErrorContent: ErrorDialogContent;
   isRewardsDialogOpen: boolean;
-  displayLogoutModal: boolean;
   showRewardsTooltip: boolean;
 
   startCreateConversation: () => void;
@@ -83,7 +81,7 @@ export class Container extends React.Component<Properties, State> {
     const {
       createConversation,
       registration,
-      authentication: { user, displayLogoutModal },
+      authentication: { user },
       chat: { activeConversationId, joinRoomErrorContent },
       rewards,
     } = state;
@@ -105,7 +103,6 @@ export class Container extends React.Component<Properties, State> {
       joinRoomErrorContent,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       showRewardsTooltip: rewards.showRewardsInTooltip,
-      displayLogoutModal,
     };
   }
 
@@ -288,7 +285,6 @@ export class Container extends React.Component<Properties, State> {
           {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
-          {this.props.displayLogoutModal && <LogoutConfirmationModalContainer />}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         </div>
         {this.props.stage === SagaStage.None && this.renderFooterMask()}

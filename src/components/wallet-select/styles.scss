@@ -6,7 +6,7 @@ $left-padding: 12px;
   padding: 8px;
   border-radius: 8px;
   color: theme.$color-greyscale-12;
-  background-color: theme.$color-primary-transparency-1;
+  background: rgba(10, 10, 10, 0.75);
 
   &__title-bar {
     border-bottom: 1px solid theme.$color-primary-4;

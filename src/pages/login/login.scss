@@ -1,4 +1,5 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import './../../modules/background';
 // XXX: Merge this with the invite page styles...there's some kind of root authentication page that needs to be created?
 
 // Constants for login dimensions and spacing
@@ -33,11 +34,7 @@ body {
 
 // Main login component styles
 .login-main {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-    radial-gradient(66.52% 66.52% at 0% 0%, #26072d 0%, rgba(38, 7, 45, 0) 100%),
-    radial-gradient(93.63% 93.63% at 100% 0%, #9d0097 0%, rgba(157, 0, 151, 0) 100%),
-    radial-gradient(91.27% 91.27% at 112.3% 83.55%, #52a9ff 0%, rgba(82, 169, 255, 0) 100%),
-    radial-gradient(65.88% 65.88% at -1.79% 99.21%, #4f0895 0%, rgba(79, 8, 149, 0) 100%), #290634;
+  @include background-zero;
 
   position: absolute;
   overflow-y: auto;
@@ -82,9 +79,12 @@ body {
 
   &__toggle-group {
     height: 40px;
-    background: theme.$color-primary-transparency-1;
+    background: transparent;
     width: $login-width;
     margin-bottom: $login-gap;
+    border-radius: 24px;
+    border: 1px solid rgba(163, 162, 163, 0.1);
+    padding: 4px;
 
     > * {
       border-left: none !important;
@@ -92,7 +92,9 @@ body {
 
     [data-state='on'] {
       font-weight: 700;
-      background: theme.$color-primary-transparency-2 !important;
+      background: rgba(163, 162, 163, 0.1) !important;
+      border-radius: 20px !important;
+      padding: 8px, 16px, 8px, 16px !important;
     }
   }
 

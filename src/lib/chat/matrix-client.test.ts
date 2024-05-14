@@ -366,7 +366,7 @@ describe('matrix client', () => {
       );
     });
 
-    it('set the appropriate defaul power_levels in group conversation', async () => {
+    it('set the appropriate default power_levels in group conversation', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom }, { userId: '@this.user' });
 
@@ -386,8 +386,8 @@ describe('matrix client', () => {
             users: {
               '@this.user': 100, // the user who created the room
             },
-            invite: PowerLevels.Owner,
-            kick: PowerLevels.Owner,
+            invite: PowerLevels.Moderator,
+            kick: PowerLevels.Moderator,
             redact: PowerLevels.Owner,
             ban: PowerLevels.Owner,
             users_default: PowerLevels.Viewer,

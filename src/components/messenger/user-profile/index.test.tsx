@@ -4,6 +4,7 @@ import { UserProfile, Properties } from '.';
 import { PanelHeader } from '../list/panel-header';
 
 import { Image } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 import { IconCurrencyEthereum } from '@zero-tech/zui/icons';
 
 import { bem } from '../../../lib/bem';
@@ -20,6 +21,7 @@ describe(UserProfile, () => {
 
       onBack: () => null,
       onOpenLogoutDialog: () => null,
+      onOpenBackupDialog: () => null,
       ...props,
     };
 
@@ -47,9 +49,18 @@ describe(UserProfile, () => {
   it('opens the invite dialog', () => {
     const wrapper = subject({});
 
-    wrapper.find(c('action-button')).simulate('press');
+    wrapper.find(Button).at(0).simulate('press');
 
     expect(wrapper).toHaveState('isInviteDialogOpen', true);
+  });
+
+  it('publishes onOpenBackupDialog event', () => {
+    const onOpenBackupDialog = jest.fn();
+    const wrapper = subject({ onOpenBackupDialog });
+
+    wrapper.find(Button).at(1).simulate('press');
+
+    expect(onOpenBackupDialog).toHaveBeenCalled();
   });
 
   it('renders subhandle when subhandle prop is provided', () => {

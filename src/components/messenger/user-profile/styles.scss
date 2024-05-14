@@ -95,6 +95,16 @@
     > *:first-child {
       gap: 4px;
     }
+
+    > *:last-child {
+      font-weight: 400;
+    }
+
+    &--highlighted {
+      > *:last-child {
+        font-weight: 600;
+      }
+    }
   }
 
   &__footer {

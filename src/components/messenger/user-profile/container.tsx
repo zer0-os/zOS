@@ -9,6 +9,7 @@ import { getUserSubHandle } from '../../../lib/user';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { closeUserProfile } from '../../../store/edit-profile';
 import { logout } from '../../../store/authentication';
+import { openBackupDialog } from '../../../store/matrix';
 
 export interface PublicProperties {}
 
@@ -17,6 +18,7 @@ export interface Properties extends PublicProperties {
   displayLogoutModal: boolean;
 
   logout: () => void;
+  openBackupDialog: () => void;
   closeUserProfile: () => void;
 }
 
@@ -39,6 +41,7 @@ export class Container extends React.Component<Properties> {
     return {
       logout,
       closeUserProfile,
+      openBackupDialog,
     };
   }
 
@@ -51,6 +54,7 @@ export class Container extends React.Component<Properties> {
         isLogoutOpen={this.props.displayLogoutModal}
         onBack={this.props.closeUserProfile}
         onOpenLogoutDialog={this.props.logout}
+        onOpenBackupDialog={this.props.openBackupDialog}
       />
     );
   }

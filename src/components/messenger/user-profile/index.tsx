@@ -5,7 +5,7 @@ import { bemClassName } from '../../../lib/bem';
 import { PanelHeader } from '../list/panel-header';
 import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
-import { IconCurrencyEthereum, IconLogOut3, IconPlus } from '@zero-tech/zui/icons';
+import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus } from '@zero-tech/zui/icons';
 import { LogoutConfirmationModalContainer } from '../../logout-confirmation-modal/container';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 
@@ -21,6 +21,7 @@ export interface Properties {
 
   onBack: () => void;
   onOpenLogoutDialog: () => void;
+  onOpenBackupDialog: () => void;
 }
 
 interface State {
@@ -56,6 +57,10 @@ export class UserProfile extends React.Component<Properties, State> {
     this.props.onOpenLogoutDialog();
   };
 
+  openBackupDialog = () => {
+    this.props.onOpenBackupDialog();
+  };
+
   renderDetails = () => {
     return (
       <div {...cn('details')}>
@@ -79,14 +84,26 @@ export class UserProfile extends React.Component<Properties, State> {
 
   renderActions() {
     return (
-      <Button
-        {...cn('action-button')}
-        variant={ButtonVariant.Secondary}
-        onPress={this.openInviteDialog}
-        startEnhancer={<IconPlus size={20} isFilled />}
-      >
-        Invite Friends
-      </Button>
+      <div {...cn('action-button-container')}>
+        <Button
+          {...cn('action-button', 'highlighted')}
+          variant={ButtonVariant.Secondary}
+          onPress={this.openInviteDialog}
+          startEnhancer={<IconPlus size={20} isFilled />}
+        >
+          Invite Friends
+        </Button>
+
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={this.openBackupDialog}
+          startEnhancer={<IconLock1 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Account Backup
+        </Button>
+      </div>
     );
   }
 

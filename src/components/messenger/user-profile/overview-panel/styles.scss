@@ -1,6 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../variables';
-@import '../../../glass';
+@import '../../../../variables';
+@import '../../../../glass';
 
 @keyframes fadeIn {
   0% {
@@ -11,7 +11,7 @@
   }
 }
 
-.user-profile {
+.overview-panel {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -40,7 +40,7 @@
   &__image-conatiner {
     align-self: center;
 
-    animation: fadeIn 0.5s;
+    animation: fadeIn 2s;
   }
 
   &__image {

@@ -6,16 +6,11 @@ import {
   fetchOwnedZIDs,
   openUserProfile,
   closeUserProfile,
+  openEditProfile,
 } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
-import {
-  EditProfileState,
-  State,
-  initialState as initialEditProfileState,
-  setIsUserProfileOpen,
-  setLoadingZIDs,
-} from '.';
+import { EditProfileState, State, initialState as initialEditProfileState, Stage, setStage, setLoadingZIDs } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
@@ -169,32 +164,43 @@ describe('fetchOwnedZIDs', () => {
 });
 
 describe('openUserProfile', () => {
-  it('should set isUserProfileOpen to true', async () => {
+  it('should set stage to Overview', async () => {
     const { storeState } = await expectSaga(openUserProfile)
       .withReducer(rootReducer, initialState())
-      .put(setIsUserProfileOpen(true))
+      .put(setStage(Stage.Overview))
       .run();
 
-    expect(storeState.editProfile.isUserProfileOpen).toEqual(true);
+    expect(storeState.editProfile.stage).toEqual(Stage.Overview);
+  });
+});
+
+describe('openEditProfile', () => {
+  it('should set stage to EditProfile', async () => {
+    const { storeState } = await expectSaga(openEditProfile)
+      .withReducer(rootReducer, initialState())
+      .put(setStage(Stage.EditProfile))
+      .run();
+
+    expect(storeState.editProfile.stage).toEqual(Stage.EditProfile);
   });
 });
 
 describe('closeUserProfile', () => {
-  it('should set isUserProfileOpen to false', async () => {
+  it('should set stage to None', async () => {
     const initialStateWithOpenProfile = {
       ...initialState(),
       editProfile: {
         ...initialState().editProfile,
-        isUserProfileOpen: true,
+        stage: Stage.EditProfile,
       },
     };
 
     const { storeState } = await expectSaga(closeUserProfile)
       .withReducer(rootReducer, initialStateWithOpenProfile)
-      .put(setIsUserProfileOpen(false))
+      .put(setStage(Stage.None))
       .run();
 
-    expect(storeState.editProfile.isUserProfileOpen).toEqual(false);
+    expect(storeState.editProfile.stage).toEqual(Stage.None);
   });
 });
 

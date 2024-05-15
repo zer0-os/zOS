@@ -32,7 +32,7 @@ import { UserHeader } from './user-header';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
-import { closeRewardsDialog } from '../../../store/rewards';
+import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { openUserProfile } from '../../../store/edit-profile';
 
@@ -72,6 +72,7 @@ export interface Properties extends PublicProperties {
   onFavoriteRoom: (payload: { roomId: string }) => void;
   onUnfavoriteRoom: (payload: { roomId: string }) => void;
   openUserProfile: () => void;
+  totalRewardsViewed: () => void;
 }
 
 interface State {
@@ -124,6 +125,7 @@ export class Container extends React.Component<Properties, State> {
       onFavoriteRoom,
       onUnfavoriteRoom,
       openUserProfile,
+      totalRewardsViewed,
     };
   }
 
@@ -238,6 +240,7 @@ export class Container extends React.Component<Properties, State> {
         showRewardsTooltip={this.props.showRewardsTooltip}
         openUserProfile={this.props.openUserProfile}
         hasUnviewedRewards={this.props.hasUnviewedRewards}
+        totalRewardsViewed={this.props.totalRewardsViewed}
       />
     );
   }

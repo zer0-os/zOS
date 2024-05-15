@@ -21,6 +21,7 @@ describe(UserHeader, () => {
       onVerifyId: () => null,
       startConversation: () => null,
       openUserProfile: () => null,
+      totalRewardsViewed: () => null,
       ...props,
     };
 
@@ -85,5 +86,14 @@ describe(UserHeader, () => {
     wrapper.find(c('avatar-container')).simulate('click');
 
     expect(openUserProfile).toHaveBeenCalled();
+  });
+
+  it('fires totalRewardsViewed when user avatar is clicked', function () {
+    const totalRewardsViewed = jest.fn();
+    const wrapper = subject({ totalRewardsViewed });
+
+    wrapper.find(c('avatar-container')).simulate('click');
+
+    expect(totalRewardsViewed).toHaveBeenCalled();
   });
 });

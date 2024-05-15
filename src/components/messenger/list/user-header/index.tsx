@@ -22,6 +22,7 @@ export interface Properties {
   onVerifyId: () => void;
   startConversation: () => void;
   openUserProfile: () => void;
+  totalRewardsViewed: () => void;
 }
 
 export class UserHeader extends React.Component<Properties> {
@@ -39,6 +40,7 @@ export class UserHeader extends React.Component<Properties> {
 
   openProfile = () => {
     this.props.openUserProfile();
+    this.props.totalRewardsViewed();
   };
 
   renderVerifyIdButton() {

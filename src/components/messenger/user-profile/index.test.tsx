@@ -18,6 +18,7 @@ describe(UserProfile, () => {
       onBackup: () => {},
       onEdit: () => {},
       onBackToOverview: () => {},
+      onRewards: () => {},
 
       ...props,
     };

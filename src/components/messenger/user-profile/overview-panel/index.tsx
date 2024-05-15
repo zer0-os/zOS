@@ -7,6 +7,8 @@ import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus, IconUser1 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
+import { RewardsItemContainer } from '../../../settings-menu/rewards-item/container';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import './styles.scss';
 
@@ -21,6 +23,7 @@ export interface Properties {
   onOpenLogoutDialog: () => void;
   onOpenBackupDialog: () => void;
   onOpenEditProfile: () => void;
+  onOpenRewards: () => void;
 }
 
 interface State {
@@ -62,6 +65,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   openEditProfile = () => {
     this.props.onOpenEditProfile();
+  };
+
+  openRewards = () => {
+    this.props.onOpenRewards();
   };
 
   renderDetails = () => {
@@ -136,6 +143,14 @@ export class OverviewPanel extends React.Component<Properties, State> {
     );
   }
 
+  renderRewards() {
+    return (
+      <div {...cn('rewards')} onClick={this.openRewards}>
+        <RewardsItemContainer />
+      </div>
+    );
+  }
+
   render() {
     return (
       <div {...cn()}>
@@ -144,7 +159,11 @@ export class OverviewPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('body')}>
-          {this.renderDetails()}
+          <div {...cn('section')}>
+            {this.renderDetails()}
+            {featureFlags.enableRewards && this.renderRewards()}
+          </div>
+
           {this.renderActions()}
         </div>
 

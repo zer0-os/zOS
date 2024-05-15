@@ -15,6 +15,7 @@ export interface Properties {
   onBackup: () => void;
   onEdit: () => void;
   onBackToOverview: () => void;
+  onRewards: () => void;
 }
 
 export class UserProfile extends React.Component<Properties> {
@@ -30,6 +31,7 @@ export class UserProfile extends React.Component<Properties> {
             onOpenLogoutDialog={this.props.onLogout}
             onOpenBackupDialog={this.props.onBackup}
             onOpenEditProfile={this.props.onEdit}
+            onOpenRewards={this.props.onRewards}
           />
         )}
 

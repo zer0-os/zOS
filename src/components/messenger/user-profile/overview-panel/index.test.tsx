@@ -11,6 +11,12 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
+const featureFlags = { enableRewards: false };
+
+jest.mock('../../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe(OverviewPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -22,6 +28,7 @@ describe(OverviewPanel, () => {
       onOpenLogoutDialog: () => {},
       onOpenBackupDialog: () => {},
       onOpenEditProfile: () => {},
+      onOpenRewards: () => {},
 
       ...props,
     };
@@ -63,6 +70,17 @@ describe(OverviewPanel, () => {
     wrapper.find(Button).at(2).simulate('press');
 
     expect(onOpenBackupDialog).toHaveBeenCalled();
+  });
+
+  it('publishes onOpenRewards event', () => {
+    featureFlags.enableRewards = true;
+
+    const onOpenRewards = jest.fn();
+    const wrapper = subject({ onOpenRewards });
+
+    wrapper.find(c('rewards')).simulate('click');
+
+    expect(onOpenRewards).toHaveBeenCalled();
   });
 
   it('opens the invite dialog', () => {

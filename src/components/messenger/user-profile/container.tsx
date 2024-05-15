@@ -10,6 +10,7 @@ import { currentUserSelector } from '../../../store/authentication/selectors';
 import { Stage, closeUserProfile, openEditProfile, openUserProfile } from '../../../store/edit-profile';
 import { logout } from '../../../store/authentication';
 import { openBackupDialog } from '../../../store/matrix';
+import { openRewardsDialog } from '../../../store/rewards';
 
 export interface PublicProperties {}
 
@@ -22,6 +23,7 @@ export interface Properties extends PublicProperties {
   openUserProfile: () => void;
   closeUserProfile: () => void;
   openEditProfile: () => void;
+  openRewardsDialog: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -46,6 +48,7 @@ export class Container extends React.Component<Properties> {
       closeUserProfile,
       openBackupDialog,
       openEditProfile,
+      openRewardsDialog,
     };
   }
 
@@ -61,6 +64,7 @@ export class Container extends React.Component<Properties> {
         onBackup={this.props.openBackupDialog}
         onEdit={this.props.openEditProfile}
         onBackToOverview={this.props.openUserProfile}
+        onRewards={this.props.openRewardsDialog}
       />
     );
   }

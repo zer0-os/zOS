@@ -26,7 +26,6 @@ export interface Properties {
   conversationAdminIds: string[];
 
   onBack: () => void;
-  onRemoveMember: (userId: string) => void;
   onEdit: (name: string, image: File | null) => void;
   onMemberSelected: (userId: string) => void;
   openUserProfile: () => void;
@@ -67,15 +66,9 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     return this.props.state === EditConversationState.SUCCESS;
   }
 
-  get removeMember() {
-    if (this.props.otherMembers.length < 2) return null;
-
-    return this.publishRemove;
+  get canRemoveMembers() {
+    return this.props.otherMembers.length > 1;
   }
-
-  publishRemove = (userId: string) => {
-    this.props.onRemoveMember(userId);
-  };
 
   memberSelected = (userId: string) => {
     this.props.onMemberSelected(userId);
@@ -147,8 +140,9 @@ export class EditConversationPanel extends React.Component<Properties, State> {
               <CitizenListItem
                 key={u.userId}
                 user={u}
-                onRemove={this.removeMember}
+                canRemove={this.canRemoveMembers}
                 onSelected={this.memberSelected}
+                showMemberManagementMenu
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>

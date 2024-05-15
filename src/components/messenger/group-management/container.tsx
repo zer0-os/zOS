@@ -8,7 +8,6 @@ import {
   MembersSelectedPayload,
   editConversationNameAndIcon,
   EditConversationPayload,
-  openRemoveMember,
   startEditConversation,
   startAddGroupMember,
   LeaveGroupDialogStatus,
@@ -110,7 +109,6 @@ export class Container extends React.Component<Properties> {
       back,
       addSelectedMembers,
       editConversationNameAndIcon,
-      openRemoveMember,
       startEditConversation,
       startAddGroupMember,
       setLeaveGroupStatus,
@@ -133,10 +131,6 @@ export class Container extends React.Component<Properties> {
 
   onAddMembers = async (selectedOptions: Option[]) => {
     this.props.addSelectedMembers({ roomId: this.props.activeConversationId, users: selectedOptions });
-  };
-
-  openRemoveMember = (userId: string) => {
-    this.props.openRemoveMember({ roomId: this.props.activeConversationId, userId });
   };
 
   onEditConversation = async (name: string, image: File | null) => {
@@ -178,7 +172,6 @@ export class Container extends React.Component<Properties> {
           isOneOnOne={this.props.isOneOnOne}
           onEditConversation={this.onEditConversation}
           editConversationState={this.props.editConversationState}
-          onRemoveMember={this.openRemoveMember}
           canAddMembers={this.props.canAddMembers}
           canEditGroup={this.props.canEditGroup}
           canLeaveGroup={this.props.canLeaveGroup}

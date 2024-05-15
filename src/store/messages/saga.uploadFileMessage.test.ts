@@ -24,7 +24,7 @@ describe(uploadFileMessages, () => {
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages).toHaveLength(1);
-    expect(channel.messages[0].id).toEqual('image-message-id');
+    expect(channel.messages[0].id).toEqual('optimistic-id'); // we'll get the real id later (from matrix event)
   });
 
   it('first media file sets its rootMessageId', async () => {

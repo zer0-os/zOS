@@ -159,6 +159,46 @@ export class MatrixClient implements IChatClient {
     return admins;
   }
 
+  /**
+   * Currently we have minimum invite, kick level set to 100 for all users
+   * this means that only the room creator/admin (which has a power_level of 100) can invite and kick users
+   *
+   * this function will lower the minimum invite and kick levels to 50 for all rooms,
+   * so that the admin can set other users as moderators and they can invite and kick users
+   */
+  async lowerMinimumInviteAndKickLevels(rooms: Room[]) {
+    for (const room of rooms) {
+      try {
+        const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
+        if (!powerLevels || this.userId !== room.getCreator() || room.getMembers().length <= 2) {
+          continue;
+        }
+
+        const powerLevelsContent = powerLevels.getContent();
+        if (powerLevelsContent.invite === PowerLevels.Moderator && powerLevelsContent.kick === PowerLevels.Moderator) {
+          continue;
+        }
+
+        // just to be safe, above we check if the user is the creator of the room
+        // but also check if this users has a power level of 100,
+        // otherwise sendStateEvent will fail
+        const users = powerLevelsContent.users || {};
+        if (users[this.userId] !== PowerLevels.Owner) {
+          continue;
+        }
+
+        const updatedRoomPowerLevels = {
+          ...powerLevelsContent,
+          invite: PowerLevels.Moderator,
+          kick: PowerLevels.Moderator,
+        };
+        await this.matrix.sendStateEvent(room.roomId, EventType.RoomPowerLevels, updatedRoomPowerLevels);
+      } catch (error) {
+        console.error(`Error lowering minimum invite and kick levels for room ${room.roomId} `, error);
+      }
+    }
+  }
+
   async getConversations() {
     await this.waitForConnection();
     const rooms = await this.getRoomsUserIsIn();
@@ -179,6 +219,8 @@ export class MatrixClient implements IChatClient {
     }
 
     const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+
+    await this.lowerMinimumInviteAndKickLevels(filteredRooms);
     return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
   }
 
@@ -420,9 +462,9 @@ export class MatrixClient implements IChatClient {
         users: {
           [this.userId]: PowerLevels.Owner,
         },
-        invite: PowerLevels.Owner, // default is PL0
+        invite: PowerLevels.Moderator, // default is PL0
         // all below except users_default, default to PL50
-        kick: PowerLevels.Owner,
+        kick: PowerLevels.Moderator,
         redact: PowerLevels.Owner,
         ban: PowerLevels.Owner,
         users_default: PowerLevels.Viewer,

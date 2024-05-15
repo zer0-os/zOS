@@ -9,6 +9,10 @@
   height: 32px;
   gap: 8px;
 
+  &__avatar-container {
+    cursor: pointer;
+  }
+
   &__user-details {
     display: flex;
     flex-direction: column;

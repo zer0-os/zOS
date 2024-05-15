@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
+import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
-import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 const cn = bemClassName('user-header');
 
@@ -67,7 +67,7 @@ export class UserHeader extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <div onClick={this.openProfile}>
+        <div {...cn('avatar-container')} onClick={this.openProfile}>
           <Avatar
             isActive={this.shouldAvatarHaveHighlight}
             size={'medium'}

@@ -77,4 +77,13 @@ describe(UserHeader, () => {
     const wrapper = subject({ showRewardsTooltip: false });
     expect(wrapper).not.toHaveElement(RewardsToolTipContainer);
   });
+
+  it('fires openUserProfile when user avatar is clicked', function () {
+    const openUserProfile = jest.fn();
+    const wrapper = subject({ openUserProfile });
+
+    wrapper.find(c('avatar-container')).simulate('click');
+
+    expect(openUserProfile).toHaveBeenCalled();
+  });
 });

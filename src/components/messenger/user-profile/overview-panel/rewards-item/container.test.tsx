@@ -1,4 +1,4 @@
-import { StoreBuilder } from '../../../store/test/store';
+import { StoreBuilder } from '../../../../../store/test/store';
 import { Container } from './container';
 
 describe(Container, () => {

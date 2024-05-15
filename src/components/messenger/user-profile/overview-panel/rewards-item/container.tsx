@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { connectContainer } from '../../../store/redux-container';
-import { RootState } from '../../../store/reducer';
+import { connectContainer } from '../../../../../store/redux-container';
+import { RootState } from '../../../../../store/reducer';
 import { RewardsItem } from '.';
-import { calculateTotalPriceInUSDCents, formatUSD, formatWeiAmount } from '../../../lib/number';
+import { calculateTotalPriceInUSDCents, formatUSD, formatWeiAmount } from '../../../../../lib/number';
 
 export interface PublicProperties {}
 

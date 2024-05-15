@@ -7,7 +7,7 @@ import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus, IconUser1 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { RewardsItemContainer } from '../../../settings-menu/rewards-item/container';
+import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
 
 import './styles.scss';

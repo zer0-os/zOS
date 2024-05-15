@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { RewardsItem, Properties } from '.';
-import { bem } from '../../../lib/bem';
+import { bem } from '../../../../../lib/bem';
 
 const c = bem('.rewards-item');
 

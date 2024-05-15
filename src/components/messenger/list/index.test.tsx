@@ -51,6 +51,7 @@ describe('messenger-list', () => {
       onFavoriteRoom: () => null,
       onUnfavoriteRoom: () => null,
       openUserProfile: () => null,
+      totalRewardsViewed: () => null,
 
       ...props,
     };

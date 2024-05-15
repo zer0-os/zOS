@@ -270,15 +270,12 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
   return yield sendMessage(messageCall, channelId, optimisticId);
 }
 
+// note: we're not replacing the optimistic message with the real message here anymore
+// because we're now relying on receiving the real-time message event from matrix,
+// which will replace the optimistic message
 export function* sendMessage(apiCall, channelId, optimisticId) {
   try {
-    const createdMessage = yield apiCall;
-    const existingMessageIds = yield select(rawMessagesSelector(channelId));
-    const messages = yield call(replaceOptimisticMessage, existingMessageIds, createdMessage);
-    if (messages) {
-      yield call(receiveChannel, { id: channelId, messages: messages });
-    }
-    return createdMessage;
+    return yield apiCall;
   } catch (e) {
     yield call(messageSendFailed, optimisticId);
     return null;

@@ -75,18 +75,15 @@ export class Invite extends React.Component<Properties, State> {
 
     return (
       <div className={c('')}>
-        <div className={c('heading-container')}>
-          <h3 className={c('heading')}>Add invite code</h3>
-          <div className={c('sub-heading')}>6 digit code you received in your invite</div>
-        </div>
         <form className={c('form')} onSubmit={this.submitForm}>
           <div className={c('input-container')}>
             <Input
               onChange={this.onInviteCodeChanged}
-              placeholder='e.g 123456'
+              placeholder='Invite Code'
               value={this.state.inviteCode}
               type='text'
               error={isError}
+              autoFocus
             />
 
             {isError && this.renderAlert(this.props.inviteCodeStatus)}

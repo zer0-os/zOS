@@ -19,7 +19,6 @@ describe(EditConversationPanel, () => {
       errors: {},
       name: '',
       icon: '',
-      onRemoveMember: () => null,
       conversationAdminIds: [],
       onMemberSelected: () => null,
       openUserProfile: () => null,
@@ -130,20 +129,38 @@ describe(EditConversationPanel, () => {
       ]);
     });
 
-    it('pubishes remove event', function () {
-      const onRemoveMember = jest.fn();
+    it('passes canRemoveMembers as false to CitizenListItem if only 2 members in group', function () {
       const wrapper = subject({
-        onRemoveMember,
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
         otherMembers: [
           { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
-          { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
         ] as User[],
       });
 
-      const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'otherMember1');
-      item.simulate('remove', 'otherMember1');
+      expect(wrapper.find(CitizenListItem).at(1).prop('canRemove')).toEqual(false);
+    });
 
-      expect(onRemoveMember).toHaveBeenCalledWith('otherMember1');
+    it('passes canRemoveMembers as true to CitizenListItem if more than 2 members in group', function () {
+      const wrapper = subject({
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+          { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+          { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Eve' },
+        ] as User[],
+      });
+
+      expect(wrapper.find(CitizenListItem).at(1).prop('canRemove')).toEqual(true);
+    });
+
+    it('passes showMemberManagementMenu as true to CitizenListItem', function () {
+      const wrapper = subject({
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+        ] as User[],
+      });
+
+      expect(wrapper.find(CitizenListItem).at(1).prop('showMemberManagementMenu')).toEqual(true);
     });
 
     it('publishes onMemberSelected event', () => {

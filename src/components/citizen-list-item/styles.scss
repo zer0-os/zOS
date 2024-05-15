@@ -57,6 +57,10 @@
 
   &__remove {
     display: none;
+
+    &--menu-open {
+      display: block;
+    }
   }
 
   &:hover &__remove {

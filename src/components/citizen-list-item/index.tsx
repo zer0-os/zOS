@@ -2,30 +2,36 @@ import * as React from 'react';
 
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 import { displayName } from '../../lib/user';
 
 import './styles.scss';
+import { MemberManagementMenuContainer } from '../messenger/group-management/member-management-menu/container';
+import classNames from 'classnames';
 
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
   user: User;
   tag?: string;
+  canRemove?: boolean;
+  showMemberManagementMenu?: boolean;
 
-  onRemove?: (userId: string) => void;
   onSelected?: (userId: string) => void;
 }
 
-export class CitizenListItem extends React.Component<Properties> {
+interface State {
+  isMenuOpen: boolean;
+}
+
+export class CitizenListItem extends React.Component<Properties, State> {
+  state: State = {
+    isMenuOpen: false,
+  };
+
   get statusType() {
     return this.props.user.isOnline ? 'active' : 'offline';
   }
-
-  publishRemove = () => {
-    this.props.onRemove(this.props.user.userId);
-  };
 
   publishMemberClick = () => {
     if (this.props.onSelected) {
@@ -37,6 +43,10 @@ export class CitizenListItem extends React.Component<Properties> {
     if (event.key === 'Enter' && this.props.onSelected) {
       this.props.onSelected(this.props.user.userId);
     }
+  };
+
+  onIsMenuOpenChange = (isOpen: boolean) => {
+    this.setState({ isMenuOpen: isOpen });
   };
 
   render() {
@@ -56,9 +66,20 @@ export class CitizenListItem extends React.Component<Properties> {
         </div>
 
         {this.props.tag && <div {...cn('tag')}>{this.props.tag}</div>}
-        {this.props.onRemove && (
-          <div {...cn('remove')}>
-            <IconButton Icon={IconXClose} size={24} onClick={this.publishRemove} />
+        {this.props.showMemberManagementMenu && (
+          <div
+            className={classNames('citizen-list-item__remove', {
+              'citizen-list-item__remove--menu-open': this.state.isMenuOpen,
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <MemberManagementMenuContainer
+              user={this.props.user}
+              onOpenChange={this.onIsMenuOpenChange}
+              canRemove={this.props.canRemove}
+            />
           </div>
         )}
       </div>

@@ -5,14 +5,18 @@ import { RootState } from '../../store/reducer';
 import { SecureBackupContainer } from '../secure-backup/container';
 import { closeBackupDialog } from '../../store/matrix';
 import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
+import { RewardsModalContainer } from '../rewards-modal/container';
+import { closeRewardsDialog } from '../../store/rewards';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       displayLogoutModal: false,
       isBackupDialogOpen: false,
+      isRewardsDialogOpen: false,
 
       closeBackupDialog: () => null,
+      closeRewardsDialog: () => null,
       ...props,
     };
     return shallow(<Container {...allProps} />);
@@ -52,6 +56,18 @@ describe('DialogManager', () => {
     expect(wrapper).not.toHaveElement(LogoutConfirmationModalContainer);
   });
 
+  it('renders Rewards Modal when isRewardsDialogOpen is true', () => {
+    const wrapper = subject({ isRewardsDialogOpen: true });
+
+    expect(wrapper).toHaveElement(RewardsModalContainer);
+  });
+
+  it('does not render Rewards Modal when isRewardsDialogOpen is false', () => {
+    const wrapper = subject({ isRewardsDialogOpen: false });
+
+    expect(wrapper).not.toHaveElement(RewardsModalContainer);
+  });
+
   describe('mapState', () => {
     const stateMock: RootState = {
       authentication: {
@@ -59,6 +75,9 @@ describe('DialogManager', () => {
       },
       matrix: {
         isBackupDialogOpen: true,
+      },
+      rewards: {
+        showRewardsInPopup: false,
       },
     } as RootState;
 
@@ -73,6 +92,12 @@ describe('DialogManager', () => {
 
       expect(props.displayLogoutModal).toBe(true);
     });
+
+    it('returns isRewardsDialogOpen', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.isRewardsDialogOpen).toBe(false);
+    });
   });
 
   describe('mapActions', () => {
@@ -81,6 +106,13 @@ describe('DialogManager', () => {
 
       expect(actions.closeBackupDialog).toBeDefined();
       expect(actions.closeBackupDialog).toEqual(closeBackupDialog);
+    });
+
+    it('returns closeRewardsDialog action', () => {
+      const actions = Container.mapActions({} as any);
+
+      expect(actions.closeRewardsDialog).toBeDefined();
+      expect(actions.closeRewardsDialog).toEqual(closeRewardsDialog);
     });
   });
 });

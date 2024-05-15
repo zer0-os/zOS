@@ -15,10 +15,12 @@ describe(UserHeader, () => {
       userAvatarUrl: '',
       userIsOnline: true,
       showRewardsTooltip: false,
+      hasUnviewedRewards: false,
 
       onLogout: () => null,
       onVerifyId: () => null,
       startConversation: () => null,
+      openUserProfile: () => null,
       ...props,
     };
 
@@ -69,5 +71,19 @@ describe(UserHeader, () => {
   it('renders rewards tooltip when showRewardsTooltip is true', function () {
     const wrapper = subject({ showRewardsTooltip: true });
     expect(wrapper).toHaveElement(RewardsToolTipContainer);
+  });
+
+  it('does not render rewards tooltip when showRewardsTooltip is false', function () {
+    const wrapper = subject({ showRewardsTooltip: false });
+    expect(wrapper).not.toHaveElement(RewardsToolTipContainer);
+  });
+
+  it('fires openUserProfile when user avatar is clicked', function () {
+    const openUserProfile = jest.fn();
+    const wrapper = subject({ openUserProfile });
+
+    wrapper.find(c('avatar-container')).simulate('click');
+
+    expect(openUserProfile).toHaveBeenCalled();
   });
 });

@@ -34,6 +34,7 @@ import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
+import { openUserProfile } from '../../../store/edit-profile';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -57,6 +58,7 @@ export interface Properties extends PublicProperties {
   joinRoomErrorContent: ErrorDialogContent;
   isRewardsDialogOpen: boolean;
   showRewardsTooltip: boolean;
+  hasUnviewedRewards: boolean;
 
   startCreateConversation: () => void;
   back: () => void;
@@ -69,6 +71,7 @@ export interface Properties extends PublicProperties {
   closeRewardsDialog: () => void;
   onFavoriteRoom: (payload: { roomId: string }) => void;
   onUnfavoriteRoom: (payload: { roomId: string }) => void;
+  openUserProfile: () => void;
 }
 
 interface State {
@@ -103,6 +106,7 @@ export class Container extends React.Component<Properties, State> {
       joinRoomErrorContent,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       showRewardsTooltip: rewards.showRewardsInTooltip,
+      hasUnviewedRewards: rewards.showNewRewardsIndicator,
     };
   }
 
@@ -119,6 +123,7 @@ export class Container extends React.Component<Properties, State> {
       closeRewardsDialog,
       onFavoriteRoom,
       onUnfavoriteRoom,
+      openUserProfile,
     };
   }
 
@@ -231,6 +236,8 @@ export class Container extends React.Component<Properties, State> {
         onLogout={this.props.logout}
         onVerifyId={this.openVerifyIdDialog}
         showRewardsTooltip={this.props.showRewardsTooltip}
+        openUserProfile={this.props.openUserProfile}
+        hasUnviewedRewards={this.props.hasUnviewedRewards}
       />
     );
   }

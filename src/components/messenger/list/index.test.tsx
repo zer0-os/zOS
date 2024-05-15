@@ -40,6 +40,7 @@ describe('messenger-list', () => {
       createConversation: jest.fn(),
       isRewardsDialogOpen: false,
       showRewardsTooltip: false,
+      hasUnviewedRewards: false,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,
@@ -49,6 +50,7 @@ describe('messenger-list', () => {
       closeRewardsDialog: () => null,
       onFavoriteRoom: () => null,
       onUnfavoriteRoom: () => null,
+      openUserProfile: () => null,
 
       ...props,
     };

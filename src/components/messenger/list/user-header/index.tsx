@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { SettingsMenuContainer } from '../../../settings-menu/container';
-import { IconButton } from '@zero-tech/zui/components';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 
@@ -17,10 +16,12 @@ export interface Properties {
   userAvatarUrl: string;
   userIsOnline: boolean;
   showRewardsTooltip: boolean;
+  hasUnviewedRewards: boolean;
 
   onLogout?: () => void;
   onVerifyId: () => void;
   startConversation: () => void;
+  openUserProfile: () => void;
 }
 
 export class UserHeader extends React.Component<Properties> {
@@ -31,6 +32,14 @@ export class UserHeader extends React.Component<Properties> {
   get isWalletAddress() {
     return this.props.userHandle.startsWith('0x');
   }
+
+  get shouldAvatarHaveHighlight() {
+    return this.props.hasUnviewedRewards;
+  }
+
+  openProfile = () => {
+    this.props.openUserProfile();
+  };
 
   renderVerifyIdButton() {
     return (
@@ -58,13 +67,14 @@ export class UserHeader extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <SettingsMenuContainer
-          onLogout={this.props.onLogout}
-          userName={this.props.userName}
-          userHandle={this.props.userHandle}
-          userAvatarUrl={this.props.userAvatarUrl}
-          userStatus={this.userStatus}
-        />
+        <div onClick={this.openProfile}>
+          <Avatar
+            isActive={this.shouldAvatarHaveHighlight}
+            size={'medium'}
+            imageURL={this.props.userAvatarUrl}
+            statusType={'active'}
+          />
+        </div>
         {this.props.showRewardsTooltip && <RewardsToolTipContainer />}
 
         {this.renderUserDetails()}

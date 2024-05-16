@@ -19,8 +19,8 @@ export enum SagaActionTypes {
   Back = 'group-management/back',
   Cancel = 'group-management/cancel',
   AddSelectedMembers = 'group-management/add-selected-members',
-  OpenRemoveMember = 'group-management/open-remove-member',
-  CancelRemoveMember = 'group-management/cancel-remove-member',
+  OpenMemberManagement = 'group-management/open-member-management',
+  CancelMemberManageMent = 'group-management/cancel-member-management',
   RemoveMember = 'group-management/remove-member',
   EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
   OpenViewGroupInformation = 'group-management/open-view-group-information',
@@ -40,10 +40,17 @@ export enum LeaveGroupDialogStatus {
   IN_PROGRESS,
 }
 
-export enum RemoveMemberDialogStage {
+export enum MemberManagementDialogStage {
   OPEN,
   CLOSED,
   IN_PROGRESS,
+}
+
+export enum MemberManagementAction {
+  None = 'none',
+  RemoveMember = 'remove_member',
+  MakeModerator = 'make_moderator',
+  RemoveModertor = 'remove_moderator',
 }
 
 export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);
@@ -51,8 +58,10 @@ export const startAddGroupMember = createAction(SagaActionTypes.StartAddMember);
 export const startEditConversation = createAction(SagaActionTypes.StartEditConversation);
 export const back = createAction(SagaActionTypes.Back);
 export const addSelectedMembers = createAction<MembersSelectedPayload>(SagaActionTypes.AddSelectedMembers);
-export const openRemoveMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.OpenRemoveMember);
-export const cancelRemoveMember = createAction(SagaActionTypes.CancelRemoveMember);
+export const openMemberManagement = createAction<{ type: MemberManagementAction; roomId: string; userId: string }>(
+  SagaActionTypes.OpenMemberManagement
+);
+export const cancelMemberManagement = createAction(SagaActionTypes.CancelMemberManageMent);
 export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
 export const viewGroupInformation = createAction(SagaActionTypes.OpenViewGroupInformation);
 export const editConversationNameAndIcon = createAction<EditConversationPayload>(
@@ -65,10 +74,11 @@ export type GroupManagementState = {
   isAddingMembers: boolean;
   addMemberError: string;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
-  removeMember: {
+  memberMangement: {
+    type: MemberManagementAction;
+    stage: MemberManagementDialogStage;
     userId: string;
     roomId: string;
-    stage: RemoveMemberDialogStage;
     error: string;
   };
   errors: GroupManagementErrors;
@@ -83,10 +93,11 @@ export const initialState: GroupManagementState = {
   leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
   errors: { editConversationErrors: { image: '', general: '' } },
   editConversationState: EditConversationState.NONE,
-  removeMember: {
+  memberMangement: {
+    type: MemberManagementAction.None,
     userId: '',
     roomId: '',
-    stage: RemoveMemberDialogStage.CLOSED,
+    stage: MemberManagementDialogStage.CLOSED,
     error: '',
   },
   isSecondarySidekickOpen: false,
@@ -123,14 +134,14 @@ const slice = createSlice({
     setEditConversationState: (state, action: PayloadAction<GroupManagementState['editConversationState']>) => {
       state.editConversationState = action.payload;
     },
-    setRemoveMember: (state, action: PayloadAction<GroupManagementState['removeMember']>) => {
-      state.removeMember = action.payload;
+    setMemberManagement: (state, action: PayloadAction<GroupManagementState['memberMangement']>) => {
+      state.memberMangement = action.payload;
     },
-    setRemoveMemberStage: (state, action: PayloadAction<GroupManagementState['removeMember']['stage']>) => {
-      state.removeMember.stage = action.payload;
+    setMemberManagementStage: (state, action: PayloadAction<GroupManagementState['memberMangement']['stage']>) => {
+      state.memberMangement.stage = action.payload;
     },
-    setRemoveMemberError: (state, action: PayloadAction<GroupManagementState['removeMember']['error']>) => {
-      state.removeMember.error = action.payload;
+    setMemberManagementError: (state, action: PayloadAction<GroupManagementState['memberMangement']['error']>) => {
+      state.memberMangement.error = action.payload;
     },
     setSecondarySidekickOpen: (state, action: PayloadAction<GroupManagementState['isSecondarySidekickOpen']>) => {
       state.isSecondarySidekickOpen = action.payload;
@@ -146,9 +157,9 @@ export const {
   setEditConversationState,
   setEditConversationImageError,
   setEditConversationGeneralError,
-  setRemoveMember,
-  setRemoveMemberStage,
-  setRemoveMemberError,
+  setMemberManagement,
+  setMemberManagementStage,
+  setMemberManagementError,
   setSecondarySidekickOpen,
 } = slice.actions;
 export const { reducer } = slice;

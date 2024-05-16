@@ -14,7 +14,7 @@ import {
   setEditConversationState,
   setEditConversationGeneralError,
   setEditConversationImageError,
-  RemoveMemberDialogStage,
+  MemberManagementDialogStage,
   setSecondarySidekickOpen,
 } from '.';
 import { expectSaga } from '../../test/saga';
@@ -168,7 +168,7 @@ describe('Group Management Saga', () => {
         .withReducer(rootReducer, initialState.build())
         .run();
 
-      expect(storeState.groupManagement.removeMember.stage).toEqual(RemoveMemberDialogStage.CLOSED);
+      expect(storeState.groupManagement.memberMangement.stage).toEqual(MemberManagementDialogStage.CLOSED);
     });
 
     it('sets error message when error occurs', async () => {
@@ -184,7 +184,7 @@ describe('Group Management Saga', () => {
         .withReducer(rootReducer, initialState.build())
         .run();
 
-      expect(storeState.groupManagement.removeMember.error).toEqual('Failed to remove member, please try again');
+      expect(storeState.groupManagement.memberMangement.error).toEqual('Failed to remove member, please try again');
     });
 
     it('keeps the dialog open when error occurs', async () => {
@@ -200,7 +200,7 @@ describe('Group Management Saga', () => {
         .withReducer(rootReducer, initialState.build())
         .run();
 
-      expect(storeState.groupManagement.removeMember.stage).toEqual(RemoveMemberDialogStage.OPEN);
+      expect(storeState.groupManagement.memberMangement.stage).toEqual(MemberManagementDialogStage.OPEN);
     });
   });
 

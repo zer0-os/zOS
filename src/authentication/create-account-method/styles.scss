@@ -1,6 +1,9 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .create-account-method {
+  width: 256px;
+  margin-top: 52px;
+
   &--is-connecting {
     margin: auto;
   }
@@ -16,17 +19,20 @@
 
   &__toggle-group {
     height: 40px;
-    background: theme.$color-primary-transparency-1;
-    width: 280px;
+    background: unset;
+    width: 256px;
     margin-bottom: 32px;
+    border: 1px solid rgba(163, 162, 163, 0.1);
+    border-radius: 9999px;
 
     > * {
       border-left: none !important;
+      border-radius: 9999px !important;
     }
 
     [data-state='on'] {
-      font-weight: 700;
-      background: theme.$color-primary-transparency-2 !important;
+      font-weight: 600;
+      background: rgba(163, 162, 163, 0.1) !important;
     }
   }
 }

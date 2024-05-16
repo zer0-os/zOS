@@ -90,11 +90,12 @@ body {
 
     > * {
       border-left: none !important;
+      border-radius: 9999px !important;
     }
 
     [data-state='on'] {
       font-weight: 600;
-      background: theme.$color-primary-transparency-2 !important;
+      background: rgba(163, 162, 163, 0.1) !important;
     }
   }
 
@@ -105,7 +106,7 @@ body {
     &--wallet-option {
       @include glass-shadow-and-blur;
 
-      background: rgba(10, 10, 10, 0.75);
+      background: rgba(11, 7, 7, 0.75);
       border-radius: 8px;
     }
   }

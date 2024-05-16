@@ -92,7 +92,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
               {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
-              <div {...cn('login-option')}>{this.renderLoginOption()}</div>
+              <div {...cn('login-option', isWeb3LoginStage && 'wallet-option')}>{this.renderLoginOption()}</div>
             </div>
             {this.renderFooter(stage)}
           </main>

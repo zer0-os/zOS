@@ -95,12 +95,15 @@ body {
   }
 
   &__login-option {
-    @include glass-shadow-and-blur;
-
     min-width: 128px;
     max-width: 256px;
-    background: rgba(10, 10, 10, 0.75);
-    border-radius: 8px;
+
+    &--wallet-option {
+      @include glass-shadow-and-blur;
+
+      background: rgba(10, 10, 10, 0.75);
+      border-radius: 8px;
+    }
   }
 
   &__other {

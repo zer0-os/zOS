@@ -1,12 +1,13 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 @import '../../background';
+@import '../../glass';
 
 // XXX: Merge this with the invite page styles...there's some kind of root authentication page that needs to be created?
 
 // Constants for login dimensions and spacing
 $login-gap: 32px;
-$login-width: 280px;
+$login-width: 256px;
 $login-padding-vertical: 24px;
 
 // Mixin for flexbox layout
@@ -58,9 +59,10 @@ body {
   }
 
   &__header {
-    color: theme.$color-greyscale-12;
+    @include glass-text-primary-color;
+
     text-align: center;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 18px;
     line-height: 22px;
     margin-bottom: $login-gap;
@@ -80,23 +82,25 @@ body {
 
   &__toggle-group {
     height: 40px;
-    background: theme.$color-primary-transparency-1;
+    background: unset;
     width: $login-width;
     margin-bottom: $login-gap;
-
-    > * {
-      border-left: none !important;
-    }
+    border: 1px solid rgba(163, 162, 163, 0.1);
+    border-radius: 9999px;
 
     [data-state='on'] {
-      font-weight: 700;
+      font-weight: 600;
       background: theme.$color-primary-transparency-2 !important;
     }
   }
 
   &__login-option {
-    display: flex;
-    justify-content: center;
+    @include glass-shadow-and-blur;
+
+    min-width: 128px;
+    max-width: 256px;
+    background: rgba(10, 10, 10, 0.75);
+    border-radius: 8px;
   }
 
   &__other {

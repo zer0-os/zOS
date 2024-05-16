@@ -5,20 +5,22 @@ import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
 import './styles.scss';
 
 import { bemClassName } from '../../../lib/bem';
+import { MemberManagementAction } from '../../../store/group-management';
 
 const cn = bemClassName('remove-member-dialog');
 
 export interface Properties {
+  type: MemberManagementAction;
   userName: string;
   roomName: string;
   inProgress: boolean;
   error: string;
 
   onClose: () => void;
-  onRemove: () => void;
+  onConfirm: () => void;
 }
 
-export class RemoveMemberDialog extends React.Component<Properties> {
+export class MemberManagementDialog extends React.Component<Properties> {
   get roomLabel() {
     return this.props.roomName ? `${this.props.roomName}` : 'the group';
   }
@@ -44,7 +46,7 @@ export class RemoveMemberDialog extends React.Component<Properties> {
         cancelLabel='Cancel'
         confirmationLabel='Remove Member'
         onCancel={this.props.onClose}
-        onConfirm={this.props.onRemove}
+        onConfirm={this.props.onConfirm}
         inProgress={this.props.inProgress}
       >
         <div {...cn()}>

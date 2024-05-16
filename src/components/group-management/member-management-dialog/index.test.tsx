@@ -2,25 +2,27 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { RemoveMemberDialog, Properties } from '.';
+import { MemberManagementDialog, Properties } from '.';
 import { bem } from '../../../lib/bem';
 import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
+import { MemberManagementAction } from '../../../store/group-management';
 
 const c = bem('.remove-member-dialog');
 
-describe(RemoveMemberDialog, () => {
+describe(MemberManagementDialog, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      type: MemberManagementAction.None,
       userName: 'StubUser',
       roomName: 'StubRoom',
       inProgress: false,
       error: '',
       onClose: () => {},
-      onRemove: () => {},
+      onConfirm: () => {},
       ...props,
     };
 
-    return shallow(<RemoveMemberDialog {...allProps} />);
+    return shallow(<MemberManagementDialog {...allProps} />);
   };
 
   it('renders the message with NO room name', function () {
@@ -50,7 +52,7 @@ describe(RemoveMemberDialog, () => {
 
   it('publishes onRemove event when confirmed', () => {
     const onRemove = jest.fn();
-    const wrapper = subject({ onRemove });
+    const wrapper = subject({ onConfirm: onRemove });
 
     wrapper.find(ModalConfirmation).simulate('confirm');
 

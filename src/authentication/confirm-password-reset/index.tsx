@@ -117,6 +117,7 @@ export class ConfirmPasswordReset extends React.Component<Properties, State> {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             size='large'
+            autoFocus
           />
           <PasswordInput
             {...cn('input')}

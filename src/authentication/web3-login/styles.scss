@@ -7,20 +7,13 @@
 }
 
 .web3-login {
-  width: 280px;
+  width: 240px;
+  padding: 8px;
 
   @include flex();
 
   &__login {
     @include flex();
-  }
-
-  &__select-wallet {
-    margin-bottom: 8px;
-  }
-
-  &__error-container {
-    padding-top: 4px;
   }
 
   &__error {

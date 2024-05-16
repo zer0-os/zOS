@@ -1,12 +1,13 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
 
-$left-padding: 12px;
+$left-padding: 8px;
 
 .zos-wallet-select {
+  @include glass-text-primary-color;
+
   padding: 8px;
   border-radius: 8px;
-  color: theme.$color-greyscale-12;
-  background-color: theme.$color-primary-transparency-1;
 
   &__title-bar {
     border-bottom: 1px solid theme.$color-primary-4;
@@ -33,13 +34,13 @@ $left-padding: 12px;
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
-    padding: 7px $left-padding;
+    padding: 7px 2px 7px 8px;
     height: 56px;
     cursor: pointer;
     border-radius: 8px;
 
     &:hover {
-      background-color: theme.$color-primary-transparency-2;
+      @include glass-state-hover-color;
     }
   }
 
@@ -61,10 +62,11 @@ $left-padding: 12px;
   }
 
   &__footer {
-    border-top: 1px solid theme.$color-primary-4;
+    @include glass-text-secondary-color;
+    @include glass-state-active-stroke-top;
+
     padding: 24px 16px 16px;
 
-    color: theme.$color-greyscale-11;
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
@@ -92,7 +94,6 @@ $left-padding: 12px;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 7px 12px;
   }
 
   &__connecting-wallet-name {

@@ -24,9 +24,19 @@
   }
 
   &__form {
-    gap: 32px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 280px;
+    margin: 0 auto;
+  }
 
-    @include form();
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
   }
 
   &__input {
@@ -38,7 +48,7 @@
     padding: 8px 6px !important;
   }
 
-  &__input-alert {
+  &__alert {
     font-size: 12px;
     margin-top: 4px;
     padding: 4px 8px;

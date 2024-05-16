@@ -65,36 +65,40 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
           <div {...cn('sub-heading')}>Enter your details</div>
         </div>
         <form {...cn('form')} onSubmit={this.publishOnCreate}>
-          <div {...cn('image-upload')}>
-            <ImageUpload
-              onChange={this.trackImage}
-              icon={this.renderImageUploadIcon()}
-              isError={Boolean(this.props.errors.image)}
-              errorMessage={this.props.errors.image}
-            />
+          <div {...cn('section')}>
+            <div {...cn('image-upload')}>
+              <ImageUpload
+                onChange={this.trackImage}
+                icon={this.renderImageUploadIcon()}
+                isError={Boolean(this.props.errors.image)}
+                errorMessage={this.props.errors.image}
+              />
+            </div>
+            {this.imageError && (
+              <Alert className={c('alert')} isFilled variant='error'>
+                {this.imageError}
+              </Alert>
+            )}
           </div>
-          {this.imageError && (
-            <Alert isFilled variant='error'>
-              {this.imageError}
-            </Alert>
-          )}
-          <Input
-            {...cn('input')}
-            label='Display Name'
-            wrapperClassName={c('input-wrapper')}
-            alertClassName={c('input-alert')}
-            name='name'
-            value={this.state.name}
-            onChange={this.trackName}
-            error={!!this.nameError}
-            alert={this.nameError}
-            autoFocus
-          />
-          {this.generalError && (
-            <Alert isFilled variant='error'>
-              {this.generalError}
-            </Alert>
-          )}
+          <div {...cn('section')}>
+            <Input
+              {...cn('input')}
+              label='Display Name'
+              wrapperClassName={c('input-wrapper')}
+              alertClassName={c('alert')}
+              name='name'
+              value={this.state.name}
+              onChange={this.trackName}
+              error={!!this.nameError}
+              alert={this.nameError}
+              autoFocus
+            />
+            {this.generalError && (
+              <Alert className={c('alert')} isFilled variant='error'>
+                {this.generalError}
+              </Alert>
+            )}
+          </div>
           <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Create Account
           </Button>

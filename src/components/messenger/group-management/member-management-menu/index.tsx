@@ -4,12 +4,13 @@ import { IconDotsHorizontal, IconUserX1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
+import { MemberManagementAction } from '../../../../store/group-management';
 
 export interface Properties {
   canRemove?: boolean;
   onOpenChange: (isOpen: boolean) => void;
 
-  onRemoveMember: () => void;
+  onOpenMemberManagement: (type: MemberManagementAction) => void;
 }
 
 export class MemberManagementMenu extends React.Component<Properties> {
@@ -18,7 +19,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
   };
 
   onRemoveMember = () => {
-    this.props.onRemoveMember();
+    this.props.onOpenMemberManagement(MemberManagementAction.RemoveMember);
   };
 
   renderMenuItem(icon, label) {

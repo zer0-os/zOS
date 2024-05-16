@@ -82,14 +82,13 @@ export class CreateAccountDetails extends React.Component<Properties, State> {
             {...cn('input')}
             label='Display Name'
             wrapperClassName={c('input-wrapper')}
-            helperTextClassName={c('input-helper-text')}
-            helperText='This is the name that is visible to others on ZERO'
-            placeholder='E.g John Smith'
+            alertClassName={c('input-alert')}
             name='name'
             value={this.state.name}
             onChange={this.trackName}
             error={!!this.nameError}
             alert={this.nameError}
+            autoFocus
           />
           {this.generalError && (
             <Alert isFilled variant='error'>

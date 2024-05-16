@@ -33,13 +33,16 @@
     @include input();
   }
 
-  &__input-helper-text {
-    padding-bottom: 4px;
-  }
-
   &__input-wrapper {
     height: unset !important;
     padding: 8px 6px !important;
+  }
+
+  &__input-alert {
+    font-size: 12px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    line-height: 17px;
   }
 
   &__image-upload {

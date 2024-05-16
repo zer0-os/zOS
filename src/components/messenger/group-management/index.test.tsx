@@ -27,7 +27,6 @@ describe(GroupManagement, () => {
       onBack: () => null,
       searchUsers: () => null,
       onAddMembers: () => null,
-      onRemoveMember: () => null,
       onEditConversation: () => null,
       startEditConversation: () => null,
       startAddGroupMember: () => null,

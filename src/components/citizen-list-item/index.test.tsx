@@ -42,15 +42,6 @@ describe(CitizenListItem, () => {
     expect(avatar).toHaveProp('statusType', 'offline');
   });
 
-  it('publishes remove event', function () {
-    const onRemove = jest.fn();
-    const wrapper = subject({ onRemove, user: { userId: 'user-id' } as any });
-
-    wrapper.find(IconButton).simulate('click');
-
-    expect(onRemove).toHaveBeenCalledWith('user-id');
-  });
-
   it('does not render remove icon if no handler provided', function () {
     const wrapper = subject({});
 

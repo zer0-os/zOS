@@ -1,0 +1,25 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.member-management-menu {
+  .remove-member {
+    color: theme.$color-failure-11;
+  }
+
+  .menu-item {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.member-management-trigger {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: theme.$color-greyscale-transparency-3;
+  }
+}

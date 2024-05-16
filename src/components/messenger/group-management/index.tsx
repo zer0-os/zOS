@@ -29,7 +29,6 @@ export interface Properties {
   onAddMembers: (options: Option[]) => void;
   onEditConversation: (name: string, image: File | null) => void;
   searchUsers: (search: string) => Promise<any>;
-  onRemoveMember: (userId: string) => void;
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
@@ -59,7 +58,6 @@ export class GroupManagement extends React.PureComponent<Properties> {
             conversationAdminIds={this.props.conversationAdminIds}
             errors={this.props.errors.editConversationErrors}
             onBack={this.props.onBack}
-            onRemoveMember={this.props.onRemoveMember}
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
             onMemberSelected={this.props.onMemberClick}

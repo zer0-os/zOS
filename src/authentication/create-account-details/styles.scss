@@ -24,22 +24,35 @@
   }
 
   &__form {
-    gap: 32px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 280px;
+    margin: 0 auto;
+  }
 
-    @include form();
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
   }
 
   &__input {
     @include input();
   }
 
-  &__input-helper-text {
-    padding-bottom: 4px;
-  }
-
   &__input-wrapper {
     height: unset !important;
     padding: 8px 6px !important;
+  }
+
+  &__alert {
+    font-size: 12px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    line-height: 17px;
   }
 
   &__image-upload {

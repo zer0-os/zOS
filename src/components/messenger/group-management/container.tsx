@@ -20,7 +20,7 @@ import { RootState } from '../../../store/reducer';
 import { GroupManagementErrors, EditConversationState } from '../../../store/group-management/types';
 import { User, denormalize as denormalizeChannel, openConversation, Channel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { RemoveMemberDialogContainer } from '../../group-management/remove-member-dialog/container';
+import { MemberManagementDialogContainer } from '../../group-management/member-management-dialog/container';
 import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -182,7 +182,7 @@ export class Container extends React.Component<Properties> {
           onMemberClick={this.processMemberConversation}
           openUserProfile={this.props.openUserProfile}
         />
-        <RemoveMemberDialogContainer />
+        <MemberManagementDialogContainer />
       </>
     );
   }

@@ -29,7 +29,7 @@ export class MemberManagementDialog extends React.Component<Properties> {
     if (this.props.type === MemberManagementAction.RemoveMember) {
       return `Removing ${this.props.userName} from ${this.roomLabel}.`;
     } else if (this.props.type === MemberManagementAction.MakeModerator) {
-      return `Making ${this.props.userName} a moderator of ${this.roomLabel}.`;
+      return `Making ${this.props.userName} moderator of ${this.roomLabel}.`;
     }
 
     return 'in progress';
@@ -48,7 +48,7 @@ export class MemberManagementDialog extends React.Component<Properties> {
     if (this.props.type === MemberManagementAction.MakeModerator) {
       return (
         <>
-          Are you sure you want to make <i>{this.props.userName}</i> a moderator of <i>{this.roomLabel}</i>?
+          Are you sure you want to make <i>{this.props.userName}</i> moderator of <i>{this.roomLabel}</i>?
         </>
       );
     }

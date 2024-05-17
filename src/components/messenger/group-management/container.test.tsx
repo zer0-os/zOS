@@ -53,5 +53,15 @@ describe(Container, () => {
         expect.objectContaining({ editConversationState: EditConversationState.NONE })
       );
     });
+
+    test('gets conversationModeratorIds', () => {
+      const state = new StoreBuilder()
+        .managingGroup({})
+        .withActiveConversation({ id: 'user-id', moderatorIds: ['user-id'] });
+
+      expect(Container.mapState(state.build())).toEqual(
+        expect.objectContaining({ conversationModeratorIds: ['user-id'] })
+      );
+    });
   });
 });

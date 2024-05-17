@@ -21,6 +21,7 @@ describe(GroupManagement, () => {
       errors: {},
       editConversationState: EditConversationState.NONE,
       conversationAdminIds: [],
+      conversationModeratorIds: [],
       canAddMembers: false,
       canEditGroup: false,
       canLeaveGroup: false,

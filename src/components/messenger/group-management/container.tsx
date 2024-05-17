@@ -47,6 +47,7 @@ export interface Properties extends PublicProperties {
   canEditGroup: boolean;
   canLeaveGroup: boolean;
   conversationAdminIds: string[];
+  conversationModeratorIds: string[];
   isOneOnOne: boolean;
   existingConversations: Channel[];
 
@@ -73,6 +74,7 @@ export class Container extends React.Component<Properties> {
     const conversation = denormalizeChannel(activeConversationId, state);
     const currentUser = currentUserSelector(state);
     const conversationAdminIds = conversation?.adminMatrixIds;
+    const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
     const existingConversations = denormalizeConversations(state);
 
@@ -100,6 +102,7 @@ export class Container extends React.Component<Properties> {
       canEditGroup: isCurrentUserRoomAdmin,
       canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,
+      conversationModeratorIds,
       isOneOnOne: conversation?.isOneOnOne,
       existingConversations,
     };
@@ -177,6 +180,7 @@ export class Container extends React.Component<Properties> {
           canLeaveGroup={this.props.canLeaveGroup}
           startEditConversation={this.props.startEditConversation}
           conversationAdminIds={this.props.conversationAdminIds}
+          conversationModeratorIds={this.props.conversationModeratorIds}
           startAddGroupMember={this.props.startAddGroupMember}
           setLeaveGroupStatus={this.props.setLeaveGroupStatus}
           onMemberClick={this.processMemberConversation}

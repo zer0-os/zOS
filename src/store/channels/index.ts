@@ -52,6 +52,7 @@ export interface Channel {
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
   adminMatrixIds: string[];
+  moderatorIds?: string[];
   reply?: ParentMessage;
   isFavorite: boolean;
   otherMembersTyping: string[];
@@ -73,6 +74,7 @@ export const CHANNEL_DEFAULTS = {
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,
   adminMatrixIds: [],
+  moderatorIds: [],
   isFavorite: false,
   otherMembersTyping: [],
 };

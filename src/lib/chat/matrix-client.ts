@@ -147,16 +147,25 @@ export class MatrixClient implements IChatClient {
     return roomIds.includes(roomId);
   }
 
-  private getRoomAdmins(room: Room): string[] {
+  private getRoomAdminsAndMods(room: Room): [string[], string[]] {
     const powerLevels = this.getLatestEvent(room, EventType.RoomPowerLevels);
     if (!powerLevels) {
       // possible if you've just _created_ the conversation, in which case we don't
       // have the power levels events yet
-      return [room.getCreator()];
+      return [[room.getCreator()], []];
     }
     const powerLevelsByUser = powerLevels.getContent()?.users || {};
-    const admins = Object.keys(powerLevelsByUser).filter((userId) => powerLevelsByUser[userId] === PowerLevels.Owner);
-    return admins;
+
+    const admins = [];
+    const mods = [];
+    for (const [userId, powerLevel] of Object.entries(powerLevelsByUser)) {
+      if (powerLevel === PowerLevels.Owner) {
+        admins.push(userId);
+      } else if (powerLevel === PowerLevels.Moderator) {
+        mods.push(userId);
+      }
+    }
+    return [admins, mods];
   }
 
   /**
@@ -698,6 +707,11 @@ export class MatrixClient implements IChatClient {
     await this.matrix.kick(roomId, user.matrixId);
   }
 
+  async setUserAsModerator(roomId: string, user): Promise<void> {
+    await this.waitForConnection();
+    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Moderator);
+  }
+
   private async onMessageUpdated(event): Promise<void> {
     const relatedEventId = this.getRelatedEventId(event);
     const originalMessage = await this.getMessageByRoomId(event.room_id, relatedEventId);
@@ -881,6 +895,7 @@ export class MatrixClient implements IChatClient {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
+    this.matrix.on(RoomMemberEvent.PowerLevel, this.publishRoomMemberPowerLevelsChanged);
 
     //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
@@ -1015,6 +1030,10 @@ export class MatrixClient implements IChatClient {
     this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
 
+  private publishRoomMemberPowerLevelsChanged = (_event: MatrixEvent, member: RoomMember) => {
+    this.events.roomMemberPowerLevelChanged(member.roomId, member.userId, member.powerLevel);
+  };
+
   private publishMembershipChange = async (event) => {
     const user = this.mapUser(event.state_key);
     const membership = event.content.membership;
@@ -1065,6 +1084,7 @@ export class MatrixClient implements IChatClient {
     const messages = await this.getAllMessagesFromRoom(room);
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
     const isFavorite = await this.isRoomFavorited(room.roomId);
+    const [admins, mods] = this.getRoomAdminsAndMods(room);
 
     return {
       id: room.roomId,
@@ -1080,7 +1100,8 @@ export class MatrixClient implements IChatClient {
       unreadCount,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
-      adminMatrixIds: this.getRoomAdmins(room),
+      adminMatrixIds: admins,
+      moderatorIds: mods,
       isFavorite,
     };
   };

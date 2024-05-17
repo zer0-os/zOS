@@ -27,6 +27,8 @@ export const mapChannelMembers = (channels: Channel[], zeroUsersMap: { [id: stri
     for (const member of channel.memberHistory) {
       replaceZOSUserFields(member as User, zeroUsersMap[member.matrixId]);
     }
+
+    channel.moderatorIds = channel.moderatorIds.map((matrixId) => zeroUsersMap[matrixId]?.userId || matrixId);
   }
 };
 

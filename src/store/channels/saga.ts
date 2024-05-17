@@ -12,12 +12,15 @@ import {
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
-import { ParentMessage } from '../../lib/chat/types';
+import { ParentMessage, PowerLevels } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 import { getLocalZeroUsersMap } from '../messages/saga';
+import { userByMatrixIdSelector } from '../users/selectors';
+import { rawChannel } from './selectors';
+import cloneDeep from 'lodash/cloneDeep';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -191,6 +194,32 @@ function* listenForMessageSent() {
   }
 }
 
+export function* receivedRoomMemberPowerLevelChanged(action) {
+  const { roomId, matrixId, powerLevel } = action.payload;
+  const user = yield select(userByMatrixIdSelector, matrixId);
+  const channel = yield select(rawChannel, roomId);
+  if (!user || !channel) {
+    return;
+  }
+
+  let moderatorIds = cloneDeep(channel.moderatorIds || []);
+
+  if (powerLevel === PowerLevels.Moderator) {
+    if (!moderatorIds.includes(user.userId)) {
+      moderatorIds.push(user.userId);
+    }
+  }
+
+  if (powerLevel === PowerLevels.Viewer) {
+    const index = moderatorIds.indexOf(user.userId);
+    if (index !== -1) {
+      moderatorIds.splice(index, 1);
+    }
+  }
+
+  yield call(receiveChannel, { id: roomId, moderatorIds });
+}
+
 export function* saga() {
   yield spawn(listenForMessageSent);
   yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
@@ -205,4 +234,9 @@ export function* saga() {
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavorited);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
+  yield takeEveryFromBus(
+    yield call(getChatBus),
+    ChatEvents.RoomMemberPowerLevelChanged,
+    receivedRoomMemberPowerLevelChanged
+  );
 }

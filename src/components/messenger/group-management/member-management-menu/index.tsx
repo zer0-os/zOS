@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import { IconDotsHorizontal, IconUserX1 } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconUserCheck1, IconUserX1 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { MemberManagementAction } from '../../../../store/group-management';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 export interface Properties {
   canRemove?: boolean;
@@ -22,6 +23,10 @@ export class MemberManagementMenu extends React.Component<Properties> {
     this.props.onOpenMemberManagement(MemberManagementAction.RemoveMember);
   };
 
+  onMakeMod = () => {
+    this.props.onOpenMemberManagement(MemberManagementAction.MakeModerator);
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -32,6 +37,15 @@ export class MemberManagementMenu extends React.Component<Properties> {
 
   get dropdownMenuItems() {
     const menuItems = [];
+
+    if (featureFlags.allowModeratorActions) {
+      menuItems.push({
+        id: 'make-mod',
+        className: 'make-mod',
+        label: this.renderMenuItem(<IconUserCheck1 size={20} />, 'Make Mod'),
+        onSelect: this.onMakeMod,
+      });
+    }
 
     if (this.props.canRemove) {
       menuItems.push({

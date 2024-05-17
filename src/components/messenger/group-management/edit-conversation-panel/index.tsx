@@ -24,6 +24,7 @@ export interface Properties {
   errors: EditConversationErrors;
   state: EditConversationState;
   conversationAdminIds: string[];
+  conversationModeratorIds: string[];
 
   onBack: () => void;
   onEdit: (name: string, image: File | null) => void;
@@ -124,6 +125,13 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     );
   };
 
+  getMemberTag = (userId: string) => {
+    if (this.props.conversationModeratorIds.includes(userId)) {
+      return 'Mod';
+    }
+    return '';
+  };
+
   renderMembers = () => {
     const { conversationAdminIds, otherMembers } = this.props;
     const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
@@ -142,6 +150,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
                 user={u}
                 canRemove={this.canRemoveMembers}
                 onSelected={this.memberSelected}
+                tag={this.getMemberTag(u.userId)}
                 showMemberManagementMenu
               ></CitizenListItem>
             ))}

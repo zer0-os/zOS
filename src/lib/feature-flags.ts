@@ -81,6 +81,14 @@ export class FeatureFlags {
   set allowEditPrimaryZID(value: boolean) {
     this._setBoolean('allowEditPrimaryZID', value);
   }
+
+  get allowModeratorActions() {
+    return this._getBoolean('allowModeratorActions', false);
+  }
+
+  set allowModeratorActions(value: boolean) {
+    this._setBoolean('allowModeratorActions', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

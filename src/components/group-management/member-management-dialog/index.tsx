@@ -26,25 +26,55 @@ export class MemberManagementDialog extends React.Component<Properties> {
   }
 
   get progressMessage() {
-    return `Removing ${this.props.userName} from ${this.roomLabel}.`;
+    if (this.props.type === MemberManagementAction.RemoveMember) {
+      return `Removing ${this.props.userName} from ${this.roomLabel}.`;
+    } else if (this.props.type === MemberManagementAction.MakeModerator) {
+      return `Making ${this.props.userName} a moderator of ${this.roomLabel}.`;
+    }
+
+    return 'in progress';
   }
 
   get message() {
-    return (
-      <>
-        Are you sure you want to remove {this.props.userName} from {this.roomLabel}?<br />
-        {this.props.userName} will lose access to the conversation and its history.
-      </>
-    );
+    if (this.props.type === MemberManagementAction.RemoveMember) {
+      return (
+        <>
+          Are you sure you want to remove {this.props.userName} from {this.roomLabel}?<br />
+          {this.props.userName} will lose access to the conversation and its history.
+        </>
+      );
+    }
+
+    if (this.props.type === MemberManagementAction.MakeModerator) {
+      return (
+        <>
+          Are you sure you want to make <i>{this.props.userName}</i> a moderator of <i>{this.roomLabel}</i>?
+        </>
+      );
+    }
+
+    return 'Are you sure you want to perform this action?';
+  }
+
+  get title() {
+    if (this.props.type === MemberManagementAction.RemoveMember) {
+      return 'Remove Member';
+    }
+
+    if (this.props.type === MemberManagementAction.MakeModerator) {
+      return 'Make Mod';
+    }
+
+    return 'Member Management';
   }
 
   render() {
     return (
       <ModalConfirmation
         open
-        title='Remove Member'
+        title={this.title}
         cancelLabel='Cancel'
-        confirmationLabel='Remove Member'
+        confirmationLabel={this.title}
         onCancel={this.props.onClose}
         onConfirm={this.props.onConfirm}
         inProgress={this.props.inProgress}

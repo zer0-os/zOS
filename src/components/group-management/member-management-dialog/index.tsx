@@ -48,7 +48,7 @@ export class MemberManagementDialog extends React.Component<Properties> {
     if (this.props.type === MemberManagementAction.MakeModerator) {
       return (
         <>
-          Are you sure you want to make <i>{this.props.userName}</i> moderator of <i>{this.roomLabel}</i>?
+          Are you sure you want to make <b>{this.props.userName}</b> moderator of <i>{this.roomLabel}</i>?
         </>
       );
     }

@@ -19,7 +19,9 @@ import { LoginPage } from './pages';
 import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
+import { desktopInit } from './lib/desktop';
 
+desktopInit();
 runSagas();
 
 initializeErrorBoundary();

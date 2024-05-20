@@ -73,6 +73,7 @@ export class RequestPasswordReset extends React.Component<Properties, State> {
           onChange={this.trackEmail}
           error={!!this.emailError}
           alert={this.emailError}
+          autoFocus
         />
 
         {this.generalError && (

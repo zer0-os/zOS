@@ -2,13 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Properties, MemberManagementMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
+import { MemberManagementAction } from '../../../../store/group-management';
 
 describe(MemberManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       canRemove: true,
       onOpenChange: () => {},
-      onRemoveMember: () => {},
+      onOpenMemberManagement: () => {},
       ...props,
     };
 
@@ -25,12 +26,12 @@ describe(MemberManagementMenu, () => {
 
   describe('Remove', () => {
     it('publishes onRemoveMember event when Remove member is clicked', () => {
-      const onRemoveMember = jest.fn();
-      const wrapper = subject({ onRemoveMember, canRemove: true });
+      const onOpenMemberManagement = jest.fn();
+      const wrapper = subject({ onOpenMemberManagement, canRemove: true });
 
       selectItem(wrapper, 'remove-member');
 
-      expect(onRemoveMember).toHaveBeenCalled();
+      expect(onOpenMemberManagement).toBeCalledWith(MemberManagementAction.RemoveMember);
     });
   });
 });

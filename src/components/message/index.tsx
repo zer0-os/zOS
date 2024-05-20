@@ -71,6 +71,13 @@ export class Message extends React.Component<Properties, State> {
   wrapperRef = React.createRef<HTMLDivElement>();
 
   handleContextMenu = (event) => {
+    if (typeof window !== 'undefined' && window.getSelection) {
+      const selectedText = window.getSelection().toString();
+      if (selectedText.length > 0) {
+        return;
+      }
+    }
+
     if (event.button === 2) {
       event.preventDefault();
       event.stopPropagation();

@@ -20,7 +20,8 @@ describe('ChannelViewContainer', () => {
       activeConversationId: '',
       sendMessage: () => undefined,
       uploadFileMessage: () => undefined,
-      deleteMessage: () => undefined,
+      openDeleteMessage: () => undefined,
+
       editMessage: () => undefined,
       context: {
         isAuthenticated: false,
@@ -164,19 +165,19 @@ describe('ChannelViewContainer', () => {
     });
   });
 
-  it('should call deleteMessage', () => {
-    const deleteMessage = jest.fn();
+  it('should call openDeleteMessage', () => {
+    const openDeleteMessage = jest.fn();
     const messageId = 2345221;
 
     const wrapper = subject({
-      deleteMessage,
+      openDeleteMessage,
       channelId: 'the-channel-id',
       channel: { hasMore: true, name: 'first channel' },
     });
 
     wrapper.find(ChatView).first().prop('deleteMessage')(messageId);
 
-    expect(deleteMessage).toHaveBeenCalledOnce();
+    expect(openDeleteMessage).toHaveBeenCalledWith(messageId);
   });
 
   it('should call editMessage', () => {

@@ -7,6 +7,8 @@ import { closeBackupDialog } from '../../store/matrix';
 import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
+import { DeleteMessageContainer } from '../delete-message-dialog/container';
+import { closeDeleteMessage } from '../../store/dialogs';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
@@ -14,9 +16,12 @@ describe('DialogManager', () => {
       displayLogoutModal: false,
       isBackupDialogOpen: false,
       isRewardsDialogOpen: false,
+      deleteMessageId: null,
 
       closeBackupDialog: () => null,
       closeRewardsDialog: () => null,
+      closeDeleteMessage: () => null,
+
       ...props,
     };
     return shallow(<Container {...allProps} />);
@@ -68,6 +73,18 @@ describe('DialogManager', () => {
     expect(wrapper).not.toHaveElement(RewardsModalContainer);
   });
 
+  it('renders DeleteMessageContainer when deleteMessageId is present', () => {
+    const wrapper = subject({ deleteMessageId: 123 });
+
+    expect(wrapper).toHaveElement(DeleteMessageContainer);
+  });
+
+  it('does not render DeleteMessageContainer when deleteMessageId is absent', () => {
+    const wrapper = subject({ deleteMessageId: null });
+
+    expect(wrapper).not.toHaveElement(DeleteMessageContainer);
+  });
+
   describe('mapState', () => {
     const stateMock: RootState = {
       authentication: {
@@ -78,6 +95,9 @@ describe('DialogManager', () => {
       },
       rewards: {
         showRewardsInPopup: false,
+      },
+      dialogs: {
+        deleteMessageId: 123,
       },
     } as RootState;
 
@@ -98,6 +118,12 @@ describe('DialogManager', () => {
 
       expect(props.isRewardsDialogOpen).toBe(false);
     });
+
+    it('returns deleteMessageId', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.deleteMessageId).toBe(123);
+    });
   });
 
   describe('mapActions', () => {
@@ -113,6 +139,13 @@ describe('DialogManager', () => {
 
       expect(actions.closeRewardsDialog).toBeDefined();
       expect(actions.closeRewardsDialog).toEqual(closeRewardsDialog);
+    });
+
+    it('returns closeDeleteMessage action', () => {
+      const actions = Container.mapActions({} as any);
+
+      expect(actions.closeDeleteMessage).toBeDefined();
+      expect(actions.closeDeleteMessage).toEqual(closeDeleteMessage);
     });
   });
 });

@@ -1,9 +1,8 @@
 import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { DropdownMenu, Modal, IconButton } from '@zero-tech/zui/components';
-import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
-import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4, IconXClose } from '@zero-tech/zui/icons';
+import { DropdownMenu } from '@zero-tech/zui/components';
+import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -24,14 +23,8 @@ export interface Properties {
   onReply?: () => void;
 }
 
-export interface State {
-  deleteDialogIsOpen: boolean;
-}
-
-export class MessageMenu extends React.Component<Properties, State> {
+export class MessageMenu extends React.Component<Properties> {
   ref = createRef();
-
-  state = { deleteDialogIsOpen: false };
 
   renderMenuOption(icon, label) {
     return (
@@ -68,52 +61,12 @@ export class MessageMenu extends React.Component<Properties, State> {
       menuItems.push({
         id: 'delete',
         label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
-        onSelect: this.toggleDeleteDialog,
+        onSelect: this.props.onDelete,
       });
     }
 
     return menuItems;
   };
-
-  handleDeleteMessage = () => {
-    this.setState({
-      deleteDialogIsOpen: false,
-    });
-    this.props.onDelete();
-  };
-
-  toggleDeleteDialog = () => {
-    this.setState({
-      deleteDialogIsOpen: !this.state.deleteDialogIsOpen,
-    });
-  };
-
-  get showDeleteModal(): boolean {
-    return this.state.deleteDialogIsOpen;
-  }
-
-  renderDeleteModal() {
-    return (
-      <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
-        <div className='delete-message-modal__header'>
-          <h2>Delete message</h2>
-          <IconButton Icon={IconXClose} size='large' onClick={this.toggleDeleteDialog} />
-        </div>
-        <div className='delete-message-text-content'>
-          Are you sure you want to delete this message? This cannot be undone.
-        </div>
-        <div className='delete-message-modal__footer'>
-          <Button variant={ButtonVariant.Secondary} color={ButtonColor.Greyscale} onPress={this.toggleDeleteDialog}>
-            Cancel
-          </Button>
-
-          <Button color={ButtonColor.Red} onPress={this.handleDeleteMessage}>
-            Delete message
-          </Button>
-        </div>
-      </Modal>
-    );
-  }
 
   render() {
     const menuItems = this.renderItems();
@@ -149,7 +102,6 @@ export class MessageMenu extends React.Component<Properties, State> {
             )
           }
         />
-        {this.renderDeleteModal()}
       </div>
     );
   }

@@ -76,6 +76,12 @@
       linear-gradient(black, black) center / calc(100% - 2px) calc(100% - 26px) no-repeat,
       linear-gradient(black, black) center / calc(100% - 26px) calc(100% - 2px) no-repeat;
   }
+
+  // Override for ToDesktop styling (disable mask property)
+  html.todesktop &:before {
+    background-image: none;
+    mask: none;
+  }
 }
 
 @mixin glass-inner {

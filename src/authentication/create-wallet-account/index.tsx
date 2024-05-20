@@ -23,15 +23,11 @@ export class CreateWalletAccount extends React.Component<Properties> {
     return (
       <div {...cn('')}>
         <div {...cn('main')}>
-          <div {...cn('select-wallet')}>
-            <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />
-          </div>
+          <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />
           {this.showError && (
-            <div {...cn('error-container')}>
-              <Alert {...cn('error')} variant='error' isFilled>
-                {this.props.error}
-              </Alert>
-            </div>
+            <Alert {...cn('error')} variant='error' isFilled>
+              {this.props.error}
+            </Alert>
           )}
         </div>
       </div>

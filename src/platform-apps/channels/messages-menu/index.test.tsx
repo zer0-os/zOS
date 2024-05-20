@@ -43,7 +43,7 @@ describe('Message Menu', () => {
       expect(deleteItem).toBeDefined();
     });
 
-    it('should open delete modal when delete button is clicked', () => {
+    it('should publish onDelete when delete button is clicked', () => {
       const onDelete = jest.fn();
       const wrapper = subject({ canDelete: true, onDelete });
 
@@ -53,8 +53,7 @@ describe('Message Menu', () => {
 
       deleteItem.onSelect();
 
-      const state = wrapper.state() as { deleteDialogIsOpen: boolean };
-      expect(state.deleteDialogIsOpen).toBe(true);
+      expect(onDelete).toHaveBeenCalled();
     });
   });
 

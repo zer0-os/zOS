@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../styles';
+@import '../../glass';
 
 .confirm-password-reset {
   margin: 76px 0 auto 0;
@@ -12,11 +13,18 @@
     align-items: center;
 
     gap: 8px;
-    margin: 0 0 32px 0;
+    margin: 70px 0 16px 0;
   }
 
   &__heading {
     @include heading();
+  }
+
+  &__sub-heading {
+    @include sub-heading();
+    @include glass-text-secondary-color;
+
+    font-size: 14px;
   }
 
   &__form {

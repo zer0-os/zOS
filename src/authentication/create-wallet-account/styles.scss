@@ -1,23 +1,21 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../styles';
+@import '../../glass';
 
 .create-wallet-account {
+  display: flex;
   margin: 0 0 auto;
 
+  background: rgba(11, 7, 7, 0.75);
+  border-radius: 8px;
+
+  @include glass-shadow-and-blur;
   @include base();
 
   &__main {
     box-sizing: border-box;
-    width: 280px;
-    margin-bottom: 8px;
-  }
-
-  &__select-wallet {
-    margin-bottom: 8px;
-  }
-
-  &__error-container {
-    padding-top: 4px;
+    width: 100%;
+    padding: 8px;
   }
 
   &__error {

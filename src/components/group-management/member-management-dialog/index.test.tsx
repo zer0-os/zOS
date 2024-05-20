@@ -25,20 +25,100 @@ describe(MemberManagementDialog, () => {
     return shallow(<MemberManagementDialog {...allProps} />);
   };
 
-  it('renders the message with NO room name', function () {
-    const wrapper = subject({ userName: 'Johnny Cash', roomName: '' });
+  describe('remove member', () => {
+    it('renders the message with NO room name', function () {
+      const wrapper = subject({ userName: 'Johnny Cash', roomName: '', type: MemberManagementAction.RemoveMember });
 
-    expect(wrapper.find(c('')).text()).toEqual(
-      'Are you sure you want to remove Johnny Cash from the group?Johnny Cash will lose access to the conversation and its history.'
-    );
+      expect(wrapper.find(c('')).text()).toEqual(
+        'Are you sure you want to remove Johnny Cash from the group?Johnny Cash will lose access to the conversation and its history.'
+      );
+    });
+
+    it('renders the message with a room name', function () {
+      const wrapper = subject({
+        userName: 'Johnny Cash',
+        roomName: 'Fun Room',
+        type: MemberManagementAction.RemoveMember,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual(
+        'Are you sure you want to remove Johnny Cash from Fun Room?Johnny Cash will lose access to the conversation and its history.'
+      );
+    });
+
+    it('renders loading text when isInProgress with NO room name', () => {
+      const wrapper = subject({
+        inProgress: true,
+        userName: 'Johnny Cash',
+        roomName: '',
+        type: MemberManagementAction.RemoveMember,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from the group.');
+    });
+
+    it('renders loading text when isInProgress with room name', () => {
+      const wrapper = subject({
+        inProgress: true,
+        userName: 'Johnny Cash',
+        roomName: 'Fun Room',
+        type: MemberManagementAction.RemoveMember,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from Fun Room.');
+    });
+
+    it('renders confirmation message when NOT isInProgress', () => {
+      const wrapper = subject({ inProgress: false, type: MemberManagementAction.RemoveMember });
+
+      expect(wrapper.find(ModalConfirmation).prop('confirmationLabel')).toEqual('Remove Member');
+    });
   });
 
-  it('renders the message with a room name', function () {
-    const wrapper = subject({ userName: 'Johnny Cash', roomName: 'Fun Room' });
+  describe('make moderator', () => {
+    it('renders the message with NO room name', function () {
+      const wrapper = subject({ userName: 'Johnny Cash', roomName: '', type: MemberManagementAction.MakeModerator });
 
-    expect(wrapper.find(c('')).text()).toEqual(
-      'Are you sure you want to remove Johnny Cash from Fun Room?Johnny Cash will lose access to the conversation and its history.'
-    );
+      expect(wrapper.find(c('')).text()).toEqual('Are you sure you want to make Johnny Cash moderator of the group?');
+    });
+
+    it('renders the message with a room name', function () {
+      const wrapper = subject({
+        userName: 'Johnny Cash',
+        roomName: 'Fun Room',
+        type: MemberManagementAction.MakeModerator,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual('Are you sure you want to make Johnny Cash moderator of Fun Room?');
+    });
+
+    it('renders loading text when isInProgress with NO room name', () => {
+      const wrapper = subject({
+        inProgress: true,
+        userName: 'Johnny Cash',
+        roomName: '',
+        type: MemberManagementAction.MakeModerator,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual('Making Johnny Cash moderator of the group.');
+    });
+
+    it('renders loading text when isInProgress with room name', () => {
+      const wrapper = subject({
+        inProgress: true,
+        userName: 'Johnny Cash',
+        roomName: 'Fun Room',
+        type: MemberManagementAction.MakeModerator,
+      });
+
+      expect(wrapper.find(c('')).text()).toEqual('Making Johnny Cash moderator of Fun Room.');
+    });
+
+    it('renders confirmation message when NOT isInProgress', () => {
+      const wrapper = subject({ inProgress: false, type: MemberManagementAction.MakeModerator });
+
+      expect(wrapper.find(ModalConfirmation).prop('confirmationLabel')).toEqual('Make Mod');
+    });
   });
 
   it('publishes close event when cancelled', function () {
@@ -51,30 +131,12 @@ describe(MemberManagementDialog, () => {
   });
 
   it('publishes onRemove event when confirmed', () => {
-    const onRemove = jest.fn();
-    const wrapper = subject({ onConfirm: onRemove });
+    const onConfirm = jest.fn();
+    const wrapper = subject({ onConfirm });
 
     wrapper.find(ModalConfirmation).simulate('confirm');
 
-    expect(onRemove).toHaveBeenCalled();
-  });
-
-  it('renders loading text when isInProgress with NO room name', () => {
-    const wrapper = subject({ inProgress: true, userName: 'Johnny Cash', roomName: '' });
-
-    expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from the group.');
-  });
-
-  it('renders loading text when isInProgress with room name', () => {
-    const wrapper = subject({ inProgress: true, userName: 'Johnny Cash', roomName: 'Fun Room' });
-
-    expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from Fun Room.');
-  });
-
-  it('renders confirmation message when NOT isInProgress', () => {
-    const wrapper = subject({ inProgress: false });
-
-    expect(wrapper.find(ModalConfirmation).prop('confirmationLabel')).toEqual('Remove Member');
+    expect(onConfirm).toHaveBeenCalled();
   });
 
   it('renders sets inProgress on Modal', () => {

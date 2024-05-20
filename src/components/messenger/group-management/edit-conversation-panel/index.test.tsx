@@ -20,6 +20,7 @@ describe(EditConversationPanel, () => {
       name: '',
       icon: '',
       conversationAdminIds: [],
+      conversationModeratorIds: [],
       onMemberSelected: () => null,
       openUserProfile: () => null,
       ...props,
@@ -126,6 +127,26 @@ describe(EditConversationPanel, () => {
         { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' },
         { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
         { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+      ]);
+    });
+
+    it('renders the members with appropriate tags', function () {
+      const wrapper = subject({
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+        otherMembers: [
+          { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
+          { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
+          { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Eve' },
+        ] as User[],
+        conversationAdminIds: ['currentUser'],
+        conversationModeratorIds: ['otherMember2'],
+      });
+
+      expect(wrapper.find(CitizenListItem).map((c) => c.prop('tag'))).toEqual([
+        'Admin',
+        '',
+        'Mod',
+        '',
       ]);
     });
 

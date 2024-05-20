@@ -11,6 +11,7 @@ import {
   removeMember,
   MemberManagementDialogStage,
   MemberManagementAction,
+  setMemberAsModerator,
 } from '../../../store/group-management';
 
 export interface PublicProperties {}
@@ -26,22 +27,23 @@ export interface Properties extends PublicProperties {
 
   cancel: () => void;
   remove: (userId: string, roomId: string) => void;
+  setAsMod: (userId: string, roomId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      groupManagement: { memberMangement },
+      groupManagement: { memberManagement },
     } = state;
-    const user = denormalizeUser(memberMangement.userId, state);
-    const channel = denormalizeChannel(memberMangement.roomId, state);
+    const user = denormalizeUser(memberManagement.userId, state);
+    const channel = denormalizeChannel(memberManagement.roomId, state);
 
     return {
-      type: memberMangement.type,
-      userId: memberMangement.userId,
-      roomId: memberMangement.roomId,
-      stage: memberMangement.stage,
-      error: memberMangement.error,
+      type: memberManagement.type,
+      userId: memberManagement.userId,
+      roomId: memberManagement.roomId,
+      stage: memberManagement.stage,
+      error: memberManagement.error,
       userName: displayName(user),
       roomName: channel?.name,
     };
@@ -51,12 +53,17 @@ export class Container extends React.Component<Properties> {
     return {
       cancel: cancelMemberManagement,
       remove: (userId, roomId) => removeMember({ userId, roomId }),
+      setAsMod: (userId, roomId) => setMemberAsModerator({ userId, roomId }),
     };
   }
 
   onConfirm = (): void => {
     if (this.props.type === MemberManagementAction.RemoveMember) {
       this.props.remove(this.props.userId, this.props.roomId);
+    }
+
+    if (this.props.type === MemberManagementAction.MakeModerator) {
+      this.props.setAsMod(this.props.userId, this.props.roomId);
     }
   };
 

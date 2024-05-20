@@ -24,6 +24,7 @@ export interface Properties {
   canEditGroup: boolean;
   canLeaveGroup: boolean;
   conversationAdminIds: string[];
+  conversationModeratorIds: string[];
 
   onBack: () => void;
   onAddMembers: (options: Option[]) => void;
@@ -56,6 +57,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             currentUser={this.props.currentUser}
             otherMembers={this.props.otherMembers}
             conversationAdminIds={this.props.conversationAdminIds}
+            conversationModeratorIds={this.props.conversationModeratorIds}
             errors={this.props.errors.editConversationErrors}
             onBack={this.props.onBack}
             onEdit={this.props.onEditConversation}

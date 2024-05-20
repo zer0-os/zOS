@@ -21,6 +21,7 @@ export interface RealtimeChatEvents {
   roomFavorited: (roomId: string) => void;
   roomUnfavorited: (roomId: string) => void;
   roomMemberTyping: (roomId: string, userIds: string[]) => void;
+  roomMemberPowerLevelChanged: (roomId: string, matrixId: string, powerLevel: number) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -316,4 +317,8 @@ export async function uploadImageUrl(
 
 export async function sendTypingEvent(roomId: string, isTyping: boolean) {
   return await chat.get().matrix.sendTypingEvent(roomId, isTyping);
+}
+
+export async function setUserAsModerator(roomId: string, userId: string) {
+  return await chat.get().matrix.setUserAsModerator(roomId, userId);
 }

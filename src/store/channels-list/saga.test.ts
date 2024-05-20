@@ -302,6 +302,7 @@ describe('channels list saga', () => {
           { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
         ],
         messages: [],
+        moderatorIds: [],
       },
       {
         id: 'room-2',
@@ -310,6 +311,7 @@ describe('channels list saga', () => {
           { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
         ],
         messages: [],
+        moderatorIds: [],
       },
     ] as any;
 
@@ -476,6 +478,21 @@ describe('channels list saga', () => {
         primaryZID: '',
         displaySubHandle: '',
       });
+    });
+
+    it('maps moderatorIds of channels to ZERO Users and save normalized state', async () => {
+      rooms[0].moderatorIds = ['matrix-id-1', 'matrix-id-2'];
+      rooms[1].moderatorIds = ['matrix-id-3'];
+
+      const initialState = new StoreBuilder().withConversationList(rooms[0], rooms[1]);
+
+      await expectSaga(mapToZeroUsers, rooms)
+        .withReducer(rootReducer, initialState.build())
+        .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
+        .run();
+
+      expect(rooms[0].moderatorIds).toIncludeSameMembers(['user-1', 'user-2']);
+      expect(rooms[1].moderatorIds).toIncludeSameMembers(['user-3']);
     });
   });
 

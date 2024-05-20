@@ -78,9 +78,11 @@
   }
 
   // Override for ToDesktop styling (disable mask property)
-  html.todesktop &:before {
-    background-image: none;
-    mask: none;
+  html.todesktop & {
+    &:before {
+      background-image: none;
+      mask: none;
+    }
   }
 }
 
